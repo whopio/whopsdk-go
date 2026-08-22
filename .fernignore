@@ -1,1 +1,31 @@
-# Specify files that shouldn't be modified by Fern
+# Files Fern must not modify or delete when regenerating this repo.
+#
+# Fern owns the SDK source and the ci.yml beside this workflow, and prunes anything it
+# did not generate — it reads this file from the pull request's base branch, so an entry
+# only protects a file once it is on main.
+#
+# publish-main.yml is hand-written. Go has no registry: distribution is this repository,
+# served to consumers through proxy.golang.org, so "publishing" is pushing a vX.Y.Z tag.
+# The workflow releases whopsdk-go when a merge to main lands a core/request_option.go
+# whose X-Fern-SDK-Version stamp is not yet tagged. It needs no credential beyond the
+# GITHUB_TOKEN that pushes the tag.
+#
+# Two consequences of that shape are irreversible and worth stating here:
+#
+#   * proxy.golang.org caches a version permanently and immutably. Once it has served
+#     github.com/whopio/whopsdk-go@vX.Y.Z, moving the tag changes nothing for anyone who
+#     already fetched it, and the mistake is invisible locally. The workflow refuses to
+#     move an existing tag and refuses to release a version the proxy already serves.
+#
+#   * The module path in go.mod is the import path. It must equal the repository URL, and
+#     from v2 onwards it must carry a /vN suffix or every consumer breaks. The workflow
+#     checks both against the version it is about to tag.
+#
+# The Fern Go generator's ci.yml only compiles, lints and tests. Unlike the Ruby
+# generator's, it contains no tag-triggered publish job and no id-token: write, so it is
+# left to Fern rather than being taken over here.
+#
+# LICENSE is listed pre-emptively: Fern does not carry one over, and a public Go module
+# without one is not safely consumable.
+.github/workflows/publish-main.yml
+LICENSE
