@@ -13,16 +13,19 @@ on:
         description: "Build and check the module without tagging"
         type: boolean
         default: true
+      confirm_version:
+        description: "Tag the version main already reports, on a commit that is not a pure version bump. Must equal the X-Fern-SDK-Version stamp in core/request_option.go, e.g. 1.0.11"
+        type: string
+        default: ""
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-whopsdk-go-${{ github.ref }}
-  cancel-in-progress: false
+  group: release-whopsdk-go-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  MODULE_PATH: github.com/whopio/whopsdk-go
   VERSION_FILE: core/request_option.go
   METADATA_FILE: .fern/metadata.json
   GO_VERSION: "1.25"
@@ -34,10 +37,11 @@ jobs:
       release: ${{ steps.gate.outputs.release }}
       dry: ${{ steps.gate.outputs.dry }}
       version: ${{ steps.gate.outputs.version }}
+      module_path: ${{ steps.gate.outputs.module_path }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 2
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Decide whether to release
@@ -45,9 +49,12 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}
+          CONFIRM_VERSION: ${{ github.event.inputs.confirm_version }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
           REF: ${{ github.ref }}
+          ACTOR: ${{ github.actor }}
+          BEFORE: ${{ github.event.before }}
         run: |
           set -euo pipefail
 
@@ -64,6 +71,7 @@ jobs:
             emit release false
             emit dry true
             emit version ""
+            emit module_path ""
             exit 0
           fi
 
@@ -82,17 +90,19 @@ jobs:
             exit 1
           fi
 
+          major="${version%%.*}"
+          module_path="github.com/${REPOSITORY}"
+          if [ "$major" -ge 2 ]; then
+            module_path="github.com/${REPOSITORY}/v${major}"
+          fi
+          emit module_path "$module_path"
+          echo "version ${version} must be published as module ${module_path}"
+
           declared=$(grep -E '^module[[:space:]]+' go.mod | head -1 | awk '{print $2}')
           echo "go.mod declares module ${declared}"
 
-          major="${version%%.*}"
-          expected="github.com/${REPOSITORY}"
-          if [ "$major" -ge 2 ]; then
-            expected="github.com/${REPOSITORY}/v${major}"
-          fi
-
-          if [ "$declared" != "$expected" ]; then
-            echo "::error::go.mod declares '${declared}' but version ${version} requires the module path to be '${expected}'."
+          if [ "$declared" != "$module_path" ]; then
+            echo "::error::go.mod declares '${declared}' but version ${version} requires the module path to be '${module_path}'."
             echo "::error::A Go module path is its import path. If it does not match the repository URL — and carry a /vN suffix from v2 onwards — 'go get' cannot resolve it and every consumer breaks."
             exit 1
           fi
@@ -111,30 +121,68 @@ jobs:
             exit 1
           fi
 
-          if [ "$EVENT" = "push" ]; then
-            previous=$(git show "HEAD^:${VERSION_FILE}" 2>/dev/null | grep -o '"X-Fern-SDK-Version", "[^"]*"' | head -1 | sed 's/.*, "//; s/"$//' || true)
-            if [ "$previous" = "$stamp" ]; then
-              echo "::notice::the version stamp is still ${stamp}; this push is not a release."
-              emit release false
-              exit 0
+          skip_and_report_untagged() {
+            if ! gh api "repos/${REPOSITORY}/git/ref/tags/v${version}" --silent >/dev/null 2>&1; then
+              echo "::warning::main reports ${stamp} and there is no v${version} tag. Nothing here will tag it. To release this tree deliberately, run this workflow from the Actions tab on main with dry_run unchecked and confirm_version=${version}."
             fi
+            emit release false
+            exit 0
+          }
 
-            changed=$(git diff --name-only HEAD^ HEAD)
-            unexpected=$(printf '%s\n' "$changed" | grep -vxE "${VERSION_FILE}|${METADATA_FILE}" || true)
-            if [ -n "$unexpected" ]; then
-              echo "::notice::this push changes more than ${VERSION_FILE} and ${METADATA_FILE}, so it is a regeneration rather than a release. Nothing will be tagged. Also changed:"
-              printf '%s\n' "$unexpected"
-              emit release false
-              exit 0
-            fi
-
-            body=$(git diff -U0 HEAD^ HEAD -- "$VERSION_FILE" "$METADATA_FILE" | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' || true)
-            offending=$(printf '%s\n' "$body" | grep -vE 'X-Fern-SDK-Version|User-Agent|"sdkVersion"|"requestedVersion"|"originGitCommit"' || true)
-            if [ -n "$offending" ]; then
-              echo "::error::a release push must change only the version stamps. Also changed:"
-              printf '%s\n' "$offending"
+          if [ -n "$CONFIRM_VERSION" ]; then
+            if [ "$CONFIRM_VERSION" != "$version" ] && [ "$CONFIRM_VERSION" != "$stamp" ]; then
+              echo "::error::confirm_version is '${CONFIRM_VERSION}' but ${VERSION_FILE} on main reports ${stamp}."
+              echo "::error::The tree is the only source of truth for a Go release, because the tag is the source. Dispatch again with confirm_version=${version}, or regenerate main first."
               exit 1
             fi
+            echo "${ACTOR} confirmed the release of ${version} from main, so the only-version-changed check does not apply to this run."
+          else
+            base=""
+            if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] \
+               && git rev-parse --verify --quiet "${BEFORE}^{commit}" >/dev/null; then
+              base="$BEFORE"
+            elif git rev-parse --verify --quiet 'HEAD^' >/dev/null; then
+              base="HEAD^"
+            fi
+
+            if [ -z "$base" ]; then
+              echo "::notice::there is no commit to diff against — HEAD has no parent and github.event.before is unusable — so the only-version-changed check cannot run."
+              skip_and_report_untagged
+            fi
+
+            echo "Inspecting the whole pushed range ${base}..HEAD"
+
+            previous=$(git show "${base}:${VERSION_FILE}" 2>/dev/null | grep -o '"X-Fern-SDK-Version", "[^"]*"' | head -1 | sed 's/.*, "//; s/"$//' || true)
+            if [ "$previous" = "$stamp" ]; then
+              echo "::notice::the version stamp is still ${stamp} across ${base}..HEAD; this push is not a release."
+              skip_and_report_untagged
+            fi
+
+            changed=$(git diff --name-only "$base" HEAD)
+            unexpected=$(printf '%s\n' "$changed" | grep -vxE "${VERSION_FILE}|${METADATA_FILE}" || true)
+            if [ -n "$unexpected" ]; then
+              count=$(printf '%s\n' "$unexpected" | wc -l | tr -d ' ')
+              echo "::notice::${base}..HEAD changes ${count} file(s) beyond ${VERSION_FILE} and ${METADATA_FILE}, so it is a regeneration rather than a version bump. The first 20:"
+              printf '%s\n' "$unexpected" | head -20
+              skip_and_report_untagged
+            fi
+
+            body=$(git diff -U0 "$base" HEAD -- "$VERSION_FILE" | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' || true)
+            non_stamp=$(printf '%s\n' "$body" | grep -vE '"(X-Fern-SDK-Version|User-Agent)", "[^"]*"' || true)
+            if [ -n "$non_stamp" ]; then
+              echo "::notice::${base}..HEAD changes lines in ${VERSION_FILE} that are not version stamps, so it is a regeneration rather than a version bump. Also changed:"
+              printf '%s\n' "$non_stamp"
+              skip_and_report_untagged
+            fi
+
+            for header in X-Fern-SDK-Version User-Agent; do
+              if ! printf '%s\n' "$body" | grep -qE "^\+.*\"${header}\", \"[^\"]*${version}\""; then
+                echo "::notice::${base}..HEAD does not set the ${header} stamp in ${VERSION_FILE} to ${version}, so it is not a version bump to ${version}."
+                skip_and_report_untagged
+              fi
+            done
+
+            echo "${base}..HEAD moves the version stamps from ${previous:-nothing} to ${stamp} and changes nothing else."
           fi
 
           head_sha=$(git rev-parse HEAD)
@@ -151,10 +199,10 @@ jobs:
             exit 1
           fi
 
-          status=$(proxy "https://proxy.golang.org/${MODULE_PATH}/@v/v${version}.info" /tmp/proxy-info.txt)
+          status=$(proxy "https://proxy.golang.org/${module_path}/@v/v${version}.info" /tmp/proxy-info.txt)
           case "$status" in
             200)
-              echo "::error::proxy.golang.org already serves ${MODULE_PATH}@v${version}:"
+              echo "::error::proxy.golang.org already serves ${module_path}@v${version}:"
               cat /tmp/proxy-info.txt
               echo "::error::The module proxy is immutable — that version can never be changed or withdrawn. Release a new version."
               exit 1
@@ -162,7 +210,7 @@ jobs:
             404)
               echo "proxy.golang.org does not serve v${version} yet."
               if grep -qi 'private repository\|could not read Username' /tmp/proxy-info.txt; then
-                echo "::warning::proxy.golang.org cannot read ${MODULE_PATH} because the repository is not public. The tag will be created, but 'go get' will not resolve it until the repository is made public."
+                echo "::warning::proxy.golang.org cannot read ${module_path} because the repository is not public. The tag will be created, but 'go get' will not resolve it until the repository is made public."
               fi
               ;;
             *)
@@ -172,7 +220,7 @@ jobs:
               ;;
           esac
 
-          latest_status=$(proxy "https://proxy.golang.org/${MODULE_PATH}/@latest" /tmp/proxy-latest.txt)
+          latest_status=$(proxy "https://proxy.golang.org/${module_path}/@latest" /tmp/proxy-latest.txt)
           case "$latest_status" in
             200)
               latest=$(jq -r '.Version' /tmp/proxy-latest.txt)
@@ -180,12 +228,12 @@ jobs:
               echo "Latest on proxy.golang.org: ${latest}"
               highest=$(printf '%s\n%s\n' "$latest" "$version" | sort -V | tail -1)
               if [ "$highest" = "$latest" ] && [ "$latest" != "$version" ]; then
-                echo "::error::${VERSION_FILE} is at ${version} but ${MODULE_PATH}@v${latest} is already published. This tree was generated before that release; regenerate it before merging."
+                echo "::error::${VERSION_FILE} is at ${version} but ${module_path}@v${latest} is already published. This tree was generated before that release; regenerate it before merging."
                 exit 1
               fi
               ;;
             404)
-              echo "::notice::proxy.golang.org serves no version of ${MODULE_PATH} yet; skipping the regression check."
+              echo "::notice::proxy.golang.org serves no version of ${module_path} yet; skipping the regression check."
               ;;
             *)
               echo "::error::proxy.golang.org returned HTTP ${latest_status} for @latest; refusing to guess the published version."
@@ -214,6 +262,7 @@ jobs:
       - name: Check the version stamps agree
         env:
           VERSION: ${{ needs.decide.outputs.version }}
+          MODULE_PATH: ${{ needs.decide.outputs.module_path }}
         run: |
           set -euo pipefail
 
@@ -234,12 +283,17 @@ jobs:
           if [ -f "$METADATA_FILE" ]; then
             meta_sdk=$(jq -r '.sdkVersion // ""' "$METADATA_FILE")
             meta_req=$(jq -r '.requestedVersion // ""' "$METADATA_FILE")
+            meta_module=$(jq -r '.generatorConfig.module.path // ""' "$METADATA_FILE")
             if [ -n "$meta_sdk" ] && [ "$meta_sdk" != "v${VERSION}" ]; then
               echo "::error::${METADATA_FILE} sdkVersion is ${meta_sdk}, expected v${VERSION}"
               fail=1
             fi
             if [ -n "$meta_req" ] && [ "$meta_req" != "$VERSION" ]; then
               echo "::error::${METADATA_FILE} requestedVersion is ${meta_req}, expected ${VERSION}"
+              fail=1
+            fi
+            if [ -n "$meta_module" ] && [ "$meta_module" != "$MODULE_PATH" ]; then
+              echo "::error::${METADATA_FILE} generatorConfig.module.path is ${meta_module}, expected ${MODULE_PATH}"
               fail=1
             fi
           fi
@@ -256,7 +310,7 @@ jobs:
             exit 1
           fi
 
-          echo "every version stamp reports ${VERSION}"
+          echo "every version stamp reports ${VERSION} under ${MODULE_PATH}"
 
       - name: Verify the module and its dependencies
         run: |
@@ -306,6 +360,7 @@ jobs:
       - name: Consume the module as an external consumer would
         env:
           VERSION: ${{ needs.decide.outputs.version }}
+          MODULE_PATH: ${{ needs.decide.outputs.module_path }}
         run: |
           set -euo pipefail
           workspace="$PWD"
@@ -314,9 +369,9 @@ jobs:
 
           go mod init whopsdkgoprobe
           go mod edit -replace "${MODULE_PATH}=${workspace}"
-          go mod edit -require "${MODULE_PATH}@v0.0.0"
+          go mod edit -require "${MODULE_PATH}@v${VERSION}"
 
-          cat > main.go <<'GO'
+          cat > main.go.template <<'GO'
           package main
 
           import (
@@ -327,9 +382,9 @@ jobs:
           	"os"
           	"strings"
 
-          	whopsdk "github.com/whopio/whopsdk-go"
-          	client "github.com/whopio/whopsdk-go/client"
-          	option "github.com/whopio/whopsdk-go/option"
+          	whopsdk "WHOPSDK_MODULE_PATH"
+          	client "WHOPSDK_MODULE_PATH/client"
+          	option "WHOPSDK_MODULE_PATH/option"
           )
 
           type capturingClient struct {
@@ -382,6 +437,14 @@ jobs:
           }
           GO
 
+          sed "s|WHOPSDK_MODULE_PATH|${MODULE_PATH}|g" main.go.template > main.go
+          rm main.go.template
+          if grep -q 'WHOPSDK_MODULE_PATH' main.go; then
+            echo "::error::the probe still carries an unresolved module path placeholder."
+            exit 1
+          fi
+          grep -n "${MODULE_PATH}" main.go
+
           go mod tidy
           go run . "$VERSION"
 
@@ -431,7 +494,7 @@ jobs:
 
   verify:
     needs: [decide, release]
-    if: needs.decide.outputs.dry == 'false' && needs.decide.outputs.version != ''
+    if: needs.release.result == 'success' && needs.decide.outputs.version != ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -444,6 +507,7 @@ jobs:
       - name: Wait for proxy.golang.org to serve the tag
         env:
           VERSION: ${{ needs.decide.outputs.version }}
+          MODULE_PATH: ${{ needs.decide.outputs.module_path }}
         run: |
           set -euo pipefail
 
@@ -460,7 +524,7 @@ jobs:
           done
 
           cat /tmp/proxy-info.txt || true
-          echo "::error::proxy.golang.org still does not serve ${MODULE_PATH}@v${VERSION}."
+          echo "::error::v${VERSION} is tagged and pushed, so the release itself succeeded. What has not happened is distribution: proxy.golang.org still does not serve ${MODULE_PATH}@v${VERSION}."
           if grep -qi 'private repository\|could not read Username' /tmp/proxy-info.txt; then
             echo "::error::The repository is not public, so the module proxy cannot fetch it. Nobody can 'go get' this SDK until whopio/whopsdk-go is made public."
           fi
@@ -469,6 +533,7 @@ jobs:
       - name: Resolve the published version from the proxy
         env:
           VERSION: ${{ needs.decide.outputs.version }}
+          MODULE_PATH: ${{ needs.decide.outputs.module_path }}
           GOFLAGS: -mod=mod
           GOPROXY: https://proxy.golang.org,direct
         run: |
@@ -476,6 +541,19 @@ jobs:
           consumer=$(mktemp -d)
           cd "$consumer"
           go mod init whopsdkgoconsumer
-          go get "${MODULE_PATH}@v${VERSION}"
-          grep -F "${MODULE_PATH} v${VERSION}" go.mod
-          echo "${MODULE_PATH}@v${VERSION} resolves from proxy.golang.org"
+
+          for attempt in $(seq 1 20); do
+            if go get "${MODULE_PATH}@v${VERSION}" >/tmp/go-get.txt 2>&1; then
+              cat /tmp/go-get.txt
+              grep -F "${MODULE_PATH} v${VERSION}" go.mod
+              echo "${MODULE_PATH}@v${VERSION} resolves from proxy.golang.org after ${attempt} attempt(s)"
+              exit 0
+            fi
+            echo "attempt ${attempt}:"
+            cat /tmp/go-get.txt
+            sleep 15
+          done
+
+          echo "::error::v${VERSION} is tagged and pushed, so the release itself succeeded. What has not happened is distribution: 'go get ${MODULE_PATH}@v${VERSION}' still fails, which means proxy.golang.org or sum.golang.org has not caught up or cannot read the repository."
+          cat /tmp/go-get.txt || true
+          exit 1
