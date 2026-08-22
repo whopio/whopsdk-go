@@ -270,8 +270,28 @@ jobs:
       - name: Vet
         run: go vet ./...
 
+      - name: Start the wiremock server the generated tests expect
+        if: hashFiles('wiremock/docker-compose.test.yml') != ''
+        env:
+          COMPOSE_PROJECT: whopsdkgorelease
+        run: |
+          set -euo pipefail
+          docker compose -p "$COMPOSE_PROJECT" -f wiremock/docker-compose.test.yml up -d --wait
+          port=$(docker compose -p "$COMPOSE_PROJECT" -f wiremock/docker-compose.test.yml port wiremock 8080 | cut -d: -f2)
+          if [ -z "$port" ]; then
+            echo "::error::wiremock started but exposed no port; the generated tests would fail against localhost:8080."
+            exit 1
+          fi
+          echo "WIREMOCK_URL=http://localhost:${port}" >> "$GITHUB_ENV"
+
       - name: Test
         run: go test ./...
+
+      - name: Stop the wiremock server
+        if: always() && hashFiles('wiremock/docker-compose.test.yml') != ''
+        env:
+          COMPOSE_PROJECT: whopsdkgorelease
+        run: docker compose -p "$COMPOSE_PROJECT" -f wiremock/docker-compose.test.yml down
 
       - name: Consume the module as an external consumer would
         env:

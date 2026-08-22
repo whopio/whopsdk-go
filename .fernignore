@@ -21,9 +21,9 @@
 #     from v2 onwards it must carry a /vN suffix or every consumer breaks. The workflow
 #     checks both against the version it is about to tag.
 #
-# The Fern Go generator's ci.yml only compiles, lints and tests. Unlike the Ruby
-# generator's, it contains no tag-triggered publish job and no id-token: write, so it is
-# left to Fern rather than being taken over here.
+# The Fern Go generator's ci.yml only compiles, lints and tests. It contains no
+# tag-triggered publish job and no id-token: write — unlike the Ruby generator's, per
+# whopio/whopsdk-ruby#55 — so it is left to Fern rather than being taken over here.
 #
 # LICENSE is listed pre-emptively: Fern does not carry one over, and a public Go module
 # without one is not safely consumable.
