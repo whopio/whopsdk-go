@@ -47,6 +47,7 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
+          REF: ${{ github.ref }}
         run: |
           set -euo pipefail
 
@@ -104,6 +105,11 @@ jobs:
           fi
 
           emit dry false
+
+          if [ "$REF" != "refs/heads/main" ]; then
+            echo "::error::a real release must run from main; this run is on ${REF}."
+            exit 1
+          fi
 
           if [ "$EVENT" = "push" ]; then
             previous=$(git show "HEAD^:${VERSION_FILE}" 2>/dev/null | grep -o '"X-Fern-SDK-Version", "[^"]*"' | head -1 | sed 's/.*, "//; s/"$//' || true)
