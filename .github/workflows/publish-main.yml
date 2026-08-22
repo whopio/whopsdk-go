@@ -106,20 +106,24 @@ jobs:
           emit dry false
 
           if [ "$EVENT" = "push" ]; then
+            previous=$(git show "HEAD^:${VERSION_FILE}" 2>/dev/null | grep -o '"X-Fern-SDK-Version", "[^"]*"' | head -1 | sed 's/.*, "//; s/"$//' || true)
+            if [ "$previous" = "$stamp" ]; then
+              echo "::notice::the version stamp is still ${stamp}; this push is not a release."
+              emit release false
+              exit 0
+            fi
+
             changed=$(git diff --name-only HEAD^ HEAD)
             unexpected=$(printf '%s\n' "$changed" | grep -vxE "${VERSION_FILE}|${METADATA_FILE}" || true)
             if [ -n "$unexpected" ]; then
-              echo "::error::a release push must change only ${VERSION_FILE} and ${METADATA_FILE}. Also changed:"
+              echo "::notice::this push changes more than ${VERSION_FILE} and ${METADATA_FILE}, so it is a regeneration rather than a release. Nothing will be tagged. Also changed:"
               printf '%s\n' "$unexpected"
-              exit 1
+              emit release false
+              exit 0
             fi
 
             body=$(git diff -U0 HEAD^ HEAD -- "$VERSION_FILE" "$METADATA_FILE" | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' || true)
-            if [ -z "$body" ]; then
-              echo "::error::${VERSION_FILE} is in the push paths but nothing changed in it."
-              exit 1
-            fi
-            offending=$(printf '%s\n' "$body" | grep -vE 'X-Fern-SDK-Version|User-Agent|"sdkVersion"|"requestedVersion"' || true)
+            offending=$(printf '%s\n' "$body" | grep -vE 'X-Fern-SDK-Version|User-Agent|"sdkVersion"|"requestedVersion"|"originGitCommit"' || true)
             if [ -n "$offending" ]; then
               echo "::error::a release push must change only the version stamps. Also changed:"
               printf '%s\n' "$offending"
