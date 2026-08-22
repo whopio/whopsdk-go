@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-whopsdk-go
+  group: release-whopsdk-go-${{ github.ref }}
   cancel-in-progress: false
 
 env:
