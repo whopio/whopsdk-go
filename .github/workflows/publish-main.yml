@@ -468,23 +468,31 @@ jobs:
 
           head_sha=$(git rev-parse HEAD)
 
-          if git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1; then
-            remote_sha=$(git ls-remote origin "refs/tags/v${VERSION}^{}" | awk '{print $1}')
-            if [ -z "$remote_sha" ]; then
-              remote_sha=$(git ls-remote origin "refs/tags/v${VERSION}" | awk '{print $1}')
-            fi
-            if [ "$remote_sha" != "$head_sha" ]; then
-              echo "::error::v${VERSION} already points at ${remote_sha}, not ${head_sha}. Refusing to move a published version."
-              exit 1
-            fi
-            echo "v${VERSION} already tags ${head_sha}."
-          else
+          if ! git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git tag -a "v${VERSION}" -m "whopsdk-go v${VERSION}"
             git push origin "refs/tags/v${VERSION}" || \
-              git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null
+              echo "::notice::the tag push did not succeed; re-reading the remote to find out what v${VERSION} actually points at."
           fi
+
+          remote_sha=$(git ls-remote origin "refs/tags/v${VERSION}^{}" | awk '{print $1}')
+          if [ -z "$remote_sha" ]; then
+            remote_sha=$(git ls-remote origin "refs/tags/v${VERSION}" | awk '{print $1}')
+          fi
+
+          if [ -z "$remote_sha" ]; then
+            echo "::error::v${VERSION} is not on the remote after the push, so this release did not happen."
+            exit 1
+          fi
+
+          if [ "$remote_sha" != "$head_sha" ]; then
+            echo "::error::v${VERSION} points at ${remote_sha}, not ${head_sha}. Refusing to move a published version."
+            echo "::error::proxy.golang.org caches what it served permanently, so moving the tag changes nothing for anyone who already fetched it. Release a new version instead."
+            exit 1
+          fi
+
+          echo "v${VERSION} tags ${head_sha}."
 
           if gh release view "v${VERSION}" >/dev/null 2>&1; then
             echo "Release v${VERSION} already exists."
