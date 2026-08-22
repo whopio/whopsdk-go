@@ -1,0 +1,451 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "core/request_option.go"
+      - ".fern/metadata.json"
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build and check the module without tagging"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-whopsdk-go
+  cancel-in-progress: false
+
+env:
+  MODULE_PATH: github.com/whopio/whopsdk-go
+  VERSION_FILE: core/request_option.go
+  METADATA_FILE: .fern/metadata.json
+  GO_VERSION: "1.25"
+
+jobs:
+  decide:
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.gate.outputs.release }}
+      dry: ${{ steps.gate.outputs.dry }}
+      version: ${{ steps.gate.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Decide whether to release
+        id: gate
+        env:
+          EVENT: ${{ github.event_name }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          emit() { echo "$1=$2" >> "$GITHUB_OUTPUT"; }
+
+          proxy() {
+            local url="$1" out="$2" code
+            code=$(curl -sS -o "$out" -w '%{http_code}' --max-time 30 "$url") || code="000"
+            printf '%s' "$code"
+          }
+
+          if [ ! -f "$VERSION_FILE" ] || [ ! -f go.mod ]; then
+            echo "::notice::${VERSION_FILE} or go.mod is missing — this tree carries no Go module for this workflow to release."
+            emit release false
+            emit dry true
+            emit version ""
+            exit 0
+          fi
+
+          stamp=$(grep -o '"X-Fern-SDK-Version", "[^"]*"' "$VERSION_FILE" | head -1 | sed 's/.*, "//; s/"$//')
+          if [ -z "$stamp" ]; then
+            echo "::error::${VERSION_FILE} carries no X-Fern-SDK-Version stamp, so there is no version to release."
+            exit 1
+          fi
+
+          version="${stamp#v}"
+          echo "${VERSION_FILE} reports ${stamp} (version ${version})"
+          emit version "$version"
+
+          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::'$version' is not stable semver; prereleases are not released from main."
+            exit 1
+          fi
+
+          declared=$(grep -E '^module[[:space:]]+' go.mod | head -1 | awk '{print $2}')
+          echo "go.mod declares module ${declared}"
+
+          major="${version%%.*}"
+          expected="github.com/${REPOSITORY}"
+          if [ "$major" -ge 2 ]; then
+            expected="github.com/${REPOSITORY}/v${major}"
+          fi
+
+          if [ "$declared" != "$expected" ]; then
+            echo "::error::go.mod declares '${declared}' but version ${version} requires the module path to be '${expected}'."
+            echo "::error::A Go module path is its import path. If it does not match the repository URL — and carry a /vN suffix from v2 onwards — 'go get' cannot resolve it and every consumer breaks."
+            exit 1
+          fi
+
+          if [ "$EVENT" = "pull_request" ] || [ "$DRY_RUN" = "true" ]; then
+            echo "Dry run: building and checking the module, tagging nothing."
+            emit release true
+            emit dry true
+            exit 0
+          fi
+
+          emit dry false
+
+          if [ "$EVENT" = "push" ]; then
+            changed=$(git diff --name-only HEAD^ HEAD)
+            unexpected=$(printf '%s\n' "$changed" | grep -vxE "${VERSION_FILE}|${METADATA_FILE}" || true)
+            if [ -n "$unexpected" ]; then
+              echo "::error::a release push must change only ${VERSION_FILE} and ${METADATA_FILE}. Also changed:"
+              printf '%s\n' "$unexpected"
+              exit 1
+            fi
+
+            body=$(git diff -U0 HEAD^ HEAD -- "$VERSION_FILE" "$METADATA_FILE" | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' || true)
+            if [ -z "$body" ]; then
+              echo "::error::${VERSION_FILE} is in the push paths but nothing changed in it."
+              exit 1
+            fi
+            offending=$(printf '%s\n' "$body" | grep -vE 'X-Fern-SDK-Version|User-Agent|"sdkVersion"|"requestedVersion"' || true)
+            if [ -n "$offending" ]; then
+              echo "::error::a release push must change only the version stamps. Also changed:"
+              printf '%s\n' "$offending"
+              exit 1
+            fi
+          fi
+
+          head_sha=$(git rev-parse HEAD)
+          tagged=$(gh api "repos/${REPOSITORY}/git/ref/tags/v${version}" --jq '.object.sha' 2>/dev/null || true)
+          if [ -n "$tagged" ]; then
+            peeled=$(gh api "repos/${REPOSITORY}/git/tags/${tagged}" --jq '.object.sha' 2>/dev/null || printf '%s' "$tagged")
+            if [ "$peeled" = "$head_sha" ]; then
+              echo "::notice::v${version} already tags this commit; nothing to release."
+              emit release false
+              exit 0
+            fi
+            echo "::error::v${version} already exists and points at ${peeled}, but this commit is ${head_sha}."
+            echo "::error::A Go version is the tag, and proxy.golang.org caches what it served permanently. Moving the tag changes nothing for anyone who already fetched it. Release a new version instead."
+            exit 1
+          fi
+
+          status=$(proxy "https://proxy.golang.org/${MODULE_PATH}/@v/v${version}.info" /tmp/proxy-info.txt)
+          case "$status" in
+            200)
+              echo "::error::proxy.golang.org already serves ${MODULE_PATH}@v${version}:"
+              cat /tmp/proxy-info.txt
+              echo "::error::The module proxy is immutable — that version can never be changed or withdrawn. Release a new version."
+              exit 1
+              ;;
+            404)
+              echo "proxy.golang.org does not serve v${version} yet."
+              if grep -qi 'private repository\|could not read Username' /tmp/proxy-info.txt; then
+                echo "::warning::proxy.golang.org cannot read ${MODULE_PATH} because the repository is not public. The tag will be created, but 'go get' will not resolve it until the repository is made public."
+              fi
+              ;;
+            *)
+              echo "::error::proxy.golang.org returned HTTP ${status} for v${version}; refusing to guess whether it is published."
+              cat /tmp/proxy-info.txt || true
+              exit 1
+              ;;
+          esac
+
+          latest_status=$(proxy "https://proxy.golang.org/${MODULE_PATH}/@latest" /tmp/proxy-latest.txt)
+          case "$latest_status" in
+            200)
+              latest=$(jq -r '.Version' /tmp/proxy-latest.txt)
+              latest="${latest#v}"
+              echo "Latest on proxy.golang.org: ${latest}"
+              highest=$(printf '%s\n%s\n' "$latest" "$version" | sort -V | tail -1)
+              if [ "$highest" = "$latest" ] && [ "$latest" != "$version" ]; then
+                echo "::error::${VERSION_FILE} is at ${version} but ${MODULE_PATH}@v${latest} is already published. This tree was generated before that release; regenerate it before merging."
+                exit 1
+              fi
+              ;;
+            404)
+              echo "::notice::proxy.golang.org serves no version of ${MODULE_PATH} yet; skipping the regression check."
+              ;;
+            *)
+              echo "::error::proxy.golang.org returned HTTP ${latest_status} for @latest; refusing to guess the published version."
+              exit 1
+              ;;
+          esac
+
+          emit release true
+
+  build:
+    needs: decide
+    if: needs.decide.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: Check the version stamps agree
+        env:
+          VERSION: ${{ needs.decide.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          fail=0
+          expect_stamp="\"X-Fern-SDK-Version\", \"v${VERSION}\""
+          expect_agent="\"User-Agent\", \"${MODULE_PATH}/${VERSION}\""
+
+          if ! grep -qF "$expect_stamp" "$VERSION_FILE"; then
+            echo "::error::${VERSION_FILE} does not carry ${expect_stamp}"
+            fail=1
+          fi
+          if ! grep -qF "$expect_agent" "$VERSION_FILE"; then
+            echo "::error::${VERSION_FILE} does not carry ${expect_agent}"
+            grep -n '"User-Agent"' "$VERSION_FILE" || true
+            fail=1
+          fi
+
+          if [ -f "$METADATA_FILE" ]; then
+            meta_sdk=$(jq -r '.sdkVersion // ""' "$METADATA_FILE")
+            meta_req=$(jq -r '.requestedVersion // ""' "$METADATA_FILE")
+            if [ -n "$meta_sdk" ] && [ "$meta_sdk" != "v${VERSION}" ]; then
+              echo "::error::${METADATA_FILE} sdkVersion is ${meta_sdk}, expected v${VERSION}"
+              fail=1
+            fi
+            if [ -n "$meta_req" ] && [ "$meta_req" != "$VERSION" ]; then
+              echo "::error::${METADATA_FILE} requestedVersion is ${meta_req}, expected ${VERSION}"
+              fail=1
+            fi
+          fi
+
+          stale=$(grep -rn 'X-Fern-SDK-Version' --include='*.go' . | grep -vF "v${VERSION}" || true)
+          if [ -n "$stale" ]; then
+            echo "::error::the tree still reports a version other than v${VERSION}:"
+            printf '%s\n' "$stale"
+            fail=1
+          fi
+
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::A Go release is the tagged commit itself, so the stamps cannot be rewritten at build time the way a tarball's can. The tree must already be correct before it is tagged."
+            exit 1
+          fi
+
+          echo "every version stamp reports ${VERSION}"
+
+      - name: Verify the module and its dependencies
+        run: |
+          set -euo pipefail
+          go mod verify
+          go mod download
+
+      - name: Check formatting
+        run: |
+          set -euo pipefail
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "::error::these files are not gofmt-clean:"
+            printf '%s\n' "$unformatted"
+            exit 1
+          fi
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test ./...
+
+      - name: Consume the module as an external consumer would
+        env:
+          VERSION: ${{ needs.decide.outputs.version }}
+        run: |
+          set -euo pipefail
+          workspace="$PWD"
+          probe=$(mktemp -d)
+          cd "$probe"
+
+          go mod init whopsdkgoprobe
+          go mod edit -replace "${MODULE_PATH}=${workspace}"
+          go mod edit -require "${MODULE_PATH}@v0.0.0"
+
+          cat > main.go <<'GO'
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+          	"io"
+          	"net/http"
+          	"os"
+          	"strings"
+
+          	whopsdk "github.com/whopio/whopsdk-go"
+          	client "github.com/whopio/whopsdk-go/client"
+          	option "github.com/whopio/whopsdk-go/option"
+          )
+
+          type capturingClient struct {
+          	header http.Header
+          }
+
+          func (c *capturingClient) Do(request *http.Request) (*http.Response, error) {
+          	c.header = request.Header.Clone()
+          	return &http.Response{
+          		StatusCode: http.StatusOK,
+          		Header:     make(http.Header),
+          		Body:       io.NopCloser(strings.NewReader("{}")),
+          		Request:    request,
+          	}, nil
+          }
+
+          func main() {
+          	want := os.Args[1]
+          	capture := &capturingClient{}
+
+          	whop := client.NewWhop(
+          		option.WithToken("probe"),
+          		option.WithHTTPClient(capture),
+          	)
+          	_, _ = whop.Users.Me(context.Background(), &whopsdk.MeUsersRequest{})
+
+          	if capture.header == nil {
+          		fmt.Println("the client never issued a request")
+          		os.Exit(1)
+          	}
+
+          	sdkVersion := capture.header.Get("X-Fern-SDK-Version")
+          	userAgent := capture.header.Get("User-Agent")
+          	fmt.Printf("on the wire: X-Fern-SDK-Version=%q User-Agent=%q\n", sdkVersion, userAgent)
+
+          	failed := false
+          	if sdkVersion != "v"+want {
+          		fmt.Printf("X-Fern-SDK-Version is %q, expected %q\n", sdkVersion, "v"+want)
+          		failed = true
+          	}
+          	if !strings.HasSuffix(userAgent, "/"+want) {
+          		fmt.Printf("User-Agent is %q, expected it to end in %q\n", userAgent, "/"+want)
+          		failed = true
+          	}
+          	if failed {
+          		os.Exit(1)
+          	}
+
+          	fmt.Println("the module imports under its declared path and reports the released version on the wire")
+          }
+          GO
+
+          go mod tidy
+          go run . "$VERSION"
+
+  release:
+    needs: [decide, build]
+    if: needs.decide.outputs.release == 'true' && needs.decide.outputs.dry == 'false'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Tag the release
+        env:
+          VERSION: ${{ needs.decide.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          head_sha=$(git rev-parse HEAD)
+
+          if git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1; then
+            remote_sha=$(git ls-remote origin "refs/tags/v${VERSION}^{}" | awk '{print $1}')
+            if [ -z "$remote_sha" ]; then
+              remote_sha=$(git ls-remote origin "refs/tags/v${VERSION}" | awk '{print $1}')
+            fi
+            if [ "$remote_sha" != "$head_sha" ]; then
+              echo "::error::v${VERSION} already points at ${remote_sha}, not ${head_sha}. Refusing to move a published version."
+              exit 1
+            fi
+            echo "v${VERSION} already tags ${head_sha}."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "v${VERSION}" -m "whopsdk-go v${VERSION}"
+            git push origin "refs/tags/v${VERSION}" || \
+              git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null
+          fi
+
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo "Release v${VERSION} already exists."
+          else
+            gh release create "v${VERSION}" --title "v${VERSION}" --generate-notes
+          fi
+
+  verify:
+    needs: [decide, release]
+    if: needs.decide.outputs.dry == 'false' && needs.decide.outputs.version != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: Wait for proxy.golang.org to serve the tag
+        env:
+          VERSION: ${{ needs.decide.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          for attempt in $(seq 1 20); do
+            code=$(curl -sS -o /tmp/proxy-info.txt -w '%{http_code}' --max-time 30 \
+              "https://proxy.golang.org/${MODULE_PATH}/@v/v${VERSION}.info") || code="000"
+            if [ "$code" = "200" ]; then
+              cat /tmp/proxy-info.txt
+              echo "served after ${attempt} attempt(s)"
+              exit 0
+            fi
+            echo "attempt ${attempt}: HTTP ${code}"
+            sleep 15
+          done
+
+          cat /tmp/proxy-info.txt || true
+          echo "::error::proxy.golang.org still does not serve ${MODULE_PATH}@v${VERSION}."
+          if grep -qi 'private repository\|could not read Username' /tmp/proxy-info.txt; then
+            echo "::error::The repository is not public, so the module proxy cannot fetch it. Nobody can 'go get' this SDK until whopio/whopsdk-go is made public."
+          fi
+          exit 1
+
+      - name: Resolve the published version from the proxy
+        env:
+          VERSION: ${{ needs.decide.outputs.version }}
+          GOFLAGS: -mod=mod
+          GOPROXY: https://proxy.golang.org,direct
+        run: |
+          set -euo pipefail
+          consumer=$(mktemp -d)
+          cd "$consumer"
+          go mod init whopsdkgoconsumer
+          go get "${MODULE_PATH}@v${VERSION}"
+          grep -F "${MODULE_PATH} v${VERSION}" go.mod
+          echo "${MODULE_PATH}@v${VERSION} resolves from proxy.golang.org"
