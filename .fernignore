@@ -27,5 +27,28 @@
 #
 # LICENSE is listed pre-emptively: Fern does not carry one over, and a public Go module
 # without one is not safely consumable.
+#
+# webhook_verification.go is the hand-written UnwrapWebhook helper, and
+# webhook_verification_test.go is its test — Fern owns *_test.go too, so without the second
+# entry a regeneration would prune the test and leave the helper untested rather than fail
+# loudly. It restores the verification half of `client.webhooks.unwrap`, which the
+# Stainless-generated SDK shipped and Fern cannot generate: Fern generates from OpenAPI
+# paths and `unwrap` was never a path.
+#
+# It sits in the root package rather than a package of its own so the import path a
+# consumer uses is the module path itself — the one path here that no regeneration can
+# move. It is a package-level function, not a method on a generated client, so nothing
+# generated is patched.
+#
+# Unlike whopsdk-ruby, whopsdk-python and whopsdk-typescript, this needs nothing restored
+# from whop-monorepo's sdks/fern/generators.yml. Those three each keep a helper alive with
+# two entries there — a require/export path, because their entry point is generated, and an
+# extraDependencies entry, because their manifest is generated and the helper needs
+# standardwebhooks. Go needs neither: a file in a package is compiled by virtue of being in
+# the directory, so there is nothing to register, and the helper is standard library only
+# (crypto/hmac, crypto/sha256), so the generated go.mod — regenerated on 8af0c93 — needs no
+# declaration it would lose.
 .github/workflows/publish-main.yml
 LICENSE
+webhook_verification.go
+webhook_verification_test.go
