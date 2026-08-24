@@ -27,5 +27,13 @@
 #
 # LICENSE is listed pre-emptively: Fern does not carry one over, and a public Go module
 # without one is not safely consumable.
+#
+# auto-merge.yml is hand-written and arms Fern's own regeneration PRs. On pull_request_target
+# it enables auto-merge (squash) for a pull request opened by fern-api[bot] from an in-repo
+# fern-bot/* branch against the default branch, so the pull request merges itself once main's
+# required status checks pass. The trigger is pull_request_target rather than pull_request so
+# the workflow that arms a pull request is always the copy already on the base branch, never
+# the copy that pull request carries.
+.github/workflows/auto-merge.yml
 .github/workflows/publish-main.yml
 LICENSE
