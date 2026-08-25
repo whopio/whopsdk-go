@@ -3438,18 +3438,18 @@ func TestEnumListSupportedMethodsResponseDataItemDeliveryType(t *testing.T) {
 		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("mobile_wallet"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_masspay_card", func(t *testing.T) {
+	t.Run("NewFromString_card", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("masspay_card")
+		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("card")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("masspay_card"), val, "enum value should match expected wire value")
+		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("card"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_paper_check", func(t *testing.T) {
+	t.Run("NewFromString_check", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("paper_check")
+		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("check")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("paper_check"), val, "enum value should match expected wire value")
+		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_bill", func(t *testing.T) {
@@ -3464,13 +3464,6 @@ func TestEnumListSupportedMethodsResponseDataItemDeliveryType(t *testing.T) {
 		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("cryptocurrency")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("cryptocurrency"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_unknown", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("unknown")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("unknown"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

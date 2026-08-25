@@ -1236,6 +1236,14 @@ func TestSettersBounty(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetActiveProofLivestreamFeeds", func(t *testing.T) {
+		obj := &Bounty{}
+		var fernTestValueActiveProofLivestreamFeeds []*BountyActiveLivestreamFeed
+		obj.SetActiveProofLivestreamFeeds(fernTestValueActiveProofLivestreamFeeds)
+		assert.Equal(t, fernTestValueActiveProofLivestreamFeeds, obj.ActiveProofLivestreamFeeds)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAffiliateShareAmount", func(t *testing.T) {
 		obj := &Bounty{}
 		var fernTestValueAffiliateShareAmount float64
@@ -1249,6 +1257,14 @@ func TestSettersBounty(t *testing.T) {
 		var fernTestValueAllowedCountryCodes []string
 		obj.SetAllowedCountryCodes(fernTestValueAllowedCountryCodes)
 		assert.Equal(t, fernTestValueAllowedCountryCodes, obj.AllowedCountryCodes)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetAwaitingReviewSubmissionsCount", func(t *testing.T) {
+		obj := &Bounty{}
+		var fernTestValueAwaitingReviewSubmissionsCount int
+		obj.SetAwaitingReviewSubmissionsCount(fernTestValueAwaitingReviewSubmissionsCount)
+		assert.Equal(t, fernTestValueAwaitingReviewSubmissionsCount, obj.AwaitingReviewSubmissionsCount)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1297,6 +1313,14 @@ func TestSettersBounty(t *testing.T) {
 		var fernTestValueCurrency BountyCurrency
 		obj.SetCurrency(fernTestValueCurrency)
 		assert.Equal(t, fernTestValueCurrency, obj.Currency)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDeniedSubmissionsCount", func(t *testing.T) {
+		obj := &Bounty{}
+		var fernTestValueDeniedSubmissionsCount int
+		obj.SetDeniedSubmissionsCount(fernTestValueDeniedSubmissionsCount)
+		assert.Equal(t, fernTestValueDeniedSubmissionsCount, obj.DeniedSubmissionsCount)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1573,6 +1597,39 @@ func TestGettersBounty(t *testing.T) {
 		_ = obj.GetAcceptedSubmissionsPerUserLimit() // Should return zero value
 	})
 
+	t.Run("GetActiveProofLivestreamFeeds", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Bounty{}
+		var expected []*BountyActiveLivestreamFeed
+		obj.ActiveProofLivestreamFeeds = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetActiveProofLivestreamFeeds(), "getter should return the property value")
+	})
+
+	t.Run("GetActiveProofLivestreamFeeds_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Bounty{}
+		obj.ActiveProofLivestreamFeeds = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetActiveProofLivestreamFeeds(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetActiveProofLivestreamFeeds_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Bounty
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetActiveProofLivestreamFeeds() // Should return zero value
+	})
+
 	t.Run("GetAffiliateShareAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1627,6 +1684,29 @@ func TestGettersBounty(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAllowedCountryCodes() // Should return zero value
+	})
+
+	t.Run("GetAwaitingReviewSubmissionsCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Bounty{}
+		var expected int
+		obj.AwaitingReviewSubmissionsCount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAwaitingReviewSubmissionsCount(), "getter should return the property value")
+	})
+
+	t.Run("GetAwaitingReviewSubmissionsCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Bounty
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAwaitingReviewSubmissionsCount() // Should return zero value
 	})
 
 	t.Run("GetBudgetAmount", func(t *testing.T) {
@@ -1795,6 +1875,29 @@ func TestGettersBounty(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCurrency() // Should return zero value
+	})
+
+	t.Run("GetDeniedSubmissionsCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Bounty{}
+		var expected int
+		obj.DeniedSubmissionsCount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDeniedSubmissionsCount(), "getter should return the property value")
+	})
+
+	t.Run("GetDeniedSubmissionsCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Bounty
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDeniedSubmissionsCount() // Should return zero value
 	})
 
 	t.Run("GetDescription", func(t *testing.T) {
@@ -2507,6 +2610,37 @@ func TestSettersMarkExplicitBounty(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetActiveProofLivestreamFeeds_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Bounty{}
+		var fernTestValueActiveProofLivestreamFeeds []*BountyActiveLivestreamFeed
+
+		// Act
+		obj.SetActiveProofLivestreamFeeds(fernTestValueActiveProofLivestreamFeeds)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetAffiliateShareAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2546,6 +2680,37 @@ func TestSettersMarkExplicitBounty(t *testing.T) {
 
 		// Act
 		obj.SetAllowedCountryCodes(fernTestValueAllowedCountryCodes)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAwaitingReviewSubmissionsCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Bounty{}
+		var fernTestValueAwaitingReviewSubmissionsCount int
+
+		// Act
+		obj.SetAwaitingReviewSubmissionsCount(fernTestValueAwaitingReviewSubmissionsCount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2732,6 +2897,37 @@ func TestSettersMarkExplicitBounty(t *testing.T) {
 
 		// Act
 		obj.SetCurrency(fernTestValueCurrency)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDeniedSubmissionsCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Bounty{}
+		var fernTestValueDeniedSubmissionsCount int
+
+		// Act
+		obj.SetDeniedSubmissionsCount(fernTestValueDeniedSubmissionsCount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3383,6 +3579,211 @@ func TestSettersMarkExplicitBounty(t *testing.T) {
 
 		// Act
 		obj.SetViewerAcceptedSubmissionsCount(fernTestValueViewerAcceptedSubmissionsCount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersBountyActiveLivestreamFeed(t *testing.T) {
+	t.Run("SetHost", func(t *testing.T) {
+		obj := &BountyActiveLivestreamFeed{}
+		var fernTestValueHost *UserSummary
+		obj.SetHost(fernTestValueHost)
+		assert.Equal(t, fernTestValueHost, obj.Host)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetID", func(t *testing.T) {
+		obj := &BountyActiveLivestreamFeed{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTitle", func(t *testing.T) {
+		obj := &BountyActiveLivestreamFeed{}
+		var fernTestValueTitle string
+		obj.SetTitle(fernTestValueTitle)
+		assert.Equal(t, fernTestValueTitle, obj.Title)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersBountyActiveLivestreamFeed(t *testing.T) {
+	t.Run("GetHost", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BountyActiveLivestreamFeed{}
+		var expected *UserSummary
+		obj.Host = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetHost(), "getter should return the property value")
+	})
+
+	t.Run("GetHost_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BountyActiveLivestreamFeed{}
+		obj.Host = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetHost(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetHost_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *BountyActiveLivestreamFeed
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetHost() // Should return zero value
+	})
+
+	t.Run("GetID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BountyActiveLivestreamFeed{}
+		var expected string
+		obj.ID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
+	})
+
+	t.Run("GetID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *BountyActiveLivestreamFeed
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetTitle", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BountyActiveLivestreamFeed{}
+		var expected string
+		obj.Title = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTitle(), "getter should return the property value")
+	})
+
+	t.Run("GetTitle_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *BountyActiveLivestreamFeed
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTitle() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitBountyActiveLivestreamFeed(t *testing.T) {
+	t.Run("SetHost_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BountyActiveLivestreamFeed{}
+		var fernTestValueHost *UserSummary
+
+		// Act
+		obj.SetHost(fernTestValueHost)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BountyActiveLivestreamFeed{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BountyActiveLivestreamFeed{}
+		var fernTestValueTitle string
+
+		// Act
+		obj.SetTitle(fernTestValueTitle)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -8868,6 +9269,39 @@ func TestJSONMarshalingBounty(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingBountyActiveLivestreamFeed(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BountyActiveLivestreamFeed{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled BountyActiveLivestreamFeed
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj BountyActiveLivestreamFeed
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj BountyActiveLivestreamFeed
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingBountyListItem(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -9143,6 +9577,22 @@ func TestStringBounty(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *Bounty
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringBountyActiveLivestreamFeed(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &BountyActiveLivestreamFeed{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *BountyActiveLivestreamFeed
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -10776,6 +11226,29 @@ func TestExtraPropertiesBounty(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *Bounty
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesBountyActiveLivestreamFeed(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &BountyActiveLivestreamFeed{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *BountyActiveLivestreamFeed
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

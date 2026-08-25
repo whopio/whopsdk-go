@@ -156,9 +156,10 @@ var (
 	ledgerActivityFieldLedgerAccountID = big.NewInt(1 << 6)
 	ledgerActivityFieldLineType        = big.NewInt(1 << 7)
 	ledgerActivityFieldObject          = big.NewInt(1 << 8)
-	ledgerActivityFieldPostedAt        = big.NewInt(1 << 9)
-	ledgerActivityFieldResource        = big.NewInt(1 << 10)
-	ledgerActivityFieldSource          = big.NewInt(1 << 11)
+	ledgerActivityFieldPayment         = big.NewInt(1 << 9)
+	ledgerActivityFieldPostedAt        = big.NewInt(1 << 10)
+	ledgerActivityFieldResource        = big.NewInt(1 << 11)
+	ledgerActivityFieldSource          = big.NewInt(1 << 12)
 )
 
 type LedgerActivity struct {
@@ -179,6 +180,8 @@ type LedgerActivity struct {
 	// The ledger line category this activity was posted under.
 	LineType LedgerActivityLineType `json:"line_type" url:"line_type"`
 	Object   LedgerActivityObject   `json:"object" url:"object"`
+	// Payment related to this ledger activity. Included when rich resource hydration is enabled and the movement is tied to a payment.
+	Payment *LedgerActivityPayment `json:"payment,omitempty" url:"payment,omitempty"`
 	// When the activity posted to the ledger.
 	PostedAt time.Time `json:"posted_at" url:"posted_at"`
 	// Resource associated with this ledger activity.
@@ -254,6 +257,13 @@ func (l *LedgerActivity) GetObject() LedgerActivityObject {
 		return ""
 	}
 	return l.Object
+}
+
+func (l *LedgerActivity) GetPayment() *LedgerActivityPayment {
+	if l == nil {
+		return nil
+	}
+	return l.Payment
 }
 
 func (l *LedgerActivity) GetPostedAt() time.Time {
@@ -352,6 +362,13 @@ func (l *LedgerActivity) SetLineType(lineType LedgerActivityLineType) {
 func (l *LedgerActivity) SetObject(object LedgerActivityObject) {
 	l.Object = object
 	l.require(ledgerActivityFieldObject)
+}
+
+// SetPayment sets the Payment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetPayment(payment *LedgerActivityPayment) {
+	l.Payment = payment
+	l.require(ledgerActivityFieldPayment)
 }
 
 // SetPostedAt sets the PostedAt field and marks it as non-optional;
@@ -952,6 +969,8 @@ const (
 	LedgerActivityLineTypeAirdropReversal                  LedgerActivityLineType = "airdrop_reversal"
 	LedgerActivityLineTypeApplicationFee                   LedgerActivityLineType = "application_fee"
 	LedgerActivityLineTypeApplicationFeePayout             LedgerActivityLineType = "application_fee_payout"
+	LedgerActivityLineTypeBalanceReservation               LedgerActivityLineType = "balance_reservation"
+	LedgerActivityLineTypeBalanceReservationReversal       LedgerActivityLineType = "balance_reservation_reversal"
 	LedgerActivityLineTypeBankTransfer                     LedgerActivityLineType = "bank_transfer"
 	LedgerActivityLineTypeBillingPercentageFee             LedgerActivityLineType = "billing_percentage_fee"
 	LedgerActivityLineTypeBuyerFee                         LedgerActivityLineType = "buyer_fee"
@@ -1064,6 +1083,10 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeApplicationFee, nil
 	case "application_fee_payout":
 		return LedgerActivityLineTypeApplicationFeePayout, nil
+	case "balance_reservation":
+		return LedgerActivityLineTypeBalanceReservation, nil
+	case "balance_reservation_reversal":
+		return LedgerActivityLineTypeBalanceReservationReversal, nil
 	case "bank_transfer":
 		return LedgerActivityLineTypeBankTransfer, nil
 	case "billing_percentage_fee":
@@ -1253,6 +1276,236 @@ func NewLedgerActivityObjectFromString(s string) (LedgerActivityObject, error) {
 }
 
 func (l LedgerActivityObject) Ptr() *LedgerActivityObject {
+	return &l
+}
+
+var (
+	ledgerActivityPaymentFieldAmount            = big.NewInt(1 << 0)
+	ledgerActivityPaymentFieldCardBrand         = big.NewInt(1 << 1)
+	ledgerActivityPaymentFieldCardLast4         = big.NewInt(1 << 2)
+	ledgerActivityPaymentFieldCreatedAt         = big.NewInt(1 << 3)
+	ledgerActivityPaymentFieldID                = big.NewInt(1 << 4)
+	ledgerActivityPaymentFieldObject            = big.NewInt(1 << 5)
+	ledgerActivityPaymentFieldPaymentMethodType = big.NewInt(1 << 6)
+	ledgerActivityPaymentFieldPaymentProcessor  = big.NewInt(1 << 7)
+)
+
+type LedgerActivityPayment struct {
+	// Total charged by the payment.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
+	// Card brand, when the customer paid by card.
+	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
+	// Last four digits of the card, when the customer paid by card.
+	CardLast4 *string `json:"card_last4,omitempty" url:"card_last4,omitempty"`
+	// When the payment was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// Payment ID, prefixed `pay_`.
+	ID     string                      `json:"id" url:"id"`
+	Object LedgerActivityPaymentObject `json:"object" url:"object"`
+	// How the customer paid, such as `card` or `paypal`.
+	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
+	// Processor that handled the payment, such as `stripe`.
+	PaymentProcessor *string `json:"payment_processor,omitempty" url:"payment_processor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityPayment) GetAmount() *Money {
+	if l == nil {
+		return nil
+	}
+	return l.Amount
+}
+
+func (l *LedgerActivityPayment) GetCardBrand() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CardBrand
+}
+
+func (l *LedgerActivityPayment) GetCardLast4() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CardLast4
+}
+
+func (l *LedgerActivityPayment) GetCreatedAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.CreatedAt
+}
+
+func (l *LedgerActivityPayment) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityPayment) GetObject() LedgerActivityPaymentObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *LedgerActivityPayment) GetPaymentMethodType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentMethodType
+}
+
+func (l *LedgerActivityPayment) GetPaymentProcessor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentProcessor
+}
+
+func (l *LedgerActivityPayment) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityPayment) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetAmount(amount *Money) {
+	l.Amount = amount
+	l.require(ledgerActivityPaymentFieldAmount)
+}
+
+// SetCardBrand sets the CardBrand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetCardBrand(cardBrand *string) {
+	l.CardBrand = cardBrand
+	l.require(ledgerActivityPaymentFieldCardBrand)
+}
+
+// SetCardLast4 sets the CardLast4 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetCardLast4(cardLast4 *string) {
+	l.CardLast4 = cardLast4
+	l.require(ledgerActivityPaymentFieldCardLast4)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetCreatedAt(createdAt time.Time) {
+	l.CreatedAt = createdAt
+	l.require(ledgerActivityPaymentFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityPaymentFieldID)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetObject(object LedgerActivityPaymentObject) {
+	l.Object = object
+	l.require(ledgerActivityPaymentFieldObject)
+}
+
+// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetPaymentMethodType(paymentMethodType *string) {
+	l.PaymentMethodType = paymentMethodType
+	l.require(ledgerActivityPaymentFieldPaymentMethodType)
+}
+
+// SetPaymentProcessor sets the PaymentProcessor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetPaymentProcessor(paymentProcessor *string) {
+	l.PaymentProcessor = paymentProcessor
+	l.require(ledgerActivityPaymentFieldPaymentProcessor)
+}
+
+func (l *LedgerActivityPayment) UnmarshalJSON(data []byte) error {
+	type embed LedgerActivityPayment
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = LedgerActivityPayment(unmarshaler.embed)
+	l.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityPayment) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityPayment
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed:     embed(*l),
+		CreatedAt: internal.NewDateTime(l.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityPayment) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LedgerActivityPaymentObject string
+
+const (
+	LedgerActivityPaymentObjectPayment LedgerActivityPaymentObject = "payment"
+)
+
+func NewLedgerActivityPaymentObjectFromString(s string) (LedgerActivityPaymentObject, error) {
+	switch s {
+	case "payment":
+		return LedgerActivityPaymentObjectPayment, nil
+	}
+	var t LedgerActivityPaymentObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivityPaymentObject) Ptr() *LedgerActivityPaymentObject {
 	return &l
 }
 
@@ -3479,28 +3732,34 @@ func (l LedgerActivityResourceTwoObject) Ptr() *LedgerActivityResourceTwoObject 
 // Source of this ledger activity.
 var (
 	ledgerActivitySourceFieldAmountFloat         = big.NewInt(1 << 0)
-	ledgerActivitySourceFieldChain               = big.NewInt(1 << 1)
-	ledgerActivitySourceFieldClaimURL            = big.NewInt(1 << 2)
-	ledgerActivitySourceFieldCreatedAt           = big.NewInt(1 << 3)
-	ledgerActivitySourceFieldEstimatedArrival    = big.NewInt(1 << 4)
-	ledgerActivitySourceFieldFromAmount          = big.NewInt(1 << 5)
-	ledgerActivitySourceFieldFromCurrency        = big.NewInt(1 << 6)
-	ledgerActivitySourceFieldID                  = big.NewInt(1 << 7)
-	ledgerActivitySourceFieldObject              = big.NewInt(1 << 8)
-	ledgerActivitySourceFieldPayerName           = big.NewInt(1 << 9)
-	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 10)
-	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 11)
-	ledgerActivitySourceFieldReason              = big.NewInt(1 << 12)
-	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 13)
-	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 14)
-	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 15)
-	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 16)
-	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 17)
+	ledgerActivitySourceFieldCardBrand           = big.NewInt(1 << 1)
+	ledgerActivitySourceFieldChain               = big.NewInt(1 << 2)
+	ledgerActivitySourceFieldClaimURL            = big.NewInt(1 << 3)
+	ledgerActivitySourceFieldCreatedAt           = big.NewInt(1 << 4)
+	ledgerActivitySourceFieldEstimatedArrival    = big.NewInt(1 << 5)
+	ledgerActivitySourceFieldFromAmount          = big.NewInt(1 << 6)
+	ledgerActivitySourceFieldFromCurrency        = big.NewInt(1 << 7)
+	ledgerActivitySourceFieldID                  = big.NewInt(1 << 8)
+	ledgerActivitySourceFieldObject              = big.NewInt(1 << 9)
+	ledgerActivitySourceFieldPayerName           = big.NewInt(1 << 10)
+	ledgerActivitySourceFieldPaymentAmount       = big.NewInt(1 << 11)
+	ledgerActivitySourceFieldPaymentMethodType   = big.NewInt(1 << 12)
+	ledgerActivitySourceFieldPaymentProcessor    = big.NewInt(1 << 13)
+	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 14)
+	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 15)
+	ledgerActivitySourceFieldReason              = big.NewInt(1 << 16)
+	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 17)
+	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 18)
+	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 19)
+	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 20)
+	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 21)
 )
 
 type LedgerActivitySource struct {
 	// Withdrawal amount as a decimal number in the destination currency (withdrawal sources only; requires payout:withdrawal:read).
 	AmountFloat *float64 `json:"amount_float,omitempty" url:"amount_float,omitempty"`
+	// Card brand used by the payment source.
+	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
 	// Chain the deposit landed on, for example plasma (onchain_transaction sources only).
 	Chain *string `json:"chain,omitempty" url:"chain,omitempty"`
 	// Public claim URL for the airdrop link (airdrop_link sources only).
@@ -3517,6 +3776,12 @@ type LedgerActivitySource struct {
 	Object       string  `json:"object" url:"object"`
 	// Name of the entity processing the payout (withdrawal sources only; requires payout:withdrawal:read).
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
+	// Total charged by the payment source.
+	PaymentAmount *Money `json:"payment_amount,omitempty" url:"payment_amount,omitempty"`
+	// Payment method used by the payment source.
+	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
+	// Processor used by the payment source.
+	PaymentProcessor *string `json:"payment_processor,omitempty" url:"payment_processor,omitempty"`
 	// Payout destination display info (withdrawal sources only).
 	PayoutDestination *LedgerActivitySourcePayoutDestination `json:"payout_destination,omitempty" url:"payout_destination,omitempty"`
 	// Saved payout destination nickname (withdrawal sources only).
@@ -3547,6 +3812,13 @@ func (l *LedgerActivitySource) GetAmountFloat() *float64 {
 		return nil
 	}
 	return l.AmountFloat
+}
+
+func (l *LedgerActivitySource) GetCardBrand() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CardBrand
 }
 
 func (l *LedgerActivitySource) GetChain() *string {
@@ -3610,6 +3882,27 @@ func (l *LedgerActivitySource) GetPayerName() *string {
 		return nil
 	}
 	return l.PayerName
+}
+
+func (l *LedgerActivitySource) GetPaymentAmount() *Money {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentAmount
+}
+
+func (l *LedgerActivitySource) GetPaymentMethodType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentMethodType
+}
+
+func (l *LedgerActivitySource) GetPaymentProcessor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentProcessor
 }
 
 func (l *LedgerActivitySource) GetPayoutDestination() *LedgerActivitySourcePayoutDestination {
@@ -3689,6 +3982,13 @@ func (l *LedgerActivitySource) SetAmountFloat(amountFloat *float64) {
 	l.require(ledgerActivitySourceFieldAmountFloat)
 }
 
+// SetCardBrand sets the CardBrand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetCardBrand(cardBrand *string) {
+	l.CardBrand = cardBrand
+	l.require(ledgerActivitySourceFieldCardBrand)
+}
+
 // SetChain sets the Chain field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *LedgerActivitySource) SetChain(chain *string) {
@@ -3750,6 +4050,27 @@ func (l *LedgerActivitySource) SetObject(object string) {
 func (l *LedgerActivitySource) SetPayerName(payerName *string) {
 	l.PayerName = payerName
 	l.require(ledgerActivitySourceFieldPayerName)
+}
+
+// SetPaymentAmount sets the PaymentAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetPaymentAmount(paymentAmount *Money) {
+	l.PaymentAmount = paymentAmount
+	l.require(ledgerActivitySourceFieldPaymentAmount)
+}
+
+// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetPaymentMethodType(paymentMethodType *string) {
+	l.PaymentMethodType = paymentMethodType
+	l.require(ledgerActivitySourceFieldPaymentMethodType)
+}
+
+// SetPaymentProcessor sets the PaymentProcessor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetPaymentProcessor(paymentProcessor *string) {
+	l.PaymentProcessor = paymentProcessor
+	l.require(ledgerActivitySourceFieldPaymentProcessor)
 }
 
 // SetPayoutDestination sets the PayoutDestination field and marks it as non-optional;
@@ -3979,6 +4300,8 @@ const (
 	ListFinancialActivityRequestLineTypesItemAirdropReversal                  ListFinancialActivityRequestLineTypesItem = "airdrop_reversal"
 	ListFinancialActivityRequestLineTypesItemApplicationFee                   ListFinancialActivityRequestLineTypesItem = "application_fee"
 	ListFinancialActivityRequestLineTypesItemApplicationFeePayout             ListFinancialActivityRequestLineTypesItem = "application_fee_payout"
+	ListFinancialActivityRequestLineTypesItemBalanceReservation               ListFinancialActivityRequestLineTypesItem = "balance_reservation"
+	ListFinancialActivityRequestLineTypesItemBalanceReservationReversal       ListFinancialActivityRequestLineTypesItem = "balance_reservation_reversal"
 	ListFinancialActivityRequestLineTypesItemBankTransfer                     ListFinancialActivityRequestLineTypesItem = "bank_transfer"
 	ListFinancialActivityRequestLineTypesItemBillingPercentageFee             ListFinancialActivityRequestLineTypesItem = "billing_percentage_fee"
 	ListFinancialActivityRequestLineTypesItemBuyerFee                         ListFinancialActivityRequestLineTypesItem = "buyer_fee"
@@ -4092,6 +4415,10 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemApplicationFee, nil
 	case "application_fee_payout":
 		return ListFinancialActivityRequestLineTypesItemApplicationFeePayout, nil
+	case "balance_reservation":
+		return ListFinancialActivityRequestLineTypesItemBalanceReservation, nil
+	case "balance_reservation_reversal":
+		return ListFinancialActivityRequestLineTypesItemBalanceReservationReversal, nil
 	case "bank_transfer":
 		return ListFinancialActivityRequestLineTypesItemBankTransfer, nil
 	case "billing_percentage_fee":

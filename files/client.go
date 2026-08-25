@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-08-21-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -38,12 +38,12 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Create a new file record and receive a presigned URL for uploading content to S3.
+// Creates a file and returns a presigned destination to upload its bytes to. PUT the bytes to `upload_url` (single-part), or to each of `multipart_upload_urls` and then call Complete File Multipart Upload. Once the bytes land the file becomes `ready`, and its ID can be attached wherever a file is accepted — account legal documents, dispute evidence documents.
 //
 // Example:
 //
 //	request := &whopsdk.CreateFilesRequest{
-//	    Filename: "filename",
+//	    Filename: "terms.pdf",
 //	}
 //	client.Files.Create(
 //	    context.TODO(),
@@ -53,7 +53,7 @@ func (c *Client) Create(
 	ctx context.Context,
 	request *whopsdk.CreateFilesRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.CreateFilesResponse, error) {
+) (*whopsdk.File, error) {
 	response, err := c.WithRawResponse.Create(
 		ctx,
 		request,
@@ -65,12 +65,12 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing file.
+// Retrieves a file you uploaded — poll it after uploading the bytes to see `upload_status` become `ready`. Only the creator can retrieve a file this way; a file attached to another resource is read through that resource.
 //
 // Example:
 //
 //	request := &whopsdk.RetrieveFilesRequest{
-//	    ID: "file_xxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Files.Retrieve(
 //	    context.TODO(),
@@ -82,6 +82,40 @@ func (c *Client) Retrieve(
 	opts ...option.RequestOption,
 ) (*whopsdk.File, error) {
 	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Assembles the parts of a multipart upload after every part has been PUT to its presigned URL. Pass the `multipart_upload_id` from Create File and each part's `ETag` response header.
+//
+// Example:
+//
+//	request := &whopsdk.CompleteFilesRequest{
+//	    ID: "id",
+//	    MultipartParts: []*whopsdk.CompleteFilesRequestMultipartPartsItem{
+//	        &whopsdk.CompleteFilesRequestMultipartPartsItem{
+//	            Etag: "etag-1",
+//	            PartNumber: 1,
+//	        },
+//	    },
+//	    MultipartUploadID: "upload-id",
+//	}
+//	client.Files.Complete(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Complete(
+	ctx context.Context,
+	request *whopsdk.CompleteFilesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.File, error) {
+	response, err := c.WithRawResponse.Complete(
 		ctx,
 		request,
 		opts...,

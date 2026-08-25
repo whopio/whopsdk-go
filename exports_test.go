@@ -2910,20 +2910,6 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		assert.Equal(t, CreateExportsRequestResource("financial-activity"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_members", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateExportsRequestResourceFromString("members")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateExportsRequestResource("members"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_memberships", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateExportsRequestResourceFromString("memberships")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateExportsRequestResource("memberships"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_payout_methods", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateExportsRequestResourceFromString("payout_methods")
@@ -3001,6 +2987,13 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		assert.Equal(t, CreateExportsRequestResource("webhooks"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_members", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExportsRequestResourceFromString("members")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExportsRequestResource("members"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_receipts", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateExportsRequestResourceFromString("receipts")
@@ -3013,6 +3006,13 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		val, err := NewCreateExportsRequestResourceFromString("unclaimed_memberships")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateExportsRequestResource("unclaimed_memberships"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_memberships", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExportsRequestResourceFromString("memberships")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExportsRequestResource("memberships"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_tracking_links", func(t *testing.T) {
@@ -3177,20 +3177,6 @@ func TestEnumExportResource(t *testing.T) {
 		assert.Equal(t, ExportResource("financial-activity"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_members", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewExportResourceFromString("members")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ExportResource("members"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_memberships", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewExportResourceFromString("memberships")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ExportResource("memberships"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_payout_methods", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewExportResourceFromString("payout_methods")
@@ -3268,6 +3254,13 @@ func TestEnumExportResource(t *testing.T) {
 		assert.Equal(t, ExportResource("webhooks"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_members", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExportResourceFromString("members")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExportResource("members"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_receipts", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewExportResourceFromString("receipts")
@@ -3280,6 +3273,13 @@ func TestEnumExportResource(t *testing.T) {
 		val, err := NewExportResourceFromString("unclaimed_memberships")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ExportResource("unclaimed_memberships"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_memberships", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExportResourceFromString("memberships")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExportResource("memberships"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_tracking_links", func(t *testing.T) {
@@ -3559,20 +3559,6 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		assert.Equal(t, ListExportsRequestResource("financial-activity"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_members", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListExportsRequestResourceFromString("members")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListExportsRequestResource("members"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_memberships", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListExportsRequestResourceFromString("memberships")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListExportsRequestResource("memberships"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_payout_methods", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListExportsRequestResourceFromString("payout_methods")
@@ -3650,6 +3636,13 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		assert.Equal(t, ListExportsRequestResource("webhooks"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_members", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExportsRequestResourceFromString("members")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExportsRequestResource("members"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_receipts", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListExportsRequestResourceFromString("receipts")
@@ -3662,6 +3655,13 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		val, err := NewListExportsRequestResourceFromString("unclaimed_memberships")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExportsRequestResource("unclaimed_memberships"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_memberships", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExportsRequestResourceFromString("memberships")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExportsRequestResource("memberships"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_tracking_links", func(t *testing.T) {

@@ -7376,6 +7376,123 @@ func (c CheckoutModes) Ptr() *CheckoutModes {
 	return &c
 }
 
+var (
+	checkoutSessionPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
+	checkoutSessionPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
+	checkoutSessionPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
+)
+
+type CheckoutSessionPaymentMethodConfiguration struct {
+	Disabled []string `json:"disabled" url:"disabled"`
+	Enabled  []string `json:"enabled" url:"enabled"`
+	// Whether Whop's default set is the starting point. When `false`, only `enabled` is offered.
+	IncludePlatformDefaults bool `json:"include_platform_defaults" url:"include_platform_defaults"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CheckoutSessionPaymentMethodConfiguration) GetDisabled() []string {
+	if c == nil {
+		return nil
+	}
+	return c.Disabled
+}
+
+func (c *CheckoutSessionPaymentMethodConfiguration) GetEnabled() []string {
+	if c == nil {
+		return nil
+	}
+	return c.Enabled
+}
+
+func (c *CheckoutSessionPaymentMethodConfiguration) GetIncludePlatformDefaults() bool {
+	if c == nil {
+		return false
+	}
+	return c.IncludePlatformDefaults
+}
+
+func (c *CheckoutSessionPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CheckoutSessionPaymentMethodConfiguration) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetDisabled sets the Disabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutSessionPaymentMethodConfiguration) SetDisabled(disabled []string) {
+	c.Disabled = disabled
+	c.require(checkoutSessionPaymentMethodConfigurationFieldDisabled)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutSessionPaymentMethodConfiguration) SetEnabled(enabled []string) {
+	c.Enabled = enabled
+	c.require(checkoutSessionPaymentMethodConfigurationFieldEnabled)
+}
+
+// SetIncludePlatformDefaults sets the IncludePlatformDefaults field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutSessionPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults bool) {
+	c.IncludePlatformDefaults = includePlatformDefaults
+	c.require(checkoutSessionPaymentMethodConfigurationFieldIncludePlatformDefaults)
+}
+
+func (c *CheckoutSessionPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
+	type unmarshaler CheckoutSessionPaymentMethodConfiguration
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CheckoutSessionPaymentMethodConfiguration(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CheckoutSessionPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
+	type embed CheckoutSessionPaymentMethodConfiguration
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CheckoutSessionPaymentMethodConfiguration) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 // The different border-radius styles available for checkout pages.
 type CheckoutShapes string
 
@@ -9575,6 +9692,465 @@ func NewExperienceNotificationPreferenceObjectFromString(s string) (ExperienceNo
 
 func (e ExperienceNotificationPreferenceObject) Ptr() *ExperienceNotificationPreferenceObject {
 	return &e
+}
+
+var (
+	fileFieldContentType         = big.NewInt(1 << 0)
+	fileFieldCreatedAt           = big.NewInt(1 << 1)
+	fileFieldFilename            = big.NewInt(1 << 2)
+	fileFieldID                  = big.NewInt(1 << 3)
+	fileFieldMultipartChunkSize  = big.NewInt(1 << 4)
+	fileFieldMultipartUploadID   = big.NewInt(1 << 5)
+	fileFieldMultipartUploadURLs = big.NewInt(1 << 6)
+	fileFieldObject              = big.NewInt(1 << 7)
+	fileFieldSize                = big.NewInt(1 << 8)
+	fileFieldUploadHeaders       = big.NewInt(1 << 9)
+	fileFieldUploadStatus        = big.NewInt(1 << 10)
+	fileFieldUploadURL           = big.NewInt(1 << 11)
+	fileFieldURL                 = big.NewInt(1 << 12)
+	fileFieldVisibility          = big.NewInt(1 << 13)
+)
+
+type File struct {
+	// The file's MIME type, e.g. `application/pdf`.
+	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
+	// When the file was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// The original filename, including its extension.
+	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
+	// The file's ID, prefixed `file_`.
+	ID string `json:"id" url:"id"`
+	// The byte size each part (except the last) must be. Present only on create, and only for multipart uploads.
+	MultipartChunkSize *int `json:"multipart_chunk_size,omitempty" url:"multipart_chunk_size,omitempty"`
+	// The ID of the multipart upload, passed back to `complete`. Present only on create, and only for multipart uploads.
+	MultipartUploadID   *string             `json:"multipart_upload_id,omitempty" url:"multipart_upload_id,omitempty"`
+	MultipartUploadURLs []*FileMultipartURL `json:"multipart_upload_urls,omitempty" url:"multipart_upload_urls,omitempty"`
+	// The type of this object, always `file`.
+	Object string `json:"object" url:"object"`
+	// The file size in bytes. `null` until the upload has finished.
+	Size *int `json:"size,omitempty" url:"size,omitempty"`
+	// Headers to send with the upload PUT. Present only on create.
+	UploadHeaders map[string]any `json:"upload_headers,omitempty" url:"upload_headers,omitempty"`
+	// Where the file is in its upload lifecycle.
+	UploadStatus FileUploadStatus `json:"upload_status" url:"upload_status"`
+	// Presigned URL to PUT the file's bytes to. Present only on create, and only for single-part uploads.
+	UploadURL *string `json:"upload_url,omitempty" url:"upload_url,omitempty"`
+	// A URL to download the file: a permanent CDN URL for public files, a signed expiring URL for private ones. `null` until the upload has finished.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+	// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
+	Visibility FileVisibility `json:"visibility" url:"visibility"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *File) GetContentType() *string {
+	if f == nil {
+		return nil
+	}
+	return f.ContentType
+}
+
+func (f *File) GetCreatedAt() string {
+	if f == nil {
+		return ""
+	}
+	return f.CreatedAt
+}
+
+func (f *File) GetFilename() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Filename
+}
+
+func (f *File) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *File) GetMultipartChunkSize() *int {
+	if f == nil {
+		return nil
+	}
+	return f.MultipartChunkSize
+}
+
+func (f *File) GetMultipartUploadID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.MultipartUploadID
+}
+
+func (f *File) GetMultipartUploadURLs() []*FileMultipartURL {
+	if f == nil {
+		return nil
+	}
+	return f.MultipartUploadURLs
+}
+
+func (f *File) GetObject() string {
+	if f == nil {
+		return ""
+	}
+	return f.Object
+}
+
+func (f *File) GetSize() *int {
+	if f == nil {
+		return nil
+	}
+	return f.Size
+}
+
+func (f *File) GetUploadHeaders() map[string]any {
+	if f == nil {
+		return nil
+	}
+	return f.UploadHeaders
+}
+
+func (f *File) GetUploadStatus() FileUploadStatus {
+	if f == nil {
+		return ""
+	}
+	return f.UploadStatus
+}
+
+func (f *File) GetUploadURL() *string {
+	if f == nil {
+		return nil
+	}
+	return f.UploadURL
+}
+
+func (f *File) GetURL() *string {
+	if f == nil {
+		return nil
+	}
+	return f.URL
+}
+
+func (f *File) GetVisibility() FileVisibility {
+	if f == nil {
+		return ""
+	}
+	return f.Visibility
+}
+
+func (f *File) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *File) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetContentType(contentType *string) {
+	f.ContentType = contentType
+	f.require(fileFieldContentType)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetCreatedAt(createdAt string) {
+	f.CreatedAt = createdAt
+	f.require(fileFieldCreatedAt)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetFilename(filename *string) {
+	f.Filename = filename
+	f.require(fileFieldFilename)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetID(id string) {
+	f.ID = id
+	f.require(fileFieldID)
+}
+
+// SetMultipartChunkSize sets the MultipartChunkSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetMultipartChunkSize(multipartChunkSize *int) {
+	f.MultipartChunkSize = multipartChunkSize
+	f.require(fileFieldMultipartChunkSize)
+}
+
+// SetMultipartUploadID sets the MultipartUploadID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetMultipartUploadID(multipartUploadID *string) {
+	f.MultipartUploadID = multipartUploadID
+	f.require(fileFieldMultipartUploadID)
+}
+
+// SetMultipartUploadURLs sets the MultipartUploadURLs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetMultipartUploadURLs(multipartUploadURLs []*FileMultipartURL) {
+	f.MultipartUploadURLs = multipartUploadURLs
+	f.require(fileFieldMultipartUploadURLs)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetObject(object string) {
+	f.Object = object
+	f.require(fileFieldObject)
+}
+
+// SetSize sets the Size field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetSize(size *int) {
+	f.Size = size
+	f.require(fileFieldSize)
+}
+
+// SetUploadHeaders sets the UploadHeaders field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetUploadHeaders(uploadHeaders map[string]any) {
+	f.UploadHeaders = uploadHeaders
+	f.require(fileFieldUploadHeaders)
+}
+
+// SetUploadStatus sets the UploadStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetUploadStatus(uploadStatus FileUploadStatus) {
+	f.UploadStatus = uploadStatus
+	f.require(fileFieldUploadStatus)
+}
+
+// SetUploadURL sets the UploadURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetUploadURL(uploadURL *string) {
+	f.UploadURL = uploadURL
+	f.require(fileFieldUploadURL)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetURL(url *string) {
+	f.URL = url
+	f.require(fileFieldURL)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetVisibility(visibility FileVisibility) {
+	f.Visibility = visibility
+	f.require(fileFieldVisibility)
+}
+
+func (f *File) UnmarshalJSON(data []byte) error {
+	type unmarshaler File
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = File(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *File) MarshalJSON() ([]byte, error) {
+	type embed File
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *File) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	fileMultipartURLFieldPartNumber = big.NewInt(1 << 0)
+	fileMultipartURLFieldURL        = big.NewInt(1 << 1)
+)
+
+type FileMultipartURL struct {
+	// The 1-based index of this part within the multipart upload.
+	PartNumber int `json:"part_number" url:"part_number"`
+	// The presigned URL to PUT this part's bytes to.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FileMultipartURL) GetPartNumber() int {
+	if f == nil {
+		return 0
+	}
+	return f.PartNumber
+}
+
+func (f *FileMultipartURL) GetURL() string {
+	if f == nil {
+		return ""
+	}
+	return f.URL
+}
+
+func (f *FileMultipartURL) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FileMultipartURL) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetPartNumber sets the PartNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FileMultipartURL) SetPartNumber(partNumber int) {
+	f.PartNumber = partNumber
+	f.require(fileMultipartURLFieldPartNumber)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FileMultipartURL) SetURL(url string) {
+	f.URL = url
+	f.require(fileMultipartURLFieldURL)
+}
+
+func (f *FileMultipartURL) UnmarshalJSON(data []byte) error {
+	type unmarshaler FileMultipartURL
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FileMultipartURL(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FileMultipartURL) MarshalJSON() ([]byte, error) {
+	type embed FileMultipartURL
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FileMultipartURL) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+// Where the file is in its upload lifecycle.
+type FileUploadStatus string
+
+const (
+	FileUploadStatusPending    FileUploadStatus = "pending"
+	FileUploadStatusProcessing FileUploadStatus = "processing"
+	FileUploadStatusReady      FileUploadStatus = "ready"
+	FileUploadStatusFailed     FileUploadStatus = "failed"
+)
+
+func NewFileUploadStatusFromString(s string) (FileUploadStatus, error) {
+	switch s {
+	case "pending":
+		return FileUploadStatusPending, nil
+	case "processing":
+		return FileUploadStatusProcessing, nil
+	case "ready":
+		return FileUploadStatusReady, nil
+	case "failed":
+		return FileUploadStatusFailed, nil
+	}
+	var t FileUploadStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FileUploadStatus) Ptr() *FileUploadStatus {
+	return &f
+}
+
+// Controls whether an uploaded file is publicly accessible or requires authentication to access.
+type FileVisibility string
+
+const (
+	FileVisibilityPublic  FileVisibility = "public"
+	FileVisibilityPrivate FileVisibility = "private"
+)
+
+func NewFileVisibilityFromString(s string) (FileVisibility, error) {
+	switch s {
+	case "public":
+		return FileVisibilityPublic, nil
+	case "private":
+		return FileVisibilityPrivate, nil
+	}
+	var t FileVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FileVisibility) Ptr() *FileVisibility {
+	return &f
 }
 
 var (
@@ -18390,838 +18966,6 @@ func (t *TooManyRequestsErrorBodyError) String() string {
 }
 
 var (
-	transferFieldOrigin      = big.NewInt(1 << 0)
-	transferFieldDestination = big.NewInt(1 << 1)
-)
-
-type Transfer struct {
-	Origin      *TransferOrigin      `json:"origin,omitempty" url:"origin,omitempty"`
-	Destination *TransferDestination `json:"destination,omitempty" url:"destination,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (t *Transfer) GetOrigin() *TransferOrigin {
-	if t == nil {
-		return nil
-	}
-	return t.Origin
-}
-
-func (t *Transfer) GetDestination() *TransferDestination {
-	if t == nil {
-		return nil
-	}
-	return t.Destination
-}
-
-func (t *Transfer) GetExtraProperties() map[string]interface{} {
-	if t == nil {
-		return nil
-	}
-	return t.extraProperties
-}
-
-func (t *Transfer) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
-	}
-	t.explicitFields.Or(t.explicitFields, field)
-}
-
-// SetOrigin sets the Origin field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *Transfer) SetOrigin(origin *TransferOrigin) {
-	t.Origin = origin
-	t.require(transferFieldOrigin)
-}
-
-// SetDestination sets the Destination field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *Transfer) SetDestination(destination *TransferDestination) {
-	t.Destination = destination
-	t.require(transferFieldDestination)
-}
-
-func (t *Transfer) UnmarshalJSON(data []byte) error {
-	type unmarshaler Transfer
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*t = Transfer(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *t)
-	if err != nil {
-		return err
-	}
-	t.extraProperties = extraProperties
-	t.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (t *Transfer) MarshalJSON() ([]byte, error) {
-	type embed Transfer
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*t),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (t *Transfer) String() string {
-	if t == nil {
-		return "<nil>"
-	}
-	if len(t.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(t); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", t)
-}
-
-type TransferDestination struct {
-	Typename string
-	User     *TransferDestinationUser
-	Company  *TransferDestinationCompany
-
-	rawJSON json.RawMessage
-}
-
-func (t *TransferDestination) GetTypename() string {
-	if t == nil {
-		return ""
-	}
-	return t.Typename
-}
-
-func (t *TransferDestination) GetUser() *TransferDestinationUser {
-	if t == nil {
-		return nil
-	}
-	return t.User
-}
-
-func (t *TransferDestination) GetCompany() *TransferDestinationCompany {
-	if t == nil {
-		return nil
-	}
-	return t.Company
-}
-
-func (t *TransferDestination) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	t.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", t)
-	}
-	switch unmarshaler.Typename {
-	case "User":
-		value := new(TransferDestinationUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.User = value
-	case "Company":
-		value := new(TransferDestinationCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.Company = value
-	}
-	t.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (t TransferDestination) MarshalJSON() ([]byte, error) {
-	if err := t.validate(); err != nil {
-		return nil, err
-	}
-	if t.User != nil {
-		return internal.MarshalJSONWithExtraProperty(t.User, "typename", "User")
-	}
-	if t.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(t.Company, "typename", "Company")
-	}
-	if len(t.rawJSON) > 0 {
-		return t.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", t)
-}
-
-type TransferDestinationVisitor interface {
-	VisitUser(*TransferDestinationUser) error
-	VisitCompany(*TransferDestinationCompany) error
-}
-
-func (t *TransferDestination) Accept(visitor TransferDestinationVisitor) error {
-	if t.User != nil {
-		return visitor.VisitUser(t.User)
-	}
-	if t.Company != nil {
-		return visitor.VisitCompany(t.Company)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", t)
-}
-
-func (t *TransferDestination) validate() error {
-	if t == nil {
-		return fmt.Errorf("type %T is nil", t)
-	}
-	var fields []string
-	if t.User != nil {
-		fields = append(fields, "User")
-	}
-	if t.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if len(fields) == 0 {
-		if t.Typename != "" {
-			if len(t.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", t, t.Typename)
-		}
-		return fmt.Errorf("type %T is empty", t)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", t, fields)
-	}
-	if t.Typename != "" {
-		field := fields[0]
-		if t.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				t,
-				t.Typename,
-				t,
-			)
-		}
-	}
-	return nil
-}
-
-// A company on Whop.
-var (
-	transferDestinationCompanyFieldID    = big.NewInt(1 << 0)
-	transferDestinationCompanyFieldRoute = big.NewInt(1 << 1)
-	transferDestinationCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-type TransferDestinationCompany struct {
-	// The unique identifier for the company.
-	ID string `json:"id" url:"id"`
-	// The URL slug for the company's store page.
-	Route string `json:"route" url:"route"`
-	// The display name of the company shown to customers.
-	Title string `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (t *TransferDestinationCompany) GetID() string {
-	if t == nil {
-		return ""
-	}
-	return t.ID
-}
-
-func (t *TransferDestinationCompany) GetRoute() string {
-	if t == nil {
-		return ""
-	}
-	return t.Route
-}
-
-func (t *TransferDestinationCompany) GetTitle() string {
-	if t == nil {
-		return ""
-	}
-	return t.Title
-}
-
-func (t *TransferDestinationCompany) GetExtraProperties() map[string]interface{} {
-	if t == nil {
-		return nil
-	}
-	return t.extraProperties
-}
-
-func (t *TransferDestinationCompany) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
-	}
-	t.explicitFields.Or(t.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferDestinationCompany) SetID(id string) {
-	t.ID = id
-	t.require(transferDestinationCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferDestinationCompany) SetRoute(route string) {
-	t.Route = route
-	t.require(transferDestinationCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferDestinationCompany) SetTitle(title string) {
-	t.Title = title
-	t.require(transferDestinationCompanyFieldTitle)
-}
-
-func (t *TransferDestinationCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler TransferDestinationCompany
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*t = TransferDestinationCompany(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *t)
-	if err != nil {
-		return err
-	}
-	t.extraProperties = extraProperties
-	t.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (t *TransferDestinationCompany) MarshalJSON() ([]byte, error) {
-	type embed TransferDestinationCompany
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*t),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (t *TransferDestinationCompany) String() string {
-	if t == nil {
-		return "<nil>"
-	}
-	if len(t.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(t); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", t)
-}
-
-// A user account on Whop.
-var (
-	transferDestinationUserFieldID       = big.NewInt(1 << 0)
-	transferDestinationUserFieldName     = big.NewInt(1 << 1)
-	transferDestinationUserFieldUsername = big.NewInt(1 << 2)
-)
-
-type TransferDestinationUser struct {
-	// The unique identifier for the user.
-	ID string `json:"id" url:"id"`
-	// The user's display name shown on their public profile.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The user's unique username shown on their public profile.
-	Username string `json:"username" url:"username"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (t *TransferDestinationUser) GetID() string {
-	if t == nil {
-		return ""
-	}
-	return t.ID
-}
-
-func (t *TransferDestinationUser) GetName() *string {
-	if t == nil {
-		return nil
-	}
-	return t.Name
-}
-
-func (t *TransferDestinationUser) GetUsername() string {
-	if t == nil {
-		return ""
-	}
-	return t.Username
-}
-
-func (t *TransferDestinationUser) GetExtraProperties() map[string]interface{} {
-	if t == nil {
-		return nil
-	}
-	return t.extraProperties
-}
-
-func (t *TransferDestinationUser) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
-	}
-	t.explicitFields.Or(t.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferDestinationUser) SetID(id string) {
-	t.ID = id
-	t.require(transferDestinationUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferDestinationUser) SetName(name *string) {
-	t.Name = name
-	t.require(transferDestinationUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferDestinationUser) SetUsername(username string) {
-	t.Username = username
-	t.require(transferDestinationUserFieldUsername)
-}
-
-func (t *TransferDestinationUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler TransferDestinationUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*t = TransferDestinationUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *t)
-	if err != nil {
-		return err
-	}
-	t.extraProperties = extraProperties
-	t.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (t *TransferDestinationUser) MarshalJSON() ([]byte, error) {
-	type embed TransferDestinationUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*t),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (t *TransferDestinationUser) String() string {
-	if t == nil {
-		return "<nil>"
-	}
-	if len(t.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(t); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", t)
-}
-
-type TransferOrigin struct {
-	Typename string
-	User     *TransferOriginUser
-	Company  *TransferOriginCompany
-
-	rawJSON json.RawMessage
-}
-
-func (t *TransferOrigin) GetTypename() string {
-	if t == nil {
-		return ""
-	}
-	return t.Typename
-}
-
-func (t *TransferOrigin) GetUser() *TransferOriginUser {
-	if t == nil {
-		return nil
-	}
-	return t.User
-}
-
-func (t *TransferOrigin) GetCompany() *TransferOriginCompany {
-	if t == nil {
-		return nil
-	}
-	return t.Company
-}
-
-func (t *TransferOrigin) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	t.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", t)
-	}
-	switch unmarshaler.Typename {
-	case "User":
-		value := new(TransferOriginUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.User = value
-	case "Company":
-		value := new(TransferOriginCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.Company = value
-	}
-	t.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (t TransferOrigin) MarshalJSON() ([]byte, error) {
-	if err := t.validate(); err != nil {
-		return nil, err
-	}
-	if t.User != nil {
-		return internal.MarshalJSONWithExtraProperty(t.User, "typename", "User")
-	}
-	if t.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(t.Company, "typename", "Company")
-	}
-	if len(t.rawJSON) > 0 {
-		return t.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", t)
-}
-
-type TransferOriginVisitor interface {
-	VisitUser(*TransferOriginUser) error
-	VisitCompany(*TransferOriginCompany) error
-}
-
-func (t *TransferOrigin) Accept(visitor TransferOriginVisitor) error {
-	if t.User != nil {
-		return visitor.VisitUser(t.User)
-	}
-	if t.Company != nil {
-		return visitor.VisitCompany(t.Company)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", t)
-}
-
-func (t *TransferOrigin) validate() error {
-	if t == nil {
-		return fmt.Errorf("type %T is nil", t)
-	}
-	var fields []string
-	if t.User != nil {
-		fields = append(fields, "User")
-	}
-	if t.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if len(fields) == 0 {
-		if t.Typename != "" {
-			if len(t.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", t, t.Typename)
-		}
-		return fmt.Errorf("type %T is empty", t)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", t, fields)
-	}
-	if t.Typename != "" {
-		field := fields[0]
-		if t.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				t,
-				t.Typename,
-				t,
-			)
-		}
-	}
-	return nil
-}
-
-// A company on Whop.
-var (
-	transferOriginCompanyFieldID    = big.NewInt(1 << 0)
-	transferOriginCompanyFieldRoute = big.NewInt(1 << 1)
-	transferOriginCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-type TransferOriginCompany struct {
-	// The unique identifier for the company.
-	ID string `json:"id" url:"id"`
-	// The URL slug for the company's store page.
-	Route string `json:"route" url:"route"`
-	// The display name of the company shown to customers.
-	Title string `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (t *TransferOriginCompany) GetID() string {
-	if t == nil {
-		return ""
-	}
-	return t.ID
-}
-
-func (t *TransferOriginCompany) GetRoute() string {
-	if t == nil {
-		return ""
-	}
-	return t.Route
-}
-
-func (t *TransferOriginCompany) GetTitle() string {
-	if t == nil {
-		return ""
-	}
-	return t.Title
-}
-
-func (t *TransferOriginCompany) GetExtraProperties() map[string]interface{} {
-	if t == nil {
-		return nil
-	}
-	return t.extraProperties
-}
-
-func (t *TransferOriginCompany) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
-	}
-	t.explicitFields.Or(t.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferOriginCompany) SetID(id string) {
-	t.ID = id
-	t.require(transferOriginCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferOriginCompany) SetRoute(route string) {
-	t.Route = route
-	t.require(transferOriginCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferOriginCompany) SetTitle(title string) {
-	t.Title = title
-	t.require(transferOriginCompanyFieldTitle)
-}
-
-func (t *TransferOriginCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler TransferOriginCompany
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*t = TransferOriginCompany(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *t)
-	if err != nil {
-		return err
-	}
-	t.extraProperties = extraProperties
-	t.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (t *TransferOriginCompany) MarshalJSON() ([]byte, error) {
-	type embed TransferOriginCompany
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*t),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (t *TransferOriginCompany) String() string {
-	if t == nil {
-		return "<nil>"
-	}
-	if len(t.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(t); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", t)
-}
-
-// A user account on Whop.
-var (
-	transferOriginUserFieldID       = big.NewInt(1 << 0)
-	transferOriginUserFieldName     = big.NewInt(1 << 1)
-	transferOriginUserFieldUsername = big.NewInt(1 << 2)
-)
-
-type TransferOriginUser struct {
-	// The unique identifier for the user.
-	ID string `json:"id" url:"id"`
-	// The user's display name shown on their public profile.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The user's unique username shown on their public profile.
-	Username string `json:"username" url:"username"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (t *TransferOriginUser) GetID() string {
-	if t == nil {
-		return ""
-	}
-	return t.ID
-}
-
-func (t *TransferOriginUser) GetName() *string {
-	if t == nil {
-		return nil
-	}
-	return t.Name
-}
-
-func (t *TransferOriginUser) GetUsername() string {
-	if t == nil {
-		return ""
-	}
-	return t.Username
-}
-
-func (t *TransferOriginUser) GetExtraProperties() map[string]interface{} {
-	if t == nil {
-		return nil
-	}
-	return t.extraProperties
-}
-
-func (t *TransferOriginUser) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
-	}
-	t.explicitFields.Or(t.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferOriginUser) SetID(id string) {
-	t.ID = id
-	t.require(transferOriginUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferOriginUser) SetName(name *string) {
-	t.Name = name
-	t.require(transferOriginUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TransferOriginUser) SetUsername(username string) {
-	t.Username = username
-	t.require(transferOriginUserFieldUsername)
-}
-
-func (t *TransferOriginUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler TransferOriginUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*t = TransferOriginUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *t)
-	if err != nil {
-		return err
-	}
-	t.extraProperties = extraProperties
-	t.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (t *TransferOriginUser) MarshalJSON() ([]byte, error) {
-	type embed TransferOriginUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*t),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (t *TransferOriginUser) String() string {
-	if t == nil {
-		return "<nil>"
-	}
-	if len(t.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(t); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", t)
-}
-
-var (
 	unauthorizedErrorBodyFieldError = big.NewInt(1 << 0)
 )
 
@@ -19655,6 +19399,35 @@ func (u *UnprocessableEntityErrorBodyError) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+// The upload status of a file
+type UploadStatuses string
+
+const (
+	UploadStatusesPending    UploadStatuses = "pending"
+	UploadStatusesProcessing UploadStatuses = "processing"
+	UploadStatusesReady      UploadStatuses = "ready"
+	UploadStatusesFailed     UploadStatuses = "failed"
+)
+
+func NewUploadStatusesFromString(s string) (UploadStatuses, error) {
+	switch s {
+	case "pending":
+		return UploadStatusesPending, nil
+	case "processing":
+		return UploadStatusesProcessing, nil
+	case "ready":
+		return UploadStatusesReady, nil
+	case "failed":
+		return UploadStatusesFailed, nil
+	}
+	var t UploadStatuses
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UploadStatuses) Ptr() *UploadStatuses {
+	return &u
 }
 
 var (

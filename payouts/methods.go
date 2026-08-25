@@ -957,8 +957,8 @@ const (
 	CreateMethodsResponseSupportedPayoutMethodDeliveryTypeBankDeposit    CreateMethodsResponseSupportedPayoutMethodDeliveryType = "bank_deposit"
 	CreateMethodsResponseSupportedPayoutMethodDeliveryTypeHomeDelivery   CreateMethodsResponseSupportedPayoutMethodDeliveryType = "home_delivery"
 	CreateMethodsResponseSupportedPayoutMethodDeliveryTypeMobileWallet   CreateMethodsResponseSupportedPayoutMethodDeliveryType = "mobile_wallet"
-	CreateMethodsResponseSupportedPayoutMethodDeliveryTypeMasspayCard    CreateMethodsResponseSupportedPayoutMethodDeliveryType = "masspay_card"
-	CreateMethodsResponseSupportedPayoutMethodDeliveryTypePaperCheck     CreateMethodsResponseSupportedPayoutMethodDeliveryType = "paper_check"
+	CreateMethodsResponseSupportedPayoutMethodDeliveryTypeCard           CreateMethodsResponseSupportedPayoutMethodDeliveryType = "card"
+	CreateMethodsResponseSupportedPayoutMethodDeliveryTypeCheck          CreateMethodsResponseSupportedPayoutMethodDeliveryType = "check"
 	CreateMethodsResponseSupportedPayoutMethodDeliveryTypeBill           CreateMethodsResponseSupportedPayoutMethodDeliveryType = "bill"
 	CreateMethodsResponseSupportedPayoutMethodDeliveryTypeCryptocurrency CreateMethodsResponseSupportedPayoutMethodDeliveryType = "cryptocurrency"
 	CreateMethodsResponseSupportedPayoutMethodDeliveryTypeUnknown        CreateMethodsResponseSupportedPayoutMethodDeliveryType = "unknown"
@@ -974,10 +974,10 @@ func NewCreateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString(s strin
 		return CreateMethodsResponseSupportedPayoutMethodDeliveryTypeHomeDelivery, nil
 	case "mobile_wallet":
 		return CreateMethodsResponseSupportedPayoutMethodDeliveryTypeMobileWallet, nil
-	case "masspay_card":
-		return CreateMethodsResponseSupportedPayoutMethodDeliveryTypeMasspayCard, nil
-	case "paper_check":
-		return CreateMethodsResponseSupportedPayoutMethodDeliveryTypePaperCheck, nil
+	case "card":
+		return CreateMethodsResponseSupportedPayoutMethodDeliveryTypeCard, nil
+	case "check":
+		return CreateMethodsResponseSupportedPayoutMethodDeliveryTypeCheck, nil
 	case "bill":
 		return CreateMethodsResponseSupportedPayoutMethodDeliveryTypeBill, nil
 	case "cryptocurrency":
@@ -2593,8 +2593,8 @@ const (
 	ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeBankDeposit    ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType = "bank_deposit"
 	ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeHomeDelivery   ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType = "home_delivery"
 	ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeMobileWallet   ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType = "mobile_wallet"
-	ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeMasspayCard    ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType = "masspay_card"
-	ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypePaperCheck     ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType = "paper_check"
+	ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeCard           ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType = "card"
+	ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeCheck          ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType = "check"
 	ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeBill           ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType = "bill"
 	ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeCryptocurrency ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType = "cryptocurrency"
 	ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeUnknown        ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType = "unknown"
@@ -2610,10 +2610,10 @@ func NewListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeFromString(s
 		return ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeHomeDelivery, nil
 	case "mobile_wallet":
 		return ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeMobileWallet, nil
-	case "masspay_card":
-		return ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeMasspayCard, nil
-	case "paper_check":
-		return ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypePaperCheck, nil
+	case "card":
+		return ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeCard, nil
+	case "check":
+		return ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeCheck, nil
 	case "bill":
 		return ListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeBill, nil
 	case "cryptocurrency":
@@ -3911,8 +3911,8 @@ const (
 	UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeBankDeposit    UpdateMethodsResponseSupportedPayoutMethodDeliveryType = "bank_deposit"
 	UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeHomeDelivery   UpdateMethodsResponseSupportedPayoutMethodDeliveryType = "home_delivery"
 	UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeMobileWallet   UpdateMethodsResponseSupportedPayoutMethodDeliveryType = "mobile_wallet"
-	UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeMasspayCard    UpdateMethodsResponseSupportedPayoutMethodDeliveryType = "masspay_card"
-	UpdateMethodsResponseSupportedPayoutMethodDeliveryTypePaperCheck     UpdateMethodsResponseSupportedPayoutMethodDeliveryType = "paper_check"
+	UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeCard           UpdateMethodsResponseSupportedPayoutMethodDeliveryType = "card"
+	UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeCheck          UpdateMethodsResponseSupportedPayoutMethodDeliveryType = "check"
 	UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeBill           UpdateMethodsResponseSupportedPayoutMethodDeliveryType = "bill"
 	UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeCryptocurrency UpdateMethodsResponseSupportedPayoutMethodDeliveryType = "cryptocurrency"
 	UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeUnknown        UpdateMethodsResponseSupportedPayoutMethodDeliveryType = "unknown"
@@ -3928,10 +3928,10 @@ func NewUpdateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString(s strin
 		return UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeHomeDelivery, nil
 	case "mobile_wallet":
 		return UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeMobileWallet, nil
-	case "masspay_card":
-		return UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeMasspayCard, nil
-	case "paper_check":
-		return UpdateMethodsResponseSupportedPayoutMethodDeliveryTypePaperCheck, nil
+	case "card":
+		return UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeCard, nil
+	case "check":
+		return UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeCheck, nil
 	case "bill":
 		return UpdateMethodsResponseSupportedPayoutMethodDeliveryTypeBill, nil
 	case "cryptocurrency":

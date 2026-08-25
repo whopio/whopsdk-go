@@ -1042,7 +1042,7 @@ type InvoiceLineItemsItem struct {
 	Quantity float64 `json:"quantity" url:"quantity"`
 	// The computed total for this line item (quantity * unit_price).
 	Total float64 `json:"total" url:"total"`
-	// The unit price for this line item.
+	// The unit price for this line item. Negative for a credit or deduction.
 	UnitPrice float64 `json:"unit_price" url:"unit_price"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1584,7 +1584,7 @@ type InvoiceListItemLineItemsItem struct {
 	Quantity float64 `json:"quantity" url:"quantity"`
 	// The computed total for this line item (quantity * unit_price).
 	Total float64 `json:"total" url:"total"`
-	// The unit price for this line item.
+	// The unit price for this line item. Negative for a credit or deduction.
 	UnitPrice float64 `json:"unit_price" url:"unit_price"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3000,7 +3000,7 @@ type CreateInvoicesRequestProduct struct {
 	DueDate *time.Time `json:"due_date,omitempty" url:"due_date,omitempty"`
 	// The email address of the customer. Required when creating an invoice for a customer who is not yet a member of the company.
 	EmailAddress *string `json:"email_address,omitempty" url:"email_address,omitempty"`
-	// Optional line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price.
+	// Optional line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge.
 	LineItems []*CreateInvoicesRequestProductLineItemsItem `json:"line_items,omitempty" url:"line_items,omitempty"`
 	// The unique identifier of an existing mailing address to attach to this invoice. Cannot be used together with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
@@ -3613,7 +3613,7 @@ type CreateInvoicesRequestProductID struct {
 	DueDate *time.Time `json:"due_date,omitempty" url:"due_date,omitempty"`
 	// The email address of the customer. Required when creating an invoice for a customer who is not yet a member of the company.
 	EmailAddress *string `json:"email_address,omitempty" url:"email_address,omitempty"`
-	// Optional line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price.
+	// Optional line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge.
 	LineItems []*CreateInvoicesRequestProductIDLineItemsItem `json:"line_items,omitempty" url:"line_items,omitempty"`
 	// The unique identifier of an existing mailing address to attach to this invoice. Cannot be used together with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
@@ -4200,7 +4200,7 @@ type CreateInvoicesRequestProductIDLineItemsItem struct {
 	Label string `json:"label" url:"label"`
 	// The quantity of this line item. Defaults to 1.
 	Quantity *float64 `json:"quantity,omitempty" url:"quantity,omitempty"`
-	// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43
+	// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43. Negative values represent a credit or deduction, as long as the line items still total a chargeable amount.
 	UnitPrice float64 `json:"unit_price" url:"unit_price"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4968,7 +4968,7 @@ type CreateInvoicesRequestProductLineItemsItem struct {
 	Label string `json:"label" url:"label"`
 	// The quantity of this line item. Defaults to 1.
 	Quantity *float64 `json:"quantity,omitempty" url:"quantity,omitempty"`
-	// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43
+	// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43. Negative values represent a credit or deduction, as long as the line items still total a chargeable amount.
 	UnitPrice float64 `json:"unit_price" url:"unit_price"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -7436,7 +7436,7 @@ type UpdateInvoicesRequestLineItemsItem struct {
 	Label string `json:"label" url:"label"`
 	// The quantity of this line item. Defaults to 1.
 	Quantity *float64 `json:"quantity,omitempty" url:"quantity,omitempty"`
-	// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43
+	// The unit price for this line item. Provided as a number in the specified currency. Eg: 10.43 for $10.43. Negative values represent a credit or deduction, as long as the line items still total a chargeable amount.
 	UnitPrice float64 `json:"unit_price" url:"unit_price"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -8227,7 +8227,7 @@ type UpdateInvoicesRequest struct {
 	DueDate *time.Time `json:"due_date,omitempty" url:"-"`
 	// The email address of the customer.
 	EmailAddress *string `json:"email_address,omitempty" url:"-"`
-	// Line items that break down the invoice total.
+	// Line items that break down the invoice total. When provided, the sum of (quantity * unit_price) for all items must equal the plan price. Individual items may be negative to represent a credit, as long as the sum is not negative and clears the currency's minimum charge. Pass an empty list to remove the breakdown.
 	LineItems []*UpdateInvoicesRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The unique identifier of an existing mailing address to attach.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`

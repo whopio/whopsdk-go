@@ -23,7 +23,7 @@ type CreateExportsRequest struct {
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// Column keys to include. Empty means all columns for the resource.
 	Columns []string `json:"columns,omitempty" url:"-"`
-	// Resource-specific filters. For native REST resources (`payouts`, `transfers`, `memberships`) these are the resource's own list query params; for dashboard tables they mirror the dashboard table filters.
+	// Resource-specific filters. For native REST resources (`payouts`, `transfers`, `products`) these are the resource's own list query params; for dashboard tables they mirror the dashboard table filters.
 	Filters map[string]any `json:"filters,omitempty" url:"-"`
 	// The resource to export, e.g. `payouts`, `receipts`, or `members`.
 	Resource CreateExportsRequestResource `json:"resource" url:"-"`
@@ -429,8 +429,6 @@ const (
 	ExportResourceDisputes                  ExportResource = "disputes"
 	ExportResourceEvents                    ExportResource = "events"
 	ExportResourceFinancialActivity         ExportResource = "financial-activity"
-	ExportResourceMembers                   ExportResource = "members"
-	ExportResourceMemberships               ExportResource = "memberships"
 	ExportResourcePayoutMethods             ExportResource = "payout_methods"
 	ExportResourcePayouts                   ExportResource = "payouts"
 	ExportResourcePeople                    ExportResource = "people"
@@ -442,8 +440,10 @@ const (
 	ExportResourceTeamMembers               ExportResource = "team_members"
 	ExportResourceTransfers                 ExportResource = "transfers"
 	ExportResourceWebhooks                  ExportResource = "webhooks"
+	ExportResourceMembers                   ExportResource = "members"
 	ExportResourceReceipts                  ExportResource = "receipts"
 	ExportResourceUnclaimedMemberships      ExportResource = "unclaimed_memberships"
+	ExportResourceMemberships               ExportResource = "memberships"
 	ExportResourceTrackingLinks             ExportResource = "tracking_links"
 	ExportResourcePromoCodes                ExportResource = "promo_codes"
 	ExportResourceResolutions               ExportResource = "resolutions"
@@ -483,10 +483,6 @@ func NewExportResourceFromString(s string) (ExportResource, error) {
 		return ExportResourceEvents, nil
 	case "financial-activity":
 		return ExportResourceFinancialActivity, nil
-	case "members":
-		return ExportResourceMembers, nil
-	case "memberships":
-		return ExportResourceMemberships, nil
 	case "payout_methods":
 		return ExportResourcePayoutMethods, nil
 	case "payouts":
@@ -509,10 +505,14 @@ func NewExportResourceFromString(s string) (ExportResource, error) {
 		return ExportResourceTransfers, nil
 	case "webhooks":
 		return ExportResourceWebhooks, nil
+	case "members":
+		return ExportResourceMembers, nil
 	case "receipts":
 		return ExportResourceReceipts, nil
 	case "unclaimed_memberships":
 		return ExportResourceUnclaimedMemberships, nil
+	case "memberships":
+		return ExportResourceMemberships, nil
 	case "tracking_links":
 		return ExportResourceTrackingLinks, nil
 	case "promo_codes":
@@ -592,8 +592,6 @@ const (
 	CreateExportsRequestResourceDisputes                  CreateExportsRequestResource = "disputes"
 	CreateExportsRequestResourceEvents                    CreateExportsRequestResource = "events"
 	CreateExportsRequestResourceFinancialActivity         CreateExportsRequestResource = "financial-activity"
-	CreateExportsRequestResourceMembers                   CreateExportsRequestResource = "members"
-	CreateExportsRequestResourceMemberships               CreateExportsRequestResource = "memberships"
 	CreateExportsRequestResourcePayoutMethods             CreateExportsRequestResource = "payout_methods"
 	CreateExportsRequestResourcePayouts                   CreateExportsRequestResource = "payouts"
 	CreateExportsRequestResourcePeople                    CreateExportsRequestResource = "people"
@@ -605,8 +603,10 @@ const (
 	CreateExportsRequestResourceTeamMembers               CreateExportsRequestResource = "team_members"
 	CreateExportsRequestResourceTransfers                 CreateExportsRequestResource = "transfers"
 	CreateExportsRequestResourceWebhooks                  CreateExportsRequestResource = "webhooks"
+	CreateExportsRequestResourceMembers                   CreateExportsRequestResource = "members"
 	CreateExportsRequestResourceReceipts                  CreateExportsRequestResource = "receipts"
 	CreateExportsRequestResourceUnclaimedMemberships      CreateExportsRequestResource = "unclaimed_memberships"
+	CreateExportsRequestResourceMemberships               CreateExportsRequestResource = "memberships"
 	CreateExportsRequestResourceTrackingLinks             CreateExportsRequestResource = "tracking_links"
 	CreateExportsRequestResourcePromoCodes                CreateExportsRequestResource = "promo_codes"
 	CreateExportsRequestResourceResolutions               CreateExportsRequestResource = "resolutions"
@@ -644,10 +644,6 @@ func NewCreateExportsRequestResourceFromString(s string) (CreateExportsRequestRe
 		return CreateExportsRequestResourceEvents, nil
 	case "financial-activity":
 		return CreateExportsRequestResourceFinancialActivity, nil
-	case "members":
-		return CreateExportsRequestResourceMembers, nil
-	case "memberships":
-		return CreateExportsRequestResourceMemberships, nil
 	case "payout_methods":
 		return CreateExportsRequestResourcePayoutMethods, nil
 	case "payouts":
@@ -670,10 +666,14 @@ func NewCreateExportsRequestResourceFromString(s string) (CreateExportsRequestRe
 		return CreateExportsRequestResourceTransfers, nil
 	case "webhooks":
 		return CreateExportsRequestResourceWebhooks, nil
+	case "members":
+		return CreateExportsRequestResourceMembers, nil
 	case "receipts":
 		return CreateExportsRequestResourceReceipts, nil
 	case "unclaimed_memberships":
 		return CreateExportsRequestResourceUnclaimedMemberships, nil
+	case "memberships":
+		return CreateExportsRequestResourceMemberships, nil
 	case "tracking_links":
 		return CreateExportsRequestResourceTrackingLinks, nil
 	case "promo_codes":
@@ -757,8 +757,6 @@ const (
 	ListExportsRequestResourceDisputes                  ListExportsRequestResource = "disputes"
 	ListExportsRequestResourceEvents                    ListExportsRequestResource = "events"
 	ListExportsRequestResourceFinancialActivity         ListExportsRequestResource = "financial-activity"
-	ListExportsRequestResourceMembers                   ListExportsRequestResource = "members"
-	ListExportsRequestResourceMemberships               ListExportsRequestResource = "memberships"
 	ListExportsRequestResourcePayoutMethods             ListExportsRequestResource = "payout_methods"
 	ListExportsRequestResourcePayouts                   ListExportsRequestResource = "payouts"
 	ListExportsRequestResourcePeople                    ListExportsRequestResource = "people"
@@ -770,8 +768,10 @@ const (
 	ListExportsRequestResourceTeamMembers               ListExportsRequestResource = "team_members"
 	ListExportsRequestResourceTransfers                 ListExportsRequestResource = "transfers"
 	ListExportsRequestResourceWebhooks                  ListExportsRequestResource = "webhooks"
+	ListExportsRequestResourceMembers                   ListExportsRequestResource = "members"
 	ListExportsRequestResourceReceipts                  ListExportsRequestResource = "receipts"
 	ListExportsRequestResourceUnclaimedMemberships      ListExportsRequestResource = "unclaimed_memberships"
+	ListExportsRequestResourceMemberships               ListExportsRequestResource = "memberships"
 	ListExportsRequestResourceTrackingLinks             ListExportsRequestResource = "tracking_links"
 	ListExportsRequestResourcePromoCodes                ListExportsRequestResource = "promo_codes"
 	ListExportsRequestResourceResolutions               ListExportsRequestResource = "resolutions"
@@ -811,10 +811,6 @@ func NewListExportsRequestResourceFromString(s string) (ListExportsRequestResour
 		return ListExportsRequestResourceEvents, nil
 	case "financial-activity":
 		return ListExportsRequestResourceFinancialActivity, nil
-	case "members":
-		return ListExportsRequestResourceMembers, nil
-	case "memberships":
-		return ListExportsRequestResourceMemberships, nil
 	case "payout_methods":
 		return ListExportsRequestResourcePayoutMethods, nil
 	case "payouts":
@@ -837,10 +833,14 @@ func NewListExportsRequestResourceFromString(s string) (ListExportsRequestResour
 		return ListExportsRequestResourceTransfers, nil
 	case "webhooks":
 		return ListExportsRequestResourceWebhooks, nil
+	case "members":
+		return ListExportsRequestResourceMembers, nil
 	case "receipts":
 		return ListExportsRequestResourceReceipts, nil
 	case "unclaimed_memberships":
 		return ListExportsRequestResourceUnclaimedMemberships, nil
+	case "memberships":
+		return ListExportsRequestResourceMemberships, nil
 	case "tracking_links":
 		return ListExportsRequestResourceTrackingLinks, nil
 	case "promo_codes":

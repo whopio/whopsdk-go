@@ -9,7 +9,138 @@ import (
 	testing "testing"
 )
 
+func TestSettersCompleteFilesRequest(t *testing.T) {
+	t.Run("SetID", func(t *testing.T) {
+		obj := &CompleteFilesRequest{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMultipartParts", func(t *testing.T) {
+		obj := &CompleteFilesRequest{}
+		var fernTestValueMultipartParts []*CompleteFilesRequestMultipartPartsItem
+		obj.SetMultipartParts(fernTestValueMultipartParts)
+		assert.Equal(t, fernTestValueMultipartParts, obj.MultipartParts)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMultipartUploadID", func(t *testing.T) {
+		obj := &CompleteFilesRequest{}
+		var fernTestValueMultipartUploadID string
+		obj.SetMultipartUploadID(fernTestValueMultipartUploadID)
+		assert.Equal(t, fernTestValueMultipartUploadID, obj.MultipartUploadID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestSettersMarkExplicitCompleteFilesRequest(t *testing.T) {
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompleteFilesRequest{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMultipartParts_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompleteFilesRequest{}
+		var fernTestValueMultipartParts []*CompleteFilesRequestMultipartPartsItem
+
+		// Act
+		obj.SetMultipartParts(fernTestValueMultipartParts)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMultipartUploadID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompleteFilesRequest{}
+		var fernTestValueMultipartUploadID string
+
+		// Act
+		obj.SetMultipartUploadID(fernTestValueMultipartUploadID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersCreateFilesRequest(t *testing.T) {
+	t.Run("SetByteSize", func(t *testing.T) {
+		obj := &CreateFilesRequest{}
+		var fernTestValueByteSize *int
+		obj.SetByteSize(fernTestValueByteSize)
+		assert.Equal(t, fernTestValueByteSize, obj.ByteSize)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFilename", func(t *testing.T) {
 		obj := &CreateFilesRequest{}
 		var fernTestValueFilename string
@@ -18,9 +149,17 @@ func TestSettersCreateFilesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMultipart", func(t *testing.T) {
+		obj := &CreateFilesRequest{}
+		var fernTestValueMultipart *bool
+		obj.SetMultipart(fernTestValueMultipart)
+		assert.Equal(t, fernTestValueMultipart, obj.Multipart)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetVisibility", func(t *testing.T) {
 		obj := &CreateFilesRequest{}
-		var fernTestValueVisibility *FileVisibility
+		var fernTestValueVisibility *CreateFilesRequestVisibility
 		obj.SetVisibility(fernTestValueVisibility)
 		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
 		assert.NotNil(t, obj.explicitFields)
@@ -29,6 +168,37 @@ func TestSettersCreateFilesRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateFilesRequest(t *testing.T) {
+	t.Run("SetByteSize_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateFilesRequest{}
+		var fernTestValueByteSize *int
+
+		// Act
+		obj.SetByteSize(fernTestValueByteSize)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetFilename_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -60,11 +230,42 @@ func TestSettersMarkExplicitCreateFilesRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetMultipart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateFilesRequest{}
+		var fernTestValueMultipart *bool
+
+		// Act
+		obj.SetMultipart(fernTestValueMultipart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateFilesRequest{}
-		var fernTestValueVisibility *FileVisibility
+		var fernTestValueVisibility *CreateFilesRequestVisibility
 
 		// Act
 		obj.SetVisibility(fernTestValueVisibility)
@@ -138,278 +339,83 @@ func TestSettersMarkExplicitRetrieveFilesRequest(t *testing.T) {
 
 }
 
-func TestSettersFile(t *testing.T) {
-	t.Run("SetContentType", func(t *testing.T) {
-		obj := &File{}
-		var fernTestValueContentType *string
-		obj.SetContentType(fernTestValueContentType)
-		assert.Equal(t, fernTestValueContentType, obj.ContentType)
+func TestSettersCompleteFilesRequestMultipartPartsItem(t *testing.T) {
+	t.Run("SetEtag", func(t *testing.T) {
+		obj := &CompleteFilesRequestMultipartPartsItem{}
+		var fernTestValueEtag string
+		obj.SetEtag(fernTestValueEtag)
+		assert.Equal(t, fernTestValueEtag, obj.Etag)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetFilename", func(t *testing.T) {
-		obj := &File{}
-		var fernTestValueFilename *string
-		obj.SetFilename(fernTestValueFilename)
-		assert.Equal(t, fernTestValueFilename, obj.Filename)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetID", func(t *testing.T) {
-		obj := &File{}
-		var fernTestValueID string
-		obj.SetID(fernTestValueID)
-		assert.Equal(t, fernTestValueID, obj.ID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetSize", func(t *testing.T) {
-		obj := &File{}
-		var fernTestValueSize *string
-		obj.SetSize(fernTestValueSize)
-		assert.Equal(t, fernTestValueSize, obj.Size)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetUploadStatus", func(t *testing.T) {
-		obj := &File{}
-		var fernTestValueUploadStatus UploadStatuses
-		obj.SetUploadStatus(fernTestValueUploadStatus)
-		assert.Equal(t, fernTestValueUploadStatus, obj.UploadStatus)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetURL", func(t *testing.T) {
-		obj := &File{}
-		var fernTestValueURL *string
-		obj.SetURL(fernTestValueURL)
-		assert.Equal(t, fernTestValueURL, obj.URL)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &File{}
-		var fernTestValueVisibility FileVisibility
-		obj.SetVisibility(fernTestValueVisibility)
-		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
+	t.Run("SetPartNumber", func(t *testing.T) {
+		obj := &CompleteFilesRequestMultipartPartsItem{}
+		var fernTestValuePartNumber int
+		obj.SetPartNumber(fernTestValuePartNumber)
+		assert.Equal(t, fernTestValuePartNumber, obj.PartNumber)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 }
 
-func TestGettersFile(t *testing.T) {
-	t.Run("GetContentType", func(t *testing.T) {
+func TestGettersCompleteFilesRequestMultipartPartsItem(t *testing.T) {
+	t.Run("GetEtag", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &File{}
-		var expected *string
-		obj.ContentType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetContentType(), "getter should return the property value")
-	})
-
-	t.Run("GetContentType_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		obj.ContentType = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetContentType(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetContentType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *File
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetContentType() // Should return zero value
-	})
-
-	t.Run("GetFilename", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		var expected *string
-		obj.Filename = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetFilename(), "getter should return the property value")
-	})
-
-	t.Run("GetFilename_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		obj.Filename = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetFilename(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetFilename_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *File
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetFilename() // Should return zero value
-	})
-
-	t.Run("GetID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
+		obj := &CompleteFilesRequestMultipartPartsItem{}
 		var expected string
-		obj.ID = expected
+		obj.Etag = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetEtag(), "getter should return the property value")
 	})
 
-	t.Run("GetID_NilReceiver", func(t *testing.T) {
+	t.Run("GetEtag_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *File
+		var obj *CompleteFilesRequestMultipartPartsItem
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetID() // Should return zero value
+		_ = obj.GetEtag() // Should return zero value
 	})
 
-	t.Run("GetSize", func(t *testing.T) {
+	t.Run("GetPartNumber", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &File{}
-		var expected *string
-		obj.Size = expected
+		obj := &CompleteFilesRequestMultipartPartsItem{}
+		var expected int
+		obj.PartNumber = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetSize(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetPartNumber(), "getter should return the property value")
 	})
 
-	t.Run("GetSize_NilValue", func(t *testing.T) {
+	t.Run("GetPartNumber_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		// Arrange
-		obj := &File{}
-		obj.Size = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetSize(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetSize_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *File
+		var obj *CompleteFilesRequestMultipartPartsItem
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetSize() // Should return zero value
-	})
-
-	t.Run("GetUploadStatus", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		var expected UploadStatuses
-		obj.UploadStatus = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetUploadStatus(), "getter should return the property value")
-	})
-
-	t.Run("GetUploadStatus_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *File
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetUploadStatus() // Should return zero value
-	})
-
-	t.Run("GetURL", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		var expected *string
-		obj.URL = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetURL(), "getter should return the property value")
-	})
-
-	t.Run("GetURL_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		obj.URL = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetURL(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetURL_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *File
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetURL() // Should return zero value
-	})
-
-	t.Run("GetVisibility", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		var expected FileVisibility
-		obj.Visibility = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetVisibility(), "getter should return the property value")
-	})
-
-	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *File
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetVisibility() // Should return zero value
+		_ = obj.GetPartNumber() // Should return zero value
 	})
 
 }
 
-func TestSettersMarkExplicitFile(t *testing.T) {
-	t.Run("SetContentType_MarksExplicit", func(t *testing.T) {
+func TestSettersMarkExplicitCompleteFilesRequestMultipartPartsItem(t *testing.T) {
+	t.Run("SetEtag_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &File{}
-		var fernTestValueContentType *string
+		obj := &CompleteFilesRequestMultipartPartsItem{}
+		var fernTestValueEtag string
 
 		// Act
-		obj.SetContentType(fernTestValueContentType)
+		obj.SetEtag(fernTestValueEtag)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -433,169 +439,14 @@ func TestSettersMarkExplicitFile(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetFilename_MarksExplicit", func(t *testing.T) {
+	t.Run("SetPartNumber_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &File{}
-		var fernTestValueFilename *string
+		obj := &CompleteFilesRequestMultipartPartsItem{}
+		var fernTestValuePartNumber int
 
 		// Act
-		obj.SetFilename(fernTestValueFilename)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		var fernTestValueID string
-
-		// Act
-		obj.SetID(fernTestValueID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetSize_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		var fernTestValueSize *string
-
-		// Act
-		obj.SetSize(fernTestValueSize)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetUploadStatus_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		var fernTestValueUploadStatus UploadStatuses
-
-		// Act
-		obj.SetUploadStatus(fernTestValueUploadStatus)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetURL_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		var fernTestValueURL *string
-
-		// Act
-		obj.SetURL(fernTestValueURL)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-		var fernTestValueVisibility FileVisibility
-
-		// Act
-		obj.SetVisibility(fernTestValueVisibility)
+		obj.SetPartNumber(fernTestValuePartNumber)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -621,638 +472,11 @@ func TestSettersMarkExplicitFile(t *testing.T) {
 
 }
 
-func TestSettersCreateFilesResponse(t *testing.T) {
-	t.Run("SetContentType", func(t *testing.T) {
-		obj := &CreateFilesResponse{}
-		var fernTestValueContentType *string
-		obj.SetContentType(fernTestValueContentType)
-		assert.Equal(t, fernTestValueContentType, obj.ContentType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetFilename", func(t *testing.T) {
-		obj := &CreateFilesResponse{}
-		var fernTestValueFilename *string
-		obj.SetFilename(fernTestValueFilename)
-		assert.Equal(t, fernTestValueFilename, obj.Filename)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetID", func(t *testing.T) {
-		obj := &CreateFilesResponse{}
-		var fernTestValueID string
-		obj.SetID(fernTestValueID)
-		assert.Equal(t, fernTestValueID, obj.ID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetSize", func(t *testing.T) {
-		obj := &CreateFilesResponse{}
-		var fernTestValueSize *string
-		obj.SetSize(fernTestValueSize)
-		assert.Equal(t, fernTestValueSize, obj.Size)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetUploadHeaders", func(t *testing.T) {
-		obj := &CreateFilesResponse{}
-		var fernTestValueUploadHeaders map[string]any
-		obj.SetUploadHeaders(fernTestValueUploadHeaders)
-		assert.Equal(t, fernTestValueUploadHeaders, obj.UploadHeaders)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetUploadStatus", func(t *testing.T) {
-		obj := &CreateFilesResponse{}
-		var fernTestValueUploadStatus UploadStatuses
-		obj.SetUploadStatus(fernTestValueUploadStatus)
-		assert.Equal(t, fernTestValueUploadStatus, obj.UploadStatus)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetUploadURL", func(t *testing.T) {
-		obj := &CreateFilesResponse{}
-		var fernTestValueUploadURL *string
-		obj.SetUploadURL(fernTestValueUploadURL)
-		assert.Equal(t, fernTestValueUploadURL, obj.UploadURL)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetURL", func(t *testing.T) {
-		obj := &CreateFilesResponse{}
-		var fernTestValueURL *string
-		obj.SetURL(fernTestValueURL)
-		assert.Equal(t, fernTestValueURL, obj.URL)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetVisibility", func(t *testing.T) {
-		obj := &CreateFilesResponse{}
-		var fernTestValueVisibility FileVisibility
-		obj.SetVisibility(fernTestValueVisibility)
-		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-}
-
-func TestGettersCreateFilesResponse(t *testing.T) {
-	t.Run("GetContentType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var expected *string
-		obj.ContentType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetContentType(), "getter should return the property value")
-	})
-
-	t.Run("GetContentType_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		obj.ContentType = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetContentType(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetContentType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateFilesResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetContentType() // Should return zero value
-	})
-
-	t.Run("GetFilename", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var expected *string
-		obj.Filename = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetFilename(), "getter should return the property value")
-	})
-
-	t.Run("GetFilename_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		obj.Filename = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetFilename(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetFilename_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateFilesResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetFilename() // Should return zero value
-	})
-
-	t.Run("GetID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var expected string
-		obj.ID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
-	})
-
-	t.Run("GetID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateFilesResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetID() // Should return zero value
-	})
-
-	t.Run("GetSize", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var expected *string
-		obj.Size = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetSize(), "getter should return the property value")
-	})
-
-	t.Run("GetSize_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		obj.Size = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetSize(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetSize_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateFilesResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetSize() // Should return zero value
-	})
-
-	t.Run("GetUploadHeaders", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var expected map[string]any
-		obj.UploadHeaders = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetUploadHeaders(), "getter should return the property value")
-	})
-
-	t.Run("GetUploadHeaders_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		obj.UploadHeaders = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetUploadHeaders(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetUploadHeaders_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateFilesResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetUploadHeaders() // Should return zero value
-	})
-
-	t.Run("GetUploadStatus", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var expected UploadStatuses
-		obj.UploadStatus = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetUploadStatus(), "getter should return the property value")
-	})
-
-	t.Run("GetUploadStatus_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateFilesResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetUploadStatus() // Should return zero value
-	})
-
-	t.Run("GetUploadURL", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var expected *string
-		obj.UploadURL = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetUploadURL(), "getter should return the property value")
-	})
-
-	t.Run("GetUploadURL_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		obj.UploadURL = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetUploadURL(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetUploadURL_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateFilesResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetUploadURL() // Should return zero value
-	})
-
-	t.Run("GetURL", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var expected *string
-		obj.URL = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetURL(), "getter should return the property value")
-	})
-
-	t.Run("GetURL_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		obj.URL = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetURL(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetURL_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateFilesResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetURL() // Should return zero value
-	})
-
-	t.Run("GetVisibility", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var expected FileVisibility
-		obj.Visibility = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetVisibility(), "getter should return the property value")
-	})
-
-	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateFilesResponse
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetVisibility() // Should return zero value
-	})
-
-}
-
-func TestSettersMarkExplicitCreateFilesResponse(t *testing.T) {
-	t.Run("SetContentType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var fernTestValueContentType *string
-
-		// Act
-		obj.SetContentType(fernTestValueContentType)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetFilename_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var fernTestValueFilename *string
-
-		// Act
-		obj.SetFilename(fernTestValueFilename)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var fernTestValueID string
-
-		// Act
-		obj.SetID(fernTestValueID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetSize_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var fernTestValueSize *string
-
-		// Act
-		obj.SetSize(fernTestValueSize)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetUploadHeaders_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var fernTestValueUploadHeaders map[string]any
-
-		// Act
-		obj.SetUploadHeaders(fernTestValueUploadHeaders)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetUploadStatus_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var fernTestValueUploadStatus UploadStatuses
-
-		// Act
-		obj.SetUploadStatus(fernTestValueUploadStatus)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetUploadURL_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var fernTestValueUploadURL *string
-
-		// Act
-		obj.SetUploadURL(fernTestValueUploadURL)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetURL_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var fernTestValueURL *string
-
-		// Act
-		obj.SetURL(fernTestValueURL)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateFilesResponse{}
-		var fernTestValueVisibility FileVisibility
-
-		// Act
-		obj.SetVisibility(fernTestValueVisibility)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-}
-
-func TestJSONMarshalingCreateFilesResponse(t *testing.T) {
+func TestJSONMarshalingCompleteFilesRequestMultipartPartsItem(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateFilesResponse{}
+		obj := &CompleteFilesRequestMultipartPartsItem{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -1261,113 +485,64 @@ func TestJSONMarshalingCreateFilesResponse(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled CreateFilesResponse
+		var unmarshaled CompleteFilesRequestMultipartPartsItem
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateFilesResponse
+		var obj CompleteFilesRequestMultipartPartsItem
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj CreateFilesResponse
+		var obj CompleteFilesRequestMultipartPartsItem
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
 }
 
-func TestJSONMarshalingFile(t *testing.T) {
-	t.Run("MarshalUnmarshal", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &File{}
-
-		// Act - Marshal to JSON
-		data, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed")
-		assert.NotNil(t, data, "marshaled data should not be nil")
-		assert.NotEmpty(t, data, "marshaled data should not be empty")
-
-		// Unmarshal back and verify round-trip
-		var unmarshaled File
-		err = json.Unmarshal(data, &unmarshaled)
-		assert.NoError(t, err, "round-trip unmarshal should succeed")
-	})
-
-	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
-		t.Parallel()
-		var obj File
-		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
-		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
-	})
-
-	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
-		t.Parallel()
-		var obj File
-		err := json.Unmarshal([]byte(`{}`), &obj)
-		assert.NoError(t, err, "unmarshaling empty object should succeed")
-	})
-}
-
-func TestStringCreateFilesResponse(t *testing.T) {
+func TestStringCompleteFilesRequestMultipartPartsItem(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateFilesResponse{}
+		obj := &CompleteFilesRequestMultipartPartsItem{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateFilesResponse
+		var obj *CompleteFilesRequestMultipartPartsItem
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
 }
 
-func TestStringFile(t *testing.T) {
-	t.Run("StringMethod", func(t *testing.T) {
-		t.Parallel()
-		obj := &File{}
-		result := obj.String()
-		assert.NotEmpty(t, result, "String() should return a non-empty representation")
-	})
-
-	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *File
-		result := obj.String()
-		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
-	})
-}
-
-func TestEnumFileVisibility(t *testing.T) {
+func TestEnumCreateFilesRequestVisibility(t *testing.T) {
 	t.Run("NewFromString_public", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewFileVisibilityFromString("public")
+		val, err := NewCreateFilesRequestVisibilityFromString("public")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, FileVisibility("public"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateFilesRequestVisibility("public"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_private", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewFileVisibilityFromString("private")
+		val, err := NewCreateFilesRequestVisibilityFromString("private")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, FileVisibility("private"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateFilesRequestVisibility("private"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewFileVisibilityFromString("invalid_value_that_does_not_exist")
+		_, err := NewCreateFilesRequestVisibilityFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewFileVisibilityFromString("public")
+		val, err := NewCreateFilesRequestVisibilityFromString("public")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -1375,53 +550,10 @@ func TestEnumFileVisibility(t *testing.T) {
 	})
 }
 
-func TestEnumUploadStatuses(t *testing.T) {
-	t.Run("NewFromString_pending", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUploadStatusesFromString("pending")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UploadStatuses("pending"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_processing", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUploadStatusesFromString("processing")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UploadStatuses("processing"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_ready", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUploadStatusesFromString("ready")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UploadStatuses("ready"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_failed", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewUploadStatusesFromString("failed")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UploadStatuses("failed"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewUploadStatusesFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewUploadStatusesFromString("pending")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestExtraPropertiesCreateFilesResponse(t *testing.T) {
+func TestExtraPropertiesCompleteFilesRequestMultipartPartsItem(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreateFilesResponse{}
+		obj := &CompleteFilesRequestMultipartPartsItem{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -1435,30 +567,7 @@ func TestExtraPropertiesCreateFilesResponse(t *testing.T) {
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateFilesResponse
-		extraProps := obj.GetExtraProperties()
-		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
-	})
-}
-
-func TestExtraPropertiesFile(t *testing.T) {
-	t.Run("GetExtraProperties", func(t *testing.T) {
-		t.Parallel()
-		obj := &File{}
-		// Should not panic when calling GetExtraProperties()
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("GetExtraProperties() panicked: %v", r)
-			}
-		}()
-		extraProps := obj.GetExtraProperties()
-		// Result can be nil or an empty/non-empty map
-		_ = extraProps
-	})
-
-	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *File
+		var obj *CompleteFilesRequestMultipartPartsItem
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

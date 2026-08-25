@@ -89,7 +89,6 @@ func TestPlansListWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.ListPlansRequest{
-		AccountID: "account_id",
 		ReleaseMethods: []*string{
 			whopsdk.String(
 				"buy_now",
@@ -120,7 +119,7 @@ func TestPlansListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPlansListWithWireMock", "GET", "/plans", map[string]interface{}{"account_id": "account_id", "release_methods": "buy_now", "visibilities": "visible", "plan_types": "renewal", "product_ids": "prod_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestPlansListWithWireMock", "GET", "/plans", map[string]interface{}{"release_methods": "buy_now", "visibilities": "visible", "plan_types": "renewal", "product_ids": "prod_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestPlansCreateWithWireMock(

@@ -417,8 +417,8 @@ var (
 )
 
 type ListPlansRequest struct {
-	// The unique identifier of the account to list plans for.
-	AccountID string `json:"-" url:"account_id"`
+	// The unique identifier of the account to list plans for. Required unless `product_ids` is provided for a public product-plan read.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The sort direction for results. Defaults to descending.
 	Direction *ListPlansRequestDirection `json:"-" url:"direction,omitempty"`
 	// The field to sort results by. Defaults to created_at.
@@ -429,7 +429,7 @@ type ListPlansRequest struct {
 	Visibilities []*string `json:"-" url:"visibilities,omitempty"`
 	// Filter to only plans matching these billing types.
 	PlanTypes []*string `json:"-" url:"plan_types,omitempty"`
-	// Filter to only plans belonging to these product identifiers.
+	// Filter to only plans belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice plans are returned.
 	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
 	// Only return plans created before this timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
@@ -457,7 +457,7 @@ func (l *ListPlansRequest) require(field *big.Int) {
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPlansRequest) SetAccountID(accountID string) {
+func (l *ListPlansRequest) SetAccountID(accountID *string) {
 	l.AccountID = accountID
 	l.require(listPlansRequestFieldAccountID)
 }
@@ -570,123 +570,6 @@ func (r *RetrievePlansRequest) require(field *big.Int) {
 func (r *RetrievePlansRequest) SetID(id string) {
 	r.ID = id
 	r.require(retrievePlansRequestFieldID)
-}
-
-var (
-	checkoutSessionPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
-	checkoutSessionPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
-	checkoutSessionPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
-)
-
-type CheckoutSessionPaymentMethodConfiguration struct {
-	Disabled []string `json:"disabled" url:"disabled"`
-	Enabled  []string `json:"enabled" url:"enabled"`
-	// Whether Whop's default set is the starting point. When `false`, only `enabled` is offered.
-	IncludePlatformDefaults bool `json:"include_platform_defaults" url:"include_platform_defaults"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetDisabled() []string {
-	if c == nil {
-		return nil
-	}
-	return c.Disabled
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetEnabled() []string {
-	if c == nil {
-		return nil
-	}
-	return c.Enabled
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetIncludePlatformDefaults() bool {
-	if c == nil {
-		return false
-	}
-	return c.IncludePlatformDefaults
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetDisabled sets the Disabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutSessionPaymentMethodConfiguration) SetDisabled(disabled []string) {
-	c.Disabled = disabled
-	c.require(checkoutSessionPaymentMethodConfigurationFieldDisabled)
-}
-
-// SetEnabled sets the Enabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutSessionPaymentMethodConfiguration) SetEnabled(enabled []string) {
-	c.Enabled = enabled
-	c.require(checkoutSessionPaymentMethodConfigurationFieldEnabled)
-}
-
-// SetIncludePlatformDefaults sets the IncludePlatformDefaults field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutSessionPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults bool) {
-	c.IncludePlatformDefaults = includePlatformDefaults
-	c.require(checkoutSessionPaymentMethodConfigurationFieldIncludePlatformDefaults)
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
-	type unmarshaler CheckoutSessionPaymentMethodConfiguration
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CheckoutSessionPaymentMethodConfiguration(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
-	type embed CheckoutSessionPaymentMethodConfiguration
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
 }
 
 var (

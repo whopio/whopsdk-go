@@ -451,6 +451,14 @@ func TestSettersListAppsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRecommended", func(t *testing.T) {
+		obj := &ListAppsRequest{}
+		var fernTestValueRecommended *bool
+		obj.SetRecommended(fernTestValueRecommended)
+		assert.Equal(t, fernTestValueRecommended, obj.Recommended)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetQuery", func(t *testing.T) {
 		obj := &ListAppsRequest{}
 		var fernTestValueQuery *string
@@ -611,6 +619,37 @@ func TestSettersMarkExplicitListAppsRequest(t *testing.T) {
 
 		// Act
 		obj.SetVerifiedAppsOnly(fernTestValueVerifiedAppsOnly)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRecommended_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAppsRequest{}
+		var fernTestValueRecommended *bool
+
+		// Act
+		obj.SetRecommended(fernTestValueRecommended)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1376,6 +1415,14 @@ func TestSettersApp(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetElementsUsed", func(t *testing.T) {
+		obj := &App{}
+		var fernTestValueElementsUsed []AppElementsUsedItem
+		obj.SetElementsUsed(fernTestValueElementsUsed)
+		assert.Equal(t, fernTestValueElementsUsed, obj.ElementsUsed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExperiencePath", func(t *testing.T) {
 		obj := &App{}
 		var fernTestValueExperiencePath *string
@@ -2010,6 +2057,39 @@ func TestGettersApp(t *testing.T) {
 			}
 		}()
 		_ = obj.GetDomainID() // Should return zero value
+	})
+
+	t.Run("GetElementsUsed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &App{}
+		var expected []AppElementsUsedItem
+		obj.ElementsUsed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetElementsUsed(), "getter should return the property value")
+	})
+
+	t.Run("GetElementsUsed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &App{}
+		obj.ElementsUsed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetElementsUsed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetElementsUsed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *App
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetElementsUsed() // Should return zero value
 	})
 
 	t.Run("GetExperiencePath", func(t *testing.T) {
@@ -3100,6 +3180,37 @@ func TestSettersMarkExplicitApp(t *testing.T) {
 
 		// Act
 		obj.SetDomainID(fernTestValueDomainID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetElementsUsed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &App{}
+		var fernTestValueElementsUsed []AppElementsUsedItem
+
+		// Act
+		obj.SetElementsUsed(fernTestValueElementsUsed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12552,6 +12663,266 @@ func TestEnumAppDeploymentStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAppDeploymentStatusFromString("published")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAppElementsUsedItem(t *testing.T) {
+	t.Run("NewFromString_ads", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("ads")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("ads"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ads_billing_setup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("ads.billing-setup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("ads.billing-setup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ads_campaign_creator", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("ads.campaign-creator")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("ads.campaign-creator"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ads_reporting", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("ads.reporting")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("ads.reporting"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ads_reporting_chart", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("ads.reporting.chart")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("ads.reporting.chart"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ads_reporting_table", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("ads.reporting.table")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("ads.reporting.table"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_checkout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("checkout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("checkout"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_checkout_checkout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("checkout.checkout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("checkout.checkout"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_checkout_expressCheckout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("checkout.expressCheckout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("checkout.expressCheckout"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments_address", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments.address")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments.address"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments_branding", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments.branding")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments.branding"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments.card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments.card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments_cardFields", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments.cardFields")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments.cardFields"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments_cardFields_cardCvc", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments.cardFields.cardCvc")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments.cardFields.cardCvc"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments_cardFields_cardExpiry", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments.cardFields.cardExpiry")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments.cardFields.cardExpiry"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments_cardFields_cardNumber", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments.cardFields.cardNumber")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments.cardFields.cardNumber"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments_email", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments.email")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments.email"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments_payment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments.payment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments.payment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments_taxId", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("payments.taxId")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("payments.taxId"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tracking", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("tracking")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("tracking"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tracking_events", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("tracking.events")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("tracking.events"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tracking_people", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("tracking.people")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("tracking.people"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("wallet")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("wallet"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet_activity", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("wallet.activity")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("wallet.activity"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet_balances", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("wallet.balances")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("wallet.balances"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet_balances_balance", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("wallet.balances.balance")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("wallet.balances.balance"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet_balances_list", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("wallet.balances.list")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("wallet.balances.list"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet_cards", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("wallet.cards")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("wallet.cards"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet_deposit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("wallet.deposit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("wallet.deposit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet_send", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("wallet.send")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("wallet.send"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet_withdraw", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("wallet.withdraw")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("wallet.withdraw"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_websites", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("websites")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("websites"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_websites_pixel_setup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("websites.pixel-setup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("websites.pixel-setup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_websites_websites", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppElementsUsedItemFromString("websites.websites")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppElementsUsedItem("websites.websites"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAppElementsUsedItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAppElementsUsedItemFromString("ads")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

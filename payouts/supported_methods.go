@@ -462,11 +462,10 @@ const (
 	ListSupportedMethodsResponseDataItemDeliveryTypeBankDeposit    ListSupportedMethodsResponseDataItemDeliveryType = "bank_deposit"
 	ListSupportedMethodsResponseDataItemDeliveryTypeHomeDelivery   ListSupportedMethodsResponseDataItemDeliveryType = "home_delivery"
 	ListSupportedMethodsResponseDataItemDeliveryTypeMobileWallet   ListSupportedMethodsResponseDataItemDeliveryType = "mobile_wallet"
-	ListSupportedMethodsResponseDataItemDeliveryTypeMasspayCard    ListSupportedMethodsResponseDataItemDeliveryType = "masspay_card"
-	ListSupportedMethodsResponseDataItemDeliveryTypePaperCheck     ListSupportedMethodsResponseDataItemDeliveryType = "paper_check"
+	ListSupportedMethodsResponseDataItemDeliveryTypeCard           ListSupportedMethodsResponseDataItemDeliveryType = "card"
+	ListSupportedMethodsResponseDataItemDeliveryTypeCheck          ListSupportedMethodsResponseDataItemDeliveryType = "check"
 	ListSupportedMethodsResponseDataItemDeliveryTypeBill           ListSupportedMethodsResponseDataItemDeliveryType = "bill"
 	ListSupportedMethodsResponseDataItemDeliveryTypeCryptocurrency ListSupportedMethodsResponseDataItemDeliveryType = "cryptocurrency"
-	ListSupportedMethodsResponseDataItemDeliveryTypeUnknown        ListSupportedMethodsResponseDataItemDeliveryType = "unknown"
 )
 
 func NewListSupportedMethodsResponseDataItemDeliveryTypeFromString(s string) (ListSupportedMethodsResponseDataItemDeliveryType, error) {
@@ -479,16 +478,14 @@ func NewListSupportedMethodsResponseDataItemDeliveryTypeFromString(s string) (Li
 		return ListSupportedMethodsResponseDataItemDeliveryTypeHomeDelivery, nil
 	case "mobile_wallet":
 		return ListSupportedMethodsResponseDataItemDeliveryTypeMobileWallet, nil
-	case "masspay_card":
-		return ListSupportedMethodsResponseDataItemDeliveryTypeMasspayCard, nil
-	case "paper_check":
-		return ListSupportedMethodsResponseDataItemDeliveryTypePaperCheck, nil
+	case "card":
+		return ListSupportedMethodsResponseDataItemDeliveryTypeCard, nil
+	case "check":
+		return ListSupportedMethodsResponseDataItemDeliveryTypeCheck, nil
 	case "bill":
 		return ListSupportedMethodsResponseDataItemDeliveryTypeBill, nil
 	case "cryptocurrency":
 		return ListSupportedMethodsResponseDataItemDeliveryTypeCryptocurrency, nil
-	case "unknown":
-		return ListSupportedMethodsResponseDataItemDeliveryTypeUnknown, nil
 	}
 	var t ListSupportedMethodsResponseDataItemDeliveryType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

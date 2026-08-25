@@ -89,7 +89,7 @@ func TestFilesCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateFilesRequest{
-		Filename: "filename",
+		Filename: "terms.pdf",
 	}
 	_, invocationErr := client.Files.Create(
 		context.TODO(),
@@ -115,7 +115,7 @@ func TestFilesRetrieveWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.RetrieveFilesRequest{
-		ID: "file_xxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.Files.Retrieve(
 		context.TODO(),
@@ -126,5 +126,38 @@ func TestFilesRetrieveWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestFilesRetrieveWithWireMock", "GET", "/files/file_xxxxxxxxxxxxx", nil, 1)
+	VerifyRequestCount(t, "TestFilesRetrieveWithWireMock", "GET", "/files/id", nil, 1)
+}
+
+func TestFilesCompleteWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.CompleteFilesRequest{
+		ID: "id",
+		MultipartParts: []*whopsdk.CompleteFilesRequestMultipartPartsItem{
+			&whopsdk.CompleteFilesRequestMultipartPartsItem{
+				Etag:       "etag-1",
+				PartNumber: 1,
+			},
+		},
+		MultipartUploadID: "upload-id",
+	}
+	_, invocationErr := client.Files.Complete(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestFilesCompleteWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestFilesCompleteWithWireMock", "POST", "/files/id/complete", nil, 1)
 }

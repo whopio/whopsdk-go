@@ -10,15 +10,88 @@ import (
 )
 
 var (
-	createFilesRequestFieldFilename   = big.NewInt(1 << 0)
-	createFilesRequestFieldVisibility = big.NewInt(1 << 1)
+	completeFilesRequestFieldID                = big.NewInt(1 << 0)
+	completeFilesRequestFieldMultipartParts    = big.NewInt(1 << 1)
+	completeFilesRequestFieldMultipartUploadID = big.NewInt(1 << 2)
+)
+
+type CompleteFilesRequest struct {
+	// The unique identifier of the file, prefixed `file_`.
+	ID string `json:"-" url:"-"`
+	// Every uploaded part, in order.
+	MultipartParts []*CompleteFilesRequestMultipartPartsItem `json:"multipart_parts" url:"-"`
+	// The ID of the multipart upload, returned by Create File.
+	MultipartUploadID string `json:"multipart_upload_id" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CompleteFilesRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompleteFilesRequest) SetID(id string) {
+	c.ID = id
+	c.require(completeFilesRequestFieldID)
+}
+
+// SetMultipartParts sets the MultipartParts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompleteFilesRequest) SetMultipartParts(multipartParts []*CompleteFilesRequestMultipartPartsItem) {
+	c.MultipartParts = multipartParts
+	c.require(completeFilesRequestFieldMultipartParts)
+}
+
+// SetMultipartUploadID sets the MultipartUploadID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompleteFilesRequest) SetMultipartUploadID(multipartUploadID string) {
+	c.MultipartUploadID = multipartUploadID
+	c.require(completeFilesRequestFieldMultipartUploadID)
+}
+
+func (c *CompleteFilesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CompleteFilesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CompleteFilesRequest(body)
+	return nil
+}
+
+func (c *CompleteFilesRequest) MarshalJSON() ([]byte, error) {
+	type embed CompleteFilesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	createFilesRequestFieldByteSize   = big.NewInt(1 << 0)
+	createFilesRequestFieldFilename   = big.NewInt(1 << 1)
+	createFilesRequestFieldMultipart  = big.NewInt(1 << 2)
+	createFilesRequestFieldVisibility = big.NewInt(1 << 3)
 )
 
 type CreateFilesRequest struct {
-	// The name of the file including its extension (e.g., "photo.png" or "document.pdf").
+	// The file's size in bytes. Required when `multipart` is `true`. Multipart uploads support at most 10,000 parts of 5MB each (about 50 GB).
+	ByteSize *int `json:"byte_size,omitempty" url:"-"`
+	// The name of the file including its extension, e.g. `terms.pdf`.
 	Filename string `json:"filename" url:"-"`
-	// Controls whether the file is publicly accessible via CDN or requires authentication. Defaults to private.
-	Visibility *FileVisibility `json:"visibility,omitempty" url:"-"`
+	// Upload the file in 5MB parts. Required for files larger than 5GB; useful above ~100MB. The file must be larger than 5MB.
+	Multipart *bool `json:"multipart,omitempty" url:"-"`
+	// `public` files are served via an unsigned CDN URL — use for assets anyone may see. `private` files are served via a signed, expiring URL — use for sensitive documents. Defaults to `private`.
+	Visibility *CreateFilesRequestVisibility `json:"visibility,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -31,6 +104,13 @@ func (c *CreateFilesRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
+// SetByteSize sets the ByteSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFilesRequest) SetByteSize(byteSize *int) {
+	c.ByteSize = byteSize
+	c.require(createFilesRequestFieldByteSize)
+}
+
 // SetFilename sets the Filename field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateFilesRequest) SetFilename(filename string) {
@@ -38,9 +118,16 @@ func (c *CreateFilesRequest) SetFilename(filename string) {
 	c.require(createFilesRequestFieldFilename)
 }
 
+// SetMultipart sets the Multipart field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFilesRequest) SetMultipart(multipart *bool) {
+	c.Multipart = multipart
+	c.require(createFilesRequestFieldMultipart)
+}
+
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFilesRequest) SetVisibility(visibility *FileVisibility) {
+func (c *CreateFilesRequest) SetVisibility(visibility *CreateFilesRequestVisibility) {
 	c.Visibility = visibility
 	c.require(createFilesRequestFieldVisibility)
 }
@@ -71,7 +158,7 @@ var (
 )
 
 type RetrieveFilesRequest struct {
-	// The unique identifier of the file to retrieve.
+	// The unique identifier of the file, prefixed `file_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -92,32 +179,16 @@ func (r *RetrieveFilesRequest) SetID(id string) {
 	r.require(retrieveFilesRequestFieldID)
 }
 
-// A file that has been uploaded or is pending upload.
 var (
-	fileFieldContentType  = big.NewInt(1 << 0)
-	fileFieldFilename     = big.NewInt(1 << 1)
-	fileFieldID           = big.NewInt(1 << 2)
-	fileFieldSize         = big.NewInt(1 << 3)
-	fileFieldUploadStatus = big.NewInt(1 << 4)
-	fileFieldURL          = big.NewInt(1 << 5)
-	fileFieldVisibility   = big.NewInt(1 << 6)
+	completeFilesRequestMultipartPartsItemFieldEtag       = big.NewInt(1 << 0)
+	completeFilesRequestMultipartPartsItemFieldPartNumber = big.NewInt(1 << 1)
 )
 
-type File struct {
-	// The MIME type of the uploaded file (e.g., image/jpeg, video/mp4, audio/mpeg).
-	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
-	// The original filename of the uploaded file, including its file extension.
-	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
-	// The unique identifier for the file.
-	ID string `json:"id" url:"id"`
-	// The file size in bytes. Null if the file has not finished uploading.
-	Size *string `json:"size,omitempty" url:"size,omitempty"`
-	// The current upload status of the file (e.g., pending, ready).
-	UploadStatus UploadStatuses `json:"upload_status" url:"upload_status"`
-	// The URL for accessing the file. For public files, this is a permanent CDN URL. For private files, this is a signed URL that expires. Null if the file has not finished uploading.
-	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// Whether the file is publicly accessible or requires authentication.
-	Visibility FileVisibility `json:"visibility" url:"visibility"`
+type CompleteFilesRequestMultipartPartsItem struct {
+	// The `ETag` response header from the part's upload.
+	Etag string `json:"etag" url:"etag"`
+	// The 1-based index of the part.
+	PartNumber int `json:"part_number" url:"part_number"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -126,399 +197,55 @@ type File struct {
 	rawJSON         json.RawMessage
 }
 
-func (f *File) GetContentType() *string {
-	if f == nil {
-		return nil
-	}
-	return f.ContentType
-}
-
-func (f *File) GetFilename() *string {
-	if f == nil {
-		return nil
-	}
-	return f.Filename
-}
-
-func (f *File) GetID() string {
-	if f == nil {
-		return ""
-	}
-	return f.ID
-}
-
-func (f *File) GetSize() *string {
-	if f == nil {
-		return nil
-	}
-	return f.Size
-}
-
-func (f *File) GetUploadStatus() UploadStatuses {
-	if f == nil {
-		return ""
-	}
-	return f.UploadStatus
-}
-
-func (f *File) GetURL() *string {
-	if f == nil {
-		return nil
-	}
-	return f.URL
-}
-
-func (f *File) GetVisibility() FileVisibility {
-	if f == nil {
-		return ""
-	}
-	return f.Visibility
-}
-
-func (f *File) GetExtraProperties() map[string]interface{} {
-	if f == nil {
-		return nil
-	}
-	return f.extraProperties
-}
-
-func (f *File) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
-	}
-	f.explicitFields.Or(f.explicitFields, field)
-}
-
-// SetContentType sets the ContentType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *File) SetContentType(contentType *string) {
-	f.ContentType = contentType
-	f.require(fileFieldContentType)
-}
-
-// SetFilename sets the Filename field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *File) SetFilename(filename *string) {
-	f.Filename = filename
-	f.require(fileFieldFilename)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *File) SetID(id string) {
-	f.ID = id
-	f.require(fileFieldID)
-}
-
-// SetSize sets the Size field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *File) SetSize(size *string) {
-	f.Size = size
-	f.require(fileFieldSize)
-}
-
-// SetUploadStatus sets the UploadStatus field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *File) SetUploadStatus(uploadStatus UploadStatuses) {
-	f.UploadStatus = uploadStatus
-	f.require(fileFieldUploadStatus)
-}
-
-// SetURL sets the URL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *File) SetURL(url *string) {
-	f.URL = url
-	f.require(fileFieldURL)
-}
-
-// SetVisibility sets the Visibility field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *File) SetVisibility(visibility FileVisibility) {
-	f.Visibility = visibility
-	f.require(fileFieldVisibility)
-}
-
-func (f *File) UnmarshalJSON(data []byte) error {
-	type unmarshaler File
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*f = File(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *f)
-	if err != nil {
-		return err
-	}
-	f.extraProperties = extraProperties
-	f.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (f *File) MarshalJSON() ([]byte, error) {
-	type embed File
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*f),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (f *File) String() string {
-	if f == nil {
-		return "<nil>"
-	}
-	if len(f.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(f); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", f)
-}
-
-// Controls whether an uploaded file is publicly accessible or requires authentication to access.
-type FileVisibility string
-
-const (
-	FileVisibilityPublic  FileVisibility = "public"
-	FileVisibilityPrivate FileVisibility = "private"
-)
-
-func NewFileVisibilityFromString(s string) (FileVisibility, error) {
-	switch s {
-	case "public":
-		return FileVisibilityPublic, nil
-	case "private":
-		return FileVisibilityPrivate, nil
-	}
-	var t FileVisibility
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (f FileVisibility) Ptr() *FileVisibility {
-	return &f
-}
-
-// The upload status of a file
-type UploadStatuses string
-
-const (
-	UploadStatusesPending    UploadStatuses = "pending"
-	UploadStatusesProcessing UploadStatuses = "processing"
-	UploadStatusesReady      UploadStatuses = "ready"
-	UploadStatusesFailed     UploadStatuses = "failed"
-)
-
-func NewUploadStatusesFromString(s string) (UploadStatuses, error) {
-	switch s {
-	case "pending":
-		return UploadStatusesPending, nil
-	case "processing":
-		return UploadStatusesProcessing, nil
-	case "ready":
-		return UploadStatusesReady, nil
-	case "failed":
-		return UploadStatusesFailed, nil
-	}
-	var t UploadStatuses
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UploadStatuses) Ptr() *UploadStatuses {
-	return &u
-}
-
-// A file that has been uploaded or is pending upload.
-var (
-	createFilesResponseFieldContentType   = big.NewInt(1 << 0)
-	createFilesResponseFieldFilename      = big.NewInt(1 << 1)
-	createFilesResponseFieldID            = big.NewInt(1 << 2)
-	createFilesResponseFieldSize          = big.NewInt(1 << 3)
-	createFilesResponseFieldUploadHeaders = big.NewInt(1 << 4)
-	createFilesResponseFieldUploadStatus  = big.NewInt(1 << 5)
-	createFilesResponseFieldUploadURL     = big.NewInt(1 << 6)
-	createFilesResponseFieldURL           = big.NewInt(1 << 7)
-	createFilesResponseFieldVisibility    = big.NewInt(1 << 8)
-)
-
-type CreateFilesResponse struct {
-	// The MIME type of the uploaded file (e.g., image/jpeg, video/mp4, audio/mpeg).
-	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
-	// The original filename of the uploaded file, including its file extension.
-	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
-	// The unique identifier for the file.
-	ID string `json:"id" url:"id"`
-	// The file size in bytes. Null if the file has not finished uploading.
-	Size *string `json:"size,omitempty" url:"size,omitempty"`
-	// Headers to include in the upload request. Only present in the response from the create mutation.
-	UploadHeaders map[string]any `json:"upload_headers,omitempty" url:"upload_headers,omitempty"`
-	// The current upload status of the file (e.g., pending, ready).
-	UploadStatus UploadStatuses `json:"upload_status" url:"upload_status"`
-	// The presigned URL to upload the file contents to. Only present in the response from the create mutation.
-	UploadURL *string `json:"upload_url,omitempty" url:"upload_url,omitempty"`
-	// The URL for accessing the file. For public files, this is a permanent CDN URL. For private files, this is a signed URL that expires. Null if the file has not finished uploading.
-	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// Whether the file is publicly accessible or requires authentication.
-	Visibility FileVisibility `json:"visibility" url:"visibility"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateFilesResponse) GetContentType() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ContentType
-}
-
-func (c *CreateFilesResponse) GetFilename() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Filename
-}
-
-func (c *CreateFilesResponse) GetID() string {
+func (c *CompleteFilesRequestMultipartPartsItem) GetEtag() string {
 	if c == nil {
 		return ""
 	}
-	return c.ID
+	return c.Etag
 }
 
-func (c *CreateFilesResponse) GetSize() *string {
+func (c *CompleteFilesRequestMultipartPartsItem) GetPartNumber() int {
 	if c == nil {
-		return nil
+		return 0
 	}
-	return c.Size
+	return c.PartNumber
 }
 
-func (c *CreateFilesResponse) GetUploadHeaders() map[string]any {
-	if c == nil {
-		return nil
-	}
-	return c.UploadHeaders
-}
-
-func (c *CreateFilesResponse) GetUploadStatus() UploadStatuses {
-	if c == nil {
-		return ""
-	}
-	return c.UploadStatus
-}
-
-func (c *CreateFilesResponse) GetUploadURL() *string {
-	if c == nil {
-		return nil
-	}
-	return c.UploadURL
-}
-
-func (c *CreateFilesResponse) GetURL() *string {
-	if c == nil {
-		return nil
-	}
-	return c.URL
-}
-
-func (c *CreateFilesResponse) GetVisibility() FileVisibility {
-	if c == nil {
-		return ""
-	}
-	return c.Visibility
-}
-
-func (c *CreateFilesResponse) GetExtraProperties() map[string]interface{} {
+func (c *CompleteFilesRequestMultipartPartsItem) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateFilesResponse) require(field *big.Int) {
+func (c *CompleteFilesRequestMultipartPartsItem) require(field *big.Int) {
 	if c.explicitFields == nil {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetContentType sets the ContentType field and marks it as non-optional;
+// SetEtag sets the Etag field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFilesResponse) SetContentType(contentType *string) {
-	c.ContentType = contentType
-	c.require(createFilesResponseFieldContentType)
+func (c *CompleteFilesRequestMultipartPartsItem) SetEtag(etag string) {
+	c.Etag = etag
+	c.require(completeFilesRequestMultipartPartsItemFieldEtag)
 }
 
-// SetFilename sets the Filename field and marks it as non-optional;
+// SetPartNumber sets the PartNumber field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFilesResponse) SetFilename(filename *string) {
-	c.Filename = filename
-	c.require(createFilesResponseFieldFilename)
+func (c *CompleteFilesRequestMultipartPartsItem) SetPartNumber(partNumber int) {
+	c.PartNumber = partNumber
+	c.require(completeFilesRequestMultipartPartsItemFieldPartNumber)
 }
 
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFilesResponse) SetID(id string) {
-	c.ID = id
-	c.require(createFilesResponseFieldID)
-}
-
-// SetSize sets the Size field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFilesResponse) SetSize(size *string) {
-	c.Size = size
-	c.require(createFilesResponseFieldSize)
-}
-
-// SetUploadHeaders sets the UploadHeaders field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFilesResponse) SetUploadHeaders(uploadHeaders map[string]any) {
-	c.UploadHeaders = uploadHeaders
-	c.require(createFilesResponseFieldUploadHeaders)
-}
-
-// SetUploadStatus sets the UploadStatus field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFilesResponse) SetUploadStatus(uploadStatus UploadStatuses) {
-	c.UploadStatus = uploadStatus
-	c.require(createFilesResponseFieldUploadStatus)
-}
-
-// SetUploadURL sets the UploadURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFilesResponse) SetUploadURL(uploadURL *string) {
-	c.UploadURL = uploadURL
-	c.require(createFilesResponseFieldUploadURL)
-}
-
-// SetURL sets the URL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFilesResponse) SetURL(url *string) {
-	c.URL = url
-	c.require(createFilesResponseFieldURL)
-}
-
-// SetVisibility sets the Visibility field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFilesResponse) SetVisibility(visibility FileVisibility) {
-	c.Visibility = visibility
-	c.require(createFilesResponseFieldVisibility)
-}
-
-func (c *CreateFilesResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateFilesResponse
+func (c *CompleteFilesRequestMultipartPartsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CompleteFilesRequestMultipartPartsItem
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateFilesResponse(value)
+	*c = CompleteFilesRequestMultipartPartsItem(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -528,8 +255,8 @@ func (c *CreateFilesResponse) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *CreateFilesResponse) MarshalJSON() ([]byte, error) {
-	type embed CreateFilesResponse
+func (c *CompleteFilesRequestMultipartPartsItem) MarshalJSON() ([]byte, error) {
+	type embed CompleteFilesRequestMultipartPartsItem
 	var marshaler = struct {
 		embed
 	}{
@@ -539,7 +266,7 @@ func (c *CreateFilesResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateFilesResponse) String() string {
+func (c *CompleteFilesRequestMultipartPartsItem) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -552,4 +279,27 @@ func (c *CreateFilesResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// `public` files are served via an unsigned CDN URL — use for assets anyone may see. `private` files are served via a signed, expiring URL — use for sensitive documents. Defaults to `private`.
+type CreateFilesRequestVisibility string
+
+const (
+	CreateFilesRequestVisibilityPublic  CreateFilesRequestVisibility = "public"
+	CreateFilesRequestVisibilityPrivate CreateFilesRequestVisibility = "private"
+)
+
+func NewCreateFilesRequestVisibilityFromString(s string) (CreateFilesRequestVisibility, error) {
+	switch s {
+	case "public":
+		return CreateFilesRequestVisibilityPublic, nil
+	case "private":
+		return CreateFilesRequestVisibilityPrivate, nil
+	}
+	var t CreateFilesRequestVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateFilesRequestVisibility) Ptr() *CreateFilesRequestVisibility {
+	return &c
 }

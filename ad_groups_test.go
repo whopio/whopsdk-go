@@ -2409,6 +2409,14 @@ func TestSettersSearchTargetingOptionsAdGroupsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSpecialAdCategories", func(t *testing.T) {
+		obj := &SearchTargetingOptionsAdGroupsRequest{}
+		var fernTestValueSpecialAdCategories []*SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem
+		obj.SetSpecialAdCategories(fernTestValueSpecialAdCategories)
+		assert.Equal(t, fernTestValueSpecialAdCategories, obj.SpecialAdCategories)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestSettersMarkExplicitSearchTargetingOptionsAdGroupsRequest(t *testing.T) {
@@ -2606,6 +2614,37 @@ func TestSettersMarkExplicitSearchTargetingOptionsAdGroupsRequest(t *testing.T) 
 
 		// Act
 		obj.SetLimit(fernTestValueLimit)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSpecialAdCategories_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SearchTargetingOptionsAdGroupsRequest{}
+		var fernTestValueSpecialAdCategories []*SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem
+
+		// Act
+		obj.SetSpecialAdCategories(fernTestValueSpecialAdCategories)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -21369,6 +21408,49 @@ func TestEnumSearchTargetingOptionsAdGroupsRequestPlatform(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewSearchTargetingOptionsAdGroupsRequestPlatformFromString("meta")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumSearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem(t *testing.T) {
+	t.Run("NewFromString_housing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemFromString("housing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem("housing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_employment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemFromString("employment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem("employment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_financial_products", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemFromString("financial_products")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem("financial_products"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_politics", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemFromString("politics")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem("politics"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemFromString("housing")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

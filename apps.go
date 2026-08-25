@@ -205,13 +205,14 @@ var (
 	listAppsRequestFieldAppType          = big.NewInt(1 << 1)
 	listAppsRequestFieldViewType         = big.NewInt(1 << 2)
 	listAppsRequestFieldVerifiedAppsOnly = big.NewInt(1 << 3)
-	listAppsRequestFieldQuery            = big.NewInt(1 << 4)
-	listAppsRequestFieldOrder            = big.NewInt(1 << 5)
-	listAppsRequestFieldDirection        = big.NewInt(1 << 6)
-	listAppsRequestFieldFirst            = big.NewInt(1 << 7)
-	listAppsRequestFieldAfter            = big.NewInt(1 << 8)
-	listAppsRequestFieldLast             = big.NewInt(1 << 9)
-	listAppsRequestFieldBefore           = big.NewInt(1 << 10)
+	listAppsRequestFieldRecommended      = big.NewInt(1 << 4)
+	listAppsRequestFieldQuery            = big.NewInt(1 << 5)
+	listAppsRequestFieldOrder            = big.NewInt(1 << 6)
+	listAppsRequestFieldDirection        = big.NewInt(1 << 7)
+	listAppsRequestFieldFirst            = big.NewInt(1 << 8)
+	listAppsRequestFieldAfter            = big.NewInt(1 << 9)
+	listAppsRequestFieldLast             = big.NewInt(1 << 10)
+	listAppsRequestFieldBefore           = big.NewInt(1 << 11)
 )
 
 type ListAppsRequest struct {
@@ -223,6 +224,8 @@ type ListAppsRequest struct {
 	ViewType *ListAppsRequestViewType `json:"-" url:"view_type,omitempty"`
 	// Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
 	VerifiedAppsOnly *bool `json:"-" url:"verified_apps_only,omitempty"`
+	// Only return apps Whop recommends (or, with `false`, only those it does not). The community blueprints gallery is the recommended slice of the public website list.
+	Recommended *bool `json:"-" url:"recommended,omitempty"`
 	// A search string matched against app names.
 	Query *string `json:"-" url:"query,omitempty"`
 	// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then apps with a banner image, then by how many apps were created from each app as a template.
@@ -275,6 +278,13 @@ func (l *ListAppsRequest) SetViewType(viewType *ListAppsRequestViewType) {
 func (l *ListAppsRequest) SetVerifiedAppsOnly(verifiedAppsOnly *bool) {
 	l.VerifiedAppsOnly = verifiedAppsOnly
 	l.require(listAppsRequestFieldVerifiedAppsOnly)
+}
+
+// SetRecommended sets the Recommended field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsRequest) SetRecommended(recommended *bool) {
+	l.Recommended = recommended
+	l.require(listAppsRequestFieldRecommended)
 }
 
 // SetQuery sets the Query field and marks it as non-optional;
@@ -474,27 +484,28 @@ var (
 	appFieldDescription               = big.NewInt(1 << 12)
 	appFieldDiscoverPath              = big.NewInt(1 << 13)
 	appFieldDomainID                  = big.NewInt(1 << 14)
-	appFieldExperiencePath            = big.NewInt(1 << 15)
-	appFieldHostedURL                 = big.NewInt(1 << 16)
-	appFieldIcon                      = big.NewInt(1 << 17)
-	appFieldID                        = big.NewInt(1 << 18)
-	appFieldMarketplaceStatus         = big.NewInt(1 << 19)
-	appFieldName                      = big.NewInt(1 << 20)
-	appFieldOauthClientType           = big.NewInt(1 << 21)
-	appFieldOpenapiPath               = big.NewInt(1 << 22)
-	appFieldOrigin                    = big.NewInt(1 << 23)
-	appFieldProductID                 = big.NewInt(1 << 24)
-	appFieldProductionAndroidBuild    = big.NewInt(1 << 25)
-	appFieldProductionIosBuild        = big.NewInt(1 << 26)
-	appFieldProductionWebBuild        = big.NewInt(1 << 27)
-	appFieldRedirectURIs              = big.NewInt(1 << 28)
-	appFieldRequestedPermissions      = big.NewInt(1 << 29)
-	appFieldRequiredScopes            = big.NewInt(1 << 30)
-	appFieldRoute                     = big.NewInt(1 << 31)
-	appFieldSecrets                   = big.NewInt(1 << 32)
-	appFieldSkillsPath                = big.NewInt(1 << 33)
-	appFieldStatus                    = big.NewInt(1 << 34)
-	appFieldVerified                  = big.NewInt(1 << 35)
+	appFieldElementsUsed              = big.NewInt(1 << 15)
+	appFieldExperiencePath            = big.NewInt(1 << 16)
+	appFieldHostedURL                 = big.NewInt(1 << 17)
+	appFieldIcon                      = big.NewInt(1 << 18)
+	appFieldID                        = big.NewInt(1 << 19)
+	appFieldMarketplaceStatus         = big.NewInt(1 << 20)
+	appFieldName                      = big.NewInt(1 << 21)
+	appFieldOauthClientType           = big.NewInt(1 << 22)
+	appFieldOpenapiPath               = big.NewInt(1 << 23)
+	appFieldOrigin                    = big.NewInt(1 << 24)
+	appFieldProductID                 = big.NewInt(1 << 25)
+	appFieldProductionAndroidBuild    = big.NewInt(1 << 26)
+	appFieldProductionIosBuild        = big.NewInt(1 << 27)
+	appFieldProductionWebBuild        = big.NewInt(1 << 28)
+	appFieldRedirectURIs              = big.NewInt(1 << 29)
+	appFieldRequestedPermissions      = big.NewInt(1 << 30)
+	appFieldRequiredScopes            = big.NewInt(1 << 31)
+	appFieldRoute                     = big.NewInt(1 << 32)
+	appFieldSecrets                   = big.NewInt(1 << 33)
+	appFieldSkillsPath                = big.NewInt(1 << 34)
+	appFieldStatus                    = big.NewInt(1 << 35)
+	appFieldVerified                  = big.NewInt(1 << 36)
 )
 
 type App struct {
@@ -526,7 +537,8 @@ type App struct {
 	// URL path for the discover view, or `null` when not configured.
 	DiscoverPath *string `json:"discover_path,omitempty" url:"discover_path,omitempty"`
 	// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
-	DomainID string `json:"domain_id" url:"domain_id"`
+	DomainID     string                `json:"domain_id" url:"domain_id"`
+	ElementsUsed []AppElementsUsedItem `json:"elements_used" url:"elements_used"`
 	// URL path for the member-facing hub view, or `null` when not configured.
 	ExperiencePath *string `json:"experience_path,omitempty" url:"experience_path,omitempty"`
 	// Full URL where the app's hosted web build is served, or `null` if no route is claimed.
@@ -677,6 +689,13 @@ func (a *App) GetDomainID() string {
 		return ""
 	}
 	return a.DomainID
+}
+
+func (a *App) GetElementsUsed() []AppElementsUsedItem {
+	if a == nil {
+		return nil
+	}
+	return a.ElementsUsed
 }
 
 func (a *App) GetExperiencePath() *string {
@@ -943,6 +962,13 @@ func (a *App) SetDiscoverPath(discoverPath *string) {
 func (a *App) SetDomainID(domainID string) {
 	a.DomainID = domainID
 	a.require(appFieldDomainID)
+}
+
+// SetElementsUsed sets the ElementsUsed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetElementsUsed(elementsUsed []AppElementsUsedItem) {
+	a.ElementsUsed = elementsUsed
+	a.require(appFieldElementsUsed)
 }
 
 // SetExperiencePath sets the ExperiencePath field and marks it as non-optional;
@@ -1967,6 +1993,128 @@ func NewAppDeploymentStatusFromString(s string) (AppDeploymentStatus, error) {
 }
 
 func (a AppDeploymentStatus) Ptr() *AppDeploymentStatus {
+	return &a
+}
+
+// Whop Elements the app's production web build mounts, as `<namespace>.<element>` keys (sub-controller children take a third segment, e.g. `payments.cardFields.cardNumber`). A bare namespace means the build reaches that namespace but the individual elements could not be resolved. Empty when the build mounts none, when it has not been scanned yet, or when the app has no production web build.
+type AppElementsUsedItem string
+
+const (
+	AppElementsUsedItemAds                          AppElementsUsedItem = "ads"
+	AppElementsUsedItemAdsBillingSetup              AppElementsUsedItem = "ads.billing-setup"
+	AppElementsUsedItemAdsCampaignCreator           AppElementsUsedItem = "ads.campaign-creator"
+	AppElementsUsedItemAdsReporting                 AppElementsUsedItem = "ads.reporting"
+	AppElementsUsedItemAdsReportingChart            AppElementsUsedItem = "ads.reporting.chart"
+	AppElementsUsedItemAdsReportingTable            AppElementsUsedItem = "ads.reporting.table"
+	AppElementsUsedItemCheckout                     AppElementsUsedItem = "checkout"
+	AppElementsUsedItemCheckoutCheckout             AppElementsUsedItem = "checkout.checkout"
+	AppElementsUsedItemCheckoutExpressCheckout      AppElementsUsedItem = "checkout.expressCheckout"
+	AppElementsUsedItemPayments                     AppElementsUsedItem = "payments"
+	AppElementsUsedItemPaymentsAddress              AppElementsUsedItem = "payments.address"
+	AppElementsUsedItemPaymentsBranding             AppElementsUsedItem = "payments.branding"
+	AppElementsUsedItemPaymentsCard                 AppElementsUsedItem = "payments.card"
+	AppElementsUsedItemPaymentsCardFields           AppElementsUsedItem = "payments.cardFields"
+	AppElementsUsedItemPaymentsCardFieldsCardCvc    AppElementsUsedItem = "payments.cardFields.cardCvc"
+	AppElementsUsedItemPaymentsCardFieldsCardExpiry AppElementsUsedItem = "payments.cardFields.cardExpiry"
+	AppElementsUsedItemPaymentsCardFieldsCardNumber AppElementsUsedItem = "payments.cardFields.cardNumber"
+	AppElementsUsedItemPaymentsEmail                AppElementsUsedItem = "payments.email"
+	AppElementsUsedItemPaymentsPayment              AppElementsUsedItem = "payments.payment"
+	AppElementsUsedItemPaymentsTaxID                AppElementsUsedItem = "payments.taxId"
+	AppElementsUsedItemTracking                     AppElementsUsedItem = "tracking"
+	AppElementsUsedItemTrackingEvents               AppElementsUsedItem = "tracking.events"
+	AppElementsUsedItemTrackingPeople               AppElementsUsedItem = "tracking.people"
+	AppElementsUsedItemWallet                       AppElementsUsedItem = "wallet"
+	AppElementsUsedItemWalletActivity               AppElementsUsedItem = "wallet.activity"
+	AppElementsUsedItemWalletBalances               AppElementsUsedItem = "wallet.balances"
+	AppElementsUsedItemWalletBalancesBalance        AppElementsUsedItem = "wallet.balances.balance"
+	AppElementsUsedItemWalletBalancesList           AppElementsUsedItem = "wallet.balances.list"
+	AppElementsUsedItemWalletCards                  AppElementsUsedItem = "wallet.cards"
+	AppElementsUsedItemWalletDeposit                AppElementsUsedItem = "wallet.deposit"
+	AppElementsUsedItemWalletSend                   AppElementsUsedItem = "wallet.send"
+	AppElementsUsedItemWalletWithdraw               AppElementsUsedItem = "wallet.withdraw"
+	AppElementsUsedItemWebsites                     AppElementsUsedItem = "websites"
+	AppElementsUsedItemWebsitesPixelSetup           AppElementsUsedItem = "websites.pixel-setup"
+	AppElementsUsedItemWebsitesWebsites             AppElementsUsedItem = "websites.websites"
+)
+
+func NewAppElementsUsedItemFromString(s string) (AppElementsUsedItem, error) {
+	switch s {
+	case "ads":
+		return AppElementsUsedItemAds, nil
+	case "ads.billing-setup":
+		return AppElementsUsedItemAdsBillingSetup, nil
+	case "ads.campaign-creator":
+		return AppElementsUsedItemAdsCampaignCreator, nil
+	case "ads.reporting":
+		return AppElementsUsedItemAdsReporting, nil
+	case "ads.reporting.chart":
+		return AppElementsUsedItemAdsReportingChart, nil
+	case "ads.reporting.table":
+		return AppElementsUsedItemAdsReportingTable, nil
+	case "checkout":
+		return AppElementsUsedItemCheckout, nil
+	case "checkout.checkout":
+		return AppElementsUsedItemCheckoutCheckout, nil
+	case "checkout.expressCheckout":
+		return AppElementsUsedItemCheckoutExpressCheckout, nil
+	case "payments":
+		return AppElementsUsedItemPayments, nil
+	case "payments.address":
+		return AppElementsUsedItemPaymentsAddress, nil
+	case "payments.branding":
+		return AppElementsUsedItemPaymentsBranding, nil
+	case "payments.card":
+		return AppElementsUsedItemPaymentsCard, nil
+	case "payments.cardFields":
+		return AppElementsUsedItemPaymentsCardFields, nil
+	case "payments.cardFields.cardCvc":
+		return AppElementsUsedItemPaymentsCardFieldsCardCvc, nil
+	case "payments.cardFields.cardExpiry":
+		return AppElementsUsedItemPaymentsCardFieldsCardExpiry, nil
+	case "payments.cardFields.cardNumber":
+		return AppElementsUsedItemPaymentsCardFieldsCardNumber, nil
+	case "payments.email":
+		return AppElementsUsedItemPaymentsEmail, nil
+	case "payments.payment":
+		return AppElementsUsedItemPaymentsPayment, nil
+	case "payments.taxId":
+		return AppElementsUsedItemPaymentsTaxID, nil
+	case "tracking":
+		return AppElementsUsedItemTracking, nil
+	case "tracking.events":
+		return AppElementsUsedItemTrackingEvents, nil
+	case "tracking.people":
+		return AppElementsUsedItemTrackingPeople, nil
+	case "wallet":
+		return AppElementsUsedItemWallet, nil
+	case "wallet.activity":
+		return AppElementsUsedItemWalletActivity, nil
+	case "wallet.balances":
+		return AppElementsUsedItemWalletBalances, nil
+	case "wallet.balances.balance":
+		return AppElementsUsedItemWalletBalancesBalance, nil
+	case "wallet.balances.list":
+		return AppElementsUsedItemWalletBalancesList, nil
+	case "wallet.cards":
+		return AppElementsUsedItemWalletCards, nil
+	case "wallet.deposit":
+		return AppElementsUsedItemWalletDeposit, nil
+	case "wallet.send":
+		return AppElementsUsedItemWalletSend, nil
+	case "wallet.withdraw":
+		return AppElementsUsedItemWalletWithdraw, nil
+	case "websites":
+		return AppElementsUsedItemWebsites, nil
+	case "websites.pixel-setup":
+		return AppElementsUsedItemWebsitesPixelSetup, nil
+	case "websites.websites":
+		return AppElementsUsedItemWebsitesWebsites, nil
+	}
+	var t AppElementsUsedItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AppElementsUsedItem) Ptr() *AppElementsUsedItem {
 	return &a
 }
 

@@ -9965,18 +9965,18 @@ func TestEnumCreateMethodsResponseSupportedPayoutMethodDeliveryType(t *testing.T
 		assert.Equal(t, CreateMethodsResponseSupportedPayoutMethodDeliveryType("mobile_wallet"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_masspay_card", func(t *testing.T) {
+	t.Run("NewFromString_card", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString("masspay_card")
+		val, err := NewCreateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString("card")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateMethodsResponseSupportedPayoutMethodDeliveryType("masspay_card"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateMethodsResponseSupportedPayoutMethodDeliveryType("card"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_paper_check", func(t *testing.T) {
+	t.Run("NewFromString_check", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString("paper_check")
+		val, err := NewCreateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString("check")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateMethodsResponseSupportedPayoutMethodDeliveryType("paper_check"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateMethodsResponseSupportedPayoutMethodDeliveryType("check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_bill", func(t *testing.T) {
@@ -10209,18 +10209,18 @@ func TestEnumListMethodsResponseDataItemSupportedPayoutMethodDeliveryType(t *tes
 		assert.Equal(t, ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType("mobile_wallet"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_masspay_card", func(t *testing.T) {
+	t.Run("NewFromString_card", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeFromString("masspay_card")
+		val, err := NewListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeFromString("card")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType("masspay_card"), val, "enum value should match expected wire value")
+		assert.Equal(t, ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType("card"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_paper_check", func(t *testing.T) {
+	t.Run("NewFromString_check", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeFromString("paper_check")
+		val, err := NewListMethodsResponseDataItemSupportedPayoutMethodDeliveryTypeFromString("check")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType("paper_check"), val, "enum value should match expected wire value")
+		assert.Equal(t, ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType("check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_bill", func(t *testing.T) {
@@ -10482,18 +10482,18 @@ func TestEnumUpdateMethodsResponseSupportedPayoutMethodDeliveryType(t *testing.T
 		assert.Equal(t, UpdateMethodsResponseSupportedPayoutMethodDeliveryType("mobile_wallet"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_masspay_card", func(t *testing.T) {
+	t.Run("NewFromString_card", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString("masspay_card")
+		val, err := NewUpdateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString("card")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateMethodsResponseSupportedPayoutMethodDeliveryType("masspay_card"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateMethodsResponseSupportedPayoutMethodDeliveryType("card"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_paper_check", func(t *testing.T) {
+	t.Run("NewFromString_check", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString("paper_check")
+		val, err := NewUpdateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString("check")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdateMethodsResponseSupportedPayoutMethodDeliveryType("paper_check"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdateMethodsResponseSupportedPayoutMethodDeliveryType("check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_bill", func(t *testing.T) {
