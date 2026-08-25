@@ -293,13 +293,16 @@ func (f ForumEmailNotificationPreferences) Ptr() *ForumEmailNotificationPreferen
 
 // The parent experience that this forum belongs to.
 var (
-	forumExperienceFieldID   = big.NewInt(1 << 0)
-	forumExperienceFieldName = big.NewInt(1 << 1)
+	forumExperienceFieldID       = big.NewInt(1 << 0)
+	forumExperienceFieldIsPublic = big.NewInt(1 << 1)
+	forumExperienceFieldName     = big.NewInt(1 << 2)
 )
 
 type ForumExperience struct {
 	// The unique identifier for the experience.
 	ID string `json:"id" url:"id"`
+	// Whether this experience is publicly visible to all users, including those without a membership.
+	IsPublic bool `json:"is_public" url:"is_public"`
 	// The display name of this experience shown to users in the product navigation. Maximum 255 characters.
 	Name string `json:"name" url:"name"`
 
@@ -315,6 +318,13 @@ func (f *ForumExperience) GetID() string {
 		return ""
 	}
 	return f.ID
+}
+
+func (f *ForumExperience) GetIsPublic() bool {
+	if f == nil {
+		return false
+	}
+	return f.IsPublic
 }
 
 func (f *ForumExperience) GetName() string {
@@ -343,6 +353,13 @@ func (f *ForumExperience) require(field *big.Int) {
 func (f *ForumExperience) SetID(id string) {
 	f.ID = id
 	f.require(forumExperienceFieldID)
+}
+
+// SetIsPublic sets the IsPublic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForumExperience) SetIsPublic(isPublic bool) {
+	f.IsPublic = isPublic
+	f.require(forumExperienceFieldIsPublic)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -550,13 +567,16 @@ func (f *ForumListItem) String() string {
 
 // The parent experience that this forum belongs to.
 var (
-	forumListItemExperienceFieldID   = big.NewInt(1 << 0)
-	forumListItemExperienceFieldName = big.NewInt(1 << 1)
+	forumListItemExperienceFieldID       = big.NewInt(1 << 0)
+	forumListItemExperienceFieldIsPublic = big.NewInt(1 << 1)
+	forumListItemExperienceFieldName     = big.NewInt(1 << 2)
 )
 
 type ForumListItemExperience struct {
 	// The unique identifier for the experience.
 	ID string `json:"id" url:"id"`
+	// Whether this experience is publicly visible to all users, including those without a membership.
+	IsPublic bool `json:"is_public" url:"is_public"`
 	// The display name of this experience shown to users in the product navigation. Maximum 255 characters.
 	Name string `json:"name" url:"name"`
 
@@ -572,6 +592,13 @@ func (f *ForumListItemExperience) GetID() string {
 		return ""
 	}
 	return f.ID
+}
+
+func (f *ForumListItemExperience) GetIsPublic() bool {
+	if f == nil {
+		return false
+	}
+	return f.IsPublic
 }
 
 func (f *ForumListItemExperience) GetName() string {
@@ -600,6 +627,13 @@ func (f *ForumListItemExperience) require(field *big.Int) {
 func (f *ForumListItemExperience) SetID(id string) {
 	f.ID = id
 	f.require(forumListItemExperienceFieldID)
+}
+
+// SetIsPublic sets the IsPublic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForumListItemExperience) SetIsPublic(isPublic bool) {
+	f.IsPublic = isPublic
+	f.require(forumListItemExperienceFieldIsPublic)
 }
 
 // SetName sets the Name field and marks it as non-optional;

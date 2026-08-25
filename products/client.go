@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-08-21-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,12 +39,11 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of products belonging to an account.
+// Returns a paginated list of products. Omit `account_id` to search the public marketplace.
 //
 // Example:
 //
 //	request := &whopsdk.ListProductsRequest{
-//	    AccountID: "account_id",
 //	    Visibilities: []*string{
 //	        whopsdk.String(
 //	            "visible",
@@ -150,7 +149,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing product. This endpoint is publicly accessible.
+// Retrieves a product. Public — no credentials.
 //
 // Example:
 //

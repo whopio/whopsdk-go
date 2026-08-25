@@ -538,48 +538,52 @@ var (
 	accountFieldCreatedAt                           = big.NewInt(1 << 11)
 	accountFieldDescription                         = big.NewInt(1 << 12)
 	accountFieldEmail                               = big.NewInt(1 << 13)
-	accountFieldHomePreferences                     = big.NewInt(1 << 14)
-	accountFieldID                                  = big.NewInt(1 << 15)
-	accountFieldIndustryGroup                       = big.NewInt(1 << 16)
-	accountFieldIndustryType                        = big.NewInt(1 << 17)
-	accountFieldInvoicePrefix                       = big.NewInt(1 << 18)
-	accountFieldLogoURL                             = big.NewInt(1 << 19)
-	accountFieldMetadata                            = big.NewInt(1 << 20)
-	accountFieldOnboardingType                      = big.NewInt(1 << 21)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 22)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 23)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 24)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 25)
-	accountFieldOwner                               = big.NewInt(1 << 26)
-	accountFieldParentAccount                       = big.NewInt(1 << 27)
-	accountFieldPaymentControls                     = big.NewInt(1 << 28)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 29)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 30)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 31)
-	accountFieldRequiredActions                     = big.NewInt(1 << 32)
-	accountFieldRoute                               = big.NewInt(1 << 33)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 34)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 35)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 36)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 37)
-	accountFieldSocialLinks                         = big.NewInt(1 << 38)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 39)
-	accountFieldStatus                              = big.NewInt(1 << 40)
-	accountFieldStatusReason                        = big.NewInt(1 << 41)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 42)
-	accountFieldTargetAudience                      = big.NewInt(1 << 43)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 44)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 45)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 46)
-	accountFieldTaxType                             = big.NewInt(1 << 47)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 48)
-	accountFieldTitle                               = big.NewInt(1 << 49)
-	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 50)
-	accountFieldTotalUsd                            = big.NewInt(1 << 51)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 52)
-	accountFieldVerification                        = big.NewInt(1 << 53)
-	accountFieldVolumeUsd                           = big.NewInt(1 << 54)
-	accountFieldWallet                              = big.NewInt(1 << 55)
+	accountFieldEula                                = big.NewInt(1 << 14)
+	accountFieldHomePreferences                     = big.NewInt(1 << 15)
+	accountFieldID                                  = big.NewInt(1 << 16)
+	accountFieldIndustryGroup                       = big.NewInt(1 << 17)
+	accountFieldIndustryType                        = big.NewInt(1 << 18)
+	accountFieldInvoicePrefix                       = big.NewInt(1 << 19)
+	accountFieldLogoURL                             = big.NewInt(1 << 20)
+	accountFieldMetadata                            = big.NewInt(1 << 21)
+	accountFieldOnboardingType                      = big.NewInt(1 << 22)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 23)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 24)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 25)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 26)
+	accountFieldOwner                               = big.NewInt(1 << 27)
+	accountFieldParentAccount                       = big.NewInt(1 << 28)
+	accountFieldPaymentControls                     = big.NewInt(1 << 29)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 30)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 31)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 32)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 33)
+	accountFieldRequiredActions                     = big.NewInt(1 << 34)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 35)
+	accountFieldRoute                               = big.NewInt(1 << 36)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 37)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 38)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 39)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 40)
+	accountFieldSocialLinks                         = big.NewInt(1 << 41)
+	accountFieldStablecoinRails                     = big.NewInt(1 << 42)
+	accountFieldStatus                              = big.NewInt(1 << 43)
+	accountFieldStatusReason                        = big.NewInt(1 << 44)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 45)
+	accountFieldTargetAudience                      = big.NewInt(1 << 46)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 47)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 48)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 49)
+	accountFieldTaxType                             = big.NewInt(1 << 50)
+	accountFieldTermsOfService                      = big.NewInt(1 << 51)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 52)
+	accountFieldTitle                               = big.NewInt(1 << 53)
+	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 54)
+	accountFieldTotalUsd                            = big.NewInt(1 << 55)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 56)
+	accountFieldVerification                        = big.NewInt(1 << 57)
+	accountFieldVolumeUsd                           = big.NewInt(1 << 58)
+	accountFieldWallet                              = big.NewInt(1 << 59)
 )
 
 type Account struct {
@@ -609,7 +613,9 @@ type Account struct {
 	// Account promotional description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// Account owner email address.
-	Email           *string                      `json:"email,omitempty" url:"email,omitempty"`
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The account's end-user license agreement document, or `null` if they have not published one.
+	Eula            *File                        `json:"eula,omitempty" url:"eula,omitempty"`
 	HomePreferences []AccountHomePreferencesItem `json:"home_preferences" url:"home_preferences"`
 	// Account ID, prefixed `biz_`.
 	ID string `json:"id" url:"id"`
@@ -639,6 +645,8 @@ type Account struct {
 	ParentAccount *AccountParent `json:"parent_account,omitempty" url:"parent_account,omitempty"`
 	// Payment health controls currently applied to the account. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
 	PaymentControls *AccountPaymentControls `json:"payment_controls,omitempty" url:"payment_controls,omitempty"`
+	// The account's privacy policy document, or `null` if they have not published one.
+	PrivacyPolicy *File `json:"privacy_policy,omitempty" url:"privacy_policy,omitempty"`
 	// Tax classification code applied by default to the account's products, with `id`, `name`, and `product_type`. `null` when no default is set.
 	ProductTaxCode map[string]any `json:"product_tax_code,omitempty" url:"product_tax_code,omitempty"`
 	// DEPRECATED: Use the `GET /recommended_actions?account_id={account_id}` endpoint instead.
@@ -646,6 +654,8 @@ type Account struct {
 	// Whether authorized users must enable two-factor authentication.
 	Require2Fa      bool                     `json:"require_2fa" url:"require_2fa"`
 	RequiredActions []*AccountRequiredAction `json:"required_actions,omitempty" url:"required_actions,omitempty"`
+	// The account's return policy document, or `null` if they have not published one.
+	ReturnPolicy *File `json:"return_policy,omitempty" url:"return_policy,omitempty"`
 	// Account public route identifier.
 	Route string `json:"route" url:"route"`
 	// Whether Whop sends transactional emails to customers on behalf of this account.
@@ -673,6 +683,8 @@ type Account struct {
 	TaxRemittedBy *AccountTaxRemittedBy `json:"tax_remitted_by,omitempty" url:"tax_remitted_by,omitempty"`
 	// How tax is applied to the account's prices: `inclusive` (tax included in the listed price) or `exclusive` (tax added on top). Defaults to `exclusive` when unset; `null` only when the account has no payment connection.
 	TaxType *AccountTaxType `json:"tax_type,omitempty" url:"tax_type,omitempty"`
+	// The account's terms of service document, or `null` if they have not published one.
+	TermsOfService *File `json:"terms_of_service,omitempty" url:"terms_of_service,omitempty"`
 	// Account-level 3D Secure behavior. `mandate_challenge` requires cardholder verification on supported card payments; `null` uses the standard checkout flow.
 	ThreeDsLevel *AccountThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Account display name.
@@ -795,6 +807,13 @@ func (a *Account) GetEmail() *string {
 	return a.Email
 }
 
+func (a *Account) GetEula() *File {
+	if a == nil {
+		return nil
+	}
+	return a.Eula
+}
+
 func (a *Account) GetHomePreferences() []AccountHomePreferencesItem {
 	if a == nil {
 		return nil
@@ -900,6 +919,13 @@ func (a *Account) GetPaymentControls() *AccountPaymentControls {
 	return a.PaymentControls
 }
 
+func (a *Account) GetPrivacyPolicy() *File {
+	if a == nil {
+		return nil
+	}
+	return a.PrivacyPolicy
+}
+
 func (a *Account) GetProductTaxCode() map[string]any {
 	if a == nil {
 		return nil
@@ -926,6 +952,13 @@ func (a *Account) GetRequiredActions() []*AccountRequiredAction {
 		return nil
 	}
 	return a.RequiredActions
+}
+
+func (a *Account) GetReturnPolicy() *File {
+	if a == nil {
+		return nil
+	}
+	return a.ReturnPolicy
 }
 
 func (a *Account) GetRoute() string {
@@ -1031,6 +1064,13 @@ func (a *Account) GetTaxType() *AccountTaxType {
 		return nil
 	}
 	return a.TaxType
+}
+
+func (a *Account) GetTermsOfService() *File {
+	if a == nil {
+		return nil
+	}
+	return a.TermsOfService
 }
 
 func (a *Account) GetThreeDsLevel() *AccountThreeDsLevel {
@@ -1201,6 +1241,13 @@ func (a *Account) SetEmail(email *string) {
 	a.require(accountFieldEmail)
 }
 
+// SetEula sets the Eula field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetEula(eula *File) {
+	a.Eula = eula
+	a.require(accountFieldEula)
+}
+
 // SetHomePreferences sets the HomePreferences field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetHomePreferences(homePreferences []AccountHomePreferencesItem) {
@@ -1306,6 +1353,13 @@ func (a *Account) SetPaymentControls(paymentControls *AccountPaymentControls) {
 	a.require(accountFieldPaymentControls)
 }
 
+// SetPrivacyPolicy sets the PrivacyPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetPrivacyPolicy(privacyPolicy *File) {
+	a.PrivacyPolicy = privacyPolicy
+	a.require(accountFieldPrivacyPolicy)
+}
+
 // SetProductTaxCode sets the ProductTaxCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetProductTaxCode(productTaxCode map[string]any) {
@@ -1332,6 +1386,13 @@ func (a *Account) SetRequire2Fa(require2Fa bool) {
 func (a *Account) SetRequiredActions(requiredActions []*AccountRequiredAction) {
 	a.RequiredActions = requiredActions
 	a.require(accountFieldRequiredActions)
+}
+
+// SetReturnPolicy sets the ReturnPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetReturnPolicy(returnPolicy *File) {
+	a.ReturnPolicy = returnPolicy
+	a.require(accountFieldReturnPolicy)
 }
 
 // SetRoute sets the Route field and marks it as non-optional;
@@ -1437,6 +1498,13 @@ func (a *Account) SetTaxRemittedBy(taxRemittedBy *AccountTaxRemittedBy) {
 func (a *Account) SetTaxType(taxType *AccountTaxType) {
 	a.TaxType = taxType
 	a.require(accountFieldTaxType)
+}
+
+// SetTermsOfService sets the TermsOfService field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetTermsOfService(termsOfService *File) {
+	a.TermsOfService = termsOfService
+	a.require(accountFieldTermsOfService)
 }
 
 // SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;

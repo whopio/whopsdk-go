@@ -1360,24 +1360,53 @@ func (d *DisputeEvidence) String() string {
 }
 
 var (
-	disputeEvidenceDocumentFieldContentType  = big.NewInt(1 << 0)
-	disputeEvidenceDocumentFieldDocumentType = big.NewInt(1 << 1)
-	disputeEvidenceDocumentFieldFilename     = big.NewInt(1 << 2)
-	disputeEvidenceDocumentFieldID           = big.NewInt(1 << 3)
-	disputeEvidenceDocumentFieldURL          = big.NewInt(1 << 4)
+	disputeEvidenceDocumentFieldContentType         = big.NewInt(1 << 0)
+	disputeEvidenceDocumentFieldCreatedAt           = big.NewInt(1 << 1)
+	disputeEvidenceDocumentFieldDocumentType        = big.NewInt(1 << 2)
+	disputeEvidenceDocumentFieldFilename            = big.NewInt(1 << 3)
+	disputeEvidenceDocumentFieldID                  = big.NewInt(1 << 4)
+	disputeEvidenceDocumentFieldMultipartChunkSize  = big.NewInt(1 << 5)
+	disputeEvidenceDocumentFieldMultipartUploadID   = big.NewInt(1 << 6)
+	disputeEvidenceDocumentFieldMultipartUploadURLs = big.NewInt(1 << 7)
+	disputeEvidenceDocumentFieldObject              = big.NewInt(1 << 8)
+	disputeEvidenceDocumentFieldSize                = big.NewInt(1 << 9)
+	disputeEvidenceDocumentFieldUploadHeaders       = big.NewInt(1 << 10)
+	disputeEvidenceDocumentFieldUploadStatus        = big.NewInt(1 << 11)
+	disputeEvidenceDocumentFieldUploadURL           = big.NewInt(1 << 12)
+	disputeEvidenceDocumentFieldURL                 = big.NewInt(1 << 13)
+	disputeEvidenceDocumentFieldVisibility          = big.NewInt(1 << 14)
 )
 
 type DisputeEvidenceDocument struct {
 	// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts.
 	ContentType *DisputeEvidenceDocumentContentType `json:"content_type,omitempty" url:"content_type,omitempty"`
+	// When the file was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
 	// What kind of evidence the document is.
 	DocumentType DisputeEvidenceDocumentDocumentType `json:"document_type" url:"document_type"`
-	// The uploaded file's name.
+	// The original filename, including its extension.
 	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
-	// The attachment's ID, prefixed `file_`.
+	// The file's ID, prefixed `file_`.
 	ID string `json:"id" url:"id"`
-	// A URL to download the document.
+	// The byte size each part (except the last) must be. Present only on create, and only for multipart uploads.
+	MultipartChunkSize *int `json:"multipart_chunk_size,omitempty" url:"multipart_chunk_size,omitempty"`
+	// The ID of the multipart upload, passed back to `complete`. Present only on create, and only for multipart uploads.
+	MultipartUploadID   *string             `json:"multipart_upload_id,omitempty" url:"multipart_upload_id,omitempty"`
+	MultipartUploadURLs []*FileMultipartURL `json:"multipart_upload_urls,omitempty" url:"multipart_upload_urls,omitempty"`
+	// The type of this object, always `file`.
+	Object string `json:"object" url:"object"`
+	// The file size in bytes. `null` until the upload has finished.
+	Size *int `json:"size,omitempty" url:"size,omitempty"`
+	// Headers to send with the upload PUT. Present only on create.
+	UploadHeaders map[string]any `json:"upload_headers,omitempty" url:"upload_headers,omitempty"`
+	// Where the file is in its upload lifecycle.
+	UploadStatus DisputeEvidenceDocumentUploadStatus `json:"upload_status" url:"upload_status"`
+	// Presigned URL to PUT the file's bytes to. Present only on create, and only for single-part uploads.
+	UploadURL *string `json:"upload_url,omitempty" url:"upload_url,omitempty"`
+	// A URL to download the file: a permanent CDN URL for public files, a signed expiring URL for private ones. `null` until the upload has finished.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
+	// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
+	Visibility DisputeEvidenceDocumentVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1391,6 +1420,13 @@ func (d *DisputeEvidenceDocument) GetContentType() *DisputeEvidenceDocumentConte
 		return nil
 	}
 	return d.ContentType
+}
+
+func (d *DisputeEvidenceDocument) GetCreatedAt() string {
+	if d == nil {
+		return ""
+	}
+	return d.CreatedAt
 }
 
 func (d *DisputeEvidenceDocument) GetDocumentType() DisputeEvidenceDocumentDocumentType {
@@ -1414,11 +1450,74 @@ func (d *DisputeEvidenceDocument) GetID() string {
 	return d.ID
 }
 
+func (d *DisputeEvidenceDocument) GetMultipartChunkSize() *int {
+	if d == nil {
+		return nil
+	}
+	return d.MultipartChunkSize
+}
+
+func (d *DisputeEvidenceDocument) GetMultipartUploadID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.MultipartUploadID
+}
+
+func (d *DisputeEvidenceDocument) GetMultipartUploadURLs() []*FileMultipartURL {
+	if d == nil {
+		return nil
+	}
+	return d.MultipartUploadURLs
+}
+
+func (d *DisputeEvidenceDocument) GetObject() string {
+	if d == nil {
+		return ""
+	}
+	return d.Object
+}
+
+func (d *DisputeEvidenceDocument) GetSize() *int {
+	if d == nil {
+		return nil
+	}
+	return d.Size
+}
+
+func (d *DisputeEvidenceDocument) GetUploadHeaders() map[string]any {
+	if d == nil {
+		return nil
+	}
+	return d.UploadHeaders
+}
+
+func (d *DisputeEvidenceDocument) GetUploadStatus() DisputeEvidenceDocumentUploadStatus {
+	if d == nil {
+		return ""
+	}
+	return d.UploadStatus
+}
+
+func (d *DisputeEvidenceDocument) GetUploadURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.UploadURL
+}
+
 func (d *DisputeEvidenceDocument) GetURL() *string {
 	if d == nil {
 		return nil
 	}
 	return d.URL
+}
+
+func (d *DisputeEvidenceDocument) GetVisibility() DisputeEvidenceDocumentVisibility {
+	if d == nil {
+		return ""
+	}
+	return d.Visibility
 }
 
 func (d *DisputeEvidenceDocument) GetExtraProperties() map[string]interface{} {
@@ -1442,6 +1541,13 @@ func (d *DisputeEvidenceDocument) SetContentType(contentType *DisputeEvidenceDoc
 	d.require(disputeEvidenceDocumentFieldContentType)
 }
 
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetCreatedAt(createdAt string) {
+	d.CreatedAt = createdAt
+	d.require(disputeEvidenceDocumentFieldCreatedAt)
+}
+
 // SetDocumentType sets the DocumentType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeEvidenceDocument) SetDocumentType(documentType DisputeEvidenceDocumentDocumentType) {
@@ -1463,11 +1569,74 @@ func (d *DisputeEvidenceDocument) SetID(id string) {
 	d.require(disputeEvidenceDocumentFieldID)
 }
 
+// SetMultipartChunkSize sets the MultipartChunkSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetMultipartChunkSize(multipartChunkSize *int) {
+	d.MultipartChunkSize = multipartChunkSize
+	d.require(disputeEvidenceDocumentFieldMultipartChunkSize)
+}
+
+// SetMultipartUploadID sets the MultipartUploadID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetMultipartUploadID(multipartUploadID *string) {
+	d.MultipartUploadID = multipartUploadID
+	d.require(disputeEvidenceDocumentFieldMultipartUploadID)
+}
+
+// SetMultipartUploadURLs sets the MultipartUploadURLs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetMultipartUploadURLs(multipartUploadURLs []*FileMultipartURL) {
+	d.MultipartUploadURLs = multipartUploadURLs
+	d.require(disputeEvidenceDocumentFieldMultipartUploadURLs)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetObject(object string) {
+	d.Object = object
+	d.require(disputeEvidenceDocumentFieldObject)
+}
+
+// SetSize sets the Size field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetSize(size *int) {
+	d.Size = size
+	d.require(disputeEvidenceDocumentFieldSize)
+}
+
+// SetUploadHeaders sets the UploadHeaders field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetUploadHeaders(uploadHeaders map[string]any) {
+	d.UploadHeaders = uploadHeaders
+	d.require(disputeEvidenceDocumentFieldUploadHeaders)
+}
+
+// SetUploadStatus sets the UploadStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetUploadStatus(uploadStatus DisputeEvidenceDocumentUploadStatus) {
+	d.UploadStatus = uploadStatus
+	d.require(disputeEvidenceDocumentFieldUploadStatus)
+}
+
+// SetUploadURL sets the UploadURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetUploadURL(uploadURL *string) {
+	d.UploadURL = uploadURL
+	d.require(disputeEvidenceDocumentFieldUploadURL)
+}
+
 // SetURL sets the URL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeEvidenceDocument) SetURL(url *string) {
 	d.URL = url
 	d.require(disputeEvidenceDocumentFieldURL)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetVisibility(visibility DisputeEvidenceDocumentVisibility) {
+	d.Visibility = visibility
+	d.require(disputeEvidenceDocumentFieldVisibility)
 }
 
 func (d *DisputeEvidenceDocument) UnmarshalJSON(data []byte) error {
@@ -1585,6 +1754,58 @@ func NewDisputeEvidenceDocumentDocumentTypeFromString(s string) (DisputeEvidence
 }
 
 func (d DisputeEvidenceDocumentDocumentType) Ptr() *DisputeEvidenceDocumentDocumentType {
+	return &d
+}
+
+// Where the file is in its upload lifecycle.
+type DisputeEvidenceDocumentUploadStatus string
+
+const (
+	DisputeEvidenceDocumentUploadStatusPending    DisputeEvidenceDocumentUploadStatus = "pending"
+	DisputeEvidenceDocumentUploadStatusProcessing DisputeEvidenceDocumentUploadStatus = "processing"
+	DisputeEvidenceDocumentUploadStatusReady      DisputeEvidenceDocumentUploadStatus = "ready"
+	DisputeEvidenceDocumentUploadStatusFailed     DisputeEvidenceDocumentUploadStatus = "failed"
+)
+
+func NewDisputeEvidenceDocumentUploadStatusFromString(s string) (DisputeEvidenceDocumentUploadStatus, error) {
+	switch s {
+	case "pending":
+		return DisputeEvidenceDocumentUploadStatusPending, nil
+	case "processing":
+		return DisputeEvidenceDocumentUploadStatusProcessing, nil
+	case "ready":
+		return DisputeEvidenceDocumentUploadStatusReady, nil
+	case "failed":
+		return DisputeEvidenceDocumentUploadStatusFailed, nil
+	}
+	var t DisputeEvidenceDocumentUploadStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DisputeEvidenceDocumentUploadStatus) Ptr() *DisputeEvidenceDocumentUploadStatus {
+	return &d
+}
+
+// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
+type DisputeEvidenceDocumentVisibility string
+
+const (
+	DisputeEvidenceDocumentVisibilityPublic  DisputeEvidenceDocumentVisibility = "public"
+	DisputeEvidenceDocumentVisibilityPrivate DisputeEvidenceDocumentVisibility = "private"
+)
+
+func NewDisputeEvidenceDocumentVisibilityFromString(s string) (DisputeEvidenceDocumentVisibility, error) {
+	switch s {
+	case "public":
+		return DisputeEvidenceDocumentVisibilityPublic, nil
+	case "private":
+		return DisputeEvidenceDocumentVisibilityPrivate, nil
+	}
+	var t DisputeEvidenceDocumentVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DisputeEvidenceDocumentVisibility) Ptr() *DisputeEvidenceDocumentVisibility {
 	return &d
 }
 

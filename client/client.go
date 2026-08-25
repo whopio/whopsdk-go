@@ -23,6 +23,7 @@ import (
 	cardtransactions "github.com/whopio/whopsdk-go/cardtransactions"
 	chatchannels "github.com/whopio/whopsdk-go/chatchannels"
 	checkoutconfigurations "github.com/whopio/whopsdk-go/checkoutconfigurations"
+	checkoutsessions "github.com/whopio/whopsdk-go/checkoutsessions"
 	companies "github.com/whopio/whopsdk-go/companies"
 	companytokentransactions "github.com/whopio/whopsdk-go/companytokentransactions"
 	core "github.com/whopio/whopsdk-go/core"
@@ -110,6 +111,7 @@ type Whop struct {
 	Cards                    *cards.Client
 	ChatChannels             *chatchannels.Client
 	CheckoutConfigurations   *checkoutconfigurations.Client
+	CheckoutSessions         *checkoutsessions.Client
 	Companies                *companies.Client
 	CompanyTokenTransactions *companytokentransactions.Client
 	CourseChapters           *coursechapters.Client
@@ -180,7 +182,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-08-21-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -204,6 +206,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Cards:                    cards.NewClient(options),
 		ChatChannels:             chatchannels.NewClient(options),
 		CheckoutConfigurations:   checkoutconfigurations.NewClient(options),
+		CheckoutSessions:         checkoutsessions.NewClient(options),
 		Companies:                companies.NewClient(options),
 		CompanyTokenTransactions: companytokentransactions.NewClient(options),
 		CourseChapters:           coursechapters.NewClient(options),

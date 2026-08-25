@@ -399,35 +399,38 @@ var (
 	bountyFieldAcceptedSubmissionsCount        = big.NewInt(1 << 1)
 	bountyFieldAcceptedSubmissionsLimit        = big.NewInt(1 << 2)
 	bountyFieldAcceptedSubmissionsPerUserLimit = big.NewInt(1 << 3)
-	bountyFieldAffiliateShareAmount            = big.NewInt(1 << 4)
-	bountyFieldAllowedCountryCodes             = big.NewInt(1 << 5)
-	bountyFieldBudgetAmount                    = big.NewInt(1 << 6)
-	bountyFieldBusinessGoalType                = big.NewInt(1 << 7)
-	bountyFieldCancelRequestedAt               = big.NewInt(1 << 8)
-	bountyFieldCaptureSpec                     = big.NewInt(1 << 9)
-	bountyFieldCreatedAt                       = big.NewInt(1 << 10)
-	bountyFieldCurrency                        = big.NewInt(1 << 11)
-	bountyFieldDescription                     = big.NewInt(1 << 12)
-	bountyFieldDiscussionExperienceID          = big.NewInt(1 << 13)
-	bountyFieldDiscussionFeedID                = big.NewInt(1 << 14)
-	bountyFieldDiscussionPostID                = big.NewInt(1 << 15)
-	bountyFieldExperienceID                    = big.NewInt(1 << 16)
-	bountyFieldFundingAccount                  = big.NewInt(1 << 17)
-	bountyFieldGrossPaidOutAmount              = big.NewInt(1 << 18)
-	bountyFieldGrossRewardAmount               = big.NewInt(1 << 19)
-	bountyFieldHostingAccount                  = big.NewInt(1 << 20)
-	bountyFieldID                              = big.NewInt(1 << 21)
-	bountyFieldNetRewardAmount                 = big.NewInt(1 << 22)
-	bountyFieldPoster                          = big.NewInt(1 << 23)
-	bountyFieldScheduledFrequency              = big.NewInt(1 << 24)
-	bountyFieldScheduledPublishAt              = big.NewInt(1 << 25)
-	bountyFieldSpotsRemaining                  = big.NewInt(1 << 26)
-	bountyFieldStatus                          = big.NewInt(1 << 27)
-	bountyFieldSubmissionsClosedAt             = big.NewInt(1 << 28)
-	bountyFieldTitle                           = big.NewInt(1 << 29)
-	bountyFieldUnresolvedSubmissionsCount      = big.NewInt(1 << 30)
-	bountyFieldUpdatedAt                       = big.NewInt(1 << 31)
-	bountyFieldViewerAcceptedSubmissionsCount  = big.NewInt(1 << 32)
+	bountyFieldActiveProofLivestreamFeeds      = big.NewInt(1 << 4)
+	bountyFieldAffiliateShareAmount            = big.NewInt(1 << 5)
+	bountyFieldAllowedCountryCodes             = big.NewInt(1 << 6)
+	bountyFieldAwaitingReviewSubmissionsCount  = big.NewInt(1 << 7)
+	bountyFieldBudgetAmount                    = big.NewInt(1 << 8)
+	bountyFieldBusinessGoalType                = big.NewInt(1 << 9)
+	bountyFieldCancelRequestedAt               = big.NewInt(1 << 10)
+	bountyFieldCaptureSpec                     = big.NewInt(1 << 11)
+	bountyFieldCreatedAt                       = big.NewInt(1 << 12)
+	bountyFieldCurrency                        = big.NewInt(1 << 13)
+	bountyFieldDeniedSubmissionsCount          = big.NewInt(1 << 14)
+	bountyFieldDescription                     = big.NewInt(1 << 15)
+	bountyFieldDiscussionExperienceID          = big.NewInt(1 << 16)
+	bountyFieldDiscussionFeedID                = big.NewInt(1 << 17)
+	bountyFieldDiscussionPostID                = big.NewInt(1 << 18)
+	bountyFieldExperienceID                    = big.NewInt(1 << 19)
+	bountyFieldFundingAccount                  = big.NewInt(1 << 20)
+	bountyFieldGrossPaidOutAmount              = big.NewInt(1 << 21)
+	bountyFieldGrossRewardAmount               = big.NewInt(1 << 22)
+	bountyFieldHostingAccount                  = big.NewInt(1 << 23)
+	bountyFieldID                              = big.NewInt(1 << 24)
+	bountyFieldNetRewardAmount                 = big.NewInt(1 << 25)
+	bountyFieldPoster                          = big.NewInt(1 << 26)
+	bountyFieldScheduledFrequency              = big.NewInt(1 << 27)
+	bountyFieldScheduledPublishAt              = big.NewInt(1 << 28)
+	bountyFieldSpotsRemaining                  = big.NewInt(1 << 29)
+	bountyFieldStatus                          = big.NewInt(1 << 30)
+	bountyFieldSubmissionsClosedAt             = big.NewInt(1 << 31)
+	bountyFieldTitle                           = big.NewInt(1 << 32)
+	bountyFieldUnresolvedSubmissionsCount      = big.NewInt(1 << 33)
+	bountyFieldUpdatedAt                       = big.NewInt(1 << 34)
+	bountyFieldViewerAcceptedSubmissionsCount  = big.NewInt(1 << 35)
 )
 
 type Bounty struct {
@@ -437,10 +440,13 @@ type Bounty struct {
 	// Number of submissions that can be accepted (winner slots).
 	AcceptedSubmissionsLimit int `json:"accepted_submissions_limit" url:"accepted_submissions_limit"`
 	// How many winner slots one worker can win. Defaults to `1`. Wins plus proofs awaiting review never exceed this number, and a worker runs one attempt at a time. Cannot exceed `accepted_submissions_limit`.
-	AcceptedSubmissionsPerUserLimit int `json:"accepted_submissions_per_user_limit" url:"accepted_submissions_per_user_limit"`
+	AcceptedSubmissionsPerUserLimit int                           `json:"accepted_submissions_per_user_limit" url:"accepted_submissions_per_user_limit"`
+	ActiveProofLivestreamFeeds      []*BountyActiveLivestreamFeed `json:"active_proof_livestream_feeds" url:"active_proof_livestream_feeds"`
 	// What a referrer earns per accepted submission when the worker arrived through their affiliate link, in whole currency units, at the standard platform fee rate. Taken out of the worker's post-fee reward rather than added on top. `0` when the bounty pays no affiliate share, including bounties tied to no account, which cannot record a referral.
 	AffiliateShareAmount float64  `json:"affiliate_share_amount" url:"affiliate_share_amount"`
 	AllowedCountryCodes  []string `json:"allowed_country_codes" url:"allowed_country_codes"`
+	// Submissions delivered and waiting on review. A subset of `unresolved_submissions_count`, which also counts attempts still in progress.
+	AwaitingReviewSubmissionsCount int `json:"awaiting_review_submissions_count" url:"awaiting_review_submissions_count"`
 	// Total gross budget committed to the bounty: `gross_reward_amount` times `accepted_submissions_limit`.
 	BudgetAmount float64 `json:"budget_amount" url:"budget_amount"`
 	// What the poster wants the work to achieve, declared once at create. `null` for bounties created before the taxonomy rolled out.
@@ -453,6 +459,8 @@ type Bounty struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Currency for all amounts on the bounty, as a lowercase ISO 4217 code.
 	Currency BountyCurrency `json:"currency" url:"currency"`
+	// Submissions reviewed and turned down.
+	DeniedSubmissionsCount int `json:"denied_submissions_count" url:"denied_submissions_count"`
 	// Full task instructions shown to workers.
 	Description string `json:"description" url:"description"`
 	// Experience the bounty's discussion thread lives in, prefixed `exp_`. Read this — not `experience_id` — to open the thread: a platform-wide bounty has no hosting experience of its own but its discussion still lives in one.
@@ -531,6 +539,13 @@ func (b *Bounty) GetAcceptedSubmissionsPerUserLimit() int {
 	return b.AcceptedSubmissionsPerUserLimit
 }
 
+func (b *Bounty) GetActiveProofLivestreamFeeds() []*BountyActiveLivestreamFeed {
+	if b == nil {
+		return nil
+	}
+	return b.ActiveProofLivestreamFeeds
+}
+
 func (b *Bounty) GetAffiliateShareAmount() float64 {
 	if b == nil {
 		return 0
@@ -543,6 +558,13 @@ func (b *Bounty) GetAllowedCountryCodes() []string {
 		return nil
 	}
 	return b.AllowedCountryCodes
+}
+
+func (b *Bounty) GetAwaitingReviewSubmissionsCount() int {
+	if b == nil {
+		return 0
+	}
+	return b.AwaitingReviewSubmissionsCount
 }
 
 func (b *Bounty) GetBudgetAmount() float64 {
@@ -585,6 +607,13 @@ func (b *Bounty) GetCurrency() BountyCurrency {
 		return ""
 	}
 	return b.Currency
+}
+
+func (b *Bounty) GetDeniedSubmissionsCount() int {
+	if b == nil {
+		return 0
+	}
+	return b.DeniedSubmissionsCount
 }
 
 func (b *Bounty) GetDescription() string {
@@ -776,6 +805,13 @@ func (b *Bounty) SetAcceptedSubmissionsPerUserLimit(acceptedSubmissionsPerUserLi
 	b.require(bountyFieldAcceptedSubmissionsPerUserLimit)
 }
 
+// SetActiveProofLivestreamFeeds sets the ActiveProofLivestreamFeeds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *Bounty) SetActiveProofLivestreamFeeds(activeProofLivestreamFeeds []*BountyActiveLivestreamFeed) {
+	b.ActiveProofLivestreamFeeds = activeProofLivestreamFeeds
+	b.require(bountyFieldActiveProofLivestreamFeeds)
+}
+
 // SetAffiliateShareAmount sets the AffiliateShareAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (b *Bounty) SetAffiliateShareAmount(affiliateShareAmount float64) {
@@ -788,6 +824,13 @@ func (b *Bounty) SetAffiliateShareAmount(affiliateShareAmount float64) {
 func (b *Bounty) SetAllowedCountryCodes(allowedCountryCodes []string) {
 	b.AllowedCountryCodes = allowedCountryCodes
 	b.require(bountyFieldAllowedCountryCodes)
+}
+
+// SetAwaitingReviewSubmissionsCount sets the AwaitingReviewSubmissionsCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *Bounty) SetAwaitingReviewSubmissionsCount(awaitingReviewSubmissionsCount int) {
+	b.AwaitingReviewSubmissionsCount = awaitingReviewSubmissionsCount
+	b.require(bountyFieldAwaitingReviewSubmissionsCount)
 }
 
 // SetBudgetAmount sets the BudgetAmount field and marks it as non-optional;
@@ -830,6 +873,13 @@ func (b *Bounty) SetCreatedAt(createdAt string) {
 func (b *Bounty) SetCurrency(currency BountyCurrency) {
 	b.Currency = currency
 	b.require(bountyFieldCurrency)
+}
+
+// SetDeniedSubmissionsCount sets the DeniedSubmissionsCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *Bounty) SetDeniedSubmissionsCount(deniedSubmissionsCount int) {
+	b.DeniedSubmissionsCount = deniedSubmissionsCount
+	b.require(bountyFieldDeniedSubmissionsCount)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -1045,6 +1095,125 @@ func NewBountyAcceptedDeliverableTypesItemFromString(s string) (BountyAcceptedDe
 
 func (b BountyAcceptedDeliverableTypesItem) Ptr() *BountyAcceptedDeliverableTypesItem {
 	return &b
+}
+
+var (
+	bountyActiveLivestreamFeedFieldHost  = big.NewInt(1 << 0)
+	bountyActiveLivestreamFeedFieldID    = big.NewInt(1 << 1)
+	bountyActiveLivestreamFeedFieldTitle = big.NewInt(1 << 2)
+)
+
+type BountyActiveLivestreamFeed struct {
+	// User hosting the proof livestream — the worker streaming their attempt. `null` if the host account no longer exists.
+	Host *UserSummary `json:"host,omitempty" url:"host,omitempty"`
+	// Livestream feed ID.
+	ID string `json:"id" url:"id"`
+	// Display title for the proof livestream.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BountyActiveLivestreamFeed) GetHost() *UserSummary {
+	if b == nil {
+		return nil
+	}
+	return b.Host
+}
+
+func (b *BountyActiveLivestreamFeed) GetID() string {
+	if b == nil {
+		return ""
+	}
+	return b.ID
+}
+
+func (b *BountyActiveLivestreamFeed) GetTitle() string {
+	if b == nil {
+		return ""
+	}
+	return b.Title
+}
+
+func (b *BountyActiveLivestreamFeed) GetExtraProperties() map[string]interface{} {
+	if b == nil {
+		return nil
+	}
+	return b.extraProperties
+}
+
+func (b *BountyActiveLivestreamFeed) require(field *big.Int) {
+	if b.explicitFields == nil {
+		b.explicitFields = big.NewInt(0)
+	}
+	b.explicitFields.Or(b.explicitFields, field)
+}
+
+// SetHost sets the Host field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BountyActiveLivestreamFeed) SetHost(host *UserSummary) {
+	b.Host = host
+	b.require(bountyActiveLivestreamFeedFieldHost)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BountyActiveLivestreamFeed) SetID(id string) {
+	b.ID = id
+	b.require(bountyActiveLivestreamFeedFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BountyActiveLivestreamFeed) SetTitle(title string) {
+	b.Title = title
+	b.require(bountyActiveLivestreamFeedFieldTitle)
+}
+
+func (b *BountyActiveLivestreamFeed) UnmarshalJSON(data []byte) error {
+	type unmarshaler BountyActiveLivestreamFeed
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BountyActiveLivestreamFeed(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BountyActiveLivestreamFeed) MarshalJSON() ([]byte, error) {
+	type embed BountyActiveLivestreamFeed
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*b),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, b.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (b *BountyActiveLivestreamFeed) String() string {
+	if b == nil {
+		return "<nil>"
+	}
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
 }
 
 // What the poster wants the work to achieve, declared once at create. `null` for bounties created before the taxonomy rolled out.

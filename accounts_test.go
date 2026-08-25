@@ -1596,6 +1596,14 @@ func TestSettersAccount(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEula", func(t *testing.T) {
+		obj := &Account{}
+		var fernTestValueEula *File
+		obj.SetEula(fernTestValueEula)
+		assert.Equal(t, fernTestValueEula, obj.Eula)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetHomePreferences", func(t *testing.T) {
 		obj := &Account{}
 		var fernTestValueHomePreferences []AccountHomePreferencesItem
@@ -1716,6 +1724,14 @@ func TestSettersAccount(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPrivacyPolicy", func(t *testing.T) {
+		obj := &Account{}
+		var fernTestValuePrivacyPolicy *File
+		obj.SetPrivacyPolicy(fernTestValuePrivacyPolicy)
+		assert.Equal(t, fernTestValuePrivacyPolicy, obj.PrivacyPolicy)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetProductTaxCode", func(t *testing.T) {
 		obj := &Account{}
 		var fernTestValueProductTaxCode map[string]any
@@ -1745,6 +1761,14 @@ func TestSettersAccount(t *testing.T) {
 		var fernTestValueRequiredActions []*AccountRequiredAction
 		obj.SetRequiredActions(fernTestValueRequiredActions)
 		assert.Equal(t, fernTestValueRequiredActions, obj.RequiredActions)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetReturnPolicy", func(t *testing.T) {
+		obj := &Account{}
+		var fernTestValueReturnPolicy *File
+		obj.SetReturnPolicy(fernTestValueReturnPolicy)
+		assert.Equal(t, fernTestValueReturnPolicy, obj.ReturnPolicy)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1865,6 +1889,14 @@ func TestSettersAccount(t *testing.T) {
 		var fernTestValueTaxType *AccountTaxType
 		obj.SetTaxType(fernTestValueTaxType)
 		assert.Equal(t, fernTestValueTaxType, obj.TaxType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTermsOfService", func(t *testing.T) {
+		obj := &Account{}
+		var fernTestValueTermsOfService *File
+		obj.SetTermsOfService(fernTestValueTermsOfService)
+		assert.Equal(t, fernTestValueTermsOfService, obj.TermsOfService)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2367,6 +2399,39 @@ func TestGettersAccount(t *testing.T) {
 		_ = obj.GetEmail() // Should return zero value
 	})
 
+	t.Run("GetEula", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var expected *File
+		obj.Eula = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEula(), "getter should return the property value")
+	})
+
+	t.Run("GetEula_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		obj.Eula = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEula(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEula_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Account
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEula() // Should return zero value
+	})
+
 	t.Run("GetHomePreferences", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2852,6 +2917,39 @@ func TestGettersAccount(t *testing.T) {
 		_ = obj.GetPaymentControls() // Should return zero value
 	})
 
+	t.Run("GetPrivacyPolicy", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var expected *File
+		obj.PrivacyPolicy = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPrivacyPolicy(), "getter should return the property value")
+	})
+
+	t.Run("GetPrivacyPolicy_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		obj.PrivacyPolicy = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPrivacyPolicy(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPrivacyPolicy_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Account
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPrivacyPolicy() // Should return zero value
+	})
+
 	t.Run("GetProductTaxCode", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2972,6 +3070,39 @@ func TestGettersAccount(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRequiredActions() // Should return zero value
+	})
+
+	t.Run("GetReturnPolicy", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var expected *File
+		obj.ReturnPolicy = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReturnPolicy(), "getter should return the property value")
+	})
+
+	t.Run("GetReturnPolicy_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		obj.ReturnPolicy = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetReturnPolicy(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetReturnPolicy_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Account
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReturnPolicy() // Should return zero value
 	})
 
 	t.Run("GetRoute", func(t *testing.T) {
@@ -3407,6 +3538,39 @@ func TestGettersAccount(t *testing.T) {
 			}
 		}()
 		_ = obj.GetTaxType() // Should return zero value
+	})
+
+	t.Run("GetTermsOfService", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var expected *File
+		obj.TermsOfService = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTermsOfService(), "getter should return the property value")
+	})
+
+	t.Run("GetTermsOfService_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		obj.TermsOfService = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTermsOfService(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTermsOfService_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Account
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTermsOfService() // Should return zero value
 	})
 
 	t.Run("GetThreeDsLevel", func(t *testing.T) {
@@ -4090,6 +4254,37 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetEula_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var fernTestValueEula *File
+
+		// Act
+		obj.SetEula(fernTestValueEula)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetHomePreferences_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -4555,6 +4750,37 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetPrivacyPolicy_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var fernTestValuePrivacyPolicy *File
+
+		// Act
+		obj.SetPrivacyPolicy(fernTestValuePrivacyPolicy)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetProductTaxCode_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -4656,6 +4882,37 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 
 		// Act
 		obj.SetRequiredActions(fernTestValueRequiredActions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReturnPolicy_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var fernTestValueReturnPolicy *File
+
+		// Act
+		obj.SetReturnPolicy(fernTestValueReturnPolicy)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5121,6 +5378,37 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 
 		// Act
 		obj.SetTaxType(fernTestValueTaxType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTermsOfService_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var fernTestValueTermsOfService *File
+
+		// Act
+		obj.SetTermsOfService(fernTestValueTermsOfService)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

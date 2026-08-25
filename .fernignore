@@ -37,3 +37,6 @@
 .github/workflows/auto-merge.yml
 .github/workflows/publish-main.yml
 LICENSE
+.fern/replay.lock
+.fern/replay.yml
+.gitattributes

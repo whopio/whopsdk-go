@@ -663,6 +663,7 @@ func (g GetFinancialReportResponseRowsItemGrouping) Ptr() *GetFinancialReportRes
 type GetFinancialReportResponseRowsItemLineCategory string
 
 const (
+	GetFinancialReportResponseRowsItemLineCategoryAcceleratedSettlementFee                  GetFinancialReportResponseRowsItemLineCategory = "accelerated_settlement_fee"
 	GetFinancialReportResponseRowsItemLineCategoryAccountSettlement                         GetFinancialReportResponseRowsItemLineCategory = "account_settlement"
 	GetFinancialReportResponseRowsItemLineCategoryAdBalanceFundingReceipt                   GetFinancialReportResponseRowsItemLineCategory = "ad_balance_funding_receipt"
 	GetFinancialReportResponseRowsItemLineCategoryAdBudgetRelease                           GetFinancialReportResponseRowsItemLineCategory = "ad_budget_release"
@@ -828,6 +829,7 @@ const (
 	GetFinancialReportResponseRowsItemLineCategoryPlatformEarningSettlement                 GetFinancialReportResponseRowsItemLineCategory = "platform_earning_settlement"
 	GetFinancialReportResponseRowsItemLineCategoryPlatformEarningUnreconciledClearing       GetFinancialReportResponseRowsItemLineCategory = "platform_earning_unreconciled_clearing"
 	GetFinancialReportResponseRowsItemLineCategoryPromoReversal                             GetFinancialReportResponseRowsItemLineCategory = "promo_reversal"
+	GetFinancialReportResponseRowsItemLineCategoryPspAcceleratedSettlementFee               GetFinancialReportResponseRowsItemLineCategory = "psp_accelerated_settlement_fee"
 	GetFinancialReportResponseRowsItemLineCategoryPspAccountUpdaterFee                      GetFinancialReportResponseRowsItemLineCategory = "psp_account_updater_fee"
 	GetFinancialReportResponseRowsItemLineCategoryPspAdjustedProcessingFee                  GetFinancialReportResponseRowsItemLineCategory = "psp_adjusted_processing_fee"
 	GetFinancialReportResponseRowsItemLineCategoryPspAuthenticationFee                      GetFinancialReportResponseRowsItemLineCategory = "psp_authentication_fee"
@@ -944,6 +946,8 @@ const (
 
 func NewGetFinancialReportResponseRowsItemLineCategoryFromString(s string) (GetFinancialReportResponseRowsItemLineCategory, error) {
 	switch s {
+	case "accelerated_settlement_fee":
+		return GetFinancialReportResponseRowsItemLineCategoryAcceleratedSettlementFee, nil
 	case "account_settlement":
 		return GetFinancialReportResponseRowsItemLineCategoryAccountSettlement, nil
 	case "ad_balance_funding_receipt":
@@ -1274,6 +1278,8 @@ func NewGetFinancialReportResponseRowsItemLineCategoryFromString(s string) (GetF
 		return GetFinancialReportResponseRowsItemLineCategoryPlatformEarningUnreconciledClearing, nil
 	case "promo_reversal":
 		return GetFinancialReportResponseRowsItemLineCategoryPromoReversal, nil
+	case "psp_accelerated_settlement_fee":
+		return GetFinancialReportResponseRowsItemLineCategoryPspAcceleratedSettlementFee, nil
 	case "psp_account_updater_fee":
 		return GetFinancialReportResponseRowsItemLineCategoryPspAccountUpdaterFee, nil
 	case "psp_adjusted_processing_fee":

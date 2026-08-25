@@ -1805,6 +1805,13 @@ func TestEnumGetFinancialReportResponseRowsItemGrouping(t *testing.T) {
 }
 
 func TestEnumGetFinancialReportResponseRowsItemLineCategory(t *testing.T) {
+	t.Run("NewFromString_accelerated_settlement_fee", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetFinancialReportResponseRowsItemLineCategoryFromString("accelerated_settlement_fee")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetFinancialReportResponseRowsItemLineCategory("accelerated_settlement_fee"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_account_settlement", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewGetFinancialReportResponseRowsItemLineCategoryFromString("account_settlement")
@@ -2960,6 +2967,13 @@ func TestEnumGetFinancialReportResponseRowsItemLineCategory(t *testing.T) {
 		assert.Equal(t, GetFinancialReportResponseRowsItemLineCategory("promo_reversal"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_psp_accelerated_settlement_fee", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetFinancialReportResponseRowsItemLineCategoryFromString("psp_accelerated_settlement_fee")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetFinancialReportResponseRowsItemLineCategory("psp_accelerated_settlement_fee"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_psp_account_updater_fee", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewGetFinancialReportResponseRowsItemLineCategoryFromString("psp_account_updater_fee")
@@ -3750,7 +3764,7 @@ func TestEnumGetFinancialReportResponseRowsItemLineCategory(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewGetFinancialReportResponseRowsItemLineCategoryFromString("account_settlement")
+		val, err := NewGetFinancialReportResponseRowsItemLineCategoryFromString("accelerated_settlement_fee")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

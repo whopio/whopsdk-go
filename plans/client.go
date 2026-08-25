@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-08-21-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,12 +39,11 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of plans belonging to an account, with optional filtering by visibility, type, release method, and product.
+// Returns a paginated list of plans. Omit `account_id` and pass `product_ids` to list a product's public buyable plans.
 //
 // Example:
 //
 //	request := &whopsdk.ListPlansRequest{
-//	    AccountID: "account_id",
 //	    ReleaseMethods: []*string{
 //	        whopsdk.String(
 //	            "buy_now",

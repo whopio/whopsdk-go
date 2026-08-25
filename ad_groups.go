@@ -783,13 +783,14 @@ func (r *RetrieveAdGroupsRequest) SetAttributionModel(attributionModel *Retrieve
 }
 
 var (
-	searchTargetingOptionsAdGroupsRequestFieldAccountID     = big.NewInt(1 << 0)
-	searchTargetingOptionsAdGroupsRequestFieldPlatform      = big.NewInt(1 << 1)
-	searchTargetingOptionsAdGroupsRequestFieldQuery         = big.NewInt(1 << 2)
-	searchTargetingOptionsAdGroupsRequestFieldTypes         = big.NewInt(1 << 3)
-	searchTargetingOptionsAdGroupsRequestFieldLocationTypes = big.NewInt(1 << 4)
-	searchTargetingOptionsAdGroupsRequestFieldCountry       = big.NewInt(1 << 5)
-	searchTargetingOptionsAdGroupsRequestFieldLimit         = big.NewInt(1 << 6)
+	searchTargetingOptionsAdGroupsRequestFieldAccountID           = big.NewInt(1 << 0)
+	searchTargetingOptionsAdGroupsRequestFieldPlatform            = big.NewInt(1 << 1)
+	searchTargetingOptionsAdGroupsRequestFieldQuery               = big.NewInt(1 << 2)
+	searchTargetingOptionsAdGroupsRequestFieldTypes               = big.NewInt(1 << 3)
+	searchTargetingOptionsAdGroupsRequestFieldLocationTypes       = big.NewInt(1 << 4)
+	searchTargetingOptionsAdGroupsRequestFieldCountry             = big.NewInt(1 << 5)
+	searchTargetingOptionsAdGroupsRequestFieldLimit               = big.NewInt(1 << 6)
+	searchTargetingOptionsAdGroupsRequestFieldSpecialAdCategories = big.NewInt(1 << 7)
 )
 
 type SearchTargetingOptionsAdGroupsRequest struct {
@@ -807,6 +808,8 @@ type SearchTargetingOptionsAdGroupsRequest struct {
 	Country *string `json:"-" url:"country,omitempty"`
 	// Maximum number of results per requested type.
 	Limit *int `json:"-" url:"limit,omitempty"`
+	// The campaign's declared special ad categories. Under `housing`, `employment`, or `financial_products` the ad platform allows interests only, drawn from a short approved list, so results are narrowed to what such a campaign can launch with and other kinds return nothing. Blank `query` browses that approved list instead of the usual fixed lists.
+	SpecialAdCategories []*SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem `json:"-" url:"special_ad_categories,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -866,6 +869,13 @@ func (s *SearchTargetingOptionsAdGroupsRequest) SetCountry(country *string) {
 func (s *SearchTargetingOptionsAdGroupsRequest) SetLimit(limit *int) {
 	s.Limit = limit
 	s.require(searchTargetingOptionsAdGroupsRequestFieldLimit)
+}
+
+// SetSpecialAdCategories sets the SpecialAdCategories field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchTargetingOptionsAdGroupsRequest) SetSpecialAdCategories(specialAdCategories []*SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem) {
+	s.SpecialAdCategories = specialAdCategories
+	s.require(searchTargetingOptionsAdGroupsRequestFieldSpecialAdCategories)
 }
 
 var (
@@ -1011,7 +1021,7 @@ type AdGroup struct {
 	Demographics *AdGroupDemographics `json:"demographics" url:"demographics"`
 	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`). `null` for `minimum_cost` bidding.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
-	// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. Can't be combined with automatic audience targeting, and unavailable to campaigns with special_ad_categories.
+	// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. Can't be combined with automatic audience targeting. Special ad category campaigns are limited to approved interests.
 	DetailedTargeting *AdGroupDetailedTargeting `json:"detailed_targeting" url:"detailed_targeting"`
 	// Device platforms and operating systems targeted.
 	Devices *AdGroupDevices `json:"devices" url:"devices"`
@@ -4754,7 +4764,7 @@ type AdGroupGeoLocationsBody struct {
 	CustomLocations []*AdGroupGeoLocationsBodyCustomLocationsItem `json:"custom_locations,omitempty" url:"custom_locations,omitempty"`
 	// US states and DC, as ISO 3166-2 codes such as `US-CA`. US territories (`PR`, `GU`, `VI`, `AS`, `MP`) and everywhere outside the US are targeted through `countries`.
 	Regions []string `json:"regions,omitempty" url:"regions,omitempty"`
-	// ZIP and postal codes, as bare strings or objects with a key.
+	// ZIP and postal codes, keyed by the ad platform's location taxonomy. Meta keys these `COUNTRY:CODE`, as `US:78756` — a bare code is ambiguous, because the same one exists in several countries. TikTok takes the bare code.
 	Zips []*AdGroupGeoLocationsBodyZipsItem `json:"zips,omitempty" url:"zips,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5249,7 +5259,7 @@ var (
 )
 
 type AdGroupGeoLocationsBodyZipsItemKey struct {
-	// The ZIP or postal code.
+	// The ad platform's key for the ZIP or postal code.
 	Key string `json:"key" url:"key"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -8381,6 +8391,34 @@ func NewSearchTargetingOptionsAdGroupsRequestPlatformFromString(s string) (Searc
 }
 
 func (s SearchTargetingOptionsAdGroupsRequestPlatform) Ptr() *SearchTargetingOptionsAdGroupsRequestPlatform {
+	return &s
+}
+
+type SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem string
+
+const (
+	SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemHousing           SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem = "housing"
+	SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemEmployment        SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem = "employment"
+	SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemFinancialProducts SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem = "financial_products"
+	SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemPolitics          SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem = "politics"
+)
+
+func NewSearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemFromString(s string) (SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem, error) {
+	switch s {
+	case "housing":
+		return SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemHousing, nil
+	case "employment":
+		return SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemEmployment, nil
+	case "financial_products":
+		return SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemFinancialProducts, nil
+	case "politics":
+		return SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItemPolitics, nil
+	}
+	var t SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem) Ptr() *SearchTargetingOptionsAdGroupsRequestSpecialAdCategoriesItem {
 	return &s
 }
 
