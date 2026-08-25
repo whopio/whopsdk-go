@@ -187,8 +187,14 @@ jobs:
 
           head_sha=$(git rev-parse HEAD)
           tagged=$(gh api "repos/${REPOSITORY}/git/ref/tags/v${version}" --jq '.object.sha' 2>/dev/null || true)
+          if ! printf '%s' "$tagged" | grep -qE '^[0-9a-f]{40}$'; then
+            tagged=""
+          fi
           if [ -n "$tagged" ]; then
-            peeled=$(gh api "repos/${REPOSITORY}/git/tags/${tagged}" --jq '.object.sha' 2>/dev/null || printf '%s' "$tagged")
+            peeled=$(gh api "repos/${REPOSITORY}/git/tags/${tagged}" --jq '.object.sha' 2>/dev/null || true)
+            if ! printf '%s' "$peeled" | grep -qE '^[0-9a-f]{40}$'; then
+              peeled="$tagged"
+            fi
             if [ "$peeled" = "$head_sha" ]; then
               echo "::notice::v${version} already tags this commit; nothing to release."
               emit release false
