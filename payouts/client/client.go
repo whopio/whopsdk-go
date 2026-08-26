@@ -26,7 +26,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21-1"
+		apiVersionDateDefault := "2026-08-25-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -163,6 +163,33 @@ func (c *Client) Retrieve(
 	opts ...option.RequestOption,
 ) (*whopsdk.RetrievePayoutsResponse, error) {
 	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Cancels a payout that is still in review and returns the funds, fees included, to the balance. A payout can be canceled while its status is `in_review`. A `requested` payout is still being prepared (its funds may be converting) and answers 409 until it reaches review; from `processing` on, the money is on its way and the answer is 409 with error type `not_cancelable`. Canceling a payout that is already canceled succeeds and returns it unchanged.
+//
+// Example:
+//
+//	request := &whopsdk.CancelPayoutsRequest{
+//	    ID: "id",
+//	}
+//	client.Payouts.Cancel(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Cancel(
+	ctx context.Context,
+	request *whopsdk.CancelPayoutsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.CancelPayoutsResponse, error) {
+	response, err := c.WithRawResponse.Cancel(
 		ctx,
 		request,
 		opts...,

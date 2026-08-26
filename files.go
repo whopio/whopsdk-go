@@ -154,6 +154,92 @@ func (c *CreateFilesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	listFilesRequestFieldFileIDs   = big.NewInt(1 << 0)
+	listFilesRequestFieldOrder     = big.NewInt(1 << 1)
+	listFilesRequestFieldDirection = big.NewInt(1 << 2)
+	listFilesRequestFieldFirst     = big.NewInt(1 << 3)
+	listFilesRequestFieldAfter     = big.NewInt(1 << 4)
+	listFilesRequestFieldLast      = big.NewInt(1 << 5)
+	listFilesRequestFieldBefore    = big.NewInt(1 << 6)
+)
+
+type ListFilesRequest struct {
+	// The files to return, each prefixed `file_`. Repeat the parameter to pass several, up to 250 per request. Batches of up to 100 answer in one page by default; larger batches page at up to 100 per response.
+	FileIDs []*string `json:"-" url:"file_ids,omitempty"`
+	// The field to sort by.
+	Order *ListFilesRequestOrder `json:"-" url:"order,omitempty"`
+	// The sort direction.
+	Direction *ListFilesRequestDirection `json:"-" url:"direction,omitempty"`
+	// The number of files to return.
+	First *int `json:"-" url:"first,omitempty"`
+	// A cursor; returns files after this position.
+	After *string `json:"-" url:"after,omitempty"`
+	// The number of files to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// A cursor; returns files before this position.
+	Before *string `json:"-" url:"before,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListFilesRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetFileIDs sets the FileIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesRequest) SetFileIDs(fileIDs []*string) {
+	l.FileIDs = fileIDs
+	l.require(listFilesRequestFieldFileIDs)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesRequest) SetOrder(order *ListFilesRequestOrder) {
+	l.Order = order
+	l.require(listFilesRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesRequest) SetDirection(direction *ListFilesRequestDirection) {
+	l.Direction = direction
+	l.require(listFilesRequestFieldDirection)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesRequest) SetFirst(first *int) {
+	l.First = first
+	l.require(listFilesRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesRequest) SetAfter(after *string) {
+	l.After = after
+	l.require(listFilesRequestFieldAfter)
+}
+
+// SetLast sets the Last field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesRequest) SetLast(last *int) {
+	l.Last = last
+	l.require(listFilesRequestFieldLast)
+}
+
+// SetBefore sets the Before field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesRequest) SetBefore(before *string) {
+	l.Before = before
+	l.require(listFilesRequestFieldBefore)
+}
+
+var (
 	retrieveFilesRequestFieldID = big.NewInt(1 << 0)
 )
 
@@ -302,4 +388,277 @@ func NewCreateFilesRequestVisibilityFromString(s string) (CreateFilesRequestVisi
 
 func (c CreateFilesRequestVisibility) Ptr() *CreateFilesRequestVisibility {
 	return &c
+}
+
+type ListFilesRequestDirection string
+
+const (
+	ListFilesRequestDirectionAsc  ListFilesRequestDirection = "asc"
+	ListFilesRequestDirectionDesc ListFilesRequestDirection = "desc"
+)
+
+func NewListFilesRequestDirectionFromString(s string) (ListFilesRequestDirection, error) {
+	switch s {
+	case "asc":
+		return ListFilesRequestDirectionAsc, nil
+	case "desc":
+		return ListFilesRequestDirectionDesc, nil
+	}
+	var t ListFilesRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListFilesRequestDirection) Ptr() *ListFilesRequestDirection {
+	return &l
+}
+
+type ListFilesRequestOrder string
+
+const (
+	ListFilesRequestOrderCreatedAt ListFilesRequestOrder = "created_at"
+)
+
+func NewListFilesRequestOrderFromString(s string) (ListFilesRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return ListFilesRequestOrderCreatedAt, nil
+	}
+	var t ListFilesRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListFilesRequestOrder) Ptr() *ListFilesRequestOrder {
+	return &l
+}
+
+var (
+	listFilesResponseFieldData     = big.NewInt(1 << 0)
+	listFilesResponseFieldPageInfo = big.NewInt(1 << 1)
+)
+
+type ListFilesResponse struct {
+	Data     []*File                    `json:"data" url:"data"`
+	PageInfo *ListFilesResponsePageInfo `json:"page_info" url:"page_info"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListFilesResponse) GetData() []*File {
+	if l == nil {
+		return nil
+	}
+	return l.Data
+}
+
+func (l *ListFilesResponse) GetPageInfo() *ListFilesResponsePageInfo {
+	if l == nil {
+		return nil
+	}
+	return l.PageInfo
+}
+
+func (l *ListFilesResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListFilesResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesResponse) SetData(data []*File) {
+	l.Data = data
+	l.require(listFilesResponseFieldData)
+}
+
+// SetPageInfo sets the PageInfo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesResponse) SetPageInfo(pageInfo *ListFilesResponsePageInfo) {
+	l.PageInfo = pageInfo
+	l.require(listFilesResponseFieldPageInfo)
+}
+
+func (l *ListFilesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListFilesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListFilesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListFilesResponse) MarshalJSON() ([]byte, error) {
+	type embed ListFilesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListFilesResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listFilesResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	listFilesResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	listFilesResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	listFilesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+type ListFilesResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListFilesResponsePageInfo) GetEndCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EndCursor
+}
+
+func (l *ListFilesResponsePageInfo) GetHasNextPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasNextPage
+}
+
+func (l *ListFilesResponsePageInfo) GetHasPreviousPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasPreviousPage
+}
+
+func (l *ListFilesResponsePageInfo) GetStartCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.StartCursor
+}
+
+func (l *ListFilesResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListFilesResponsePageInfo) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesResponsePageInfo) SetEndCursor(endCursor *string) {
+	l.EndCursor = endCursor
+	l.require(listFilesResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	l.HasNextPage = hasNextPage
+	l.require(listFilesResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	l.HasPreviousPage = hasPreviousPage
+	l.require(listFilesResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFilesResponsePageInfo) SetStartCursor(startCursor *string) {
+	l.StartCursor = startCursor
+	l.require(listFilesResponsePageInfoFieldStartCursor)
+}
+
+func (l *ListFilesResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListFilesResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListFilesResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListFilesResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed ListFilesResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListFilesResponsePageInfo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }

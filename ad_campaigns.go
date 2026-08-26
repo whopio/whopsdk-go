@@ -2944,6 +2944,29 @@ func (u UpdateAdCampaignsRequestBudgetOptimization) Ptr() *UpdateAdCampaignsRequ
 	return &u
 }
 
+// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`). Only changeable while the campaign is a draft; send budget_amount in the same request so the amount lands on the new type.
+type UpdateAdCampaignsRequestBudgetType string
+
+const (
+	UpdateAdCampaignsRequestBudgetTypeDaily    UpdateAdCampaignsRequestBudgetType = "daily"
+	UpdateAdCampaignsRequestBudgetTypeLifetime UpdateAdCampaignsRequestBudgetType = "lifetime"
+)
+
+func NewUpdateAdCampaignsRequestBudgetTypeFromString(s string) (UpdateAdCampaignsRequestBudgetType, error) {
+	switch s {
+	case "daily":
+		return UpdateAdCampaignsRequestBudgetTypeDaily, nil
+	case "lifetime":
+		return UpdateAdCampaignsRequestBudgetTypeLifetime, nil
+	}
+	var t UpdateAdCampaignsRequestBudgetType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateAdCampaignsRequestBudgetType) Ptr() *UpdateAdCampaignsRequestBudgetType {
+	return &u
+}
+
 type UpdateAdCampaignsRequestSpecialAdCategoriesItem string
 
 const (
@@ -3023,11 +3046,12 @@ var (
 	updateAdCampaignsRequestFieldBidType             = big.NewInt(1 << 1)
 	updateAdCampaignsRequestFieldBudgetAmount        = big.NewInt(1 << 2)
 	updateAdCampaignsRequestFieldBudgetOptimization  = big.NewInt(1 << 3)
-	updateAdCampaignsRequestFieldEndsAt              = big.NewInt(1 << 4)
-	updateAdCampaignsRequestFieldSpecialAdCategories = big.NewInt(1 << 5)
-	updateAdCampaignsRequestFieldStartsAt            = big.NewInt(1 << 6)
-	updateAdCampaignsRequestFieldStatus              = big.NewInt(1 << 7)
-	updateAdCampaignsRequestFieldTitle               = big.NewInt(1 << 8)
+	updateAdCampaignsRequestFieldBudgetType          = big.NewInt(1 << 4)
+	updateAdCampaignsRequestFieldEndsAt              = big.NewInt(1 << 5)
+	updateAdCampaignsRequestFieldSpecialAdCategories = big.NewInt(1 << 6)
+	updateAdCampaignsRequestFieldStartsAt            = big.NewInt(1 << 7)
+	updateAdCampaignsRequestFieldStatus              = big.NewInt(1 << 8)
+	updateAdCampaignsRequestFieldTitle               = big.NewInt(1 << 9)
 )
 
 type UpdateAdCampaignsRequest struct {
@@ -3035,10 +3059,12 @@ type UpdateAdCampaignsRequest struct {
 	ID string `json:"-" url:"-"`
 	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Switching to `minimum_cost` clears the cap amounts stored on the campaign's ad groups. Only for campaigns that own the budget.
 	BidType *UpdateAdCampaignsRequestBidType `json:"bid_type,omitempty" url:"-"`
-	// The campaign budget, in the account's currency. Interpreted as daily or lifetime per the campaign's existing budget type.
+	// The campaign budget, in the account's currency. Interpreted as daily or lifetime per the campaign's budget type, including a budget_type sent in the same request.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
 	// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign is live on the ad network; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
 	BudgetOptimization *UpdateAdCampaignsRequestBudgetOptimization `json:"budget_optimization,omitempty" url:"-"`
+	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`). Only changeable while the campaign is a draft; send budget_amount in the same request so the amount lands on the new type.
+	BudgetType *UpdateAdCampaignsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	// When the campaign stops delivering, as an ISO 8601 timestamp. Only for campaigns that own the budget.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
 	// Regulated categories the campaign falls under. Editable on any campaign, draft or launched; pass an empty array to clear.
@@ -3087,6 +3113,13 @@ func (u *UpdateAdCampaignsRequest) SetBudgetAmount(budgetAmount *float64) {
 func (u *UpdateAdCampaignsRequest) SetBudgetOptimization(budgetOptimization *UpdateAdCampaignsRequestBudgetOptimization) {
 	u.BudgetOptimization = budgetOptimization
 	u.require(updateAdCampaignsRequestFieldBudgetOptimization)
+}
+
+// SetBudgetType sets the BudgetType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdCampaignsRequest) SetBudgetType(budgetType *UpdateAdCampaignsRequestBudgetType) {
+	u.BudgetType = budgetType
+	u.require(updateAdCampaignsRequestFieldBudgetType)
 }
 
 // SetEndsAt sets the EndsAt field and marks it as non-optional;

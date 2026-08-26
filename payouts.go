@@ -11,6 +11,52 @@ import (
 )
 
 var (
+	cancelPayoutsRequestFieldID        = big.NewInt(1 << 0)
+	cancelPayoutsRequestFieldAccountID = big.NewInt(1 << 1)
+	cancelPayoutsRequestFieldUserID    = big.NewInt(1 << 2)
+)
+
+type CancelPayoutsRequest struct {
+	// Payout ID, prefixed `wdrl_`, or the `cofr_` payout request ID returned by `POST /payouts` — both cancel the same payout.
+	ID string `json:"-" url:"-"`
+	// Owning account ID, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Owning user ID, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+	UserID *string `json:"-" url:"user_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CancelPayoutsRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsRequest) SetID(id string) {
+	c.ID = id
+	c.require(cancelPayoutsRequestFieldID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(cancelPayoutsRequestFieldAccountID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsRequest) SetUserID(userID *string) {
+	c.UserID = userID
+	c.require(cancelPayoutsRequestFieldUserID)
+}
+
+var (
 	listPayoutsRequestFieldAccountID      = big.NewInt(1 << 0)
 	listPayoutsRequestFieldUserID         = big.NewInt(1 << 1)
 	listPayoutsRequestFieldCurrency       = big.NewInt(1 << 2)
@@ -190,6 +236,1020 @@ func (r *RetrievePayoutsRequest) SetAccountID(accountID *string) {
 func (r *RetrievePayoutsRequest) SetUserID(userID *string) {
 	r.UserID = userID
 	r.require(retrievePayoutsRequestFieldUserID)
+}
+
+var (
+	cancelPayoutsResponseFieldAmount              = big.NewInt(1 << 0)
+	cancelPayoutsResponseFieldCreatedAt           = big.NewInt(1 << 1)
+	cancelPayoutsResponseFieldCurrency            = big.NewInt(1 << 2)
+	cancelPayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 3)
+	cancelPayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 4)
+	cancelPayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 5)
+	cancelPayoutsResponseFieldExchangeRate        = big.NewInt(1 << 6)
+	cancelPayoutsResponseFieldFailure             = big.NewInt(1 << 7)
+	cancelPayoutsResponseFieldFeeAmount           = big.NewInt(1 << 8)
+	cancelPayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 9)
+	cancelPayoutsResponseFieldID                  = big.NewInt(1 << 10)
+	cancelPayoutsResponseFieldMarkupFee           = big.NewInt(1 << 11)
+	cancelPayoutsResponseFieldMetadata            = big.NewInt(1 << 12)
+	cancelPayoutsResponseFieldNetAmount           = big.NewInt(1 << 13)
+	cancelPayoutsResponseFieldNotes               = big.NewInt(1 << 14)
+	cancelPayoutsResponseFieldObject              = big.NewInt(1 << 15)
+	cancelPayoutsResponseFieldPayerName           = big.NewInt(1 << 16)
+	cancelPayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 17)
+	cancelPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 18)
+	cancelPayoutsResponseFieldSource              = big.NewInt(1 << 19)
+	cancelPayoutsResponseFieldSpeed               = big.NewInt(1 << 20)
+	cancelPayoutsResponseFieldStatus              = big.NewInt(1 << 21)
+	cancelPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 22)
+	cancelPayoutsResponseFieldTraceCode           = big.NewInt(1 << 23)
+)
+
+type CancelPayoutsResponse struct {
+	// The payout amount in whole currency units, as a decimal string.
+	Amount string `json:"amount" url:"amount"`
+	// When the payout was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// Payout currency.
+	Currency string `json:"currency" url:"currency"`
+	// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
+	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
+	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
+	// Estimated time the funds become available in the destination account.
+	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
+	// Exchange rate from the payout currency to the destination currency. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded rate.
+	ExchangeRate *float64 `json:"exchange_rate,omitempty" url:"exchange_rate,omitempty"`
+	// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
+	Failure *CancelPayoutsResponseFailure `json:"failure,omitempty" url:"failure,omitempty"`
+	// The fee charged for the payout, in the payout currency, as a decimal string.
+	FeeAmount string `json:"fee_amount" url:"fee_amount"`
+	// Who bore the payout fee: the account itself, or its parent platform.
+	FeePaidBy CancelPayoutsResponseFeePaidBy `json:"fee_paid_by" url:"fee_paid_by"`
+	// Payout ID, prefixed `wdrl_` for a payout returned by `GET /payouts` or `cofr_` for a payout request returned by `POST /payouts`.
+	ID string `json:"id" url:"id"`
+	// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies.
+	MarkupFee string `json:"markup_fee" url:"markup_fee"`
+	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
+	Metadata map[string]string `json:"metadata" url:"metadata"`
+	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+	NetAmount string `json:"net_amount" url:"net_amount"`
+	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
+	Notes  *string                     `json:"notes,omitempty" url:"notes,omitempty"`
+	Object CancelPayoutsResponseObject `json:"object" url:"object"`
+	// Name of the entity processing the payout.
+	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
+	// The saved payout method used. Requires payout:destination:read; null without it.
+	PayoutMethod *CancelPayoutsResponsePayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
+	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. For a request retrieved by its own `cofr_` ID, this equals `id`. Returns `null` for payouts not created by `POST /payouts`.
+	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
+	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+	Source *CancelPayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
+	// Payout delivery speed.
+	Speed CancelPayoutsResponseSpeed `json:"speed" url:"speed"`
+	// Current payout status.
+	Status CancelPayoutsResponseStatus `json:"status" url:"status"`
+	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+	StatusDetail string `json:"status_detail" url:"status_detail"`
+	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
+	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CancelPayoutsResponse) GetAmount() string {
+	if c == nil {
+		return ""
+	}
+	return c.Amount
+}
+
+func (c *CancelPayoutsResponse) GetCreatedAt() time.Time {
+	if c == nil {
+		return time.Time{}
+	}
+	return c.CreatedAt
+}
+
+func (c *CancelPayoutsResponse) GetCurrency() string {
+	if c == nil {
+		return ""
+	}
+	return c.Currency
+}
+
+func (c *CancelPayoutsResponse) GetDestinationAmount() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DestinationAmount
+}
+
+func (c *CancelPayoutsResponse) GetDestinationCurrency() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DestinationCurrency
+}
+
+func (c *CancelPayoutsResponse) GetEstimatedArrival() *time.Time {
+	if c == nil {
+		return nil
+	}
+	return c.EstimatedArrival
+}
+
+func (c *CancelPayoutsResponse) GetExchangeRate() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.ExchangeRate
+}
+
+func (c *CancelPayoutsResponse) GetFailure() *CancelPayoutsResponseFailure {
+	if c == nil {
+		return nil
+	}
+	return c.Failure
+}
+
+func (c *CancelPayoutsResponse) GetFeeAmount() string {
+	if c == nil {
+		return ""
+	}
+	return c.FeeAmount
+}
+
+func (c *CancelPayoutsResponse) GetFeePaidBy() CancelPayoutsResponseFeePaidBy {
+	if c == nil {
+		return ""
+	}
+	return c.FeePaidBy
+}
+
+func (c *CancelPayoutsResponse) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CancelPayoutsResponse) GetMarkupFee() string {
+	if c == nil {
+		return ""
+	}
+	return c.MarkupFee
+}
+
+func (c *CancelPayoutsResponse) GetMetadata() map[string]string {
+	if c == nil {
+		return nil
+	}
+	return c.Metadata
+}
+
+func (c *CancelPayoutsResponse) GetNetAmount() string {
+	if c == nil {
+		return ""
+	}
+	return c.NetAmount
+}
+
+func (c *CancelPayoutsResponse) GetNotes() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Notes
+}
+
+func (c *CancelPayoutsResponse) GetObject() CancelPayoutsResponseObject {
+	if c == nil {
+		return ""
+	}
+	return c.Object
+}
+
+func (c *CancelPayoutsResponse) GetPayerName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PayerName
+}
+
+func (c *CancelPayoutsResponse) GetPayoutMethod() *CancelPayoutsResponsePayoutMethod {
+	if c == nil {
+		return nil
+	}
+	return c.PayoutMethod
+}
+
+func (c *CancelPayoutsResponse) GetPayoutRequestID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PayoutRequestID
+}
+
+func (c *CancelPayoutsResponse) GetSource() *CancelPayoutsResponseSource {
+	if c == nil {
+		return nil
+	}
+	return c.Source
+}
+
+func (c *CancelPayoutsResponse) GetSpeed() CancelPayoutsResponseSpeed {
+	if c == nil {
+		return ""
+	}
+	return c.Speed
+}
+
+func (c *CancelPayoutsResponse) GetStatus() CancelPayoutsResponseStatus {
+	if c == nil {
+		return ""
+	}
+	return c.Status
+}
+
+func (c *CancelPayoutsResponse) GetStatusDetail() string {
+	if c == nil {
+		return ""
+	}
+	return c.StatusDetail
+}
+
+func (c *CancelPayoutsResponse) GetTraceCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.TraceCode
+}
+
+func (c *CancelPayoutsResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CancelPayoutsResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetAmount(amount string) {
+	c.Amount = amount
+	c.require(cancelPayoutsResponseFieldAmount)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetCreatedAt(createdAt time.Time) {
+	c.CreatedAt = createdAt
+	c.require(cancelPayoutsResponseFieldCreatedAt)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetCurrency(currency string) {
+	c.Currency = currency
+	c.require(cancelPayoutsResponseFieldCurrency)
+}
+
+// SetDestinationAmount sets the DestinationAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetDestinationAmount(destinationAmount *string) {
+	c.DestinationAmount = destinationAmount
+	c.require(cancelPayoutsResponseFieldDestinationAmount)
+}
+
+// SetDestinationCurrency sets the DestinationCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetDestinationCurrency(destinationCurrency *string) {
+	c.DestinationCurrency = destinationCurrency
+	c.require(cancelPayoutsResponseFieldDestinationCurrency)
+}
+
+// SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetEstimatedArrival(estimatedArrival *time.Time) {
+	c.EstimatedArrival = estimatedArrival
+	c.require(cancelPayoutsResponseFieldEstimatedArrival)
+}
+
+// SetExchangeRate sets the ExchangeRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetExchangeRate(exchangeRate *float64) {
+	c.ExchangeRate = exchangeRate
+	c.require(cancelPayoutsResponseFieldExchangeRate)
+}
+
+// SetFailure sets the Failure field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetFailure(failure *CancelPayoutsResponseFailure) {
+	c.Failure = failure
+	c.require(cancelPayoutsResponseFieldFailure)
+}
+
+// SetFeeAmount sets the FeeAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetFeeAmount(feeAmount string) {
+	c.FeeAmount = feeAmount
+	c.require(cancelPayoutsResponseFieldFeeAmount)
+}
+
+// SetFeePaidBy sets the FeePaidBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetFeePaidBy(feePaidBy CancelPayoutsResponseFeePaidBy) {
+	c.FeePaidBy = feePaidBy
+	c.require(cancelPayoutsResponseFieldFeePaidBy)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetID(id string) {
+	c.ID = id
+	c.require(cancelPayoutsResponseFieldID)
+}
+
+// SetMarkupFee sets the MarkupFee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetMarkupFee(markupFee string) {
+	c.MarkupFee = markupFee
+	c.require(cancelPayoutsResponseFieldMarkupFee)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetMetadata(metadata map[string]string) {
+	c.Metadata = metadata
+	c.require(cancelPayoutsResponseFieldMetadata)
+}
+
+// SetNetAmount sets the NetAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetNetAmount(netAmount string) {
+	c.NetAmount = netAmount
+	c.require(cancelPayoutsResponseFieldNetAmount)
+}
+
+// SetNotes sets the Notes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetNotes(notes *string) {
+	c.Notes = notes
+	c.require(cancelPayoutsResponseFieldNotes)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetObject(object CancelPayoutsResponseObject) {
+	c.Object = object
+	c.require(cancelPayoutsResponseFieldObject)
+}
+
+// SetPayerName sets the PayerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetPayerName(payerName *string) {
+	c.PayerName = payerName
+	c.require(cancelPayoutsResponseFieldPayerName)
+}
+
+// SetPayoutMethod sets the PayoutMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetPayoutMethod(payoutMethod *CancelPayoutsResponsePayoutMethod) {
+	c.PayoutMethod = payoutMethod
+	c.require(cancelPayoutsResponseFieldPayoutMethod)
+}
+
+// SetPayoutRequestID sets the PayoutRequestID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetPayoutRequestID(payoutRequestID *string) {
+	c.PayoutRequestID = payoutRequestID
+	c.require(cancelPayoutsResponseFieldPayoutRequestID)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetSource(source *CancelPayoutsResponseSource) {
+	c.Source = source
+	c.require(cancelPayoutsResponseFieldSource)
+}
+
+// SetSpeed sets the Speed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetSpeed(speed CancelPayoutsResponseSpeed) {
+	c.Speed = speed
+	c.require(cancelPayoutsResponseFieldSpeed)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetStatus(status CancelPayoutsResponseStatus) {
+	c.Status = status
+	c.require(cancelPayoutsResponseFieldStatus)
+}
+
+// SetStatusDetail sets the StatusDetail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetStatusDetail(statusDetail string) {
+	c.StatusDetail = statusDetail
+	c.require(cancelPayoutsResponseFieldStatusDetail)
+}
+
+// SetTraceCode sets the TraceCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetTraceCode(traceCode *string) {
+	c.TraceCode = traceCode
+	c.require(cancelPayoutsResponseFieldTraceCode)
+}
+
+func (c *CancelPayoutsResponse) UnmarshalJSON(data []byte) error {
+	type embed CancelPayoutsResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt        *internal.DateTime `json:"created_at"`
+		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = CancelPayoutsResponse(unmarshaler.embed)
+	c.CreatedAt = unmarshaler.CreatedAt.Time()
+	c.EstimatedArrival = unmarshaler.EstimatedArrival.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CancelPayoutsResponse) MarshalJSON() ([]byte, error) {
+	type embed CancelPayoutsResponse
+	var marshaler = struct {
+		embed
+		CreatedAt        *internal.DateTime `json:"created_at"`
+		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+	}{
+		embed:            embed(*c),
+		CreatedAt:        internal.NewDateTime(c.CreatedAt),
+		EstimatedArrival: internal.NewOptionalDateTime(c.EstimatedArrival),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CancelPayoutsResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
+var (
+	cancelPayoutsResponseFailureFieldCode            = big.NewInt(1 << 0)
+	cancelPayoutsResponseFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
+	cancelPayoutsResponseFailureFieldMessage         = big.NewInt(1 << 2)
+)
+
+type CancelPayoutsResponseFailure struct {
+	// Classified failure code from the maintained error catalog.
+	Code *string `json:"code,omitempty" url:"code,omitempty"`
+	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
+	FundsReturnedAt *time.Time `json:"funds_returned_at,omitempty" url:"funds_returned_at,omitempty"`
+	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination; other callers get the generic catalog message.
+	Message *string `json:"message,omitempty" url:"message,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CancelPayoutsResponseFailure) GetCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Code
+}
+
+func (c *CancelPayoutsResponseFailure) GetFundsReturnedAt() *time.Time {
+	if c == nil {
+		return nil
+	}
+	return c.FundsReturnedAt
+}
+
+func (c *CancelPayoutsResponseFailure) GetMessage() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Message
+}
+
+func (c *CancelPayoutsResponseFailure) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CancelPayoutsResponseFailure) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponseFailure) SetCode(code *string) {
+	c.Code = code
+	c.require(cancelPayoutsResponseFailureFieldCode)
+}
+
+// SetFundsReturnedAt sets the FundsReturnedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponseFailure) SetFundsReturnedAt(fundsReturnedAt *time.Time) {
+	c.FundsReturnedAt = fundsReturnedAt
+	c.require(cancelPayoutsResponseFailureFieldFundsReturnedAt)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponseFailure) SetMessage(message *string) {
+	c.Message = message
+	c.require(cancelPayoutsResponseFailureFieldMessage)
+}
+
+func (c *CancelPayoutsResponseFailure) UnmarshalJSON(data []byte) error {
+	type embed CancelPayoutsResponseFailure
+	var unmarshaler = struct {
+		embed
+		FundsReturnedAt *internal.DateTime `json:"funds_returned_at,omitempty"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = CancelPayoutsResponseFailure(unmarshaler.embed)
+	c.FundsReturnedAt = unmarshaler.FundsReturnedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CancelPayoutsResponseFailure) MarshalJSON() ([]byte, error) {
+	type embed CancelPayoutsResponseFailure
+	var marshaler = struct {
+		embed
+		FundsReturnedAt *internal.DateTime `json:"funds_returned_at,omitempty"`
+	}{
+		embed:           embed(*c),
+		FundsReturnedAt: internal.NewOptionalDateTime(c.FundsReturnedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CancelPayoutsResponseFailure) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Who bore the payout fee: the account itself, or its parent platform.
+type CancelPayoutsResponseFeePaidBy string
+
+const (
+	CancelPayoutsResponseFeePaidBySelf     CancelPayoutsResponseFeePaidBy = "self"
+	CancelPayoutsResponseFeePaidByPlatform CancelPayoutsResponseFeePaidBy = "platform"
+)
+
+func NewCancelPayoutsResponseFeePaidByFromString(s string) (CancelPayoutsResponseFeePaidBy, error) {
+	switch s {
+	case "self":
+		return CancelPayoutsResponseFeePaidBySelf, nil
+	case "platform":
+		return CancelPayoutsResponseFeePaidByPlatform, nil
+	}
+	var t CancelPayoutsResponseFeePaidBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelPayoutsResponseFeePaidBy) Ptr() *CancelPayoutsResponseFeePaidBy {
+	return &c
+}
+
+type CancelPayoutsResponseObject string
+
+const (
+	CancelPayoutsResponseObjectPayout CancelPayoutsResponseObject = "payout"
+)
+
+func NewCancelPayoutsResponseObjectFromString(s string) (CancelPayoutsResponseObject, error) {
+	switch s {
+	case "payout":
+		return CancelPayoutsResponseObjectPayout, nil
+	}
+	var t CancelPayoutsResponseObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelPayoutsResponseObject) Ptr() *CancelPayoutsResponseObject {
+	return &c
+}
+
+// The saved payout method used. Requires payout:destination:read; null without it.
+var (
+	cancelPayoutsResponsePayoutMethodFieldNickname              = big.NewInt(1 << 0)
+	cancelPayoutsResponsePayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+)
+
+type CancelPayoutsResponsePayoutMethod struct {
+	// Saved payout method nickname.
+	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
+	// Supported payout method display details.
+	SupportedPayoutMethod *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CancelPayoutsResponsePayoutMethod) GetNickname() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Nickname
+}
+
+func (c *CancelPayoutsResponsePayoutMethod) GetSupportedPayoutMethod() *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod {
+	if c == nil {
+		return nil
+	}
+	return c.SupportedPayoutMethod
+}
+
+func (c *CancelPayoutsResponsePayoutMethod) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CancelPayoutsResponsePayoutMethod) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetNickname sets the Nickname field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponsePayoutMethod) SetNickname(nickname *string) {
+	c.Nickname = nickname
+	c.require(cancelPayoutsResponsePayoutMethodFieldNickname)
+}
+
+// SetSupportedPayoutMethod sets the SupportedPayoutMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponsePayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) {
+	c.SupportedPayoutMethod = supportedPayoutMethod
+	c.require(cancelPayoutsResponsePayoutMethodFieldSupportedPayoutMethod)
+}
+
+func (c *CancelPayoutsResponsePayoutMethod) UnmarshalJSON(data []byte) error {
+	type unmarshaler CancelPayoutsResponsePayoutMethod
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CancelPayoutsResponsePayoutMethod(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CancelPayoutsResponsePayoutMethod) MarshalJSON() ([]byte, error) {
+	type embed CancelPayoutsResponsePayoutMethod
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CancelPayoutsResponsePayoutMethod) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Supported payout method display details.
+var (
+	cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
+	cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
+	cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
+)
+
+type CancelPayoutsResponsePayoutMethodSupportedPayoutMethod struct {
+	// How the funds are delivered to the recipient.
+	DeliveryType CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
+	// Supported payout method icon URL.
+	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
+	// Supported payout method display name.
+	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) GetDeliveryType() CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType {
+	if c == nil {
+		return ""
+	}
+	return c.DeliveryType
+}
+
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) GetIconURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.IconURL
+}
+
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) GetPayerName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PayerName
+}
+
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetDeliveryType sets the DeliveryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) SetDeliveryType(deliveryType CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType) {
+	c.DeliveryType = deliveryType
+	c.require(cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldDeliveryType)
+}
+
+// SetIconURL sets the IconURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) SetIconURL(iconURL *string) {
+	c.IconURL = iconURL
+	c.require(cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldIconURL)
+}
+
+// SetPayerName sets the PayerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) SetPayerName(payerName *string) {
+	c.PayerName = payerName
+	c.require(cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldPayerName)
+}
+
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) UnmarshalJSON(data []byte) error {
+	type unmarshaler CancelPayoutsResponsePayoutMethodSupportedPayoutMethod
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CancelPayoutsResponsePayoutMethodSupportedPayoutMethod(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) MarshalJSON() ([]byte, error) {
+	type embed CancelPayoutsResponsePayoutMethodSupportedPayoutMethod
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// How the funds are delivered to the recipient.
+type CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType string
+
+const (
+	CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup     CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType = "cash_pickup"
+	CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit    CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType = "bank_deposit"
+	CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery   CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType = "home_delivery"
+	CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet   CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType = "mobile_wallet"
+	CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeCard           CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType = "card"
+	CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeCheck          CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType = "check"
+	CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeBill           CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType = "bill"
+	CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType = "cryptocurrency"
+	CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeUnknown        CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType = "unknown"
+)
+
+func NewCancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeFromString(s string) (CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType, error) {
+	switch s {
+	case "cash_pickup":
+		return CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup, nil
+	case "bank_deposit":
+		return CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit, nil
+	case "home_delivery":
+		return CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery, nil
+	case "mobile_wallet":
+		return CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet, nil
+	case "card":
+		return CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeCard, nil
+	case "check":
+		return CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeCheck, nil
+	case "bill":
+		return CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeBill, nil
+	case "cryptocurrency":
+		return CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency, nil
+	case "unknown":
+		return CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeUnknown, nil
+	}
+	var t CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType {
+	return &c
+}
+
+// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+type CancelPayoutsResponseSource string
+
+const (
+	CancelPayoutsResponseSourceAPI       CancelPayoutsResponseSource = "api"
+	CancelPayoutsResponseSourceDashboard CancelPayoutsResponseSource = "dashboard"
+	CancelPayoutsResponseSourceAutomatic CancelPayoutsResponseSource = "automatic"
+)
+
+func NewCancelPayoutsResponseSourceFromString(s string) (CancelPayoutsResponseSource, error) {
+	switch s {
+	case "api":
+		return CancelPayoutsResponseSourceAPI, nil
+	case "dashboard":
+		return CancelPayoutsResponseSourceDashboard, nil
+	case "automatic":
+		return CancelPayoutsResponseSourceAutomatic, nil
+	}
+	var t CancelPayoutsResponseSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelPayoutsResponseSource) Ptr() *CancelPayoutsResponseSource {
+	return &c
+}
+
+// Payout delivery speed.
+type CancelPayoutsResponseSpeed string
+
+const (
+	CancelPayoutsResponseSpeedStandard CancelPayoutsResponseSpeed = "standard"
+	CancelPayoutsResponseSpeedInstant  CancelPayoutsResponseSpeed = "instant"
+)
+
+func NewCancelPayoutsResponseSpeedFromString(s string) (CancelPayoutsResponseSpeed, error) {
+	switch s {
+	case "standard":
+		return CancelPayoutsResponseSpeedStandard, nil
+	case "instant":
+		return CancelPayoutsResponseSpeedInstant, nil
+	}
+	var t CancelPayoutsResponseSpeed
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelPayoutsResponseSpeed) Ptr() *CancelPayoutsResponseSpeed {
+	return &c
+}
+
+// Current payout status.
+type CancelPayoutsResponseStatus string
+
+const (
+	CancelPayoutsResponseStatusRequested  CancelPayoutsResponseStatus = "requested"
+	CancelPayoutsResponseStatusInReview   CancelPayoutsResponseStatus = "in_review"
+	CancelPayoutsResponseStatusProcessing CancelPayoutsResponseStatus = "processing"
+	CancelPayoutsResponseStatusCompleted  CancelPayoutsResponseStatus = "completed"
+	CancelPayoutsResponseStatusReversed   CancelPayoutsResponseStatus = "reversed"
+	CancelPayoutsResponseStatusCanceled   CancelPayoutsResponseStatus = "canceled"
+	CancelPayoutsResponseStatusFailed     CancelPayoutsResponseStatus = "failed"
+	CancelPayoutsResponseStatusDenied     CancelPayoutsResponseStatus = "denied"
+)
+
+func NewCancelPayoutsResponseStatusFromString(s string) (CancelPayoutsResponseStatus, error) {
+	switch s {
+	case "requested":
+		return CancelPayoutsResponseStatusRequested, nil
+	case "in_review":
+		return CancelPayoutsResponseStatusInReview, nil
+	case "processing":
+		return CancelPayoutsResponseStatusProcessing, nil
+	case "completed":
+		return CancelPayoutsResponseStatusCompleted, nil
+	case "reversed":
+		return CancelPayoutsResponseStatusReversed, nil
+	case "canceled":
+		return CancelPayoutsResponseStatusCanceled, nil
+	case "failed":
+		return CancelPayoutsResponseStatusFailed, nil
+	case "denied":
+		return CancelPayoutsResponseStatusDenied, nil
+	}
+	var t CancelPayoutsResponseStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelPayoutsResponseStatus) Ptr() *CancelPayoutsResponseStatus {
+	return &c
 }
 
 type CreatePayoutsRequestBody struct {
@@ -2582,6 +3642,1271 @@ func (l *ListPayoutsResponsePageInfo) String() string {
 }
 
 var (
+	postPayoutCreatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postPayoutCreatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postPayoutCreatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postPayoutCreatedPayloadFieldData               = big.NewInt(1 << 3)
+	postPayoutCreatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postPayoutCreatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postPayoutCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postPayoutCreatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+type PostPayoutCreatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostPayoutCreatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string                       `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *PostPayoutCreatedPayloadData `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostPayoutCreatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPayoutCreatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostPayoutCreatedPayload) GetAPIVersion() PostPayoutCreatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostPayoutCreatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostPayoutCreatedPayload) GetData() *PostPayoutCreatedPayloadData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostPayoutCreatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostPayoutCreatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostPayoutCreatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostPayoutCreatedPayload) GetType() PostPayoutCreatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostPayoutCreatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPayoutCreatedPayload) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postPayoutCreatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayload) SetAPIVersion(apiVersion PostPayoutCreatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postPayoutCreatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postPayoutCreatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayload) SetData(data *PostPayoutCreatedPayloadData) {
+	p.Data = data
+	p.require(postPayoutCreatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postPayoutCreatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postPayoutCreatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postPayoutCreatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayload) SetType(type_ PostPayoutCreatedPayloadType) {
+	p.Type = type_
+	p.require(postPayoutCreatedPayloadFieldType)
+}
+
+func (p *PostPayoutCreatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostPayoutCreatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostPayoutCreatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPayoutCreatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutCreatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPayoutCreatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostPayoutCreatedPayloadAPIVersion string
+
+const (
+	PostPayoutCreatedPayloadAPIVersionV1 PostPayoutCreatedPayloadAPIVersion = "v1"
+)
+
+func NewPostPayoutCreatedPayloadAPIVersionFromString(s string) (PostPayoutCreatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostPayoutCreatedPayloadAPIVersionV1, nil
+	}
+	var t PostPayoutCreatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutCreatedPayloadAPIVersion) Ptr() *PostPayoutCreatedPayloadAPIVersion {
+	return &p
+}
+
+var (
+	postPayoutCreatedPayloadDataFieldAmount              = big.NewInt(1 << 0)
+	postPayoutCreatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 1)
+	postPayoutCreatedPayloadDataFieldCurrency            = big.NewInt(1 << 2)
+	postPayoutCreatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 3)
+	postPayoutCreatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 4)
+	postPayoutCreatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 5)
+	postPayoutCreatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 6)
+	postPayoutCreatedPayloadDataFieldFailure             = big.NewInt(1 << 7)
+	postPayoutCreatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 8)
+	postPayoutCreatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 9)
+	postPayoutCreatedPayloadDataFieldID                  = big.NewInt(1 << 10)
+	postPayoutCreatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 11)
+	postPayoutCreatedPayloadDataFieldMetadata            = big.NewInt(1 << 12)
+	postPayoutCreatedPayloadDataFieldNetAmount           = big.NewInt(1 << 13)
+	postPayoutCreatedPayloadDataFieldNotes               = big.NewInt(1 << 14)
+	postPayoutCreatedPayloadDataFieldObject              = big.NewInt(1 << 15)
+	postPayoutCreatedPayloadDataFieldPayerName           = big.NewInt(1 << 16)
+	postPayoutCreatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 17)
+	postPayoutCreatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
+	postPayoutCreatedPayloadDataFieldSource              = big.NewInt(1 << 19)
+	postPayoutCreatedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
+	postPayoutCreatedPayloadDataFieldStatus              = big.NewInt(1 << 21)
+	postPayoutCreatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 22)
+	postPayoutCreatedPayloadDataFieldTraceCode           = big.NewInt(1 << 23)
+)
+
+type PostPayoutCreatedPayloadData struct {
+	// The payout amount in whole currency units, as a decimal string.
+	Amount string `json:"amount" url:"amount"`
+	// When the payout was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// Payout currency.
+	Currency string `json:"currency" url:"currency"`
+	// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
+	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
+	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
+	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
+	// Estimated time the funds become available in the destination account.
+	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
+	// Exchange rate from the payout currency to the destination currency. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded rate.
+	ExchangeRate *float64 `json:"exchange_rate,omitempty" url:"exchange_rate,omitempty"`
+	// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
+	Failure *PostPayoutCreatedPayloadDataFailure `json:"failure,omitempty" url:"failure,omitempty"`
+	// The fee charged for the payout, in the payout currency, as a decimal string.
+	FeeAmount string `json:"fee_amount" url:"fee_amount"`
+	// Who bore the payout fee: the account itself, or its parent platform.
+	FeePaidBy PostPayoutCreatedPayloadDataFeePaidBy `json:"fee_paid_by" url:"fee_paid_by"`
+	// Payout ID, prefixed `wdrl_`.
+	ID string `json:"id" url:"id"`
+	// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies.
+	MarkupFee string `json:"markup_fee" url:"markup_fee"`
+	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
+	Metadata map[string]string `json:"metadata" url:"metadata"`
+	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
+	NetAmount string `json:"net_amount" url:"net_amount"`
+	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
+	Notes  *string                            `json:"notes,omitempty" url:"notes,omitempty"`
+	Object PostPayoutCreatedPayloadDataObject `json:"object" url:"object"`
+	// Name of the entity processing the payout.
+	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
+	// The saved payout method used. Requires payout:destination:read; null without it.
+	PayoutMethod *PostPayoutCreatedPayloadDataPayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
+	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. Match it to the settled payout in `GET /payouts`. Returns `null` for payouts not created by `POST /payouts`.
+	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
+	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+	Source *PostPayoutCreatedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
+	// Payout delivery speed.
+	Speed PostPayoutCreatedPayloadDataSpeed `json:"speed" url:"speed"`
+	// Current payout status.
+	Status PostPayoutCreatedPayloadDataStatus `json:"status" url:"status"`
+	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
+	StatusDetail string `json:"status_detail" url:"status_detail"`
+	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
+	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPayoutCreatedPayloadData) GetAmount() string {
+	if p == nil {
+		return ""
+	}
+	return p.Amount
+}
+
+func (p *PostPayoutCreatedPayloadData) GetCreatedAt() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.CreatedAt
+}
+
+func (p *PostPayoutCreatedPayloadData) GetCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.Currency
+}
+
+func (p *PostPayoutCreatedPayloadData) GetDestinationAmount() *string {
+	if p == nil {
+		return nil
+	}
+	return p.DestinationAmount
+}
+
+func (p *PostPayoutCreatedPayloadData) GetDestinationCurrency() *string {
+	if p == nil {
+		return nil
+	}
+	return p.DestinationCurrency
+}
+
+func (p *PostPayoutCreatedPayloadData) GetEstimatedArrival() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.EstimatedArrival
+}
+
+func (p *PostPayoutCreatedPayloadData) GetExchangeRate() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.ExchangeRate
+}
+
+func (p *PostPayoutCreatedPayloadData) GetFailure() *PostPayoutCreatedPayloadDataFailure {
+	if p == nil {
+		return nil
+	}
+	return p.Failure
+}
+
+func (p *PostPayoutCreatedPayloadData) GetFeeAmount() string {
+	if p == nil {
+		return ""
+	}
+	return p.FeeAmount
+}
+
+func (p *PostPayoutCreatedPayloadData) GetFeePaidBy() PostPayoutCreatedPayloadDataFeePaidBy {
+	if p == nil {
+		return ""
+	}
+	return p.FeePaidBy
+}
+
+func (p *PostPayoutCreatedPayloadData) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostPayoutCreatedPayloadData) GetMarkupFee() string {
+	if p == nil {
+		return ""
+	}
+	return p.MarkupFee
+}
+
+func (p *PostPayoutCreatedPayloadData) GetMetadata() map[string]string {
+	if p == nil {
+		return nil
+	}
+	return p.Metadata
+}
+
+func (p *PostPayoutCreatedPayloadData) GetNetAmount() string {
+	if p == nil {
+		return ""
+	}
+	return p.NetAmount
+}
+
+func (p *PostPayoutCreatedPayloadData) GetNotes() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Notes
+}
+
+func (p *PostPayoutCreatedPayloadData) GetObject() PostPayoutCreatedPayloadDataObject {
+	if p == nil {
+		return ""
+	}
+	return p.Object
+}
+
+func (p *PostPayoutCreatedPayloadData) GetPayerName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PayerName
+}
+
+func (p *PostPayoutCreatedPayloadData) GetPayoutMethod() *PostPayoutCreatedPayloadDataPayoutMethod {
+	if p == nil {
+		return nil
+	}
+	return p.PayoutMethod
+}
+
+func (p *PostPayoutCreatedPayloadData) GetPayoutRequestID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PayoutRequestID
+}
+
+func (p *PostPayoutCreatedPayloadData) GetSource() *PostPayoutCreatedPayloadDataSource {
+	if p == nil {
+		return nil
+	}
+	return p.Source
+}
+
+func (p *PostPayoutCreatedPayloadData) GetSpeed() PostPayoutCreatedPayloadDataSpeed {
+	if p == nil {
+		return ""
+	}
+	return p.Speed
+}
+
+func (p *PostPayoutCreatedPayloadData) GetStatus() PostPayoutCreatedPayloadDataStatus {
+	if p == nil {
+		return ""
+	}
+	return p.Status
+}
+
+func (p *PostPayoutCreatedPayloadData) GetStatusDetail() string {
+	if p == nil {
+		return ""
+	}
+	return p.StatusDetail
+}
+
+func (p *PostPayoutCreatedPayloadData) GetTraceCode() *string {
+	if p == nil {
+		return nil
+	}
+	return p.TraceCode
+}
+
+func (p *PostPayoutCreatedPayloadData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPayoutCreatedPayloadData) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetAmount(amount string) {
+	p.Amount = amount
+	p.require(postPayoutCreatedPayloadDataFieldAmount)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetCreatedAt(createdAt time.Time) {
+	p.CreatedAt = createdAt
+	p.require(postPayoutCreatedPayloadDataFieldCreatedAt)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetCurrency(currency string) {
+	p.Currency = currency
+	p.require(postPayoutCreatedPayloadDataFieldCurrency)
+}
+
+// SetDestinationAmount sets the DestinationAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetDestinationAmount(destinationAmount *string) {
+	p.DestinationAmount = destinationAmount
+	p.require(postPayoutCreatedPayloadDataFieldDestinationAmount)
+}
+
+// SetDestinationCurrency sets the DestinationCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetDestinationCurrency(destinationCurrency *string) {
+	p.DestinationCurrency = destinationCurrency
+	p.require(postPayoutCreatedPayloadDataFieldDestinationCurrency)
+}
+
+// SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetEstimatedArrival(estimatedArrival *time.Time) {
+	p.EstimatedArrival = estimatedArrival
+	p.require(postPayoutCreatedPayloadDataFieldEstimatedArrival)
+}
+
+// SetExchangeRate sets the ExchangeRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetExchangeRate(exchangeRate *float64) {
+	p.ExchangeRate = exchangeRate
+	p.require(postPayoutCreatedPayloadDataFieldExchangeRate)
+}
+
+// SetFailure sets the Failure field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetFailure(failure *PostPayoutCreatedPayloadDataFailure) {
+	p.Failure = failure
+	p.require(postPayoutCreatedPayloadDataFieldFailure)
+}
+
+// SetFeeAmount sets the FeeAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetFeeAmount(feeAmount string) {
+	p.FeeAmount = feeAmount
+	p.require(postPayoutCreatedPayloadDataFieldFeeAmount)
+}
+
+// SetFeePaidBy sets the FeePaidBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetFeePaidBy(feePaidBy PostPayoutCreatedPayloadDataFeePaidBy) {
+	p.FeePaidBy = feePaidBy
+	p.require(postPayoutCreatedPayloadDataFieldFeePaidBy)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetID(id string) {
+	p.ID = id
+	p.require(postPayoutCreatedPayloadDataFieldID)
+}
+
+// SetMarkupFee sets the MarkupFee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetMarkupFee(markupFee string) {
+	p.MarkupFee = markupFee
+	p.require(postPayoutCreatedPayloadDataFieldMarkupFee)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetMetadata(metadata map[string]string) {
+	p.Metadata = metadata
+	p.require(postPayoutCreatedPayloadDataFieldMetadata)
+}
+
+// SetNetAmount sets the NetAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetNetAmount(netAmount string) {
+	p.NetAmount = netAmount
+	p.require(postPayoutCreatedPayloadDataFieldNetAmount)
+}
+
+// SetNotes sets the Notes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetNotes(notes *string) {
+	p.Notes = notes
+	p.require(postPayoutCreatedPayloadDataFieldNotes)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetObject(object PostPayoutCreatedPayloadDataObject) {
+	p.Object = object
+	p.require(postPayoutCreatedPayloadDataFieldObject)
+}
+
+// SetPayerName sets the PayerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetPayerName(payerName *string) {
+	p.PayerName = payerName
+	p.require(postPayoutCreatedPayloadDataFieldPayerName)
+}
+
+// SetPayoutMethod sets the PayoutMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetPayoutMethod(payoutMethod *PostPayoutCreatedPayloadDataPayoutMethod) {
+	p.PayoutMethod = payoutMethod
+	p.require(postPayoutCreatedPayloadDataFieldPayoutMethod)
+}
+
+// SetPayoutRequestID sets the PayoutRequestID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetPayoutRequestID(payoutRequestID *string) {
+	p.PayoutRequestID = payoutRequestID
+	p.require(postPayoutCreatedPayloadDataFieldPayoutRequestID)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetSource(source *PostPayoutCreatedPayloadDataSource) {
+	p.Source = source
+	p.require(postPayoutCreatedPayloadDataFieldSource)
+}
+
+// SetSpeed sets the Speed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetSpeed(speed PostPayoutCreatedPayloadDataSpeed) {
+	p.Speed = speed
+	p.require(postPayoutCreatedPayloadDataFieldSpeed)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetStatus(status PostPayoutCreatedPayloadDataStatus) {
+	p.Status = status
+	p.require(postPayoutCreatedPayloadDataFieldStatus)
+}
+
+// SetStatusDetail sets the StatusDetail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetStatusDetail(statusDetail string) {
+	p.StatusDetail = statusDetail
+	p.require(postPayoutCreatedPayloadDataFieldStatusDetail)
+}
+
+// SetTraceCode sets the TraceCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetTraceCode(traceCode *string) {
+	p.TraceCode = traceCode
+	p.require(postPayoutCreatedPayloadDataFieldTraceCode)
+}
+
+func (p *PostPayoutCreatedPayloadData) UnmarshalJSON(data []byte) error {
+	type embed PostPayoutCreatedPayloadData
+	var unmarshaler = struct {
+		embed
+		CreatedAt        *internal.DateTime `json:"created_at"`
+		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostPayoutCreatedPayloadData(unmarshaler.embed)
+	p.CreatedAt = unmarshaler.CreatedAt.Time()
+	p.EstimatedArrival = unmarshaler.EstimatedArrival.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPayoutCreatedPayloadData) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutCreatedPayloadData
+	var marshaler = struct {
+		embed
+		CreatedAt        *internal.DateTime `json:"created_at"`
+		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+	}{
+		embed:            embed(*p),
+		CreatedAt:        internal.NewDateTime(p.CreatedAt),
+		EstimatedArrival: internal.NewOptionalDateTime(p.EstimatedArrival),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPayoutCreatedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
+var (
+	postPayoutCreatedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
+	postPayoutCreatedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
+	postPayoutCreatedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
+)
+
+type PostPayoutCreatedPayloadDataFailure struct {
+	// Classified failure code from the maintained error catalog.
+	Code *string `json:"code,omitempty" url:"code,omitempty"`
+	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
+	FundsReturnedAt *time.Time `json:"funds_returned_at,omitempty" url:"funds_returned_at,omitempty"`
+	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination; other callers get the generic catalog message.
+	Message *string `json:"message,omitempty" url:"message,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPayoutCreatedPayloadDataFailure) GetCode() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Code
+}
+
+func (p *PostPayoutCreatedPayloadDataFailure) GetFundsReturnedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.FundsReturnedAt
+}
+
+func (p *PostPayoutCreatedPayloadDataFailure) GetMessage() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Message
+}
+
+func (p *PostPayoutCreatedPayloadDataFailure) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPayoutCreatedPayloadDataFailure) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataFailure) SetCode(code *string) {
+	p.Code = code
+	p.require(postPayoutCreatedPayloadDataFailureFieldCode)
+}
+
+// SetFundsReturnedAt sets the FundsReturnedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataFailure) SetFundsReturnedAt(fundsReturnedAt *time.Time) {
+	p.FundsReturnedAt = fundsReturnedAt
+	p.require(postPayoutCreatedPayloadDataFailureFieldFundsReturnedAt)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataFailure) SetMessage(message *string) {
+	p.Message = message
+	p.require(postPayoutCreatedPayloadDataFailureFieldMessage)
+}
+
+func (p *PostPayoutCreatedPayloadDataFailure) UnmarshalJSON(data []byte) error {
+	type embed PostPayoutCreatedPayloadDataFailure
+	var unmarshaler = struct {
+		embed
+		FundsReturnedAt *internal.DateTime `json:"funds_returned_at,omitempty"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostPayoutCreatedPayloadDataFailure(unmarshaler.embed)
+	p.FundsReturnedAt = unmarshaler.FundsReturnedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPayoutCreatedPayloadDataFailure) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutCreatedPayloadDataFailure
+	var marshaler = struct {
+		embed
+		FundsReturnedAt *internal.DateTime `json:"funds_returned_at,omitempty"`
+	}{
+		embed:           embed(*p),
+		FundsReturnedAt: internal.NewOptionalDateTime(p.FundsReturnedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPayoutCreatedPayloadDataFailure) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Who bore the payout fee: the account itself, or its parent platform.
+type PostPayoutCreatedPayloadDataFeePaidBy string
+
+const (
+	PostPayoutCreatedPayloadDataFeePaidBySelf     PostPayoutCreatedPayloadDataFeePaidBy = "self"
+	PostPayoutCreatedPayloadDataFeePaidByPlatform PostPayoutCreatedPayloadDataFeePaidBy = "platform"
+)
+
+func NewPostPayoutCreatedPayloadDataFeePaidByFromString(s string) (PostPayoutCreatedPayloadDataFeePaidBy, error) {
+	switch s {
+	case "self":
+		return PostPayoutCreatedPayloadDataFeePaidBySelf, nil
+	case "platform":
+		return PostPayoutCreatedPayloadDataFeePaidByPlatform, nil
+	}
+	var t PostPayoutCreatedPayloadDataFeePaidBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutCreatedPayloadDataFeePaidBy) Ptr() *PostPayoutCreatedPayloadDataFeePaidBy {
+	return &p
+}
+
+type PostPayoutCreatedPayloadDataObject string
+
+const (
+	PostPayoutCreatedPayloadDataObjectPayout PostPayoutCreatedPayloadDataObject = "payout"
+)
+
+func NewPostPayoutCreatedPayloadDataObjectFromString(s string) (PostPayoutCreatedPayloadDataObject, error) {
+	switch s {
+	case "payout":
+		return PostPayoutCreatedPayloadDataObjectPayout, nil
+	}
+	var t PostPayoutCreatedPayloadDataObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutCreatedPayloadDataObject) Ptr() *PostPayoutCreatedPayloadDataObject {
+	return &p
+}
+
+// The saved payout method used. Requires payout:destination:read; null without it.
+var (
+	postPayoutCreatedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
+	postPayoutCreatedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+)
+
+type PostPayoutCreatedPayloadDataPayoutMethod struct {
+	// Saved payout method nickname.
+	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
+	// Supported payout method display details.
+	SupportedPayoutMethod *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) GetNickname() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Nickname
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) GetSupportedPayoutMethod() *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod {
+	if p == nil {
+		return nil
+	}
+	return p.SupportedPayoutMethod
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetNickname sets the Nickname field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) SetNickname(nickname *string) {
+	p.Nickname = nickname
+	p.require(postPayoutCreatedPayloadDataPayoutMethodFieldNickname)
+}
+
+// SetSupportedPayoutMethod sets the SupportedPayoutMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) {
+	p.SupportedPayoutMethod = supportedPayoutMethod
+	p.require(postPayoutCreatedPayloadDataPayoutMethodFieldSupportedPayoutMethod)
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostPayoutCreatedPayloadDataPayoutMethod
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostPayoutCreatedPayloadDataPayoutMethod(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutCreatedPayloadDataPayoutMethod
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Supported payout method display details.
+var (
+	postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
+	postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
+	postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
+)
+
+type PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod struct {
+	// How the funds are delivered to the recipient.
+	DeliveryType PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
+	// Supported payout method icon URL.
+	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
+	// Supported payout method display name.
+	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) GetDeliveryType() PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
+	if p == nil {
+		return ""
+	}
+	return p.DeliveryType
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) GetIconURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.IconURL
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) GetPayerName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PayerName
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetDeliveryType sets the DeliveryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) SetDeliveryType(deliveryType PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) {
+	p.DeliveryType = deliveryType
+	p.require(postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType)
+}
+
+// SetIconURL sets the IconURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) SetIconURL(iconURL *string) {
+	p.IconURL = iconURL
+	p.require(postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL)
+}
+
+// SetPayerName sets the PayerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) SetPayerName(payerName *string) {
+	p.PayerName = payerName
+	p.require(postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName)
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// How the funds are delivered to the recipient.
+type PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType string
+
+const (
+	PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup     PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cash_pickup"
+	PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit    PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bank_deposit"
+	PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery   PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "home_delivery"
+	PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet   PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "mobile_wallet"
+	PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard           PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "card"
+	PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck          PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "check"
+	PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill           PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bill"
+	PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cryptocurrency"
+	PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown        PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "unknown"
+)
+
+func NewPostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeFromString(s string) (PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType, error) {
+	switch s {
+	case "cash_pickup":
+		return PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup, nil
+	case "bank_deposit":
+		return PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit, nil
+	case "home_delivery":
+		return PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery, nil
+	case "mobile_wallet":
+		return PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet, nil
+	case "card":
+		return PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard, nil
+	case "check":
+		return PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck, nil
+	case "bill":
+		return PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill, nil
+	case "cryptocurrency":
+		return PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency, nil
+	case "unknown":
+		return PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown, nil
+	}
+	var t PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
+	return &p
+}
+
+// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+type PostPayoutCreatedPayloadDataSource string
+
+const (
+	PostPayoutCreatedPayloadDataSourceAPI       PostPayoutCreatedPayloadDataSource = "api"
+	PostPayoutCreatedPayloadDataSourceDashboard PostPayoutCreatedPayloadDataSource = "dashboard"
+	PostPayoutCreatedPayloadDataSourceAutomatic PostPayoutCreatedPayloadDataSource = "automatic"
+)
+
+func NewPostPayoutCreatedPayloadDataSourceFromString(s string) (PostPayoutCreatedPayloadDataSource, error) {
+	switch s {
+	case "api":
+		return PostPayoutCreatedPayloadDataSourceAPI, nil
+	case "dashboard":
+		return PostPayoutCreatedPayloadDataSourceDashboard, nil
+	case "automatic":
+		return PostPayoutCreatedPayloadDataSourceAutomatic, nil
+	}
+	var t PostPayoutCreatedPayloadDataSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutCreatedPayloadDataSource) Ptr() *PostPayoutCreatedPayloadDataSource {
+	return &p
+}
+
+// Payout delivery speed.
+type PostPayoutCreatedPayloadDataSpeed string
+
+const (
+	PostPayoutCreatedPayloadDataSpeedStandard PostPayoutCreatedPayloadDataSpeed = "standard"
+	PostPayoutCreatedPayloadDataSpeedInstant  PostPayoutCreatedPayloadDataSpeed = "instant"
+)
+
+func NewPostPayoutCreatedPayloadDataSpeedFromString(s string) (PostPayoutCreatedPayloadDataSpeed, error) {
+	switch s {
+	case "standard":
+		return PostPayoutCreatedPayloadDataSpeedStandard, nil
+	case "instant":
+		return PostPayoutCreatedPayloadDataSpeedInstant, nil
+	}
+	var t PostPayoutCreatedPayloadDataSpeed
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutCreatedPayloadDataSpeed) Ptr() *PostPayoutCreatedPayloadDataSpeed {
+	return &p
+}
+
+// Current payout status.
+type PostPayoutCreatedPayloadDataStatus string
+
+const (
+	PostPayoutCreatedPayloadDataStatusRequested  PostPayoutCreatedPayloadDataStatus = "requested"
+	PostPayoutCreatedPayloadDataStatusInReview   PostPayoutCreatedPayloadDataStatus = "in_review"
+	PostPayoutCreatedPayloadDataStatusProcessing PostPayoutCreatedPayloadDataStatus = "processing"
+	PostPayoutCreatedPayloadDataStatusCompleted  PostPayoutCreatedPayloadDataStatus = "completed"
+	PostPayoutCreatedPayloadDataStatusReversed   PostPayoutCreatedPayloadDataStatus = "reversed"
+	PostPayoutCreatedPayloadDataStatusCanceled   PostPayoutCreatedPayloadDataStatus = "canceled"
+	PostPayoutCreatedPayloadDataStatusFailed     PostPayoutCreatedPayloadDataStatus = "failed"
+	PostPayoutCreatedPayloadDataStatusDenied     PostPayoutCreatedPayloadDataStatus = "denied"
+)
+
+func NewPostPayoutCreatedPayloadDataStatusFromString(s string) (PostPayoutCreatedPayloadDataStatus, error) {
+	switch s {
+	case "requested":
+		return PostPayoutCreatedPayloadDataStatusRequested, nil
+	case "in_review":
+		return PostPayoutCreatedPayloadDataStatusInReview, nil
+	case "processing":
+		return PostPayoutCreatedPayloadDataStatusProcessing, nil
+	case "completed":
+		return PostPayoutCreatedPayloadDataStatusCompleted, nil
+	case "reversed":
+		return PostPayoutCreatedPayloadDataStatusReversed, nil
+	case "canceled":
+		return PostPayoutCreatedPayloadDataStatusCanceled, nil
+	case "failed":
+		return PostPayoutCreatedPayloadDataStatusFailed, nil
+	case "denied":
+		return PostPayoutCreatedPayloadDataStatusDenied, nil
+	}
+	var t PostPayoutCreatedPayloadDataStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutCreatedPayloadDataStatus) Ptr() *PostPayoutCreatedPayloadDataStatus {
+	return &p
+}
+
+// The webhook event type
+type PostPayoutCreatedPayloadType string
+
+const (
+	PostPayoutCreatedPayloadTypePayoutCreated PostPayoutCreatedPayloadType = "payout.created"
+)
+
+func NewPostPayoutCreatedPayloadTypeFromString(s string) (PostPayoutCreatedPayloadType, error) {
+	switch s {
+	case "payout.created":
+		return PostPayoutCreatedPayloadTypePayoutCreated, nil
+	}
+	var t PostPayoutCreatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutCreatedPayloadType) Ptr() *PostPayoutCreatedPayloadType {
+	return &p
+}
+
+var (
 	postPayoutMethodCreatedPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postPayoutMethodCreatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postPayoutMethodCreatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
@@ -2868,7 +5193,7 @@ type PostPayoutMethodCreatedPayloadData struct {
 	Object   PostPayoutMethodCreatedPayloadDataObject `json:"object" url:"object"`
 	// Display name of the payout rail, such as `ACH Bank Deposit`.
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
-	// Fee and delivery estimate for withdrawing the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
+	// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 	Quote *PostPayoutMethodCreatedPayloadDataQuote `json:"quote,omitempty" url:"quote,omitempty"`
 	// Lifecycle status: `created` means saved but unused, `active` means a payout succeeded through it, `broken` means a payout failure disabled it; a later successful payout returns it to `active`.
 	Status PostPayoutMethodCreatedPayloadDataStatus `json:"status" url:"status"`
@@ -3407,7 +5732,7 @@ type PostPayoutMethodCreatedPayloadDataFeeStructure struct {
 	Currency string `json:"currency" url:"currency"`
 	// Fixed fee charged, denominated in `currency`.
 	FixedAmount float64 `json:"fixed_amount" url:"fixed_amount"`
-	// Percentage of the withdrawal amount charged as a fee.
+	// Percentage of the payout amount charged as a fee.
 	Percentage float64 `json:"percentage" url:"percentage"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3534,7 +5859,7 @@ func (p PostPayoutMethodCreatedPayloadDataObject) Ptr() *PostPayoutMethodCreated
 	return &p
 }
 
-// Fee and delivery estimate for withdrawing the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
+// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 var (
 	postPayoutMethodCreatedPayloadDataQuoteFieldAmount       = big.NewInt(1 << 0)
 	postPayoutMethodCreatedPayloadDataQuoteFieldCurrency     = big.NewInt(1 << 1)
@@ -3546,17 +5871,17 @@ var (
 )
 
 type PostPayoutMethodCreatedPayloadDataQuote struct {
-	// The withdrawal amount the quote is for.
+	// The payout amount the quote is for.
 	Amount float64 `json:"amount" url:"amount"`
 	// Currency of the quoted amount.
 	Currency string `json:"currency" url:"currency"`
-	// Exchange rate from the withdrawal currency to the destination currency.
+	// Exchange rate from the payout currency to the destination currency.
 	ExchangeRate float64 `json:"exchange_rate" url:"exchange_rate"`
 	// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
 	Instant *PostPayoutMethodCreatedPayloadDataQuoteInstant `json:"instant,omitempty" url:"instant,omitempty"`
-	// Maximum withdrawal amount for this method, in the withdrawal currency.
+	// Maximum payout amount for this method, in the payout currency.
 	MaxLimit *float64 `json:"max_limit,omitempty" url:"max_limit,omitempty"`
-	// Minimum withdrawal amount for this method, in the withdrawal currency.
+	// Minimum payout amount for this method, in the payout currency.
 	MinLimit float64 `json:"min_limit" url:"min_limit"`
 	// Standard-delivery estimate. Null if the method does not support standard delivery, or the amount does not cover the fee.
 	Standard *PostPayoutMethodCreatedPayloadDataQuoteStandard `json:"standard,omitempty" url:"standard,omitempty"`
@@ -3729,9 +6054,9 @@ var (
 )
 
 type PostPayoutMethodCreatedPayloadDataQuoteInstant struct {
-	// Total fee charged, in the withdrawal currency.
+	// Total fee charged, in the payout currency.
 	Fee float64 `json:"fee" url:"fee"`
-	// Amount delivered after fees, in the withdrawal currency.
+	// Amount delivered after fees, in the payout currency.
 	TotalReceived float64 `json:"total_received" url:"total_received"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3832,9 +6157,9 @@ var (
 )
 
 type PostPayoutMethodCreatedPayloadDataQuoteStandard struct {
-	// Total fee charged, in the withdrawal currency.
+	// Total fee charged, in the payout currency.
 	Fee float64 `json:"fee" url:"fee"`
-	// Amount delivered after fees, in the withdrawal currency.
+	// Amount delivered after fees, in the payout currency.
 	TotalReceived float64 `json:"total_received" url:"total_received"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4225,24 +6550,24 @@ func (p PostPayoutMethodCreatedPayloadType) Ptr() *PostPayoutMethodCreatedPayloa
 }
 
 var (
-	postWithdrawalCreatedPayloadFieldAccountID          = big.NewInt(1 << 0)
-	postWithdrawalCreatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
-	postWithdrawalCreatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
-	postWithdrawalCreatedPayloadFieldData               = big.NewInt(1 << 3)
-	postWithdrawalCreatedPayloadFieldID                 = big.NewInt(1 << 4)
-	postWithdrawalCreatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
-	postWithdrawalCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
-	postWithdrawalCreatedPayloadFieldType               = big.NewInt(1 << 7)
+	postPayoutReversedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postPayoutReversedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postPayoutReversedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postPayoutReversedPayloadFieldData               = big.NewInt(1 << 3)
+	postPayoutReversedPayloadFieldID                 = big.NewInt(1 << 4)
+	postPayoutReversedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postPayoutReversedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postPayoutReversedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
-type PostWithdrawalCreatedPayload struct {
+type PostPayoutReversedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// The API version for this webhook
-	APIVersion PostWithdrawalCreatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	APIVersion PostPayoutReversedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string                           `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *PostWithdrawalCreatedPayloadData `json:"data" url:"data"`
+	APIVersionDate *string                        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *PostPayoutReversedPayloadData `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -4250,7 +6575,7 @@ type PostWithdrawalCreatedPayload struct {
 	// The timestamp in ISO 8601 format that the webhook was sent at on the server
 	Timestamp time.Time `json:"timestamp" url:"timestamp"`
 	// The webhook event type
-	Type PostWithdrawalCreatedPayloadType `json:"type" url:"type"`
+	Type PostPayoutReversedPayloadType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4259,70 +6584,70 @@ type PostWithdrawalCreatedPayload struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostWithdrawalCreatedPayload) GetAccountID() *string {
+func (p *PostPayoutReversedPayload) GetAccountID() *string {
 	if p == nil {
 		return nil
 	}
 	return p.AccountID
 }
 
-func (p *PostWithdrawalCreatedPayload) GetAPIVersion() PostWithdrawalCreatedPayloadAPIVersion {
+func (p *PostPayoutReversedPayload) GetAPIVersion() PostPayoutReversedPayloadAPIVersion {
 	if p == nil {
 		return ""
 	}
 	return p.APIVersion
 }
 
-func (p *PostWithdrawalCreatedPayload) GetAPIVersionDate() *string {
+func (p *PostPayoutReversedPayload) GetAPIVersionDate() *string {
 	if p == nil {
 		return nil
 	}
 	return p.APIVersionDate
 }
 
-func (p *PostWithdrawalCreatedPayload) GetData() *PostWithdrawalCreatedPayloadData {
+func (p *PostPayoutReversedPayload) GetData() *PostPayoutReversedPayloadData {
 	if p == nil {
 		return nil
 	}
 	return p.Data
 }
 
-func (p *PostWithdrawalCreatedPayload) GetID() string {
+func (p *PostPayoutReversedPayload) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *PostWithdrawalCreatedPayload) GetPreviousAttributes() map[string]any {
+func (p *PostPayoutReversedPayload) GetPreviousAttributes() map[string]any {
 	if p == nil {
 		return nil
 	}
 	return p.PreviousAttributes
 }
 
-func (p *PostWithdrawalCreatedPayload) GetTimestamp() time.Time {
+func (p *PostPayoutReversedPayload) GetTimestamp() time.Time {
 	if p == nil {
 		return time.Time{}
 	}
 	return p.Timestamp
 }
 
-func (p *PostWithdrawalCreatedPayload) GetType() PostWithdrawalCreatedPayloadType {
+func (p *PostPayoutReversedPayload) GetType() PostPayoutReversedPayloadType {
 	if p == nil {
 		return ""
 	}
 	return p.Type
 }
 
-func (p *PostWithdrawalCreatedPayload) GetExtraProperties() map[string]interface{} {
+func (p *PostPayoutReversedPayload) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostWithdrawalCreatedPayload) require(field *big.Int) {
+func (p *PostPayoutReversedPayload) require(field *big.Int) {
 	if p.explicitFields == nil {
 		p.explicitFields = big.NewInt(0)
 	}
@@ -4331,62 +6656,62 @@ func (p *PostWithdrawalCreatedPayload) require(field *big.Int) {
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayload) SetAccountID(accountID *string) {
+func (p *PostPayoutReversedPayload) SetAccountID(accountID *string) {
 	p.AccountID = accountID
-	p.require(postWithdrawalCreatedPayloadFieldAccountID)
+	p.require(postPayoutReversedPayloadFieldAccountID)
 }
 
 // SetAPIVersion sets the APIVersion field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayload) SetAPIVersion(apiVersion PostWithdrawalCreatedPayloadAPIVersion) {
+func (p *PostPayoutReversedPayload) SetAPIVersion(apiVersion PostPayoutReversedPayloadAPIVersion) {
 	p.APIVersion = apiVersion
-	p.require(postWithdrawalCreatedPayloadFieldAPIVersion)
+	p.require(postPayoutReversedPayloadFieldAPIVersion)
 }
 
 // SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+func (p *PostPayoutReversedPayload) SetAPIVersionDate(apiVersionDate *string) {
 	p.APIVersionDate = apiVersionDate
-	p.require(postWithdrawalCreatedPayloadFieldAPIVersionDate)
+	p.require(postPayoutReversedPayloadFieldAPIVersionDate)
 }
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayload) SetData(data *PostWithdrawalCreatedPayloadData) {
+func (p *PostPayoutReversedPayload) SetData(data *PostPayoutReversedPayloadData) {
 	p.Data = data
-	p.require(postWithdrawalCreatedPayloadFieldData)
+	p.require(postPayoutReversedPayloadFieldData)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayload) SetID(id string) {
+func (p *PostPayoutReversedPayload) SetID(id string) {
 	p.ID = id
-	p.require(postWithdrawalCreatedPayloadFieldID)
+	p.require(postPayoutReversedPayloadFieldID)
 }
 
 // SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+func (p *PostPayoutReversedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
 	p.PreviousAttributes = previousAttributes
-	p.require(postWithdrawalCreatedPayloadFieldPreviousAttributes)
+	p.require(postPayoutReversedPayloadFieldPreviousAttributes)
 }
 
 // SetTimestamp sets the Timestamp field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayload) SetTimestamp(timestamp time.Time) {
+func (p *PostPayoutReversedPayload) SetTimestamp(timestamp time.Time) {
 	p.Timestamp = timestamp
-	p.require(postWithdrawalCreatedPayloadFieldTimestamp)
+	p.require(postPayoutReversedPayloadFieldTimestamp)
 }
 
 // SetType sets the Type field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayload) SetType(type_ PostWithdrawalCreatedPayloadType) {
+func (p *PostPayoutReversedPayload) SetType(type_ PostPayoutReversedPayloadType) {
 	p.Type = type_
-	p.require(postWithdrawalCreatedPayloadFieldType)
+	p.require(postPayoutReversedPayloadFieldType)
 }
 
-func (p *PostWithdrawalCreatedPayload) UnmarshalJSON(data []byte) error {
-	type embed PostWithdrawalCreatedPayload
+func (p *PostPayoutReversedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostPayoutReversedPayload
 	var unmarshaler = struct {
 		embed
 		Timestamp *internal.DateTime `json:"timestamp"`
@@ -4396,7 +6721,7 @@ func (p *PostWithdrawalCreatedPayload) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*p = PostWithdrawalCreatedPayload(unmarshaler.embed)
+	*p = PostPayoutReversedPayload(unmarshaler.embed)
 	p.Timestamp = unmarshaler.Timestamp.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
@@ -4407,8 +6732,8 @@ func (p *PostWithdrawalCreatedPayload) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *PostWithdrawalCreatedPayload) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalCreatedPayload
+func (p *PostPayoutReversedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutReversedPayload
 	var marshaler = struct {
 		embed
 		Timestamp *internal.DateTime `json:"timestamp"`
@@ -4420,7 +6745,7 @@ func (p *PostWithdrawalCreatedPayload) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostWithdrawalCreatedPayload) String() string {
+func (p *PostPayoutReversedPayload) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -4436,53 +6761,53 @@ func (p *PostWithdrawalCreatedPayload) String() string {
 }
 
 // The API version for this webhook
-type PostWithdrawalCreatedPayloadAPIVersion string
+type PostPayoutReversedPayloadAPIVersion string
 
 const (
-	PostWithdrawalCreatedPayloadAPIVersionV1 PostWithdrawalCreatedPayloadAPIVersion = "v1"
+	PostPayoutReversedPayloadAPIVersionV1 PostPayoutReversedPayloadAPIVersion = "v1"
 )
 
-func NewPostWithdrawalCreatedPayloadAPIVersionFromString(s string) (PostWithdrawalCreatedPayloadAPIVersion, error) {
+func NewPostPayoutReversedPayloadAPIVersionFromString(s string) (PostPayoutReversedPayloadAPIVersion, error) {
 	switch s {
 	case "v1":
-		return PostWithdrawalCreatedPayloadAPIVersionV1, nil
+		return PostPayoutReversedPayloadAPIVersionV1, nil
 	}
-	var t PostWithdrawalCreatedPayloadAPIVersion
+	var t PostPayoutReversedPayloadAPIVersion
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalCreatedPayloadAPIVersion) Ptr() *PostWithdrawalCreatedPayloadAPIVersion {
+func (p PostPayoutReversedPayloadAPIVersion) Ptr() *PostPayoutReversedPayloadAPIVersion {
 	return &p
 }
 
 var (
-	postWithdrawalCreatedPayloadDataFieldAmount              = big.NewInt(1 << 0)
-	postWithdrawalCreatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 1)
-	postWithdrawalCreatedPayloadDataFieldCurrency            = big.NewInt(1 << 2)
-	postWithdrawalCreatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 3)
-	postWithdrawalCreatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 4)
-	postWithdrawalCreatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 5)
-	postWithdrawalCreatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 6)
-	postWithdrawalCreatedPayloadDataFieldFailure             = big.NewInt(1 << 7)
-	postWithdrawalCreatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 8)
-	postWithdrawalCreatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 9)
-	postWithdrawalCreatedPayloadDataFieldID                  = big.NewInt(1 << 10)
-	postWithdrawalCreatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 11)
-	postWithdrawalCreatedPayloadDataFieldMetadata            = big.NewInt(1 << 12)
-	postWithdrawalCreatedPayloadDataFieldNetAmount           = big.NewInt(1 << 13)
-	postWithdrawalCreatedPayloadDataFieldNotes               = big.NewInt(1 << 14)
-	postWithdrawalCreatedPayloadDataFieldObject              = big.NewInt(1 << 15)
-	postWithdrawalCreatedPayloadDataFieldPayerName           = big.NewInt(1 << 16)
-	postWithdrawalCreatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 17)
-	postWithdrawalCreatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
-	postWithdrawalCreatedPayloadDataFieldSource              = big.NewInt(1 << 19)
-	postWithdrawalCreatedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
-	postWithdrawalCreatedPayloadDataFieldStatus              = big.NewInt(1 << 21)
-	postWithdrawalCreatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 22)
-	postWithdrawalCreatedPayloadDataFieldTraceCode           = big.NewInt(1 << 23)
+	postPayoutReversedPayloadDataFieldAmount              = big.NewInt(1 << 0)
+	postPayoutReversedPayloadDataFieldCreatedAt           = big.NewInt(1 << 1)
+	postPayoutReversedPayloadDataFieldCurrency            = big.NewInt(1 << 2)
+	postPayoutReversedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 3)
+	postPayoutReversedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 4)
+	postPayoutReversedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 5)
+	postPayoutReversedPayloadDataFieldExchangeRate        = big.NewInt(1 << 6)
+	postPayoutReversedPayloadDataFieldFailure             = big.NewInt(1 << 7)
+	postPayoutReversedPayloadDataFieldFeeAmount           = big.NewInt(1 << 8)
+	postPayoutReversedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 9)
+	postPayoutReversedPayloadDataFieldID                  = big.NewInt(1 << 10)
+	postPayoutReversedPayloadDataFieldMarkupFee           = big.NewInt(1 << 11)
+	postPayoutReversedPayloadDataFieldMetadata            = big.NewInt(1 << 12)
+	postPayoutReversedPayloadDataFieldNetAmount           = big.NewInt(1 << 13)
+	postPayoutReversedPayloadDataFieldNotes               = big.NewInt(1 << 14)
+	postPayoutReversedPayloadDataFieldObject              = big.NewInt(1 << 15)
+	postPayoutReversedPayloadDataFieldPayerName           = big.NewInt(1 << 16)
+	postPayoutReversedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 17)
+	postPayoutReversedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
+	postPayoutReversedPayloadDataFieldSource              = big.NewInt(1 << 19)
+	postPayoutReversedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
+	postPayoutReversedPayloadDataFieldStatus              = big.NewInt(1 << 21)
+	postPayoutReversedPayloadDataFieldStatusDetail        = big.NewInt(1 << 22)
+	postPayoutReversedPayloadDataFieldTraceCode           = big.NewInt(1 << 23)
 )
 
-type PostWithdrawalCreatedPayloadData struct {
+type PostPayoutReversedPayloadData struct {
 	// The payout amount in whole currency units, as a decimal string.
 	Amount string `json:"amount" url:"amount"`
 	// When the payout was created.
@@ -4498,11 +6823,11 @@ type PostWithdrawalCreatedPayloadData struct {
 	// Exchange rate from the payout currency to the destination currency. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded rate.
 	ExchangeRate *float64 `json:"exchange_rate,omitempty" url:"exchange_rate,omitempty"`
 	// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
-	Failure *PostWithdrawalCreatedPayloadDataFailure `json:"failure,omitempty" url:"failure,omitempty"`
+	Failure *PostPayoutReversedPayloadDataFailure `json:"failure,omitempty" url:"failure,omitempty"`
 	// The fee charged for the payout, in the payout currency, as a decimal string.
 	FeeAmount string `json:"fee_amount" url:"fee_amount"`
 	// Who bore the payout fee: the account itself, or its parent platform.
-	FeePaidBy PostWithdrawalCreatedPayloadDataFeePaidBy `json:"fee_paid_by" url:"fee_paid_by"`
+	FeePaidBy PostPayoutReversedPayloadDataFeePaidBy `json:"fee_paid_by" url:"fee_paid_by"`
 	// Payout ID, prefixed `wdrl_`.
 	ID string `json:"id" url:"id"`
 	// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies.
@@ -4512,20 +6837,20 @@ type PostWithdrawalCreatedPayloadData struct {
 	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
 	NetAmount string `json:"net_amount" url:"net_amount"`
 	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
-	Notes  *string                                `json:"notes,omitempty" url:"notes,omitempty"`
-	Object PostWithdrawalCreatedPayloadDataObject `json:"object" url:"object"`
+	Notes  *string                             `json:"notes,omitempty" url:"notes,omitempty"`
+	Object PostPayoutReversedPayloadDataObject `json:"object" url:"object"`
 	// Name of the entity processing the payout.
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
 	// The saved payout method used. Requires payout:destination:read; null without it.
-	PayoutMethod *PostWithdrawalCreatedPayloadDataPayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
+	PayoutMethod *PostPayoutReversedPayloadDataPayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
 	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. Match it to the settled payout in `GET /payouts`. Returns `null` for payouts not created by `POST /payouts`.
 	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
 	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
-	Source *PostWithdrawalCreatedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
+	Source *PostPayoutReversedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
-	Speed PostWithdrawalCreatedPayloadDataSpeed `json:"speed" url:"speed"`
+	Speed PostPayoutReversedPayloadDataSpeed `json:"speed" url:"speed"`
 	// Current payout status.
-	Status PostWithdrawalCreatedPayloadDataStatus `json:"status" url:"status"`
+	Status PostPayoutReversedPayloadDataStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
 	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
@@ -4538,182 +6863,182 @@ type PostWithdrawalCreatedPayloadData struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetAmount() string {
+func (p *PostPayoutReversedPayloadData) GetAmount() string {
 	if p == nil {
 		return ""
 	}
 	return p.Amount
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetCreatedAt() time.Time {
+func (p *PostPayoutReversedPayloadData) GetCreatedAt() time.Time {
 	if p == nil {
 		return time.Time{}
 	}
 	return p.CreatedAt
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetCurrency() string {
+func (p *PostPayoutReversedPayloadData) GetCurrency() string {
 	if p == nil {
 		return ""
 	}
 	return p.Currency
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetDestinationAmount() *string {
+func (p *PostPayoutReversedPayloadData) GetDestinationAmount() *string {
 	if p == nil {
 		return nil
 	}
 	return p.DestinationAmount
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetDestinationCurrency() *string {
+func (p *PostPayoutReversedPayloadData) GetDestinationCurrency() *string {
 	if p == nil {
 		return nil
 	}
 	return p.DestinationCurrency
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetEstimatedArrival() *time.Time {
+func (p *PostPayoutReversedPayloadData) GetEstimatedArrival() *time.Time {
 	if p == nil {
 		return nil
 	}
 	return p.EstimatedArrival
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetExchangeRate() *float64 {
+func (p *PostPayoutReversedPayloadData) GetExchangeRate() *float64 {
 	if p == nil {
 		return nil
 	}
 	return p.ExchangeRate
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetFailure() *PostWithdrawalCreatedPayloadDataFailure {
+func (p *PostPayoutReversedPayloadData) GetFailure() *PostPayoutReversedPayloadDataFailure {
 	if p == nil {
 		return nil
 	}
 	return p.Failure
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetFeeAmount() string {
+func (p *PostPayoutReversedPayloadData) GetFeeAmount() string {
 	if p == nil {
 		return ""
 	}
 	return p.FeeAmount
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetFeePaidBy() PostWithdrawalCreatedPayloadDataFeePaidBy {
+func (p *PostPayoutReversedPayloadData) GetFeePaidBy() PostPayoutReversedPayloadDataFeePaidBy {
 	if p == nil {
 		return ""
 	}
 	return p.FeePaidBy
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetID() string {
+func (p *PostPayoutReversedPayloadData) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetMarkupFee() string {
+func (p *PostPayoutReversedPayloadData) GetMarkupFee() string {
 	if p == nil {
 		return ""
 	}
 	return p.MarkupFee
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetMetadata() map[string]string {
+func (p *PostPayoutReversedPayloadData) GetMetadata() map[string]string {
 	if p == nil {
 		return nil
 	}
 	return p.Metadata
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetNetAmount() string {
+func (p *PostPayoutReversedPayloadData) GetNetAmount() string {
 	if p == nil {
 		return ""
 	}
 	return p.NetAmount
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetNotes() *string {
+func (p *PostPayoutReversedPayloadData) GetNotes() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Notes
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetObject() PostWithdrawalCreatedPayloadDataObject {
+func (p *PostPayoutReversedPayloadData) GetObject() PostPayoutReversedPayloadDataObject {
 	if p == nil {
 		return ""
 	}
 	return p.Object
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetPayerName() *string {
+func (p *PostPayoutReversedPayloadData) GetPayerName() *string {
 	if p == nil {
 		return nil
 	}
 	return p.PayerName
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetPayoutMethod() *PostWithdrawalCreatedPayloadDataPayoutMethod {
+func (p *PostPayoutReversedPayloadData) GetPayoutMethod() *PostPayoutReversedPayloadDataPayoutMethod {
 	if p == nil {
 		return nil
 	}
 	return p.PayoutMethod
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetPayoutRequestID() *string {
+func (p *PostPayoutReversedPayloadData) GetPayoutRequestID() *string {
 	if p == nil {
 		return nil
 	}
 	return p.PayoutRequestID
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetSource() *PostWithdrawalCreatedPayloadDataSource {
+func (p *PostPayoutReversedPayloadData) GetSource() *PostPayoutReversedPayloadDataSource {
 	if p == nil {
 		return nil
 	}
 	return p.Source
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetSpeed() PostWithdrawalCreatedPayloadDataSpeed {
+func (p *PostPayoutReversedPayloadData) GetSpeed() PostPayoutReversedPayloadDataSpeed {
 	if p == nil {
 		return ""
 	}
 	return p.Speed
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetStatus() PostWithdrawalCreatedPayloadDataStatus {
+func (p *PostPayoutReversedPayloadData) GetStatus() PostPayoutReversedPayloadDataStatus {
 	if p == nil {
 		return ""
 	}
 	return p.Status
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetStatusDetail() string {
+func (p *PostPayoutReversedPayloadData) GetStatusDetail() string {
 	if p == nil {
 		return ""
 	}
 	return p.StatusDetail
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetTraceCode() *string {
+func (p *PostPayoutReversedPayloadData) GetTraceCode() *string {
 	if p == nil {
 		return nil
 	}
 	return p.TraceCode
 }
 
-func (p *PostWithdrawalCreatedPayloadData) GetExtraProperties() map[string]interface{} {
+func (p *PostPayoutReversedPayloadData) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostWithdrawalCreatedPayloadData) require(field *big.Int) {
+func (p *PostPayoutReversedPayloadData) require(field *big.Int) {
 	if p.explicitFields == nil {
 		p.explicitFields = big.NewInt(0)
 	}
@@ -4722,174 +7047,174 @@ func (p *PostWithdrawalCreatedPayloadData) require(field *big.Int) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetAmount(amount string) {
+func (p *PostPayoutReversedPayloadData) SetAmount(amount string) {
 	p.Amount = amount
-	p.require(postWithdrawalCreatedPayloadDataFieldAmount)
+	p.require(postPayoutReversedPayloadDataFieldAmount)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetCreatedAt(createdAt time.Time) {
+func (p *PostPayoutReversedPayloadData) SetCreatedAt(createdAt time.Time) {
 	p.CreatedAt = createdAt
-	p.require(postWithdrawalCreatedPayloadDataFieldCreatedAt)
+	p.require(postPayoutReversedPayloadDataFieldCreatedAt)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetCurrency(currency string) {
+func (p *PostPayoutReversedPayloadData) SetCurrency(currency string) {
 	p.Currency = currency
-	p.require(postWithdrawalCreatedPayloadDataFieldCurrency)
+	p.require(postPayoutReversedPayloadDataFieldCurrency)
 }
 
 // SetDestinationAmount sets the DestinationAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetDestinationAmount(destinationAmount *string) {
+func (p *PostPayoutReversedPayloadData) SetDestinationAmount(destinationAmount *string) {
 	p.DestinationAmount = destinationAmount
-	p.require(postWithdrawalCreatedPayloadDataFieldDestinationAmount)
+	p.require(postPayoutReversedPayloadDataFieldDestinationAmount)
 }
 
 // SetDestinationCurrency sets the DestinationCurrency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetDestinationCurrency(destinationCurrency *string) {
+func (p *PostPayoutReversedPayloadData) SetDestinationCurrency(destinationCurrency *string) {
 	p.DestinationCurrency = destinationCurrency
-	p.require(postWithdrawalCreatedPayloadDataFieldDestinationCurrency)
+	p.require(postPayoutReversedPayloadDataFieldDestinationCurrency)
 }
 
 // SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetEstimatedArrival(estimatedArrival *time.Time) {
+func (p *PostPayoutReversedPayloadData) SetEstimatedArrival(estimatedArrival *time.Time) {
 	p.EstimatedArrival = estimatedArrival
-	p.require(postWithdrawalCreatedPayloadDataFieldEstimatedArrival)
+	p.require(postPayoutReversedPayloadDataFieldEstimatedArrival)
 }
 
 // SetExchangeRate sets the ExchangeRate field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetExchangeRate(exchangeRate *float64) {
+func (p *PostPayoutReversedPayloadData) SetExchangeRate(exchangeRate *float64) {
 	p.ExchangeRate = exchangeRate
-	p.require(postWithdrawalCreatedPayloadDataFieldExchangeRate)
+	p.require(postPayoutReversedPayloadDataFieldExchangeRate)
 }
 
 // SetFailure sets the Failure field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetFailure(failure *PostWithdrawalCreatedPayloadDataFailure) {
+func (p *PostPayoutReversedPayloadData) SetFailure(failure *PostPayoutReversedPayloadDataFailure) {
 	p.Failure = failure
-	p.require(postWithdrawalCreatedPayloadDataFieldFailure)
+	p.require(postPayoutReversedPayloadDataFieldFailure)
 }
 
 // SetFeeAmount sets the FeeAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetFeeAmount(feeAmount string) {
+func (p *PostPayoutReversedPayloadData) SetFeeAmount(feeAmount string) {
 	p.FeeAmount = feeAmount
-	p.require(postWithdrawalCreatedPayloadDataFieldFeeAmount)
+	p.require(postPayoutReversedPayloadDataFieldFeeAmount)
 }
 
 // SetFeePaidBy sets the FeePaidBy field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetFeePaidBy(feePaidBy PostWithdrawalCreatedPayloadDataFeePaidBy) {
+func (p *PostPayoutReversedPayloadData) SetFeePaidBy(feePaidBy PostPayoutReversedPayloadDataFeePaidBy) {
 	p.FeePaidBy = feePaidBy
-	p.require(postWithdrawalCreatedPayloadDataFieldFeePaidBy)
+	p.require(postPayoutReversedPayloadDataFieldFeePaidBy)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetID(id string) {
+func (p *PostPayoutReversedPayloadData) SetID(id string) {
 	p.ID = id
-	p.require(postWithdrawalCreatedPayloadDataFieldID)
+	p.require(postPayoutReversedPayloadDataFieldID)
 }
 
 // SetMarkupFee sets the MarkupFee field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetMarkupFee(markupFee string) {
+func (p *PostPayoutReversedPayloadData) SetMarkupFee(markupFee string) {
 	p.MarkupFee = markupFee
-	p.require(postWithdrawalCreatedPayloadDataFieldMarkupFee)
+	p.require(postPayoutReversedPayloadDataFieldMarkupFee)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetMetadata(metadata map[string]string) {
+func (p *PostPayoutReversedPayloadData) SetMetadata(metadata map[string]string) {
 	p.Metadata = metadata
-	p.require(postWithdrawalCreatedPayloadDataFieldMetadata)
+	p.require(postPayoutReversedPayloadDataFieldMetadata)
 }
 
 // SetNetAmount sets the NetAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetNetAmount(netAmount string) {
+func (p *PostPayoutReversedPayloadData) SetNetAmount(netAmount string) {
 	p.NetAmount = netAmount
-	p.require(postWithdrawalCreatedPayloadDataFieldNetAmount)
+	p.require(postPayoutReversedPayloadDataFieldNetAmount)
 }
 
 // SetNotes sets the Notes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetNotes(notes *string) {
+func (p *PostPayoutReversedPayloadData) SetNotes(notes *string) {
 	p.Notes = notes
-	p.require(postWithdrawalCreatedPayloadDataFieldNotes)
+	p.require(postPayoutReversedPayloadDataFieldNotes)
 }
 
 // SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetObject(object PostWithdrawalCreatedPayloadDataObject) {
+func (p *PostPayoutReversedPayloadData) SetObject(object PostPayoutReversedPayloadDataObject) {
 	p.Object = object
-	p.require(postWithdrawalCreatedPayloadDataFieldObject)
+	p.require(postPayoutReversedPayloadDataFieldObject)
 }
 
 // SetPayerName sets the PayerName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetPayerName(payerName *string) {
+func (p *PostPayoutReversedPayloadData) SetPayerName(payerName *string) {
 	p.PayerName = payerName
-	p.require(postWithdrawalCreatedPayloadDataFieldPayerName)
+	p.require(postPayoutReversedPayloadDataFieldPayerName)
 }
 
 // SetPayoutMethod sets the PayoutMethod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetPayoutMethod(payoutMethod *PostWithdrawalCreatedPayloadDataPayoutMethod) {
+func (p *PostPayoutReversedPayloadData) SetPayoutMethod(payoutMethod *PostPayoutReversedPayloadDataPayoutMethod) {
 	p.PayoutMethod = payoutMethod
-	p.require(postWithdrawalCreatedPayloadDataFieldPayoutMethod)
+	p.require(postPayoutReversedPayloadDataFieldPayoutMethod)
 }
 
 // SetPayoutRequestID sets the PayoutRequestID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetPayoutRequestID(payoutRequestID *string) {
+func (p *PostPayoutReversedPayloadData) SetPayoutRequestID(payoutRequestID *string) {
 	p.PayoutRequestID = payoutRequestID
-	p.require(postWithdrawalCreatedPayloadDataFieldPayoutRequestID)
+	p.require(postPayoutReversedPayloadDataFieldPayoutRequestID)
 }
 
 // SetSource sets the Source field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetSource(source *PostWithdrawalCreatedPayloadDataSource) {
+func (p *PostPayoutReversedPayloadData) SetSource(source *PostPayoutReversedPayloadDataSource) {
 	p.Source = source
-	p.require(postWithdrawalCreatedPayloadDataFieldSource)
+	p.require(postPayoutReversedPayloadDataFieldSource)
 }
 
 // SetSpeed sets the Speed field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetSpeed(speed PostWithdrawalCreatedPayloadDataSpeed) {
+func (p *PostPayoutReversedPayloadData) SetSpeed(speed PostPayoutReversedPayloadDataSpeed) {
 	p.Speed = speed
-	p.require(postWithdrawalCreatedPayloadDataFieldSpeed)
+	p.require(postPayoutReversedPayloadDataFieldSpeed)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetStatus(status PostWithdrawalCreatedPayloadDataStatus) {
+func (p *PostPayoutReversedPayloadData) SetStatus(status PostPayoutReversedPayloadDataStatus) {
 	p.Status = status
-	p.require(postWithdrawalCreatedPayloadDataFieldStatus)
+	p.require(postPayoutReversedPayloadDataFieldStatus)
 }
 
 // SetStatusDetail sets the StatusDetail field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetStatusDetail(statusDetail string) {
+func (p *PostPayoutReversedPayloadData) SetStatusDetail(statusDetail string) {
 	p.StatusDetail = statusDetail
-	p.require(postWithdrawalCreatedPayloadDataFieldStatusDetail)
+	p.require(postPayoutReversedPayloadDataFieldStatusDetail)
 }
 
 // SetTraceCode sets the TraceCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadData) SetTraceCode(traceCode *string) {
+func (p *PostPayoutReversedPayloadData) SetTraceCode(traceCode *string) {
 	p.TraceCode = traceCode
-	p.require(postWithdrawalCreatedPayloadDataFieldTraceCode)
+	p.require(postPayoutReversedPayloadDataFieldTraceCode)
 }
 
-func (p *PostWithdrawalCreatedPayloadData) UnmarshalJSON(data []byte) error {
-	type embed PostWithdrawalCreatedPayloadData
+func (p *PostPayoutReversedPayloadData) UnmarshalJSON(data []byte) error {
+	type embed PostPayoutReversedPayloadData
 	var unmarshaler = struct {
 		embed
 		CreatedAt        *internal.DateTime `json:"created_at"`
@@ -4900,7 +7225,7 @@ func (p *PostWithdrawalCreatedPayloadData) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*p = PostWithdrawalCreatedPayloadData(unmarshaler.embed)
+	*p = PostPayoutReversedPayloadData(unmarshaler.embed)
 	p.CreatedAt = unmarshaler.CreatedAt.Time()
 	p.EstimatedArrival = unmarshaler.EstimatedArrival.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
@@ -4912,8 +7237,8 @@ func (p *PostWithdrawalCreatedPayloadData) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *PostWithdrawalCreatedPayloadData) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalCreatedPayloadData
+func (p *PostPayoutReversedPayloadData) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutReversedPayloadData
 	var marshaler = struct {
 		embed
 		CreatedAt        *internal.DateTime `json:"created_at"`
@@ -4927,7 +7252,7 @@ func (p *PostWithdrawalCreatedPayloadData) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostWithdrawalCreatedPayloadData) String() string {
+func (p *PostPayoutReversedPayloadData) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -4944,12 +7269,12 @@ func (p *PostWithdrawalCreatedPayloadData) String() string {
 
 // Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 var (
-	postWithdrawalCreatedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
-	postWithdrawalCreatedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
-	postWithdrawalCreatedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
+	postPayoutReversedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
+	postPayoutReversedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
+	postPayoutReversedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
 )
 
-type PostWithdrawalCreatedPayloadDataFailure struct {
+type PostPayoutReversedPayloadDataFailure struct {
 	// Classified failure code from the maintained error catalog.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
@@ -4964,35 +7289,35 @@ type PostWithdrawalCreatedPayloadDataFailure struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostWithdrawalCreatedPayloadDataFailure) GetCode() *string {
+func (p *PostPayoutReversedPayloadDataFailure) GetCode() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Code
 }
 
-func (p *PostWithdrawalCreatedPayloadDataFailure) GetFundsReturnedAt() *time.Time {
+func (p *PostPayoutReversedPayloadDataFailure) GetFundsReturnedAt() *time.Time {
 	if p == nil {
 		return nil
 	}
 	return p.FundsReturnedAt
 }
 
-func (p *PostWithdrawalCreatedPayloadDataFailure) GetMessage() *string {
+func (p *PostPayoutReversedPayloadDataFailure) GetMessage() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Message
 }
 
-func (p *PostWithdrawalCreatedPayloadDataFailure) GetExtraProperties() map[string]interface{} {
+func (p *PostPayoutReversedPayloadDataFailure) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostWithdrawalCreatedPayloadDataFailure) require(field *big.Int) {
+func (p *PostPayoutReversedPayloadDataFailure) require(field *big.Int) {
 	if p.explicitFields == nil {
 		p.explicitFields = big.NewInt(0)
 	}
@@ -5001,27 +7326,27 @@ func (p *PostWithdrawalCreatedPayloadDataFailure) require(field *big.Int) {
 
 // SetCode sets the Code field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadDataFailure) SetCode(code *string) {
+func (p *PostPayoutReversedPayloadDataFailure) SetCode(code *string) {
 	p.Code = code
-	p.require(postWithdrawalCreatedPayloadDataFailureFieldCode)
+	p.require(postPayoutReversedPayloadDataFailureFieldCode)
 }
 
 // SetFundsReturnedAt sets the FundsReturnedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadDataFailure) SetFundsReturnedAt(fundsReturnedAt *time.Time) {
+func (p *PostPayoutReversedPayloadDataFailure) SetFundsReturnedAt(fundsReturnedAt *time.Time) {
 	p.FundsReturnedAt = fundsReturnedAt
-	p.require(postWithdrawalCreatedPayloadDataFailureFieldFundsReturnedAt)
+	p.require(postPayoutReversedPayloadDataFailureFieldFundsReturnedAt)
 }
 
 // SetMessage sets the Message field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadDataFailure) SetMessage(message *string) {
+func (p *PostPayoutReversedPayloadDataFailure) SetMessage(message *string) {
 	p.Message = message
-	p.require(postWithdrawalCreatedPayloadDataFailureFieldMessage)
+	p.require(postPayoutReversedPayloadDataFailureFieldMessage)
 }
 
-func (p *PostWithdrawalCreatedPayloadDataFailure) UnmarshalJSON(data []byte) error {
-	type embed PostWithdrawalCreatedPayloadDataFailure
+func (p *PostPayoutReversedPayloadDataFailure) UnmarshalJSON(data []byte) error {
+	type embed PostPayoutReversedPayloadDataFailure
 	var unmarshaler = struct {
 		embed
 		FundsReturnedAt *internal.DateTime `json:"funds_returned_at,omitempty"`
@@ -5031,7 +7356,7 @@ func (p *PostWithdrawalCreatedPayloadDataFailure) UnmarshalJSON(data []byte) err
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*p = PostWithdrawalCreatedPayloadDataFailure(unmarshaler.embed)
+	*p = PostPayoutReversedPayloadDataFailure(unmarshaler.embed)
 	p.FundsReturnedAt = unmarshaler.FundsReturnedAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
@@ -5042,8 +7367,8 @@ func (p *PostWithdrawalCreatedPayloadDataFailure) UnmarshalJSON(data []byte) err
 	return nil
 }
 
-func (p *PostWithdrawalCreatedPayloadDataFailure) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalCreatedPayloadDataFailure
+func (p *PostPayoutReversedPayloadDataFailure) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutReversedPayloadDataFailure
 	var marshaler = struct {
 		embed
 		FundsReturnedAt *internal.DateTime `json:"funds_returned_at,omitempty"`
@@ -5055,7 +7380,7 @@ func (p *PostWithdrawalCreatedPayloadDataFailure) MarshalJSON() ([]byte, error) 
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostWithdrawalCreatedPayloadDataFailure) String() string {
+func (p *PostPayoutReversedPayloadDataFailure) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -5071,58 +7396,58 @@ func (p *PostWithdrawalCreatedPayloadDataFailure) String() string {
 }
 
 // Who bore the payout fee: the account itself, or its parent platform.
-type PostWithdrawalCreatedPayloadDataFeePaidBy string
+type PostPayoutReversedPayloadDataFeePaidBy string
 
 const (
-	PostWithdrawalCreatedPayloadDataFeePaidBySelf     PostWithdrawalCreatedPayloadDataFeePaidBy = "self"
-	PostWithdrawalCreatedPayloadDataFeePaidByPlatform PostWithdrawalCreatedPayloadDataFeePaidBy = "platform"
+	PostPayoutReversedPayloadDataFeePaidBySelf     PostPayoutReversedPayloadDataFeePaidBy = "self"
+	PostPayoutReversedPayloadDataFeePaidByPlatform PostPayoutReversedPayloadDataFeePaidBy = "platform"
 )
 
-func NewPostWithdrawalCreatedPayloadDataFeePaidByFromString(s string) (PostWithdrawalCreatedPayloadDataFeePaidBy, error) {
+func NewPostPayoutReversedPayloadDataFeePaidByFromString(s string) (PostPayoutReversedPayloadDataFeePaidBy, error) {
 	switch s {
 	case "self":
-		return PostWithdrawalCreatedPayloadDataFeePaidBySelf, nil
+		return PostPayoutReversedPayloadDataFeePaidBySelf, nil
 	case "platform":
-		return PostWithdrawalCreatedPayloadDataFeePaidByPlatform, nil
+		return PostPayoutReversedPayloadDataFeePaidByPlatform, nil
 	}
-	var t PostWithdrawalCreatedPayloadDataFeePaidBy
+	var t PostPayoutReversedPayloadDataFeePaidBy
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalCreatedPayloadDataFeePaidBy) Ptr() *PostWithdrawalCreatedPayloadDataFeePaidBy {
+func (p PostPayoutReversedPayloadDataFeePaidBy) Ptr() *PostPayoutReversedPayloadDataFeePaidBy {
 	return &p
 }
 
-type PostWithdrawalCreatedPayloadDataObject string
+type PostPayoutReversedPayloadDataObject string
 
 const (
-	PostWithdrawalCreatedPayloadDataObjectPayout PostWithdrawalCreatedPayloadDataObject = "payout"
+	PostPayoutReversedPayloadDataObjectPayout PostPayoutReversedPayloadDataObject = "payout"
 )
 
-func NewPostWithdrawalCreatedPayloadDataObjectFromString(s string) (PostWithdrawalCreatedPayloadDataObject, error) {
+func NewPostPayoutReversedPayloadDataObjectFromString(s string) (PostPayoutReversedPayloadDataObject, error) {
 	switch s {
 	case "payout":
-		return PostWithdrawalCreatedPayloadDataObjectPayout, nil
+		return PostPayoutReversedPayloadDataObjectPayout, nil
 	}
-	var t PostWithdrawalCreatedPayloadDataObject
+	var t PostPayoutReversedPayloadDataObject
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalCreatedPayloadDataObject) Ptr() *PostWithdrawalCreatedPayloadDataObject {
+func (p PostPayoutReversedPayloadDataObject) Ptr() *PostPayoutReversedPayloadDataObject {
 	return &p
 }
 
 // The saved payout method used. Requires payout:destination:read; null without it.
 var (
-	postWithdrawalCreatedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
-	postWithdrawalCreatedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+	postPayoutReversedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
+	postPayoutReversedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
 )
 
-type PostWithdrawalCreatedPayloadDataPayoutMethod struct {
+type PostPayoutReversedPayloadDataPayoutMethod struct {
 	// Saved payout method nickname.
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
 	// Supported payout method display details.
-	SupportedPayoutMethod *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	SupportedPayoutMethod *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5131,28 +7456,28 @@ type PostWithdrawalCreatedPayloadDataPayoutMethod struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) GetNickname() *string {
+func (p *PostPayoutReversedPayloadDataPayoutMethod) GetNickname() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Nickname
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) GetSupportedPayoutMethod() *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod {
+func (p *PostPayoutReversedPayloadDataPayoutMethod) GetSupportedPayoutMethod() *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod {
 	if p == nil {
 		return nil
 	}
 	return p.SupportedPayoutMethod
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) GetExtraProperties() map[string]interface{} {
+func (p *PostPayoutReversedPayloadDataPayoutMethod) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) require(field *big.Int) {
+func (p *PostPayoutReversedPayloadDataPayoutMethod) require(field *big.Int) {
 	if p.explicitFields == nil {
 		p.explicitFields = big.NewInt(0)
 	}
@@ -5161,25 +7486,25 @@ func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) require(field *big.Int) {
 
 // SetNickname sets the Nickname field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) SetNickname(nickname *string) {
+func (p *PostPayoutReversedPayloadDataPayoutMethod) SetNickname(nickname *string) {
 	p.Nickname = nickname
-	p.require(postWithdrawalCreatedPayloadDataPayoutMethodFieldNickname)
+	p.require(postPayoutReversedPayloadDataPayoutMethodFieldNickname)
 }
 
 // SetSupportedPayoutMethod sets the SupportedPayoutMethod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) {
+func (p *PostPayoutReversedPayloadDataPayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) {
 	p.SupportedPayoutMethod = supportedPayoutMethod
-	p.require(postWithdrawalCreatedPayloadDataPayoutMethodFieldSupportedPayoutMethod)
+	p.require(postPayoutReversedPayloadDataPayoutMethodFieldSupportedPayoutMethod)
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostWithdrawalCreatedPayloadDataPayoutMethod
+func (p *PostPayoutReversedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostPayoutReversedPayloadDataPayoutMethod
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PostWithdrawalCreatedPayloadDataPayoutMethod(value)
+	*p = PostPayoutReversedPayloadDataPayoutMethod(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -5189,8 +7514,8 @@ func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) UnmarshalJSON(data []byte
 	return nil
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalCreatedPayloadDataPayoutMethod
+func (p *PostPayoutReversedPayloadDataPayoutMethod) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutReversedPayloadDataPayoutMethod
 	var marshaler = struct {
 		embed
 	}{
@@ -5200,7 +7525,7 @@ func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) MarshalJSON() ([]byte, er
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) String() string {
+func (p *PostPayoutReversedPayloadDataPayoutMethod) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -5217,14 +7542,14 @@ func (p *PostWithdrawalCreatedPayloadDataPayoutMethod) String() string {
 
 // Supported payout method display details.
 var (
-	postWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
-	postWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
-	postWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
+	postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
+	postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
+	postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
 )
 
-type PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod struct {
+type PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod struct {
 	// How the funds are delivered to the recipient.
-	DeliveryType PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
+	DeliveryType PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
 	// Supported payout method icon URL.
 	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
 	// Supported payout method display name.
@@ -5237,35 +7562,35 @@ type PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) GetDeliveryType() PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) GetDeliveryType() PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
 	if p == nil {
 		return ""
 	}
 	return p.DeliveryType
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) GetIconURL() *string {
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) GetIconURL() *string {
 	if p == nil {
 		return nil
 	}
 	return p.IconURL
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) GetPayerName() *string {
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) GetPayerName() *string {
 	if p == nil {
 		return nil
 	}
 	return p.PayerName
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) GetExtraProperties() map[string]interface{} {
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) require(field *big.Int) {
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) require(field *big.Int) {
 	if p.explicitFields == nil {
 		p.explicitFields = big.NewInt(0)
 	}
@@ -5274,32 +7599,32 @@ func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) requ
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) SetDeliveryType(deliveryType PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) {
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) SetDeliveryType(deliveryType PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) {
 	p.DeliveryType = deliveryType
-	p.require(postWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType)
+	p.require(postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType)
 }
 
 // SetIconURL sets the IconURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) SetIconURL(iconURL *string) {
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) SetIconURL(iconURL *string) {
 	p.IconURL = iconURL
-	p.require(postWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL)
+	p.require(postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL)
 }
 
 // SetPayerName sets the PayerName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) SetPayerName(payerName *string) {
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) SetPayerName(payerName *string) {
 	p.PayerName = payerName
-	p.require(postWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName)
+	p.require(postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName)
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod(value)
+	*p = PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -5309,8 +7634,8 @@ func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) Unma
 	return nil
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod
 	var marshaler = struct {
 		embed
 	}{
@@ -5320,7 +7645,7 @@ func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) Mars
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) String() string {
+func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -5336,178 +7661,178 @@ func (p *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethod) Stri
 }
 
 // How the funds are delivered to the recipient.
-type PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType string
+type PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType string
 
 const (
-	PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup     PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cash_pickup"
-	PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit    PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bank_deposit"
-	PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery   PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "home_delivery"
-	PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet   PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "mobile_wallet"
-	PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard           PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "card"
-	PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck          PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "check"
-	PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill           PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bill"
-	PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cryptocurrency"
-	PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown        PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "unknown"
+	PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup     PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cash_pickup"
+	PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit    PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bank_deposit"
+	PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery   PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "home_delivery"
+	PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet   PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "mobile_wallet"
+	PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard           PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "card"
+	PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck          PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "check"
+	PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill           PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bill"
+	PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cryptocurrency"
+	PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown        PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "unknown"
 )
 
-func NewPostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeFromString(s string) (PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType, error) {
+func NewPostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeFromString(s string) (PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType, error) {
 	switch s {
 	case "cash_pickup":
-		return PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup, nil
+		return PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup, nil
 	case "bank_deposit":
-		return PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit, nil
+		return PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit, nil
 	case "home_delivery":
-		return PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery, nil
+		return PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery, nil
 	case "mobile_wallet":
-		return PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet, nil
+		return PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet, nil
 	case "card":
-		return PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard, nil
+		return PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard, nil
 	case "check":
-		return PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck, nil
+		return PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck, nil
 	case "bill":
-		return PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill, nil
+		return PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill, nil
 	case "cryptocurrency":
-		return PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency, nil
+		return PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency, nil
 	case "unknown":
-		return PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown, nil
+		return PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown, nil
 	}
-	var t PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType
+	var t PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *PostWithdrawalCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
+func (p PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
 	return &p
 }
 
 // How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
-type PostWithdrawalCreatedPayloadDataSource string
+type PostPayoutReversedPayloadDataSource string
 
 const (
-	PostWithdrawalCreatedPayloadDataSourceAPI       PostWithdrawalCreatedPayloadDataSource = "api"
-	PostWithdrawalCreatedPayloadDataSourceDashboard PostWithdrawalCreatedPayloadDataSource = "dashboard"
-	PostWithdrawalCreatedPayloadDataSourceAutomatic PostWithdrawalCreatedPayloadDataSource = "automatic"
+	PostPayoutReversedPayloadDataSourceAPI       PostPayoutReversedPayloadDataSource = "api"
+	PostPayoutReversedPayloadDataSourceDashboard PostPayoutReversedPayloadDataSource = "dashboard"
+	PostPayoutReversedPayloadDataSourceAutomatic PostPayoutReversedPayloadDataSource = "automatic"
 )
 
-func NewPostWithdrawalCreatedPayloadDataSourceFromString(s string) (PostWithdrawalCreatedPayloadDataSource, error) {
+func NewPostPayoutReversedPayloadDataSourceFromString(s string) (PostPayoutReversedPayloadDataSource, error) {
 	switch s {
 	case "api":
-		return PostWithdrawalCreatedPayloadDataSourceAPI, nil
+		return PostPayoutReversedPayloadDataSourceAPI, nil
 	case "dashboard":
-		return PostWithdrawalCreatedPayloadDataSourceDashboard, nil
+		return PostPayoutReversedPayloadDataSourceDashboard, nil
 	case "automatic":
-		return PostWithdrawalCreatedPayloadDataSourceAutomatic, nil
+		return PostPayoutReversedPayloadDataSourceAutomatic, nil
 	}
-	var t PostWithdrawalCreatedPayloadDataSource
+	var t PostPayoutReversedPayloadDataSource
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalCreatedPayloadDataSource) Ptr() *PostWithdrawalCreatedPayloadDataSource {
+func (p PostPayoutReversedPayloadDataSource) Ptr() *PostPayoutReversedPayloadDataSource {
 	return &p
 }
 
 // Payout delivery speed.
-type PostWithdrawalCreatedPayloadDataSpeed string
+type PostPayoutReversedPayloadDataSpeed string
 
 const (
-	PostWithdrawalCreatedPayloadDataSpeedStandard PostWithdrawalCreatedPayloadDataSpeed = "standard"
-	PostWithdrawalCreatedPayloadDataSpeedInstant  PostWithdrawalCreatedPayloadDataSpeed = "instant"
+	PostPayoutReversedPayloadDataSpeedStandard PostPayoutReversedPayloadDataSpeed = "standard"
+	PostPayoutReversedPayloadDataSpeedInstant  PostPayoutReversedPayloadDataSpeed = "instant"
 )
 
-func NewPostWithdrawalCreatedPayloadDataSpeedFromString(s string) (PostWithdrawalCreatedPayloadDataSpeed, error) {
+func NewPostPayoutReversedPayloadDataSpeedFromString(s string) (PostPayoutReversedPayloadDataSpeed, error) {
 	switch s {
 	case "standard":
-		return PostWithdrawalCreatedPayloadDataSpeedStandard, nil
+		return PostPayoutReversedPayloadDataSpeedStandard, nil
 	case "instant":
-		return PostWithdrawalCreatedPayloadDataSpeedInstant, nil
+		return PostPayoutReversedPayloadDataSpeedInstant, nil
 	}
-	var t PostWithdrawalCreatedPayloadDataSpeed
+	var t PostPayoutReversedPayloadDataSpeed
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalCreatedPayloadDataSpeed) Ptr() *PostWithdrawalCreatedPayloadDataSpeed {
+func (p PostPayoutReversedPayloadDataSpeed) Ptr() *PostPayoutReversedPayloadDataSpeed {
 	return &p
 }
 
 // Current payout status.
-type PostWithdrawalCreatedPayloadDataStatus string
+type PostPayoutReversedPayloadDataStatus string
 
 const (
-	PostWithdrawalCreatedPayloadDataStatusRequested  PostWithdrawalCreatedPayloadDataStatus = "requested"
-	PostWithdrawalCreatedPayloadDataStatusInReview   PostWithdrawalCreatedPayloadDataStatus = "in_review"
-	PostWithdrawalCreatedPayloadDataStatusProcessing PostWithdrawalCreatedPayloadDataStatus = "processing"
-	PostWithdrawalCreatedPayloadDataStatusCompleted  PostWithdrawalCreatedPayloadDataStatus = "completed"
-	PostWithdrawalCreatedPayloadDataStatusReversed   PostWithdrawalCreatedPayloadDataStatus = "reversed"
-	PostWithdrawalCreatedPayloadDataStatusCanceled   PostWithdrawalCreatedPayloadDataStatus = "canceled"
-	PostWithdrawalCreatedPayloadDataStatusFailed     PostWithdrawalCreatedPayloadDataStatus = "failed"
-	PostWithdrawalCreatedPayloadDataStatusDenied     PostWithdrawalCreatedPayloadDataStatus = "denied"
+	PostPayoutReversedPayloadDataStatusRequested  PostPayoutReversedPayloadDataStatus = "requested"
+	PostPayoutReversedPayloadDataStatusInReview   PostPayoutReversedPayloadDataStatus = "in_review"
+	PostPayoutReversedPayloadDataStatusProcessing PostPayoutReversedPayloadDataStatus = "processing"
+	PostPayoutReversedPayloadDataStatusCompleted  PostPayoutReversedPayloadDataStatus = "completed"
+	PostPayoutReversedPayloadDataStatusReversed   PostPayoutReversedPayloadDataStatus = "reversed"
+	PostPayoutReversedPayloadDataStatusCanceled   PostPayoutReversedPayloadDataStatus = "canceled"
+	PostPayoutReversedPayloadDataStatusFailed     PostPayoutReversedPayloadDataStatus = "failed"
+	PostPayoutReversedPayloadDataStatusDenied     PostPayoutReversedPayloadDataStatus = "denied"
 )
 
-func NewPostWithdrawalCreatedPayloadDataStatusFromString(s string) (PostWithdrawalCreatedPayloadDataStatus, error) {
+func NewPostPayoutReversedPayloadDataStatusFromString(s string) (PostPayoutReversedPayloadDataStatus, error) {
 	switch s {
 	case "requested":
-		return PostWithdrawalCreatedPayloadDataStatusRequested, nil
+		return PostPayoutReversedPayloadDataStatusRequested, nil
 	case "in_review":
-		return PostWithdrawalCreatedPayloadDataStatusInReview, nil
+		return PostPayoutReversedPayloadDataStatusInReview, nil
 	case "processing":
-		return PostWithdrawalCreatedPayloadDataStatusProcessing, nil
+		return PostPayoutReversedPayloadDataStatusProcessing, nil
 	case "completed":
-		return PostWithdrawalCreatedPayloadDataStatusCompleted, nil
+		return PostPayoutReversedPayloadDataStatusCompleted, nil
 	case "reversed":
-		return PostWithdrawalCreatedPayloadDataStatusReversed, nil
+		return PostPayoutReversedPayloadDataStatusReversed, nil
 	case "canceled":
-		return PostWithdrawalCreatedPayloadDataStatusCanceled, nil
+		return PostPayoutReversedPayloadDataStatusCanceled, nil
 	case "failed":
-		return PostWithdrawalCreatedPayloadDataStatusFailed, nil
+		return PostPayoutReversedPayloadDataStatusFailed, nil
 	case "denied":
-		return PostWithdrawalCreatedPayloadDataStatusDenied, nil
+		return PostPayoutReversedPayloadDataStatusDenied, nil
 	}
-	var t PostWithdrawalCreatedPayloadDataStatus
+	var t PostPayoutReversedPayloadDataStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalCreatedPayloadDataStatus) Ptr() *PostWithdrawalCreatedPayloadDataStatus {
+func (p PostPayoutReversedPayloadDataStatus) Ptr() *PostPayoutReversedPayloadDataStatus {
 	return &p
 }
 
 // The webhook event type
-type PostWithdrawalCreatedPayloadType string
+type PostPayoutReversedPayloadType string
 
 const (
-	PostWithdrawalCreatedPayloadTypeWithdrawalCreated PostWithdrawalCreatedPayloadType = "withdrawal.created"
+	PostPayoutReversedPayloadTypePayoutReversed PostPayoutReversedPayloadType = "payout.reversed"
 )
 
-func NewPostWithdrawalCreatedPayloadTypeFromString(s string) (PostWithdrawalCreatedPayloadType, error) {
+func NewPostPayoutReversedPayloadTypeFromString(s string) (PostPayoutReversedPayloadType, error) {
 	switch s {
-	case "withdrawal.created":
-		return PostWithdrawalCreatedPayloadTypeWithdrawalCreated, nil
+	case "payout.reversed":
+		return PostPayoutReversedPayloadTypePayoutReversed, nil
 	}
-	var t PostWithdrawalCreatedPayloadType
+	var t PostPayoutReversedPayloadType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalCreatedPayloadType) Ptr() *PostWithdrawalCreatedPayloadType {
+func (p PostPayoutReversedPayloadType) Ptr() *PostPayoutReversedPayloadType {
 	return &p
 }
 
 var (
-	postWithdrawalReversedPayloadFieldAccountID          = big.NewInt(1 << 0)
-	postWithdrawalReversedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
-	postWithdrawalReversedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
-	postWithdrawalReversedPayloadFieldData               = big.NewInt(1 << 3)
-	postWithdrawalReversedPayloadFieldID                 = big.NewInt(1 << 4)
-	postWithdrawalReversedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
-	postWithdrawalReversedPayloadFieldTimestamp          = big.NewInt(1 << 6)
-	postWithdrawalReversedPayloadFieldType               = big.NewInt(1 << 7)
+	postPayoutUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postPayoutUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postPayoutUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postPayoutUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postPayoutUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postPayoutUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postPayoutUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postPayoutUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
-type PostWithdrawalReversedPayload struct {
+type PostPayoutUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// The API version for this webhook
-	APIVersion PostWithdrawalReversedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	APIVersion PostPayoutUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string                            `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *PostWithdrawalReversedPayloadData `json:"data" url:"data"`
+	APIVersionDate *string                       `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *PostPayoutUpdatedPayloadData `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -5515,7 +7840,7 @@ type PostWithdrawalReversedPayload struct {
 	// The timestamp in ISO 8601 format that the webhook was sent at on the server
 	Timestamp time.Time `json:"timestamp" url:"timestamp"`
 	// The webhook event type
-	Type PostWithdrawalReversedPayloadType `json:"type" url:"type"`
+	Type PostPayoutUpdatedPayloadType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5524,70 +7849,70 @@ type PostWithdrawalReversedPayload struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostWithdrawalReversedPayload) GetAccountID() *string {
+func (p *PostPayoutUpdatedPayload) GetAccountID() *string {
 	if p == nil {
 		return nil
 	}
 	return p.AccountID
 }
 
-func (p *PostWithdrawalReversedPayload) GetAPIVersion() PostWithdrawalReversedPayloadAPIVersion {
+func (p *PostPayoutUpdatedPayload) GetAPIVersion() PostPayoutUpdatedPayloadAPIVersion {
 	if p == nil {
 		return ""
 	}
 	return p.APIVersion
 }
 
-func (p *PostWithdrawalReversedPayload) GetAPIVersionDate() *string {
+func (p *PostPayoutUpdatedPayload) GetAPIVersionDate() *string {
 	if p == nil {
 		return nil
 	}
 	return p.APIVersionDate
 }
 
-func (p *PostWithdrawalReversedPayload) GetData() *PostWithdrawalReversedPayloadData {
+func (p *PostPayoutUpdatedPayload) GetData() *PostPayoutUpdatedPayloadData {
 	if p == nil {
 		return nil
 	}
 	return p.Data
 }
 
-func (p *PostWithdrawalReversedPayload) GetID() string {
+func (p *PostPayoutUpdatedPayload) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *PostWithdrawalReversedPayload) GetPreviousAttributes() map[string]any {
+func (p *PostPayoutUpdatedPayload) GetPreviousAttributes() map[string]any {
 	if p == nil {
 		return nil
 	}
 	return p.PreviousAttributes
 }
 
-func (p *PostWithdrawalReversedPayload) GetTimestamp() time.Time {
+func (p *PostPayoutUpdatedPayload) GetTimestamp() time.Time {
 	if p == nil {
 		return time.Time{}
 	}
 	return p.Timestamp
 }
 
-func (p *PostWithdrawalReversedPayload) GetType() PostWithdrawalReversedPayloadType {
+func (p *PostPayoutUpdatedPayload) GetType() PostPayoutUpdatedPayloadType {
 	if p == nil {
 		return ""
 	}
 	return p.Type
 }
 
-func (p *PostWithdrawalReversedPayload) GetExtraProperties() map[string]interface{} {
+func (p *PostPayoutUpdatedPayload) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostWithdrawalReversedPayload) require(field *big.Int) {
+func (p *PostPayoutUpdatedPayload) require(field *big.Int) {
 	if p.explicitFields == nil {
 		p.explicitFields = big.NewInt(0)
 	}
@@ -5596,62 +7921,62 @@ func (p *PostWithdrawalReversedPayload) require(field *big.Int) {
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayload) SetAccountID(accountID *string) {
+func (p *PostPayoutUpdatedPayload) SetAccountID(accountID *string) {
 	p.AccountID = accountID
-	p.require(postWithdrawalReversedPayloadFieldAccountID)
+	p.require(postPayoutUpdatedPayloadFieldAccountID)
 }
 
 // SetAPIVersion sets the APIVersion field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayload) SetAPIVersion(apiVersion PostWithdrawalReversedPayloadAPIVersion) {
+func (p *PostPayoutUpdatedPayload) SetAPIVersion(apiVersion PostPayoutUpdatedPayloadAPIVersion) {
 	p.APIVersion = apiVersion
-	p.require(postWithdrawalReversedPayloadFieldAPIVersion)
+	p.require(postPayoutUpdatedPayloadFieldAPIVersion)
 }
 
 // SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayload) SetAPIVersionDate(apiVersionDate *string) {
+func (p *PostPayoutUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
 	p.APIVersionDate = apiVersionDate
-	p.require(postWithdrawalReversedPayloadFieldAPIVersionDate)
+	p.require(postPayoutUpdatedPayloadFieldAPIVersionDate)
 }
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayload) SetData(data *PostWithdrawalReversedPayloadData) {
+func (p *PostPayoutUpdatedPayload) SetData(data *PostPayoutUpdatedPayloadData) {
 	p.Data = data
-	p.require(postWithdrawalReversedPayloadFieldData)
+	p.require(postPayoutUpdatedPayloadFieldData)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayload) SetID(id string) {
+func (p *PostPayoutUpdatedPayload) SetID(id string) {
 	p.ID = id
-	p.require(postWithdrawalReversedPayloadFieldID)
+	p.require(postPayoutUpdatedPayloadFieldID)
 }
 
 // SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+func (p *PostPayoutUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
 	p.PreviousAttributes = previousAttributes
-	p.require(postWithdrawalReversedPayloadFieldPreviousAttributes)
+	p.require(postPayoutUpdatedPayloadFieldPreviousAttributes)
 }
 
 // SetTimestamp sets the Timestamp field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayload) SetTimestamp(timestamp time.Time) {
+func (p *PostPayoutUpdatedPayload) SetTimestamp(timestamp time.Time) {
 	p.Timestamp = timestamp
-	p.require(postWithdrawalReversedPayloadFieldTimestamp)
+	p.require(postPayoutUpdatedPayloadFieldTimestamp)
 }
 
 // SetType sets the Type field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayload) SetType(type_ PostWithdrawalReversedPayloadType) {
+func (p *PostPayoutUpdatedPayload) SetType(type_ PostPayoutUpdatedPayloadType) {
 	p.Type = type_
-	p.require(postWithdrawalReversedPayloadFieldType)
+	p.require(postPayoutUpdatedPayloadFieldType)
 }
 
-func (p *PostWithdrawalReversedPayload) UnmarshalJSON(data []byte) error {
-	type embed PostWithdrawalReversedPayload
+func (p *PostPayoutUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostPayoutUpdatedPayload
 	var unmarshaler = struct {
 		embed
 		Timestamp *internal.DateTime `json:"timestamp"`
@@ -5661,7 +7986,7 @@ func (p *PostWithdrawalReversedPayload) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*p = PostWithdrawalReversedPayload(unmarshaler.embed)
+	*p = PostPayoutUpdatedPayload(unmarshaler.embed)
 	p.Timestamp = unmarshaler.Timestamp.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
@@ -5672,8 +7997,8 @@ func (p *PostWithdrawalReversedPayload) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *PostWithdrawalReversedPayload) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalReversedPayload
+func (p *PostPayoutUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutUpdatedPayload
 	var marshaler = struct {
 		embed
 		Timestamp *internal.DateTime `json:"timestamp"`
@@ -5685,7 +8010,7 @@ func (p *PostWithdrawalReversedPayload) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostWithdrawalReversedPayload) String() string {
+func (p *PostPayoutUpdatedPayload) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -5701,53 +8026,53 @@ func (p *PostWithdrawalReversedPayload) String() string {
 }
 
 // The API version for this webhook
-type PostWithdrawalReversedPayloadAPIVersion string
+type PostPayoutUpdatedPayloadAPIVersion string
 
 const (
-	PostWithdrawalReversedPayloadAPIVersionV1 PostWithdrawalReversedPayloadAPIVersion = "v1"
+	PostPayoutUpdatedPayloadAPIVersionV1 PostPayoutUpdatedPayloadAPIVersion = "v1"
 )
 
-func NewPostWithdrawalReversedPayloadAPIVersionFromString(s string) (PostWithdrawalReversedPayloadAPIVersion, error) {
+func NewPostPayoutUpdatedPayloadAPIVersionFromString(s string) (PostPayoutUpdatedPayloadAPIVersion, error) {
 	switch s {
 	case "v1":
-		return PostWithdrawalReversedPayloadAPIVersionV1, nil
+		return PostPayoutUpdatedPayloadAPIVersionV1, nil
 	}
-	var t PostWithdrawalReversedPayloadAPIVersion
+	var t PostPayoutUpdatedPayloadAPIVersion
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalReversedPayloadAPIVersion) Ptr() *PostWithdrawalReversedPayloadAPIVersion {
+func (p PostPayoutUpdatedPayloadAPIVersion) Ptr() *PostPayoutUpdatedPayloadAPIVersion {
 	return &p
 }
 
 var (
-	postWithdrawalReversedPayloadDataFieldAmount              = big.NewInt(1 << 0)
-	postWithdrawalReversedPayloadDataFieldCreatedAt           = big.NewInt(1 << 1)
-	postWithdrawalReversedPayloadDataFieldCurrency            = big.NewInt(1 << 2)
-	postWithdrawalReversedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 3)
-	postWithdrawalReversedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 4)
-	postWithdrawalReversedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 5)
-	postWithdrawalReversedPayloadDataFieldExchangeRate        = big.NewInt(1 << 6)
-	postWithdrawalReversedPayloadDataFieldFailure             = big.NewInt(1 << 7)
-	postWithdrawalReversedPayloadDataFieldFeeAmount           = big.NewInt(1 << 8)
-	postWithdrawalReversedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 9)
-	postWithdrawalReversedPayloadDataFieldID                  = big.NewInt(1 << 10)
-	postWithdrawalReversedPayloadDataFieldMarkupFee           = big.NewInt(1 << 11)
-	postWithdrawalReversedPayloadDataFieldMetadata            = big.NewInt(1 << 12)
-	postWithdrawalReversedPayloadDataFieldNetAmount           = big.NewInt(1 << 13)
-	postWithdrawalReversedPayloadDataFieldNotes               = big.NewInt(1 << 14)
-	postWithdrawalReversedPayloadDataFieldObject              = big.NewInt(1 << 15)
-	postWithdrawalReversedPayloadDataFieldPayerName           = big.NewInt(1 << 16)
-	postWithdrawalReversedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 17)
-	postWithdrawalReversedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
-	postWithdrawalReversedPayloadDataFieldSource              = big.NewInt(1 << 19)
-	postWithdrawalReversedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
-	postWithdrawalReversedPayloadDataFieldStatus              = big.NewInt(1 << 21)
-	postWithdrawalReversedPayloadDataFieldStatusDetail        = big.NewInt(1 << 22)
-	postWithdrawalReversedPayloadDataFieldTraceCode           = big.NewInt(1 << 23)
+	postPayoutUpdatedPayloadDataFieldAmount              = big.NewInt(1 << 0)
+	postPayoutUpdatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 1)
+	postPayoutUpdatedPayloadDataFieldCurrency            = big.NewInt(1 << 2)
+	postPayoutUpdatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 3)
+	postPayoutUpdatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 4)
+	postPayoutUpdatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 5)
+	postPayoutUpdatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 6)
+	postPayoutUpdatedPayloadDataFieldFailure             = big.NewInt(1 << 7)
+	postPayoutUpdatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 8)
+	postPayoutUpdatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 9)
+	postPayoutUpdatedPayloadDataFieldID                  = big.NewInt(1 << 10)
+	postPayoutUpdatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 11)
+	postPayoutUpdatedPayloadDataFieldMetadata            = big.NewInt(1 << 12)
+	postPayoutUpdatedPayloadDataFieldNetAmount           = big.NewInt(1 << 13)
+	postPayoutUpdatedPayloadDataFieldNotes               = big.NewInt(1 << 14)
+	postPayoutUpdatedPayloadDataFieldObject              = big.NewInt(1 << 15)
+	postPayoutUpdatedPayloadDataFieldPayerName           = big.NewInt(1 << 16)
+	postPayoutUpdatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 17)
+	postPayoutUpdatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
+	postPayoutUpdatedPayloadDataFieldSource              = big.NewInt(1 << 19)
+	postPayoutUpdatedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
+	postPayoutUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 21)
+	postPayoutUpdatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 22)
+	postPayoutUpdatedPayloadDataFieldTraceCode           = big.NewInt(1 << 23)
 )
 
-type PostWithdrawalReversedPayloadData struct {
+type PostPayoutUpdatedPayloadData struct {
 	// The payout amount in whole currency units, as a decimal string.
 	Amount string `json:"amount" url:"amount"`
 	// When the payout was created.
@@ -5763,11 +8088,11 @@ type PostWithdrawalReversedPayloadData struct {
 	// Exchange rate from the payout currency to the destination currency. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded rate.
 	ExchangeRate *float64 `json:"exchange_rate,omitempty" url:"exchange_rate,omitempty"`
 	// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
-	Failure *PostWithdrawalReversedPayloadDataFailure `json:"failure,omitempty" url:"failure,omitempty"`
+	Failure *PostPayoutUpdatedPayloadDataFailure `json:"failure,omitempty" url:"failure,omitempty"`
 	// The fee charged for the payout, in the payout currency, as a decimal string.
 	FeeAmount string `json:"fee_amount" url:"fee_amount"`
 	// Who bore the payout fee: the account itself, or its parent platform.
-	FeePaidBy PostWithdrawalReversedPayloadDataFeePaidBy `json:"fee_paid_by" url:"fee_paid_by"`
+	FeePaidBy PostPayoutUpdatedPayloadDataFeePaidBy `json:"fee_paid_by" url:"fee_paid_by"`
 	// Payout ID, prefixed `wdrl_`.
 	ID string `json:"id" url:"id"`
 	// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies.
@@ -5777,20 +8102,20 @@ type PostWithdrawalReversedPayloadData struct {
 	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
 	NetAmount string `json:"net_amount" url:"net_amount"`
 	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
-	Notes  *string                                 `json:"notes,omitempty" url:"notes,omitempty"`
-	Object PostWithdrawalReversedPayloadDataObject `json:"object" url:"object"`
+	Notes  *string                            `json:"notes,omitempty" url:"notes,omitempty"`
+	Object PostPayoutUpdatedPayloadDataObject `json:"object" url:"object"`
 	// Name of the entity processing the payout.
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
 	// The saved payout method used. Requires payout:destination:read; null without it.
-	PayoutMethod *PostWithdrawalReversedPayloadDataPayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
+	PayoutMethod *PostPayoutUpdatedPayloadDataPayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
 	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. Match it to the settled payout in `GET /payouts`. Returns `null` for payouts not created by `POST /payouts`.
 	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
 	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
-	Source *PostWithdrawalReversedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
+	Source *PostPayoutUpdatedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
-	Speed PostWithdrawalReversedPayloadDataSpeed `json:"speed" url:"speed"`
+	Speed PostPayoutUpdatedPayloadDataSpeed `json:"speed" url:"speed"`
 	// Current payout status.
-	Status PostWithdrawalReversedPayloadDataStatus `json:"status" url:"status"`
+	Status PostPayoutUpdatedPayloadDataStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
 	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
@@ -5803,182 +8128,182 @@ type PostWithdrawalReversedPayloadData struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetAmount() string {
+func (p *PostPayoutUpdatedPayloadData) GetAmount() string {
 	if p == nil {
 		return ""
 	}
 	return p.Amount
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetCreatedAt() time.Time {
+func (p *PostPayoutUpdatedPayloadData) GetCreatedAt() time.Time {
 	if p == nil {
 		return time.Time{}
 	}
 	return p.CreatedAt
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetCurrency() string {
+func (p *PostPayoutUpdatedPayloadData) GetCurrency() string {
 	if p == nil {
 		return ""
 	}
 	return p.Currency
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetDestinationAmount() *string {
+func (p *PostPayoutUpdatedPayloadData) GetDestinationAmount() *string {
 	if p == nil {
 		return nil
 	}
 	return p.DestinationAmount
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetDestinationCurrency() *string {
+func (p *PostPayoutUpdatedPayloadData) GetDestinationCurrency() *string {
 	if p == nil {
 		return nil
 	}
 	return p.DestinationCurrency
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetEstimatedArrival() *time.Time {
+func (p *PostPayoutUpdatedPayloadData) GetEstimatedArrival() *time.Time {
 	if p == nil {
 		return nil
 	}
 	return p.EstimatedArrival
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetExchangeRate() *float64 {
+func (p *PostPayoutUpdatedPayloadData) GetExchangeRate() *float64 {
 	if p == nil {
 		return nil
 	}
 	return p.ExchangeRate
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetFailure() *PostWithdrawalReversedPayloadDataFailure {
+func (p *PostPayoutUpdatedPayloadData) GetFailure() *PostPayoutUpdatedPayloadDataFailure {
 	if p == nil {
 		return nil
 	}
 	return p.Failure
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetFeeAmount() string {
+func (p *PostPayoutUpdatedPayloadData) GetFeeAmount() string {
 	if p == nil {
 		return ""
 	}
 	return p.FeeAmount
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetFeePaidBy() PostWithdrawalReversedPayloadDataFeePaidBy {
+func (p *PostPayoutUpdatedPayloadData) GetFeePaidBy() PostPayoutUpdatedPayloadDataFeePaidBy {
 	if p == nil {
 		return ""
 	}
 	return p.FeePaidBy
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetID() string {
+func (p *PostPayoutUpdatedPayloadData) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetMarkupFee() string {
+func (p *PostPayoutUpdatedPayloadData) GetMarkupFee() string {
 	if p == nil {
 		return ""
 	}
 	return p.MarkupFee
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetMetadata() map[string]string {
+func (p *PostPayoutUpdatedPayloadData) GetMetadata() map[string]string {
 	if p == nil {
 		return nil
 	}
 	return p.Metadata
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetNetAmount() string {
+func (p *PostPayoutUpdatedPayloadData) GetNetAmount() string {
 	if p == nil {
 		return ""
 	}
 	return p.NetAmount
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetNotes() *string {
+func (p *PostPayoutUpdatedPayloadData) GetNotes() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Notes
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetObject() PostWithdrawalReversedPayloadDataObject {
+func (p *PostPayoutUpdatedPayloadData) GetObject() PostPayoutUpdatedPayloadDataObject {
 	if p == nil {
 		return ""
 	}
 	return p.Object
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetPayerName() *string {
+func (p *PostPayoutUpdatedPayloadData) GetPayerName() *string {
 	if p == nil {
 		return nil
 	}
 	return p.PayerName
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetPayoutMethod() *PostWithdrawalReversedPayloadDataPayoutMethod {
+func (p *PostPayoutUpdatedPayloadData) GetPayoutMethod() *PostPayoutUpdatedPayloadDataPayoutMethod {
 	if p == nil {
 		return nil
 	}
 	return p.PayoutMethod
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetPayoutRequestID() *string {
+func (p *PostPayoutUpdatedPayloadData) GetPayoutRequestID() *string {
 	if p == nil {
 		return nil
 	}
 	return p.PayoutRequestID
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetSource() *PostWithdrawalReversedPayloadDataSource {
+func (p *PostPayoutUpdatedPayloadData) GetSource() *PostPayoutUpdatedPayloadDataSource {
 	if p == nil {
 		return nil
 	}
 	return p.Source
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetSpeed() PostWithdrawalReversedPayloadDataSpeed {
+func (p *PostPayoutUpdatedPayloadData) GetSpeed() PostPayoutUpdatedPayloadDataSpeed {
 	if p == nil {
 		return ""
 	}
 	return p.Speed
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetStatus() PostWithdrawalReversedPayloadDataStatus {
+func (p *PostPayoutUpdatedPayloadData) GetStatus() PostPayoutUpdatedPayloadDataStatus {
 	if p == nil {
 		return ""
 	}
 	return p.Status
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetStatusDetail() string {
+func (p *PostPayoutUpdatedPayloadData) GetStatusDetail() string {
 	if p == nil {
 		return ""
 	}
 	return p.StatusDetail
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetTraceCode() *string {
+func (p *PostPayoutUpdatedPayloadData) GetTraceCode() *string {
 	if p == nil {
 		return nil
 	}
 	return p.TraceCode
 }
 
-func (p *PostWithdrawalReversedPayloadData) GetExtraProperties() map[string]interface{} {
+func (p *PostPayoutUpdatedPayloadData) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostWithdrawalReversedPayloadData) require(field *big.Int) {
+func (p *PostPayoutUpdatedPayloadData) require(field *big.Int) {
 	if p.explicitFields == nil {
 		p.explicitFields = big.NewInt(0)
 	}
@@ -5987,174 +8312,174 @@ func (p *PostWithdrawalReversedPayloadData) require(field *big.Int) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetAmount(amount string) {
+func (p *PostPayoutUpdatedPayloadData) SetAmount(amount string) {
 	p.Amount = amount
-	p.require(postWithdrawalReversedPayloadDataFieldAmount)
+	p.require(postPayoutUpdatedPayloadDataFieldAmount)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetCreatedAt(createdAt time.Time) {
+func (p *PostPayoutUpdatedPayloadData) SetCreatedAt(createdAt time.Time) {
 	p.CreatedAt = createdAt
-	p.require(postWithdrawalReversedPayloadDataFieldCreatedAt)
+	p.require(postPayoutUpdatedPayloadDataFieldCreatedAt)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetCurrency(currency string) {
+func (p *PostPayoutUpdatedPayloadData) SetCurrency(currency string) {
 	p.Currency = currency
-	p.require(postWithdrawalReversedPayloadDataFieldCurrency)
+	p.require(postPayoutUpdatedPayloadDataFieldCurrency)
 }
 
 // SetDestinationAmount sets the DestinationAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetDestinationAmount(destinationAmount *string) {
+func (p *PostPayoutUpdatedPayloadData) SetDestinationAmount(destinationAmount *string) {
 	p.DestinationAmount = destinationAmount
-	p.require(postWithdrawalReversedPayloadDataFieldDestinationAmount)
+	p.require(postPayoutUpdatedPayloadDataFieldDestinationAmount)
 }
 
 // SetDestinationCurrency sets the DestinationCurrency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetDestinationCurrency(destinationCurrency *string) {
+func (p *PostPayoutUpdatedPayloadData) SetDestinationCurrency(destinationCurrency *string) {
 	p.DestinationCurrency = destinationCurrency
-	p.require(postWithdrawalReversedPayloadDataFieldDestinationCurrency)
+	p.require(postPayoutUpdatedPayloadDataFieldDestinationCurrency)
 }
 
 // SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetEstimatedArrival(estimatedArrival *time.Time) {
+func (p *PostPayoutUpdatedPayloadData) SetEstimatedArrival(estimatedArrival *time.Time) {
 	p.EstimatedArrival = estimatedArrival
-	p.require(postWithdrawalReversedPayloadDataFieldEstimatedArrival)
+	p.require(postPayoutUpdatedPayloadDataFieldEstimatedArrival)
 }
 
 // SetExchangeRate sets the ExchangeRate field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetExchangeRate(exchangeRate *float64) {
+func (p *PostPayoutUpdatedPayloadData) SetExchangeRate(exchangeRate *float64) {
 	p.ExchangeRate = exchangeRate
-	p.require(postWithdrawalReversedPayloadDataFieldExchangeRate)
+	p.require(postPayoutUpdatedPayloadDataFieldExchangeRate)
 }
 
 // SetFailure sets the Failure field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetFailure(failure *PostWithdrawalReversedPayloadDataFailure) {
+func (p *PostPayoutUpdatedPayloadData) SetFailure(failure *PostPayoutUpdatedPayloadDataFailure) {
 	p.Failure = failure
-	p.require(postWithdrawalReversedPayloadDataFieldFailure)
+	p.require(postPayoutUpdatedPayloadDataFieldFailure)
 }
 
 // SetFeeAmount sets the FeeAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetFeeAmount(feeAmount string) {
+func (p *PostPayoutUpdatedPayloadData) SetFeeAmount(feeAmount string) {
 	p.FeeAmount = feeAmount
-	p.require(postWithdrawalReversedPayloadDataFieldFeeAmount)
+	p.require(postPayoutUpdatedPayloadDataFieldFeeAmount)
 }
 
 // SetFeePaidBy sets the FeePaidBy field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetFeePaidBy(feePaidBy PostWithdrawalReversedPayloadDataFeePaidBy) {
+func (p *PostPayoutUpdatedPayloadData) SetFeePaidBy(feePaidBy PostPayoutUpdatedPayloadDataFeePaidBy) {
 	p.FeePaidBy = feePaidBy
-	p.require(postWithdrawalReversedPayloadDataFieldFeePaidBy)
+	p.require(postPayoutUpdatedPayloadDataFieldFeePaidBy)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetID(id string) {
+func (p *PostPayoutUpdatedPayloadData) SetID(id string) {
 	p.ID = id
-	p.require(postWithdrawalReversedPayloadDataFieldID)
+	p.require(postPayoutUpdatedPayloadDataFieldID)
 }
 
 // SetMarkupFee sets the MarkupFee field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetMarkupFee(markupFee string) {
+func (p *PostPayoutUpdatedPayloadData) SetMarkupFee(markupFee string) {
 	p.MarkupFee = markupFee
-	p.require(postWithdrawalReversedPayloadDataFieldMarkupFee)
+	p.require(postPayoutUpdatedPayloadDataFieldMarkupFee)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetMetadata(metadata map[string]string) {
+func (p *PostPayoutUpdatedPayloadData) SetMetadata(metadata map[string]string) {
 	p.Metadata = metadata
-	p.require(postWithdrawalReversedPayloadDataFieldMetadata)
+	p.require(postPayoutUpdatedPayloadDataFieldMetadata)
 }
 
 // SetNetAmount sets the NetAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetNetAmount(netAmount string) {
+func (p *PostPayoutUpdatedPayloadData) SetNetAmount(netAmount string) {
 	p.NetAmount = netAmount
-	p.require(postWithdrawalReversedPayloadDataFieldNetAmount)
+	p.require(postPayoutUpdatedPayloadDataFieldNetAmount)
 }
 
 // SetNotes sets the Notes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetNotes(notes *string) {
+func (p *PostPayoutUpdatedPayloadData) SetNotes(notes *string) {
 	p.Notes = notes
-	p.require(postWithdrawalReversedPayloadDataFieldNotes)
+	p.require(postPayoutUpdatedPayloadDataFieldNotes)
 }
 
 // SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetObject(object PostWithdrawalReversedPayloadDataObject) {
+func (p *PostPayoutUpdatedPayloadData) SetObject(object PostPayoutUpdatedPayloadDataObject) {
 	p.Object = object
-	p.require(postWithdrawalReversedPayloadDataFieldObject)
+	p.require(postPayoutUpdatedPayloadDataFieldObject)
 }
 
 // SetPayerName sets the PayerName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetPayerName(payerName *string) {
+func (p *PostPayoutUpdatedPayloadData) SetPayerName(payerName *string) {
 	p.PayerName = payerName
-	p.require(postWithdrawalReversedPayloadDataFieldPayerName)
+	p.require(postPayoutUpdatedPayloadDataFieldPayerName)
 }
 
 // SetPayoutMethod sets the PayoutMethod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetPayoutMethod(payoutMethod *PostWithdrawalReversedPayloadDataPayoutMethod) {
+func (p *PostPayoutUpdatedPayloadData) SetPayoutMethod(payoutMethod *PostPayoutUpdatedPayloadDataPayoutMethod) {
 	p.PayoutMethod = payoutMethod
-	p.require(postWithdrawalReversedPayloadDataFieldPayoutMethod)
+	p.require(postPayoutUpdatedPayloadDataFieldPayoutMethod)
 }
 
 // SetPayoutRequestID sets the PayoutRequestID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetPayoutRequestID(payoutRequestID *string) {
+func (p *PostPayoutUpdatedPayloadData) SetPayoutRequestID(payoutRequestID *string) {
 	p.PayoutRequestID = payoutRequestID
-	p.require(postWithdrawalReversedPayloadDataFieldPayoutRequestID)
+	p.require(postPayoutUpdatedPayloadDataFieldPayoutRequestID)
 }
 
 // SetSource sets the Source field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetSource(source *PostWithdrawalReversedPayloadDataSource) {
+func (p *PostPayoutUpdatedPayloadData) SetSource(source *PostPayoutUpdatedPayloadDataSource) {
 	p.Source = source
-	p.require(postWithdrawalReversedPayloadDataFieldSource)
+	p.require(postPayoutUpdatedPayloadDataFieldSource)
 }
 
 // SetSpeed sets the Speed field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetSpeed(speed PostWithdrawalReversedPayloadDataSpeed) {
+func (p *PostPayoutUpdatedPayloadData) SetSpeed(speed PostPayoutUpdatedPayloadDataSpeed) {
 	p.Speed = speed
-	p.require(postWithdrawalReversedPayloadDataFieldSpeed)
+	p.require(postPayoutUpdatedPayloadDataFieldSpeed)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetStatus(status PostWithdrawalReversedPayloadDataStatus) {
+func (p *PostPayoutUpdatedPayloadData) SetStatus(status PostPayoutUpdatedPayloadDataStatus) {
 	p.Status = status
-	p.require(postWithdrawalReversedPayloadDataFieldStatus)
+	p.require(postPayoutUpdatedPayloadDataFieldStatus)
 }
 
 // SetStatusDetail sets the StatusDetail field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetStatusDetail(statusDetail string) {
+func (p *PostPayoutUpdatedPayloadData) SetStatusDetail(statusDetail string) {
 	p.StatusDetail = statusDetail
-	p.require(postWithdrawalReversedPayloadDataFieldStatusDetail)
+	p.require(postPayoutUpdatedPayloadDataFieldStatusDetail)
 }
 
 // SetTraceCode sets the TraceCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadData) SetTraceCode(traceCode *string) {
+func (p *PostPayoutUpdatedPayloadData) SetTraceCode(traceCode *string) {
 	p.TraceCode = traceCode
-	p.require(postWithdrawalReversedPayloadDataFieldTraceCode)
+	p.require(postPayoutUpdatedPayloadDataFieldTraceCode)
 }
 
-func (p *PostWithdrawalReversedPayloadData) UnmarshalJSON(data []byte) error {
-	type embed PostWithdrawalReversedPayloadData
+func (p *PostPayoutUpdatedPayloadData) UnmarshalJSON(data []byte) error {
+	type embed PostPayoutUpdatedPayloadData
 	var unmarshaler = struct {
 		embed
 		CreatedAt        *internal.DateTime `json:"created_at"`
@@ -6165,7 +8490,7 @@ func (p *PostWithdrawalReversedPayloadData) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*p = PostWithdrawalReversedPayloadData(unmarshaler.embed)
+	*p = PostPayoutUpdatedPayloadData(unmarshaler.embed)
 	p.CreatedAt = unmarshaler.CreatedAt.Time()
 	p.EstimatedArrival = unmarshaler.EstimatedArrival.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
@@ -6177,8 +8502,8 @@ func (p *PostWithdrawalReversedPayloadData) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *PostWithdrawalReversedPayloadData) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalReversedPayloadData
+func (p *PostPayoutUpdatedPayloadData) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutUpdatedPayloadData
 	var marshaler = struct {
 		embed
 		CreatedAt        *internal.DateTime `json:"created_at"`
@@ -6192,7 +8517,7 @@ func (p *PostWithdrawalReversedPayloadData) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostWithdrawalReversedPayloadData) String() string {
+func (p *PostPayoutUpdatedPayloadData) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -6209,12 +8534,12 @@ func (p *PostWithdrawalReversedPayloadData) String() string {
 
 // Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 var (
-	postWithdrawalReversedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
-	postWithdrawalReversedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
-	postWithdrawalReversedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
+	postPayoutUpdatedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
+	postPayoutUpdatedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
+	postPayoutUpdatedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
 )
 
-type PostWithdrawalReversedPayloadDataFailure struct {
+type PostPayoutUpdatedPayloadDataFailure struct {
 	// Classified failure code from the maintained error catalog.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
@@ -6229,35 +8554,35 @@ type PostWithdrawalReversedPayloadDataFailure struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostWithdrawalReversedPayloadDataFailure) GetCode() *string {
+func (p *PostPayoutUpdatedPayloadDataFailure) GetCode() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Code
 }
 
-func (p *PostWithdrawalReversedPayloadDataFailure) GetFundsReturnedAt() *time.Time {
+func (p *PostPayoutUpdatedPayloadDataFailure) GetFundsReturnedAt() *time.Time {
 	if p == nil {
 		return nil
 	}
 	return p.FundsReturnedAt
 }
 
-func (p *PostWithdrawalReversedPayloadDataFailure) GetMessage() *string {
+func (p *PostPayoutUpdatedPayloadDataFailure) GetMessage() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Message
 }
 
-func (p *PostWithdrawalReversedPayloadDataFailure) GetExtraProperties() map[string]interface{} {
+func (p *PostPayoutUpdatedPayloadDataFailure) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostWithdrawalReversedPayloadDataFailure) require(field *big.Int) {
+func (p *PostPayoutUpdatedPayloadDataFailure) require(field *big.Int) {
 	if p.explicitFields == nil {
 		p.explicitFields = big.NewInt(0)
 	}
@@ -6266,27 +8591,27 @@ func (p *PostWithdrawalReversedPayloadDataFailure) require(field *big.Int) {
 
 // SetCode sets the Code field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadDataFailure) SetCode(code *string) {
+func (p *PostPayoutUpdatedPayloadDataFailure) SetCode(code *string) {
 	p.Code = code
-	p.require(postWithdrawalReversedPayloadDataFailureFieldCode)
+	p.require(postPayoutUpdatedPayloadDataFailureFieldCode)
 }
 
 // SetFundsReturnedAt sets the FundsReturnedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadDataFailure) SetFundsReturnedAt(fundsReturnedAt *time.Time) {
+func (p *PostPayoutUpdatedPayloadDataFailure) SetFundsReturnedAt(fundsReturnedAt *time.Time) {
 	p.FundsReturnedAt = fundsReturnedAt
-	p.require(postWithdrawalReversedPayloadDataFailureFieldFundsReturnedAt)
+	p.require(postPayoutUpdatedPayloadDataFailureFieldFundsReturnedAt)
 }
 
 // SetMessage sets the Message field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadDataFailure) SetMessage(message *string) {
+func (p *PostPayoutUpdatedPayloadDataFailure) SetMessage(message *string) {
 	p.Message = message
-	p.require(postWithdrawalReversedPayloadDataFailureFieldMessage)
+	p.require(postPayoutUpdatedPayloadDataFailureFieldMessage)
 }
 
-func (p *PostWithdrawalReversedPayloadDataFailure) UnmarshalJSON(data []byte) error {
-	type embed PostWithdrawalReversedPayloadDataFailure
+func (p *PostPayoutUpdatedPayloadDataFailure) UnmarshalJSON(data []byte) error {
+	type embed PostPayoutUpdatedPayloadDataFailure
 	var unmarshaler = struct {
 		embed
 		FundsReturnedAt *internal.DateTime `json:"funds_returned_at,omitempty"`
@@ -6296,7 +8621,7 @@ func (p *PostWithdrawalReversedPayloadDataFailure) UnmarshalJSON(data []byte) er
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*p = PostWithdrawalReversedPayloadDataFailure(unmarshaler.embed)
+	*p = PostPayoutUpdatedPayloadDataFailure(unmarshaler.embed)
 	p.FundsReturnedAt = unmarshaler.FundsReturnedAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
@@ -6307,8 +8632,8 @@ func (p *PostWithdrawalReversedPayloadDataFailure) UnmarshalJSON(data []byte) er
 	return nil
 }
 
-func (p *PostWithdrawalReversedPayloadDataFailure) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalReversedPayloadDataFailure
+func (p *PostPayoutUpdatedPayloadDataFailure) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutUpdatedPayloadDataFailure
 	var marshaler = struct {
 		embed
 		FundsReturnedAt *internal.DateTime `json:"funds_returned_at,omitempty"`
@@ -6320,7 +8645,7 @@ func (p *PostWithdrawalReversedPayloadDataFailure) MarshalJSON() ([]byte, error)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostWithdrawalReversedPayloadDataFailure) String() string {
+func (p *PostPayoutUpdatedPayloadDataFailure) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -6336,58 +8661,58 @@ func (p *PostWithdrawalReversedPayloadDataFailure) String() string {
 }
 
 // Who bore the payout fee: the account itself, or its parent platform.
-type PostWithdrawalReversedPayloadDataFeePaidBy string
+type PostPayoutUpdatedPayloadDataFeePaidBy string
 
 const (
-	PostWithdrawalReversedPayloadDataFeePaidBySelf     PostWithdrawalReversedPayloadDataFeePaidBy = "self"
-	PostWithdrawalReversedPayloadDataFeePaidByPlatform PostWithdrawalReversedPayloadDataFeePaidBy = "platform"
+	PostPayoutUpdatedPayloadDataFeePaidBySelf     PostPayoutUpdatedPayloadDataFeePaidBy = "self"
+	PostPayoutUpdatedPayloadDataFeePaidByPlatform PostPayoutUpdatedPayloadDataFeePaidBy = "platform"
 )
 
-func NewPostWithdrawalReversedPayloadDataFeePaidByFromString(s string) (PostWithdrawalReversedPayloadDataFeePaidBy, error) {
+func NewPostPayoutUpdatedPayloadDataFeePaidByFromString(s string) (PostPayoutUpdatedPayloadDataFeePaidBy, error) {
 	switch s {
 	case "self":
-		return PostWithdrawalReversedPayloadDataFeePaidBySelf, nil
+		return PostPayoutUpdatedPayloadDataFeePaidBySelf, nil
 	case "platform":
-		return PostWithdrawalReversedPayloadDataFeePaidByPlatform, nil
+		return PostPayoutUpdatedPayloadDataFeePaidByPlatform, nil
 	}
-	var t PostWithdrawalReversedPayloadDataFeePaidBy
+	var t PostPayoutUpdatedPayloadDataFeePaidBy
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalReversedPayloadDataFeePaidBy) Ptr() *PostWithdrawalReversedPayloadDataFeePaidBy {
+func (p PostPayoutUpdatedPayloadDataFeePaidBy) Ptr() *PostPayoutUpdatedPayloadDataFeePaidBy {
 	return &p
 }
 
-type PostWithdrawalReversedPayloadDataObject string
+type PostPayoutUpdatedPayloadDataObject string
 
 const (
-	PostWithdrawalReversedPayloadDataObjectPayout PostWithdrawalReversedPayloadDataObject = "payout"
+	PostPayoutUpdatedPayloadDataObjectPayout PostPayoutUpdatedPayloadDataObject = "payout"
 )
 
-func NewPostWithdrawalReversedPayloadDataObjectFromString(s string) (PostWithdrawalReversedPayloadDataObject, error) {
+func NewPostPayoutUpdatedPayloadDataObjectFromString(s string) (PostPayoutUpdatedPayloadDataObject, error) {
 	switch s {
 	case "payout":
-		return PostWithdrawalReversedPayloadDataObjectPayout, nil
+		return PostPayoutUpdatedPayloadDataObjectPayout, nil
 	}
-	var t PostWithdrawalReversedPayloadDataObject
+	var t PostPayoutUpdatedPayloadDataObject
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalReversedPayloadDataObject) Ptr() *PostWithdrawalReversedPayloadDataObject {
+func (p PostPayoutUpdatedPayloadDataObject) Ptr() *PostPayoutUpdatedPayloadDataObject {
 	return &p
 }
 
 // The saved payout method used. Requires payout:destination:read; null without it.
 var (
-	postWithdrawalReversedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
-	postWithdrawalReversedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+	postPayoutUpdatedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
+	postPayoutUpdatedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
 )
 
-type PostWithdrawalReversedPayloadDataPayoutMethod struct {
+type PostPayoutUpdatedPayloadDataPayoutMethod struct {
 	// Saved payout method nickname.
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
 	// Supported payout method display details.
-	SupportedPayoutMethod *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	SupportedPayoutMethod *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6396,28 +8721,28 @@ type PostWithdrawalReversedPayloadDataPayoutMethod struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethod) GetNickname() *string {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) GetNickname() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Nickname
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethod) GetSupportedPayoutMethod() *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) GetSupportedPayoutMethod() *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod {
 	if p == nil {
 		return nil
 	}
 	return p.SupportedPayoutMethod
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethod) GetExtraProperties() map[string]interface{} {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethod) require(field *big.Int) {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) require(field *big.Int) {
 	if p.explicitFields == nil {
 		p.explicitFields = big.NewInt(0)
 	}
@@ -6426,25 +8751,25 @@ func (p *PostWithdrawalReversedPayloadDataPayoutMethod) require(field *big.Int) 
 
 // SetNickname sets the Nickname field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadDataPayoutMethod) SetNickname(nickname *string) {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) SetNickname(nickname *string) {
 	p.Nickname = nickname
-	p.require(postWithdrawalReversedPayloadDataPayoutMethodFieldNickname)
+	p.require(postPayoutUpdatedPayloadDataPayoutMethodFieldNickname)
 }
 
 // SetSupportedPayoutMethod sets the SupportedPayoutMethod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadDataPayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) {
 	p.SupportedPayoutMethod = supportedPayoutMethod
-	p.require(postWithdrawalReversedPayloadDataPayoutMethodFieldSupportedPayoutMethod)
+	p.require(postPayoutUpdatedPayloadDataPayoutMethodFieldSupportedPayoutMethod)
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostWithdrawalReversedPayloadDataPayoutMethod
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostPayoutUpdatedPayloadDataPayoutMethod
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PostWithdrawalReversedPayloadDataPayoutMethod(value)
+	*p = PostPayoutUpdatedPayloadDataPayoutMethod(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -6454,8 +8779,8 @@ func (p *PostWithdrawalReversedPayloadDataPayoutMethod) UnmarshalJSON(data []byt
 	return nil
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethod) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalReversedPayloadDataPayoutMethod
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutUpdatedPayloadDataPayoutMethod
 	var marshaler = struct {
 		embed
 	}{
@@ -6465,7 +8790,7 @@ func (p *PostWithdrawalReversedPayloadDataPayoutMethod) MarshalJSON() ([]byte, e
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethod) String() string {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -6482,14 +8807,14 @@ func (p *PostWithdrawalReversedPayloadDataPayoutMethod) String() string {
 
 // Supported payout method display details.
 var (
-	postWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
-	postWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
-	postWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
+	postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
+	postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
+	postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
 )
 
-type PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod struct {
+type PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod struct {
 	// How the funds are delivered to the recipient.
-	DeliveryType PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
+	DeliveryType PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
 	// Supported payout method icon URL.
 	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
 	// Supported payout method display name.
@@ -6502,35 +8827,35 @@ type PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) GetDeliveryType() PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) GetDeliveryType() PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
 	if p == nil {
 		return ""
 	}
 	return p.DeliveryType
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) GetIconURL() *string {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) GetIconURL() *string {
 	if p == nil {
 		return nil
 	}
 	return p.IconURL
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) GetPayerName() *string {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) GetPayerName() *string {
 	if p == nil {
 		return nil
 	}
 	return p.PayerName
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) GetExtraProperties() map[string]interface{} {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) require(field *big.Int) {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) require(field *big.Int) {
 	if p.explicitFields == nil {
 		p.explicitFields = big.NewInt(0)
 	}
@@ -6539,32 +8864,32 @@ func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) req
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) SetDeliveryType(deliveryType PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) SetDeliveryType(deliveryType PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) {
 	p.DeliveryType = deliveryType
-	p.require(postWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType)
+	p.require(postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType)
 }
 
 // SetIconURL sets the IconURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) SetIconURL(iconURL *string) {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) SetIconURL(iconURL *string) {
 	p.IconURL = iconURL
-	p.require(postWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL)
+	p.require(postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL)
 }
 
 // SetPayerName sets the PayerName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) SetPayerName(payerName *string) {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) SetPayerName(payerName *string) {
 	p.PayerName = payerName
-	p.require(postWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName)
+	p.require(postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName)
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod(value)
+	*p = PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -6574,8 +8899,8 @@ func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) Unm
 	return nil
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod
 	var marshaler = struct {
 		embed
 	}{
@@ -6585,7 +8910,7 @@ func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) Mar
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) String() string {
+func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -6601,1421 +8926,156 @@ func (p *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethod) Str
 }
 
 // How the funds are delivered to the recipient.
-type PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType string
+type PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType string
 
 const (
-	PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup     PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cash_pickup"
-	PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit    PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bank_deposit"
-	PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery   PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "home_delivery"
-	PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet   PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "mobile_wallet"
-	PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard           PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "card"
-	PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck          PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "check"
-	PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill           PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bill"
-	PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cryptocurrency"
-	PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown        PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "unknown"
+	PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup     PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cash_pickup"
+	PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit    PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bank_deposit"
+	PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery   PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "home_delivery"
+	PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet   PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "mobile_wallet"
+	PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard           PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "card"
+	PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck          PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "check"
+	PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill           PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bill"
+	PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cryptocurrency"
+	PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown        PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "unknown"
 )
 
-func NewPostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeFromString(s string) (PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType, error) {
+func NewPostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeFromString(s string) (PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType, error) {
 	switch s {
 	case "cash_pickup":
-		return PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup, nil
+		return PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup, nil
 	case "bank_deposit":
-		return PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit, nil
+		return PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit, nil
 	case "home_delivery":
-		return PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery, nil
+		return PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery, nil
 	case "mobile_wallet":
-		return PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet, nil
+		return PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet, nil
 	case "card":
-		return PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard, nil
+		return PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard, nil
 	case "check":
-		return PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck, nil
+		return PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck, nil
 	case "bill":
-		return PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill, nil
+		return PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill, nil
 	case "cryptocurrency":
-		return PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency, nil
+		return PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency, nil
 	case "unknown":
-		return PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown, nil
+		return PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown, nil
 	}
-	var t PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType
+	var t PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *PostWithdrawalReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
+func (p PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
 	return &p
 }
 
 // How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
-type PostWithdrawalReversedPayloadDataSource string
+type PostPayoutUpdatedPayloadDataSource string
 
 const (
-	PostWithdrawalReversedPayloadDataSourceAPI       PostWithdrawalReversedPayloadDataSource = "api"
-	PostWithdrawalReversedPayloadDataSourceDashboard PostWithdrawalReversedPayloadDataSource = "dashboard"
-	PostWithdrawalReversedPayloadDataSourceAutomatic PostWithdrawalReversedPayloadDataSource = "automatic"
+	PostPayoutUpdatedPayloadDataSourceAPI       PostPayoutUpdatedPayloadDataSource = "api"
+	PostPayoutUpdatedPayloadDataSourceDashboard PostPayoutUpdatedPayloadDataSource = "dashboard"
+	PostPayoutUpdatedPayloadDataSourceAutomatic PostPayoutUpdatedPayloadDataSource = "automatic"
 )
 
-func NewPostWithdrawalReversedPayloadDataSourceFromString(s string) (PostWithdrawalReversedPayloadDataSource, error) {
+func NewPostPayoutUpdatedPayloadDataSourceFromString(s string) (PostPayoutUpdatedPayloadDataSource, error) {
 	switch s {
 	case "api":
-		return PostWithdrawalReversedPayloadDataSourceAPI, nil
+		return PostPayoutUpdatedPayloadDataSourceAPI, nil
 	case "dashboard":
-		return PostWithdrawalReversedPayloadDataSourceDashboard, nil
+		return PostPayoutUpdatedPayloadDataSourceDashboard, nil
 	case "automatic":
-		return PostWithdrawalReversedPayloadDataSourceAutomatic, nil
+		return PostPayoutUpdatedPayloadDataSourceAutomatic, nil
 	}
-	var t PostWithdrawalReversedPayloadDataSource
+	var t PostPayoutUpdatedPayloadDataSource
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalReversedPayloadDataSource) Ptr() *PostWithdrawalReversedPayloadDataSource {
+func (p PostPayoutUpdatedPayloadDataSource) Ptr() *PostPayoutUpdatedPayloadDataSource {
 	return &p
 }
 
 // Payout delivery speed.
-type PostWithdrawalReversedPayloadDataSpeed string
+type PostPayoutUpdatedPayloadDataSpeed string
 
 const (
-	PostWithdrawalReversedPayloadDataSpeedStandard PostWithdrawalReversedPayloadDataSpeed = "standard"
-	PostWithdrawalReversedPayloadDataSpeedInstant  PostWithdrawalReversedPayloadDataSpeed = "instant"
+	PostPayoutUpdatedPayloadDataSpeedStandard PostPayoutUpdatedPayloadDataSpeed = "standard"
+	PostPayoutUpdatedPayloadDataSpeedInstant  PostPayoutUpdatedPayloadDataSpeed = "instant"
 )
 
-func NewPostWithdrawalReversedPayloadDataSpeedFromString(s string) (PostWithdrawalReversedPayloadDataSpeed, error) {
+func NewPostPayoutUpdatedPayloadDataSpeedFromString(s string) (PostPayoutUpdatedPayloadDataSpeed, error) {
 	switch s {
 	case "standard":
-		return PostWithdrawalReversedPayloadDataSpeedStandard, nil
+		return PostPayoutUpdatedPayloadDataSpeedStandard, nil
 	case "instant":
-		return PostWithdrawalReversedPayloadDataSpeedInstant, nil
+		return PostPayoutUpdatedPayloadDataSpeedInstant, nil
 	}
-	var t PostWithdrawalReversedPayloadDataSpeed
+	var t PostPayoutUpdatedPayloadDataSpeed
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalReversedPayloadDataSpeed) Ptr() *PostWithdrawalReversedPayloadDataSpeed {
+func (p PostPayoutUpdatedPayloadDataSpeed) Ptr() *PostPayoutUpdatedPayloadDataSpeed {
 	return &p
 }
 
 // Current payout status.
-type PostWithdrawalReversedPayloadDataStatus string
+type PostPayoutUpdatedPayloadDataStatus string
 
 const (
-	PostWithdrawalReversedPayloadDataStatusRequested  PostWithdrawalReversedPayloadDataStatus = "requested"
-	PostWithdrawalReversedPayloadDataStatusInReview   PostWithdrawalReversedPayloadDataStatus = "in_review"
-	PostWithdrawalReversedPayloadDataStatusProcessing PostWithdrawalReversedPayloadDataStatus = "processing"
-	PostWithdrawalReversedPayloadDataStatusCompleted  PostWithdrawalReversedPayloadDataStatus = "completed"
-	PostWithdrawalReversedPayloadDataStatusReversed   PostWithdrawalReversedPayloadDataStatus = "reversed"
-	PostWithdrawalReversedPayloadDataStatusCanceled   PostWithdrawalReversedPayloadDataStatus = "canceled"
-	PostWithdrawalReversedPayloadDataStatusFailed     PostWithdrawalReversedPayloadDataStatus = "failed"
-	PostWithdrawalReversedPayloadDataStatusDenied     PostWithdrawalReversedPayloadDataStatus = "denied"
+	PostPayoutUpdatedPayloadDataStatusRequested  PostPayoutUpdatedPayloadDataStatus = "requested"
+	PostPayoutUpdatedPayloadDataStatusInReview   PostPayoutUpdatedPayloadDataStatus = "in_review"
+	PostPayoutUpdatedPayloadDataStatusProcessing PostPayoutUpdatedPayloadDataStatus = "processing"
+	PostPayoutUpdatedPayloadDataStatusCompleted  PostPayoutUpdatedPayloadDataStatus = "completed"
+	PostPayoutUpdatedPayloadDataStatusReversed   PostPayoutUpdatedPayloadDataStatus = "reversed"
+	PostPayoutUpdatedPayloadDataStatusCanceled   PostPayoutUpdatedPayloadDataStatus = "canceled"
+	PostPayoutUpdatedPayloadDataStatusFailed     PostPayoutUpdatedPayloadDataStatus = "failed"
+	PostPayoutUpdatedPayloadDataStatusDenied     PostPayoutUpdatedPayloadDataStatus = "denied"
 )
 
-func NewPostWithdrawalReversedPayloadDataStatusFromString(s string) (PostWithdrawalReversedPayloadDataStatus, error) {
+func NewPostPayoutUpdatedPayloadDataStatusFromString(s string) (PostPayoutUpdatedPayloadDataStatus, error) {
 	switch s {
 	case "requested":
-		return PostWithdrawalReversedPayloadDataStatusRequested, nil
+		return PostPayoutUpdatedPayloadDataStatusRequested, nil
 	case "in_review":
-		return PostWithdrawalReversedPayloadDataStatusInReview, nil
+		return PostPayoutUpdatedPayloadDataStatusInReview, nil
 	case "processing":
-		return PostWithdrawalReversedPayloadDataStatusProcessing, nil
+		return PostPayoutUpdatedPayloadDataStatusProcessing, nil
 	case "completed":
-		return PostWithdrawalReversedPayloadDataStatusCompleted, nil
+		return PostPayoutUpdatedPayloadDataStatusCompleted, nil
 	case "reversed":
-		return PostWithdrawalReversedPayloadDataStatusReversed, nil
+		return PostPayoutUpdatedPayloadDataStatusReversed, nil
 	case "canceled":
-		return PostWithdrawalReversedPayloadDataStatusCanceled, nil
+		return PostPayoutUpdatedPayloadDataStatusCanceled, nil
 	case "failed":
-		return PostWithdrawalReversedPayloadDataStatusFailed, nil
+		return PostPayoutUpdatedPayloadDataStatusFailed, nil
 	case "denied":
-		return PostWithdrawalReversedPayloadDataStatusDenied, nil
+		return PostPayoutUpdatedPayloadDataStatusDenied, nil
 	}
-	var t PostWithdrawalReversedPayloadDataStatus
+	var t PostPayoutUpdatedPayloadDataStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalReversedPayloadDataStatus) Ptr() *PostWithdrawalReversedPayloadDataStatus {
+func (p PostPayoutUpdatedPayloadDataStatus) Ptr() *PostPayoutUpdatedPayloadDataStatus {
 	return &p
 }
 
 // The webhook event type
-type PostWithdrawalReversedPayloadType string
+type PostPayoutUpdatedPayloadType string
 
 const (
-	PostWithdrawalReversedPayloadTypeWithdrawalReversed PostWithdrawalReversedPayloadType = "withdrawal.reversed"
+	PostPayoutUpdatedPayloadTypePayoutUpdated PostPayoutUpdatedPayloadType = "payout.updated"
 )
 
-func NewPostWithdrawalReversedPayloadTypeFromString(s string) (PostWithdrawalReversedPayloadType, error) {
+func NewPostPayoutUpdatedPayloadTypeFromString(s string) (PostPayoutUpdatedPayloadType, error) {
 	switch s {
-	case "withdrawal.reversed":
-		return PostWithdrawalReversedPayloadTypeWithdrawalReversed, nil
+	case "payout.updated":
+		return PostPayoutUpdatedPayloadTypePayoutUpdated, nil
 	}
-	var t PostWithdrawalReversedPayloadType
+	var t PostPayoutUpdatedPayloadType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PostWithdrawalReversedPayloadType) Ptr() *PostWithdrawalReversedPayloadType {
-	return &p
-}
-
-var (
-	postWithdrawalUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
-	postWithdrawalUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
-	postWithdrawalUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
-	postWithdrawalUpdatedPayloadFieldData               = big.NewInt(1 << 3)
-	postWithdrawalUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
-	postWithdrawalUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
-	postWithdrawalUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
-	postWithdrawalUpdatedPayloadFieldType               = big.NewInt(1 << 7)
-)
-
-type PostWithdrawalUpdatedPayload struct {
-	// The account ID that this webhook event is associated with
-	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The API version for this webhook
-	APIVersion PostWithdrawalUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
-	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string                           `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *PostWithdrawalUpdatedPayloadData `json:"data" url:"data"`
-	// A unique ID for every single webhook request
-	ID string `json:"id" url:"id"`
-	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
-	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
-	// The timestamp in ISO 8601 format that the webhook was sent at on the server
-	Timestamp time.Time `json:"timestamp" url:"timestamp"`
-	// The webhook event type
-	Type PostWithdrawalUpdatedPayloadType `json:"type" url:"type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostWithdrawalUpdatedPayload) GetAccountID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.AccountID
-}
-
-func (p *PostWithdrawalUpdatedPayload) GetAPIVersion() PostWithdrawalUpdatedPayloadAPIVersion {
-	if p == nil {
-		return ""
-	}
-	return p.APIVersion
-}
-
-func (p *PostWithdrawalUpdatedPayload) GetAPIVersionDate() *string {
-	if p == nil {
-		return nil
-	}
-	return p.APIVersionDate
-}
-
-func (p *PostWithdrawalUpdatedPayload) GetData() *PostWithdrawalUpdatedPayloadData {
-	if p == nil {
-		return nil
-	}
-	return p.Data
-}
-
-func (p *PostWithdrawalUpdatedPayload) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostWithdrawalUpdatedPayload) GetPreviousAttributes() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.PreviousAttributes
-}
-
-func (p *PostWithdrawalUpdatedPayload) GetTimestamp() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.Timestamp
-}
-
-func (p *PostWithdrawalUpdatedPayload) GetType() PostWithdrawalUpdatedPayloadType {
-	if p == nil {
-		return ""
-	}
-	return p.Type
-}
-
-func (p *PostWithdrawalUpdatedPayload) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostWithdrawalUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayload) SetAccountID(accountID *string) {
-	p.AccountID = accountID
-	p.require(postWithdrawalUpdatedPayloadFieldAccountID)
-}
-
-// SetAPIVersion sets the APIVersion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayload) SetAPIVersion(apiVersion PostWithdrawalUpdatedPayloadAPIVersion) {
-	p.APIVersion = apiVersion
-	p.require(postWithdrawalUpdatedPayloadFieldAPIVersion)
-}
-
-// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
-	p.APIVersionDate = apiVersionDate
-	p.require(postWithdrawalUpdatedPayloadFieldAPIVersionDate)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayload) SetData(data *PostWithdrawalUpdatedPayloadData) {
-	p.Data = data
-	p.require(postWithdrawalUpdatedPayloadFieldData)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayload) SetID(id string) {
-	p.ID = id
-	p.require(postWithdrawalUpdatedPayloadFieldID)
-}
-
-// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
-	p.PreviousAttributes = previousAttributes
-	p.require(postWithdrawalUpdatedPayloadFieldPreviousAttributes)
-}
-
-// SetTimestamp sets the Timestamp field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayload) SetTimestamp(timestamp time.Time) {
-	p.Timestamp = timestamp
-	p.require(postWithdrawalUpdatedPayloadFieldTimestamp)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayload) SetType(type_ PostWithdrawalUpdatedPayloadType) {
-	p.Type = type_
-	p.require(postWithdrawalUpdatedPayloadFieldType)
-}
-
-func (p *PostWithdrawalUpdatedPayload) UnmarshalJSON(data []byte) error {
-	type embed PostWithdrawalUpdatedPayload
-	var unmarshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PostWithdrawalUpdatedPayload(unmarshaler.embed)
-	p.Timestamp = unmarshaler.Timestamp.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostWithdrawalUpdatedPayload) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalUpdatedPayload
-	var marshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed:     embed(*p),
-		Timestamp: internal.NewDateTime(p.Timestamp),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostWithdrawalUpdatedPayload) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The API version for this webhook
-type PostWithdrawalUpdatedPayloadAPIVersion string
-
-const (
-	PostWithdrawalUpdatedPayloadAPIVersionV1 PostWithdrawalUpdatedPayloadAPIVersion = "v1"
-)
-
-func NewPostWithdrawalUpdatedPayloadAPIVersionFromString(s string) (PostWithdrawalUpdatedPayloadAPIVersion, error) {
-	switch s {
-	case "v1":
-		return PostWithdrawalUpdatedPayloadAPIVersionV1, nil
-	}
-	var t PostWithdrawalUpdatedPayloadAPIVersion
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostWithdrawalUpdatedPayloadAPIVersion) Ptr() *PostWithdrawalUpdatedPayloadAPIVersion {
-	return &p
-}
-
-var (
-	postWithdrawalUpdatedPayloadDataFieldAmount              = big.NewInt(1 << 0)
-	postWithdrawalUpdatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 1)
-	postWithdrawalUpdatedPayloadDataFieldCurrency            = big.NewInt(1 << 2)
-	postWithdrawalUpdatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 3)
-	postWithdrawalUpdatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 4)
-	postWithdrawalUpdatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 5)
-	postWithdrawalUpdatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 6)
-	postWithdrawalUpdatedPayloadDataFieldFailure             = big.NewInt(1 << 7)
-	postWithdrawalUpdatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 8)
-	postWithdrawalUpdatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 9)
-	postWithdrawalUpdatedPayloadDataFieldID                  = big.NewInt(1 << 10)
-	postWithdrawalUpdatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 11)
-	postWithdrawalUpdatedPayloadDataFieldMetadata            = big.NewInt(1 << 12)
-	postWithdrawalUpdatedPayloadDataFieldNetAmount           = big.NewInt(1 << 13)
-	postWithdrawalUpdatedPayloadDataFieldNotes               = big.NewInt(1 << 14)
-	postWithdrawalUpdatedPayloadDataFieldObject              = big.NewInt(1 << 15)
-	postWithdrawalUpdatedPayloadDataFieldPayerName           = big.NewInt(1 << 16)
-	postWithdrawalUpdatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 17)
-	postWithdrawalUpdatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
-	postWithdrawalUpdatedPayloadDataFieldSource              = big.NewInt(1 << 19)
-	postWithdrawalUpdatedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
-	postWithdrawalUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 21)
-	postWithdrawalUpdatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 22)
-	postWithdrawalUpdatedPayloadDataFieldTraceCode           = big.NewInt(1 << 23)
-)
-
-type PostWithdrawalUpdatedPayloadData struct {
-	// The payout amount in whole currency units, as a decimal string.
-	Amount string `json:"amount" url:"amount"`
-	// When the payout was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// Payout currency.
-	Currency string `json:"currency" url:"currency"`
-	// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
-	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
-	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
-	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
-	// Estimated time the funds become available in the destination account.
-	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
-	// Exchange rate from the payout currency to the destination currency. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded rate.
-	ExchangeRate *float64 `json:"exchange_rate,omitempty" url:"exchange_rate,omitempty"`
-	// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
-	Failure *PostWithdrawalUpdatedPayloadDataFailure `json:"failure,omitempty" url:"failure,omitempty"`
-	// The fee charged for the payout, in the payout currency, as a decimal string.
-	FeeAmount string `json:"fee_amount" url:"fee_amount"`
-	// Who bore the payout fee: the account itself, or its parent platform.
-	FeePaidBy PostWithdrawalUpdatedPayloadDataFeePaidBy `json:"fee_paid_by" url:"fee_paid_by"`
-	// Payout ID, prefixed `wdrl_`.
-	ID string `json:"id" url:"id"`
-	// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies.
-	MarkupFee string `json:"markup_fee" url:"markup_fee"`
-	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
-	Metadata map[string]string `json:"metadata" url:"metadata"`
-	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
-	NetAmount string `json:"net_amount" url:"net_amount"`
-	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
-	Notes  *string                                `json:"notes,omitempty" url:"notes,omitempty"`
-	Object PostWithdrawalUpdatedPayloadDataObject `json:"object" url:"object"`
-	// Name of the entity processing the payout.
-	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
-	// The saved payout method used. Requires payout:destination:read; null without it.
-	PayoutMethod *PostWithdrawalUpdatedPayloadDataPayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
-	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. Match it to the settled payout in `GET /payouts`. Returns `null` for payouts not created by `POST /payouts`.
-	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
-	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
-	Source *PostWithdrawalUpdatedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
-	// Payout delivery speed.
-	Speed PostWithdrawalUpdatedPayloadDataSpeed `json:"speed" url:"speed"`
-	// Current payout status.
-	Status PostWithdrawalUpdatedPayloadDataStatus `json:"status" url:"status"`
-	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
-	StatusDetail string `json:"status_detail" url:"status_detail"`
-	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
-	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetAmount() string {
-	if p == nil {
-		return ""
-	}
-	return p.Amount
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetCreatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.CreatedAt
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetCurrency() string {
-	if p == nil {
-		return ""
-	}
-	return p.Currency
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetDestinationAmount() *string {
-	if p == nil {
-		return nil
-	}
-	return p.DestinationAmount
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetDestinationCurrency() *string {
-	if p == nil {
-		return nil
-	}
-	return p.DestinationCurrency
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetEstimatedArrival() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.EstimatedArrival
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetExchangeRate() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.ExchangeRate
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetFailure() *PostWithdrawalUpdatedPayloadDataFailure {
-	if p == nil {
-		return nil
-	}
-	return p.Failure
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetFeeAmount() string {
-	if p == nil {
-		return ""
-	}
-	return p.FeeAmount
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetFeePaidBy() PostWithdrawalUpdatedPayloadDataFeePaidBy {
-	if p == nil {
-		return ""
-	}
-	return p.FeePaidBy
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetMarkupFee() string {
-	if p == nil {
-		return ""
-	}
-	return p.MarkupFee
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetMetadata() map[string]string {
-	if p == nil {
-		return nil
-	}
-	return p.Metadata
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetNetAmount() string {
-	if p == nil {
-		return ""
-	}
-	return p.NetAmount
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetNotes() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Notes
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetObject() PostWithdrawalUpdatedPayloadDataObject {
-	if p == nil {
-		return ""
-	}
-	return p.Object
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetPayerName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PayerName
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetPayoutMethod() *PostWithdrawalUpdatedPayloadDataPayoutMethod {
-	if p == nil {
-		return nil
-	}
-	return p.PayoutMethod
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetPayoutRequestID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PayoutRequestID
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetSource() *PostWithdrawalUpdatedPayloadDataSource {
-	if p == nil {
-		return nil
-	}
-	return p.Source
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetSpeed() PostWithdrawalUpdatedPayloadDataSpeed {
-	if p == nil {
-		return ""
-	}
-	return p.Speed
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetStatus() PostWithdrawalUpdatedPayloadDataStatus {
-	if p == nil {
-		return ""
-	}
-	return p.Status
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetStatusDetail() string {
-	if p == nil {
-		return ""
-	}
-	return p.StatusDetail
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetTraceCode() *string {
-	if p == nil {
-		return nil
-	}
-	return p.TraceCode
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAmount sets the Amount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetAmount(amount string) {
-	p.Amount = amount
-	p.require(postWithdrawalUpdatedPayloadDataFieldAmount)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetCreatedAt(createdAt time.Time) {
-	p.CreatedAt = createdAt
-	p.require(postWithdrawalUpdatedPayloadDataFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetCurrency(currency string) {
-	p.Currency = currency
-	p.require(postWithdrawalUpdatedPayloadDataFieldCurrency)
-}
-
-// SetDestinationAmount sets the DestinationAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetDestinationAmount(destinationAmount *string) {
-	p.DestinationAmount = destinationAmount
-	p.require(postWithdrawalUpdatedPayloadDataFieldDestinationAmount)
-}
-
-// SetDestinationCurrency sets the DestinationCurrency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetDestinationCurrency(destinationCurrency *string) {
-	p.DestinationCurrency = destinationCurrency
-	p.require(postWithdrawalUpdatedPayloadDataFieldDestinationCurrency)
-}
-
-// SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetEstimatedArrival(estimatedArrival *time.Time) {
-	p.EstimatedArrival = estimatedArrival
-	p.require(postWithdrawalUpdatedPayloadDataFieldEstimatedArrival)
-}
-
-// SetExchangeRate sets the ExchangeRate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetExchangeRate(exchangeRate *float64) {
-	p.ExchangeRate = exchangeRate
-	p.require(postWithdrawalUpdatedPayloadDataFieldExchangeRate)
-}
-
-// SetFailure sets the Failure field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetFailure(failure *PostWithdrawalUpdatedPayloadDataFailure) {
-	p.Failure = failure
-	p.require(postWithdrawalUpdatedPayloadDataFieldFailure)
-}
-
-// SetFeeAmount sets the FeeAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetFeeAmount(feeAmount string) {
-	p.FeeAmount = feeAmount
-	p.require(postWithdrawalUpdatedPayloadDataFieldFeeAmount)
-}
-
-// SetFeePaidBy sets the FeePaidBy field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetFeePaidBy(feePaidBy PostWithdrawalUpdatedPayloadDataFeePaidBy) {
-	p.FeePaidBy = feePaidBy
-	p.require(postWithdrawalUpdatedPayloadDataFieldFeePaidBy)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetID(id string) {
-	p.ID = id
-	p.require(postWithdrawalUpdatedPayloadDataFieldID)
-}
-
-// SetMarkupFee sets the MarkupFee field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetMarkupFee(markupFee string) {
-	p.MarkupFee = markupFee
-	p.require(postWithdrawalUpdatedPayloadDataFieldMarkupFee)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetMetadata(metadata map[string]string) {
-	p.Metadata = metadata
-	p.require(postWithdrawalUpdatedPayloadDataFieldMetadata)
-}
-
-// SetNetAmount sets the NetAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetNetAmount(netAmount string) {
-	p.NetAmount = netAmount
-	p.require(postWithdrawalUpdatedPayloadDataFieldNetAmount)
-}
-
-// SetNotes sets the Notes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetNotes(notes *string) {
-	p.Notes = notes
-	p.require(postWithdrawalUpdatedPayloadDataFieldNotes)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetObject(object PostWithdrawalUpdatedPayloadDataObject) {
-	p.Object = object
-	p.require(postWithdrawalUpdatedPayloadDataFieldObject)
-}
-
-// SetPayerName sets the PayerName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetPayerName(payerName *string) {
-	p.PayerName = payerName
-	p.require(postWithdrawalUpdatedPayloadDataFieldPayerName)
-}
-
-// SetPayoutMethod sets the PayoutMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetPayoutMethod(payoutMethod *PostWithdrawalUpdatedPayloadDataPayoutMethod) {
-	p.PayoutMethod = payoutMethod
-	p.require(postWithdrawalUpdatedPayloadDataFieldPayoutMethod)
-}
-
-// SetPayoutRequestID sets the PayoutRequestID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetPayoutRequestID(payoutRequestID *string) {
-	p.PayoutRequestID = payoutRequestID
-	p.require(postWithdrawalUpdatedPayloadDataFieldPayoutRequestID)
-}
-
-// SetSource sets the Source field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetSource(source *PostWithdrawalUpdatedPayloadDataSource) {
-	p.Source = source
-	p.require(postWithdrawalUpdatedPayloadDataFieldSource)
-}
-
-// SetSpeed sets the Speed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetSpeed(speed PostWithdrawalUpdatedPayloadDataSpeed) {
-	p.Speed = speed
-	p.require(postWithdrawalUpdatedPayloadDataFieldSpeed)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetStatus(status PostWithdrawalUpdatedPayloadDataStatus) {
-	p.Status = status
-	p.require(postWithdrawalUpdatedPayloadDataFieldStatus)
-}
-
-// SetStatusDetail sets the StatusDetail field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetStatusDetail(statusDetail string) {
-	p.StatusDetail = statusDetail
-	p.require(postWithdrawalUpdatedPayloadDataFieldStatusDetail)
-}
-
-// SetTraceCode sets the TraceCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadData) SetTraceCode(traceCode *string) {
-	p.TraceCode = traceCode
-	p.require(postWithdrawalUpdatedPayloadDataFieldTraceCode)
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) UnmarshalJSON(data []byte) error {
-	type embed PostWithdrawalUpdatedPayloadData
-	var unmarshaler = struct {
-		embed
-		CreatedAt        *internal.DateTime `json:"created_at"`
-		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PostWithdrawalUpdatedPayloadData(unmarshaler.embed)
-	p.CreatedAt = unmarshaler.CreatedAt.Time()
-	p.EstimatedArrival = unmarshaler.EstimatedArrival.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalUpdatedPayloadData
-	var marshaler = struct {
-		embed
-		CreatedAt        *internal.DateTime `json:"created_at"`
-		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
-	}{
-		embed:            embed(*p),
-		CreatedAt:        internal.NewDateTime(p.CreatedAt),
-		EstimatedArrival: internal.NewOptionalDateTime(p.EstimatedArrival),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostWithdrawalUpdatedPayloadData) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
-var (
-	postWithdrawalUpdatedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
-	postWithdrawalUpdatedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
-	postWithdrawalUpdatedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
-)
-
-type PostWithdrawalUpdatedPayloadDataFailure struct {
-	// Classified failure code from the maintained error catalog.
-	Code *string `json:"code,omitempty" url:"code,omitempty"`
-	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
-	FundsReturnedAt *time.Time `json:"funds_returned_at,omitempty" url:"funds_returned_at,omitempty"`
-	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination; other callers get the generic catalog message.
-	Message *string `json:"message,omitempty" url:"message,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataFailure) GetCode() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Code
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataFailure) GetFundsReturnedAt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.FundsReturnedAt
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataFailure) GetMessage() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Message
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataFailure) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataFailure) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCode sets the Code field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadDataFailure) SetCode(code *string) {
-	p.Code = code
-	p.require(postWithdrawalUpdatedPayloadDataFailureFieldCode)
-}
-
-// SetFundsReturnedAt sets the FundsReturnedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadDataFailure) SetFundsReturnedAt(fundsReturnedAt *time.Time) {
-	p.FundsReturnedAt = fundsReturnedAt
-	p.require(postWithdrawalUpdatedPayloadDataFailureFieldFundsReturnedAt)
-}
-
-// SetMessage sets the Message field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadDataFailure) SetMessage(message *string) {
-	p.Message = message
-	p.require(postWithdrawalUpdatedPayloadDataFailureFieldMessage)
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataFailure) UnmarshalJSON(data []byte) error {
-	type embed PostWithdrawalUpdatedPayloadDataFailure
-	var unmarshaler = struct {
-		embed
-		FundsReturnedAt *internal.DateTime `json:"funds_returned_at,omitempty"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PostWithdrawalUpdatedPayloadDataFailure(unmarshaler.embed)
-	p.FundsReturnedAt = unmarshaler.FundsReturnedAt.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataFailure) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalUpdatedPayloadDataFailure
-	var marshaler = struct {
-		embed
-		FundsReturnedAt *internal.DateTime `json:"funds_returned_at,omitempty"`
-	}{
-		embed:           embed(*p),
-		FundsReturnedAt: internal.NewOptionalDateTime(p.FundsReturnedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataFailure) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// Who bore the payout fee: the account itself, or its parent platform.
-type PostWithdrawalUpdatedPayloadDataFeePaidBy string
-
-const (
-	PostWithdrawalUpdatedPayloadDataFeePaidBySelf     PostWithdrawalUpdatedPayloadDataFeePaidBy = "self"
-	PostWithdrawalUpdatedPayloadDataFeePaidByPlatform PostWithdrawalUpdatedPayloadDataFeePaidBy = "platform"
-)
-
-func NewPostWithdrawalUpdatedPayloadDataFeePaidByFromString(s string) (PostWithdrawalUpdatedPayloadDataFeePaidBy, error) {
-	switch s {
-	case "self":
-		return PostWithdrawalUpdatedPayloadDataFeePaidBySelf, nil
-	case "platform":
-		return PostWithdrawalUpdatedPayloadDataFeePaidByPlatform, nil
-	}
-	var t PostWithdrawalUpdatedPayloadDataFeePaidBy
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostWithdrawalUpdatedPayloadDataFeePaidBy) Ptr() *PostWithdrawalUpdatedPayloadDataFeePaidBy {
-	return &p
-}
-
-type PostWithdrawalUpdatedPayloadDataObject string
-
-const (
-	PostWithdrawalUpdatedPayloadDataObjectPayout PostWithdrawalUpdatedPayloadDataObject = "payout"
-)
-
-func NewPostWithdrawalUpdatedPayloadDataObjectFromString(s string) (PostWithdrawalUpdatedPayloadDataObject, error) {
-	switch s {
-	case "payout":
-		return PostWithdrawalUpdatedPayloadDataObjectPayout, nil
-	}
-	var t PostWithdrawalUpdatedPayloadDataObject
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostWithdrawalUpdatedPayloadDataObject) Ptr() *PostWithdrawalUpdatedPayloadDataObject {
-	return &p
-}
-
-// The saved payout method used. Requires payout:destination:read; null without it.
-var (
-	postWithdrawalUpdatedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
-	postWithdrawalUpdatedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
-)
-
-type PostWithdrawalUpdatedPayloadDataPayoutMethod struct {
-	// Saved payout method nickname.
-	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
-	// Supported payout method display details.
-	SupportedPayoutMethod *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethod) GetNickname() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Nickname
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethod) GetSupportedPayoutMethod() *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod {
-	if p == nil {
-		return nil
-	}
-	return p.SupportedPayoutMethod
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethod) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetNickname sets the Nickname field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethod) SetNickname(nickname *string) {
-	p.Nickname = nickname
-	p.require(postWithdrawalUpdatedPayloadDataPayoutMethodFieldNickname)
-}
-
-// SetSupportedPayoutMethod sets the SupportedPayoutMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) {
-	p.SupportedPayoutMethod = supportedPayoutMethod
-	p.require(postWithdrawalUpdatedPayloadDataPayoutMethodFieldSupportedPayoutMethod)
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostWithdrawalUpdatedPayloadDataPayoutMethod
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostWithdrawalUpdatedPayloadDataPayoutMethod(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethod) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalUpdatedPayloadDataPayoutMethod
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethod) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// Supported payout method display details.
-var (
-	postWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
-	postWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
-	postWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
-)
-
-type PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod struct {
-	// How the funds are delivered to the recipient.
-	DeliveryType PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
-	// Supported payout method icon URL.
-	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
-	// Supported payout method display name.
-	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) GetDeliveryType() PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
-	if p == nil {
-		return ""
-	}
-	return p.DeliveryType
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) GetIconURL() *string {
-	if p == nil {
-		return nil
-	}
-	return p.IconURL
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) GetPayerName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PayerName
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetDeliveryType sets the DeliveryType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) SetDeliveryType(deliveryType PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) {
-	p.DeliveryType = deliveryType
-	p.require(postWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType)
-}
-
-// SetIconURL sets the IconURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) SetIconURL(iconURL *string) {
-	p.IconURL = iconURL
-	p.require(postWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL)
-}
-
-// SetPayerName sets the PayerName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) SetPayerName(payerName *string) {
-	p.PayerName = payerName
-	p.require(postWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName)
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) MarshalJSON() ([]byte, error) {
-	type embed PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// How the funds are delivered to the recipient.
-type PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType string
-
-const (
-	PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup     PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cash_pickup"
-	PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit    PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bank_deposit"
-	PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery   PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "home_delivery"
-	PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet   PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "mobile_wallet"
-	PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard           PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "card"
-	PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck          PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "check"
-	PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill           PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "bill"
-	PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "cryptocurrency"
-	PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown        PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType = "unknown"
-)
-
-func NewPostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeFromString(s string) (PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType, error) {
-	switch s {
-	case "cash_pickup":
-		return PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCashPickup, nil
-	case "bank_deposit":
-		return PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBankDeposit, nil
-	case "home_delivery":
-		return PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeHomeDelivery, nil
-	case "mobile_wallet":
-		return PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeMobileWallet, nil
-	case "card":
-		return PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCard, nil
-	case "check":
-		return PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCheck, nil
-	case "bill":
-		return PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeBill, nil
-	case "cryptocurrency":
-		return PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeCryptocurrency, nil
-	case "unknown":
-		return PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeUnknown, nil
-	}
-	var t PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *PostWithdrawalUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
-	return &p
-}
-
-// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
-type PostWithdrawalUpdatedPayloadDataSource string
-
-const (
-	PostWithdrawalUpdatedPayloadDataSourceAPI       PostWithdrawalUpdatedPayloadDataSource = "api"
-	PostWithdrawalUpdatedPayloadDataSourceDashboard PostWithdrawalUpdatedPayloadDataSource = "dashboard"
-	PostWithdrawalUpdatedPayloadDataSourceAutomatic PostWithdrawalUpdatedPayloadDataSource = "automatic"
-)
-
-func NewPostWithdrawalUpdatedPayloadDataSourceFromString(s string) (PostWithdrawalUpdatedPayloadDataSource, error) {
-	switch s {
-	case "api":
-		return PostWithdrawalUpdatedPayloadDataSourceAPI, nil
-	case "dashboard":
-		return PostWithdrawalUpdatedPayloadDataSourceDashboard, nil
-	case "automatic":
-		return PostWithdrawalUpdatedPayloadDataSourceAutomatic, nil
-	}
-	var t PostWithdrawalUpdatedPayloadDataSource
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostWithdrawalUpdatedPayloadDataSource) Ptr() *PostWithdrawalUpdatedPayloadDataSource {
-	return &p
-}
-
-// Payout delivery speed.
-type PostWithdrawalUpdatedPayloadDataSpeed string
-
-const (
-	PostWithdrawalUpdatedPayloadDataSpeedStandard PostWithdrawalUpdatedPayloadDataSpeed = "standard"
-	PostWithdrawalUpdatedPayloadDataSpeedInstant  PostWithdrawalUpdatedPayloadDataSpeed = "instant"
-)
-
-func NewPostWithdrawalUpdatedPayloadDataSpeedFromString(s string) (PostWithdrawalUpdatedPayloadDataSpeed, error) {
-	switch s {
-	case "standard":
-		return PostWithdrawalUpdatedPayloadDataSpeedStandard, nil
-	case "instant":
-		return PostWithdrawalUpdatedPayloadDataSpeedInstant, nil
-	}
-	var t PostWithdrawalUpdatedPayloadDataSpeed
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostWithdrawalUpdatedPayloadDataSpeed) Ptr() *PostWithdrawalUpdatedPayloadDataSpeed {
-	return &p
-}
-
-// Current payout status.
-type PostWithdrawalUpdatedPayloadDataStatus string
-
-const (
-	PostWithdrawalUpdatedPayloadDataStatusRequested  PostWithdrawalUpdatedPayloadDataStatus = "requested"
-	PostWithdrawalUpdatedPayloadDataStatusInReview   PostWithdrawalUpdatedPayloadDataStatus = "in_review"
-	PostWithdrawalUpdatedPayloadDataStatusProcessing PostWithdrawalUpdatedPayloadDataStatus = "processing"
-	PostWithdrawalUpdatedPayloadDataStatusCompleted  PostWithdrawalUpdatedPayloadDataStatus = "completed"
-	PostWithdrawalUpdatedPayloadDataStatusReversed   PostWithdrawalUpdatedPayloadDataStatus = "reversed"
-	PostWithdrawalUpdatedPayloadDataStatusCanceled   PostWithdrawalUpdatedPayloadDataStatus = "canceled"
-	PostWithdrawalUpdatedPayloadDataStatusFailed     PostWithdrawalUpdatedPayloadDataStatus = "failed"
-	PostWithdrawalUpdatedPayloadDataStatusDenied     PostWithdrawalUpdatedPayloadDataStatus = "denied"
-)
-
-func NewPostWithdrawalUpdatedPayloadDataStatusFromString(s string) (PostWithdrawalUpdatedPayloadDataStatus, error) {
-	switch s {
-	case "requested":
-		return PostWithdrawalUpdatedPayloadDataStatusRequested, nil
-	case "in_review":
-		return PostWithdrawalUpdatedPayloadDataStatusInReview, nil
-	case "processing":
-		return PostWithdrawalUpdatedPayloadDataStatusProcessing, nil
-	case "completed":
-		return PostWithdrawalUpdatedPayloadDataStatusCompleted, nil
-	case "reversed":
-		return PostWithdrawalUpdatedPayloadDataStatusReversed, nil
-	case "canceled":
-		return PostWithdrawalUpdatedPayloadDataStatusCanceled, nil
-	case "failed":
-		return PostWithdrawalUpdatedPayloadDataStatusFailed, nil
-	case "denied":
-		return PostWithdrawalUpdatedPayloadDataStatusDenied, nil
-	}
-	var t PostWithdrawalUpdatedPayloadDataStatus
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostWithdrawalUpdatedPayloadDataStatus) Ptr() *PostWithdrawalUpdatedPayloadDataStatus {
-	return &p
-}
-
-// The webhook event type
-type PostWithdrawalUpdatedPayloadType string
-
-const (
-	PostWithdrawalUpdatedPayloadTypeWithdrawalUpdated PostWithdrawalUpdatedPayloadType = "withdrawal.updated"
-)
-
-func NewPostWithdrawalUpdatedPayloadTypeFromString(s string) (PostWithdrawalUpdatedPayloadType, error) {
-	switch s {
-	case "withdrawal.updated":
-		return PostWithdrawalUpdatedPayloadTypeWithdrawalUpdated, nil
-	}
-	var t PostWithdrawalUpdatedPayloadType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostWithdrawalUpdatedPayloadType) Ptr() *PostWithdrawalUpdatedPayloadType {
+func (p PostPayoutUpdatedPayloadType) Ptr() *PostPayoutUpdatedPayloadType {
 	return &p
 }
 

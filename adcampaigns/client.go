@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21-1"
+		apiVersionDateDefault := "2026-08-25-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -194,7 +194,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Updates an ad campaign's editable fields (title, budget, schedule, bid strategy, special ad categories, and, before launch, budget optimization), and launches a draft campaign by setting status to active. Objective, budget type and desired cost per result are fixed at creation and cannot be changed.
+// Updates an ad campaign's editable fields (title, budget, schedule, bid strategy, special ad categories, and, before launch, budget type and budget optimization), and launches a draft campaign by setting status to active. Objective and desired cost per result are fixed at creation and cannot be changed.
 //
 // Example:
 //

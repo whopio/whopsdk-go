@@ -7376,123 +7376,6 @@ func (c CheckoutModes) Ptr() *CheckoutModes {
 	return &c
 }
 
-var (
-	checkoutSessionPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
-	checkoutSessionPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
-	checkoutSessionPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
-)
-
-type CheckoutSessionPaymentMethodConfiguration struct {
-	Disabled []string `json:"disabled" url:"disabled"`
-	Enabled  []string `json:"enabled" url:"enabled"`
-	// Whether Whop's default set is the starting point. When `false`, only `enabled` is offered.
-	IncludePlatformDefaults bool `json:"include_platform_defaults" url:"include_platform_defaults"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetDisabled() []string {
-	if c == nil {
-		return nil
-	}
-	return c.Disabled
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetEnabled() []string {
-	if c == nil {
-		return nil
-	}
-	return c.Enabled
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetIncludePlatformDefaults() bool {
-	if c == nil {
-		return false
-	}
-	return c.IncludePlatformDefaults
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetDisabled sets the Disabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutSessionPaymentMethodConfiguration) SetDisabled(disabled []string) {
-	c.Disabled = disabled
-	c.require(checkoutSessionPaymentMethodConfigurationFieldDisabled)
-}
-
-// SetEnabled sets the Enabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutSessionPaymentMethodConfiguration) SetEnabled(enabled []string) {
-	c.Enabled = enabled
-	c.require(checkoutSessionPaymentMethodConfigurationFieldEnabled)
-}
-
-// SetIncludePlatformDefaults sets the IncludePlatformDefaults field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutSessionPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults bool) {
-	c.IncludePlatformDefaults = includePlatformDefaults
-	c.require(checkoutSessionPaymentMethodConfigurationFieldIncludePlatformDefaults)
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
-	type unmarshaler CheckoutSessionPaymentMethodConfiguration
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CheckoutSessionPaymentMethodConfiguration(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
-	type embed CheckoutSessionPaymentMethodConfiguration
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
 // The different border-radius styles available for checkout pages.
 type CheckoutShapes string
 
@@ -14052,18 +13935,20 @@ var (
 	paymentBankTransferFieldAccountNumberLabel          = big.NewInt(1 << 1)
 	paymentBankTransferFieldAmount                      = big.NewInt(1 << 2)
 	paymentBankTransferFieldBankAccountType             = big.NewInt(1 << 3)
-	paymentBankTransferFieldBankBranch                  = big.NewInt(1 << 4)
-	paymentBankTransferFieldBankCode                    = big.NewInt(1 << 5)
-	paymentBankTransferFieldBankName                    = big.NewInt(1 << 6)
-	paymentBankTransferFieldBeneficiaryDocument         = big.NewInt(1 << 7)
-	paymentBankTransferFieldBeneficiaryDocumentType     = big.NewInt(1 << 8)
-	paymentBankTransferFieldBeneficiaryName             = big.NewInt(1 << 9)
-	paymentBankTransferFieldDocumentURL                 = big.NewInt(1 << 10)
-	paymentBankTransferFieldExpiresAt                   = big.NewInt(1 << 11)
-	paymentBankTransferFieldInstructions                = big.NewInt(1 << 12)
-	paymentBankTransferFieldReference                   = big.NewInt(1 << 13)
-	paymentBankTransferFieldSecondaryAccountNumber      = big.NewInt(1 << 14)
-	paymentBankTransferFieldSecondaryAccountNumberLabel = big.NewInt(1 << 15)
+	paymentBankTransferFieldBankAddress                 = big.NewInt(1 << 4)
+	paymentBankTransferFieldBankBranch                  = big.NewInt(1 << 5)
+	paymentBankTransferFieldBankCode                    = big.NewInt(1 << 6)
+	paymentBankTransferFieldBankName                    = big.NewInt(1 << 7)
+	paymentBankTransferFieldBeneficiaryDocument         = big.NewInt(1 << 8)
+	paymentBankTransferFieldBeneficiaryDocumentType     = big.NewInt(1 << 9)
+	paymentBankTransferFieldBeneficiaryName             = big.NewInt(1 << 10)
+	paymentBankTransferFieldDocumentURL                 = big.NewInt(1 << 11)
+	paymentBankTransferFieldExpiresAt                   = big.NewInt(1 << 12)
+	paymentBankTransferFieldInstructions                = big.NewInt(1 << 13)
+	paymentBankTransferFieldReference                   = big.NewInt(1 << 14)
+	paymentBankTransferFieldRoutingNumber               = big.NewInt(1 << 15)
+	paymentBankTransferFieldSecondaryAccountNumber      = big.NewInt(1 << 16)
+	paymentBankTransferFieldSecondaryAccountNumberLabel = big.NewInt(1 << 17)
 )
 
 type PaymentBankTransfer struct {
@@ -14075,6 +13960,8 @@ type PaymentBankTransfer struct {
 	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
 	// The kind of account receiving the transfer, such as a checking account, in the local system's own vocabulary.
 	BankAccountType *string `json:"bank_account_type,omitempty" url:"bank_account_type,omitempty"`
+	// The receiving bank's address.
+	BankAddress *string `json:"bank_address,omitempty" url:"bank_address,omitempty"`
 	// The receiving branch, where the local system routes by branch.
 	BankBranch *string `json:"bank_branch,omitempty" url:"bank_branch,omitempty"`
 	// The receiving bank's code in the local clearing system.
@@ -14095,6 +13982,8 @@ type PaymentBankTransfer struct {
 	Instructions *string `json:"instructions,omitempty" url:"instructions,omitempty"`
 	// The reference the buyer must attach to the transfer so it can be matched to this payment.
 	Reference *string `json:"reference,omitempty" url:"reference,omitempty"`
+	// The receiving bank's routing number for US transfers.
+	RoutingNumber *string `json:"routing_number,omitempty" url:"routing_number,omitempty"`
 	// A second account number, where the rail publishes the same destination in more than one format.
 	SecondaryAccountNumber *string `json:"secondary_account_number,omitempty" url:"secondary_account_number,omitempty"`
 	// What to call `secondary_account_number` when showing it.
@@ -14133,6 +14022,13 @@ func (p *PaymentBankTransfer) GetBankAccountType() *string {
 		return nil
 	}
 	return p.BankAccountType
+}
+
+func (p *PaymentBankTransfer) GetBankAddress() *string {
+	if p == nil {
+		return nil
+	}
+	return p.BankAddress
 }
 
 func (p *PaymentBankTransfer) GetBankBranch() *string {
@@ -14205,6 +14101,13 @@ func (p *PaymentBankTransfer) GetReference() *string {
 	return p.Reference
 }
 
+func (p *PaymentBankTransfer) GetRoutingNumber() *string {
+	if p == nil {
+		return nil
+	}
+	return p.RoutingNumber
+}
+
 func (p *PaymentBankTransfer) GetSecondaryAccountNumber() *string {
 	if p == nil {
 		return nil
@@ -14259,6 +14162,13 @@ func (p *PaymentBankTransfer) SetAmount(amount *Money) {
 func (p *PaymentBankTransfer) SetBankAccountType(bankAccountType *string) {
 	p.BankAccountType = bankAccountType
 	p.require(paymentBankTransferFieldBankAccountType)
+}
+
+// SetBankAddress sets the BankAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentBankTransfer) SetBankAddress(bankAddress *string) {
+	p.BankAddress = bankAddress
+	p.require(paymentBankTransferFieldBankAddress)
 }
 
 // SetBankBranch sets the BankBranch field and marks it as non-optional;
@@ -14329,6 +14239,13 @@ func (p *PaymentBankTransfer) SetInstructions(instructions *string) {
 func (p *PaymentBankTransfer) SetReference(reference *string) {
 	p.Reference = reference
 	p.require(paymentBankTransferFieldReference)
+}
+
+// SetRoutingNumber sets the RoutingNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentBankTransfer) SetRoutingNumber(routingNumber *string) {
+	p.RoutingNumber = routingNumber
+	p.require(paymentBankTransferFieldRoutingNumber)
 }
 
 // SetSecondaryAccountNumber sets the SecondaryAccountNumber field and marks it as non-optional;
@@ -16482,7 +16399,7 @@ func (p *PaymentVoucherInstructions) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The granular calculated statuses reflecting payout account KYC and withdrawal readiness.
+// The granular calculated statuses reflecting payout account KYC and payout readiness.
 type PayoutAccountCalculatedStatuses string
 
 const (
@@ -20711,6 +20628,9 @@ const (
 	WebhookEventWithdrawalCreated                  WebhookEvent = "withdrawal.created"
 	WebhookEventWithdrawalUpdated                  WebhookEvent = "withdrawal.updated"
 	WebhookEventWithdrawalReversed                 WebhookEvent = "withdrawal.reversed"
+	WebhookEventPayoutCreated                      WebhookEvent = "payout.created"
+	WebhookEventPayoutUpdated                      WebhookEvent = "payout.updated"
+	WebhookEventPayoutReversed                     WebhookEvent = "payout.reversed"
 	WebhookEventCardTransactionCreated             WebhookEvent = "card_transaction.created"
 	WebhookEventCardTransactionUpdated             WebhookEvent = "card_transaction.updated"
 	WebhookEventCardTransactionCompleted           WebhookEvent = "card_transaction.completed"
@@ -20817,6 +20737,12 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventWithdrawalUpdated, nil
 	case "withdrawal.reversed":
 		return WebhookEventWithdrawalReversed, nil
+	case "payout.created":
+		return WebhookEventPayoutCreated, nil
+	case "payout.updated":
+		return WebhookEventPayoutUpdated, nil
+	case "payout.reversed":
+		return WebhookEventPayoutReversed, nil
 	case "card_transaction.created":
 		return WebhookEventCardTransactionCreated, nil
 	case "card_transaction.updated":

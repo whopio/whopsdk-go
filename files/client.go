@@ -4,6 +4,7 @@ package files
 
 import (
 	context "context"
+	http "net/http"
 
 	whopsdk "github.com/whopio/whopsdk-go"
 	core "github.com/whopio/whopsdk-go/core"
@@ -21,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21-1"
+		apiVersionDateDefault := "2026-08-25-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -36,6 +37,84 @@ func NewClient(options *core.RequestOptions) *Client {
 			},
 		),
 	}
+}
+
+// Returns the files with the given IDs, newest first — fetch a batch in one request instead of retrieving each file individually. Only files you created are returned; IDs that do not exist, or that another credential created, are omitted. A request for up to 100 IDs answers in a single page by default; a larger batch pages at up to 100 files per response — follow `page_info` with the same `file_ids` to walk the rest.
+//
+// Example:
+//
+//	request := &whopsdk.ListFilesRequest{
+//	    FileIDs: []*string{
+//	        whopsdk.String(
+//	            "file_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
+//	client.Files.List(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) List(
+	ctx context.Context,
+	request *whopsdk.ListFilesRequest,
+	opts ...option.RequestOption,
+) (*core.Page[*string, *whopsdk.File, *whopsdk.ListFilesResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		c.baseURL,
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := baseURL + "/files"
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	headers := internal.MergeHeaders(
+		c.options.ToHeader(),
+		options.ToHeader(),
+	)
+	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
+		if pageRequest.Cursor != nil {
+			queryParams.Set("after", *pageRequest.Cursor)
+		}
+		nextURL := endpointURL
+		if len(queryParams) > 0 {
+			nextURL += "?" + queryParams.Encode()
+		}
+		return &internal.CallParams{
+			URL:             nextURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        pageRequest.Response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		}
+	}
+	readPageResponse := func(response *whopsdk.ListFilesResponse) *core.PageResponse[*string, *whopsdk.File, *whopsdk.ListFilesResponse] {
+		var zeroValue *string
+		var next *string
+		if response.PageInfo != nil {
+			next = response.PageInfo.EndCursor
+		}
+		results := response.GetData()
+		return &core.PageResponse[*string, *whopsdk.File, *whopsdk.ListFilesResponse]{
+			Results:  results,
+			Response: response,
+			Next:     next,
+			Done:     next == zeroValue || *next == "",
+		}
+	}
+	pager := internal.NewCursorPager(
+		c.caller,
+		prepareCall,
+		readPageResponse,
+	)
+	return pager.GetPage(ctx, request.After)
 }
 
 // Creates a file and returns a presigned destination to upload its bytes to. PUT the bytes to `upload_url` (single-part), or to each of `multipart_upload_urls` and then call Complete File Multipart Upload. Once the bytes land the file becomes `ready`, and its ID can be attached wherever a file is accepted — account legal documents, dispute evidence documents.

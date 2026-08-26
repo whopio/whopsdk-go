@@ -6728,6 +6728,14 @@ func TestSettersUpdateAdCampaignsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBudgetType", func(t *testing.T) {
+		obj := &UpdateAdCampaignsRequest{}
+		var fernTestValueBudgetType *UpdateAdCampaignsRequestBudgetType
+		obj.SetBudgetType(fernTestValueBudgetType)
+		assert.Equal(t, fernTestValueBudgetType, obj.BudgetType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEndsAt", func(t *testing.T) {
 		obj := &UpdateAdCampaignsRequest{}
 		var fernTestValueEndsAt *string
@@ -6872,6 +6880,37 @@ func TestSettersMarkExplicitUpdateAdCampaignsRequest(t *testing.T) {
 
 		// Act
 		obj.SetBudgetOptimization(fernTestValueBudgetOptimization)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetBudgetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdCampaignsRequest{}
+		var fernTestValueBudgetType *UpdateAdCampaignsRequestBudgetType
+
+		// Act
+		obj.SetBudgetType(fernTestValueBudgetType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -8399,6 +8438,35 @@ func TestEnumUpdateAdCampaignsRequestBudgetOptimization(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateAdCampaignsRequestBudgetOptimizationFromString("ad_campaign")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateAdCampaignsRequestBudgetType(t *testing.T) {
+	t.Run("NewFromString_daily", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAdCampaignsRequestBudgetTypeFromString("daily")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAdCampaignsRequestBudgetType("daily"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_lifetime", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAdCampaignsRequestBudgetTypeFromString("lifetime")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAdCampaignsRequestBudgetType("lifetime"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateAdCampaignsRequestBudgetTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateAdCampaignsRequestBudgetTypeFromString("daily")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

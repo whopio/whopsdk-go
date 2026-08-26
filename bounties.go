@@ -1543,18 +1543,19 @@ var (
 	bountyListItemFieldFundingAccount                  = big.NewInt(1 << 16)
 	bountyListItemFieldGrossPaidOutAmount              = big.NewInt(1 << 17)
 	bountyListItemFieldGrossRewardAmount               = big.NewInt(1 << 18)
-	bountyListItemFieldID                              = big.NewInt(1 << 19)
-	bountyListItemFieldNetRewardAmount                 = big.NewInt(1 << 20)
-	bountyListItemFieldPoster                          = big.NewInt(1 << 21)
-	bountyListItemFieldScheduledFrequency              = big.NewInt(1 << 22)
-	bountyListItemFieldScheduledPublishAt              = big.NewInt(1 << 23)
-	bountyListItemFieldSpotsRemaining                  = big.NewInt(1 << 24)
-	bountyListItemFieldStatus                          = big.NewInt(1 << 25)
-	bountyListItemFieldSubmissionsClosedAt             = big.NewInt(1 << 26)
-	bountyListItemFieldTitle                           = big.NewInt(1 << 27)
-	bountyListItemFieldUnresolvedSubmissionsCount      = big.NewInt(1 << 28)
-	bountyListItemFieldUpdatedAt                       = big.NewInt(1 << 29)
-	bountyListItemFieldViewerAcceptedSubmissionsCount  = big.NewInt(1 << 30)
+	bountyListItemFieldHostingAccount                  = big.NewInt(1 << 19)
+	bountyListItemFieldID                              = big.NewInt(1 << 20)
+	bountyListItemFieldNetRewardAmount                 = big.NewInt(1 << 21)
+	bountyListItemFieldPoster                          = big.NewInt(1 << 22)
+	bountyListItemFieldScheduledFrequency              = big.NewInt(1 << 23)
+	bountyListItemFieldScheduledPublishAt              = big.NewInt(1 << 24)
+	bountyListItemFieldSpotsRemaining                  = big.NewInt(1 << 25)
+	bountyListItemFieldStatus                          = big.NewInt(1 << 26)
+	bountyListItemFieldSubmissionsClosedAt             = big.NewInt(1 << 27)
+	bountyListItemFieldTitle                           = big.NewInt(1 << 28)
+	bountyListItemFieldUnresolvedSubmissionsCount      = big.NewInt(1 << 29)
+	bountyListItemFieldUpdatedAt                       = big.NewInt(1 << 30)
+	bountyListItemFieldViewerAcceptedSubmissionsCount  = big.NewInt(1 << 31)
 )
 
 type BountyListItem struct {
@@ -1594,6 +1595,8 @@ type BountyListItem struct {
 	GrossPaidOutAmount float64 `json:"gross_paid_out_amount" url:"gross_paid_out_amount"`
 	// Gross bounty-pool amount allocated per accepted submission, in whole currency units.
 	GrossRewardAmount float64 `json:"gross_reward_amount" url:"gross_reward_amount"`
+	// Account hosting the bounty's forum — the one whose `route` and `experience_id` address its discussion thread, and where its submissions dashboard lives. `null` for a platform-wide bounty with no host. May differ from `funding_account`.
+	HostingAccount *StorefrontAccount `json:"hosting_account,omitempty" url:"hosting_account,omitempty"`
 	// Bounty ID, prefixed `bnty_`.
 	ID string `json:"id" url:"id"`
 	// What a worker is quoted per accepted submission after the platform fee, in whole currency units. The exact post-fee figure, at the standard platform fee rate — a worker who locked a different rate, or who arrived through an affiliate link, is paid a different amount.
@@ -1757,6 +1760,13 @@ func (b *BountyListItem) GetGrossRewardAmount() float64 {
 		return 0
 	}
 	return b.GrossRewardAmount
+}
+
+func (b *BountyListItem) GetHostingAccount() *StorefrontAccount {
+	if b == nil {
+		return nil
+	}
+	return b.HostingAccount
 }
 
 func (b *BountyListItem) GetID() string {
@@ -1988,6 +1998,13 @@ func (b *BountyListItem) SetGrossPaidOutAmount(grossPaidOutAmount float64) {
 func (b *BountyListItem) SetGrossRewardAmount(grossRewardAmount float64) {
 	b.GrossRewardAmount = grossRewardAmount
 	b.require(bountyListItemFieldGrossRewardAmount)
+}
+
+// SetHostingAccount sets the HostingAccount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BountyListItem) SetHostingAccount(hostingAccount *StorefrontAccount) {
+	b.HostingAccount = hostingAccount
+	b.require(bountyListItemFieldHostingAccount)
 }
 
 // SetID sets the ID field and marks it as non-optional;
