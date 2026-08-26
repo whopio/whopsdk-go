@@ -157,9 +157,17 @@ var (
 	ledgerActivityFieldLineType        = big.NewInt(1 << 7)
 	ledgerActivityFieldObject          = big.NewInt(1 << 8)
 	ledgerActivityFieldPayment         = big.NewInt(1 << 9)
-	ledgerActivityFieldPostedAt        = big.NewInt(1 << 10)
-	ledgerActivityFieldResource        = big.NewInt(1 << 11)
-	ledgerActivityFieldSource          = big.NewInt(1 << 12)
+	ledgerActivityFieldPaymentID       = big.NewInt(1 << 10)
+	ledgerActivityFieldPlanID          = big.NewInt(1 << 11)
+	ledgerActivityFieldPlanName        = big.NewInt(1 << 12)
+	ledgerActivityFieldPostedAt        = big.NewInt(1 << 13)
+	ledgerActivityFieldProductID       = big.NewInt(1 << 14)
+	ledgerActivityFieldProductName     = big.NewInt(1 << 15)
+	ledgerActivityFieldResource        = big.NewInt(1 << 16)
+	ledgerActivityFieldSource          = big.NewInt(1 << 17)
+	ledgerActivityFieldUserEmail       = big.NewInt(1 << 18)
+	ledgerActivityFieldUserID          = big.NewInt(1 << 19)
+	ledgerActivityFieldUserName        = big.NewInt(1 << 20)
 )
 
 type LedgerActivity struct {
@@ -167,7 +175,7 @@ type LedgerActivity struct {
 	Account *LedgerActivityAccount `json:"account,omitempty" url:"account,omitempty"`
 	// Signed amount in the currency's smallest precision units.
 	Amount string `json:"amount" url:"amount"`
-	// ISO 8601 timestamp these funds became (or are scheduled to become) withdrawable: the posted time for already-settled funds, or 00:00:00 UTC on the scheduled release date for pending funds. Present only on inflows entering the balance (payments, top-ups, incoming transfers/affiliate); null on withdrawals, refunds, disputes and on-chain rows. The available_after/before filters window on its UTC settlement date.
+	// ISO 8601 timestamp these funds became (or are scheduled to become) withdrawable: the posted time for already-settled funds, or 00:00:00 UTC on the scheduled release date for pending funds. Present only on inflows entering the balance (payments, top-ups, incoming transfers/affiliate); null on payouts, refunds, disputes and on-chain rows. The available_after/before filters window on its UTC settlement date.
 	AvailableAt *time.Time `json:"available_at,omitempty" url:"available_at,omitempty"`
 	// When the activity record was created.
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
@@ -182,12 +190,28 @@ type LedgerActivity struct {
 	Object   LedgerActivityObject   `json:"object" url:"object"`
 	// Payment related to this ledger activity. Included when rich resource hydration is enabled and the movement is tied to a payment.
 	Payment *LedgerActivityPayment `json:"payment,omitempty" url:"payment,omitempty"`
+	// Payment ID for any payment-related activity, including refunds and disputes.
+	PaymentID *string `json:"payment_id,omitempty" url:"payment_id,omitempty"`
+	// ID of the plan associated with the payment, when applicable.
+	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
+	// Name of the plan associated with the payment, when applicable.
+	PlanName *string `json:"plan_name,omitempty" url:"plan_name,omitempty"`
 	// When the activity posted to the ledger.
 	PostedAt time.Time `json:"posted_at" url:"posted_at"`
+	// ID of the product associated with the payment, when applicable.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Name of the product associated with the payment, when applicable.
+	ProductName *string `json:"product_name,omitempty" url:"product_name,omitempty"`
 	// Resource associated with this ledger activity.
 	Resource *LedgerActivityResource `json:"resource,omitempty" url:"resource,omitempty"`
 	// Source of this ledger activity.
 	Source *LedgerActivitySource `json:"source,omitempty" url:"source,omitempty"`
+	// Email of the customer associated with the payment. Requires member:email:read.
+	UserEmail *string `json:"user_email,omitempty" url:"user_email,omitempty"`
+	// ID of the customer associated with the payment.
+	UserID *string `json:"user_id,omitempty" url:"user_id,omitempty"`
+	// Display name of the customer associated with the payment.
+	UserName *string `json:"user_name,omitempty" url:"user_name,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -266,11 +290,46 @@ func (l *LedgerActivity) GetPayment() *LedgerActivityPayment {
 	return l.Payment
 }
 
+func (l *LedgerActivity) GetPaymentID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentID
+}
+
+func (l *LedgerActivity) GetPlanID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PlanID
+}
+
+func (l *LedgerActivity) GetPlanName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PlanName
+}
+
 func (l *LedgerActivity) GetPostedAt() time.Time {
 	if l == nil {
 		return time.Time{}
 	}
 	return l.PostedAt
+}
+
+func (l *LedgerActivity) GetProductID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ProductID
+}
+
+func (l *LedgerActivity) GetProductName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ProductName
 }
 
 func (l *LedgerActivity) GetResource() *LedgerActivityResource {
@@ -285,6 +344,27 @@ func (l *LedgerActivity) GetSource() *LedgerActivitySource {
 		return nil
 	}
 	return l.Source
+}
+
+func (l *LedgerActivity) GetUserEmail() *string {
+	if l == nil {
+		return nil
+	}
+	return l.UserEmail
+}
+
+func (l *LedgerActivity) GetUserID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.UserID
+}
+
+func (l *LedgerActivity) GetUserName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.UserName
 }
 
 func (l *LedgerActivity) GetExtraProperties() map[string]interface{} {
@@ -371,11 +451,46 @@ func (l *LedgerActivity) SetPayment(payment *LedgerActivityPayment) {
 	l.require(ledgerActivityFieldPayment)
 }
 
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetPaymentID(paymentID *string) {
+	l.PaymentID = paymentID
+	l.require(ledgerActivityFieldPaymentID)
+}
+
+// SetPlanID sets the PlanID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetPlanID(planID *string) {
+	l.PlanID = planID
+	l.require(ledgerActivityFieldPlanID)
+}
+
+// SetPlanName sets the PlanName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetPlanName(planName *string) {
+	l.PlanName = planName
+	l.require(ledgerActivityFieldPlanName)
+}
+
 // SetPostedAt sets the PostedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *LedgerActivity) SetPostedAt(postedAt time.Time) {
 	l.PostedAt = postedAt
 	l.require(ledgerActivityFieldPostedAt)
+}
+
+// SetProductID sets the ProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetProductID(productID *string) {
+	l.ProductID = productID
+	l.require(ledgerActivityFieldProductID)
+}
+
+// SetProductName sets the ProductName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetProductName(productName *string) {
+	l.ProductName = productName
+	l.require(ledgerActivityFieldProductName)
 }
 
 // SetResource sets the Resource field and marks it as non-optional;
@@ -390,6 +505,27 @@ func (l *LedgerActivity) SetResource(resource *LedgerActivityResource) {
 func (l *LedgerActivity) SetSource(source *LedgerActivitySource) {
 	l.Source = source
 	l.require(ledgerActivityFieldSource)
+}
+
+// SetUserEmail sets the UserEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetUserEmail(userEmail *string) {
+	l.UserEmail = userEmail
+	l.require(ledgerActivityFieldUserEmail)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetUserID(userID *string) {
+	l.UserID = userID
+	l.require(ledgerActivityFieldUserID)
+}
+
+// SetUserName sets the UserName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetUserName(userName *string) {
+	l.UserName = userName
+	l.require(ledgerActivityFieldUserName)
 }
 
 func (l *LedgerActivity) UnmarshalJSON(data []byte) error {
@@ -1288,6 +1424,9 @@ var (
 	ledgerActivityPaymentFieldObject            = big.NewInt(1 << 5)
 	ledgerActivityPaymentFieldPaymentMethodType = big.NewInt(1 << 6)
 	ledgerActivityPaymentFieldPaymentProcessor  = big.NewInt(1 << 7)
+	ledgerActivityPaymentFieldPlan              = big.NewInt(1 << 8)
+	ledgerActivityPaymentFieldProduct           = big.NewInt(1 << 9)
+	ledgerActivityPaymentFieldUser              = big.NewInt(1 << 10)
 )
 
 type LedgerActivityPayment struct {
@@ -1306,6 +1445,12 @@ type LedgerActivityPayment struct {
 	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
 	// Processor that handled the payment, such as `stripe`.
 	PaymentProcessor *string `json:"payment_processor,omitempty" url:"payment_processor,omitempty"`
+	// Plan associated with the payment, when applicable.
+	Plan *LedgerActivityPaymentPlan `json:"plan,omitempty" url:"plan,omitempty"`
+	// Product associated with the payment, when applicable.
+	Product *LedgerActivityPaymentProduct `json:"product,omitempty" url:"product,omitempty"`
+	// Customer associated with the payment. Email requires member:email:read.
+	User *LedgerActivityPaymentUser `json:"user,omitempty" url:"user,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1368,6 +1513,27 @@ func (l *LedgerActivityPayment) GetPaymentProcessor() *string {
 		return nil
 	}
 	return l.PaymentProcessor
+}
+
+func (l *LedgerActivityPayment) GetPlan() *LedgerActivityPaymentPlan {
+	if l == nil {
+		return nil
+	}
+	return l.Plan
+}
+
+func (l *LedgerActivityPayment) GetProduct() *LedgerActivityPaymentProduct {
+	if l == nil {
+		return nil
+	}
+	return l.Product
+}
+
+func (l *LedgerActivityPayment) GetUser() *LedgerActivityPaymentUser {
+	if l == nil {
+		return nil
+	}
+	return l.User
 }
 
 func (l *LedgerActivityPayment) GetExtraProperties() map[string]interface{} {
@@ -1440,6 +1606,27 @@ func (l *LedgerActivityPayment) SetPaymentProcessor(paymentProcessor *string) {
 	l.require(ledgerActivityPaymentFieldPaymentProcessor)
 }
 
+// SetPlan sets the Plan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetPlan(plan *LedgerActivityPaymentPlan) {
+	l.Plan = plan
+	l.require(ledgerActivityPaymentFieldPlan)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetProduct(product *LedgerActivityPaymentProduct) {
+	l.Product = product
+	l.require(ledgerActivityPaymentFieldProduct)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPayment) SetUser(user *LedgerActivityPaymentUser) {
+	l.User = user
+	l.require(ledgerActivityPaymentFieldUser)
+}
+
 func (l *LedgerActivityPayment) UnmarshalJSON(data []byte) error {
 	type embed LedgerActivityPayment
 	var unmarshaler = struct {
@@ -1507,6 +1694,332 @@ func NewLedgerActivityPaymentObjectFromString(s string) (LedgerActivityPaymentOb
 
 func (l LedgerActivityPaymentObject) Ptr() *LedgerActivityPaymentObject {
 	return &l
+}
+
+// Plan associated with the payment, when applicable.
+var (
+	ledgerActivityPaymentPlanFieldID   = big.NewInt(1 << 0)
+	ledgerActivityPaymentPlanFieldName = big.NewInt(1 << 1)
+)
+
+type LedgerActivityPaymentPlan struct {
+	// Plan ID, prefixed `plan_`.
+	ID string `json:"id" url:"id"`
+	// Plan name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityPaymentPlan) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityPaymentPlan) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *LedgerActivityPaymentPlan) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityPaymentPlan) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentPlan) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityPaymentPlanFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentPlan) SetName(name *string) {
+	l.Name = name
+	l.require(ledgerActivityPaymentPlanFieldName)
+}
+
+func (l *LedgerActivityPaymentPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityPaymentPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityPaymentPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityPaymentPlan) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityPaymentPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityPaymentPlan) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Product associated with the payment, when applicable.
+var (
+	ledgerActivityPaymentProductFieldID   = big.NewInt(1 << 0)
+	ledgerActivityPaymentProductFieldName = big.NewInt(1 << 1)
+)
+
+type LedgerActivityPaymentProduct struct {
+	// Product ID, prefixed `prod_`.
+	ID string `json:"id" url:"id"`
+	// Product name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityPaymentProduct) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityPaymentProduct) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *LedgerActivityPaymentProduct) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityPaymentProduct) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentProduct) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityPaymentProductFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentProduct) SetName(name string) {
+	l.Name = name
+	l.require(ledgerActivityPaymentProductFieldName)
+}
+
+func (l *LedgerActivityPaymentProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityPaymentProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityPaymentProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityPaymentProduct) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityPaymentProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityPaymentProduct) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Customer associated with the payment. Email requires member:email:read.
+var (
+	ledgerActivityPaymentUserFieldEmail = big.NewInt(1 << 0)
+	ledgerActivityPaymentUserFieldID    = big.NewInt(1 << 1)
+	ledgerActivityPaymentUserFieldName  = big.NewInt(1 << 2)
+)
+
+type LedgerActivityPaymentUser struct {
+	// Customer email, or null without member:email:read.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// Customer ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// Customer display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LedgerActivityPaymentUser) GetEmail() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Email
+}
+
+func (l *LedgerActivityPaymentUser) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LedgerActivityPaymentUser) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *LedgerActivityPaymentUser) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LedgerActivityPaymentUser) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentUser) SetEmail(email *string) {
+	l.Email = email
+	l.require(ledgerActivityPaymentUserFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentUser) SetID(id string) {
+	l.ID = id
+	l.require(ledgerActivityPaymentUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityPaymentUser) SetName(name string) {
+	l.Name = name
+	l.require(ledgerActivityPaymentUserFieldName)
+}
+
+func (l *LedgerActivityPaymentUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler LedgerActivityPaymentUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LedgerActivityPaymentUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LedgerActivityPaymentUser) MarshalJSON() ([]byte, error) {
+	type embed LedgerActivityPaymentUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LedgerActivityPaymentUser) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }
 
 // Resource associated with this ledger activity.
@@ -3748,15 +4261,16 @@ var (
 	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 14)
 	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 15)
 	ledgerActivitySourceFieldReason              = big.NewInt(1 << 16)
-	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 17)
-	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 18)
-	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 19)
-	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 20)
-	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 21)
+	ledgerActivitySourceFieldRiskReviewHold      = big.NewInt(1 << 17)
+	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 18)
+	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 19)
+	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 20)
+	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 21)
+	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 22)
 )
 
 type LedgerActivitySource struct {
-	// Withdrawal amount as a decimal number in the destination currency (withdrawal sources only; requires payout:withdrawal:read).
+	// Payout amount as a decimal number in the destination currency (payout sources only; requires payout:withdrawal:read).
 	AmountFloat *float64 `json:"amount_float,omitempty" url:"amount_float,omitempty"`
 	// Card brand used by the payment source.
 	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
@@ -3764,9 +4278,9 @@ type LedgerActivitySource struct {
 	Chain *string `json:"chain,omitempty" url:"chain,omitempty"`
 	// Public claim URL for the airdrop link (airdrop_link sources only).
 	ClaimURL *string `json:"claim_url,omitempty" url:"claim_url,omitempty"`
-	// Withdrawal creation time as an ISO 8601 timestamp (withdrawal sources only; requires payout:withdrawal:read).
+	// Payout creation time as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
-	// Estimated arrival as an ISO 8601 timestamp (withdrawal sources only; requires payout:withdrawal:read).
+	// Estimated arrival as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
 	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
 	// Amount converted out of from_currency as a decimal string (swap sources only).
 	FromAmount *string `json:"from_amount,omitempty" url:"from_amount,omitempty"`
@@ -3774,7 +4288,7 @@ type LedgerActivitySource struct {
 	FromCurrency *string `json:"from_currency,omitempty" url:"from_currency,omitempty"`
 	ID           string  `json:"id" url:"id"`
 	Object       string  `json:"object" url:"object"`
-	// Name of the entity processing the payout (withdrawal sources only; requires payout:withdrawal:read).
+	// Name of the entity processing the payout (payout sources only; requires payout:withdrawal:read).
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
 	// Total charged by the payment source.
 	PaymentAmount *Money `json:"payment_amount,omitempty" url:"payment_amount,omitempty"`
@@ -3782,15 +4296,17 @@ type LedgerActivitySource struct {
 	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
 	// Processor used by the payment source.
 	PaymentProcessor *string `json:"payment_processor,omitempty" url:"payment_processor,omitempty"`
-	// Payout destination display info (withdrawal sources only).
+	// Payout destination display info (payout sources only).
 	PayoutDestination *LedgerActivitySourcePayoutDestination `json:"payout_destination,omitempty" url:"payout_destination,omitempty"`
-	// Saved payout destination nickname (withdrawal sources only).
+	// Saved payout destination nickname (payout sources only).
 	PayoutTokenNickname *string `json:"payout_token_nickname,omitempty" url:"payout_token_nickname,omitempty"`
-	// Why the activity happened. On transfer sources this is the transfer reason, for example pool_top_up or bounty_return. On withdrawal sources it explains why the withdrawal was canceled, denied, or failed (requires payout:withdrawal:read); null while the withdrawal is progressing normally.
+	// Why the activity happened. On transfer sources this is the transfer reason, for example pool_top_up or bounty_return. On payout sources it explains why the payout was canceled, denied, or failed (requires payout:withdrawal:read); null while the payout is progressing normally.
 	Reason *string `json:"reason,omitempty" url:"reason,omitempty"`
+	// Whether this payout is currently held for manual risk review (payout sources only; requires payout:withdrawal:read).
+	RiskReviewHold *bool `json:"risk_review_hold,omitempty" url:"risk_review_hold,omitempty"`
 	// Sender wallet address or onramp provider identifier (onchain_transaction sources only).
 	SenderAddress *string `json:"sender_address,omitempty" url:"sender_address,omitempty"`
-	// Lifecycle status. On withdrawal sources this is the withdrawal status (requires payout:withdrawal:read); on airdrop_link sources it is the claim-link status (ungated); on payment and top-up sources it is the friendly payment status such as succeeded/pending/failed (ungated).
+	// Lifecycle status. On payout sources this is the payout status (requires payout:withdrawal:read); on airdrop_link sources it is the claim-link status (ungated); on payment and top-up sources it is the friendly payment status such as succeeded/pending/failed (ungated).
 	Status *string `json:"status,omitempty" url:"status,omitempty"`
 	// Amount received in to_currency as a decimal string (swap sources only).
 	ToAmount *string `json:"to_amount,omitempty" url:"to_amount,omitempty"`
@@ -3924,6 +4440,13 @@ func (l *LedgerActivitySource) GetReason() *string {
 		return nil
 	}
 	return l.Reason
+}
+
+func (l *LedgerActivitySource) GetRiskReviewHold() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.RiskReviewHold
 }
 
 func (l *LedgerActivitySource) GetSenderAddress() *string {
@@ -4094,6 +4617,13 @@ func (l *LedgerActivitySource) SetReason(reason *string) {
 	l.require(ledgerActivitySourceFieldReason)
 }
 
+// SetRiskReviewHold sets the RiskReviewHold field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetRiskReviewHold(riskReviewHold *bool) {
+	l.RiskReviewHold = riskReviewHold
+	l.require(ledgerActivitySourceFieldRiskReviewHold)
+}
+
 // SetSenderAddress sets the SenderAddress field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *LedgerActivitySource) SetSenderAddress(senderAddress *string) {
@@ -4183,7 +4713,7 @@ func (l *LedgerActivitySource) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Payout destination display info (withdrawal sources only).
+// Payout destination display info (payout sources only).
 var (
 	ledgerActivitySourcePayoutDestinationFieldIconURL   = big.NewInt(1 << 0)
 	ledgerActivitySourcePayoutDestinationFieldPayerName = big.NewInt(1 << 1)

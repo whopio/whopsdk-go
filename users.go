@@ -647,7 +647,7 @@ type UserBalance struct {
 	PendingUsd string `json:"pending_usd" url:"pending_usd"`
 	// The user's personal balance in USD: cash (available + pending + in-transit + reserve) + crypto + in-flight treasury deposits. Excludes account balances (see businesses_total_usd).
 	TotalUsd string `json:"total_usd" url:"total_usd"`
-	// Balance-to-wallet USDT0 withdrawals still in flight, in USD.
+	// Balance-to-wallet USDT0 payouts still in flight, in USD.
 	TreasuryPendingUsd string `json:"treasury_pending_usd" url:"treasury_pending_usd"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

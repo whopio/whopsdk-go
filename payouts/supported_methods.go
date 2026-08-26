@@ -31,7 +31,7 @@ type ListSupportedMethodsRequest struct {
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// ISO 3166-1 alpha-2 country code for the bank account or wallet, such as `US`. Defaults to the country of supported_payout_method_id when one is given, otherwise the payout account's country.
 	Country *string `json:"-" url:"country,omitempty"`
-	// Optional withdrawal amount in whole currency units, for example `250.00`. When provided, each destination includes per-currency fee and delivery quotes.
+	// Optional payout amount in whole currency units, for example `250.00`. When provided, each destination includes per-currency fee and delivery quotes.
 	Amount *float64 `json:"-" url:"amount,omitempty"`
 	// Currency code of the amount, for example `usd`. Only meaningful with amount.
 	Currency *string `json:"-" url:"currency,omitempty"`
@@ -526,19 +526,19 @@ var (
 )
 
 type ListSupportedMethodsResponseDataItemQuotesItem struct {
-	// The withdrawal amount the quote is for.
+	// The payout amount the quote is for.
 	Amount float64 `json:"amount" url:"amount"`
 	// Currency of the quoted amount.
 	Currency string `json:"currency" url:"currency"`
 	// Currency the funds are delivered in.
 	DestinationCurrency string `json:"destination_currency" url:"destination_currency"`
-	// Exchange rate from the withdrawal currency to the destination currency.
+	// Exchange rate from the payout currency to the destination currency.
 	ExchangeRate float64 `json:"exchange_rate" url:"exchange_rate"`
 	// Instant-delivery estimate. Null if unsupported, unavailable for the account, or the amount does not cover the fee.
 	Instant *ListSupportedMethodsResponseDataItemQuotesItemInstant `json:"instant,omitempty" url:"instant,omitempty"`
-	// Maximum withdrawal amount, in the withdrawal currency.
+	// Maximum payout amount, in the payout currency.
 	MaxLimit *float64 `json:"max_limit,omitempty" url:"max_limit,omitempty"`
-	// Minimum withdrawal amount, in the withdrawal currency.
+	// Minimum payout amount, in the payout currency.
 	MinLimit float64 `json:"min_limit" url:"min_limit"`
 	// Standard-delivery estimate. Null if unsupported or the amount does not cover the fee.
 	Standard *ListSupportedMethodsResponseDataItemQuotesItemStandard `json:"standard,omitempty" url:"standard,omitempty"`

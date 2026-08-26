@@ -154,3 +154,29 @@ func TestPayoutsRetrieveWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestPayoutsRetrieveWithWireMock", "GET", "/payouts/id", nil, 1)
 }
+
+func TestPayoutsCancelWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.CancelPayoutsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Payouts.Cancel(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPayoutsCancelWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPayoutsCancelWithWireMock", "POST", "/payouts/id/cancel", nil, 1)
+}

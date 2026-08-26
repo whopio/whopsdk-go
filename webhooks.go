@@ -1241,6 +1241,9 @@ const (
 	WebhookEventsItemWithdrawalCreated                     WebhookEventsItem = "withdrawal.created"
 	WebhookEventsItemWithdrawalUpdated                     WebhookEventsItem = "withdrawal.updated"
 	WebhookEventsItemWithdrawalReversed                    WebhookEventsItem = "withdrawal.reversed"
+	WebhookEventsItemPayoutCreated                         WebhookEventsItem = "payout.created"
+	WebhookEventsItemPayoutUpdated                         WebhookEventsItem = "payout.updated"
+	WebhookEventsItemPayoutReversed                        WebhookEventsItem = "payout.reversed"
 	WebhookEventsItemCardTransactionCreated                WebhookEventsItem = "card_transaction.created"
 	WebhookEventsItemCardTransactionUpdated                WebhookEventsItem = "card_transaction.updated"
 	WebhookEventsItemCardTransactionCompleted              WebhookEventsItem = "card_transaction.completed"
@@ -1362,6 +1365,12 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemWithdrawalUpdated, nil
 	case "withdrawal.reversed":
 		return WebhookEventsItemWithdrawalReversed, nil
+	case "payout.created":
+		return WebhookEventsItemPayoutCreated, nil
+	case "payout.updated":
+		return WebhookEventsItemPayoutUpdated, nil
+	case "payout.reversed":
+		return WebhookEventsItemPayoutReversed, nil
 	case "card_transaction.created":
 		return WebhookEventsItemCardTransactionCreated, nil
 	case "card_transaction.updated":
@@ -1896,6 +1905,9 @@ const (
 	WebhookListItemEventsItemWithdrawalCreated                     WebhookListItemEventsItem = "withdrawal.created"
 	WebhookListItemEventsItemWithdrawalUpdated                     WebhookListItemEventsItem = "withdrawal.updated"
 	WebhookListItemEventsItemWithdrawalReversed                    WebhookListItemEventsItem = "withdrawal.reversed"
+	WebhookListItemEventsItemPayoutCreated                         WebhookListItemEventsItem = "payout.created"
+	WebhookListItemEventsItemPayoutUpdated                         WebhookListItemEventsItem = "payout.updated"
+	WebhookListItemEventsItemPayoutReversed                        WebhookListItemEventsItem = "payout.reversed"
 	WebhookListItemEventsItemCardTransactionCreated                WebhookListItemEventsItem = "card_transaction.created"
 	WebhookListItemEventsItemCardTransactionUpdated                WebhookListItemEventsItem = "card_transaction.updated"
 	WebhookListItemEventsItemCardTransactionCompleted              WebhookListItemEventsItem = "card_transaction.completed"
@@ -2017,6 +2029,12 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemWithdrawalUpdated, nil
 	case "withdrawal.reversed":
 		return WebhookListItemEventsItemWithdrawalReversed, nil
+	case "payout.created":
+		return WebhookListItemEventsItemPayoutCreated, nil
+	case "payout.updated":
+		return WebhookListItemEventsItemPayoutUpdated, nil
+	case "payout.reversed":
+		return WebhookListItemEventsItemPayoutReversed, nil
 	case "card_transaction.created":
 		return WebhookListItemEventsItemCardTransactionCreated, nil
 	case "card_transaction.updated":
@@ -2183,6 +2201,9 @@ const (
 	WebhookTestableEventsItemWithdrawalCreated                     WebhookTestableEventsItem = "withdrawal.created"
 	WebhookTestableEventsItemWithdrawalUpdated                     WebhookTestableEventsItem = "withdrawal.updated"
 	WebhookTestableEventsItemWithdrawalReversed                    WebhookTestableEventsItem = "withdrawal.reversed"
+	WebhookTestableEventsItemPayoutCreated                         WebhookTestableEventsItem = "payout.created"
+	WebhookTestableEventsItemPayoutUpdated                         WebhookTestableEventsItem = "payout.updated"
+	WebhookTestableEventsItemPayoutReversed                        WebhookTestableEventsItem = "payout.reversed"
 	WebhookTestableEventsItemCardTransactionCreated                WebhookTestableEventsItem = "card_transaction.created"
 	WebhookTestableEventsItemCardTransactionUpdated                WebhookTestableEventsItem = "card_transaction.updated"
 	WebhookTestableEventsItemCardTransactionCompleted              WebhookTestableEventsItem = "card_transaction.completed"
@@ -2304,6 +2325,12 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemWithdrawalUpdated, nil
 	case "withdrawal.reversed":
 		return WebhookTestableEventsItemWithdrawalReversed, nil
+	case "payout.created":
+		return WebhookTestableEventsItemPayoutCreated, nil
+	case "payout.updated":
+		return WebhookTestableEventsItemPayoutUpdated, nil
+	case "payout.reversed":
+		return WebhookTestableEventsItemPayoutReversed, nil
 	case "card_transaction.created":
 		return WebhookTestableEventsItemCardTransactionCreated, nil
 	case "card_transaction.updated":
@@ -2466,9 +2493,9 @@ const (
 	CreateWebhooksRequestEventsItemTransferCreated                                 CreateWebhooksRequestEventsItem = "transfer.created"
 	CreateWebhooksRequestEventsItemTransferCompleted                               CreateWebhooksRequestEventsItem = "transfer.completed"
 	CreateWebhooksRequestEventsItemTransferFailed                                  CreateWebhooksRequestEventsItem = "transfer.failed"
-	CreateWebhooksRequestEventsItemWithdrawalCreated                               CreateWebhooksRequestEventsItem = "withdrawal.created"
-	CreateWebhooksRequestEventsItemWithdrawalUpdated                               CreateWebhooksRequestEventsItem = "withdrawal.updated"
-	CreateWebhooksRequestEventsItemWithdrawalReversed                              CreateWebhooksRequestEventsItem = "withdrawal.reversed"
+	CreateWebhooksRequestEventsItemPayoutCreated                                   CreateWebhooksRequestEventsItem = "payout.created"
+	CreateWebhooksRequestEventsItemPayoutUpdated                                   CreateWebhooksRequestEventsItem = "payout.updated"
+	CreateWebhooksRequestEventsItemPayoutReversed                                  CreateWebhooksRequestEventsItem = "payout.reversed"
 	CreateWebhooksRequestEventsItemCardTransactionCreated                          CreateWebhooksRequestEventsItem = "card_transaction.created"
 	CreateWebhooksRequestEventsItemCardTransactionUpdated                          CreateWebhooksRequestEventsItem = "card_transaction.updated"
 	CreateWebhooksRequestEventsItemCardTransactionCompleted                        CreateWebhooksRequestEventsItem = "card_transaction.completed"
@@ -2609,12 +2636,12 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemTransferCompleted, nil
 	case "transfer.failed":
 		return CreateWebhooksRequestEventsItemTransferFailed, nil
-	case "withdrawal.created":
-		return CreateWebhooksRequestEventsItemWithdrawalCreated, nil
-	case "withdrawal.updated":
-		return CreateWebhooksRequestEventsItemWithdrawalUpdated, nil
-	case "withdrawal.reversed":
-		return CreateWebhooksRequestEventsItemWithdrawalReversed, nil
+	case "payout.created":
+		return CreateWebhooksRequestEventsItemPayoutCreated, nil
+	case "payout.updated":
+		return CreateWebhooksRequestEventsItemPayoutUpdated, nil
+	case "payout.reversed":
+		return CreateWebhooksRequestEventsItemPayoutReversed, nil
 	case "card_transaction.created":
 		return CreateWebhooksRequestEventsItemCardTransactionCreated, nil
 	case "card_transaction.updated":
@@ -4100,9 +4127,9 @@ const (
 	UpdateWebhooksRequestEventsItemTransferCreated                                 UpdateWebhooksRequestEventsItem = "transfer.created"
 	UpdateWebhooksRequestEventsItemTransferCompleted                               UpdateWebhooksRequestEventsItem = "transfer.completed"
 	UpdateWebhooksRequestEventsItemTransferFailed                                  UpdateWebhooksRequestEventsItem = "transfer.failed"
-	UpdateWebhooksRequestEventsItemWithdrawalCreated                               UpdateWebhooksRequestEventsItem = "withdrawal.created"
-	UpdateWebhooksRequestEventsItemWithdrawalUpdated                               UpdateWebhooksRequestEventsItem = "withdrawal.updated"
-	UpdateWebhooksRequestEventsItemWithdrawalReversed                              UpdateWebhooksRequestEventsItem = "withdrawal.reversed"
+	UpdateWebhooksRequestEventsItemPayoutCreated                                   UpdateWebhooksRequestEventsItem = "payout.created"
+	UpdateWebhooksRequestEventsItemPayoutUpdated                                   UpdateWebhooksRequestEventsItem = "payout.updated"
+	UpdateWebhooksRequestEventsItemPayoutReversed                                  UpdateWebhooksRequestEventsItem = "payout.reversed"
 	UpdateWebhooksRequestEventsItemCardTransactionCreated                          UpdateWebhooksRequestEventsItem = "card_transaction.created"
 	UpdateWebhooksRequestEventsItemCardTransactionUpdated                          UpdateWebhooksRequestEventsItem = "card_transaction.updated"
 	UpdateWebhooksRequestEventsItemCardTransactionCompleted                        UpdateWebhooksRequestEventsItem = "card_transaction.completed"
@@ -4243,12 +4270,12 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemTransferCompleted, nil
 	case "transfer.failed":
 		return UpdateWebhooksRequestEventsItemTransferFailed, nil
-	case "withdrawal.created":
-		return UpdateWebhooksRequestEventsItemWithdrawalCreated, nil
-	case "withdrawal.updated":
-		return UpdateWebhooksRequestEventsItemWithdrawalUpdated, nil
-	case "withdrawal.reversed":
-		return UpdateWebhooksRequestEventsItemWithdrawalReversed, nil
+	case "payout.created":
+		return UpdateWebhooksRequestEventsItemPayoutCreated, nil
+	case "payout.updated":
+		return UpdateWebhooksRequestEventsItemPayoutUpdated, nil
+	case "payout.reversed":
+		return UpdateWebhooksRequestEventsItemPayoutReversed, nil
 	case "card_transaction.created":
 		return UpdateWebhooksRequestEventsItemCardTransactionCreated, nil
 	case "card_transaction.updated":

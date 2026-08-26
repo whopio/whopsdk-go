@@ -23,7 +23,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21-1"
+		apiVersionDateDefault := "2026-08-25-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -40,7 +40,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists the bank accounts, wallets, and crypto addresses an account or user can withdraw to, newest first.
+// Lists the bank accounts, wallets, and crypto addresses an account or user can pay out to, newest first.
 //
 // Example:
 //
@@ -112,7 +112,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Saves a new place an account or user can withdraw to. Sensitive details are vaulted in transit and never stored raw.
+// Saves a new place an account or user can pay out to. Sensitive details are vaulted in transit and never stored raw.
 //
 // Example:
 //

@@ -163,7 +163,7 @@ type ListMethodsRequest struct {
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Optional status filter. `created` means saved but unused, `active` means a payout through it succeeded, `broken` means the last payout failed and the method needs fixing.
 	Status *ListMethodsRequestStatus `json:"-" url:"status,omitempty"`
-	// Optional withdrawal amount in whole currency units, for example `250.00`. When provided, each method includes a quote with the estimated fee, amount received, and delivery date for that amount.
+	// Optional payout amount in whole currency units, for example `250.00`. When provided, each method includes a quote with the estimated fee, amount received, and delivery date for that amount.
 	Amount *float64 `json:"-" url:"amount,omitempty"`
 	// Currency code of the amount, for example `usd`. Only meaningful with amount or include_limits.
 	Currency *string `json:"-" url:"currency,omitempty"`
@@ -1313,7 +1313,7 @@ type ListMethodsResponseDataItem struct {
 	Object   ListMethodsResponseDataItemObject `json:"object" url:"object"`
 	// Display name of the payout rail, such as `ACH Bank Deposit`.
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
-	// Fee and delivery estimate for withdrawing the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
+	// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 	Quote *ListMethodsResponseDataItemQuote `json:"quote,omitempty" url:"quote,omitempty"`
 	// Lifecycle status: `created` means saved but unused, `active` means a payout succeeded through it, `broken` means a payout failure disabled it; a later successful payout returns it to `active`.
 	Status ListMethodsResponseDataItemStatus `json:"status" url:"status"`
@@ -1852,7 +1852,7 @@ type ListMethodsResponseDataItemFeeStructure struct {
 	Currency string `json:"currency" url:"currency"`
 	// Fixed fee charged, denominated in `currency`.
 	FixedAmount float64 `json:"fixed_amount" url:"fixed_amount"`
-	// Percentage of the withdrawal amount charged as a fee.
+	// Percentage of the payout amount charged as a fee.
 	Percentage float64 `json:"percentage" url:"percentage"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1979,7 +1979,7 @@ func (l ListMethodsResponseDataItemObject) Ptr() *ListMethodsResponseDataItemObj
 	return &l
 }
 
-// Fee and delivery estimate for withdrawing the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
+// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 var (
 	listMethodsResponseDataItemQuoteFieldAmount       = big.NewInt(1 << 0)
 	listMethodsResponseDataItemQuoteFieldCurrency     = big.NewInt(1 << 1)
@@ -1991,17 +1991,17 @@ var (
 )
 
 type ListMethodsResponseDataItemQuote struct {
-	// The withdrawal amount the quote is for.
+	// The payout amount the quote is for.
 	Amount float64 `json:"amount" url:"amount"`
 	// Currency of the quoted amount.
 	Currency string `json:"currency" url:"currency"`
-	// Exchange rate from the withdrawal currency to the destination currency.
+	// Exchange rate from the payout currency to the destination currency.
 	ExchangeRate float64 `json:"exchange_rate" url:"exchange_rate"`
 	// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
 	Instant *ListMethodsResponseDataItemQuoteInstant `json:"instant,omitempty" url:"instant,omitempty"`
-	// Maximum withdrawal amount for this method, in the withdrawal currency.
+	// Maximum payout amount for this method, in the payout currency.
 	MaxLimit *float64 `json:"max_limit,omitempty" url:"max_limit,omitempty"`
-	// Minimum withdrawal amount for this method, in the withdrawal currency.
+	// Minimum payout amount for this method, in the payout currency.
 	MinLimit float64 `json:"min_limit" url:"min_limit"`
 	// Standard-delivery estimate. Null if the method does not support standard delivery, or the amount does not cover the fee.
 	Standard *ListMethodsResponseDataItemQuoteStandard `json:"standard,omitempty" url:"standard,omitempty"`
@@ -2174,9 +2174,9 @@ var (
 )
 
 type ListMethodsResponseDataItemQuoteInstant struct {
-	// Total fee charged, in the withdrawal currency.
+	// Total fee charged, in the payout currency.
 	Fee float64 `json:"fee" url:"fee"`
-	// Amount delivered after fees, in the withdrawal currency.
+	// Amount delivered after fees, in the payout currency.
 	TotalReceived float64 `json:"total_received" url:"total_received"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2277,9 +2277,9 @@ var (
 )
 
 type ListMethodsResponseDataItemQuoteStandard struct {
-	// Total fee charged, in the withdrawal currency.
+	// Total fee charged, in the payout currency.
 	Fee float64 `json:"fee" url:"fee"`
-	// Amount delivered after fees, in the withdrawal currency.
+	// Amount delivered after fees, in the payout currency.
 	TotalReceived float64 `json:"total_received" url:"total_received"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

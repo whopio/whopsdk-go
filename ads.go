@@ -15,12 +15,12 @@ var (
 	createAdsRequestFieldCallToAction       = big.NewInt(1 << 2)
 	createAdsRequestFieldCreatives          = big.NewInt(1 << 3)
 	createAdsRequestFieldDescriptions       = big.NewInt(1 << 4)
-	createAdsRequestFieldHeadlines          = big.NewInt(1 << 5)
-	createAdsRequestFieldLeadForm           = big.NewInt(1 << 6)
-	createAdsRequestFieldLeadFormID         = big.NewInt(1 << 7)
-	createAdsRequestFieldMessagingConfig    = big.NewInt(1 << 8)
-	createAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 9)
-	createAdsRequestFieldPostID             = big.NewInt(1 << 10)
+	createAdsRequestFieldExistingPostID     = big.NewInt(1 << 5)
+	createAdsRequestFieldHeadlines          = big.NewInt(1 << 6)
+	createAdsRequestFieldLeadForm           = big.NewInt(1 << 7)
+	createAdsRequestFieldLeadFormID         = big.NewInt(1 << 8)
+	createAdsRequestFieldMessagingConfig    = big.NewInt(1 << 9)
+	createAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 10)
 	createAdsRequestFieldPostSource         = big.NewInt(1 << 11)
 	createAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 12)
 	createAdsRequestFieldSocialAccounts     = big.NewInt(1 << 13)
@@ -40,6 +40,8 @@ type CreateAdsRequest struct {
 	Creatives []*CreateAdsRequestCreativesItem `json:"creatives,omitempty" url:"-"`
 	// The description variants shown on the ad.
 	Descriptions []string `json:"descriptions,omitempty" url:"-"`
+	// Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+	ExistingPostID *string `json:"existing_post_id,omitempty" url:"-"`
 	// The headline variants shown on the ad.
 	Headlines []string `json:"headlines,omitempty" url:"-"`
 	// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
@@ -50,9 +52,7 @@ type CreateAdsRequest struct {
 	MessagingConfig *CreateAdsRequestMessagingConfig `json:"messaging_config,omitempty" url:"-"`
 	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
 	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"-"`
-	// Promote an existing post instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
-	PostID *string `json:"post_id,omitempty" url:"-"`
-	// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+	// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
 	PostSource *CreateAdsRequestPostSource `json:"post_source,omitempty" url:"-"`
 	// The primary text variants shown in the ad body.
 	PrimaryTexts []string `json:"primary_texts,omitempty" url:"-"`
@@ -111,6 +111,13 @@ func (c *CreateAdsRequest) SetDescriptions(descriptions []string) {
 	c.require(createAdsRequestFieldDescriptions)
 }
 
+// SetExistingPostID sets the ExistingPostID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequest) SetExistingPostID(existingPostID *string) {
+	c.ExistingPostID = existingPostID
+	c.require(createAdsRequestFieldExistingPostID)
+}
+
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAdsRequest) SetHeadlines(headlines []string) {
@@ -144,13 +151,6 @@ func (c *CreateAdsRequest) SetMessagingConfig(messagingConfig *CreateAdsRequestM
 func (c *CreateAdsRequest) SetMultiAdvertiserAds(multiAdvertiserAds *bool) {
 	c.MultiAdvertiserAds = multiAdvertiserAds
 	c.require(createAdsRequestFieldMultiAdvertiserAds)
-}
-
-// SetPostID sets the PostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetPostID(postID *string) {
-	c.PostID = postID
-	c.require(createAdsRequestFieldPostID)
 }
 
 // SetPostSource sets the PostSource field and marks it as non-optional;
@@ -648,44 +648,45 @@ var (
 	adFieldCustomEventValues            = big.NewInt(1 << 27)
 	adFieldDeliveryStatus               = big.NewInt(1 << 28)
 	adFieldDescriptions                 = big.NewInt(1 << 29)
-	adFieldFrequency                    = big.NewInt(1 << 30)
-	adFieldHeadlines                    = big.NewInt(1 << 31)
-	adFieldID                           = big.NewInt(1 << 32)
-	adFieldImpressions                  = big.NewInt(1 << 33)
-	adFieldIssues                       = big.NewInt(1 << 34)
-	adFieldLeadForm                     = big.NewInt(1 << 35)
-	adFieldLeadFormID                   = big.NewInt(1 << 36)
-	adFieldLeadValue                    = big.NewInt(1 << 37)
-	adFieldLeads                        = big.NewInt(1 << 38)
-	adFieldMessagingConfig              = big.NewInt(1 << 39)
-	adFieldMultiAdvertiserAds           = big.NewInt(1 << 40)
-	adFieldPostID                       = big.NewInt(1 << 41)
-	adFieldPostSource                   = big.NewInt(1 << 42)
-	adFieldPostThumbnailURL             = big.NewInt(1 << 43)
-	adFieldPrimaryTexts                 = big.NewInt(1 << 44)
-	adFieldPurchaseValue                = big.NewInt(1 << 45)
-	adFieldPurchases                    = big.NewInt(1 << 46)
-	adFieldReach                        = big.NewInt(1 << 47)
-	adFieldResultEvent                  = big.NewInt(1 << 48)
-	adFieldResultEventName              = big.NewInt(1 << 49)
-	adFieldResults                      = big.NewInt(1 << 50)
-	adFieldReturnOnAdSpend              = big.NewInt(1 << 51)
-	adFieldScheduleValue                = big.NewInt(1 << 52)
-	adFieldSchedules                    = big.NewInt(1 << 53)
-	adFieldSocialAccounts               = big.NewInt(1 << 54)
-	adFieldSpend                        = big.NewInt(1 << 55)
-	adFieldSpendCurrency                = big.NewInt(1 << 56)
-	adFieldStatus                       = big.NewInt(1 << 57)
-	adFieldSubmittedApplicationValue    = big.NewInt(1 << 58)
-	adFieldSubmittedApplications        = big.NewInt(1 << 59)
-	adFieldTitle                        = big.NewInt(1 << 60)
-	adFieldUniqueClickThroughRate       = big.NewInt(1 << 61)
-	adFieldUniqueClicks                 = big.NewInt(1 << 62)
-	adFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adFieldURL                          = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adFieldURLParameters                = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adFieldExistingPostID               = big.NewInt(1 << 30)
+	adFieldFrequency                    = big.NewInt(1 << 31)
+	adFieldHeadlines                    = big.NewInt(1 << 32)
+	adFieldID                           = big.NewInt(1 << 33)
+	adFieldImpressions                  = big.NewInt(1 << 34)
+	adFieldIssues                       = big.NewInt(1 << 35)
+	adFieldLeadForm                     = big.NewInt(1 << 36)
+	adFieldLeadFormID                   = big.NewInt(1 << 37)
+	adFieldLeadValue                    = big.NewInt(1 << 38)
+	adFieldLeads                        = big.NewInt(1 << 39)
+	adFieldMessagingConfig              = big.NewInt(1 << 40)
+	adFieldMultiAdvertiserAds           = big.NewInt(1 << 41)
+	adFieldPostID                       = big.NewInt(1 << 42)
+	adFieldPostSource                   = big.NewInt(1 << 43)
+	adFieldPostThumbnailURL             = big.NewInt(1 << 44)
+	adFieldPrimaryTexts                 = big.NewInt(1 << 45)
+	adFieldPurchaseValue                = big.NewInt(1 << 46)
+	adFieldPurchases                    = big.NewInt(1 << 47)
+	adFieldReach                        = big.NewInt(1 << 48)
+	adFieldResultEvent                  = big.NewInt(1 << 49)
+	adFieldResultEventName              = big.NewInt(1 << 50)
+	adFieldResults                      = big.NewInt(1 << 51)
+	adFieldReturnOnAdSpend              = big.NewInt(1 << 52)
+	adFieldScheduleValue                = big.NewInt(1 << 53)
+	adFieldSchedules                    = big.NewInt(1 << 54)
+	adFieldSocialAccounts               = big.NewInt(1 << 55)
+	adFieldSpend                        = big.NewInt(1 << 56)
+	adFieldSpendCurrency                = big.NewInt(1 << 57)
+	adFieldStatus                       = big.NewInt(1 << 58)
+	adFieldSubmittedApplicationValue    = big.NewInt(1 << 59)
+	adFieldSubmittedApplications        = big.NewInt(1 << 60)
+	adFieldTitle                        = big.NewInt(1 << 61)
+	adFieldUniqueClickThroughRate       = big.NewInt(1 << 62)
+	adFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adFieldURL                          = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adFieldURLParameters                = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 68)
 )
 
 type Ad struct {
@@ -747,6 +748,8 @@ type Ad struct {
 	// Whether the ad is delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	Descriptions   []string         `json:"descriptions" url:"descriptions"`
+	// The post you pointed this ad at, when it promotes one you already published — a Facebook post, Instagram media, or TikTok video ID. `null` when the ad uses uploaded creatives.
+	ExistingPostID *string `json:"existing_post_id,omitempty" url:"existing_post_id,omitempty"`
 	// Platform-reported impressions divided by reach.
 	Frequency *float64 `json:"frequency,omitempty" url:"frequency,omitempty"`
 	Headlines []string `json:"headlines" url:"headlines"`
@@ -767,11 +770,11 @@ type Ad struct {
 	MessagingConfig *AdMessagingConfig `json:"messaging_config,omitempty" url:"messaging_config,omitempty"`
 	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
 	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"multi_advertiser_ads,omitempty"`
-	// The existing post this ad promotes — a Facebook post or Instagram media ID. `null` when the ad uses uploaded creatives.
+	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
 	PostID *string `json:"post_id,omitempty" url:"post_id,omitempty"`
-	// Identifies the network that owns `post_id`; `null` when the ad uses uploaded creatives.
+	// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
 	PostSource *AdPostSource `json:"post_source,omitempty" url:"post_source,omitempty"`
-	// Preview image of the existing post this ad promotes. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
+	// Preview image of the post named by `existing_post_id`. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
 	PostThumbnailURL *string  `json:"post_thumbnail_url,omitempty" url:"post_thumbnail_url,omitempty"`
 	PrimaryTexts     []string `json:"primary_texts" url:"primary_texts"`
 	// USD value of pixel-attributed purchases.
@@ -1035,6 +1038,13 @@ func (a *Ad) GetDescriptions() []string {
 		return nil
 	}
 	return a.Descriptions
+}
+
+func (a *Ad) GetExistingPostID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ExistingPostID
 }
 
 func (a *Ad) GetFrequency() *float64 {
@@ -1525,6 +1535,13 @@ func (a *Ad) SetDeliveryStatus(deliveryStatus AdDeliveryStatus) {
 func (a *Ad) SetDescriptions(descriptions []string) {
 	a.Descriptions = descriptions
 	a.require(adFieldDescriptions)
+}
+
+// SetExistingPostID sets the ExistingPostID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Ad) SetExistingPostID(existingPostID *string) {
+	a.ExistingPostID = existingPostID
+	a.require(adFieldExistingPostID)
 }
 
 // SetFrequency sets the Frequency field and marks it as non-optional;
@@ -2743,7 +2760,7 @@ func (a *AdMessagingConfig) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Identifies the network that owns `post_id`; `null` when the ad uses uploaded creatives.
+// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
 type AdPostSource string
 
 const (
@@ -4607,7 +4624,7 @@ func (c *CreateAdsRequestMessagingConfig) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
 type CreateAdsRequestPostSource string
 
 const (
@@ -7050,7 +7067,7 @@ func (u *UpdateAdsRequestMessagingConfig) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
 type UpdateAdsRequestPostSource string
 
 const (
@@ -7189,12 +7206,12 @@ var (
 	updateAdsRequestFieldCallToAction       = big.NewInt(1 << 1)
 	updateAdsRequestFieldCreatives          = big.NewInt(1 << 2)
 	updateAdsRequestFieldDescriptions       = big.NewInt(1 << 3)
-	updateAdsRequestFieldHeadlines          = big.NewInt(1 << 4)
-	updateAdsRequestFieldLeadForm           = big.NewInt(1 << 5)
-	updateAdsRequestFieldLeadFormID         = big.NewInt(1 << 6)
-	updateAdsRequestFieldMessagingConfig    = big.NewInt(1 << 7)
-	updateAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 8)
-	updateAdsRequestFieldPostID             = big.NewInt(1 << 9)
+	updateAdsRequestFieldExistingPostID     = big.NewInt(1 << 4)
+	updateAdsRequestFieldHeadlines          = big.NewInt(1 << 5)
+	updateAdsRequestFieldLeadForm           = big.NewInt(1 << 6)
+	updateAdsRequestFieldLeadFormID         = big.NewInt(1 << 7)
+	updateAdsRequestFieldMessagingConfig    = big.NewInt(1 << 8)
+	updateAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 9)
 	updateAdsRequestFieldPostSource         = big.NewInt(1 << 10)
 	updateAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 11)
 	updateAdsRequestFieldSocialAccounts     = big.NewInt(1 << 12)
@@ -7212,6 +7229,8 @@ type UpdateAdsRequest struct {
 	Creatives []*UpdateAdsRequestCreativesItem `json:"creatives,omitempty" url:"-"`
 	// The description variants shown on the ad.
 	Descriptions []string `json:"descriptions,omitempty" url:"-"`
+	// Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
+	ExistingPostID *string `json:"existing_post_id,omitempty" url:"-"`
 	// The headline variants shown on the ad.
 	Headlines []string `json:"headlines,omitempty" url:"-"`
 	// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
@@ -7222,9 +7241,7 @@ type UpdateAdsRequest struct {
 	MessagingConfig *UpdateAdsRequestMessagingConfig `json:"messaging_config,omitempty" url:"-"`
 	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
 	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"-"`
-	// Promote an existing post instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
-	PostID *string `json:"post_id,omitempty" url:"-"`
-	// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
+	// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
 	PostSource *UpdateAdsRequestPostSource `json:"post_source,omitempty" url:"-"`
 	// The primary text variants shown in the ad body.
 	PrimaryTexts []string `json:"primary_texts,omitempty" url:"-"`
@@ -7276,6 +7293,13 @@ func (u *UpdateAdsRequest) SetDescriptions(descriptions []string) {
 	u.require(updateAdsRequestFieldDescriptions)
 }
 
+// SetExistingPostID sets the ExistingPostID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdsRequest) SetExistingPostID(existingPostID *string) {
+	u.ExistingPostID = existingPostID
+	u.require(updateAdsRequestFieldExistingPostID)
+}
+
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAdsRequest) SetHeadlines(headlines []string) {
@@ -7309,13 +7333,6 @@ func (u *UpdateAdsRequest) SetMessagingConfig(messagingConfig *UpdateAdsRequestM
 func (u *UpdateAdsRequest) SetMultiAdvertiserAds(multiAdvertiserAds *bool) {
 	u.MultiAdvertiserAds = multiAdvertiserAds
 	u.require(updateAdsRequestFieldMultiAdvertiserAds)
-}
-
-// SetPostID sets the PostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetPostID(postID *string) {
-	u.PostID = postID
-	u.require(updateAdsRequestFieldPostID)
 }
 
 // SetPostSource sets the PostSource field and marks it as non-optional;

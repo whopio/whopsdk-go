@@ -63,7 +63,7 @@ type PayoutAccount struct {
 	LatestVerification *PayoutAccountLatestVerification `json:"latest_verification,omitempty" url:"latest_verification,omitempty"`
 	// The business representative's phone
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-	// The granular calculated status of the payout account reflecting its current KYC and withdrawal readiness state.
+	// The granular calculated status of the payout account reflecting its current KYC and payout readiness state.
 	Status *PayoutAccountCalculatedStatuses `json:"status,omitempty" url:"status,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

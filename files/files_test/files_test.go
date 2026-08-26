@@ -77,6 +77,36 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestFilesListWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.ListFilesRequest{
+		FileIDs: []*string{
+			whopsdk.String(
+				"file_xxxxxxxxxxxxx",
+			),
+		},
+	}
+	_, invocationErr := client.Files.List(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestFilesListWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestFilesListWithWireMock", "GET", "/files", map[string]interface{}{"file_ids": "file_xxxxxxxxxxxxx"}, 1)
+}
+
 func TestFilesCreateWithWireMock(
 	t *testing.T,
 ) {
