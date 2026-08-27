@@ -2176,7 +2176,7 @@ var (
 type ListMethodsResponseDataItemQuoteInstant struct {
 	// Total fee charged, in the payout currency.
 	Fee float64 `json:"fee" url:"fee"`
-	// Amount delivered after fees, in the payout currency.
+	// Amount remaining after fees, in the payout currency.
 	TotalReceived float64 `json:"total_received" url:"total_received"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2279,7 +2279,7 @@ var (
 type ListMethodsResponseDataItemQuoteStandard struct {
 	// Total fee charged, in the payout currency.
 	Fee float64 `json:"fee" url:"fee"`
-	// Amount delivered after fees, in the payout currency.
+	// Amount remaining after fees, in the payout currency.
 	TotalReceived float64 `json:"total_received" url:"total_received"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

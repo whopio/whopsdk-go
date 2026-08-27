@@ -13,22 +13,24 @@ import (
 var (
 	createEventsRequestFieldAccountID    = big.NewInt(1 << 0)
 	createEventsRequestFieldActionSource = big.NewInt(1 << 1)
-	createEventsRequestFieldContext      = big.NewInt(1 << 2)
-	createEventsRequestFieldCurrency     = big.NewInt(1 << 3)
-	createEventsRequestFieldCustomName   = big.NewInt(1 << 4)
-	createEventsRequestFieldDuration     = big.NewInt(1 << 5)
-	createEventsRequestFieldEventID      = big.NewInt(1 << 6)
-	createEventsRequestFieldEventName    = big.NewInt(1 << 7)
-	createEventsRequestFieldEventTime    = big.NewInt(1 << 8)
-	createEventsRequestFieldPlanID       = big.NewInt(1 << 9)
-	createEventsRequestFieldProductID    = big.NewInt(1 << 10)
-	createEventsRequestFieldReferrerURL  = big.NewInt(1 << 11)
-	createEventsRequestFieldResumed      = big.NewInt(1 << 12)
-	createEventsRequestFieldSource       = big.NewInt(1 << 13)
-	createEventsRequestFieldTitle        = big.NewInt(1 << 14)
-	createEventsRequestFieldURL          = big.NewInt(1 << 15)
-	createEventsRequestFieldUser         = big.NewInt(1 << 16)
-	createEventsRequestFieldValue        = big.NewInt(1 << 17)
+	createEventsRequestFieldAppBuildID   = big.NewInt(1 << 2)
+	createEventsRequestFieldAppID        = big.NewInt(1 << 3)
+	createEventsRequestFieldContext      = big.NewInt(1 << 4)
+	createEventsRequestFieldCurrency     = big.NewInt(1 << 5)
+	createEventsRequestFieldCustomName   = big.NewInt(1 << 6)
+	createEventsRequestFieldDuration     = big.NewInt(1 << 7)
+	createEventsRequestFieldEventID      = big.NewInt(1 << 8)
+	createEventsRequestFieldEventName    = big.NewInt(1 << 9)
+	createEventsRequestFieldEventTime    = big.NewInt(1 << 10)
+	createEventsRequestFieldPlanID       = big.NewInt(1 << 11)
+	createEventsRequestFieldProductID    = big.NewInt(1 << 12)
+	createEventsRequestFieldReferrerURL  = big.NewInt(1 << 13)
+	createEventsRequestFieldResumed      = big.NewInt(1 << 14)
+	createEventsRequestFieldSource       = big.NewInt(1 << 15)
+	createEventsRequestFieldTitle        = big.NewInt(1 << 16)
+	createEventsRequestFieldURL          = big.NewInt(1 << 17)
+	createEventsRequestFieldUser         = big.NewInt(1 << 18)
+	createEventsRequestFieldValue        = big.NewInt(1 << 19)
 )
 
 type CreateEventsRequest struct {
@@ -36,6 +38,10 @@ type CreateEventsRequest struct {
 	AccountID string `json:"account_id" url:"-"`
 	// Where the event originated.
 	ActionSource *CreateEventsRequestActionSource `json:"action_source,omitempty" url:"-"`
+	// The build of the hosted app that served the page where the event occurred.
+	AppBuildID *string `json:"app_build_id,omitempty" url:"-"`
+	// The hosted app that served the page where the event occurred.
+	AppID *string `json:"app_id,omitempty" url:"-"`
 	// Tracking and attribution context.
 	Context *CreateEventsRequestContext `json:"context,omitempty" url:"-"`
 	// ISO 4217 currency code.
@@ -94,6 +100,20 @@ func (c *CreateEventsRequest) SetAccountID(accountID string) {
 func (c *CreateEventsRequest) SetActionSource(actionSource *CreateEventsRequestActionSource) {
 	c.ActionSource = actionSource
 	c.require(createEventsRequestFieldActionSource)
+}
+
+// SetAppBuildID sets the AppBuildID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateEventsRequest) SetAppBuildID(appBuildID *string) {
+	c.AppBuildID = appBuildID
+	c.require(createEventsRequestFieldAppBuildID)
+}
+
+// SetAppID sets the AppID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateEventsRequest) SetAppID(appID *string) {
+	c.AppID = appID
+	c.require(createEventsRequestFieldAppID)
 }
 
 // SetContext sets the Context field and marks it as non-optional;

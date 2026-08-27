@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-1"
+		apiVersionDateDefault := "2026-08-25-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -63,7 +63,7 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
-// Starts an asynchronous CSV export of a resource for an account. Returns the export in `pending`; poll `GET /exports/{id}` until `download_url` is set.
+// Starts an asynchronous export of a resource for an account. Returns the export in `pending`; poll `GET /exports/{id}` until `download_url` is set.
 //
 // Example:
 //

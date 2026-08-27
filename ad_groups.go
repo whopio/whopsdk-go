@@ -925,32 +925,33 @@ var (
 	adGroupFieldLanguages                    = big.NewInt(1 << 43)
 	adGroupFieldLeadValue                    = big.NewInt(1 << 44)
 	adGroupFieldLeads                        = big.NewInt(1 << 45)
-	adGroupFieldMessageApps                  = big.NewInt(1 << 46)
-	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 47)
-	adGroupFieldOptimizationGoal             = big.NewInt(1 << 48)
-	adGroupFieldPlacements                   = big.NewInt(1 << 49)
-	adGroupFieldPurchaseValue                = big.NewInt(1 << 50)
-	adGroupFieldPurchases                    = big.NewInt(1 << 51)
-	adGroupFieldReach                        = big.NewInt(1 << 52)
-	adGroupFieldRegions                      = big.NewInt(1 << 53)
-	adGroupFieldResultEvent                  = big.NewInt(1 << 54)
-	adGroupFieldResultEventName              = big.NewInt(1 << 55)
-	adGroupFieldResults                      = big.NewInt(1 << 56)
-	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 57)
-	adGroupFieldScheduleValue                = big.NewInt(1 << 58)
-	adGroupFieldSchedules                    = big.NewInt(1 << 59)
-	adGroupFieldSpend                        = big.NewInt(1 << 60)
-	adGroupFieldSpendCurrency                = big.NewInt(1 << 61)
-	adGroupFieldStartsAt                     = big.NewInt(1 << 62)
-	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	adGroupFieldLinkClicks                   = big.NewInt(1 << 46)
+	adGroupFieldMessageApps                  = big.NewInt(1 << 47)
+	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 48)
+	adGroupFieldOptimizationGoal             = big.NewInt(1 << 49)
+	adGroupFieldPlacements                   = big.NewInt(1 << 50)
+	adGroupFieldPurchaseValue                = big.NewInt(1 << 51)
+	adGroupFieldPurchases                    = big.NewInt(1 << 52)
+	adGroupFieldReach                        = big.NewInt(1 << 53)
+	adGroupFieldRegions                      = big.NewInt(1 << 54)
+	adGroupFieldResultEvent                  = big.NewInt(1 << 55)
+	adGroupFieldResultEventName              = big.NewInt(1 << 56)
+	adGroupFieldResults                      = big.NewInt(1 << 57)
+	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 58)
+	adGroupFieldScheduleValue                = big.NewInt(1 << 59)
+	adGroupFieldSchedules                    = big.NewInt(1 << 60)
+	adGroupFieldSpend                        = big.NewInt(1 << 61)
+	adGroupFieldSpendCurrency                = big.NewInt(1 << 62)
+	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 72)
 )
 
 type AdGroup struct {
@@ -1042,7 +1043,9 @@ type AdGroup struct {
 	// USD value attributed to lead events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
 	LeadValue float64 `json:"lead_value" url:"lead_value"`
 	// Whop pixel-attributed leads, last-click.
-	Leads       float64                  `json:"leads" url:"leads"`
+	Leads float64 `json:"leads" url:"leads"`
+	// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+	LinkClicks  float64                  `json:"link_clicks" url:"link_clicks"`
 	MessageApps []AdGroupMessageAppsItem `json:"message_apps,omitempty" url:"message_apps,omitempty"`
 	// Minimum the ad group tries to spend each day. `null` when no floor is set.
 	MinimumDailySpend *float64 `json:"minimum_daily_spend,omitempty" url:"minimum_daily_spend,omitempty"`
@@ -1421,6 +1424,13 @@ func (a *AdGroup) GetLeads() float64 {
 		return 0
 	}
 	return a.Leads
+}
+
+func (a *AdGroup) GetLinkClicks() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.LinkClicks
 }
 
 func (a *AdGroup) GetMessageApps() []AdGroupMessageAppsItem {
@@ -1939,6 +1949,13 @@ func (a *AdGroup) SetLeadValue(leadValue float64) {
 func (a *AdGroup) SetLeads(leads float64) {
 	a.Leads = leads
 	a.require(adGroupFieldLeads)
+}
+
+// SetLinkClicks sets the LinkClicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetLinkClicks(linkClicks float64) {
+	a.LinkClicks = linkClicks
+	a.require(adGroupFieldLinkClicks)
 }
 
 // SetMessageApps sets the MessageApps field and marks it as non-optional;
@@ -8007,6 +8024,7 @@ const (
 	ListAdGroupsRequestOrderImpressions      ListAdGroupsRequestOrder = "impressions"
 	ListAdGroupsRequestOrderReach            ListAdGroupsRequestOrder = "reach"
 	ListAdGroupsRequestOrderClicks           ListAdGroupsRequestOrder = "clicks"
+	ListAdGroupsRequestOrderLinkClicks       ListAdGroupsRequestOrder = "link_clicks"
 	ListAdGroupsRequestOrderUniqueClicks     ListAdGroupsRequestOrder = "unique_clicks"
 	ListAdGroupsRequestOrderFrequency        ListAdGroupsRequestOrder = "frequency"
 	ListAdGroupsRequestOrderClickThroughRate ListAdGroupsRequestOrder = "click_through_rate"
@@ -8031,6 +8049,8 @@ func NewListAdGroupsRequestOrderFromString(s string) (ListAdGroupsRequestOrder, 
 		return ListAdGroupsRequestOrderReach, nil
 	case "clicks":
 		return ListAdGroupsRequestOrderClicks, nil
+	case "link_clicks":
+		return ListAdGroupsRequestOrderLinkClicks, nil
 	case "unique_clicks":
 		return ListAdGroupsRequestOrderUniqueClicks, nil
 	case "frequency":

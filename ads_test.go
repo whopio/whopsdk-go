@@ -2199,6 +2199,14 @@ func TestSettersAd(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetLinkClicks", func(t *testing.T) {
+		obj := &Ad{}
+		var fernTestValueLinkClicks float64
+		obj.SetLinkClicks(fernTestValueLinkClicks)
+		assert.Equal(t, fernTestValueLinkClicks, obj.LinkClicks)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetMessagingConfig", func(t *testing.T) {
 		obj := &Ad{}
 		var fernTestValueMessagingConfig *AdMessagingConfig
@@ -3582,6 +3590,29 @@ func TestGettersAd(t *testing.T) {
 			}
 		}()
 		_ = obj.GetLeads() // Should return zero value
+	})
+
+	t.Run("GetLinkClicks", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Ad{}
+		var expected float64
+		obj.LinkClicks = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLinkClicks(), "getter should return the property value")
+	})
+
+	t.Run("GetLinkClicks_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Ad
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLinkClicks() // Should return zero value
 	})
 
 	t.Run("GetMessagingConfig", func(t *testing.T) {
@@ -5621,6 +5652,37 @@ func TestSettersMarkExplicitAd(t *testing.T) {
 
 		// Act
 		obj.SetLeads(fernTestValueLeads)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLinkClicks_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Ad{}
+		var fernTestValueLinkClicks float64
+
+		// Act
+		obj.SetLinkClicks(fernTestValueLinkClicks)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -18680,6 +18742,13 @@ func TestEnumListAdsRequestOrder(t *testing.T) {
 		val, err := NewListAdsRequestOrderFromString("clicks")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListAdsRequestOrder("clicks"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_link_clicks", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListAdsRequestOrderFromString("link_clicks")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListAdsRequestOrder("link_clicks"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_unique_clicks", func(t *testing.T) {

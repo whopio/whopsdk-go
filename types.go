@@ -1601,7 +1601,7 @@ type AccountRecommendedActionOutcome struct {
 	PaymentAt *string `json:"payment_at,omitempty" url:"payment_at,omitempty"`
 	// The first `payment.completed` on that business after the chain, prefixed `pay_`, or `null` if none landed within 30 days.
 	PaymentID *string `json:"payment_id,omitempty" url:"payment_id,omitempty"`
-	// Why the generator proposed this chain, or `null` for seeded chains
+	// Why this chain was recommended, or `null` when unavailable
 	Reasoning map[string]any `json:"reasoning,omitempty" url:"reasoning,omitempty"`
 	// Headline for the chain
 	Title string `json:"title" url:"title"`
@@ -5175,6 +5175,11 @@ const (
 	CardBrandsJcblankapay         CardBrands = "jcblankapay"
 	CardBrandsCmi                 CardBrands = "cmi"
 	CardBrandsAura                CardBrands = "aura"
+	CardBrandsAccel               CardBrands = "accel"
+	CardBrandsCuliance            CardBrands = "culiance"
+	CardBrandsNyce                CardBrands = "nyce"
+	CardBrandsPulse               CardBrands = "pulse"
+	CardBrandsStar                CardBrands = "star"
 	CardBrandsUnknown             CardBrands = "unknown"
 )
 
@@ -5260,6 +5265,16 @@ func NewCardBrandsFromString(s string) (CardBrands, error) {
 		return CardBrandsCmi, nil
 	case "aura":
 		return CardBrandsAura, nil
+	case "accel":
+		return CardBrandsAccel, nil
+	case "culiance":
+		return CardBrandsCuliance, nil
+	case "nyce":
+		return CardBrandsNyce, nil
+	case "pulse":
+		return CardBrandsPulse, nil
+	case "star":
+		return CardBrandsStar, nil
 	case "unknown":
 		return CardBrandsUnknown, nil
 	}
@@ -16851,6 +16866,7 @@ type ReceiptStatus string
 const (
 	ReceiptStatusDraft         ReceiptStatus = "draft"
 	ReceiptStatusOpen          ReceiptStatus = "open"
+	ReceiptStatusAuthorized    ReceiptStatus = "authorized"
 	ReceiptStatusPaid          ReceiptStatus = "paid"
 	ReceiptStatusPending       ReceiptStatus = "pending"
 	ReceiptStatusUncollectible ReceiptStatus = "uncollectible"
@@ -16864,6 +16880,8 @@ func NewReceiptStatusFromString(s string) (ReceiptStatus, error) {
 		return ReceiptStatusDraft, nil
 	case "open":
 		return ReceiptStatusOpen, nil
+	case "authorized":
+		return ReceiptStatusAuthorized, nil
 	case "paid":
 		return ReceiptStatusPaid, nil
 	case "pending":
@@ -20652,6 +20670,8 @@ const (
 	WebhookEventIdentityProfileNeedsAction         WebhookEvent = "identity_profile.needs_action"
 	WebhookEventIdentityProfileUpdated             WebhookEvent = "identity_profile.updated"
 	WebhookEventPayoutAccountStatusUpdated         WebhookEvent = "payout_account.status_updated"
+	WebhookEventPaymentAuthorized                  WebhookEvent = "payment.authorized"
+	WebhookEventPaymentCanceled                    WebhookEvent = "payment.canceled"
 	WebhookEventResolutionCenterCaseCreated        WebhookEvent = "resolution_center_case.created"
 	WebhookEventResolutionCenterCaseUpdated        WebhookEvent = "resolution_center_case.updated"
 	WebhookEventResolutionCenterCaseDecided        WebhookEvent = "resolution_center_case.decided"
@@ -20785,6 +20805,10 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventIdentityProfileUpdated, nil
 	case "payout_account.status_updated":
 		return WebhookEventPayoutAccountStatusUpdated, nil
+	case "payment.authorized":
+		return WebhookEventPaymentAuthorized, nil
+	case "payment.canceled":
+		return WebhookEventPaymentCanceled, nil
 	case "resolution_center_case.created":
 		return WebhookEventResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":

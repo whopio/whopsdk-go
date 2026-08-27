@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-1"
+		apiVersionDateDefault := "2026-08-25-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -228,6 +228,33 @@ func (c *Client) Retrieve(
 	opts ...option.RequestOption,
 ) (*whopsdk.RetrievePaymentsResponse, error) {
 	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Captures the full amount of a card payment created with `capture: false`. The payment must still be in `requires_capture` before `capture_expires_at`. Partial capture, multiple captures, capturing more than the authorized amount, and tips are not supported.
+//
+// Example:
+//
+//	request := &whopsdk.CapturePaymentsRequest{
+//	    ID: "id",
+//	}
+//	client.Payments.Capture(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Capture(
+	ctx context.Context,
+	request *whopsdk.CapturePaymentsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.PaymentStatus, error) {
+	response, err := c.WithRawResponse.Capture(
 		ctx,
 		request,
 		opts...,

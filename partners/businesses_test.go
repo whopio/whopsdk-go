@@ -8431,6 +8431,13 @@ func TestEnumListBusinessesRequestTier(t *testing.T) {
 		assert.Equal(t, ListBusinessesRequestTier("second"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_blueprint", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListBusinessesRequestTierFromString("blueprint")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListBusinessesRequestTier("blueprint"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListBusinessesRequestTierFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -8458,6 +8465,13 @@ func TestEnumListBusinessesResponseDataItemMyPartnerTier(t *testing.T) {
 		val, err := NewListBusinessesResponseDataItemMyPartnerTierFromString("second")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListBusinessesResponseDataItemMyPartnerTier("second"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_blueprint", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListBusinessesResponseDataItemMyPartnerTierFromString("blueprint")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListBusinessesResponseDataItemMyPartnerTier("blueprint"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -8538,6 +8552,13 @@ func TestEnumRetrieveBusinessesResponseMyPartnerTier(t *testing.T) {
 		val, err := NewRetrieveBusinessesResponseMyPartnerTierFromString("second")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveBusinessesResponseMyPartnerTier("second"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_blueprint", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBusinessesResponseMyPartnerTierFromString("blueprint")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBusinessesResponseMyPartnerTier("blueprint"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

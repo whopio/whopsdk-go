@@ -43,6 +43,7 @@ import (
 	feemarkups "github.com/whopio/whopsdk-go/feemarkups"
 	files "github.com/whopio/whopsdk-go/files"
 	financialactivity "github.com/whopio/whopsdk-go/financialactivity"
+	financialreports "github.com/whopio/whopsdk-go/financialreports"
 	forumposts "github.com/whopio/whopsdk-go/forumposts"
 	forums "github.com/whopio/whopsdk-go/forums"
 	identityprofiles "github.com/whopio/whopsdk-go/identityprofiles"
@@ -50,7 +51,6 @@ import (
 	invoices "github.com/whopio/whopsdk-go/invoices"
 	leads "github.com/whopio/whopsdk-go/leads"
 	ledgeraccounts "github.com/whopio/whopsdk-go/ledgeraccounts"
-	ledgers "github.com/whopio/whopsdk-go/ledgers"
 	media "github.com/whopio/whopsdk-go/media"
 	membersclient "github.com/whopio/whopsdk-go/members/client"
 	memberships "github.com/whopio/whopsdk-go/memberships"
@@ -128,7 +128,7 @@ type Whop struct {
 	FeeMarkups               *feemarkups.Client
 	Files                    *files.Client
 	FinancialActivity        *financialactivity.Client
-	Ledgers                  *ledgers.Client
+	FinancialReports         *financialreports.Client
 	ForumPosts               *forumposts.Client
 	Forums                   *forums.Client
 	IdentityProfiles         *identityprofiles.Client
@@ -178,7 +178,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-1"
+		apiVersionDateDefault := "2026-08-25-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -221,7 +221,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		FeeMarkups:               feemarkups.NewClient(options),
 		Files:                    files.NewClient(options),
 		FinancialActivity:        financialactivity.NewClient(options),
-		Ledgers:                  ledgers.NewClient(options),
+		FinancialReports:         financialreports.NewClient(options),
 		ForumPosts:               forumposts.NewClient(options),
 		Forums:                   forums.NewClient(options),
 		IdentityProfiles:         identityprofiles.NewClient(options),

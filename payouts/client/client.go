@@ -26,7 +26,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-1"
+		apiVersionDateDefault := "2026-08-25-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -136,6 +136,34 @@ func (c *Client) Create(
 	opts ...option.RequestOption,
 ) (*whopsdk.CreatePayoutsResponse, error) {
 	response, err := c.WithRawResponse.Create(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Creates a short-lived, provider-backed quote for a payout. No funds move until the returned quote_token is submitted to POST /payouts. An Idempotency-Key header is required.
+//
+// Example:
+//
+//	request := &whopsdk.CreateQuotePayoutsRequest{
+//	    Amount: 6762.41,
+//	    PayoutMethodID: "potk_xxxxxxxxxxxxxx",
+//	}
+//	client.Payouts.CreateQuote(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreateQuote(
+	ctx context.Context,
+	request *whopsdk.CreateQuotePayoutsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.CreateQuotePayoutsResponse, error) {
+	response, err := c.WithRawResponse.CreateQuote(
 		ctx,
 		request,
 		opts...,

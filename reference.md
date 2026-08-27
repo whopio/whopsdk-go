@@ -379,6 +379,14 @@ client.Accounts.Create(
 <dl>
 <dd>
 
+**blueprintID:** `*string` — The blueprint App ID, prefixed `app_`. Creates a hosted website for the account and queues its deployment asynchronously; the Account response does not report deployment completion.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **country:** `*string` — The ISO 3166-1 alpha-2 country code where the account's business is located (e.g. `US`). Defaults to the parent account's country for connected accounts.
     
 </dd>
@@ -6133,7 +6141,7 @@ client.AppBuilds.Promote(
 <dl>
 <dd>
 
-Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication, except for the publicly readable lists: `verified_apps_only=true`, and `app_type=website` with no `account_id`, which returns every live deployed website that Whop has not verified — verified templates are the curated `verified_apps_only=true` list instead.
+Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication except for Whop's public app and website discovery lists. Public website discovery includes built official blueprints (verified apps with a product) and built, live community blueprints that Whop recommends.
 </dd>
 </dl>
 </dd>
@@ -6191,7 +6199,7 @@ client.Apps.List(
 <dl>
 <dd>
 
-**verifiedAppsOnly:** `*bool` — Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
+**verified:** `*bool` — Only return apps whose Whop verification status matches this value. Omit this filter to include every verification status the caller can see.
     
 </dd>
 </dl>
@@ -6199,7 +6207,15 @@ client.Apps.List(
 <dl>
 <dd>
 
-**recommended:** `*bool` — Only return apps Whop recommends (or, with `false`, only those it does not). The community blueprints gallery is the recommended slice of the public website list.
+**verifiedAppsOnly:** `*bool` — Legacy compatibility filter. Use `verified` for field equality. `true` returns verified apps; clients pinned before `2026-08-25-2` retain the earlier public website discovery behavior.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recommended:** `*bool` — Only return apps Whop recommends (or, with `false`, only those it does not), independently of verification status.
     
 </dd>
 </dl>
@@ -6363,7 +6379,7 @@ client.Apps.Create(
 <dl>
 <dd>
 
-**route:** `*string` — The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.app.
+**route:** `*string` — The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.site.
     
 </dd>
 </dl>
@@ -6873,7 +6889,7 @@ client.Apps.Deploy(
 <dl>
 <dd>
 
-Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.app hosting. Logs are retained for 7 days.
+Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.site hosting. Logs are retained for 7 days.
 </dd>
 </dl>
 </dd>
@@ -15430,6 +15446,22 @@ client.Events.Create(
 <dl>
 <dd>
 
+**appBuildID:** `*string` — The build of the hosted app that served the page where the event occurred.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**appID:** `*string` — The hosted app that served the page where the event occurred.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **context:** `*whopsdk.CreateEventsRequestContext` — Tracking and attribution context.
     
 </dd>
@@ -16546,7 +16578,7 @@ client.Exports.List(
 <dl>
 <dd>
 
-Starts an asynchronous CSV export of a resource for an account. Returns the export in `pending`; poll `GET /exports/{id}` until `download_url` is set.
+Starts an asynchronous export of a resource for an account. Returns the export in `pending`; poll `GET /exports/{id}` until `download_url` is set.
 </dd>
 </dl>
 </dd>
@@ -17382,6 +17414,14 @@ client.FinancialActivity.List(
 <dl>
 <dd>
 
+**direction:** `*whopsdk.ListFinancialActivityRequestDirection` — Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **currency:** `*string` — Optional currency code filter, for example `usd`.
     
 </dd>
@@ -17442,8 +17482,8 @@ client.FinancialActivity.List(
 </dl>
 </details>
 
-## Ledgers
-<details><summary><code>client.Ledgers.GetFinancialReport() -> *whopsdk.GetFinancialReportResponse</code></summary>
+## FinancialReports
+<details><summary><code>client.FinancialReports.Retrieve() -> *whopsdk.RetrieveFinancialReportsResponse</code></summary>
 <dl>
 <dd>
 
@@ -17470,11 +17510,11 @@ Returns a financial report — balance activity, income statement, or balance su
 <dd>
 
 ```go
-request := &whopsdk.GetFinancialReportRequest{
+request := &whopsdk.RetrieveFinancialReportsRequest{
     AccountID: "account_id",
-    ReportType: whopsdk.GetFinancialReportRequestReportTypeBalanceSummary,
+    ReportType: whopsdk.RetrieveFinancialReportsRequestReportTypeBalanceSummary,
 }
-client.Ledgers.GetFinancialReport(
+client.FinancialReports.Retrieve(
     context.TODO(),
     request,
 )
@@ -17500,7 +17540,7 @@ client.Ledgers.GetFinancialReport(
 <dl>
 <dd>
 
-**reportType:** `*whopsdk.GetFinancialReportRequestReportType` — The type of financial report to generate.
+**reportType:** `*whopsdk.RetrieveFinancialReportsRequestReportType` — The type of financial report to generate.
     
 </dd>
 </dl>
@@ -17540,7 +17580,7 @@ client.Ledgers.GetFinancialReport(
 <dl>
 <dd>
 
-**groupBy:** `*whopsdk.GetFinancialReportRequestGroupBy` — Grouping granularity for report rows.
+**groupBy:** `*whopsdk.RetrieveFinancialReportsRequestGroupBy` — Grouping granularity for report rows.
     
 </dd>
 </dl>
@@ -17549,6 +17589,22 @@ client.Ledgers.GetFinancialReport(
 <dd>
 
 **timezone:** `*string` — IANA timezone (for example `America/New_York`) used to bucket report periods and to interpret calendar-day boundaries for balance snapshots. Defaults to UTC. from_date/to_date remain exact instants regardless of this setting.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**lineTypes:** `*whopsdk.RetrieveFinancialReportsRequestLineTypesItem` — Account-level balance activity only: ledger line categories to include.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.RetrieveFinancialReportsRequestDirection` — Account-level balance activity only: include money moving in or money moving out.
     
 </dd>
 </dl>
@@ -17565,6 +17621,14 @@ client.Ledgers.GetFinancialReport(
 <dd>
 
 **scopeAccountID:** `*string` — Platform-wide (global) reports only: narrow the report to ledger lines on the ledger account owned by this account ID (a biz_ identifier). Ignored unless account_id is `global`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includePaymentFeeBreakdown:** `*bool` — Balance activity only: include payment costs grouped by payment method and provider.
     
 </dd>
 </dl>
@@ -23395,6 +23459,66 @@ client.Payments.Retrieve(
 </dl>
 </details>
 
+<details><summary><code>client.Payments.Capture(ID) -> *whopsdk.PaymentStatus</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Captures the full amount of a card payment created with `capture: false`. The payment must still be in `requires_capture` before `capture_expires_at`. Partial capture, multiple captures, capturing more than the authorized amount, and tips are not supported.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CapturePaymentsRequest{
+    ID: "id",
+}
+client.Payments.Capture(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The unique identifier of the payment.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Payments.ListFees(ID) -> *whopsdk.ListFeesPaymentsResponse</code></summary>
 <dl>
 <dd>
@@ -24276,6 +24400,115 @@ client.Payouts.Create(
 <dd>
 
 **request:** `*whopsdk.CreatePayoutsRequestBody` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Payouts.CreateQuote(request) -> *whopsdk.CreateQuotePayoutsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a short-lived, provider-backed quote for a payout. No funds move until the returned quote_token is submitted to POST /payouts. An Idempotency-Key header is required.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateQuotePayoutsRequest{
+    Amount: 6762.41,
+    PayoutMethodID: "potk_xxxxxxxxxxxxxx",
+}
+client.Payouts.CreateQuote(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Account to pay out from, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**amount:** `float64` — The amount to pay out in the specified currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `*string` — The balance currency to pay out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**payoutMethodID:** `string` — The saved payout method to quote (a potk_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platformCoversFees:** `*bool` — Whether the parent platform covers the payout fee instead of the account being paid out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**speed:** `*whopsdk.CreateQuotePayoutsRequestSpeed` — How fast the funds should arrive.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
     
 </dd>
 </dl>
@@ -35657,7 +35890,7 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
-**tier:** `*partners.ListBusinessesRequestTier` — Filter to only first-tier referrals or only second-tier referrals.
+**tier:** `*partners.ListBusinessesRequestTier` — Filter to referrals from a single tier: first, second, or blueprint.
     
 </dd>
 </dl>

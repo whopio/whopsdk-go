@@ -19,6 +19,14 @@ func TestSettersCreateAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBlueprintID", func(t *testing.T) {
+		obj := &CreateAccountsRequest{}
+		var fernTestValueBlueprintID *string
+		obj.SetBlueprintID(fernTestValueBlueprintID)
+		assert.Equal(t, fernTestValueBlueprintID, obj.BlueprintID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCountry", func(t *testing.T) {
 		obj := &CreateAccountsRequest{}
 		var fernTestValueCountry *string
@@ -62,6 +70,37 @@ func TestSettersMarkExplicitCreateAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetAffiliateCode(fernTestValueAffiliateCode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetBlueprintID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAccountsRequest{}
+		var fernTestValueBlueprintID *string
+
+		// Act
+		obj.SetBlueprintID(fernTestValueBlueprintID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7598,6 +7637,22 @@ func TestSettersAccountPaymentControls(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetUndatedPendingReason", func(t *testing.T) {
+		obj := &AccountPaymentControls{}
+		var fernTestValueUndatedPendingReason *AccountPaymentControlsUndatedPendingReason
+		obj.SetUndatedPendingReason(fernTestValueUndatedPendingReason)
+		assert.Equal(t, fernTestValueUndatedPendingReason, obj.UndatedPendingReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetWithdrawalSchedule", func(t *testing.T) {
+		obj := &AccountPaymentControls{}
+		var fernTestValueWithdrawalSchedule *AccountWithdrawalScheduleControl
+		obj.SetWithdrawalSchedule(fernTestValueWithdrawalSchedule)
+		assert.Equal(t, fernTestValueWithdrawalSchedule, obj.WithdrawalSchedule)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersAccountPaymentControls(t *testing.T) {
@@ -7879,6 +7934,72 @@ func TestGettersAccountPaymentControls(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRestrictedPaymentMethods() // Should return zero value
+	})
+
+	t.Run("GetUndatedPendingReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPaymentControls{}
+		var expected *AccountPaymentControlsUndatedPendingReason
+		obj.UndatedPendingReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUndatedPendingReason(), "getter should return the property value")
+	})
+
+	t.Run("GetUndatedPendingReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPaymentControls{}
+		obj.UndatedPendingReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUndatedPendingReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUndatedPendingReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountPaymentControls
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUndatedPendingReason() // Should return zero value
+	})
+
+	t.Run("GetWithdrawalSchedule", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPaymentControls{}
+		var expected *AccountWithdrawalScheduleControl
+		obj.WithdrawalSchedule = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWithdrawalSchedule(), "getter should return the property value")
+	})
+
+	t.Run("GetWithdrawalSchedule_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPaymentControls{}
+		obj.WithdrawalSchedule = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWithdrawalSchedule(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWithdrawalSchedule_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountPaymentControls
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWithdrawalSchedule() // Should return zero value
 	})
 
 }
@@ -8171,6 +8292,68 @@ func TestSettersMarkExplicitAccountPaymentControls(t *testing.T) {
 
 		// Act
 		obj.SetRestrictedPaymentMethods(fernTestValueRestrictedPaymentMethods)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUndatedPendingReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPaymentControls{}
+		var fernTestValueUndatedPendingReason *AccountPaymentControlsUndatedPendingReason
+
+		// Act
+		obj.SetUndatedPendingReason(fernTestValueUndatedPendingReason)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWithdrawalSchedule_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPaymentControls{}
+		var fernTestValueWithdrawalSchedule *AccountWithdrawalScheduleControl
+
+		// Act
+		obj.SetWithdrawalSchedule(fernTestValueWithdrawalSchedule)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9545,6 +9728,221 @@ func TestSettersMarkExplicitAccountWallet(t *testing.T) {
 
 		// Act
 		obj.SetNetwork(fernTestValueNetwork)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersAccountWithdrawalScheduleControl(t *testing.T) {
+	t.Run("SetDay", func(t *testing.T) {
+		obj := &AccountWithdrawalScheduleControl{}
+		var fernTestValueDay *int
+		obj.SetDay(fernTestValueDay)
+		assert.Equal(t, fernTestValueDay, obj.Day)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFrequency", func(t *testing.T) {
+		obj := &AccountWithdrawalScheduleControl{}
+		var fernTestValueFrequency AccountWithdrawalScheduleControlFrequency
+		obj.SetFrequency(fernTestValueFrequency)
+		assert.Equal(t, fernTestValueFrequency, obj.Frequency)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetNextPayoutDate", func(t *testing.T) {
+		obj := &AccountWithdrawalScheduleControl{}
+		var fernTestValueNextPayoutDate *string
+		obj.SetNextPayoutDate(fernTestValueNextPayoutDate)
+		assert.Equal(t, fernTestValueNextPayoutDate, obj.NextPayoutDate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersAccountWithdrawalScheduleControl(t *testing.T) {
+	t.Run("GetDay", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountWithdrawalScheduleControl{}
+		var expected *int
+		obj.Day = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDay(), "getter should return the property value")
+	})
+
+	t.Run("GetDay_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountWithdrawalScheduleControl{}
+		obj.Day = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDay(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDay_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountWithdrawalScheduleControl
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDay() // Should return zero value
+	})
+
+	t.Run("GetFrequency", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountWithdrawalScheduleControl{}
+		var expected AccountWithdrawalScheduleControlFrequency
+		obj.Frequency = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFrequency(), "getter should return the property value")
+	})
+
+	t.Run("GetFrequency_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountWithdrawalScheduleControl
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFrequency() // Should return zero value
+	})
+
+	t.Run("GetNextPayoutDate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountWithdrawalScheduleControl{}
+		var expected *string
+		obj.NextPayoutDate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetNextPayoutDate(), "getter should return the property value")
+	})
+
+	t.Run("GetNextPayoutDate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountWithdrawalScheduleControl{}
+		obj.NextPayoutDate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetNextPayoutDate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetNextPayoutDate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountWithdrawalScheduleControl
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetNextPayoutDate() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitAccountWithdrawalScheduleControl(t *testing.T) {
+	t.Run("SetDay_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountWithdrawalScheduleControl{}
+		var fernTestValueDay *int
+
+		// Act
+		obj.SetDay(fernTestValueDay)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFrequency_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountWithdrawalScheduleControl{}
+		var fernTestValueFrequency AccountWithdrawalScheduleControlFrequency
+
+		// Act
+		obj.SetFrequency(fernTestValueFrequency)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNextPayoutDate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountWithdrawalScheduleControl{}
+		var fernTestValueNextPayoutDate *string
+
+		// Act
+		obj.SetNextPayoutDate(fernTestValueNextPayoutDate)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -15603,6 +16001,39 @@ func TestJSONMarshalingAccountWallet(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingAccountWithdrawalScheduleControl(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountWithdrawalScheduleControl{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled AccountWithdrawalScheduleControl
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountWithdrawalScheduleControl
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountWithdrawalScheduleControl
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingFormCompanyAccountsRequestBusinessAddress(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -16333,6 +16764,22 @@ func TestStringAccountWallet(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AccountWallet
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringAccountWithdrawalScheduleControl(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountWithdrawalScheduleControl{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountWithdrawalScheduleControl
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -18044,6 +18491,35 @@ func TestEnumAccountPaymentControlsRestrictedPaymentMethodsItem(t *testing.T) {
 	})
 }
 
+func TestEnumAccountPaymentControlsUndatedPendingReason(t *testing.T) {
+	t.Run("NewFromString_kyc_incomplete", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsUndatedPendingReasonFromString("kyc_incomplete")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsUndatedPendingReason("kyc_incomplete"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pending_information_request", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsUndatedPendingReasonFromString("pending_information_request")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsUndatedPendingReason("pending_information_request"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAccountPaymentControlsUndatedPendingReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAccountPaymentControlsUndatedPendingReasonFromString("kyc_incomplete")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumAccountSocialLinkWebsite(t *testing.T) {
 	t.Run("NewFromString_x", func(t *testing.T) {
 		t.Parallel()
@@ -19313,6 +19789,49 @@ func TestEnumAccountWalletNetwork(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAccountWalletNetworkFromString("solana")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAccountWithdrawalScheduleControlFrequency(t *testing.T) {
+	t.Run("NewFromString_manual", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountWithdrawalScheduleControlFrequencyFromString("manual")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountWithdrawalScheduleControlFrequency("manual"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_daily", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountWithdrawalScheduleControlFrequencyFromString("daily")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountWithdrawalScheduleControlFrequency("daily"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_weekly", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountWithdrawalScheduleControlFrequencyFromString("weekly")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountWithdrawalScheduleControlFrequency("weekly"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_monthly", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountWithdrawalScheduleControlFrequencyFromString("monthly")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountWithdrawalScheduleControlFrequency("monthly"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAccountWithdrawalScheduleControlFrequencyFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAccountWithdrawalScheduleControlFrequencyFromString("manual")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -23105,6 +23624,29 @@ func TestExtraPropertiesAccountWallet(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AccountWallet
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesAccountWithdrawalScheduleControl(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountWithdrawalScheduleControl{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountWithdrawalScheduleControl
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

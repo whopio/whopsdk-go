@@ -507,10 +507,11 @@ var (
 	membershipFieldLicenseKey        = big.NewInt(1 << 5)
 	membershipFieldMember            = big.NewInt(1 << 6)
 	membershipFieldMetadata          = big.NewInt(1 << 7)
-	membershipFieldPlanID            = big.NewInt(1 << 8)
-	membershipFieldProductID         = big.NewInt(1 << 9)
-	membershipFieldStatus            = big.NewInt(1 << 10)
-	membershipFieldUserID            = big.NewInt(1 << 11)
+	membershipFieldPhoneNumber       = big.NewInt(1 << 8)
+	membershipFieldPlanID            = big.NewInt(1 << 9)
+	membershipFieldProductID         = big.NewInt(1 << 10)
+	membershipFieldStatus            = big.NewInt(1 << 11)
+	membershipFieldUserID            = big.NewInt(1 << 12)
 )
 
 type Membership struct {
@@ -530,6 +531,8 @@ type Membership struct {
 	Member *MembershipMember `json:"member,omitempty" url:"member,omitempty"`
 	// Custom key-value pairs stored on the membership, commonly used for software licensing.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
+	// The buyer's phone number recorded for this membership, or `null`. The number collected (or verified) at checkout when the seller's phone collection is on; falls back to the buyer's account number when they have shared one with this seller.
+	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
 	// The plan the buyer purchased, prefixed `plan_`.
 	PlanID string `json:"plan_id" url:"plan_id"`
 	// The product this membership grants access to, prefixed `prod_`.
@@ -600,6 +603,13 @@ func (m *Membership) GetMetadata() map[string]any {
 		return nil
 	}
 	return m.Metadata
+}
+
+func (m *Membership) GetPhoneNumber() *string {
+	if m == nil {
+		return nil
+	}
+	return m.PhoneNumber
 }
 
 func (m *Membership) GetPlanID() string {
@@ -698,6 +708,13 @@ func (m *Membership) SetMember(member *MembershipMember) {
 func (m *Membership) SetMetadata(metadata map[string]any) {
 	m.Metadata = metadata
 	m.require(membershipFieldMetadata)
+}
+
+// SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetPhoneNumber(phoneNumber *string) {
+	m.PhoneNumber = phoneNumber
+	m.require(membershipFieldPhoneNumber)
 }
 
 // SetPlanID sets the PlanID field and marks it as non-optional;

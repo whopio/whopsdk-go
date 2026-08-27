@@ -157,7 +157,7 @@ type AccountRecommendedActionChain struct {
 	Description string `json:"description" url:"description"`
 	// Chain ID — `rac_seed_<chain>_<nonce>` for seeded chains, `rac_chain_*` for generated ones
 	ID string `json:"id" url:"id"`
-	// Why the generator proposed this chain, or `null` for seeded chains
+	// Why this chain was recommended, or `null` when unavailable
 	Reasoning map[string]any `json:"reasoning,omitempty" url:"reasoning,omitempty"`
 	// Headline for the chain
 	Title string `json:"title" url:"title"`
@@ -296,17 +296,18 @@ func (a *AccountRecommendedActionChain) String() string {
 }
 
 var (
-	accountRecommendedActionChainStepFieldAction      = big.NewInt(1 << 0)
-	accountRecommendedActionChainStepFieldCta         = big.NewInt(1 << 1)
-	accountRecommendedActionChainStepFieldCtaLabel    = big.NewInt(1 << 2)
-	accountRecommendedActionChainStepFieldDescription = big.NewInt(1 << 3)
-	accountRecommendedActionChainStepFieldError       = big.NewInt(1 << 4)
-	accountRecommendedActionChainStepFieldInput       = big.NewInt(1 << 5)
-	accountRecommendedActionChainStepFieldOutput      = big.NewInt(1 << 6)
-	accountRecommendedActionChainStepFieldPosition    = big.NewInt(1 << 7)
-	accountRecommendedActionChainStepFieldReasoning   = big.NewInt(1 << 8)
-	accountRecommendedActionChainStepFieldStatus      = big.NewInt(1 << 9)
-	accountRecommendedActionChainStepFieldTitle       = big.NewInt(1 << 10)
+	accountRecommendedActionChainStepFieldAction        = big.NewInt(1 << 0)
+	accountRecommendedActionChainStepFieldCta           = big.NewInt(1 << 1)
+	accountRecommendedActionChainStepFieldCtaLabel      = big.NewInt(1 << 2)
+	accountRecommendedActionChainStepFieldDescription   = big.NewInt(1 << 3)
+	accountRecommendedActionChainStepFieldError         = big.NewInt(1 << 4)
+	accountRecommendedActionChainStepFieldExecutionType = big.NewInt(1 << 5)
+	accountRecommendedActionChainStepFieldInput         = big.NewInt(1 << 6)
+	accountRecommendedActionChainStepFieldOutput        = big.NewInt(1 << 7)
+	accountRecommendedActionChainStepFieldPosition      = big.NewInt(1 << 8)
+	accountRecommendedActionChainStepFieldReasoning     = big.NewInt(1 << 9)
+	accountRecommendedActionChainStepFieldStatus        = big.NewInt(1 << 10)
+	accountRecommendedActionChainStepFieldTitle         = big.NewInt(1 << 11)
 )
 
 type AccountRecommendedActionChainStep struct {
@@ -320,13 +321,15 @@ type AccountRecommendedActionChainStep struct {
 	Description string `json:"description" url:"description"`
 	// Why the step failed, or `null`
 	Error *string `json:"error,omitempty" url:"error,omitempty"`
+	// Whether the client should navigate to the CTA or open the programmatic execution dialog
+	ExecutionType AccountRecommendedActionChainStepExecutionType `json:"execution_type" url:"execution_type"`
 	// The filled-in request body for the step's endpoint, or `null` when it was not recorded
 	Input map[string]any `json:"input,omitempty" url:"input,omitempty"`
 	// The API response the step produced, or `null` until it succeeds
 	Output map[string]any `json:"output,omitempty" url:"output,omitempty"`
 	// Zero-based order of this step within the chain
 	Position int `json:"position" url:"position"`
-	// Why the generator filled the step this way, or `null` for seeded chains
+	// Why this step was recommended, or `null` when unavailable
 	Reasoning map[string]any `json:"reasoning,omitempty" url:"reasoning,omitempty"`
 	// Where the run step currently stands, or `null` when the chain has not been run
 	Status *AccountRecommendedActionChainStepStatus `json:"status,omitempty" url:"status,omitempty"`
@@ -373,6 +376,13 @@ func (a *AccountRecommendedActionChainStep) GetError() *string {
 		return nil
 	}
 	return a.Error
+}
+
+func (a *AccountRecommendedActionChainStep) GetExecutionType() AccountRecommendedActionChainStepExecutionType {
+	if a == nil {
+		return ""
+	}
+	return a.ExecutionType
 }
 
 func (a *AccountRecommendedActionChainStep) GetInput() map[string]any {
@@ -466,6 +476,13 @@ func (a *AccountRecommendedActionChainStep) SetError(error_ *string) {
 	a.require(accountRecommendedActionChainStepFieldError)
 }
 
+// SetExecutionType sets the ExecutionType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountRecommendedActionChainStep) SetExecutionType(executionType AccountRecommendedActionChainStepExecutionType) {
+	a.ExecutionType = executionType
+	a.require(accountRecommendedActionChainStepFieldExecutionType)
+}
+
 // SetInput sets the Input field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AccountRecommendedActionChainStep) SetInput(input map[string]any) {
@@ -548,6 +565,29 @@ func (a *AccountRecommendedActionChainStep) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// Whether the client should navigate to the CTA or open the programmatic execution dialog
+type AccountRecommendedActionChainStepExecutionType string
+
+const (
+	AccountRecommendedActionChainStepExecutionTypeRedirect    AccountRecommendedActionChainStepExecutionType = "redirect"
+	AccountRecommendedActionChainStepExecutionTypeProgramatic AccountRecommendedActionChainStepExecutionType = "programatic"
+)
+
+func NewAccountRecommendedActionChainStepExecutionTypeFromString(s string) (AccountRecommendedActionChainStepExecutionType, error) {
+	switch s {
+	case "redirect":
+		return AccountRecommendedActionChainStepExecutionTypeRedirect, nil
+	case "programatic":
+		return AccountRecommendedActionChainStepExecutionTypeProgramatic, nil
+	}
+	var t AccountRecommendedActionChainStepExecutionType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountRecommendedActionChainStepExecutionType) Ptr() *AccountRecommendedActionChainStepExecutionType {
+	return &a
 }
 
 // Where the run step currently stands, or `null` when the chain has not been run
