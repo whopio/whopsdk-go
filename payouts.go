@@ -57,6 +57,113 @@ func (c *CancelPayoutsRequest) SetUserID(userID *string) {
 }
 
 var (
+	createQuotePayoutsRequestFieldAccountID          = big.NewInt(1 << 0)
+	createQuotePayoutsRequestFieldAmount             = big.NewInt(1 << 1)
+	createQuotePayoutsRequestFieldCurrency           = big.NewInt(1 << 2)
+	createQuotePayoutsRequestFieldPayoutMethodID     = big.NewInt(1 << 3)
+	createQuotePayoutsRequestFieldPlatformCoversFees = big.NewInt(1 << 4)
+	createQuotePayoutsRequestFieldSpeed              = big.NewInt(1 << 5)
+	createQuotePayoutsRequestFieldUserID             = big.NewInt(1 << 6)
+)
+
+type CreateQuotePayoutsRequest struct {
+	// Account to pay out from, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
+	// The amount to pay out in the specified currency.
+	Amount float64 `json:"amount" url:"-"`
+	// The balance currency to pay out.
+	Currency *string `json:"currency,omitempty" url:"-"`
+	// The saved payout method to quote (a potk_ identifier).
+	PayoutMethodID string `json:"payout_method_id" url:"-"`
+	// Whether the parent platform covers the payout fee instead of the account being paid out.
+	PlatformCoversFees *bool `json:"platform_covers_fees,omitempty" url:"-"`
+	// How fast the funds should arrive.
+	Speed *CreateQuotePayoutsRequestSpeed `json:"speed,omitempty" url:"-"`
+	// User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+	UserID *string `json:"user_id,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateQuotePayoutsRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createQuotePayoutsRequestFieldAccountID)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsRequest) SetAmount(amount float64) {
+	c.Amount = amount
+	c.require(createQuotePayoutsRequestFieldAmount)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsRequest) SetCurrency(currency *string) {
+	c.Currency = currency
+	c.require(createQuotePayoutsRequestFieldCurrency)
+}
+
+// SetPayoutMethodID sets the PayoutMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsRequest) SetPayoutMethodID(payoutMethodID string) {
+	c.PayoutMethodID = payoutMethodID
+	c.require(createQuotePayoutsRequestFieldPayoutMethodID)
+}
+
+// SetPlatformCoversFees sets the PlatformCoversFees field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsRequest) SetPlatformCoversFees(platformCoversFees *bool) {
+	c.PlatformCoversFees = platformCoversFees
+	c.require(createQuotePayoutsRequestFieldPlatformCoversFees)
+}
+
+// SetSpeed sets the Speed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsRequest) SetSpeed(speed *CreateQuotePayoutsRequestSpeed) {
+	c.Speed = speed
+	c.require(createQuotePayoutsRequestFieldSpeed)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsRequest) SetUserID(userID *string) {
+	c.UserID = userID
+	c.require(createQuotePayoutsRequestFieldUserID)
+}
+
+func (c *CreateQuotePayoutsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateQuotePayoutsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateQuotePayoutsRequest(body)
+	return nil
+}
+
+func (c *CreateQuotePayoutsRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateQuotePayoutsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	listPayoutsRequestFieldAccountID      = big.NewInt(1 << 0)
 	listPayoutsRequestFieldUserID         = big.NewInt(1 << 1)
 	listPayoutsRequestFieldCurrency       = big.NewInt(1 << 2)
@@ -2327,6 +2434,276 @@ func NewCreatePayoutsResponseStatusFromString(s string) (CreatePayoutsResponseSt
 }
 
 func (c CreatePayoutsResponseStatus) Ptr() *CreatePayoutsResponseStatus {
+	return &c
+}
+
+// How fast the funds should arrive.
+type CreateQuotePayoutsRequestSpeed string
+
+const (
+	CreateQuotePayoutsRequestSpeedStandard CreateQuotePayoutsRequestSpeed = "standard"
+	CreateQuotePayoutsRequestSpeedInstant  CreateQuotePayoutsRequestSpeed = "instant"
+)
+
+func NewCreateQuotePayoutsRequestSpeedFromString(s string) (CreateQuotePayoutsRequestSpeed, error) {
+	switch s {
+	case "standard":
+		return CreateQuotePayoutsRequestSpeedStandard, nil
+	case "instant":
+		return CreateQuotePayoutsRequestSpeedInstant, nil
+	}
+	var t CreateQuotePayoutsRequestSpeed
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateQuotePayoutsRequestSpeed) Ptr() *CreateQuotePayoutsRequestSpeed {
+	return &c
+}
+
+var (
+	createQuotePayoutsResponseFieldAmount            = big.NewInt(1 << 0)
+	createQuotePayoutsResponseFieldDestinationAmount = big.NewInt(1 << 1)
+	createQuotePayoutsResponseFieldExchangeRate      = big.NewInt(1 << 2)
+	createQuotePayoutsResponseFieldExpiresAt         = big.NewInt(1 << 3)
+	createQuotePayoutsResponseFieldFee               = big.NewInt(1 << 4)
+	createQuotePayoutsResponseFieldID                = big.NewInt(1 << 5)
+	createQuotePayoutsResponseFieldNetAmount         = big.NewInt(1 << 6)
+	createQuotePayoutsResponseFieldObject            = big.NewInt(1 << 7)
+	createQuotePayoutsResponseFieldQuoteToken        = big.NewInt(1 << 8)
+)
+
+type CreateQuotePayoutsResponse struct {
+	// Gross payout amount.
+	Amount *Money `json:"amount" url:"amount"`
+	// Exact amount quoted for delivery.
+	DestinationAmount *Money `json:"destination_amount" url:"destination_amount"`
+	// Quoted exchange rate from the source currency to the destination currency.
+	ExchangeRate float64 `json:"exchange_rate" url:"exchange_rate"`
+	// When the quote expires.
+	ExpiresAt time.Time `json:"expires_at" url:"expires_at"`
+	// Fee charged for the payout.
+	Fee *Money `json:"fee" url:"fee"`
+	// Provider-backed payout quote ID, prefixed `pout_`.
+	ID string `json:"id" url:"id"`
+	// Amount remaining after fees.
+	NetAmount *Money                           `json:"net_amount" url:"net_amount"`
+	Object    CreateQuotePayoutsResponseObject `json:"object" url:"object"`
+	// Server-signed quote token to submit to POST /payouts.
+	QuoteToken string `json:"quote_token" url:"quote_token"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateQuotePayoutsResponse) GetAmount() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.Amount
+}
+
+func (c *CreateQuotePayoutsResponse) GetDestinationAmount() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.DestinationAmount
+}
+
+func (c *CreateQuotePayoutsResponse) GetExchangeRate() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.ExchangeRate
+}
+
+func (c *CreateQuotePayoutsResponse) GetExpiresAt() time.Time {
+	if c == nil {
+		return time.Time{}
+	}
+	return c.ExpiresAt
+}
+
+func (c *CreateQuotePayoutsResponse) GetFee() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.Fee
+}
+
+func (c *CreateQuotePayoutsResponse) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CreateQuotePayoutsResponse) GetNetAmount() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.NetAmount
+}
+
+func (c *CreateQuotePayoutsResponse) GetObject() CreateQuotePayoutsResponseObject {
+	if c == nil {
+		return ""
+	}
+	return c.Object
+}
+
+func (c *CreateQuotePayoutsResponse) GetQuoteToken() string {
+	if c == nil {
+		return ""
+	}
+	return c.QuoteToken
+}
+
+func (c *CreateQuotePayoutsResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateQuotePayoutsResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetAmount(amount *Money) {
+	c.Amount = amount
+	c.require(createQuotePayoutsResponseFieldAmount)
+}
+
+// SetDestinationAmount sets the DestinationAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetDestinationAmount(destinationAmount *Money) {
+	c.DestinationAmount = destinationAmount
+	c.require(createQuotePayoutsResponseFieldDestinationAmount)
+}
+
+// SetExchangeRate sets the ExchangeRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetExchangeRate(exchangeRate float64) {
+	c.ExchangeRate = exchangeRate
+	c.require(createQuotePayoutsResponseFieldExchangeRate)
+}
+
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetExpiresAt(expiresAt time.Time) {
+	c.ExpiresAt = expiresAt
+	c.require(createQuotePayoutsResponseFieldExpiresAt)
+}
+
+// SetFee sets the Fee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetFee(fee *Money) {
+	c.Fee = fee
+	c.require(createQuotePayoutsResponseFieldFee)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetID(id string) {
+	c.ID = id
+	c.require(createQuotePayoutsResponseFieldID)
+}
+
+// SetNetAmount sets the NetAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetNetAmount(netAmount *Money) {
+	c.NetAmount = netAmount
+	c.require(createQuotePayoutsResponseFieldNetAmount)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetObject(object CreateQuotePayoutsResponseObject) {
+	c.Object = object
+	c.require(createQuotePayoutsResponseFieldObject)
+}
+
+// SetQuoteToken sets the QuoteToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetQuoteToken(quoteToken string) {
+	c.QuoteToken = quoteToken
+	c.require(createQuotePayoutsResponseFieldQuoteToken)
+}
+
+func (c *CreateQuotePayoutsResponse) UnmarshalJSON(data []byte) error {
+	type embed CreateQuotePayoutsResponse
+	var unmarshaler = struct {
+		embed
+		ExpiresAt *internal.DateTime `json:"expires_at"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = CreateQuotePayoutsResponse(unmarshaler.embed)
+	c.ExpiresAt = unmarshaler.ExpiresAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateQuotePayoutsResponse) MarshalJSON() ([]byte, error) {
+	type embed CreateQuotePayoutsResponse
+	var marshaler = struct {
+		embed
+		ExpiresAt *internal.DateTime `json:"expires_at"`
+	}{
+		embed:     embed(*c),
+		ExpiresAt: internal.NewDateTime(c.ExpiresAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateQuotePayoutsResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CreateQuotePayoutsResponseObject string
+
+const (
+	CreateQuotePayoutsResponseObjectPayoutQuote CreateQuotePayoutsResponseObject = "payout_quote"
+)
+
+func NewCreateQuotePayoutsResponseObjectFromString(s string) (CreateQuotePayoutsResponseObject, error) {
+	switch s {
+	case "payout_quote":
+		return CreateQuotePayoutsResponseObjectPayoutQuote, nil
+	}
+	var t CreateQuotePayoutsResponseObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateQuotePayoutsResponseObject) Ptr() *CreateQuotePayoutsResponseObject {
 	return &c
 }
 
@@ -6056,7 +6433,7 @@ var (
 type PostPayoutMethodCreatedPayloadDataQuoteInstant struct {
 	// Total fee charged, in the payout currency.
 	Fee float64 `json:"fee" url:"fee"`
-	// Amount delivered after fees, in the payout currency.
+	// Amount remaining after fees, in the payout currency.
 	TotalReceived float64 `json:"total_received" url:"total_received"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -6159,7 +6536,7 @@ var (
 type PostPayoutMethodCreatedPayloadDataQuoteStandard struct {
 	// Total fee charged, in the payout currency.
 	Fee float64 `json:"fee" url:"fee"`
-	// Amount delivered after fees, in the payout currency.
+	// Amount remaining after fees, in the payout currency.
 	TotalReceived float64 `json:"total_received" url:"total_received"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

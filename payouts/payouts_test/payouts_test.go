@@ -129,6 +129,33 @@ func TestPayoutsCreateWithWireMock(
 	VerifyRequestCount(t, "TestPayoutsCreateWithWireMock", "POST", "/payouts", nil, 1)
 }
 
+func TestPayoutsCreateQuoteWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.CreateQuotePayoutsRequest{
+		Amount:         6762.41,
+		PayoutMethodID: "potk_xxxxxxxxxxxxxx",
+	}
+	_, invocationErr := client.Payouts.CreateQuote(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPayoutsCreateQuoteWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPayoutsCreateQuoteWithWireMock", "POST", "/payouts/quotes", nil, 1)
+}
+
 func TestPayoutsRetrieveWithWireMock(
 	t *testing.T,
 ) {

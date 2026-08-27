@@ -52,7 +52,7 @@ type ListBusinessesRequest struct {
 	ReferredUserID *string `json:"-" url:"referred_user_id,omitempty"`
 	// Filter by the referred user's exact username. Ignored when `referred_user_id` is present.
 	ReferredUsername *string `json:"-" url:"referred_username,omitempty"`
-	// Filter to only first-tier referrals or only second-tier referrals.
+	// Filter to referrals from a single tier: first, second, or blueprint.
 	Tier *ListBusinessesRequestTier `json:"-" url:"tier,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -264,8 +264,9 @@ func (l ListBusinessesRequestStatus) Ptr() *ListBusinessesRequestStatus {
 type ListBusinessesRequestTier string
 
 const (
-	ListBusinessesRequestTierFirst  ListBusinessesRequestTier = "first"
-	ListBusinessesRequestTierSecond ListBusinessesRequestTier = "second"
+	ListBusinessesRequestTierFirst     ListBusinessesRequestTier = "first"
+	ListBusinessesRequestTierSecond    ListBusinessesRequestTier = "second"
+	ListBusinessesRequestTierBlueprint ListBusinessesRequestTier = "blueprint"
 )
 
 func NewListBusinessesRequestTierFromString(s string) (ListBusinessesRequestTier, error) {
@@ -274,6 +275,8 @@ func NewListBusinessesRequestTierFromString(s string) (ListBusinessesRequestTier
 		return ListBusinessesRequestTierFirst, nil
 	case "second":
 		return ListBusinessesRequestTierSecond, nil
+	case "blueprint":
+		return ListBusinessesRequestTierBlueprint, nil
 	}
 	var t ListBusinessesRequestTier
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -410,7 +413,7 @@ type ListBusinessesResponseDataItem struct {
 	FirstTierPartner *ListBusinessesResponseDataItemFirstTierPartner `json:"first_tier_partner,omitempty" url:"first_tier_partner,omitempty"`
 	// Partner business ID.
 	ID string `json:"id" url:"id"`
-	// Which tier the caller earns on for this business: `first` (they referred the owner) or `second` (they referred the first-tier partner).
+	// Which tier the caller earns on for this business: `first` (they referred the owner), `second` (they referred the first-tier partner), or `blueprint` (the business deployed a site from their blueprint).
 	MyPartnerTier ListBusinessesResponseDataItemMyPartnerTier `json:"my_partner_tier" url:"my_partner_tier"`
 	Object        ListBusinessesResponseDataItemObject        `json:"object" url:"object"`
 	// The owner of the referred business.
@@ -1181,12 +1184,13 @@ func (l *ListBusinessesResponseDataItemFirstTierPartnerProfilePicture) String() 
 	return fmt.Sprintf("%#v", l)
 }
 
-// Which tier the caller earns on for this business: `first` (they referred the owner) or `second` (they referred the first-tier partner).
+// Which tier the caller earns on for this business: `first` (they referred the owner), `second` (they referred the first-tier partner), or `blueprint` (the business deployed a site from their blueprint).
 type ListBusinessesResponseDataItemMyPartnerTier string
 
 const (
-	ListBusinessesResponseDataItemMyPartnerTierFirst  ListBusinessesResponseDataItemMyPartnerTier = "first"
-	ListBusinessesResponseDataItemMyPartnerTierSecond ListBusinessesResponseDataItemMyPartnerTier = "second"
+	ListBusinessesResponseDataItemMyPartnerTierFirst     ListBusinessesResponseDataItemMyPartnerTier = "first"
+	ListBusinessesResponseDataItemMyPartnerTierSecond    ListBusinessesResponseDataItemMyPartnerTier = "second"
+	ListBusinessesResponseDataItemMyPartnerTierBlueprint ListBusinessesResponseDataItemMyPartnerTier = "blueprint"
 )
 
 func NewListBusinessesResponseDataItemMyPartnerTierFromString(s string) (ListBusinessesResponseDataItemMyPartnerTier, error) {
@@ -1195,6 +1199,8 @@ func NewListBusinessesResponseDataItemMyPartnerTierFromString(s string) (ListBus
 		return ListBusinessesResponseDataItemMyPartnerTierFirst, nil
 	case "second":
 		return ListBusinessesResponseDataItemMyPartnerTierSecond, nil
+	case "blueprint":
+		return ListBusinessesResponseDataItemMyPartnerTierBlueprint, nil
 	}
 	var t ListBusinessesResponseDataItemMyPartnerTier
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2107,7 +2113,7 @@ type RetrieveBusinessesResponse struct {
 	FirstTierPartner *RetrieveBusinessesResponseFirstTierPartner `json:"first_tier_partner,omitempty" url:"first_tier_partner,omitempty"`
 	// Partner business ID.
 	ID string `json:"id" url:"id"`
-	// Which tier the caller earns on for this business: `first` (they referred the owner) or `second` (they referred the first-tier partner).
+	// Which tier the caller earns on for this business: `first` (they referred the owner), `second` (they referred the first-tier partner), or `blueprint` (the business deployed a site from their blueprint).
 	MyPartnerTier RetrieveBusinessesResponseMyPartnerTier `json:"my_partner_tier" url:"my_partner_tier"`
 	Object        RetrieveBusinessesResponseObject        `json:"object" url:"object"`
 	// The owner of the referred business.
@@ -2928,12 +2934,13 @@ func (r *RetrieveBusinessesResponseFirstTierPartnerProfilePicture) String() stri
 	return fmt.Sprintf("%#v", r)
 }
 
-// Which tier the caller earns on for this business: `first` (they referred the owner) or `second` (they referred the first-tier partner).
+// Which tier the caller earns on for this business: `first` (they referred the owner), `second` (they referred the first-tier partner), or `blueprint` (the business deployed a site from their blueprint).
 type RetrieveBusinessesResponseMyPartnerTier string
 
 const (
-	RetrieveBusinessesResponseMyPartnerTierFirst  RetrieveBusinessesResponseMyPartnerTier = "first"
-	RetrieveBusinessesResponseMyPartnerTierSecond RetrieveBusinessesResponseMyPartnerTier = "second"
+	RetrieveBusinessesResponseMyPartnerTierFirst     RetrieveBusinessesResponseMyPartnerTier = "first"
+	RetrieveBusinessesResponseMyPartnerTierSecond    RetrieveBusinessesResponseMyPartnerTier = "second"
+	RetrieveBusinessesResponseMyPartnerTierBlueprint RetrieveBusinessesResponseMyPartnerTier = "blueprint"
 )
 
 func NewRetrieveBusinessesResponseMyPartnerTierFromString(s string) (RetrieveBusinessesResponseMyPartnerTier, error) {
@@ -2942,6 +2949,8 @@ func NewRetrieveBusinessesResponseMyPartnerTierFromString(s string) (RetrieveBus
 		return RetrieveBusinessesResponseMyPartnerTierFirst, nil
 	case "second":
 		return RetrieveBusinessesResponseMyPartnerTierSecond, nil
+	case "blueprint":
+		return RetrieveBusinessesResponseMyPartnerTierBlueprint, nil
 	}
 	var t RetrieveBusinessesResponseMyPartnerTier
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

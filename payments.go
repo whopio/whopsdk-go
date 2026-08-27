@@ -11,6 +11,32 @@ import (
 )
 
 var (
+	capturePaymentsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type CapturePaymentsRequest struct {
+	// The unique identifier of the payment.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CapturePaymentsRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CapturePaymentsRequest) SetID(id string) {
+	c.ID = id
+	c.require(capturePaymentsRequestFieldID)
+}
+
+var (
 	listPaymentsRequestFieldAfter                    = big.NewInt(1 << 0)
 	listPaymentsRequestFieldBefore                   = big.NewInt(1 << 1)
 	listPaymentsRequestFieldFirst                    = big.NewInt(1 << 2)
@@ -474,6 +500,7 @@ type FriendlyReceiptStatus string
 
 const (
 	FriendlyReceiptStatusSucceeded                   FriendlyReceiptStatus = "succeeded"
+	FriendlyReceiptStatusRequiresCapture             FriendlyReceiptStatus = "requires_capture"
 	FriendlyReceiptStatusPending                     FriendlyReceiptStatus = "pending"
 	FriendlyReceiptStatusFailed                      FriendlyReceiptStatus = "failed"
 	FriendlyReceiptStatusPastDue                     FriendlyReceiptStatus = "past_due"
@@ -507,6 +534,8 @@ func NewFriendlyReceiptStatusFromString(s string) (FriendlyReceiptStatus, error)
 	switch s {
 	case "succeeded":
 		return FriendlyReceiptStatusSucceeded, nil
+	case "requires_capture":
+		return FriendlyReceiptStatusRequiresCapture, nil
 	case "pending":
 		return FriendlyReceiptStatusPending, nil
 	case "failed":
@@ -10097,16 +10126,19 @@ func (p *PaymentShippingAddress) String() string {
 }
 
 var (
-	paymentStatusFieldID                = big.NewInt(1 << 0)
-	paymentStatusFieldLastPaymentError  = big.NewInt(1 << 1)
-	paymentStatusFieldNextAction        = big.NewInt(1 << 2)
-	paymentStatusFieldObject            = big.NewInt(1 << 3)
-	paymentStatusFieldProcessingDetails = big.NewInt(1 << 4)
-	paymentStatusFieldReturnURL         = big.NewInt(1 << 5)
-	paymentStatusFieldStatus            = big.NewInt(1 << 6)
+	paymentStatusFieldCaptureExpiresAt  = big.NewInt(1 << 0)
+	paymentStatusFieldID                = big.NewInt(1 << 1)
+	paymentStatusFieldLastPaymentError  = big.NewInt(1 << 2)
+	paymentStatusFieldNextAction        = big.NewInt(1 << 3)
+	paymentStatusFieldObject            = big.NewInt(1 << 4)
+	paymentStatusFieldProcessingDetails = big.NewInt(1 << 5)
+	paymentStatusFieldReturnURL         = big.NewInt(1 << 6)
+	paymentStatusFieldStatus            = big.NewInt(1 << 7)
 )
 
 type PaymentStatus struct {
+	// When the card authorization must be captured, as an ISO 8601 timestamp. `null` when this payment was not authorized for later capture.
+	CaptureExpiresAt *string `json:"capture_expires_at,omitempty" url:"capture_expires_at,omitempty"`
 	// The payment this status describes, prefixed `pay_`.
 	ID string `json:"id" url:"id"`
 	// Details of the most recent failed attempt, or `null` when the payment has not failed.
@@ -10119,7 +10151,7 @@ type PaymentStatus struct {
 	ProcessingDetails *PaymentProcessingDetails `json:"processing_details,omitempty" url:"processing_details,omitempty"`
 	// Where to send the buyer once the payment reaches a resting state, or `null` to leave them where they are. Editable until they return — see the return_url operation.
 	ReturnURL *string `json:"return_url,omitempty" url:"return_url,omitempty"`
-	// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
+	// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
 	Status PaymentStatusStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -10127,6 +10159,13 @@ type PaymentStatus struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *PaymentStatus) GetCaptureExpiresAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.CaptureExpiresAt
 }
 
 func (p *PaymentStatus) GetID() string {
@@ -10190,6 +10229,13 @@ func (p *PaymentStatus) require(field *big.Int) {
 		p.explicitFields = big.NewInt(0)
 	}
 	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCaptureExpiresAt sets the CaptureExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentStatus) SetCaptureExpiresAt(captureExpiresAt *string) {
+	p.CaptureExpiresAt = captureExpiresAt
+	p.require(paymentStatusFieldCaptureExpiresAt)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -10283,12 +10329,13 @@ func (p *PaymentStatus) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
+// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
 type PaymentStatusStatus string
 
 const (
 	PaymentStatusStatusRequiresConfirmation PaymentStatusStatus = "requires_confirmation"
 	PaymentStatusStatusRequiresAction       PaymentStatusStatus = "requires_action"
+	PaymentStatusStatusRequiresCapture      PaymentStatusStatus = "requires_capture"
 	PaymentStatusStatusConfirming           PaymentStatusStatus = "confirming"
 	PaymentStatusStatusProcessing           PaymentStatusStatus = "processing"
 	PaymentStatusStatusSucceeded            PaymentStatusStatus = "succeeded"
@@ -10301,6 +10348,8 @@ func NewPaymentStatusStatusFromString(s string) (PaymentStatusStatus, error) {
 		return PaymentStatusStatusRequiresConfirmation, nil
 	case "requires_action":
 		return PaymentStatusStatusRequiresAction, nil
+	case "requires_capture":
+		return PaymentStatusStatusRequiresCapture, nil
 	case "confirming":
 		return PaymentStatusStatusConfirming, nil
 	case "processing":
@@ -11175,17 +11224,20 @@ func (c *CreatePaymentsRequest) Accept(visitor CreatePaymentsRequestVisitor) err
 
 // Autogenerated input type of CreatePayment
 var (
-	createPaymentsRequestOneFieldCompanyID       = big.NewInt(1 << 0)
-	createPaymentsRequestOneFieldEmail           = big.NewInt(1 << 1)
-	createPaymentsRequestOneFieldMemberID        = big.NewInt(1 << 2)
-	createPaymentsRequestOneFieldMetadata        = big.NewInt(1 << 3)
-	createPaymentsRequestOneFieldPaymentMethodID = big.NewInt(1 << 4)
-	createPaymentsRequestOneFieldPlan            = big.NewInt(1 << 5)
-	createPaymentsRequestOneFieldPromoCodeID     = big.NewInt(1 << 6)
-	createPaymentsRequestOneFieldReturnURL       = big.NewInt(1 << 7)
+	createPaymentsRequestOneFieldCapture         = big.NewInt(1 << 0)
+	createPaymentsRequestOneFieldCompanyID       = big.NewInt(1 << 1)
+	createPaymentsRequestOneFieldEmail           = big.NewInt(1 << 2)
+	createPaymentsRequestOneFieldMemberID        = big.NewInt(1 << 3)
+	createPaymentsRequestOneFieldMetadata        = big.NewInt(1 << 4)
+	createPaymentsRequestOneFieldPaymentMethodID = big.NewInt(1 << 5)
+	createPaymentsRequestOneFieldPlan            = big.NewInt(1 << 6)
+	createPaymentsRequestOneFieldPromoCodeID     = big.NewInt(1 << 7)
+	createPaymentsRequestOneFieldReturnURL       = big.NewInt(1 << 8)
 )
 
 type CreatePaymentsRequestOne struct {
+	// Whether to capture the card payment immediately. Pass false to place an authorization hold that must be captured in full within five days.
+	Capture *bool `json:"capture,omitempty" url:"capture,omitempty"`
 	// The ID of the company to create the payment for.
 	CompanyID string `json:"company_id" url:"company_id"`
 	// Overrides the buyer email carried on the confirmation token, resolving or creating the Whop user the payment belongs to. Ignored when the confirmation token was created by a signed-in buyer, and unless confirmation_token is provided.
@@ -11208,6 +11260,13 @@ type CreatePaymentsRequestOne struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestOne) GetCapture() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Capture
 }
 
 func (c *CreatePaymentsRequestOne) GetCompanyID() string {
@@ -11278,6 +11337,13 @@ func (c *CreatePaymentsRequestOne) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCapture sets the Capture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestOne) SetCapture(capture *bool) {
+	c.Capture = capture
+	c.require(createPaymentsRequestOneFieldCapture)
 }
 
 // SetCompanyID sets the CompanyID field and marks it as non-optional;
@@ -11977,17 +12043,20 @@ func (c *CreatePaymentsRequestOnePlanProduct) String() string {
 
 // Autogenerated input type of CreatePayment
 var (
-	createPaymentsRequestThreeFieldCompanyID       = big.NewInt(1 << 0)
-	createPaymentsRequestThreeFieldEmail           = big.NewInt(1 << 1)
-	createPaymentsRequestThreeFieldMemberID        = big.NewInt(1 << 2)
-	createPaymentsRequestThreeFieldMetadata        = big.NewInt(1 << 3)
-	createPaymentsRequestThreeFieldPaymentMethodID = big.NewInt(1 << 4)
-	createPaymentsRequestThreeFieldPlanID          = big.NewInt(1 << 5)
-	createPaymentsRequestThreeFieldPromoCodeID     = big.NewInt(1 << 6)
-	createPaymentsRequestThreeFieldReturnURL       = big.NewInt(1 << 7)
+	createPaymentsRequestThreeFieldCapture         = big.NewInt(1 << 0)
+	createPaymentsRequestThreeFieldCompanyID       = big.NewInt(1 << 1)
+	createPaymentsRequestThreeFieldEmail           = big.NewInt(1 << 2)
+	createPaymentsRequestThreeFieldMemberID        = big.NewInt(1 << 3)
+	createPaymentsRequestThreeFieldMetadata        = big.NewInt(1 << 4)
+	createPaymentsRequestThreeFieldPaymentMethodID = big.NewInt(1 << 5)
+	createPaymentsRequestThreeFieldPlanID          = big.NewInt(1 << 6)
+	createPaymentsRequestThreeFieldPromoCodeID     = big.NewInt(1 << 7)
+	createPaymentsRequestThreeFieldReturnURL       = big.NewInt(1 << 8)
 )
 
 type CreatePaymentsRequestThree struct {
+	// Whether to capture the card payment immediately. Pass false to place an authorization hold that must be captured in full within five days.
+	Capture *bool `json:"capture,omitempty" url:"capture,omitempty"`
 	// The ID of the company to create the payment for.
 	CompanyID string `json:"company_id" url:"company_id"`
 	// Overrides the buyer email carried on the confirmation token, resolving or creating the Whop user the payment belongs to. Ignored when the confirmation token was created by a signed-in buyer, and unless confirmation_token is provided.
@@ -12010,6 +12079,13 @@ type CreatePaymentsRequestThree struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestThree) GetCapture() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Capture
 }
 
 func (c *CreatePaymentsRequestThree) GetCompanyID() string {
@@ -12080,6 +12156,13 @@ func (c *CreatePaymentsRequestThree) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCapture sets the Capture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestThree) SetCapture(capture *bool) {
+	c.Capture = capture
+	c.require(createPaymentsRequestThreeFieldCapture)
 }
 
 // SetCompanyID sets the CompanyID field and marks it as non-optional;
@@ -12182,17 +12265,20 @@ func (c *CreatePaymentsRequestThree) String() string {
 
 // Autogenerated input type of CreatePayment
 var (
-	createPaymentsRequestTwoFieldCompanyID         = big.NewInt(1 << 0)
-	createPaymentsRequestTwoFieldConfirmationToken = big.NewInt(1 << 1)
-	createPaymentsRequestTwoFieldEmail             = big.NewInt(1 << 2)
-	createPaymentsRequestTwoFieldMetadata          = big.NewInt(1 << 3)
-	createPaymentsRequestTwoFieldPaymentMethodID   = big.NewInt(1 << 4)
-	createPaymentsRequestTwoFieldPlanID            = big.NewInt(1 << 5)
-	createPaymentsRequestTwoFieldPromoCodeID       = big.NewInt(1 << 6)
-	createPaymentsRequestTwoFieldReturnURL         = big.NewInt(1 << 7)
+	createPaymentsRequestTwoFieldCapture           = big.NewInt(1 << 0)
+	createPaymentsRequestTwoFieldCompanyID         = big.NewInt(1 << 1)
+	createPaymentsRequestTwoFieldConfirmationToken = big.NewInt(1 << 2)
+	createPaymentsRequestTwoFieldEmail             = big.NewInt(1 << 3)
+	createPaymentsRequestTwoFieldMetadata          = big.NewInt(1 << 4)
+	createPaymentsRequestTwoFieldPaymentMethodID   = big.NewInt(1 << 5)
+	createPaymentsRequestTwoFieldPlanID            = big.NewInt(1 << 6)
+	createPaymentsRequestTwoFieldPromoCodeID       = big.NewInt(1 << 7)
+	createPaymentsRequestTwoFieldReturnURL         = big.NewInt(1 << 8)
 )
 
 type CreatePaymentsRequestTwo struct {
+	// Whether to capture the card payment immediately. Pass false to place an authorization hold that must be captured in full within five days.
+	Capture *bool `json:"capture,omitempty" url:"capture,omitempty"`
 	// The ID of the company to create the payment for.
 	CompanyID string `json:"company_id" url:"company_id"`
 	// A confirmation token ID (ctok_) describing a payment method the buyer just supplied. Provide this INSTEAD of member_id and payment_method_id to charge a method that is not yet on file — the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete (3DS, a redirect, linking a bank); poll the payment's status endpoint for what to do next.
@@ -12215,6 +12301,13 @@ type CreatePaymentsRequestTwo struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestTwo) GetCapture() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Capture
 }
 
 func (c *CreatePaymentsRequestTwo) GetCompanyID() string {
@@ -12285,6 +12378,13 @@ func (c *CreatePaymentsRequestTwo) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCapture sets the Capture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestTwo) SetCapture(capture *bool) {
+	c.Capture = capture
+	c.require(createPaymentsRequestTwoFieldCapture)
 }
 
 // SetCompanyID sets the CompanyID field and marks it as non-optional;
@@ -12387,17 +12487,20 @@ func (c *CreatePaymentsRequestTwo) String() string {
 
 // Autogenerated input type of CreatePayment
 var (
-	createPaymentsRequestZeroFieldCompanyID         = big.NewInt(1 << 0)
-	createPaymentsRequestZeroFieldConfirmationToken = big.NewInt(1 << 1)
-	createPaymentsRequestZeroFieldEmail             = big.NewInt(1 << 2)
-	createPaymentsRequestZeroFieldMetadata          = big.NewInt(1 << 3)
-	createPaymentsRequestZeroFieldPaymentMethodID   = big.NewInt(1 << 4)
-	createPaymentsRequestZeroFieldPlan              = big.NewInt(1 << 5)
-	createPaymentsRequestZeroFieldPromoCodeID       = big.NewInt(1 << 6)
-	createPaymentsRequestZeroFieldReturnURL         = big.NewInt(1 << 7)
+	createPaymentsRequestZeroFieldCapture           = big.NewInt(1 << 0)
+	createPaymentsRequestZeroFieldCompanyID         = big.NewInt(1 << 1)
+	createPaymentsRequestZeroFieldConfirmationToken = big.NewInt(1 << 2)
+	createPaymentsRequestZeroFieldEmail             = big.NewInt(1 << 3)
+	createPaymentsRequestZeroFieldMetadata          = big.NewInt(1 << 4)
+	createPaymentsRequestZeroFieldPaymentMethodID   = big.NewInt(1 << 5)
+	createPaymentsRequestZeroFieldPlan              = big.NewInt(1 << 6)
+	createPaymentsRequestZeroFieldPromoCodeID       = big.NewInt(1 << 7)
+	createPaymentsRequestZeroFieldReturnURL         = big.NewInt(1 << 8)
 )
 
 type CreatePaymentsRequestZero struct {
+	// Whether to capture the card payment immediately. Pass false to place an authorization hold that must be captured in full within five days.
+	Capture *bool `json:"capture,omitempty" url:"capture,omitempty"`
 	// The ID of the company to create the payment for.
 	CompanyID string `json:"company_id" url:"company_id"`
 	// A confirmation token ID (ctok_) describing a payment method the buyer just supplied. Provide this INSTEAD of member_id and payment_method_id to charge a method that is not yet on file — the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete (3DS, a redirect, linking a bank); poll the payment's status endpoint for what to do next.
@@ -12420,6 +12523,13 @@ type CreatePaymentsRequestZero struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestZero) GetCapture() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Capture
 }
 
 func (c *CreatePaymentsRequestZero) GetCompanyID() string {
@@ -12490,6 +12600,13 @@ func (c *CreatePaymentsRequestZero) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCapture sets the Capture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestZero) SetCapture(capture *bool) {
+	c.Capture = capture
+	c.require(createPaymentsRequestZeroFieldCapture)
 }
 
 // SetCompanyID sets the CompanyID field and marks it as non-optional;
@@ -14703,6 +14820,508 @@ func (l *ListPaymentsResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	postPaymentAuthorizedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postPaymentAuthorizedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postPaymentAuthorizedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postPaymentAuthorizedPayloadFieldData               = big.NewInt(1 << 3)
+	postPaymentAuthorizedPayloadFieldID                 = big.NewInt(1 << 4)
+	postPaymentAuthorizedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postPaymentAuthorizedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postPaymentAuthorizedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+type PostPaymentAuthorizedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostPaymentAuthorizedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostPaymentAuthorizedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPaymentAuthorizedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostPaymentAuthorizedPayload) GetAPIVersion() PostPaymentAuthorizedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostPaymentAuthorizedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostPaymentAuthorizedPayload) GetData() *Payment {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostPaymentAuthorizedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostPaymentAuthorizedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostPaymentAuthorizedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostPaymentAuthorizedPayload) GetType() PostPaymentAuthorizedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostPaymentAuthorizedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPaymentAuthorizedPayload) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postPaymentAuthorizedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetAPIVersion(apiVersion PostPaymentAuthorizedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postPaymentAuthorizedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postPaymentAuthorizedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetData(data *Payment) {
+	p.Data = data
+	p.require(postPaymentAuthorizedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postPaymentAuthorizedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postPaymentAuthorizedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postPaymentAuthorizedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetType(type_ PostPaymentAuthorizedPayloadType) {
+	p.Type = type_
+	p.require(postPaymentAuthorizedPayloadFieldType)
+}
+
+func (p *PostPaymentAuthorizedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostPaymentAuthorizedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostPaymentAuthorizedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPaymentAuthorizedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostPaymentAuthorizedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPaymentAuthorizedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostPaymentAuthorizedPayloadAPIVersion string
+
+const (
+	PostPaymentAuthorizedPayloadAPIVersionV1 PostPaymentAuthorizedPayloadAPIVersion = "v1"
+)
+
+func NewPostPaymentAuthorizedPayloadAPIVersionFromString(s string) (PostPaymentAuthorizedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostPaymentAuthorizedPayloadAPIVersionV1, nil
+	}
+	var t PostPaymentAuthorizedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentAuthorizedPayloadAPIVersion) Ptr() *PostPaymentAuthorizedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostPaymentAuthorizedPayloadType string
+
+const (
+	PostPaymentAuthorizedPayloadTypePaymentAuthorized PostPaymentAuthorizedPayloadType = "payment.authorized"
+)
+
+func NewPostPaymentAuthorizedPayloadTypeFromString(s string) (PostPaymentAuthorizedPayloadType, error) {
+	switch s {
+	case "payment.authorized":
+		return PostPaymentAuthorizedPayloadTypePaymentAuthorized, nil
+	}
+	var t PostPaymentAuthorizedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentAuthorizedPayloadType) Ptr() *PostPaymentAuthorizedPayloadType {
+	return &p
+}
+
+var (
+	postPaymentCanceledPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postPaymentCanceledPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postPaymentCanceledPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postPaymentCanceledPayloadFieldData               = big.NewInt(1 << 3)
+	postPaymentCanceledPayloadFieldID                 = big.NewInt(1 << 4)
+	postPaymentCanceledPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postPaymentCanceledPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postPaymentCanceledPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+type PostPaymentCanceledPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostPaymentCanceledPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostPaymentCanceledPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPaymentCanceledPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostPaymentCanceledPayload) GetAPIVersion() PostPaymentCanceledPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostPaymentCanceledPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostPaymentCanceledPayload) GetData() *Payment {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostPaymentCanceledPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostPaymentCanceledPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostPaymentCanceledPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostPaymentCanceledPayload) GetType() PostPaymentCanceledPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostPaymentCanceledPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPaymentCanceledPayload) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postPaymentCanceledPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetAPIVersion(apiVersion PostPaymentCanceledPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postPaymentCanceledPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postPaymentCanceledPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetData(data *Payment) {
+	p.Data = data
+	p.require(postPaymentCanceledPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetID(id string) {
+	p.ID = id
+	p.require(postPaymentCanceledPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postPaymentCanceledPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postPaymentCanceledPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetType(type_ PostPaymentCanceledPayloadType) {
+	p.Type = type_
+	p.require(postPaymentCanceledPayloadFieldType)
+}
+
+func (p *PostPaymentCanceledPayload) UnmarshalJSON(data []byte) error {
+	type embed PostPaymentCanceledPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostPaymentCanceledPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPaymentCanceledPayload) MarshalJSON() ([]byte, error) {
+	type embed PostPaymentCanceledPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPaymentCanceledPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostPaymentCanceledPayloadAPIVersion string
+
+const (
+	PostPaymentCanceledPayloadAPIVersionV1 PostPaymentCanceledPayloadAPIVersion = "v1"
+)
+
+func NewPostPaymentCanceledPayloadAPIVersionFromString(s string) (PostPaymentCanceledPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostPaymentCanceledPayloadAPIVersionV1, nil
+	}
+	var t PostPaymentCanceledPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentCanceledPayloadAPIVersion) Ptr() *PostPaymentCanceledPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostPaymentCanceledPayloadType string
+
+const (
+	PostPaymentCanceledPayloadTypePaymentCanceled PostPaymentCanceledPayloadType = "payment.canceled"
+)
+
+func NewPostPaymentCanceledPayloadTypeFromString(s string) (PostPaymentCanceledPayloadType, error) {
+	switch s {
+	case "payment.canceled":
+		return PostPaymentCanceledPayloadTypePaymentCanceled, nil
+	}
+	var t PostPaymentCanceledPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentCanceledPayloadType) Ptr() *PostPaymentCanceledPayloadType {
+	return &p
 }
 
 var (

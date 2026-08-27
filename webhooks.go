@@ -1265,6 +1265,8 @@ const (
 	WebhookEventsItemIdentityProfileNeedsAction            WebhookEventsItem = "identity_profile.needs_action"
 	WebhookEventsItemIdentityProfileUpdated                WebhookEventsItem = "identity_profile.updated"
 	WebhookEventsItemPayoutAccountStatusUpdated            WebhookEventsItem = "payout_account.status_updated"
+	WebhookEventsItemPaymentAuthorized                     WebhookEventsItem = "payment.authorized"
+	WebhookEventsItemPaymentCanceled                       WebhookEventsItem = "payment.canceled"
 	WebhookEventsItemResolutionCenterCaseCreated           WebhookEventsItem = "resolution_center_case.created"
 	WebhookEventsItemResolutionCenterCaseUpdated           WebhookEventsItem = "resolution_center_case.updated"
 	WebhookEventsItemResolutionCenterCaseDecided           WebhookEventsItem = "resolution_center_case.decided"
@@ -1413,6 +1415,10 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemIdentityProfileUpdated, nil
 	case "payout_account.status_updated":
 		return WebhookEventsItemPayoutAccountStatusUpdated, nil
+	case "payment.authorized":
+		return WebhookEventsItemPaymentAuthorized, nil
+	case "payment.canceled":
+		return WebhookEventsItemPaymentCanceled, nil
 	case "resolution_center_case.created":
 		return WebhookEventsItemResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
@@ -1929,6 +1935,8 @@ const (
 	WebhookListItemEventsItemIdentityProfileNeedsAction            WebhookListItemEventsItem = "identity_profile.needs_action"
 	WebhookListItemEventsItemIdentityProfileUpdated                WebhookListItemEventsItem = "identity_profile.updated"
 	WebhookListItemEventsItemPayoutAccountStatusUpdated            WebhookListItemEventsItem = "payout_account.status_updated"
+	WebhookListItemEventsItemPaymentAuthorized                     WebhookListItemEventsItem = "payment.authorized"
+	WebhookListItemEventsItemPaymentCanceled                       WebhookListItemEventsItem = "payment.canceled"
 	WebhookListItemEventsItemResolutionCenterCaseCreated           WebhookListItemEventsItem = "resolution_center_case.created"
 	WebhookListItemEventsItemResolutionCenterCaseUpdated           WebhookListItemEventsItem = "resolution_center_case.updated"
 	WebhookListItemEventsItemResolutionCenterCaseDecided           WebhookListItemEventsItem = "resolution_center_case.decided"
@@ -2077,6 +2085,10 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemIdentityProfileUpdated, nil
 	case "payout_account.status_updated":
 		return WebhookListItemEventsItemPayoutAccountStatusUpdated, nil
+	case "payment.authorized":
+		return WebhookListItemEventsItemPaymentAuthorized, nil
+	case "payment.canceled":
+		return WebhookListItemEventsItemPaymentCanceled, nil
 	case "resolution_center_case.created":
 		return WebhookListItemEventsItemResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
@@ -2225,6 +2237,8 @@ const (
 	WebhookTestableEventsItemIdentityProfileNeedsAction            WebhookTestableEventsItem = "identity_profile.needs_action"
 	WebhookTestableEventsItemIdentityProfileUpdated                WebhookTestableEventsItem = "identity_profile.updated"
 	WebhookTestableEventsItemPayoutAccountStatusUpdated            WebhookTestableEventsItem = "payout_account.status_updated"
+	WebhookTestableEventsItemPaymentAuthorized                     WebhookTestableEventsItem = "payment.authorized"
+	WebhookTestableEventsItemPaymentCanceled                       WebhookTestableEventsItem = "payment.canceled"
 	WebhookTestableEventsItemResolutionCenterCaseCreated           WebhookTestableEventsItem = "resolution_center_case.created"
 	WebhookTestableEventsItemResolutionCenterCaseUpdated           WebhookTestableEventsItem = "resolution_center_case.updated"
 	WebhookTestableEventsItemResolutionCenterCaseDecided           WebhookTestableEventsItem = "resolution_center_case.decided"
@@ -2373,6 +2387,10 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemIdentityProfileUpdated, nil
 	case "payout_account.status_updated":
 		return WebhookTestableEventsItemPayoutAccountStatusUpdated, nil
+	case "payment.authorized":
+		return WebhookTestableEventsItemPaymentAuthorized, nil
+	case "payment.canceled":
+		return WebhookTestableEventsItemPaymentCanceled, nil
 	case "resolution_center_case.created":
 		return WebhookTestableEventsItemResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
@@ -2517,6 +2535,8 @@ const (
 	CreateWebhooksRequestEventsItemIdentityProfileNeedsAction                      CreateWebhooksRequestEventsItem = "identity_profile.needs_action"
 	CreateWebhooksRequestEventsItemIdentityProfileUpdated                          CreateWebhooksRequestEventsItem = "identity_profile.updated"
 	CreateWebhooksRequestEventsItemPayoutAccountStatusUpdated                      CreateWebhooksRequestEventsItem = "payout_account.status_updated"
+	CreateWebhooksRequestEventsItemPaymentAuthorized                               CreateWebhooksRequestEventsItem = "payment.authorized"
+	CreateWebhooksRequestEventsItemPaymentCanceled                                 CreateWebhooksRequestEventsItem = "payment.canceled"
 	CreateWebhooksRequestEventsItemResolutionCenterCaseCreated                     CreateWebhooksRequestEventsItem = "resolution_center_case.created"
 	CreateWebhooksRequestEventsItemResolutionCenterCaseUpdated                     CreateWebhooksRequestEventsItem = "resolution_center_case.updated"
 	CreateWebhooksRequestEventsItemResolutionCenterCaseDecided                     CreateWebhooksRequestEventsItem = "resolution_center_case.decided"
@@ -2684,6 +2704,10 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemIdentityProfileUpdated, nil
 	case "payout_account.status_updated":
 		return CreateWebhooksRequestEventsItemPayoutAccountStatusUpdated, nil
+	case "payment.authorized":
+		return CreateWebhooksRequestEventsItemPaymentAuthorized, nil
+	case "payment.canceled":
+		return CreateWebhooksRequestEventsItemPaymentCanceled, nil
 	case "resolution_center_case.created":
 		return CreateWebhooksRequestEventsItemResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
@@ -4151,6 +4175,8 @@ const (
 	UpdateWebhooksRequestEventsItemIdentityProfileNeedsAction                      UpdateWebhooksRequestEventsItem = "identity_profile.needs_action"
 	UpdateWebhooksRequestEventsItemIdentityProfileUpdated                          UpdateWebhooksRequestEventsItem = "identity_profile.updated"
 	UpdateWebhooksRequestEventsItemPayoutAccountStatusUpdated                      UpdateWebhooksRequestEventsItem = "payout_account.status_updated"
+	UpdateWebhooksRequestEventsItemPaymentAuthorized                               UpdateWebhooksRequestEventsItem = "payment.authorized"
+	UpdateWebhooksRequestEventsItemPaymentCanceled                                 UpdateWebhooksRequestEventsItem = "payment.canceled"
 	UpdateWebhooksRequestEventsItemResolutionCenterCaseCreated                     UpdateWebhooksRequestEventsItem = "resolution_center_case.created"
 	UpdateWebhooksRequestEventsItemResolutionCenterCaseUpdated                     UpdateWebhooksRequestEventsItem = "resolution_center_case.updated"
 	UpdateWebhooksRequestEventsItemResolutionCenterCaseDecided                     UpdateWebhooksRequestEventsItem = "resolution_center_case.decided"
@@ -4318,6 +4344,10 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemIdentityProfileUpdated, nil
 	case "payout_account.status_updated":
 		return UpdateWebhooksRequestEventsItemPayoutAccountStatusUpdated, nil
+	case "payment.authorized":
+		return UpdateWebhooksRequestEventsItemPaymentAuthorized, nil
+	case "payment.canceled":
+		return UpdateWebhooksRequestEventsItemPaymentCanceled, nil
 	case "resolution_center_case.created":
 		return UpdateWebhooksRequestEventsItemResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":

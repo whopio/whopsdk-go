@@ -443,6 +443,14 @@ func TestSettersListAppsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetVerified", func(t *testing.T) {
+		obj := &ListAppsRequest{}
+		var fernTestValueVerified *bool
+		obj.SetVerified(fernTestValueVerified)
+		assert.Equal(t, fernTestValueVerified, obj.Verified)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetVerifiedAppsOnly", func(t *testing.T) {
 		obj := &ListAppsRequest{}
 		var fernTestValueVerifiedAppsOnly *bool
@@ -588,6 +596,37 @@ func TestSettersMarkExplicitListAppsRequest(t *testing.T) {
 
 		// Act
 		obj.SetViewType(fernTestValueViewType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVerified_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAppsRequest{}
+		var fernTestValueVerified *bool
+
+		// Act
+		obj.SetVerified(fernTestValueVerified)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1495,6 +1534,14 @@ func TestSettersApp(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPreviewToken", func(t *testing.T) {
+		obj := &App{}
+		var fernTestValuePreviewToken *string
+		obj.SetPreviewToken(fernTestValuePreviewToken)
+		assert.Equal(t, fernTestValuePreviewToken, obj.PreviewToken)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetProductID", func(t *testing.T) {
 		obj := &App{}
 		var fernTestValueProductID *string
@@ -2357,6 +2404,39 @@ func TestGettersApp(t *testing.T) {
 			}
 		}()
 		_ = obj.GetOrigin() // Should return zero value
+	})
+
+	t.Run("GetPreviewToken", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &App{}
+		var expected *string
+		obj.PreviewToken = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPreviewToken(), "getter should return the property value")
+	})
+
+	t.Run("GetPreviewToken_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &App{}
+		obj.PreviewToken = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPreviewToken(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPreviewToken_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *App
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPreviewToken() // Should return zero value
 	})
 
 	t.Run("GetProductID", func(t *testing.T) {
@@ -3490,6 +3570,37 @@ func TestSettersMarkExplicitApp(t *testing.T) {
 
 		// Act
 		obj.SetOrigin(fernTestValueOrigin)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPreviewToken_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &App{}
+		var fernTestValuePreviewToken *string
+
+		// Act
+		obj.SetPreviewToken(fernTestValuePreviewToken)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

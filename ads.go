@@ -658,35 +658,36 @@ var (
 	adFieldLeadFormID                   = big.NewInt(1 << 37)
 	adFieldLeadValue                    = big.NewInt(1 << 38)
 	adFieldLeads                        = big.NewInt(1 << 39)
-	adFieldMessagingConfig              = big.NewInt(1 << 40)
-	adFieldMultiAdvertiserAds           = big.NewInt(1 << 41)
-	adFieldPostID                       = big.NewInt(1 << 42)
-	adFieldPostSource                   = big.NewInt(1 << 43)
-	adFieldPostThumbnailURL             = big.NewInt(1 << 44)
-	adFieldPrimaryTexts                 = big.NewInt(1 << 45)
-	adFieldPurchaseValue                = big.NewInt(1 << 46)
-	adFieldPurchases                    = big.NewInt(1 << 47)
-	adFieldReach                        = big.NewInt(1 << 48)
-	adFieldResultEvent                  = big.NewInt(1 << 49)
-	adFieldResultEventName              = big.NewInt(1 << 50)
-	adFieldResults                      = big.NewInt(1 << 51)
-	adFieldReturnOnAdSpend              = big.NewInt(1 << 52)
-	adFieldScheduleValue                = big.NewInt(1 << 53)
-	adFieldSchedules                    = big.NewInt(1 << 54)
-	adFieldSocialAccounts               = big.NewInt(1 << 55)
-	adFieldSpend                        = big.NewInt(1 << 56)
-	adFieldSpendCurrency                = big.NewInt(1 << 57)
-	adFieldStatus                       = big.NewInt(1 << 58)
-	adFieldSubmittedApplicationValue    = big.NewInt(1 << 59)
-	adFieldSubmittedApplications        = big.NewInt(1 << 60)
-	adFieldTitle                        = big.NewInt(1 << 61)
-	adFieldUniqueClickThroughRate       = big.NewInt(1 << 62)
-	adFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adFieldURL                          = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adFieldURLParameters                = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adFieldLinkClicks                   = big.NewInt(1 << 40)
+	adFieldMessagingConfig              = big.NewInt(1 << 41)
+	adFieldMultiAdvertiserAds           = big.NewInt(1 << 42)
+	adFieldPostID                       = big.NewInt(1 << 43)
+	adFieldPostSource                   = big.NewInt(1 << 44)
+	adFieldPostThumbnailURL             = big.NewInt(1 << 45)
+	adFieldPrimaryTexts                 = big.NewInt(1 << 46)
+	adFieldPurchaseValue                = big.NewInt(1 << 47)
+	adFieldPurchases                    = big.NewInt(1 << 48)
+	adFieldReach                        = big.NewInt(1 << 49)
+	adFieldResultEvent                  = big.NewInt(1 << 50)
+	adFieldResultEventName              = big.NewInt(1 << 51)
+	adFieldResults                      = big.NewInt(1 << 52)
+	adFieldReturnOnAdSpend              = big.NewInt(1 << 53)
+	adFieldScheduleValue                = big.NewInt(1 << 54)
+	adFieldSchedules                    = big.NewInt(1 << 55)
+	adFieldSocialAccounts               = big.NewInt(1 << 56)
+	adFieldSpend                        = big.NewInt(1 << 57)
+	adFieldSpendCurrency                = big.NewInt(1 << 58)
+	adFieldStatus                       = big.NewInt(1 << 59)
+	adFieldSubmittedApplicationValue    = big.NewInt(1 << 60)
+	adFieldSubmittedApplications        = big.NewInt(1 << 61)
+	adFieldTitle                        = big.NewInt(1 << 62)
+	adFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adFieldURL                          = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adFieldURLParameters                = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 69)
 )
 
 type Ad struct {
@@ -766,6 +767,8 @@ type Ad struct {
 	LeadValue float64 `json:"lead_value" url:"lead_value"`
 	// Whop pixel-attributed leads, last-click.
 	Leads float64 `json:"leads" url:"leads"`
+	// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+	LinkClicks float64 `json:"link_clicks" url:"link_clicks"`
 	// Welcome message for click-to-message ads, shown when the conversation opens. `null` when the ad has none.
 	MessagingConfig *AdMessagingConfig `json:"messaging_config,omitempty" url:"messaging_config,omitempty"`
 	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
@@ -1108,6 +1111,13 @@ func (a *Ad) GetLeads() float64 {
 		return 0
 	}
 	return a.Leads
+}
+
+func (a *Ad) GetLinkClicks() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.LinkClicks
 }
 
 func (a *Ad) GetMessagingConfig() *AdMessagingConfig {
@@ -1605,6 +1615,13 @@ func (a *Ad) SetLeadValue(leadValue float64) {
 func (a *Ad) SetLeads(leads float64) {
 	a.Leads = leads
 	a.require(adFieldLeads)
+}
+
+// SetLinkClicks sets the LinkClicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Ad) SetLinkClicks(linkClicks float64) {
+	a.LinkClicks = linkClicks
+	a.require(adFieldLinkClicks)
 }
 
 // SetMessagingConfig sets the MessagingConfig field and marks it as non-optional;
@@ -4971,6 +4988,7 @@ const (
 	ListAdsRequestOrderImpressions      ListAdsRequestOrder = "impressions"
 	ListAdsRequestOrderReach            ListAdsRequestOrder = "reach"
 	ListAdsRequestOrderClicks           ListAdsRequestOrder = "clicks"
+	ListAdsRequestOrderLinkClicks       ListAdsRequestOrder = "link_clicks"
 	ListAdsRequestOrderUniqueClicks     ListAdsRequestOrder = "unique_clicks"
 	ListAdsRequestOrderFrequency        ListAdsRequestOrder = "frequency"
 	ListAdsRequestOrderClickThroughRate ListAdsRequestOrder = "click_through_rate"
@@ -4995,6 +5013,8 @@ func NewListAdsRequestOrderFromString(s string) (ListAdsRequestOrder, error) {
 		return ListAdsRequestOrderReach, nil
 	case "clicks":
 		return ListAdsRequestOrderClicks, nil
+	case "link_clicks":
+		return ListAdsRequestOrderLinkClicks, nil
 	case "unique_clicks":
 		return ListAdsRequestOrderUniqueClicks, nil
 	case "frequency":

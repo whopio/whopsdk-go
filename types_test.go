@@ -44701,6 +44701,41 @@ func TestEnumCardBrands(t *testing.T) {
 		assert.Equal(t, CardBrands("aura"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_accel", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCardBrandsFromString("accel")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CardBrands("accel"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_culiance", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCardBrandsFromString("culiance")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CardBrands("culiance"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nyce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCardBrandsFromString("nyce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CardBrands("nyce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pulse", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCardBrandsFromString("pulse")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CardBrands("pulse"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_star", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCardBrandsFromString("star")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CardBrands("star"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_unknown", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCardBrandsFromString("unknown")
@@ -48462,6 +48497,13 @@ func TestEnumReceiptStatus(t *testing.T) {
 		assert.Equal(t, ReceiptStatus("open"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_authorized", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewReceiptStatusFromString("authorized")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ReceiptStatus("authorized"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_paid", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewReceiptStatusFromString("paid")
@@ -50025,6 +50067,20 @@ func TestEnumWebhookEvent(t *testing.T) {
 		val, err := NewWebhookEventFromString("payout_account.status_updated")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, WebhookEvent("payout_account.status_updated"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_authorized", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookEventFromString("payment.authorized")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookEvent("payment.authorized"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_canceled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookEventFromString("payment.canceled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookEvent("payment.canceled"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_resolution_center_case_created", func(t *testing.T) {

@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-1"
+		apiVersionDateDefault := "2026-08-25-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication, except for the publicly readable lists: `verified_apps_only=true`, and `app_type=website` with no `account_id`, which returns every live deployed website that Whop has not verified — verified templates are the curated `verified_apps_only=true` list instead.
+// Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication except for Whop's public app and website discovery lists. Public website discovery includes built official blueprints (verified apps with a product) and built, live community blueprints that Whop recommends.
 //
 // Example:
 //
@@ -283,7 +283,7 @@ func (c *Client) Deploy(
 	return response.Body, nil
 }
 
-// Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.app hosting. Logs are retained for 7 days.
+// Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.site hosting. Logs are retained for 7 days.
 //
 // Example:
 //

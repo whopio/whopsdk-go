@@ -12,15 +12,18 @@ import (
 
 var (
 	createAccountsRequestFieldAffiliateCode = big.NewInt(1 << 0)
-	createAccountsRequestFieldCountry       = big.NewInt(1 << 1)
-	createAccountsRequestFieldEmail         = big.NewInt(1 << 2)
-	createAccountsRequestFieldMetadata      = big.NewInt(1 << 3)
-	createAccountsRequestFieldTitle         = big.NewInt(1 << 4)
+	createAccountsRequestFieldBlueprintID   = big.NewInt(1 << 1)
+	createAccountsRequestFieldCountry       = big.NewInt(1 << 2)
+	createAccountsRequestFieldEmail         = big.NewInt(1 << 3)
+	createAccountsRequestFieldMetadata      = big.NewInt(1 << 4)
+	createAccountsRequestFieldTitle         = big.NewInt(1 << 5)
 )
 
 type CreateAccountsRequest struct {
 	// The username, if any, of the partner who referred this account
 	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
+	// The blueprint App ID, prefixed `app_`. Creates a hosted website for the account and queues its deployment asynchronously; the Account response does not report deployment completion.
+	BlueprintID *string `json:"blueprint_id,omitempty" url:"-"`
 	// The ISO 3166-1 alpha-2 country code where the account's business is located (e.g. `US`). Defaults to the parent account's country for connected accounts.
 	Country *string `json:"country,omitempty" url:"-"`
 	// The email address of the account owner. Required for Account API key requests.
@@ -46,6 +49,13 @@ func (c *CreateAccountsRequest) require(field *big.Int) {
 func (c *CreateAccountsRequest) SetAffiliateCode(affiliateCode *string) {
 	c.AffiliateCode = affiliateCode
 	c.require(createAccountsRequestFieldAffiliateCode)
+}
+
+// SetBlueprintID sets the BlueprintID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetBlueprintID(blueprintID *string) {
+	c.BlueprintID = blueprintID
+	c.require(createAccountsRequestFieldBlueprintID)
 }
 
 // SetCountry sets the Country field and marks it as non-optional;
@@ -3246,6 +3256,8 @@ var (
 	accountPaymentControlsFieldReserve                         = big.NewInt(1 << 7)
 	accountPaymentControlsFieldResolutionCenterAutoRefund      = big.NewInt(1 << 8)
 	accountPaymentControlsFieldRestrictedPaymentMethods        = big.NewInt(1 << 9)
+	accountPaymentControlsFieldUndatedPendingReason            = big.NewInt(1 << 10)
+	accountPaymentControlsFieldWithdrawalSchedule              = big.NewInt(1 << 11)
 )
 
 type AccountPaymentControls struct {
@@ -3268,6 +3280,10 @@ type AccountPaymentControls struct {
 	// Automatic refund settings for resolution center cases.
 	ResolutionCenterAutoRefund *AccountResolutionCenterAutoRefundControl            `json:"resolution_center_auto_refund" url:"resolution_center_auto_refund"`
 	RestrictedPaymentMethods   []AccountPaymentControlsRestrictedPaymentMethodsItem `json:"restricted_payment_methods" url:"restricted_payment_methods"`
+	// Why pending funds without a settlement date aren't moving yet, when it's something the merchant can act on. `null` when there's no reason to show (still clearing, or the account is held for a reason that isn't merchant-actionable).
+	UndatedPendingReason *AccountPaymentControlsUndatedPendingReason `json:"undated_pending_reason,omitempty" url:"undated_pending_reason,omitempty"`
+	// How the account's balance automatically withdraws.
+	WithdrawalSchedule *AccountWithdrawalScheduleControl `json:"withdrawal_schedule" url:"withdrawal_schedule"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3344,6 +3360,20 @@ func (a *AccountPaymentControls) GetRestrictedPaymentMethods() []AccountPaymentC
 		return nil
 	}
 	return a.RestrictedPaymentMethods
+}
+
+func (a *AccountPaymentControls) GetUndatedPendingReason() *AccountPaymentControlsUndatedPendingReason {
+	if a == nil {
+		return nil
+	}
+	return a.UndatedPendingReason
+}
+
+func (a *AccountPaymentControls) GetWithdrawalSchedule() *AccountWithdrawalScheduleControl {
+	if a == nil {
+		return nil
+	}
+	return a.WithdrawalSchedule
 }
 
 func (a *AccountPaymentControls) GetExtraProperties() map[string]interface{} {
@@ -3430,6 +3460,20 @@ func (a *AccountPaymentControls) SetRestrictedPaymentMethods(restrictedPaymentMe
 	a.require(accountPaymentControlsFieldRestrictedPaymentMethods)
 }
 
+// SetUndatedPendingReason sets the UndatedPendingReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPaymentControls) SetUndatedPendingReason(undatedPendingReason *AccountPaymentControlsUndatedPendingReason) {
+	a.UndatedPendingReason = undatedPendingReason
+	a.require(accountPaymentControlsFieldUndatedPendingReason)
+}
+
+// SetWithdrawalSchedule sets the WithdrawalSchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPaymentControls) SetWithdrawalSchedule(withdrawalSchedule *AccountWithdrawalScheduleControl) {
+	a.WithdrawalSchedule = withdrawalSchedule
+	a.require(accountPaymentControlsFieldWithdrawalSchedule)
+}
+
 func (a *AccountPaymentControls) UnmarshalJSON(data []byte) error {
 	type unmarshaler AccountPaymentControls
 	var value unmarshaler
@@ -3498,6 +3542,29 @@ func NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString(s string) (
 }
 
 func (a AccountPaymentControlsRestrictedPaymentMethodsItem) Ptr() *AccountPaymentControlsRestrictedPaymentMethodsItem {
+	return &a
+}
+
+// Why pending funds without a settlement date aren't moving yet, when it's something the merchant can act on. `null` when there's no reason to show (still clearing, or the account is held for a reason that isn't merchant-actionable).
+type AccountPaymentControlsUndatedPendingReason string
+
+const (
+	AccountPaymentControlsUndatedPendingReasonKycIncomplete             AccountPaymentControlsUndatedPendingReason = "kyc_incomplete"
+	AccountPaymentControlsUndatedPendingReasonPendingInformationRequest AccountPaymentControlsUndatedPendingReason = "pending_information_request"
+)
+
+func NewAccountPaymentControlsUndatedPendingReasonFromString(s string) (AccountPaymentControlsUndatedPendingReason, error) {
+	switch s {
+	case "kyc_incomplete":
+		return AccountPaymentControlsUndatedPendingReasonKycIncomplete, nil
+	case "pending_information_request":
+		return AccountPaymentControlsUndatedPendingReasonPendingInformationRequest, nil
+	}
+	var t AccountPaymentControlsUndatedPendingReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountPaymentControlsUndatedPendingReason) Ptr() *AccountPaymentControlsUndatedPendingReason {
 	return &a
 }
 
@@ -4888,6 +4955,154 @@ func NewAccountWalletNetworkFromString(s string) (AccountWalletNetwork, error) {
 }
 
 func (a AccountWalletNetwork) Ptr() *AccountWalletNetwork {
+	return &a
+}
+
+var (
+	accountWithdrawalScheduleControlFieldDay            = big.NewInt(1 << 0)
+	accountWithdrawalScheduleControlFieldFrequency      = big.NewInt(1 << 1)
+	accountWithdrawalScheduleControlFieldNextPayoutDate = big.NewInt(1 << 2)
+)
+
+type AccountWithdrawalScheduleControl struct {
+	// Day the automatic withdrawal runs on: 0-6 (Sunday-Saturday) for `weekly`, 1-31 for `monthly`. `null` for `manual` and `daily`.
+	Day *int `json:"day,omitempty" url:"day,omitempty"`
+	// How often the account's balance automatically withdraws.
+	Frequency AccountWithdrawalScheduleControlFrequency `json:"frequency" url:"frequency"`
+	// Next date the automatic withdrawal is scheduled to run, as an ISO 8601 date. `null` for `manual` and `daily`, where no single next date applies.
+	NextPayoutDate *string `json:"next_payout_date,omitempty" url:"next_payout_date,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountWithdrawalScheduleControl) GetDay() *int {
+	if a == nil {
+		return nil
+	}
+	return a.Day
+}
+
+func (a *AccountWithdrawalScheduleControl) GetFrequency() AccountWithdrawalScheduleControlFrequency {
+	if a == nil {
+		return ""
+	}
+	return a.Frequency
+}
+
+func (a *AccountWithdrawalScheduleControl) GetNextPayoutDate() *string {
+	if a == nil {
+		return nil
+	}
+	return a.NextPayoutDate
+}
+
+func (a *AccountWithdrawalScheduleControl) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountWithdrawalScheduleControl) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetDay sets the Day field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountWithdrawalScheduleControl) SetDay(day *int) {
+	a.Day = day
+	a.require(accountWithdrawalScheduleControlFieldDay)
+}
+
+// SetFrequency sets the Frequency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountWithdrawalScheduleControl) SetFrequency(frequency AccountWithdrawalScheduleControlFrequency) {
+	a.Frequency = frequency
+	a.require(accountWithdrawalScheduleControlFieldFrequency)
+}
+
+// SetNextPayoutDate sets the NextPayoutDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountWithdrawalScheduleControl) SetNextPayoutDate(nextPayoutDate *string) {
+	a.NextPayoutDate = nextPayoutDate
+	a.require(accountWithdrawalScheduleControlFieldNextPayoutDate)
+}
+
+func (a *AccountWithdrawalScheduleControl) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountWithdrawalScheduleControl
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountWithdrawalScheduleControl(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountWithdrawalScheduleControl) MarshalJSON() ([]byte, error) {
+	type embed AccountWithdrawalScheduleControl
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountWithdrawalScheduleControl) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// How often the account's balance automatically withdraws.
+type AccountWithdrawalScheduleControlFrequency string
+
+const (
+	AccountWithdrawalScheduleControlFrequencyManual  AccountWithdrawalScheduleControlFrequency = "manual"
+	AccountWithdrawalScheduleControlFrequencyDaily   AccountWithdrawalScheduleControlFrequency = "daily"
+	AccountWithdrawalScheduleControlFrequencyWeekly  AccountWithdrawalScheduleControlFrequency = "weekly"
+	AccountWithdrawalScheduleControlFrequencyMonthly AccountWithdrawalScheduleControlFrequency = "monthly"
+)
+
+func NewAccountWithdrawalScheduleControlFrequencyFromString(s string) (AccountWithdrawalScheduleControlFrequency, error) {
+	switch s {
+	case "manual":
+		return AccountWithdrawalScheduleControlFrequencyManual, nil
+	case "daily":
+		return AccountWithdrawalScheduleControlFrequencyDaily, nil
+	case "weekly":
+		return AccountWithdrawalScheduleControlFrequencyWeekly, nil
+	case "monthly":
+		return AccountWithdrawalScheduleControlFrequencyMonthly, nil
+	}
+	var t AccountWithdrawalScheduleControlFrequency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountWithdrawalScheduleControlFrequency) Ptr() *AccountWithdrawalScheduleControlFrequency {
 	return &a
 }
 

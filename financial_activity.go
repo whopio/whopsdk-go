@@ -16,13 +16,14 @@ var (
 	listFinancialActivityRequestFieldIncludeOwnedAccounts = big.NewInt(1 << 2)
 	listFinancialActivityRequestFieldIncludeResource      = big.NewInt(1 << 3)
 	listFinancialActivityRequestFieldLineTypes            = big.NewInt(1 << 4)
-	listFinancialActivityRequestFieldCurrency             = big.NewInt(1 << 5)
-	listFinancialActivityRequestFieldPostedAfter          = big.NewInt(1 << 6)
-	listFinancialActivityRequestFieldPostedBefore         = big.NewInt(1 << 7)
-	listFinancialActivityRequestFieldAvailableAfter       = big.NewInt(1 << 8)
-	listFinancialActivityRequestFieldAvailableBefore      = big.NewInt(1 << 9)
-	listFinancialActivityRequestFieldLimit                = big.NewInt(1 << 10)
-	listFinancialActivityRequestFieldCursor               = big.NewInt(1 << 11)
+	listFinancialActivityRequestFieldDirection            = big.NewInt(1 << 5)
+	listFinancialActivityRequestFieldCurrency             = big.NewInt(1 << 6)
+	listFinancialActivityRequestFieldPostedAfter          = big.NewInt(1 << 7)
+	listFinancialActivityRequestFieldPostedBefore         = big.NewInt(1 << 8)
+	listFinancialActivityRequestFieldAvailableAfter       = big.NewInt(1 << 9)
+	listFinancialActivityRequestFieldAvailableBefore      = big.NewInt(1 << 10)
+	listFinancialActivityRequestFieldLimit                = big.NewInt(1 << 11)
+	listFinancialActivityRequestFieldCursor               = big.NewInt(1 << 12)
 )
 
 type ListFinancialActivityRequest struct {
@@ -36,6 +37,8 @@ type ListFinancialActivityRequest struct {
 	IncludeResource *bool `json:"-" url:"include_resource,omitempty"`
 	// Optional ledger line categories to include. Some categories (for example `onchain_deposit`, which covers inbound crypto deposits such as MoonPay onramps) are only returned when explicitly requested here.
 	LineTypes []*ListFinancialActivityRequestLineTypesItem `json:"-" url:"line_types,omitempty"`
+	// Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
+	Direction *ListFinancialActivityRequestDirection `json:"-" url:"direction,omitempty"`
 	// Optional currency code filter, for example `usd`.
 	Currency *string `json:"-" url:"currency,omitempty"`
 	// Only include rows posted after this ISO 8601 timestamp.
@@ -97,6 +100,13 @@ func (l *ListFinancialActivityRequest) SetLineTypes(lineTypes []*ListFinancialAc
 	l.require(listFinancialActivityRequestFieldLineTypes)
 }
 
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetDirection(direction *ListFinancialActivityRequestDirection) {
+	l.Direction = direction
+	l.require(listFinancialActivityRequestFieldDirection)
+}
+
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListFinancialActivityRequest) SetCurrency(currency *string) {
@@ -150,24 +160,23 @@ var (
 	ledgerActivityFieldAccount         = big.NewInt(1 << 0)
 	ledgerActivityFieldAmount          = big.NewInt(1 << 1)
 	ledgerActivityFieldAvailableAt     = big.NewInt(1 << 2)
-	ledgerActivityFieldCreatedAt       = big.NewInt(1 << 3)
-	ledgerActivityFieldCurrency        = big.NewInt(1 << 4)
-	ledgerActivityFieldID              = big.NewInt(1 << 5)
-	ledgerActivityFieldLedgerAccountID = big.NewInt(1 << 6)
-	ledgerActivityFieldLineType        = big.NewInt(1 << 7)
-	ledgerActivityFieldObject          = big.NewInt(1 << 8)
-	ledgerActivityFieldPayment         = big.NewInt(1 << 9)
-	ledgerActivityFieldPaymentID       = big.NewInt(1 << 10)
-	ledgerActivityFieldPlanID          = big.NewInt(1 << 11)
-	ledgerActivityFieldPlanName        = big.NewInt(1 << 12)
-	ledgerActivityFieldPostedAt        = big.NewInt(1 << 13)
-	ledgerActivityFieldProductID       = big.NewInt(1 << 14)
-	ledgerActivityFieldProductName     = big.NewInt(1 << 15)
-	ledgerActivityFieldResource        = big.NewInt(1 << 16)
-	ledgerActivityFieldSource          = big.NewInt(1 << 17)
-	ledgerActivityFieldUserEmail       = big.NewInt(1 << 18)
-	ledgerActivityFieldUserID          = big.NewInt(1 << 19)
-	ledgerActivityFieldUserName        = big.NewInt(1 << 20)
+	ledgerActivityFieldCurrency        = big.NewInt(1 << 3)
+	ledgerActivityFieldID              = big.NewInt(1 << 4)
+	ledgerActivityFieldLedgerAccountID = big.NewInt(1 << 5)
+	ledgerActivityFieldLineType        = big.NewInt(1 << 6)
+	ledgerActivityFieldObject          = big.NewInt(1 << 7)
+	ledgerActivityFieldPayment         = big.NewInt(1 << 8)
+	ledgerActivityFieldPaymentID       = big.NewInt(1 << 9)
+	ledgerActivityFieldPlanID          = big.NewInt(1 << 10)
+	ledgerActivityFieldPlanName        = big.NewInt(1 << 11)
+	ledgerActivityFieldPostedAt        = big.NewInt(1 << 12)
+	ledgerActivityFieldProductID       = big.NewInt(1 << 13)
+	ledgerActivityFieldProductName     = big.NewInt(1 << 14)
+	ledgerActivityFieldResource        = big.NewInt(1 << 15)
+	ledgerActivityFieldSource          = big.NewInt(1 << 16)
+	ledgerActivityFieldUserEmail       = big.NewInt(1 << 17)
+	ledgerActivityFieldUserID          = big.NewInt(1 << 18)
+	ledgerActivityFieldUserName        = big.NewInt(1 << 19)
 )
 
 type LedgerActivity struct {
@@ -177,8 +186,6 @@ type LedgerActivity struct {
 	Amount string `json:"amount" url:"amount"`
 	// ISO 8601 timestamp these funds became (or are scheduled to become) withdrawable: the posted time for already-settled funds, or 00:00:00 UTC on the scheduled release date for pending funds. Present only on inflows entering the balance (payments, top-ups, incoming transfers/affiliate); null on payouts, refunds, disputes and on-chain rows. The available_after/before filters window on its UTC settlement date.
 	AvailableAt *time.Time `json:"available_at,omitempty" url:"available_at,omitempty"`
-	// When the activity record was created.
-	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
 	// Currency for this ledger activity.
 	Currency *LedgerActivityCurrency `json:"currency" url:"currency"`
 	// Ledger activity ID.
@@ -239,13 +246,6 @@ func (l *LedgerActivity) GetAvailableAt() *time.Time {
 		return nil
 	}
 	return l.AvailableAt
-}
-
-func (l *LedgerActivity) GetCreatedAt() *time.Time {
-	if l == nil {
-		return nil
-	}
-	return l.CreatedAt
 }
 
 func (l *LedgerActivity) GetCurrency() *LedgerActivityCurrency {
@@ -402,13 +402,6 @@ func (l *LedgerActivity) SetAvailableAt(availableAt *time.Time) {
 	l.require(ledgerActivityFieldAvailableAt)
 }
 
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetCreatedAt(createdAt *time.Time) {
-	l.CreatedAt = createdAt
-	l.require(ledgerActivityFieldCreatedAt)
-}
-
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *LedgerActivity) SetCurrency(currency *LedgerActivityCurrency) {
@@ -533,7 +526,6 @@ func (l *LedgerActivity) UnmarshalJSON(data []byte) error {
 	var unmarshaler = struct {
 		embed
 		AvailableAt *internal.DateTime `json:"available_at,omitempty"`
-		CreatedAt   *internal.DateTime `json:"created_at,omitempty"`
 		PostedAt    *internal.DateTime `json:"posted_at"`
 	}{
 		embed: embed(*l),
@@ -543,7 +535,6 @@ func (l *LedgerActivity) UnmarshalJSON(data []byte) error {
 	}
 	*l = LedgerActivity(unmarshaler.embed)
 	l.AvailableAt = unmarshaler.AvailableAt.TimePtr()
-	l.CreatedAt = unmarshaler.CreatedAt.TimePtr()
 	l.PostedAt = unmarshaler.PostedAt.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *l)
 	if err != nil {
@@ -559,12 +550,10 @@ func (l *LedgerActivity) MarshalJSON() ([]byte, error) {
 	var marshaler = struct {
 		embed
 		AvailableAt *internal.DateTime `json:"available_at,omitempty"`
-		CreatedAt   *internal.DateTime `json:"created_at,omitempty"`
 		PostedAt    *internal.DateTime `json:"posted_at"`
 	}{
 		embed:       embed(*l),
 		AvailableAt: internal.NewOptionalDateTime(l.AvailableAt),
-		CreatedAt:   internal.NewOptionalDateTime(l.CreatedAt),
 		PostedAt:    internal.NewDateTime(l.PostedAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
@@ -1092,103 +1081,133 @@ func (l *LedgerActivityCurrency) String() string {
 type LedgerActivityLineType string
 
 const (
-	LedgerActivityLineTypeAdBudgetRelease                  LedgerActivityLineType = "ad_budget_release"
-	LedgerActivityLineTypeAdCampaignBudget                 LedgerActivityLineType = "ad_campaign_budget"
-	LedgerActivityLineTypeAdPublisherPayout                LedgerActivityLineType = "ad_publisher_payout"
-	LedgerActivityLineTypeAdPublisherPayoutReceived        LedgerActivityLineType = "ad_publisher_payout_received"
-	LedgerActivityLineTypeAdSpendCharge                    LedgerActivityLineType = "ad_spend_charge"
-	LedgerActivityLineTypeAffiliateFee                     LedgerActivityLineType = "affiliate_fee"
-	LedgerActivityLineTypeAirdrop                          LedgerActivityLineType = "airdrop"
-	LedgerActivityLineTypeAirdropLinkCreated               LedgerActivityLineType = "airdrop_link_created"
-	LedgerActivityLineTypeAirdropLinkRedeemed              LedgerActivityLineType = "airdrop_link_redeemed"
-	LedgerActivityLineTypeAirdropLinkReturned              LedgerActivityLineType = "airdrop_link_returned"
-	LedgerActivityLineTypeAirdropReversal                  LedgerActivityLineType = "airdrop_reversal"
-	LedgerActivityLineTypeApplicationFee                   LedgerActivityLineType = "application_fee"
-	LedgerActivityLineTypeApplicationFeePayout             LedgerActivityLineType = "application_fee_payout"
-	LedgerActivityLineTypeBalanceReservation               LedgerActivityLineType = "balance_reservation"
-	LedgerActivityLineTypeBalanceReservationReversal       LedgerActivityLineType = "balance_reservation_reversal"
-	LedgerActivityLineTypeBankTransfer                     LedgerActivityLineType = "bank_transfer"
-	LedgerActivityLineTypeBillingPercentageFee             LedgerActivityLineType = "billing_percentage_fee"
-	LedgerActivityLineTypeBuyerFee                         LedgerActivityLineType = "buyer_fee"
-	LedgerActivityLineTypeCardSpendAuthorization           LedgerActivityLineType = "card_spend_authorization"
-	LedgerActivityLineTypeCardSpendAuthorizationVoid       LedgerActivityLineType = "card_spend_authorization_void"
-	LedgerActivityLineTypeCardSpendRefund                  LedgerActivityLineType = "card_spend_refund"
-	LedgerActivityLineTypeCompanyReferral                  LedgerActivityLineType = "company_referral"
-	LedgerActivityLineTypeCrossBorderPercentageFee         LedgerActivityLineType = "cross_border_percentage_fee"
-	LedgerActivityLineTypeCurrencyConversionIncoming       LedgerActivityLineType = "currency_conversion_incoming"
-	LedgerActivityLineTypeCurrencyConversionOutgoing       LedgerActivityLineType = "currency_conversion_outgoing"
-	LedgerActivityLineTypeDisputeAlertFee                  LedgerActivityLineType = "dispute_alert_fee"
-	LedgerActivityLineTypeDisputeHoldAdjustment            LedgerActivityLineType = "dispute_hold_adjustment"
-	LedgerActivityLineTypeDisputeRepresentmentFee          LedgerActivityLineType = "dispute_representment_fee"
-	LedgerActivityLineTypeFraudPreventionFee               LedgerActivityLineType = "fraud_prevention_fee"
-	LedgerActivityLineTypeFxPercentageFee                  LedgerActivityLineType = "fx_percentage_fee"
-	LedgerActivityLineTypeHighRiskMerchantFee              LedgerActivityLineType = "high_risk_merchant_fee"
-	LedgerActivityLineTypeInstallmentDefault               LedgerActivityLineType = "installment_default"
-	LedgerActivityLineTypeInternalBalanceTransferIncoming  LedgerActivityLineType = "internal_balance_transfer_incoming"
-	LedgerActivityLineTypeInternalBalanceTransferOutgoing  LedgerActivityLineType = "internal_balance_transfer_outgoing"
-	LedgerActivityLineTypeInternalWithdrawal               LedgerActivityLineType = "internal_withdrawal"
-	LedgerActivityLineTypeInternalWithdrawalReversal       LedgerActivityLineType = "internal_withdrawal_reversal"
-	LedgerActivityLineTypeLegacyCryptoPayment              LedgerActivityLineType = "legacy_crypto_payment"
-	LedgerActivityLineTypeLegacyPayment                    LedgerActivityLineType = "legacy_payment"
-	LedgerActivityLineTypeLegacyPaymentRefund              LedgerActivityLineType = "legacy_payment_refund"
-	LedgerActivityLineTypeLicenseSale                      LedgerActivityLineType = "license_sale"
-	LedgerActivityLineTypeLicenseSaleCommission            LedgerActivityLineType = "license_sale_commission"
-	LedgerActivityLineTypeLicenseSaleRevenue               LedgerActivityLineType = "license_sale_revenue"
-	LedgerActivityLineTypeMiscPurchase                     LedgerActivityLineType = "misc_purchase"
-	LedgerActivityLineTypeMiscRefund                       LedgerActivityLineType = "misc_refund"
-	LedgerActivityLineTypeMiscReversal                     LedgerActivityLineType = "misc_reversal"
-	LedgerActivityLineTypeOnchainDeposit                   LedgerActivityLineType = "onchain_deposit"
-	LedgerActivityLineTypeOnchainSwapTarget                LedgerActivityLineType = "onchain_swap_target"
-	LedgerActivityLineTypeOnchainWalletTransferIncoming    LedgerActivityLineType = "onchain_wallet_transfer_incoming"
-	LedgerActivityLineTypeOnchainWalletTransferOutgoing    LedgerActivityLineType = "onchain_wallet_transfer_outgoing"
-	LedgerActivityLineTypeOrchestrationPercentageFee       LedgerActivityLineType = "orchestration_percentage_fee"
-	LedgerActivityLineTypePassthroughGmv                   LedgerActivityLineType = "passthrough_gmv"
-	LedgerActivityLineTypePaymentDispute                   LedgerActivityLineType = "payment_dispute"
-	LedgerActivityLineTypePaymentDisputeAdjustment         LedgerActivityLineType = "payment_dispute_adjustment"
-	LedgerActivityLineTypePaymentDisputeFee                LedgerActivityLineType = "payment_dispute_fee"
-	LedgerActivityLineTypePaymentDisputeReversal           LedgerActivityLineType = "payment_dispute_reversal"
-	LedgerActivityLineTypePaymentGross                     LedgerActivityLineType = "payment_gross"
-	LedgerActivityLineTypePaymentGrossReversal             LedgerActivityLineType = "payment_gross_reversal"
-	LedgerActivityLineTypePaymentProcessingFixedFee        LedgerActivityLineType = "payment_processing_fixed_fee"
-	LedgerActivityLineTypePaymentProcessingPercentageFee   LedgerActivityLineType = "payment_processing_percentage_fee"
-	LedgerActivityLineTypePaymentReferral                  LedgerActivityLineType = "payment_referral"
-	LedgerActivityLineTypePaymentReferralReversal          LedgerActivityLineType = "payment_referral_reversal"
-	LedgerActivityLineTypePaymentRefund                    LedgerActivityLineType = "payment_refund"
-	LedgerActivityLineTypePaymentRefundReversal            LedgerActivityLineType = "payment_refund_reversal"
-	LedgerActivityLineTypePaymentRevshare                  LedgerActivityLineType = "payment_revshare"
-	LedgerActivityLineTypePaymentRevsharePayout            LedgerActivityLineType = "payment_revshare_payout"
-	LedgerActivityLineTypePaymentRevshareRefund            LedgerActivityLineType = "payment_revshare_refund"
-	LedgerActivityLineTypePaymentRevshareReversal          LedgerActivityLineType = "payment_revshare_reversal"
-	LedgerActivityLineTypePayoutFee                        LedgerActivityLineType = "payout_fee"
-	LedgerActivityLineTypePlatformAffiliatePayment         LedgerActivityLineType = "platform_affiliate_payment"
-	LedgerActivityLineTypePlatformAffiliatePaymentReversal LedgerActivityLineType = "platform_affiliate_payment_reversal"
-	LedgerActivityLineTypePlatformBalancePayment           LedgerActivityLineType = "platform_balance_payment"
-	LedgerActivityLineTypePlatformBalancePaymentRefund     LedgerActivityLineType = "platform_balance_payment_refund"
-	LedgerActivityLineTypePlatformBalanceTransferIncoming  LedgerActivityLineType = "platform_balance_transfer_incoming"
-	LedgerActivityLineTypePlatformBalanceTransferOutgoing  LedgerActivityLineType = "platform_balance_transfer_outgoing"
-	LedgerActivityLineTypePlatformCoveredDispute           LedgerActivityLineType = "platform_covered_dispute"
-	LedgerActivityLineTypePromoReversal                    LedgerActivityLineType = "promo_reversal"
-	LedgerActivityLineTypeReferralBonus                    LedgerActivityLineType = "referral_bonus"
-	LedgerActivityLineTypeResolutionCenterRefund           LedgerActivityLineType = "resolution_center_refund"
-	LedgerActivityLineTypeRevsharePercentageFee            LedgerActivityLineType = "revshare_percentage_fee"
-	LedgerActivityLineTypeSalesTaxFee                      LedgerActivityLineType = "sales_tax_fee"
-	LedgerActivityLineTypeSalesTaxRemittance               LedgerActivityLineType = "sales_tax_remittance"
-	LedgerActivityLineTypeSalesTaxRemittanceReversal       LedgerActivityLineType = "sales_tax_remittance_reversal"
-	LedgerActivityLineTypeSoftwareRentalRevshare           LedgerActivityLineType = "software_rental_revshare"
-	LedgerActivityLineTypeSoftwareRentalTransaction        LedgerActivityLineType = "software_rental_transaction"
-	LedgerActivityLineTypeStripeDomesticProcessingFee      LedgerActivityLineType = "stripe_domestic_processing_fee"
-	LedgerActivityLineTypeStripeInternationalProcessingFee LedgerActivityLineType = "stripe_international_processing_fee"
-	LedgerActivityLineTypeThreeDsFixedFee                  LedgerActivityLineType = "three_ds_fixed_fee"
-	LedgerActivityLineTypeTopup                            LedgerActivityLineType = "topup"
-	LedgerActivityLineTypeTopupFee                         LedgerActivityLineType = "topup_fee"
-	LedgerActivityLineTypeTopupReversal                    LedgerActivityLineType = "topup_reversal"
-	LedgerActivityLineTypeTreasuryPayin                    LedgerActivityLineType = "treasury_payin"
-	LedgerActivityLineTypeWhopProcessingFee                LedgerActivityLineType = "whop_processing_fee"
-	LedgerActivityLineTypeWithdrawal                       LedgerActivityLineType = "withdrawal"
-	LedgerActivityLineTypeWithdrawalClawback               LedgerActivityLineType = "withdrawal_clawback"
-	LedgerActivityLineTypeWithdrawalClawbackReversal       LedgerActivityLineType = "withdrawal_clawback_reversal"
-	LedgerActivityLineTypeWithdrawalReclassification       LedgerActivityLineType = "withdrawal_reclassification"
-	LedgerActivityLineTypeWithdrawalReversal               LedgerActivityLineType = "withdrawal_reversal"
+	LedgerActivityLineTypeAdBudgetRelease                           LedgerActivityLineType = "ad_budget_release"
+	LedgerActivityLineTypeAdCampaignBudget                          LedgerActivityLineType = "ad_campaign_budget"
+	LedgerActivityLineTypeAdPublisherPayout                         LedgerActivityLineType = "ad_publisher_payout"
+	LedgerActivityLineTypeAdPublisherPayoutReceived                 LedgerActivityLineType = "ad_publisher_payout_received"
+	LedgerActivityLineTypeAdSpendCharge                             LedgerActivityLineType = "ad_spend_charge"
+	LedgerActivityLineTypeAffiliateFee                              LedgerActivityLineType = "affiliate_fee"
+	LedgerActivityLineTypeAirdrop                                   LedgerActivityLineType = "airdrop"
+	LedgerActivityLineTypeAirdropLinkCreated                        LedgerActivityLineType = "airdrop_link_created"
+	LedgerActivityLineTypeAirdropLinkRedeemed                       LedgerActivityLineType = "airdrop_link_redeemed"
+	LedgerActivityLineTypeAirdropLinkReturned                       LedgerActivityLineType = "airdrop_link_returned"
+	LedgerActivityLineTypeAirdropReversal                           LedgerActivityLineType = "airdrop_reversal"
+	LedgerActivityLineTypeApplicationFee                            LedgerActivityLineType = "application_fee"
+	LedgerActivityLineTypeApplicationFeePayout                      LedgerActivityLineType = "application_fee_payout"
+	LedgerActivityLineTypeBalanceReservation                        LedgerActivityLineType = "balance_reservation"
+	LedgerActivityLineTypeBalanceReservationReversal                LedgerActivityLineType = "balance_reservation_reversal"
+	LedgerActivityLineTypeBankTransfer                              LedgerActivityLineType = "bank_transfer"
+	LedgerActivityLineTypeBillingPercentageFee                      LedgerActivityLineType = "billing_percentage_fee"
+	LedgerActivityLineTypeBuyerFee                                  LedgerActivityLineType = "buyer_fee"
+	LedgerActivityLineTypeCardInterchange                           LedgerActivityLineType = "card_interchange"
+	LedgerActivityLineTypeCardLoadDeposit                           LedgerActivityLineType = "card_load_deposit"
+	LedgerActivityLineTypeCardLoadTransfer                          LedgerActivityLineType = "card_load_transfer"
+	LedgerActivityLineTypeCardSpendAuthorization                    LedgerActivityLineType = "card_spend_authorization"
+	LedgerActivityLineTypeCardSpendAuthorizationVoid                LedgerActivityLineType = "card_spend_authorization_void"
+	LedgerActivityLineTypeCardSpendRefund                           LedgerActivityLineType = "card_spend_refund"
+	LedgerActivityLineTypeCardUnloadDeposit                         LedgerActivityLineType = "card_unload_deposit"
+	LedgerActivityLineTypeCardUnloadTransfer                        LedgerActivityLineType = "card_unload_transfer"
+	LedgerActivityLineTypeCompanyReferral                           LedgerActivityLineType = "company_referral"
+	LedgerActivityLineTypeConnectedAccountNegativeBalance           LedgerActivityLineType = "connected_account_negative_balance"
+	LedgerActivityLineTypeCrossBorderPercentageFee                  LedgerActivityLineType = "cross_border_percentage_fee"
+	LedgerActivityLineTypeCurrencyConversionIncoming                LedgerActivityLineType = "currency_conversion_incoming"
+	LedgerActivityLineTypeCurrencyConversionOutgoing                LedgerActivityLineType = "currency_conversion_outgoing"
+	LedgerActivityLineTypeDisputeAlertFee                           LedgerActivityLineType = "dispute_alert_fee"
+	LedgerActivityLineTypeDisputeHoldAdjustment                     LedgerActivityLineType = "dispute_hold_adjustment"
+	LedgerActivityLineTypeDisputeRepresentmentFee                   LedgerActivityLineType = "dispute_representment_fee"
+	LedgerActivityLineTypeExternalCardLoadDeposit                   LedgerActivityLineType = "external_card_load_deposit"
+	LedgerActivityLineTypeFraudPreventionFee                        LedgerActivityLineType = "fraud_prevention_fee"
+	LedgerActivityLineTypeFxPercentageFee                           LedgerActivityLineType = "fx_percentage_fee"
+	LedgerActivityLineTypeHighRiskMerchantFee                       LedgerActivityLineType = "high_risk_merchant_fee"
+	LedgerActivityLineTypeInstallmentDefault                        LedgerActivityLineType = "installment_default"
+	LedgerActivityLineTypeInternalBalanceTransferIncoming           LedgerActivityLineType = "internal_balance_transfer_incoming"
+	LedgerActivityLineTypeInternalBalanceTransferOutgoing           LedgerActivityLineType = "internal_balance_transfer_outgoing"
+	LedgerActivityLineTypeInternalWithdrawal                        LedgerActivityLineType = "internal_withdrawal"
+	LedgerActivityLineTypeInternalWithdrawalComplete                LedgerActivityLineType = "internal_withdrawal_complete"
+	LedgerActivityLineTypeInternalWithdrawalFee                     LedgerActivityLineType = "internal_withdrawal_fee"
+	LedgerActivityLineTypeInternalWithdrawalFeeReversal             LedgerActivityLineType = "internal_withdrawal_fee_reversal"
+	LedgerActivityLineTypeInternalWithdrawalInTransit               LedgerActivityLineType = "internal_withdrawal_in_transit"
+	LedgerActivityLineTypeInternalWithdrawalInTransitReversal       LedgerActivityLineType = "internal_withdrawal_in_transit_reversal"
+	LedgerActivityLineTypeInternalWithdrawalMarkupFee               LedgerActivityLineType = "internal_withdrawal_markup_fee"
+	LedgerActivityLineTypeInternalWithdrawalMarkupFeePayout         LedgerActivityLineType = "internal_withdrawal_markup_fee_payout"
+	LedgerActivityLineTypeInternalWithdrawalMarkupFeePayoutReversal LedgerActivityLineType = "internal_withdrawal_markup_fee_payout_reversal"
+	LedgerActivityLineTypeInternalWithdrawalMarkupFeeReversal       LedgerActivityLineType = "internal_withdrawal_markup_fee_reversal"
+	LedgerActivityLineTypeInternalWithdrawalReversal                LedgerActivityLineType = "internal_withdrawal_reversal"
+	LedgerActivityLineTypeLegacyCryptoPayment                       LedgerActivityLineType = "legacy_crypto_payment"
+	LedgerActivityLineTypeLegacyPayment                             LedgerActivityLineType = "legacy_payment"
+	LedgerActivityLineTypeLegacyPaymentRefund                       LedgerActivityLineType = "legacy_payment_refund"
+	LedgerActivityLineTypeLicenseSale                               LedgerActivityLineType = "license_sale"
+	LedgerActivityLineTypeLicenseSaleCommission                     LedgerActivityLineType = "license_sale_commission"
+	LedgerActivityLineTypeLicenseSaleRevenue                        LedgerActivityLineType = "license_sale_revenue"
+	LedgerActivityLineTypeMarketplaceAffiliateFee                   LedgerActivityLineType = "marketplace_affiliate_fee"
+	LedgerActivityLineTypeMiscPurchase                              LedgerActivityLineType = "misc_purchase"
+	LedgerActivityLineTypeMiscRefund                                LedgerActivityLineType = "misc_refund"
+	LedgerActivityLineTypeMiscReversal                              LedgerActivityLineType = "misc_reversal"
+	LedgerActivityLineTypeOnchainDeposit                            LedgerActivityLineType = "onchain_deposit"
+	LedgerActivityLineTypeOnchainSwapSource                         LedgerActivityLineType = "onchain_swap_source"
+	LedgerActivityLineTypeOnchainSwapTarget                         LedgerActivityLineType = "onchain_swap_target"
+	LedgerActivityLineTypeOnchainWalletTransferIncoming             LedgerActivityLineType = "onchain_wallet_transfer_incoming"
+	LedgerActivityLineTypeOnchainWalletTransferOutgoing             LedgerActivityLineType = "onchain_wallet_transfer_outgoing"
+	LedgerActivityLineTypeOnchainWithdrawal                         LedgerActivityLineType = "onchain_withdrawal"
+	LedgerActivityLineTypeOrchestrationPercentageFee                LedgerActivityLineType = "orchestration_percentage_fee"
+	LedgerActivityLineTypePassthroughGmv                            LedgerActivityLineType = "passthrough_gmv"
+	LedgerActivityLineTypePaymentDispute                            LedgerActivityLineType = "payment_dispute"
+	LedgerActivityLineTypePaymentDisputeAdjustment                  LedgerActivityLineType = "payment_dispute_adjustment"
+	LedgerActivityLineTypePaymentDisputeFee                         LedgerActivityLineType = "payment_dispute_fee"
+	LedgerActivityLineTypePaymentDisputeReversal                    LedgerActivityLineType = "payment_dispute_reversal"
+	LedgerActivityLineTypePaymentGross                              LedgerActivityLineType = "payment_gross"
+	LedgerActivityLineTypePaymentGrossReversal                      LedgerActivityLineType = "payment_gross_reversal"
+	LedgerActivityLineTypePaymentProcessingFixedFee                 LedgerActivityLineType = "payment_processing_fixed_fee"
+	LedgerActivityLineTypePaymentProcessingPercentageFee            LedgerActivityLineType = "payment_processing_percentage_fee"
+	LedgerActivityLineTypePaymentReferral                           LedgerActivityLineType = "payment_referral"
+	LedgerActivityLineTypePaymentReferralRefund                     LedgerActivityLineType = "payment_referral_refund"
+	LedgerActivityLineTypePaymentReferralReversal                   LedgerActivityLineType = "payment_referral_reversal"
+	LedgerActivityLineTypePaymentRefund                             LedgerActivityLineType = "payment_refund"
+	LedgerActivityLineTypePaymentRefundReversal                     LedgerActivityLineType = "payment_refund_reversal"
+	LedgerActivityLineTypePaymentRevshare                           LedgerActivityLineType = "payment_revshare"
+	LedgerActivityLineTypePaymentRevsharePayout                     LedgerActivityLineType = "payment_revshare_payout"
+	LedgerActivityLineTypePaymentRevshareRefund                     LedgerActivityLineType = "payment_revshare_refund"
+	LedgerActivityLineTypePaymentRevshareReversal                   LedgerActivityLineType = "payment_revshare_reversal"
+	LedgerActivityLineTypePayoutFee                                 LedgerActivityLineType = "payout_fee"
+	LedgerActivityLineTypePlatformAffiliatePayment                  LedgerActivityLineType = "platform_affiliate_payment"
+	LedgerActivityLineTypePlatformAffiliatePaymentReversal          LedgerActivityLineType = "platform_affiliate_payment_reversal"
+	LedgerActivityLineTypePlatformBalancePayment                    LedgerActivityLineType = "platform_balance_payment"
+	LedgerActivityLineTypePlatformBalancePaymentRefund              LedgerActivityLineType = "platform_balance_payment_refund"
+	LedgerActivityLineTypePlatformBalanceTransferFee                LedgerActivityLineType = "platform_balance_transfer_fee"
+	LedgerActivityLineTypePlatformBalanceTransferIncoming           LedgerActivityLineType = "platform_balance_transfer_incoming"
+	LedgerActivityLineTypePlatformBalanceTransferOutgoing           LedgerActivityLineType = "platform_balance_transfer_outgoing"
+	LedgerActivityLineTypePlatformCoveredDispute                    LedgerActivityLineType = "platform_covered_dispute"
+	LedgerActivityLineTypePlatformEarning                           LedgerActivityLineType = "platform_earning"
+	LedgerActivityLineTypePromoReversal                             LedgerActivityLineType = "promo_reversal"
+	LedgerActivityLineTypeReferralBonus                             LedgerActivityLineType = "referral_bonus"
+	LedgerActivityLineTypeResolutionCenterRefund                    LedgerActivityLineType = "resolution_center_refund"
+	LedgerActivityLineTypeRevsharePercentageFee                     LedgerActivityLineType = "revshare_percentage_fee"
+	LedgerActivityLineTypeSalesTaxFee                               LedgerActivityLineType = "sales_tax_fee"
+	LedgerActivityLineTypeSalesTaxRemittance                        LedgerActivityLineType = "sales_tax_remittance"
+	LedgerActivityLineTypeSalesTaxRemittanceReversal                LedgerActivityLineType = "sales_tax_remittance_reversal"
+	LedgerActivityLineTypeSoftwareRentalRevshare                    LedgerActivityLineType = "software_rental_revshare"
+	LedgerActivityLineTypeSoftwareRentalTransaction                 LedgerActivityLineType = "software_rental_transaction"
+	LedgerActivityLineTypeStripeDomesticProcessingFee               LedgerActivityLineType = "stripe_domestic_processing_fee"
+	LedgerActivityLineTypeStripeInternationalProcessingFee          LedgerActivityLineType = "stripe_international_processing_fee"
+	LedgerActivityLineTypeSwapFee                                   LedgerActivityLineType = "swap_fee"
+	LedgerActivityLineTypeThreeDsFixedFee                           LedgerActivityLineType = "three_ds_fixed_fee"
+	LedgerActivityLineTypeTopup                                     LedgerActivityLineType = "topup"
+	LedgerActivityLineTypeTopupFee                                  LedgerActivityLineType = "topup_fee"
+	LedgerActivityLineTypeTopupReversal                             LedgerActivityLineType = "topup_reversal"
+	LedgerActivityLineTypeTreasuryPayin                             LedgerActivityLineType = "treasury_payin"
+	LedgerActivityLineTypeWhopProcessingFee                         LedgerActivityLineType = "whop_processing_fee"
+	LedgerActivityLineTypeWithdrawal                                LedgerActivityLineType = "withdrawal"
+	LedgerActivityLineTypeWithdrawalClawback                        LedgerActivityLineType = "withdrawal_clawback"
+	LedgerActivityLineTypeWithdrawalClawbackReversal                LedgerActivityLineType = "withdrawal_clawback_reversal"
+	LedgerActivityLineTypeWithdrawalFee                             LedgerActivityLineType = "withdrawal_fee"
+	LedgerActivityLineTypeWithdrawalFeeReversal                     LedgerActivityLineType = "withdrawal_fee_reversal"
+	LedgerActivityLineTypeWithdrawalMarkupFee                       LedgerActivityLineType = "withdrawal_markup_fee"
+	LedgerActivityLineTypeWithdrawalMarkupFeePayout                 LedgerActivityLineType = "withdrawal_markup_fee_payout"
+	LedgerActivityLineTypeWithdrawalMarkupFeePayoutReversal         LedgerActivityLineType = "withdrawal_markup_fee_payout_reversal"
+	LedgerActivityLineTypeWithdrawalMarkupFeeReversal               LedgerActivityLineType = "withdrawal_markup_fee_reversal"
+	LedgerActivityLineTypeWithdrawalReclassification                LedgerActivityLineType = "withdrawal_reclassification"
+	LedgerActivityLineTypeWithdrawalReversal                        LedgerActivityLineType = "withdrawal_reversal"
+	LedgerActivityLineTypeWithdrawalTopupAdjustment                 LedgerActivityLineType = "withdrawal_topup_adjustment"
 )
 
 func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, error) {
@@ -1229,14 +1248,26 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeBillingPercentageFee, nil
 	case "buyer_fee":
 		return LedgerActivityLineTypeBuyerFee, nil
+	case "card_interchange":
+		return LedgerActivityLineTypeCardInterchange, nil
+	case "card_load_deposit":
+		return LedgerActivityLineTypeCardLoadDeposit, nil
+	case "card_load_transfer":
+		return LedgerActivityLineTypeCardLoadTransfer, nil
 	case "card_spend_authorization":
 		return LedgerActivityLineTypeCardSpendAuthorization, nil
 	case "card_spend_authorization_void":
 		return LedgerActivityLineTypeCardSpendAuthorizationVoid, nil
 	case "card_spend_refund":
 		return LedgerActivityLineTypeCardSpendRefund, nil
+	case "card_unload_deposit":
+		return LedgerActivityLineTypeCardUnloadDeposit, nil
+	case "card_unload_transfer":
+		return LedgerActivityLineTypeCardUnloadTransfer, nil
 	case "company_referral":
 		return LedgerActivityLineTypeCompanyReferral, nil
+	case "connected_account_negative_balance":
+		return LedgerActivityLineTypeConnectedAccountNegativeBalance, nil
 	case "cross_border_percentage_fee":
 		return LedgerActivityLineTypeCrossBorderPercentageFee, nil
 	case "currency_conversion_incoming":
@@ -1249,6 +1280,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeDisputeHoldAdjustment, nil
 	case "dispute_representment_fee":
 		return LedgerActivityLineTypeDisputeRepresentmentFee, nil
+	case "external_card_load_deposit":
+		return LedgerActivityLineTypeExternalCardLoadDeposit, nil
 	case "fraud_prevention_fee":
 		return LedgerActivityLineTypeFraudPreventionFee, nil
 	case "fx_percentage_fee":
@@ -1263,6 +1296,24 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeInternalBalanceTransferOutgoing, nil
 	case "internal_withdrawal":
 		return LedgerActivityLineTypeInternalWithdrawal, nil
+	case "internal_withdrawal_complete":
+		return LedgerActivityLineTypeInternalWithdrawalComplete, nil
+	case "internal_withdrawal_fee":
+		return LedgerActivityLineTypeInternalWithdrawalFee, nil
+	case "internal_withdrawal_fee_reversal":
+		return LedgerActivityLineTypeInternalWithdrawalFeeReversal, nil
+	case "internal_withdrawal_in_transit":
+		return LedgerActivityLineTypeInternalWithdrawalInTransit, nil
+	case "internal_withdrawal_in_transit_reversal":
+		return LedgerActivityLineTypeInternalWithdrawalInTransitReversal, nil
+	case "internal_withdrawal_markup_fee":
+		return LedgerActivityLineTypeInternalWithdrawalMarkupFee, nil
+	case "internal_withdrawal_markup_fee_payout":
+		return LedgerActivityLineTypeInternalWithdrawalMarkupFeePayout, nil
+	case "internal_withdrawal_markup_fee_payout_reversal":
+		return LedgerActivityLineTypeInternalWithdrawalMarkupFeePayoutReversal, nil
+	case "internal_withdrawal_markup_fee_reversal":
+		return LedgerActivityLineTypeInternalWithdrawalMarkupFeeReversal, nil
 	case "internal_withdrawal_reversal":
 		return LedgerActivityLineTypeInternalWithdrawalReversal, nil
 	case "legacy_crypto_payment":
@@ -1277,6 +1328,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeLicenseSaleCommission, nil
 	case "license_sale_revenue":
 		return LedgerActivityLineTypeLicenseSaleRevenue, nil
+	case "marketplace_affiliate_fee":
+		return LedgerActivityLineTypeMarketplaceAffiliateFee, nil
 	case "misc_purchase":
 		return LedgerActivityLineTypeMiscPurchase, nil
 	case "misc_refund":
@@ -1285,12 +1338,16 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeMiscReversal, nil
 	case "onchain_deposit":
 		return LedgerActivityLineTypeOnchainDeposit, nil
+	case "onchain_swap_source":
+		return LedgerActivityLineTypeOnchainSwapSource, nil
 	case "onchain_swap_target":
 		return LedgerActivityLineTypeOnchainSwapTarget, nil
 	case "onchain_wallet_transfer_incoming":
 		return LedgerActivityLineTypeOnchainWalletTransferIncoming, nil
 	case "onchain_wallet_transfer_outgoing":
 		return LedgerActivityLineTypeOnchainWalletTransferOutgoing, nil
+	case "onchain_withdrawal":
+		return LedgerActivityLineTypeOnchainWithdrawal, nil
 	case "orchestration_percentage_fee":
 		return LedgerActivityLineTypeOrchestrationPercentageFee, nil
 	case "passthrough_gmv":
@@ -1313,6 +1370,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypePaymentProcessingPercentageFee, nil
 	case "payment_referral":
 		return LedgerActivityLineTypePaymentReferral, nil
+	case "payment_referral_refund":
+		return LedgerActivityLineTypePaymentReferralRefund, nil
 	case "payment_referral_reversal":
 		return LedgerActivityLineTypePaymentReferralReversal, nil
 	case "payment_refund":
@@ -1337,12 +1396,16 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypePlatformBalancePayment, nil
 	case "platform_balance_payment_refund":
 		return LedgerActivityLineTypePlatformBalancePaymentRefund, nil
+	case "platform_balance_transfer_fee":
+		return LedgerActivityLineTypePlatformBalanceTransferFee, nil
 	case "platform_balance_transfer_incoming":
 		return LedgerActivityLineTypePlatformBalanceTransferIncoming, nil
 	case "platform_balance_transfer_outgoing":
 		return LedgerActivityLineTypePlatformBalanceTransferOutgoing, nil
 	case "platform_covered_dispute":
 		return LedgerActivityLineTypePlatformCoveredDispute, nil
+	case "platform_earning":
+		return LedgerActivityLineTypePlatformEarning, nil
 	case "promo_reversal":
 		return LedgerActivityLineTypePromoReversal, nil
 	case "referral_bonus":
@@ -1365,6 +1428,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeStripeDomesticProcessingFee, nil
 	case "stripe_international_processing_fee":
 		return LedgerActivityLineTypeStripeInternationalProcessingFee, nil
+	case "swap_fee":
+		return LedgerActivityLineTypeSwapFee, nil
 	case "three_ds_fixed_fee":
 		return LedgerActivityLineTypeThreeDsFixedFee, nil
 	case "topup":
@@ -1383,10 +1448,24 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeWithdrawalClawback, nil
 	case "withdrawal_clawback_reversal":
 		return LedgerActivityLineTypeWithdrawalClawbackReversal, nil
+	case "withdrawal_fee":
+		return LedgerActivityLineTypeWithdrawalFee, nil
+	case "withdrawal_fee_reversal":
+		return LedgerActivityLineTypeWithdrawalFeeReversal, nil
+	case "withdrawal_markup_fee":
+		return LedgerActivityLineTypeWithdrawalMarkupFee, nil
+	case "withdrawal_markup_fee_payout":
+		return LedgerActivityLineTypeWithdrawalMarkupFeePayout, nil
+	case "withdrawal_markup_fee_payout_reversal":
+		return LedgerActivityLineTypeWithdrawalMarkupFeePayoutReversal, nil
+	case "withdrawal_markup_fee_reversal":
+		return LedgerActivityLineTypeWithdrawalMarkupFeeReversal, nil
 	case "withdrawal_reclassification":
 		return LedgerActivityLineTypeWithdrawalReclassification, nil
 	case "withdrawal_reversal":
 		return LedgerActivityLineTypeWithdrawalReversal, nil
+	case "withdrawal_topup_adjustment":
+		return LedgerActivityLineTypeWithdrawalTopupAdjustment, nil
 	}
 	var t LedgerActivityLineType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4814,107 +4893,159 @@ func (l *LedgerActivitySourcePayoutDestination) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+type ListFinancialActivityRequestDirection string
+
+const (
+	ListFinancialActivityRequestDirectionMoneyIn  ListFinancialActivityRequestDirection = "money_in"
+	ListFinancialActivityRequestDirectionMoneyOut ListFinancialActivityRequestDirection = "money_out"
+)
+
+func NewListFinancialActivityRequestDirectionFromString(s string) (ListFinancialActivityRequestDirection, error) {
+	switch s {
+	case "money_in":
+		return ListFinancialActivityRequestDirectionMoneyIn, nil
+	case "money_out":
+		return ListFinancialActivityRequestDirectionMoneyOut, nil
+	}
+	var t ListFinancialActivityRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListFinancialActivityRequestDirection) Ptr() *ListFinancialActivityRequestDirection {
+	return &l
+}
+
 type ListFinancialActivityRequestLineTypesItem string
 
 const (
-	ListFinancialActivityRequestLineTypesItemAdBudgetRelease                  ListFinancialActivityRequestLineTypesItem = "ad_budget_release"
-	ListFinancialActivityRequestLineTypesItemAdCampaignBudget                 ListFinancialActivityRequestLineTypesItem = "ad_campaign_budget"
-	ListFinancialActivityRequestLineTypesItemAdPublisherPayout                ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout"
-	ListFinancialActivityRequestLineTypesItemAdPublisherPayoutReceived        ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout_received"
-	ListFinancialActivityRequestLineTypesItemAdSpendCharge                    ListFinancialActivityRequestLineTypesItem = "ad_spend_charge"
-	ListFinancialActivityRequestLineTypesItemAffiliateFee                     ListFinancialActivityRequestLineTypesItem = "affiliate_fee"
-	ListFinancialActivityRequestLineTypesItemAirdrop                          ListFinancialActivityRequestLineTypesItem = "airdrop"
-	ListFinancialActivityRequestLineTypesItemAirdropLinkCreated               ListFinancialActivityRequestLineTypesItem = "airdrop_link_created"
-	ListFinancialActivityRequestLineTypesItemAirdropLinkRedeemed              ListFinancialActivityRequestLineTypesItem = "airdrop_link_redeemed"
-	ListFinancialActivityRequestLineTypesItemAirdropLinkReturned              ListFinancialActivityRequestLineTypesItem = "airdrop_link_returned"
-	ListFinancialActivityRequestLineTypesItemAirdropReversal                  ListFinancialActivityRequestLineTypesItem = "airdrop_reversal"
-	ListFinancialActivityRequestLineTypesItemApplicationFee                   ListFinancialActivityRequestLineTypesItem = "application_fee"
-	ListFinancialActivityRequestLineTypesItemApplicationFeePayout             ListFinancialActivityRequestLineTypesItem = "application_fee_payout"
-	ListFinancialActivityRequestLineTypesItemBalanceReservation               ListFinancialActivityRequestLineTypesItem = "balance_reservation"
-	ListFinancialActivityRequestLineTypesItemBalanceReservationReversal       ListFinancialActivityRequestLineTypesItem = "balance_reservation_reversal"
-	ListFinancialActivityRequestLineTypesItemBankTransfer                     ListFinancialActivityRequestLineTypesItem = "bank_transfer"
-	ListFinancialActivityRequestLineTypesItemBillingPercentageFee             ListFinancialActivityRequestLineTypesItem = "billing_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemBuyerFee                         ListFinancialActivityRequestLineTypesItem = "buyer_fee"
-	ListFinancialActivityRequestLineTypesItemCardSpendAuthorization           ListFinancialActivityRequestLineTypesItem = "card_spend_authorization"
-	ListFinancialActivityRequestLineTypesItemCardSpendAuthorizationVoid       ListFinancialActivityRequestLineTypesItem = "card_spend_authorization_void"
-	ListFinancialActivityRequestLineTypesItemCardSpendRefund                  ListFinancialActivityRequestLineTypesItem = "card_spend_refund"
-	ListFinancialActivityRequestLineTypesItemCompanyReferral                  ListFinancialActivityRequestLineTypesItem = "company_referral"
-	ListFinancialActivityRequestLineTypesItemCrossBorderPercentageFee         ListFinancialActivityRequestLineTypesItem = "cross_border_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemCurrencyConversionIncoming       ListFinancialActivityRequestLineTypesItem = "currency_conversion_incoming"
-	ListFinancialActivityRequestLineTypesItemCurrencyConversionOutgoing       ListFinancialActivityRequestLineTypesItem = "currency_conversion_outgoing"
-	ListFinancialActivityRequestLineTypesItemDisputeAlertFee                  ListFinancialActivityRequestLineTypesItem = "dispute_alert_fee"
-	ListFinancialActivityRequestLineTypesItemDisputeHoldAdjustment            ListFinancialActivityRequestLineTypesItem = "dispute_hold_adjustment"
-	ListFinancialActivityRequestLineTypesItemDisputeRepresentmentFee          ListFinancialActivityRequestLineTypesItem = "dispute_representment_fee"
-	ListFinancialActivityRequestLineTypesItemFees                             ListFinancialActivityRequestLineTypesItem = "fees"
-	ListFinancialActivityRequestLineTypesItemFraudPreventionFee               ListFinancialActivityRequestLineTypesItem = "fraud_prevention_fee"
-	ListFinancialActivityRequestLineTypesItemFxPercentageFee                  ListFinancialActivityRequestLineTypesItem = "fx_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemHighRiskMerchantFee              ListFinancialActivityRequestLineTypesItem = "high_risk_merchant_fee"
-	ListFinancialActivityRequestLineTypesItemInstallmentDefault               ListFinancialActivityRequestLineTypesItem = "installment_default"
-	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferIncoming  ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_incoming"
-	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferOutgoing  ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_outgoing"
-	ListFinancialActivityRequestLineTypesItemInternalWithdrawal               ListFinancialActivityRequestLineTypesItem = "internal_withdrawal"
-	ListFinancialActivityRequestLineTypesItemInternalWithdrawalReversal       ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_reversal"
-	ListFinancialActivityRequestLineTypesItemLegacyCryptoPayment              ListFinancialActivityRequestLineTypesItem = "legacy_crypto_payment"
-	ListFinancialActivityRequestLineTypesItemLegacyPayment                    ListFinancialActivityRequestLineTypesItem = "legacy_payment"
-	ListFinancialActivityRequestLineTypesItemLegacyPaymentRefund              ListFinancialActivityRequestLineTypesItem = "legacy_payment_refund"
-	ListFinancialActivityRequestLineTypesItemLicenseSale                      ListFinancialActivityRequestLineTypesItem = "license_sale"
-	ListFinancialActivityRequestLineTypesItemLicenseSaleCommission            ListFinancialActivityRequestLineTypesItem = "license_sale_commission"
-	ListFinancialActivityRequestLineTypesItemLicenseSaleRevenue               ListFinancialActivityRequestLineTypesItem = "license_sale_revenue"
-	ListFinancialActivityRequestLineTypesItemMiscPurchase                     ListFinancialActivityRequestLineTypesItem = "misc_purchase"
-	ListFinancialActivityRequestLineTypesItemMiscRefund                       ListFinancialActivityRequestLineTypesItem = "misc_refund"
-	ListFinancialActivityRequestLineTypesItemMiscReversal                     ListFinancialActivityRequestLineTypesItem = "misc_reversal"
-	ListFinancialActivityRequestLineTypesItemOnchainDeposit                   ListFinancialActivityRequestLineTypesItem = "onchain_deposit"
-	ListFinancialActivityRequestLineTypesItemOnchainSwapTarget                ListFinancialActivityRequestLineTypesItem = "onchain_swap_target"
-	ListFinancialActivityRequestLineTypesItemOnchainWalletTransferIncoming    ListFinancialActivityRequestLineTypesItem = "onchain_wallet_transfer_incoming"
-	ListFinancialActivityRequestLineTypesItemOnchainWalletTransferOutgoing    ListFinancialActivityRequestLineTypesItem = "onchain_wallet_transfer_outgoing"
-	ListFinancialActivityRequestLineTypesItemOrchestrationPercentageFee       ListFinancialActivityRequestLineTypesItem = "orchestration_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemPassthroughGmv                   ListFinancialActivityRequestLineTypesItem = "passthrough_gmv"
-	ListFinancialActivityRequestLineTypesItemPaymentDispute                   ListFinancialActivityRequestLineTypesItem = "payment_dispute"
-	ListFinancialActivityRequestLineTypesItemPaymentDisputeAdjustment         ListFinancialActivityRequestLineTypesItem = "payment_dispute_adjustment"
-	ListFinancialActivityRequestLineTypesItemPaymentDisputeFee                ListFinancialActivityRequestLineTypesItem = "payment_dispute_fee"
-	ListFinancialActivityRequestLineTypesItemPaymentDisputeReversal           ListFinancialActivityRequestLineTypesItem = "payment_dispute_reversal"
-	ListFinancialActivityRequestLineTypesItemPaymentGross                     ListFinancialActivityRequestLineTypesItem = "payment_gross"
-	ListFinancialActivityRequestLineTypesItemPaymentGrossReversal             ListFinancialActivityRequestLineTypesItem = "payment_gross_reversal"
-	ListFinancialActivityRequestLineTypesItemPaymentProcessingFixedFee        ListFinancialActivityRequestLineTypesItem = "payment_processing_fixed_fee"
-	ListFinancialActivityRequestLineTypesItemPaymentProcessingPercentageFee   ListFinancialActivityRequestLineTypesItem = "payment_processing_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemPaymentReferral                  ListFinancialActivityRequestLineTypesItem = "payment_referral"
-	ListFinancialActivityRequestLineTypesItemPaymentReferralReversal          ListFinancialActivityRequestLineTypesItem = "payment_referral_reversal"
-	ListFinancialActivityRequestLineTypesItemPaymentRefund                    ListFinancialActivityRequestLineTypesItem = "payment_refund"
-	ListFinancialActivityRequestLineTypesItemPaymentRefundReversal            ListFinancialActivityRequestLineTypesItem = "payment_refund_reversal"
-	ListFinancialActivityRequestLineTypesItemPaymentRevshare                  ListFinancialActivityRequestLineTypesItem = "payment_revshare"
-	ListFinancialActivityRequestLineTypesItemPaymentRevsharePayout            ListFinancialActivityRequestLineTypesItem = "payment_revshare_payout"
-	ListFinancialActivityRequestLineTypesItemPaymentRevshareRefund            ListFinancialActivityRequestLineTypesItem = "payment_revshare_refund"
-	ListFinancialActivityRequestLineTypesItemPaymentRevshareReversal          ListFinancialActivityRequestLineTypesItem = "payment_revshare_reversal"
-	ListFinancialActivityRequestLineTypesItemPayoutFee                        ListFinancialActivityRequestLineTypesItem = "payout_fee"
-	ListFinancialActivityRequestLineTypesItemPlatformAffiliatePayment         ListFinancialActivityRequestLineTypesItem = "platform_affiliate_payment"
-	ListFinancialActivityRequestLineTypesItemPlatformAffiliatePaymentReversal ListFinancialActivityRequestLineTypesItem = "platform_affiliate_payment_reversal"
-	ListFinancialActivityRequestLineTypesItemPlatformBalancePayment           ListFinancialActivityRequestLineTypesItem = "platform_balance_payment"
-	ListFinancialActivityRequestLineTypesItemPlatformBalancePaymentRefund     ListFinancialActivityRequestLineTypesItem = "platform_balance_payment_refund"
-	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncoming  ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_incoming"
-	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing  ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_outgoing"
-	ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute           ListFinancialActivityRequestLineTypesItem = "platform_covered_dispute"
-	ListFinancialActivityRequestLineTypesItemPromoReversal                    ListFinancialActivityRequestLineTypesItem = "promo_reversal"
-	ListFinancialActivityRequestLineTypesItemReferralBonus                    ListFinancialActivityRequestLineTypesItem = "referral_bonus"
-	ListFinancialActivityRequestLineTypesItemResolutionCenterRefund           ListFinancialActivityRequestLineTypesItem = "resolution_center_refund"
-	ListFinancialActivityRequestLineTypesItemRevsharePercentageFee            ListFinancialActivityRequestLineTypesItem = "revshare_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemSalesTaxFee                      ListFinancialActivityRequestLineTypesItem = "sales_tax_fee"
-	ListFinancialActivityRequestLineTypesItemSalesTaxRemittance               ListFinancialActivityRequestLineTypesItem = "sales_tax_remittance"
-	ListFinancialActivityRequestLineTypesItemSalesTaxRemittanceReversal       ListFinancialActivityRequestLineTypesItem = "sales_tax_remittance_reversal"
-	ListFinancialActivityRequestLineTypesItemSoftwareRentalRevshare           ListFinancialActivityRequestLineTypesItem = "software_rental_revshare"
-	ListFinancialActivityRequestLineTypesItemSoftwareRentalTransaction        ListFinancialActivityRequestLineTypesItem = "software_rental_transaction"
-	ListFinancialActivityRequestLineTypesItemStripeDomesticProcessingFee      ListFinancialActivityRequestLineTypesItem = "stripe_domestic_processing_fee"
-	ListFinancialActivityRequestLineTypesItemStripeInternationalProcessingFee ListFinancialActivityRequestLineTypesItem = "stripe_international_processing_fee"
-	ListFinancialActivityRequestLineTypesItemThreeDsFixedFee                  ListFinancialActivityRequestLineTypesItem = "three_ds_fixed_fee"
-	ListFinancialActivityRequestLineTypesItemTopup                            ListFinancialActivityRequestLineTypesItem = "topup"
-	ListFinancialActivityRequestLineTypesItemTopupFee                         ListFinancialActivityRequestLineTypesItem = "topup_fee"
-	ListFinancialActivityRequestLineTypesItemTopupReversal                    ListFinancialActivityRequestLineTypesItem = "topup_reversal"
-	ListFinancialActivityRequestLineTypesItemTreasuryPayin                    ListFinancialActivityRequestLineTypesItem = "treasury_payin"
-	ListFinancialActivityRequestLineTypesItemWhopProcessingFee                ListFinancialActivityRequestLineTypesItem = "whop_processing_fee"
-	ListFinancialActivityRequestLineTypesItemWithdrawal                       ListFinancialActivityRequestLineTypesItem = "withdrawal"
-	ListFinancialActivityRequestLineTypesItemWithdrawalClawback               ListFinancialActivityRequestLineTypesItem = "withdrawal_clawback"
-	ListFinancialActivityRequestLineTypesItemWithdrawalClawbackReversal       ListFinancialActivityRequestLineTypesItem = "withdrawal_clawback_reversal"
-	ListFinancialActivityRequestLineTypesItemWithdrawalReclassification       ListFinancialActivityRequestLineTypesItem = "withdrawal_reclassification"
-	ListFinancialActivityRequestLineTypesItemWithdrawalReversal               ListFinancialActivityRequestLineTypesItem = "withdrawal_reversal"
+	ListFinancialActivityRequestLineTypesItemAdBudgetRelease                           ListFinancialActivityRequestLineTypesItem = "ad_budget_release"
+	ListFinancialActivityRequestLineTypesItemAdCampaignBudget                          ListFinancialActivityRequestLineTypesItem = "ad_campaign_budget"
+	ListFinancialActivityRequestLineTypesItemAdPublisherPayout                         ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout"
+	ListFinancialActivityRequestLineTypesItemAdPublisherPayoutReceived                 ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout_received"
+	ListFinancialActivityRequestLineTypesItemAdSpendCharge                             ListFinancialActivityRequestLineTypesItem = "ad_spend_charge"
+	ListFinancialActivityRequestLineTypesItemAffiliateFee                              ListFinancialActivityRequestLineTypesItem = "affiliate_fee"
+	ListFinancialActivityRequestLineTypesItemAirdrop                                   ListFinancialActivityRequestLineTypesItem = "airdrop"
+	ListFinancialActivityRequestLineTypesItemAirdropLinkCreated                        ListFinancialActivityRequestLineTypesItem = "airdrop_link_created"
+	ListFinancialActivityRequestLineTypesItemAirdropLinkRedeemed                       ListFinancialActivityRequestLineTypesItem = "airdrop_link_redeemed"
+	ListFinancialActivityRequestLineTypesItemAirdropLinkReturned                       ListFinancialActivityRequestLineTypesItem = "airdrop_link_returned"
+	ListFinancialActivityRequestLineTypesItemAirdropReversal                           ListFinancialActivityRequestLineTypesItem = "airdrop_reversal"
+	ListFinancialActivityRequestLineTypesItemApplicationFee                            ListFinancialActivityRequestLineTypesItem = "application_fee"
+	ListFinancialActivityRequestLineTypesItemApplicationFeePayout                      ListFinancialActivityRequestLineTypesItem = "application_fee_payout"
+	ListFinancialActivityRequestLineTypesItemBalanceReservation                        ListFinancialActivityRequestLineTypesItem = "balance_reservation"
+	ListFinancialActivityRequestLineTypesItemBalanceReservationReversal                ListFinancialActivityRequestLineTypesItem = "balance_reservation_reversal"
+	ListFinancialActivityRequestLineTypesItemBankTransfer                              ListFinancialActivityRequestLineTypesItem = "bank_transfer"
+	ListFinancialActivityRequestLineTypesItemBillingPercentageFee                      ListFinancialActivityRequestLineTypesItem = "billing_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemBuyerFee                                  ListFinancialActivityRequestLineTypesItem = "buyer_fee"
+	ListFinancialActivityRequestLineTypesItemCardInterchange                           ListFinancialActivityRequestLineTypesItem = "card_interchange"
+	ListFinancialActivityRequestLineTypesItemCardLoadDeposit                           ListFinancialActivityRequestLineTypesItem = "card_load_deposit"
+	ListFinancialActivityRequestLineTypesItemCardLoadTransfer                          ListFinancialActivityRequestLineTypesItem = "card_load_transfer"
+	ListFinancialActivityRequestLineTypesItemCardSpendAuthorization                    ListFinancialActivityRequestLineTypesItem = "card_spend_authorization"
+	ListFinancialActivityRequestLineTypesItemCardSpendAuthorizationVoid                ListFinancialActivityRequestLineTypesItem = "card_spend_authorization_void"
+	ListFinancialActivityRequestLineTypesItemCardSpendRefund                           ListFinancialActivityRequestLineTypesItem = "card_spend_refund"
+	ListFinancialActivityRequestLineTypesItemCardUnloadDeposit                         ListFinancialActivityRequestLineTypesItem = "card_unload_deposit"
+	ListFinancialActivityRequestLineTypesItemCardUnloadTransfer                        ListFinancialActivityRequestLineTypesItem = "card_unload_transfer"
+	ListFinancialActivityRequestLineTypesItemCompanyReferral                           ListFinancialActivityRequestLineTypesItem = "company_referral"
+	ListFinancialActivityRequestLineTypesItemConnectedAccountNegativeBalance           ListFinancialActivityRequestLineTypesItem = "connected_account_negative_balance"
+	ListFinancialActivityRequestLineTypesItemCrossBorderPercentageFee                  ListFinancialActivityRequestLineTypesItem = "cross_border_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemCurrencyConversionIncoming                ListFinancialActivityRequestLineTypesItem = "currency_conversion_incoming"
+	ListFinancialActivityRequestLineTypesItemCurrencyConversionOutgoing                ListFinancialActivityRequestLineTypesItem = "currency_conversion_outgoing"
+	ListFinancialActivityRequestLineTypesItemDisputeAlertFee                           ListFinancialActivityRequestLineTypesItem = "dispute_alert_fee"
+	ListFinancialActivityRequestLineTypesItemDisputeHoldAdjustment                     ListFinancialActivityRequestLineTypesItem = "dispute_hold_adjustment"
+	ListFinancialActivityRequestLineTypesItemDisputeRepresentmentFee                   ListFinancialActivityRequestLineTypesItem = "dispute_representment_fee"
+	ListFinancialActivityRequestLineTypesItemExternalCardLoadDeposit                   ListFinancialActivityRequestLineTypesItem = "external_card_load_deposit"
+	ListFinancialActivityRequestLineTypesItemFees                                      ListFinancialActivityRequestLineTypesItem = "fees"
+	ListFinancialActivityRequestLineTypesItemFraudPreventionFee                        ListFinancialActivityRequestLineTypesItem = "fraud_prevention_fee"
+	ListFinancialActivityRequestLineTypesItemFxPercentageFee                           ListFinancialActivityRequestLineTypesItem = "fx_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemHighRiskMerchantFee                       ListFinancialActivityRequestLineTypesItem = "high_risk_merchant_fee"
+	ListFinancialActivityRequestLineTypesItemInstallmentDefault                        ListFinancialActivityRequestLineTypesItem = "installment_default"
+	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferIncoming           ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawal                        ListFinancialActivityRequestLineTypesItem = "internal_withdrawal"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalComplete                ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_complete"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalFee                     ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_fee"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalFeeReversal             ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_fee_reversal"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalInTransit               ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_in_transit"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalInTransitReversal       ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_in_transit_reversal"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFee               ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_markup_fee"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeePayout         ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_markup_fee_payout"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeePayoutReversal ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_markup_fee_payout_reversal"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeeReversal       ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_markup_fee_reversal"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalReversal                ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_reversal"
+	ListFinancialActivityRequestLineTypesItemLegacyCryptoPayment                       ListFinancialActivityRequestLineTypesItem = "legacy_crypto_payment"
+	ListFinancialActivityRequestLineTypesItemLegacyPayment                             ListFinancialActivityRequestLineTypesItem = "legacy_payment"
+	ListFinancialActivityRequestLineTypesItemLegacyPaymentRefund                       ListFinancialActivityRequestLineTypesItem = "legacy_payment_refund"
+	ListFinancialActivityRequestLineTypesItemLicenseSale                               ListFinancialActivityRequestLineTypesItem = "license_sale"
+	ListFinancialActivityRequestLineTypesItemLicenseSaleCommission                     ListFinancialActivityRequestLineTypesItem = "license_sale_commission"
+	ListFinancialActivityRequestLineTypesItemLicenseSaleRevenue                        ListFinancialActivityRequestLineTypesItem = "license_sale_revenue"
+	ListFinancialActivityRequestLineTypesItemMarketplaceAffiliateFee                   ListFinancialActivityRequestLineTypesItem = "marketplace_affiliate_fee"
+	ListFinancialActivityRequestLineTypesItemMiscPurchase                              ListFinancialActivityRequestLineTypesItem = "misc_purchase"
+	ListFinancialActivityRequestLineTypesItemMiscRefund                                ListFinancialActivityRequestLineTypesItem = "misc_refund"
+	ListFinancialActivityRequestLineTypesItemMiscReversal                              ListFinancialActivityRequestLineTypesItem = "misc_reversal"
+	ListFinancialActivityRequestLineTypesItemOnchainDeposit                            ListFinancialActivityRequestLineTypesItem = "onchain_deposit"
+	ListFinancialActivityRequestLineTypesItemOnchainSwapSource                         ListFinancialActivityRequestLineTypesItem = "onchain_swap_source"
+	ListFinancialActivityRequestLineTypesItemOnchainSwapTarget                         ListFinancialActivityRequestLineTypesItem = "onchain_swap_target"
+	ListFinancialActivityRequestLineTypesItemOnchainWalletTransferIncoming             ListFinancialActivityRequestLineTypesItem = "onchain_wallet_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemOnchainWalletTransferOutgoing             ListFinancialActivityRequestLineTypesItem = "onchain_wallet_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemOnchainWithdrawal                         ListFinancialActivityRequestLineTypesItem = "onchain_withdrawal"
+	ListFinancialActivityRequestLineTypesItemOrchestrationPercentageFee                ListFinancialActivityRequestLineTypesItem = "orchestration_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemPassthroughGmv                            ListFinancialActivityRequestLineTypesItem = "passthrough_gmv"
+	ListFinancialActivityRequestLineTypesItemPaymentDispute                            ListFinancialActivityRequestLineTypesItem = "payment_dispute"
+	ListFinancialActivityRequestLineTypesItemPaymentDisputeAdjustment                  ListFinancialActivityRequestLineTypesItem = "payment_dispute_adjustment"
+	ListFinancialActivityRequestLineTypesItemPaymentDisputeFee                         ListFinancialActivityRequestLineTypesItem = "payment_dispute_fee"
+	ListFinancialActivityRequestLineTypesItemPaymentDisputeReversal                    ListFinancialActivityRequestLineTypesItem = "payment_dispute_reversal"
+	ListFinancialActivityRequestLineTypesItemPaymentGross                              ListFinancialActivityRequestLineTypesItem = "payment_gross"
+	ListFinancialActivityRequestLineTypesItemPaymentGrossReversal                      ListFinancialActivityRequestLineTypesItem = "payment_gross_reversal"
+	ListFinancialActivityRequestLineTypesItemPaymentProcessingFixedFee                 ListFinancialActivityRequestLineTypesItem = "payment_processing_fixed_fee"
+	ListFinancialActivityRequestLineTypesItemPaymentProcessingPercentageFee            ListFinancialActivityRequestLineTypesItem = "payment_processing_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemPaymentReferral                           ListFinancialActivityRequestLineTypesItem = "payment_referral"
+	ListFinancialActivityRequestLineTypesItemPaymentReferralRefund                     ListFinancialActivityRequestLineTypesItem = "payment_referral_refund"
+	ListFinancialActivityRequestLineTypesItemPaymentReferralReversal                   ListFinancialActivityRequestLineTypesItem = "payment_referral_reversal"
+	ListFinancialActivityRequestLineTypesItemPaymentRefund                             ListFinancialActivityRequestLineTypesItem = "payment_refund"
+	ListFinancialActivityRequestLineTypesItemPaymentRefundReversal                     ListFinancialActivityRequestLineTypesItem = "payment_refund_reversal"
+	ListFinancialActivityRequestLineTypesItemPaymentRevshare                           ListFinancialActivityRequestLineTypesItem = "payment_revshare"
+	ListFinancialActivityRequestLineTypesItemPaymentRevsharePayout                     ListFinancialActivityRequestLineTypesItem = "payment_revshare_payout"
+	ListFinancialActivityRequestLineTypesItemPaymentRevshareRefund                     ListFinancialActivityRequestLineTypesItem = "payment_revshare_refund"
+	ListFinancialActivityRequestLineTypesItemPaymentRevshareReversal                   ListFinancialActivityRequestLineTypesItem = "payment_revshare_reversal"
+	ListFinancialActivityRequestLineTypesItemPayoutFee                                 ListFinancialActivityRequestLineTypesItem = "payout_fee"
+	ListFinancialActivityRequestLineTypesItemPlatformAffiliatePayment                  ListFinancialActivityRequestLineTypesItem = "platform_affiliate_payment"
+	ListFinancialActivityRequestLineTypesItemPlatformAffiliatePaymentReversal          ListFinancialActivityRequestLineTypesItem = "platform_affiliate_payment_reversal"
+	ListFinancialActivityRequestLineTypesItemPlatformBalancePayment                    ListFinancialActivityRequestLineTypesItem = "platform_balance_payment"
+	ListFinancialActivityRequestLineTypesItemPlatformBalancePaymentRefund              ListFinancialActivityRequestLineTypesItem = "platform_balance_payment_refund"
+	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferFee                ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_fee"
+	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncoming           ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute                    ListFinancialActivityRequestLineTypesItem = "platform_covered_dispute"
+	ListFinancialActivityRequestLineTypesItemPlatformEarning                           ListFinancialActivityRequestLineTypesItem = "platform_earning"
+	ListFinancialActivityRequestLineTypesItemPromoReversal                             ListFinancialActivityRequestLineTypesItem = "promo_reversal"
+	ListFinancialActivityRequestLineTypesItemReferralBonus                             ListFinancialActivityRequestLineTypesItem = "referral_bonus"
+	ListFinancialActivityRequestLineTypesItemResolutionCenterRefund                    ListFinancialActivityRequestLineTypesItem = "resolution_center_refund"
+	ListFinancialActivityRequestLineTypesItemRevsharePercentageFee                     ListFinancialActivityRequestLineTypesItem = "revshare_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemSalesTaxFee                               ListFinancialActivityRequestLineTypesItem = "sales_tax_fee"
+	ListFinancialActivityRequestLineTypesItemSalesTaxRemittance                        ListFinancialActivityRequestLineTypesItem = "sales_tax_remittance"
+	ListFinancialActivityRequestLineTypesItemSalesTaxRemittanceReversal                ListFinancialActivityRequestLineTypesItem = "sales_tax_remittance_reversal"
+	ListFinancialActivityRequestLineTypesItemSoftwareRentalRevshare                    ListFinancialActivityRequestLineTypesItem = "software_rental_revshare"
+	ListFinancialActivityRequestLineTypesItemSoftwareRentalTransaction                 ListFinancialActivityRequestLineTypesItem = "software_rental_transaction"
+	ListFinancialActivityRequestLineTypesItemStripeDomesticProcessingFee               ListFinancialActivityRequestLineTypesItem = "stripe_domestic_processing_fee"
+	ListFinancialActivityRequestLineTypesItemStripeInternationalProcessingFee          ListFinancialActivityRequestLineTypesItem = "stripe_international_processing_fee"
+	ListFinancialActivityRequestLineTypesItemSwapFee                                   ListFinancialActivityRequestLineTypesItem = "swap_fee"
+	ListFinancialActivityRequestLineTypesItemThreeDsFixedFee                           ListFinancialActivityRequestLineTypesItem = "three_ds_fixed_fee"
+	ListFinancialActivityRequestLineTypesItemTopup                                     ListFinancialActivityRequestLineTypesItem = "topup"
+	ListFinancialActivityRequestLineTypesItemTopupFee                                  ListFinancialActivityRequestLineTypesItem = "topup_fee"
+	ListFinancialActivityRequestLineTypesItemTopupReversal                             ListFinancialActivityRequestLineTypesItem = "topup_reversal"
+	ListFinancialActivityRequestLineTypesItemTreasuryPayin                             ListFinancialActivityRequestLineTypesItem = "treasury_payin"
+	ListFinancialActivityRequestLineTypesItemWhopProcessingFee                         ListFinancialActivityRequestLineTypesItem = "whop_processing_fee"
+	ListFinancialActivityRequestLineTypesItemWithdrawal                                ListFinancialActivityRequestLineTypesItem = "withdrawal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalClawback                        ListFinancialActivityRequestLineTypesItem = "withdrawal_clawback"
+	ListFinancialActivityRequestLineTypesItemWithdrawalClawbackReversal                ListFinancialActivityRequestLineTypesItem = "withdrawal_clawback_reversal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalFee                             ListFinancialActivityRequestLineTypesItem = "withdrawal_fee"
+	ListFinancialActivityRequestLineTypesItemWithdrawalFeeReversal                     ListFinancialActivityRequestLineTypesItem = "withdrawal_fee_reversal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFee                       ListFinancialActivityRequestLineTypesItem = "withdrawal_markup_fee"
+	ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeePayout                 ListFinancialActivityRequestLineTypesItem = "withdrawal_markup_fee_payout"
+	ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeePayoutReversal         ListFinancialActivityRequestLineTypesItem = "withdrawal_markup_fee_payout_reversal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeeReversal               ListFinancialActivityRequestLineTypesItem = "withdrawal_markup_fee_reversal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalReclassification                ListFinancialActivityRequestLineTypesItem = "withdrawal_reclassification"
+	ListFinancialActivityRequestLineTypesItemWithdrawalReversal                        ListFinancialActivityRequestLineTypesItem = "withdrawal_reversal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalTopupAdjustment                 ListFinancialActivityRequestLineTypesItem = "withdrawal_topup_adjustment"
 )
 
 func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinancialActivityRequestLineTypesItem, error) {
@@ -4955,14 +5086,26 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemBillingPercentageFee, nil
 	case "buyer_fee":
 		return ListFinancialActivityRequestLineTypesItemBuyerFee, nil
+	case "card_interchange":
+		return ListFinancialActivityRequestLineTypesItemCardInterchange, nil
+	case "card_load_deposit":
+		return ListFinancialActivityRequestLineTypesItemCardLoadDeposit, nil
+	case "card_load_transfer":
+		return ListFinancialActivityRequestLineTypesItemCardLoadTransfer, nil
 	case "card_spend_authorization":
 		return ListFinancialActivityRequestLineTypesItemCardSpendAuthorization, nil
 	case "card_spend_authorization_void":
 		return ListFinancialActivityRequestLineTypesItemCardSpendAuthorizationVoid, nil
 	case "card_spend_refund":
 		return ListFinancialActivityRequestLineTypesItemCardSpendRefund, nil
+	case "card_unload_deposit":
+		return ListFinancialActivityRequestLineTypesItemCardUnloadDeposit, nil
+	case "card_unload_transfer":
+		return ListFinancialActivityRequestLineTypesItemCardUnloadTransfer, nil
 	case "company_referral":
 		return ListFinancialActivityRequestLineTypesItemCompanyReferral, nil
+	case "connected_account_negative_balance":
+		return ListFinancialActivityRequestLineTypesItemConnectedAccountNegativeBalance, nil
 	case "cross_border_percentage_fee":
 		return ListFinancialActivityRequestLineTypesItemCrossBorderPercentageFee, nil
 	case "currency_conversion_incoming":
@@ -4975,6 +5118,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemDisputeHoldAdjustment, nil
 	case "dispute_representment_fee":
 		return ListFinancialActivityRequestLineTypesItemDisputeRepresentmentFee, nil
+	case "external_card_load_deposit":
+		return ListFinancialActivityRequestLineTypesItemExternalCardLoadDeposit, nil
 	case "fees":
 		return ListFinancialActivityRequestLineTypesItemFees, nil
 	case "fraud_prevention_fee":
@@ -4991,6 +5136,24 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemInternalBalanceTransferOutgoing, nil
 	case "internal_withdrawal":
 		return ListFinancialActivityRequestLineTypesItemInternalWithdrawal, nil
+	case "internal_withdrawal_complete":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalComplete, nil
+	case "internal_withdrawal_fee":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalFee, nil
+	case "internal_withdrawal_fee_reversal":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalFeeReversal, nil
+	case "internal_withdrawal_in_transit":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalInTransit, nil
+	case "internal_withdrawal_in_transit_reversal":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalInTransitReversal, nil
+	case "internal_withdrawal_markup_fee":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFee, nil
+	case "internal_withdrawal_markup_fee_payout":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeePayout, nil
+	case "internal_withdrawal_markup_fee_payout_reversal":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeePayoutReversal, nil
+	case "internal_withdrawal_markup_fee_reversal":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeeReversal, nil
 	case "internal_withdrawal_reversal":
 		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalReversal, nil
 	case "legacy_crypto_payment":
@@ -5005,6 +5168,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemLicenseSaleCommission, nil
 	case "license_sale_revenue":
 		return ListFinancialActivityRequestLineTypesItemLicenseSaleRevenue, nil
+	case "marketplace_affiliate_fee":
+		return ListFinancialActivityRequestLineTypesItemMarketplaceAffiliateFee, nil
 	case "misc_purchase":
 		return ListFinancialActivityRequestLineTypesItemMiscPurchase, nil
 	case "misc_refund":
@@ -5013,12 +5178,16 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemMiscReversal, nil
 	case "onchain_deposit":
 		return ListFinancialActivityRequestLineTypesItemOnchainDeposit, nil
+	case "onchain_swap_source":
+		return ListFinancialActivityRequestLineTypesItemOnchainSwapSource, nil
 	case "onchain_swap_target":
 		return ListFinancialActivityRequestLineTypesItemOnchainSwapTarget, nil
 	case "onchain_wallet_transfer_incoming":
 		return ListFinancialActivityRequestLineTypesItemOnchainWalletTransferIncoming, nil
 	case "onchain_wallet_transfer_outgoing":
 		return ListFinancialActivityRequestLineTypesItemOnchainWalletTransferOutgoing, nil
+	case "onchain_withdrawal":
+		return ListFinancialActivityRequestLineTypesItemOnchainWithdrawal, nil
 	case "orchestration_percentage_fee":
 		return ListFinancialActivityRequestLineTypesItemOrchestrationPercentageFee, nil
 	case "passthrough_gmv":
@@ -5041,6 +5210,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemPaymentProcessingPercentageFee, nil
 	case "payment_referral":
 		return ListFinancialActivityRequestLineTypesItemPaymentReferral, nil
+	case "payment_referral_refund":
+		return ListFinancialActivityRequestLineTypesItemPaymentReferralRefund, nil
 	case "payment_referral_reversal":
 		return ListFinancialActivityRequestLineTypesItemPaymentReferralReversal, nil
 	case "payment_refund":
@@ -5065,12 +5236,16 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemPlatformBalancePayment, nil
 	case "platform_balance_payment_refund":
 		return ListFinancialActivityRequestLineTypesItemPlatformBalancePaymentRefund, nil
+	case "platform_balance_transfer_fee":
+		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferFee, nil
 	case "platform_balance_transfer_incoming":
 		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncoming, nil
 	case "platform_balance_transfer_outgoing":
 		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing, nil
 	case "platform_covered_dispute":
 		return ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute, nil
+	case "platform_earning":
+		return ListFinancialActivityRequestLineTypesItemPlatformEarning, nil
 	case "promo_reversal":
 		return ListFinancialActivityRequestLineTypesItemPromoReversal, nil
 	case "referral_bonus":
@@ -5093,6 +5268,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemStripeDomesticProcessingFee, nil
 	case "stripe_international_processing_fee":
 		return ListFinancialActivityRequestLineTypesItemStripeInternationalProcessingFee, nil
+	case "swap_fee":
+		return ListFinancialActivityRequestLineTypesItemSwapFee, nil
 	case "three_ds_fixed_fee":
 		return ListFinancialActivityRequestLineTypesItemThreeDsFixedFee, nil
 	case "topup":
@@ -5111,10 +5288,24 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemWithdrawalClawback, nil
 	case "withdrawal_clawback_reversal":
 		return ListFinancialActivityRequestLineTypesItemWithdrawalClawbackReversal, nil
+	case "withdrawal_fee":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalFee, nil
+	case "withdrawal_fee_reversal":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalFeeReversal, nil
+	case "withdrawal_markup_fee":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFee, nil
+	case "withdrawal_markup_fee_payout":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeePayout, nil
+	case "withdrawal_markup_fee_payout_reversal":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeePayoutReversal, nil
+	case "withdrawal_markup_fee_reversal":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeeReversal, nil
 	case "withdrawal_reclassification":
 		return ListFinancialActivityRequestLineTypesItemWithdrawalReclassification, nil
 	case "withdrawal_reversal":
 		return ListFinancialActivityRequestLineTypesItemWithdrawalReversal, nil
+	case "withdrawal_topup_adjustment":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalTopupAdjustment, nil
 	}
 	var t ListFinancialActivityRequestLineTypesItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

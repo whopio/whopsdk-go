@@ -580,30 +580,31 @@ var (
 	adCampaignFieldIssues                       = big.NewInt(1 << 32)
 	adCampaignFieldLeadValue                    = big.NewInt(1 << 33)
 	adCampaignFieldLeads                        = big.NewInt(1 << 34)
-	adCampaignFieldObjective                    = big.NewInt(1 << 35)
-	adCampaignFieldOptimizationGoal             = big.NewInt(1 << 36)
-	adCampaignFieldPlatform                     = big.NewInt(1 << 37)
-	adCampaignFieldPurchaseValue                = big.NewInt(1 << 38)
-	adCampaignFieldPurchases                    = big.NewInt(1 << 39)
-	adCampaignFieldReach                        = big.NewInt(1 << 40)
-	adCampaignFieldResultEvent                  = big.NewInt(1 << 41)
-	adCampaignFieldResultEventName              = big.NewInt(1 << 42)
-	adCampaignFieldResults                      = big.NewInt(1 << 43)
-	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 44)
-	adCampaignFieldScheduleValue                = big.NewInt(1 << 45)
-	adCampaignFieldSchedules                    = big.NewInt(1 << 46)
-	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 47)
-	adCampaignFieldSpend                        = big.NewInt(1 << 48)
-	adCampaignFieldSpendCurrency                = big.NewInt(1 << 49)
-	adCampaignFieldStatus                       = big.NewInt(1 << 50)
-	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 51)
-	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 52)
-	adCampaignFieldTitle                        = big.NewInt(1 << 53)
-	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 54)
-	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 55)
-	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 56)
-	adCampaignFieldViewedContentValue           = big.NewInt(1 << 57)
-	adCampaignFieldViewedContents               = big.NewInt(1 << 58)
+	adCampaignFieldLinkClicks                   = big.NewInt(1 << 35)
+	adCampaignFieldObjective                    = big.NewInt(1 << 36)
+	adCampaignFieldOptimizationGoal             = big.NewInt(1 << 37)
+	adCampaignFieldPlatform                     = big.NewInt(1 << 38)
+	adCampaignFieldPurchaseValue                = big.NewInt(1 << 39)
+	adCampaignFieldPurchases                    = big.NewInt(1 << 40)
+	adCampaignFieldReach                        = big.NewInt(1 << 41)
+	adCampaignFieldResultEvent                  = big.NewInt(1 << 42)
+	adCampaignFieldResultEventName              = big.NewInt(1 << 43)
+	adCampaignFieldResults                      = big.NewInt(1 << 44)
+	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 45)
+	adCampaignFieldScheduleValue                = big.NewInt(1 << 46)
+	adCampaignFieldSchedules                    = big.NewInt(1 << 47)
+	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 48)
+	adCampaignFieldSpend                        = big.NewInt(1 << 49)
+	adCampaignFieldSpendCurrency                = big.NewInt(1 << 50)
+	adCampaignFieldStatus                       = big.NewInt(1 << 51)
+	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 52)
+	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 53)
+	adCampaignFieldTitle                        = big.NewInt(1 << 54)
+	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 55)
+	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 56)
+	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 57)
+	adCampaignFieldViewedContentValue           = big.NewInt(1 << 58)
+	adCampaignFieldViewedContents               = big.NewInt(1 << 59)
 )
 
 type AdCampaign struct {
@@ -676,6 +677,8 @@ type AdCampaign struct {
 	LeadValue float64 `json:"lead_value" url:"lead_value"`
 	// Whop pixel-attributed leads, last-click.
 	Leads float64 `json:"leads" url:"leads"`
+	// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
+	LinkClicks float64 `json:"link_clicks" url:"link_clicks"`
 	// The goal the campaign optimizes toward.
 	Objective *AdCampaignObjective `json:"objective,omitempty" url:"objective,omitempty"`
 	// The event the campaign optimizes for when a single goal is set campaign-wide. `null` when each ad group sets its own optimization_goal.
@@ -974,6 +977,13 @@ func (a *AdCampaign) GetLeads() float64 {
 		return 0
 	}
 	return a.Leads
+}
+
+func (a *AdCampaign) GetLinkClicks() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.LinkClicks
 }
 
 func (a *AdCampaign) GetObjective() *AdCampaignObjective {
@@ -1401,6 +1411,13 @@ func (a *AdCampaign) SetLeadValue(leadValue float64) {
 func (a *AdCampaign) SetLeads(leads float64) {
 	a.Leads = leads
 	a.require(adCampaignFieldLeads)
+}
+
+// SetLinkClicks sets the LinkClicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCampaign) SetLinkClicks(linkClicks float64) {
+	a.LinkClicks = linkClicks
+	a.require(adCampaignFieldLinkClicks)
 }
 
 // SetObjective sets the Objective field and marks it as non-optional;
@@ -2313,6 +2330,7 @@ const (
 	ListAdCampaignsRequestOrderImpressions      ListAdCampaignsRequestOrder = "impressions"
 	ListAdCampaignsRequestOrderReach            ListAdCampaignsRequestOrder = "reach"
 	ListAdCampaignsRequestOrderClicks           ListAdCampaignsRequestOrder = "clicks"
+	ListAdCampaignsRequestOrderLinkClicks       ListAdCampaignsRequestOrder = "link_clicks"
 	ListAdCampaignsRequestOrderUniqueClicks     ListAdCampaignsRequestOrder = "unique_clicks"
 	ListAdCampaignsRequestOrderFrequency        ListAdCampaignsRequestOrder = "frequency"
 	ListAdCampaignsRequestOrderClickThroughRate ListAdCampaignsRequestOrder = "click_through_rate"
@@ -2337,6 +2355,8 @@ func NewListAdCampaignsRequestOrderFromString(s string) (ListAdCampaignsRequestO
 		return ListAdCampaignsRequestOrderReach, nil
 	case "clicks":
 		return ListAdCampaignsRequestOrderClicks, nil
+	case "link_clicks":
+		return ListAdCampaignsRequestOrderLinkClicks, nil
 	case "unique_clicks":
 		return ListAdCampaignsRequestOrderUniqueClicks, nil
 	case "frequency":

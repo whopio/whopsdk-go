@@ -179,8 +179,9 @@ var (
 	memberFieldID             = big.NewInt(1 << 3)
 	memberFieldJoinedAt       = big.NewInt(1 << 4)
 	memberFieldLastAccessedAt = big.NewInt(1 << 5)
-	memberFieldStatus         = big.NewInt(1 << 6)
-	memberFieldUser           = big.NewInt(1 << 7)
+	memberFieldPhoneNumber    = big.NewInt(1 << 6)
+	memberFieldStatus         = big.NewInt(1 << 7)
+	memberFieldUser           = big.NewInt(1 << 8)
 )
 
 type Member struct {
@@ -196,6 +197,8 @@ type Member struct {
 	JoinedAt string `json:"joined_at" url:"joined_at"`
 	// When the member last opened the account's content, as an ISO 8601 timestamp. `null` if they never have.
 	LastAccessedAt *string `json:"last_accessed_at,omitempty" url:"last_accessed_at,omitempty"`
+	// The member's phone number, or `null`. Their account number when they have shared one with this seller; otherwise the most recent number collected (or verified) at checkout.
+	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
 	// `joined` while the member is part of the account, `left` after they leave.
 	Status MemberStatus `json:"status" url:"status"`
 	// The user behind this member. `null` when the buyer is another business rather than a person.
@@ -248,6 +251,13 @@ func (m *Member) GetLastAccessedAt() *string {
 		return nil
 	}
 	return m.LastAccessedAt
+}
+
+func (m *Member) GetPhoneNumber() *string {
+	if m == nil {
+		return nil
+	}
+	return m.PhoneNumber
 }
 
 func (m *Member) GetStatus() MemberStatus {
@@ -318,6 +328,13 @@ func (m *Member) SetJoinedAt(joinedAt string) {
 func (m *Member) SetLastAccessedAt(lastAccessedAt *string) {
 	m.LastAccessedAt = lastAccessedAt
 	m.require(memberFieldLastAccessedAt)
+}
+
+// SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetPhoneNumber(phoneNumber *string) {
+	m.PhoneNumber = phoneNumber
+	m.require(memberFieldPhoneNumber)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;

@@ -33,7 +33,7 @@ type CreateAppsRequest struct {
 	Name string `json:"name" url:"-"`
 	// The whitelisted OAuth callback URLs that users are redirected to after authorizing the app.
 	RedirectURIs []string `json:"redirect_uris,omitempty" url:"-"`
-	// The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.app.
+	// The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.site.
 	Route *string `json:"route,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -204,15 +204,16 @@ var (
 	listAppsRequestFieldAccountID        = big.NewInt(1 << 0)
 	listAppsRequestFieldAppType          = big.NewInt(1 << 1)
 	listAppsRequestFieldViewType         = big.NewInt(1 << 2)
-	listAppsRequestFieldVerifiedAppsOnly = big.NewInt(1 << 3)
-	listAppsRequestFieldRecommended      = big.NewInt(1 << 4)
-	listAppsRequestFieldQuery            = big.NewInt(1 << 5)
-	listAppsRequestFieldOrder            = big.NewInt(1 << 6)
-	listAppsRequestFieldDirection        = big.NewInt(1 << 7)
-	listAppsRequestFieldFirst            = big.NewInt(1 << 8)
-	listAppsRequestFieldAfter            = big.NewInt(1 << 9)
-	listAppsRequestFieldLast             = big.NewInt(1 << 10)
-	listAppsRequestFieldBefore           = big.NewInt(1 << 11)
+	listAppsRequestFieldVerified         = big.NewInt(1 << 3)
+	listAppsRequestFieldVerifiedAppsOnly = big.NewInt(1 << 4)
+	listAppsRequestFieldRecommended      = big.NewInt(1 << 5)
+	listAppsRequestFieldQuery            = big.NewInt(1 << 6)
+	listAppsRequestFieldOrder            = big.NewInt(1 << 7)
+	listAppsRequestFieldDirection        = big.NewInt(1 << 8)
+	listAppsRequestFieldFirst            = big.NewInt(1 << 9)
+	listAppsRequestFieldAfter            = big.NewInt(1 << 10)
+	listAppsRequestFieldLast             = big.NewInt(1 << 11)
+	listAppsRequestFieldBefore           = big.NewInt(1 << 12)
 )
 
 type ListAppsRequest struct {
@@ -222,9 +223,11 @@ type ListAppsRequest struct {
 	AppType *ListAppsRequestAppType `json:"-" url:"app_type,omitempty"`
 	// Only return apps supporting this view type, such as `dashboard` or `hub`.
 	ViewType *ListAppsRequestViewType `json:"-" url:"view_type,omitempty"`
-	// Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
+	// Only return apps whose Whop verification status matches this value. Omit this filter to include every verification status the caller can see.
+	Verified *bool `json:"-" url:"verified,omitempty"`
+	// Legacy compatibility filter. Use `verified` for field equality. `true` returns verified apps; clients pinned before `2026-08-25-2` retain the earlier public website discovery behavior.
 	VerifiedAppsOnly *bool `json:"-" url:"verified_apps_only,omitempty"`
-	// Only return apps Whop recommends (or, with `false`, only those it does not). The community blueprints gallery is the recommended slice of the public website list.
+	// Only return apps Whop recommends (or, with `false`, only those it does not), independently of verification status.
 	Recommended *bool `json:"-" url:"recommended,omitempty"`
 	// A search string matched against app names.
 	Query *string `json:"-" url:"query,omitempty"`
@@ -271,6 +274,13 @@ func (l *ListAppsRequest) SetAppType(appType *ListAppsRequestAppType) {
 func (l *ListAppsRequest) SetViewType(viewType *ListAppsRequestViewType) {
 	l.ViewType = viewType
 	l.require(listAppsRequestFieldViewType)
+}
+
+// SetVerified sets the Verified field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsRequest) SetVerified(verified *bool) {
+	l.Verified = verified
+	l.require(listAppsRequestFieldVerified)
 }
 
 // SetVerifiedAppsOnly sets the VerifiedAppsOnly field and marks it as non-optional;
@@ -494,18 +504,19 @@ var (
 	appFieldOauthClientType           = big.NewInt(1 << 22)
 	appFieldOpenapiPath               = big.NewInt(1 << 23)
 	appFieldOrigin                    = big.NewInt(1 << 24)
-	appFieldProductID                 = big.NewInt(1 << 25)
-	appFieldProductionAndroidBuild    = big.NewInt(1 << 26)
-	appFieldProductionIosBuild        = big.NewInt(1 << 27)
-	appFieldProductionWebBuild        = big.NewInt(1 << 28)
-	appFieldRedirectURIs              = big.NewInt(1 << 29)
-	appFieldRequestedPermissions      = big.NewInt(1 << 30)
-	appFieldRequiredScopes            = big.NewInt(1 << 31)
-	appFieldRoute                     = big.NewInt(1 << 32)
-	appFieldSecrets                   = big.NewInt(1 << 33)
-	appFieldSkillsPath                = big.NewInt(1 << 34)
-	appFieldStatus                    = big.NewInt(1 << 35)
-	appFieldVerified                  = big.NewInt(1 << 36)
+	appFieldPreviewToken              = big.NewInt(1 << 25)
+	appFieldProductID                 = big.NewInt(1 << 26)
+	appFieldProductionAndroidBuild    = big.NewInt(1 << 27)
+	appFieldProductionIosBuild        = big.NewInt(1 << 28)
+	appFieldProductionWebBuild        = big.NewInt(1 << 29)
+	appFieldRedirectURIs              = big.NewInt(1 << 30)
+	appFieldRequestedPermissions      = big.NewInt(1 << 31)
+	appFieldRequiredScopes            = big.NewInt(1 << 32)
+	appFieldRoute                     = big.NewInt(1 << 33)
+	appFieldSecrets                   = big.NewInt(1 << 34)
+	appFieldSkillsPath                = big.NewInt(1 << 35)
+	appFieldStatus                    = big.NewInt(1 << 36)
+	appFieldVerified                  = big.NewInt(1 << 37)
 )
 
 type App struct {
@@ -557,6 +568,8 @@ type App struct {
 	OpenapiPath *string `json:"openapi_path,omitempty" url:"openapi_path,omitempty"`
 	// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
 	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
+	// A short-lived signed pass scoping the caller to this app's gated preview hosts — every build preview and the live dev-server sandbox. Add it to a preview host as the `__whop_preview` query param (or `x-whop-preview-token` header). `null` unless the caller is a team member who can read the app's developer settings.
+	PreviewToken *string `json:"preview_token,omitempty" url:"preview_token,omitempty"`
 	// ID of the app's product listing on the Whop app store, or `null` when the app has no associated product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The approved build currently served on Android, or `null` when none is deployed.
@@ -568,7 +581,7 @@ type App struct {
 	RedirectURIs         []string                  `json:"redirect_uris" url:"redirect_uris"`
 	RequestedPermissions []*AppRequestedPermission `json:"requested_permissions" url:"requested_permissions"`
 	RequiredScopes       []AppRequiredScopesItem   `json:"required_scopes" url:"required_scopes"`
-	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.app), or `null` if no route is claimed.
+	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
 	// The app's production secrets as an object of string values, injected into the hosted server runtime. `null` when the caller lacks the `developer:update_app` permission.
 	Secrets map[string]any `json:"secrets,omitempty" url:"secrets,omitempty"`
@@ -759,6 +772,13 @@ func (a *App) GetOrigin() *string {
 		return nil
 	}
 	return a.Origin
+}
+
+func (a *App) GetPreviewToken() *string {
+	if a == nil {
+		return nil
+	}
+	return a.PreviewToken
 }
 
 func (a *App) GetProductID() *string {
@@ -1032,6 +1052,13 @@ func (a *App) SetOpenapiPath(openapiPath *string) {
 func (a *App) SetOrigin(origin *string) {
 	a.Origin = origin
 	a.require(appFieldOrigin)
+}
+
+// SetPreviewToken sets the PreviewToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetPreviewToken(previewToken *string) {
+	a.PreviewToken = previewToken
+	a.require(appFieldPreviewToken)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -2264,7 +2291,7 @@ type AppListItem struct {
 	OpenapiPath *string `json:"openapi_path,omitempty" url:"openapi_path,omitempty"`
 	// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
 	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
-	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.app), or `null` if no route is claimed.
+	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
 	// URL path to the app's skills directory, or `null` when not configured.
 	SkillsPath *string `json:"skills_path,omitempty" url:"skills_path,omitempty"`
