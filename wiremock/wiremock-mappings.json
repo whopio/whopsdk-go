@@ -8341,7 +8341,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"total_earnings_usd\": \"10.00\",\n      \"total_volume_usd\": \"100.00\",\n      \"user\": {\n        \"city\": \"Austin\",\n        \"country\": \"US\",\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Tanya Cole\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"tanyacole\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"WyJjdXJzb3IiLDFd\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"total_earnings_usd\": \"10.00\",\n      \"total_volume_usd\": \"100.00\",\n      \"user\": {\n        \"city\": \"Austin\",\n        \"country\": \"US\",\n        \"email\": \"marcus@shinetime.example\",\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Tanya Cole\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"tanyacole\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"WyJjdXJzb3IiLDFd\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10404,7 +10404,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"chain_id\": \"rac_seed_start_selling_xxxxxxxxxx\",\n  \"execution\": \"redirect\"\n}",
+        "body": "{\n  \"chain_id\": \"rac_chain_xxxxxxxxxxxx\",\n  \"execution\": \"redirect\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13522,6 +13522,58 @@
       }
     },
     {
+      "id": "100ab57d-6e7f-46a3-a900-71e552338763",
+      "name": "Get Financial Report Breakdown - default",
+      "request": {
+        "urlPathTemplate": "/financial_reports/breakdown",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "account_id": {
+            "equalTo": "account_id"
+          },
+          "bucket": {
+            "equalTo": "transfers"
+          },
+          "direction": {
+            "equalTo": "money_in"
+          },
+          "currency": {
+            "equalTo": "currency"
+          },
+          "from_date": {
+            "equalTo": "from_date"
+          },
+          "to_date": {
+            "equalTo": "to_date"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"activity_filters\": {\n    \"direction\": \"money_in\",\n    \"line_types\": [\n      \"platform_balance_transfer_outgoing\"\n    ]\n  },\n  \"bucket\": \"transfers\",\n  \"currency\": \"usd\",\n  \"direction\": \"money_in\",\n  \"items\": [\n    {\n      \"amount\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"image_url\": \"image_url\",\n      \"key\": \"key\",\n      \"name\": \"name\",\n      \"object\": \"user\",\n      \"resource_id\": \"resource_id\"\n    }\n  ],\n  \"other_amount\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "100ab57d-6e7f-46a3-a900-71e552338763",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "b7b2864f-082c-4279-accf-4387a09f7240",
       "name": "List Member Logs - default",
       "request": {
@@ -13603,7 +13655,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account\": {\n        \"id\": \"biz_xxxxxxxxxxxxxx\",\n        \"logo_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n        \"route\": \"biz_xxxxxxxxxxxxxx\",\n        \"title\": \"Gleam Mobile Detailing\"\n      },\n      \"created_at\": \"2026-01-01T12:00:00Z\",\n      \"earnings_usd\": {\n        \"completed\": \"3.00\",\n        \"pending\": \"1.00\",\n        \"total\": \"4.00\"\n      },\n      \"first_tier_partner\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Nina Alvarez\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"ninaalvarez\"\n      },\n      \"id\": \"coma_xxxxxxxxxxxxxx\",\n      \"my_partner_tier\": \"first\",\n      \"object\": \"partner_business\",\n      \"owner\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Nina Alvarez\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"ninaalvarez\"\n      },\n      \"payout_percentages\": {\n        \"ad_spend\": 0.015,\n        \"card_interchange\": 0.2,\n        \"sales\": 0.3,\n        \"transfer\": 0.25\n      },\n      \"referral_expires_at\": \"2026-01-01T12:00:00Z\",\n      \"referral_started_at\": \"2026-01-01T12:00:00Z\",\n      \"second_tier_partner\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Nina Alvarez\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"ninaalvarez\"\n      },\n      \"status\": \"active\",\n      \"volume_usd\": {\n        \"attributed\": \"40.00\",\n        \"awaiting_settlement\": \"0.00\",\n        \"settled\": \"40.00\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"WyJjdXJzb3IiLDFd\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account\": {\n        \"id\": \"biz_xxxxxxxxxxxxxx\",\n        \"logo_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n        \"route\": \"biz_xxxxxxxxxxxxxx\",\n        \"title\": \"Gleam Mobile Detailing\"\n      },\n      \"blueprint_partner\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Nina Alvarez\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"ninaalvarez\"\n      },\n      \"created_at\": \"2026-01-01T12:00:00Z\",\n      \"earnings_usd\": {\n        \"completed\": \"3.00\",\n        \"pending\": \"1.00\",\n        \"total\": \"4.00\"\n      },\n      \"first_tier_partner\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Nina Alvarez\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"ninaalvarez\"\n      },\n      \"id\": \"coma_xxxxxxxxxxxxxx\",\n      \"my_partner_tier\": \"first\",\n      \"object\": \"partner_business\",\n      \"owner\": {\n        \"email\": \"marcus@shinetime.example\",\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Nina Alvarez\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"ninaalvarez\"\n      },\n      \"payout_percentages\": {\n        \"ad_spend\": 0.015,\n        \"card_interchange\": 0.2,\n        \"sales\": 0.3,\n        \"transfer\": 0.25\n      },\n      \"referral_expires_at\": \"2026-01-01T12:00:00Z\",\n      \"referral_started_at\": \"2026-01-01T12:00:00Z\",\n      \"second_tier_partner\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Nina Alvarez\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"ninaalvarez\"\n      },\n      \"status\": \"active\",\n      \"volume_usd\": {\n        \"attributed\": \"40.00\",\n        \"awaiting_settlement\": \"0.00\",\n        \"settled\": \"40.00\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"WyJjdXJzb3IiLDFd\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13640,7 +13692,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account\": {\n    \"capabilities\": {\n      \"accept_bank_payments\": \"active\",\n      \"accept_bnpl_payments\": \"active\",\n      \"accept_card_payments\": \"active\",\n      \"bank_deposit\": \"active\",\n      \"card_deposit\": \"active\",\n      \"card_issuing\": \"active\",\n      \"crypto_deposit\": \"active\",\n      \"crypto_payout\": \"active\",\n      \"instant_payout\": \"active\",\n      \"run_ads\": \"active\",\n      \"standard_payout\": \"active\",\n      \"transfer\": \"active\"\n    },\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"logo_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"recommended_actions\": [\n      {\n        \"action\": \"theme_business\",\n        \"blocked_capabilities\": [\n          \"accept_bnpl_payments\"\n        ],\n        \"cta\": \"https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/settings/payments/\",\n        \"cta_label\": \"Apply\",\n        \"description\": \"Let customers pay over time with buy now, pay later.\",\n        \"icon_url\": \"https://whop.com/illustrations/orange/piggy-bank.svg\",\n        \"impact_score\": 86,\n        \"reasoning\": \"Financing lifts conversion on the $249 ceramic coating, the priciest job on the menu.\",\n        \"status\": \"optional\",\n        \"title\": \"Offer financing at checkout\"\n      }\n    ],\n    \"required_actions\": [\n      {\n        \"action\": \"deposit_funds\",\n        \"blocked_capabilities\": [\n          \"standard_payout\"\n        ],\n        \"cta\": \"https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/balance/\",\n        \"cta_label\": \"Verify now\",\n        \"description\": \"Complete verification to withdraw your earnings.\",\n        \"icon_url\": \"https://whop.com/illustrations/orange/shield.svg\",\n        \"status\": \"required\",\n        \"title\": \"Complete your identity verification\"\n      }\n    ],\n    \"route\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Gleam Mobile Detailing\"\n  },\n  \"created_at\": \"2026-01-01T12:00:00Z\",\n  \"earnings_usd\": {\n    \"completed\": \"0.00\",\n    \"pending\": \"0.00\",\n    \"total\": \"0.00\"\n  },\n  \"first_tier_partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Tanya Cole\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"tanyacole\"\n  },\n  \"id\": \"coma_xxxxxxxxxxxxxx\",\n  \"my_partner_tier\": \"first\",\n  \"object\": \"partner_business\",\n  \"owner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Nina Alvarez\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"ninaalvarez\"\n  },\n  \"payout_percentages\": {\n    \"ad_spend\": 0.015,\n    \"card_interchange\": 0.2,\n    \"sales\": 0.1,\n    \"transfer\": 0.25\n  },\n  \"referral_expires_at\": \"2026-01-01T12:00:00Z\",\n  \"referral_started_at\": \"2026-01-01T12:00:00Z\",\n  \"second_tier_partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Marcus Webb\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"marcuswebb\"\n  },\n  \"status\": \"active\",\n  \"volume_usd\": {\n    \"attributed\": \"0.00\",\n    \"awaiting_settlement\": \"0.00\",\n    \"settled\": \"0.00\"\n  }\n}",
+        "body": "{\n  \"account\": {\n    \"capabilities\": {\n      \"accept_bank_payments\": \"active\",\n      \"accept_bnpl_payments\": \"active\",\n      \"accept_card_payments\": \"active\",\n      \"bank_deposit\": \"active\",\n      \"card_deposit\": \"active\",\n      \"card_issuing\": \"active\",\n      \"crypto_deposit\": \"active\",\n      \"crypto_payout\": \"active\",\n      \"instant_payout\": \"active\",\n      \"run_ads\": \"active\",\n      \"standard_payout\": \"active\",\n      \"transfer\": \"active\"\n    },\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"logo_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"recommended_actions\": [\n      {\n        \"action\": \"theme_business\",\n        \"blocked_capabilities\": [\n          \"accept_bnpl_payments\"\n        ],\n        \"cta\": \"https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/settings/payments/\",\n        \"cta_label\": \"Apply\",\n        \"description\": \"Let customers pay over time with buy now, pay later.\",\n        \"icon_url\": \"https://whop.com/illustrations/orange/piggy-bank.svg\",\n        \"impact_score\": 86,\n        \"reasoning\": \"Financing lifts conversion on the $249 ceramic coating, the priciest job on the menu.\",\n        \"status\": \"optional\",\n        \"title\": \"Offer financing at checkout\"\n      }\n    ],\n    \"required_actions\": [\n      {\n        \"action\": \"deposit_funds\",\n        \"blocked_capabilities\": [\n          \"standard_payout\"\n        ],\n        \"cta\": \"https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/balance/\",\n        \"cta_label\": \"Verify now\",\n        \"description\": \"Complete verification to withdraw your earnings.\",\n        \"icon_url\": \"https://whop.com/illustrations/orange/shield.svg\",\n        \"status\": \"required\",\n        \"title\": \"Complete your identity verification\"\n      }\n    ],\n    \"route\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Gleam Mobile Detailing\"\n  },\n  \"blueprint_partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Marcus Webb\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"marcuswebb\"\n  },\n  \"created_at\": \"2026-01-01T12:00:00Z\",\n  \"earnings_usd\": {\n    \"completed\": \"0.00\",\n    \"pending\": \"0.00\",\n    \"total\": \"0.00\"\n  },\n  \"first_tier_partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Marcus Webb\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"marcuswebb\"\n  },\n  \"id\": \"coma_xxxxxxxxxxxxxx\",\n  \"my_partner_tier\": \"first\",\n  \"object\": \"partner_business\",\n  \"owner\": {\n    \"email\": \"marcus@shinetime.example\",\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Tanya Cole\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"tanyacole\"\n  },\n  \"payout_percentages\": {\n    \"ad_spend\": 0.015,\n    \"card_interchange\": 0.2,\n    \"sales\": 0.3,\n    \"transfer\": 0.25\n  },\n  \"referral_expires_at\": \"2026-01-01T12:00:00Z\",\n  \"referral_started_at\": \"2026-01-01T12:00:00Z\",\n  \"second_tier_partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Marcus Webb\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"marcuswebb\"\n  },\n  \"status\": \"active\",\n  \"volume_usd\": {\n    \"attributed\": \"0.00\",\n    \"awaiting_settlement\": \"0.00\",\n    \"settled\": \"0.00\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14213,6 +14265,6 @@
     }
   ],
   "meta": {
-    "total": 392
+    "total": 393
   }
 }

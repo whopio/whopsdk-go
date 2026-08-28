@@ -43,7 +43,7 @@ import (
 	feemarkups "github.com/whopio/whopsdk-go/feemarkups"
 	files "github.com/whopio/whopsdk-go/files"
 	financialactivity "github.com/whopio/whopsdk-go/financialactivity"
-	financialreports "github.com/whopio/whopsdk-go/financialreports"
+	financialreportsclient "github.com/whopio/whopsdk-go/financialreports/client"
 	forumposts "github.com/whopio/whopsdk-go/forumposts"
 	forums "github.com/whopio/whopsdk-go/forums"
 	identityprofiles "github.com/whopio/whopsdk-go/identityprofiles"
@@ -128,7 +128,7 @@ type Whop struct {
 	FeeMarkups               *feemarkups.Client
 	Files                    *files.Client
 	FinancialActivity        *financialactivity.Client
-	FinancialReports         *financialreports.Client
+	FinancialReports         *financialreportsclient.Client
 	ForumPosts               *forumposts.Client
 	Forums                   *forums.Client
 	IdentityProfiles         *identityprofiles.Client
@@ -221,7 +221,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		FeeMarkups:               feemarkups.NewClient(options),
 		Files:                    files.NewClient(options),
 		FinancialActivity:        financialactivity.NewClient(options),
-		FinancialReports:         financialreports.NewClient(options),
+		FinancialReports:         financialreportsclient.NewClient(options),
 		ForumPosts:               forumposts.NewClient(options),
 		Forums:                   forums.NewClient(options),
 		IdentityProfiles:         identityprofiles.NewClient(options),

@@ -388,24 +388,27 @@ func (l *ListBusinessesResponse) String() string {
 
 var (
 	listBusinessesResponseDataItemFieldAccount           = big.NewInt(1 << 0)
-	listBusinessesResponseDataItemFieldCreatedAt         = big.NewInt(1 << 1)
-	listBusinessesResponseDataItemFieldEarningsUsd       = big.NewInt(1 << 2)
-	listBusinessesResponseDataItemFieldFirstTierPartner  = big.NewInt(1 << 3)
-	listBusinessesResponseDataItemFieldID                = big.NewInt(1 << 4)
-	listBusinessesResponseDataItemFieldMyPartnerTier     = big.NewInt(1 << 5)
-	listBusinessesResponseDataItemFieldObject            = big.NewInt(1 << 6)
-	listBusinessesResponseDataItemFieldOwner             = big.NewInt(1 << 7)
-	listBusinessesResponseDataItemFieldPayoutPercentages = big.NewInt(1 << 8)
-	listBusinessesResponseDataItemFieldReferralExpiresAt = big.NewInt(1 << 9)
-	listBusinessesResponseDataItemFieldReferralStartedAt = big.NewInt(1 << 10)
-	listBusinessesResponseDataItemFieldSecondTierPartner = big.NewInt(1 << 11)
-	listBusinessesResponseDataItemFieldStatus            = big.NewInt(1 << 12)
-	listBusinessesResponseDataItemFieldVolumeUsd         = big.NewInt(1 << 13)
+	listBusinessesResponseDataItemFieldBlueprintPartner  = big.NewInt(1 << 1)
+	listBusinessesResponseDataItemFieldCreatedAt         = big.NewInt(1 << 2)
+	listBusinessesResponseDataItemFieldEarningsUsd       = big.NewInt(1 << 3)
+	listBusinessesResponseDataItemFieldFirstTierPartner  = big.NewInt(1 << 4)
+	listBusinessesResponseDataItemFieldID                = big.NewInt(1 << 5)
+	listBusinessesResponseDataItemFieldMyPartnerTier     = big.NewInt(1 << 6)
+	listBusinessesResponseDataItemFieldObject            = big.NewInt(1 << 7)
+	listBusinessesResponseDataItemFieldOwner             = big.NewInt(1 << 8)
+	listBusinessesResponseDataItemFieldPayoutPercentages = big.NewInt(1 << 9)
+	listBusinessesResponseDataItemFieldReferralExpiresAt = big.NewInt(1 << 10)
+	listBusinessesResponseDataItemFieldReferralStartedAt = big.NewInt(1 << 11)
+	listBusinessesResponseDataItemFieldSecondTierPartner = big.NewInt(1 << 12)
+	listBusinessesResponseDataItemFieldStatus            = big.NewInt(1 << 13)
+	listBusinessesResponseDataItemFieldVolumeUsd         = big.NewInt(1 << 14)
 )
 
 type ListBusinessesResponseDataItem struct {
 	// Referred account.
 	Account *ListBusinessesResponseDataItemAccount `json:"account,omitempty" url:"account,omitempty"`
+	// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
+	BlueprintPartner *ListBusinessesResponseDataItemBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
 	// When the partner business was created.
 	CreatedAt   time.Time                                  `json:"created_at" url:"created_at"`
 	EarningsUsd *ListBusinessesResponseDataItemEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
@@ -442,6 +445,13 @@ func (l *ListBusinessesResponseDataItem) GetAccount() *ListBusinessesResponseDat
 		return nil
 	}
 	return l.Account
+}
+
+func (l *ListBusinessesResponseDataItem) GetBlueprintPartner() *ListBusinessesResponseDataItemBlueprintPartner {
+	if l == nil {
+		return nil
+	}
+	return l.BlueprintPartner
 }
 
 func (l *ListBusinessesResponseDataItem) GetCreatedAt() time.Time {
@@ -554,6 +564,13 @@ func (l *ListBusinessesResponseDataItem) require(field *big.Int) {
 func (l *ListBusinessesResponseDataItem) SetAccount(account *ListBusinessesResponseDataItemAccount) {
 	l.Account = account
 	l.require(listBusinessesResponseDataItemFieldAccount)
+}
+
+// SetBlueprintPartner sets the BlueprintPartner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItem) SetBlueprintPartner(blueprintPartner *ListBusinessesResponseDataItemBlueprintPartner) {
+	l.BlueprintPartner = blueprintPartner
+	l.require(listBusinessesResponseDataItemFieldBlueprintPartner)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -828,6 +845,229 @@ func (l *ListBusinessesResponseDataItemAccount) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListBusinessesResponseDataItemAccount) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
+var (
+	listBusinessesResponseDataItemBlueprintPartnerFieldID             = big.NewInt(1 << 0)
+	listBusinessesResponseDataItemBlueprintPartnerFieldName           = big.NewInt(1 << 1)
+	listBusinessesResponseDataItemBlueprintPartnerFieldProfilePicture = big.NewInt(1 << 2)
+	listBusinessesResponseDataItemBlueprintPartnerFieldUsername       = big.NewInt(1 << 3)
+)
+
+type ListBusinessesResponseDataItemBlueprintPartner struct {
+	// User ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// The user's display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's profile picture.
+	ProfilePicture *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture `json:"profile_picture" url:"profile_picture"`
+	// The user's unique username.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartner) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartner) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartner) GetProfilePicture() *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture {
+	if l == nil {
+		return nil
+	}
+	return l.ProfilePicture
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartner) GetUsername() string {
+	if l == nil {
+		return ""
+	}
+	return l.Username
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartner) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartner) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemBlueprintPartner) SetID(id string) {
+	l.ID = id
+	l.require(listBusinessesResponseDataItemBlueprintPartnerFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemBlueprintPartner) SetName(name *string) {
+	l.Name = name
+	l.require(listBusinessesResponseDataItemBlueprintPartnerFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemBlueprintPartner) SetProfilePicture(profilePicture *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture) {
+	l.ProfilePicture = profilePicture
+	l.require(listBusinessesResponseDataItemBlueprintPartnerFieldProfilePicture)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemBlueprintPartner) SetUsername(username string) {
+	l.Username = username
+	l.require(listBusinessesResponseDataItemBlueprintPartnerFieldUsername)
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartner) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListBusinessesResponseDataItemBlueprintPartner
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListBusinessesResponseDataItemBlueprintPartner(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartner) MarshalJSON() ([]byte, error) {
+	type embed ListBusinessesResponseDataItemBlueprintPartner
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartner) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// The user's profile picture.
+var (
+	listBusinessesResponseDataItemBlueprintPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
+)
+
+type ListBusinessesResponseDataItemBlueprintPartnerProfilePicture struct {
+	// The user's profile picture URL.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture) GetURL() string {
+	if l == nil {
+		return ""
+	}
+	return l.URL
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture) SetURL(url string) {
+	l.URL = url
+	l.require(listBusinessesResponseDataItemBlueprintPartnerProfilePictureFieldURL)
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListBusinessesResponseDataItemBlueprintPartnerProfilePicture
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListBusinessesResponseDataItemBlueprintPartnerProfilePicture(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture) MarshalJSON() ([]byte, error) {
+	type embed ListBusinessesResponseDataItemBlueprintPartnerProfilePicture
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -1231,13 +1471,16 @@ func (l ListBusinessesResponseDataItemObject) Ptr() *ListBusinessesResponseDataI
 
 // The owner of the referred business.
 var (
-	listBusinessesResponseDataItemOwnerFieldID             = big.NewInt(1 << 0)
-	listBusinessesResponseDataItemOwnerFieldName           = big.NewInt(1 << 1)
-	listBusinessesResponseDataItemOwnerFieldProfilePicture = big.NewInt(1 << 2)
-	listBusinessesResponseDataItemOwnerFieldUsername       = big.NewInt(1 << 3)
+	listBusinessesResponseDataItemOwnerFieldEmail          = big.NewInt(1 << 0)
+	listBusinessesResponseDataItemOwnerFieldID             = big.NewInt(1 << 1)
+	listBusinessesResponseDataItemOwnerFieldName           = big.NewInt(1 << 2)
+	listBusinessesResponseDataItemOwnerFieldProfilePicture = big.NewInt(1 << 3)
+	listBusinessesResponseDataItemOwnerFieldUsername       = big.NewInt(1 << 4)
 )
 
 type ListBusinessesResponseDataItemOwner struct {
+	// The business owner's email address, so a partner can follow up on a referral they made. Requires the `partner:email:read` scope; `null` without it, or while the account has no reachable address of its own.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
 	// The user's display name.
@@ -1252,6 +1495,13 @@ type ListBusinessesResponseDataItemOwner struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListBusinessesResponseDataItemOwner) GetEmail() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Email
 }
 
 func (l *ListBusinessesResponseDataItemOwner) GetID() string {
@@ -1294,6 +1544,13 @@ func (l *ListBusinessesResponseDataItemOwner) require(field *big.Int) {
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemOwner) SetEmail(email *string) {
+	l.Email = email
+	l.require(listBusinessesResponseDataItemOwnerFieldEmail)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2088,24 +2345,27 @@ func (l *ListBusinessesResponsePageInfo) String() string {
 
 var (
 	retrieveBusinessesResponseFieldAccount           = big.NewInt(1 << 0)
-	retrieveBusinessesResponseFieldCreatedAt         = big.NewInt(1 << 1)
-	retrieveBusinessesResponseFieldEarningsUsd       = big.NewInt(1 << 2)
-	retrieveBusinessesResponseFieldFirstTierPartner  = big.NewInt(1 << 3)
-	retrieveBusinessesResponseFieldID                = big.NewInt(1 << 4)
-	retrieveBusinessesResponseFieldMyPartnerTier     = big.NewInt(1 << 5)
-	retrieveBusinessesResponseFieldObject            = big.NewInt(1 << 6)
-	retrieveBusinessesResponseFieldOwner             = big.NewInt(1 << 7)
-	retrieveBusinessesResponseFieldPayoutPercentages = big.NewInt(1 << 8)
-	retrieveBusinessesResponseFieldReferralExpiresAt = big.NewInt(1 << 9)
-	retrieveBusinessesResponseFieldReferralStartedAt = big.NewInt(1 << 10)
-	retrieveBusinessesResponseFieldSecondTierPartner = big.NewInt(1 << 11)
-	retrieveBusinessesResponseFieldStatus            = big.NewInt(1 << 12)
-	retrieveBusinessesResponseFieldVolumeUsd         = big.NewInt(1 << 13)
+	retrieveBusinessesResponseFieldBlueprintPartner  = big.NewInt(1 << 1)
+	retrieveBusinessesResponseFieldCreatedAt         = big.NewInt(1 << 2)
+	retrieveBusinessesResponseFieldEarningsUsd       = big.NewInt(1 << 3)
+	retrieveBusinessesResponseFieldFirstTierPartner  = big.NewInt(1 << 4)
+	retrieveBusinessesResponseFieldID                = big.NewInt(1 << 5)
+	retrieveBusinessesResponseFieldMyPartnerTier     = big.NewInt(1 << 6)
+	retrieveBusinessesResponseFieldObject            = big.NewInt(1 << 7)
+	retrieveBusinessesResponseFieldOwner             = big.NewInt(1 << 8)
+	retrieveBusinessesResponseFieldPayoutPercentages = big.NewInt(1 << 9)
+	retrieveBusinessesResponseFieldReferralExpiresAt = big.NewInt(1 << 10)
+	retrieveBusinessesResponseFieldReferralStartedAt = big.NewInt(1 << 11)
+	retrieveBusinessesResponseFieldSecondTierPartner = big.NewInt(1 << 12)
+	retrieveBusinessesResponseFieldStatus            = big.NewInt(1 << 13)
+	retrieveBusinessesResponseFieldVolumeUsd         = big.NewInt(1 << 14)
 )
 
 type RetrieveBusinessesResponse struct {
 	// Referred account.
 	Account *RetrieveBusinessesResponseAccount `json:"account,omitempty" url:"account,omitempty"`
+	// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
+	BlueprintPartner *RetrieveBusinessesResponseBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
 	// When the partner business was created.
 	CreatedAt   time.Time                              `json:"created_at" url:"created_at"`
 	EarningsUsd *RetrieveBusinessesResponseEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
@@ -2142,6 +2402,13 @@ func (r *RetrieveBusinessesResponse) GetAccount() *RetrieveBusinessesResponseAcc
 		return nil
 	}
 	return r.Account
+}
+
+func (r *RetrieveBusinessesResponse) GetBlueprintPartner() *RetrieveBusinessesResponseBlueprintPartner {
+	if r == nil {
+		return nil
+	}
+	return r.BlueprintPartner
 }
 
 func (r *RetrieveBusinessesResponse) GetCreatedAt() time.Time {
@@ -2254,6 +2521,13 @@ func (r *RetrieveBusinessesResponse) require(field *big.Int) {
 func (r *RetrieveBusinessesResponse) SetAccount(account *RetrieveBusinessesResponseAccount) {
 	r.Account = account
 	r.require(retrieveBusinessesResponseFieldAccount)
+}
+
+// SetBlueprintPartner sets the BlueprintPartner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponse) SetBlueprintPartner(blueprintPartner *RetrieveBusinessesResponseBlueprintPartner) {
+	r.BlueprintPartner = blueprintPartner
+	r.require(retrieveBusinessesResponseFieldBlueprintPartner)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -2578,6 +2852,229 @@ func (r *RetrieveBusinessesResponseAccount) MarshalJSON() ([]byte, error) {
 }
 
 func (r *RetrieveBusinessesResponseAccount) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
+var (
+	retrieveBusinessesResponseBlueprintPartnerFieldID             = big.NewInt(1 << 0)
+	retrieveBusinessesResponseBlueprintPartnerFieldName           = big.NewInt(1 << 1)
+	retrieveBusinessesResponseBlueprintPartnerFieldProfilePicture = big.NewInt(1 << 2)
+	retrieveBusinessesResponseBlueprintPartnerFieldUsername       = big.NewInt(1 << 3)
+)
+
+type RetrieveBusinessesResponseBlueprintPartner struct {
+	// User ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// The user's display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's profile picture.
+	ProfilePicture *RetrieveBusinessesResponseBlueprintPartnerProfilePicture `json:"profile_picture" url:"profile_picture"`
+	// The user's unique username.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartner) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartner) GetName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Name
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartner) GetProfilePicture() *RetrieveBusinessesResponseBlueprintPartnerProfilePicture {
+	if r == nil {
+		return nil
+	}
+	return r.ProfilePicture
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartner) GetUsername() string {
+	if r == nil {
+		return ""
+	}
+	return r.Username
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartner) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartner) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseBlueprintPartner) SetID(id string) {
+	r.ID = id
+	r.require(retrieveBusinessesResponseBlueprintPartnerFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseBlueprintPartner) SetName(name *string) {
+	r.Name = name
+	r.require(retrieveBusinessesResponseBlueprintPartnerFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseBlueprintPartner) SetProfilePicture(profilePicture *RetrieveBusinessesResponseBlueprintPartnerProfilePicture) {
+	r.ProfilePicture = profilePicture
+	r.require(retrieveBusinessesResponseBlueprintPartnerFieldProfilePicture)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseBlueprintPartner) SetUsername(username string) {
+	r.Username = username
+	r.require(retrieveBusinessesResponseBlueprintPartnerFieldUsername)
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartner) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveBusinessesResponseBlueprintPartner
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveBusinessesResponseBlueprintPartner(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartner) MarshalJSON() ([]byte, error) {
+	type embed RetrieveBusinessesResponseBlueprintPartner
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartner) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// The user's profile picture.
+var (
+	retrieveBusinessesResponseBlueprintPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
+)
+
+type RetrieveBusinessesResponseBlueprintPartnerProfilePicture struct {
+	// The user's profile picture URL.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartnerProfilePicture) GetURL() string {
+	if r == nil {
+		return ""
+	}
+	return r.URL
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartnerProfilePicture) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartnerProfilePicture) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseBlueprintPartnerProfilePicture) SetURL(url string) {
+	r.URL = url
+	r.require(retrieveBusinessesResponseBlueprintPartnerProfilePictureFieldURL)
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartnerProfilePicture) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveBusinessesResponseBlueprintPartnerProfilePicture
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveBusinessesResponseBlueprintPartnerProfilePicture(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartnerProfilePicture) MarshalJSON() ([]byte, error) {
+	type embed RetrieveBusinessesResponseBlueprintPartnerProfilePicture
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveBusinessesResponseBlueprintPartnerProfilePicture) String() string {
 	if r == nil {
 		return "<nil>"
 	}
@@ -2981,13 +3478,16 @@ func (r RetrieveBusinessesResponseObject) Ptr() *RetrieveBusinessesResponseObjec
 
 // The owner of the referred business.
 var (
-	retrieveBusinessesResponseOwnerFieldID             = big.NewInt(1 << 0)
-	retrieveBusinessesResponseOwnerFieldName           = big.NewInt(1 << 1)
-	retrieveBusinessesResponseOwnerFieldProfilePicture = big.NewInt(1 << 2)
-	retrieveBusinessesResponseOwnerFieldUsername       = big.NewInt(1 << 3)
+	retrieveBusinessesResponseOwnerFieldEmail          = big.NewInt(1 << 0)
+	retrieveBusinessesResponseOwnerFieldID             = big.NewInt(1 << 1)
+	retrieveBusinessesResponseOwnerFieldName           = big.NewInt(1 << 2)
+	retrieveBusinessesResponseOwnerFieldProfilePicture = big.NewInt(1 << 3)
+	retrieveBusinessesResponseOwnerFieldUsername       = big.NewInt(1 << 4)
 )
 
 type RetrieveBusinessesResponseOwner struct {
+	// The business owner's email address, so a partner can follow up on a referral they made. Requires the `partner:email:read` scope; `null` without it, or while the account has no reachable address of its own.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
 	// The user's display name.
@@ -3002,6 +3502,13 @@ type RetrieveBusinessesResponseOwner struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveBusinessesResponseOwner) GetEmail() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Email
 }
 
 func (r *RetrieveBusinessesResponseOwner) GetID() string {
@@ -3044,6 +3551,13 @@ func (r *RetrieveBusinessesResponseOwner) require(field *big.Int) {
 		r.explicitFields = big.NewInt(0)
 	}
 	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseOwner) SetEmail(email *string) {
+	r.Email = email
+	r.require(retrieveBusinessesResponseOwnerFieldEmail)
 }
 
 // SetID sets the ID field and marks it as non-optional;
