@@ -223,6 +223,7 @@ const (
 	PermissionActionReferralBasicRead                 PermissionAction = "referral:basic:read"
 	PermissionActionReferralPartnerCreate             PermissionAction = "referral:partner:create"
 	PermissionActionPartnerBasicRead                  PermissionAction = "partner:basic:read"
+	PermissionActionPartnerEmailRead                  PermissionAction = "partner:email:read"
 	PermissionActionPartnerInviteCreate               PermissionAction = "partner:invite:create"
 	PermissionActionPartnerCreate                     PermissionAction = "partner:create"
 	PermissionActionStatsRead                         PermissionAction = "stats:read"
@@ -656,6 +657,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionReferralPartnerCreate, nil
 	case "partner:basic:read":
 		return PermissionActionPartnerBasicRead, nil
+	case "partner:email:read":
+		return PermissionActionPartnerEmailRead, nil
 	case "partner:invite:create":
 		return PermissionActionPartnerInviteCreate, nil
 	case "partner:create":

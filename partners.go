@@ -1411,15 +1411,18 @@ func (r *ReferredUsersPartnersResponseDataItem) String() string {
 var (
 	referredUsersPartnersResponseDataItemUserFieldCity           = big.NewInt(1 << 0)
 	referredUsersPartnersResponseDataItemUserFieldCountry        = big.NewInt(1 << 1)
-	referredUsersPartnersResponseDataItemUserFieldID             = big.NewInt(1 << 2)
-	referredUsersPartnersResponseDataItemUserFieldName           = big.NewInt(1 << 3)
-	referredUsersPartnersResponseDataItemUserFieldProfilePicture = big.NewInt(1 << 4)
-	referredUsersPartnersResponseDataItemUserFieldUsername       = big.NewInt(1 << 5)
+	referredUsersPartnersResponseDataItemUserFieldEmail          = big.NewInt(1 << 2)
+	referredUsersPartnersResponseDataItemUserFieldID             = big.NewInt(1 << 3)
+	referredUsersPartnersResponseDataItemUserFieldName           = big.NewInt(1 << 4)
+	referredUsersPartnersResponseDataItemUserFieldProfilePicture = big.NewInt(1 << 5)
+	referredUsersPartnersResponseDataItemUserFieldUsername       = big.NewInt(1 << 6)
 )
 
 type ReferredUsersPartnersResponseDataItemUser struct {
-	City           *string                                                  `json:"city,omitempty" url:"city,omitempty"`
-	Country        *string                                                  `json:"country,omitempty" url:"country,omitempty"`
+	City    *string `json:"city,omitempty" url:"city,omitempty"`
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The referred user's email address, so a partner can follow up with someone they brought onto Whop. Requires the `partner:email:read` scope; `null` without it, or while the account has no reachable address of its own.
+	Email          *string                                                  `json:"email,omitempty" url:"email,omitempty"`
 	ID             string                                                   `json:"id" url:"id"`
 	Name           *string                                                  `json:"name,omitempty" url:"name,omitempty"`
 	ProfilePicture *ReferredUsersPartnersResponseDataItemUserProfilePicture `json:"profile_picture,omitempty" url:"profile_picture,omitempty"`
@@ -1444,6 +1447,13 @@ func (r *ReferredUsersPartnersResponseDataItemUser) GetCountry() *string {
 		return nil
 	}
 	return r.Country
+}
+
+func (r *ReferredUsersPartnersResponseDataItemUser) GetEmail() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Email
 }
 
 func (r *ReferredUsersPartnersResponseDataItemUser) GetID() string {
@@ -1500,6 +1510,13 @@ func (r *ReferredUsersPartnersResponseDataItemUser) SetCity(city *string) {
 func (r *ReferredUsersPartnersResponseDataItemUser) SetCountry(country *string) {
 	r.Country = country
 	r.require(referredUsersPartnersResponseDataItemUserFieldCountry)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersResponseDataItemUser) SetEmail(email *string) {
+	r.Email = email
+	r.require(referredUsersPartnersResponseDataItemUserFieldEmail)
 }
 
 // SetID sets the ID field and marks it as non-optional;

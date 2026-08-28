@@ -470,6 +470,7 @@ var (
 	transferOwnershipAccountsRequestFieldID         = big.NewInt(1 << 0)
 	transferOwnershipAccountsRequestFieldAsPartner  = big.NewInt(1 << 1)
 	transferOwnershipAccountsRequestFieldIdentifier = big.NewInt(1 << 2)
+	transferOwnershipAccountsRequestFieldMessage    = big.NewInt(1 << 3)
 )
 
 type TransferOwnershipAccountsRequest struct {
@@ -479,6 +480,8 @@ type TransferOwnershipAccountsRequest struct {
 	AsPartner *bool `json:"as_partner,omitempty" url:"-"`
 	// The user to transfer ownership to: a user ID (`user_*`) or an email address. An email address with no Whop account yet is sent an invite to create one.
 	Identifier string `json:"identifier" url:"-"`
+	// A note from the partner, shown as a quote in the invite email and signed with their name. Requires `as_partner`; sending it on an ordinary transfer is a 400. Omit it and the email sends without a note.
+	Message *string `json:"message,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -510,6 +513,13 @@ func (t *TransferOwnershipAccountsRequest) SetAsPartner(asPartner *bool) {
 func (t *TransferOwnershipAccountsRequest) SetIdentifier(identifier string) {
 	t.Identifier = identifier
 	t.require(transferOwnershipAccountsRequestFieldIdentifier)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransferOwnershipAccountsRequest) SetMessage(message *string) {
+	t.Message = message
+	t.require(transferOwnershipAccountsRequestFieldMessage)
 }
 
 func (t *TransferOwnershipAccountsRequest) UnmarshalJSON(data []byte) error {
