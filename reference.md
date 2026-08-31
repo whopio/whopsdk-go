@@ -1124,6 +1124,66 @@ client.Accounts.FormCompany(
 </dl>
 </details>
 
+<details><summary><code>client.Accounts.Suspend(ID) -> *whopsdk.Account</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Suspends a connected account directly owned by the authenticated platform account. This cannot suspend the platform account itself or an account owned by another platform.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.SuspendAccountsRequest{
+    ID: "id",
+}
+client.Accounts.Suspend(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Connected account ID, prefixed `biz_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Accounts.TransferOwnership(ID, request) -> *whopsdk.TransferOwnershipAccountsResponse</code></summary>
 <dl>
 <dd>
@@ -5781,6 +5841,145 @@ client.APIKeys.Rotate(
 </dl>
 </details>
 
+## Api Logs
+<details><summary><code>client.APILogs.List() -> *whopsdk.ListAPILogsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the requests served by Whop's API with the account's API keys, newest first — every surface (GraphQL, REST, and native /api/v1), reads and failed requests included.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListAPILogsRequest{}
+client.APILogs.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The account (biz_*) whose API logs to list. Defaults to the authenticated account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdAfter:** `*string` — Only return requests served at or after this ISO 8601 timestamp. Defaults to 7 days before created_before, or 7 days ago.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdBefore:** `*string` — Only return requests served before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**operationName:** `*string` — Only return requests for this operation, matched exactly against the operation_name shown on each log row (for example api/v1/products#create).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**httpMethod:** `*whopsdk.ListAPILogsRequestHTTPMethod` — Only return requests made with this HTTP method.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.ListAPILogsRequestStatus` — Only return requests that finished with this status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**apiKeyID:** `*string` — Only return requests made with this API key (apik_…).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**minDurationMs:** `*int` — Only return requests that took at least this many milliseconds.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**maxDurationMs:** `*int` — Only return requests that took at most this many milliseconds.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of logs to return.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## App Builds
 <details><summary><code>client.AppBuilds.List() -> *whopsdk.ListAppBuildsResponse</code></summary>
 <dl>
@@ -6239,7 +6438,7 @@ client.Apps.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.ListAppsRequestOrder` — The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then apps with a banner image, then by how many apps were created from each app as a template.
+**order:** `*whopsdk.ListAppsRequestOrder` — The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template.
     
 </dd>
 </dl>
@@ -9234,7 +9433,7 @@ client.Cards.List(
 <dl>
 <dd>
 
-Issue a virtual card, or apply for card issuing.
+Issue a virtual card, or apply for card issuing. An account with no application files one here and gets back a `202`; call again to issue the card once it is approved.
 </dd>
 </dl>
 </dd>
@@ -9276,7 +9475,7 @@ client.Cards.Create(
 <dl>
 <dd>
 
-**assignedUserID:** `*string` — The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts.
+**assignedUserID:** `*string` — The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts, and whenever a company API key files an account's first card application.
     
 </dd>
 </dl>
@@ -11023,6 +11222,206 @@ client.CompanyTokenTransactions.Retrieve(
 <dd>
 
 **id:** `string` — The unique identifier of the token transaction to retrieve.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Confirmation Tokens
+<details><summary><code>client.ConfirmationTokens.Create(request) -> *whopsdk.ConfirmationToken</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Mints a single-use, short-lived confirmation token from what the buyer entered on your collection surface: the payment method payload, billing details, and attested save consent. Public and rate-limited — the account_id in the body scopes the token but does not authenticate. Confirm it with POST /payments from your server.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateConfirmationTokensRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    BillingDetails: &whopsdk.CreateConfirmationTokensRequestBillingDetails{
+        Address: map[string]any{
+            "city": "Austin",
+            "country": "US",
+            "line1": "123 Main St",
+            "postal_code": "78701",
+        },
+        Email: "buyer@example.com",
+        Name: whopsdk.String(
+            "Buyer Name",
+        ),
+    },
+    PaymentMethod: &whopsdk.CreateConfirmationTokensRequestPaymentMethod{
+        Card: &whopsdk.CreateConfirmationTokensRequestPaymentMethodCard{
+            Brand: whopsdk.String(
+                "visa",
+            ),
+            Last4: whopsdk.String(
+                "4242",
+            ),
+            TokenIntent: whopsdk.String(
+                "bt_ti_123",
+            ),
+        },
+        Category: whopsdk.CreateConfirmationTokensRequestPaymentMethodCategoryCard,
+        Type: whopsdk.String(
+            "card",
+        ),
+    },
+    SetupFutureUsage: whopsdk.CreateConfirmationTokensRequestSetupFutureUsageOffSession.Ptr(),
+}
+client.ConfirmationTokens.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The account (biz_) this token is scoped to — the publishable identity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingDetails:** `*whopsdk.CreateConfirmationTokensRequestBillingDetails` — Billing details collected with the method. `email` is always required; cards additionally require `name` and an address with `line1` and `country`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**browserInfo:** `map[string]any` — Screen/runtime facts from the buyer's browser (platform, screen dimensions, language, ...) used for authentication ceremonies. Header-derived fields are captured server-side.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethod:** `*whopsdk.CreateConfirmationTokensRequestPaymentMethod` — The collected method: `type` names the payment method, `category` names the payload shape, and the category-keyed object carries the payload. Wallets are the exception: their payload rides the type key (`apple_pay` / `google_pay`). Send exactly the one payload arm the category selects — extra arms are rejected. Redirect-flow methods (category `redirect`, `bank_transfer`, `voucher`, and redirect wallets like `cashapp`) collect nothing and send no payload arm.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**returnURL:** `*string` — Where redirect flows send the buyer, carried onto the confirm that consumes this token.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**setupFutureUsage:** `*whopsdk.CreateConfirmationTokensRequestSetupFutureUsage` — The save-consent state your surface displayed when the buyer confirmed. Confirm may vault only if attested here.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ConfirmationTokens.Retrieve(ID) -> *whopsdk.ConfirmationToken</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a token's display-safe preview — never the underlying payment credential. Public and rate-limited: the account_id query param must match the account the token was minted for.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveConfirmationTokensRequest{
+    ID: "id",
+    AccountID: "account_id",
+}
+client.ConfirmationTokens.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Confirmation token ID, prefixed `ctok_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The account (biz_) the token was minted for.
     
 </dd>
 </dl>
@@ -17438,6 +17837,14 @@ client.FinancialActivity.List(
 <dl>
 <dd>
 
+**activityID:** `*string` — Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **currency:** `*string` — Optional currency code filter, for example `usd`.
     
 </dd>
@@ -23262,7 +23669,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**includeFree:** `*bool` — Whether to include payments with a zero amount.
+**includeFree:** `*bool` — Whether to include payments with a zero amount. Defaults to false, so zero-amount payments are omitted unless you set this to true — a company whose sales are all free plans returns an empty list without it.
     
 </dd>
 </dl>
@@ -23334,7 +23741,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-Charge an existing member off-session using one of their stored payment methods. You can provide an existing plan, or create a new one in-line. This endpoint will respond with a payment object immediately, but the payment is processed asynchronously in the background. Use webhooks to be notified when the payment succeeds or fails.
+Charge a buyer on-session with a `confirmation_token` for the method they selected, or charge an existing member off-session using a stored payment method. You can provide an existing plan or create one inline. The endpoint returns a payment immediately, but processing continues asynchronously. Use webhooks to learn whether it succeeds or fails, and poll the payment's status endpoint for any step the buyer must complete.
 
 Required permissions:
  - `payment:charge`
@@ -28052,7 +28459,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**paymentID:** `*string` — Filter refunds to only those associated with this specific payment.
+**paymentID:** `*string` — Filter refunds to those associated with this specific payment. Mutually exclusive with company_id and user_id: provide exactly one.
     
 </dd>
 </dl>
@@ -28060,7 +28467,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**companyID:** `*string` — Filter refunds to only those belonging to this company.
+**companyID:** `*string` — Filter refunds to those belonging to this company. Mutually exclusive with payment_id and user_id: provide exactly one.
     
 </dd>
 </dl>
@@ -28068,7 +28475,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**userID:** `*string` — Filter refunds to only those associated with this specific user.
+**userID:** `*string` — Filter refunds to those associated with this specific user. Mutually exclusive with payment_id and company_id: provide exactly one. Requires a credential belonging to that user; any other credential receives 'You are not authorized'.
     
 </dd>
 </dl>
@@ -30324,6 +30731,7 @@ Starts an OAuth connection flow and returns an authorize_url where the user can 
 ```go
 request := &whopsdk.ConnectSocialAccountsRequest{
     Platform: whopsdk.ConnectSocialAccountsRequestPlatformMetaBusiness,
+    RedirectURL: "https://example.com/settings/social-accounts",
 }
 client.SocialAccounts.Connect(
     context.TODO(),
@@ -30351,7 +30759,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**platform:** `*whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Supported options are `meta_business` and `tiktok`.
+**platform:** `*whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts.
     
 </dd>
 </dl>
@@ -30359,7 +30767,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**redirectURL:** `*string` — The Whop URL to redirect the user to after they finish connecting.
+**redirectURL:** `string` — Where to send the user once they finish connecting their accounts. Any `http` or `https` URL. If the connection fails, the user is redirected with a `social_account_error` query param.
     
 </dd>
 </dl>
@@ -30367,7 +30775,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**scopes:** `[]*whopsdk.ConnectSocialAccountsRequestScopesItem` — Capabilities to grant for the connected social account. Use `advertise` when connecting a Meta Business or TikTok account for ads.
+**scopes:** `[]*whopsdk.ConnectSocialAccountsRequestScopesItem` — Capabilities to grant for the connected social account. `advertise` is required for both `meta_business` and `tiktok` connections — it is not conditional on whether you intend to run ads, and omitting it fails the request.
     
 </dd>
 </dl>
@@ -36536,7 +36944,7 @@ client.Payouts.Methods.Delete(
 <dl>
 <dd>
 
-Changes the label used to identify a saved payout method.
+Changes the label used to identify a saved payout method or makes it the account's default payout method.
 </dd>
 </dl>
 </dd>
@@ -36553,7 +36961,6 @@ Changes the label used to identify a saved payout method.
 ```go
 request := &payouts.UpdateMethodsRequest{
     ID: "id",
-    Nickname: "Primary checking",
 }
 client.Payouts.Methods.Update(
     context.TODO(),
@@ -36581,7 +36988,15 @@ client.Payouts.Methods.Update(
 <dl>
 <dd>
 
-**nickname:** `string` — New label for the payout method, with at least one non-whitespace character and a maximum of 100 characters.
+**isDefault:** `*bool` — Set to `true` to make this the account's default payout method. `false` is not accepted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nickname:** `*string` — New label for the payout method, with at least one non-whitespace character and a maximum of 100 characters.
     
 </dd>
 </dl>

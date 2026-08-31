@@ -289,6 +289,32 @@ func TestAccountsFormCompanyWithWireMock(
 	VerifyRequestCount(t, "TestAccountsFormCompanyWithWireMock", "POST", "/accounts/id/form_company", nil, 1)
 }
 
+func TestAccountsSuspendWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.SuspendAccountsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Accounts.Suspend(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAccountsSuspendWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAccountsSuspendWithWireMock", "POST", "/accounts/id/suspend", nil, 1)
+}
+
 func TestAccountsTransferOwnershipWithWireMock(
 	t *testing.T,
 ) {

@@ -795,20 +795,21 @@ var (
 	createEventsRequestContextFieldLiFatID               = big.NewInt(1 << 14)
 	createEventsRequestContextFieldMsclkid               = big.NewInt(1 << 15)
 	createEventsRequestContextFieldRdtCid                = big.NewInt(1 << 16)
-	createEventsRequestContextFieldSccid                 = big.NewInt(1 << 17)
-	createEventsRequestContextFieldScreenResolution      = big.NewInt(1 << 18)
-	createEventsRequestContextFieldTimezone              = big.NewInt(1 << 19)
-	createEventsRequestContextFieldTtclid                = big.NewInt(1 << 20)
-	createEventsRequestContextFieldTtp                   = big.NewInt(1 << 21)
-	createEventsRequestContextFieldTwclid                = big.NewInt(1 << 22)
-	createEventsRequestContextFieldUserAgent             = big.NewInt(1 << 23)
-	createEventsRequestContextFieldUtmCampaign           = big.NewInt(1 << 24)
-	createEventsRequestContextFieldUtmContent            = big.NewInt(1 << 25)
-	createEventsRequestContextFieldUtmID                 = big.NewInt(1 << 26)
-	createEventsRequestContextFieldUtmMedium             = big.NewInt(1 << 27)
-	createEventsRequestContextFieldUtmSource             = big.NewInt(1 << 28)
-	createEventsRequestContextFieldUtmTerm               = big.NewInt(1 << 29)
-	createEventsRequestContextFieldWbraid                = big.NewInt(1 << 30)
+	createEventsRequestContextFieldSc                    = big.NewInt(1 << 17)
+	createEventsRequestContextFieldSccid                 = big.NewInt(1 << 18)
+	createEventsRequestContextFieldScreenResolution      = big.NewInt(1 << 19)
+	createEventsRequestContextFieldTimezone              = big.NewInt(1 << 20)
+	createEventsRequestContextFieldTtclid                = big.NewInt(1 << 21)
+	createEventsRequestContextFieldTtp                   = big.NewInt(1 << 22)
+	createEventsRequestContextFieldTwclid                = big.NewInt(1 << 23)
+	createEventsRequestContextFieldUserAgent             = big.NewInt(1 << 24)
+	createEventsRequestContextFieldUtmCampaign           = big.NewInt(1 << 25)
+	createEventsRequestContextFieldUtmContent            = big.NewInt(1 << 26)
+	createEventsRequestContextFieldUtmID                 = big.NewInt(1 << 27)
+	createEventsRequestContextFieldUtmMedium             = big.NewInt(1 << 28)
+	createEventsRequestContextFieldUtmSource             = big.NewInt(1 << 29)
+	createEventsRequestContextFieldUtmTerm               = big.NewInt(1 << 30)
+	createEventsRequestContextFieldWbraid                = big.NewInt(1 << 31)
 )
 
 type CreateEventsRequestContext struct {
@@ -846,6 +847,8 @@ type CreateEventsRequestContext struct {
 	Msclkid *string `json:"msclkid,omitempty" url:"msclkid,omitempty"`
 	// Reddit click ID.
 	RdtCid *string `json:"rdt_cid,omitempty" url:"rdt_cid,omitempty"`
+	// Whop SC identifier.
+	Sc *string `json:"sc,omitempty" url:"sc,omitempty"`
 	// Snapchat click ID.
 	Sccid *string `json:"sccid,omitempty" url:"sccid,omitempty"`
 	// Screen resolution (e.g. 1920x1080).
@@ -999,6 +1002,13 @@ func (c *CreateEventsRequestContext) GetRdtCid() *string {
 		return nil
 	}
 	return c.RdtCid
+}
+
+func (c *CreateEventsRequestContext) GetSc() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Sc
 }
 
 func (c *CreateEventsRequestContext) GetSccid() *string {
@@ -1230,6 +1240,13 @@ func (c *CreateEventsRequestContext) SetMsclkid(msclkid *string) {
 func (c *CreateEventsRequestContext) SetRdtCid(rdtCid *string) {
 	c.RdtCid = rdtCid
 	c.require(createEventsRequestContextFieldRdtCid)
+}
+
+// SetSc sets the Sc field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateEventsRequestContext) SetSc(sc *string) {
+	c.Sc = sc
+	c.require(createEventsRequestContextFieldSc)
 }
 
 // SetSccid sets the Sccid field and marks it as non-optional;

@@ -28,7 +28,7 @@ func TestSettersConnectSocialAccountsRequest(t *testing.T) {
 
 	t.Run("SetRedirectURL", func(t *testing.T) {
 		obj := &ConnectSocialAccountsRequest{}
-		var fernTestValueRedirectURL *string
+		var fernTestValueRedirectURL string
 		obj.SetRedirectURL(fernTestValueRedirectURL)
 		assert.Equal(t, fernTestValueRedirectURL, obj.RedirectURL)
 		assert.NotNil(t, obj.explicitFields)
@@ -111,7 +111,7 @@ func TestSettersMarkExplicitConnectSocialAccountsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ConnectSocialAccountsRequest{}
-		var fernTestValueRedirectURL *string
+		var fernTestValueRedirectURL string
 
 		// Act
 		obj.SetRedirectURL(fernTestValueRedirectURL)

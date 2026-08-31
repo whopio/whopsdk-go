@@ -23,7 +23,7 @@ var (
 type CreateCardsRequest struct {
 	// The owning account ID (a biz_ identifier). Provide this or user_id.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts.
+	// The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts, and whenever a company API key files an account's first card application.
 	AssignedUserID *string `json:"assigned_user_id,omitempty" url:"-"`
 	// A display name for the card.
 	Name *string `json:"name,omitempty" url:"-"`

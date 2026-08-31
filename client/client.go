@@ -13,6 +13,7 @@ import (
 	affiliatesclient "github.com/whopio/whopsdk-go/affiliates/client"
 	aichats "github.com/whopio/whopsdk-go/aichats"
 	apikeys "github.com/whopio/whopsdk-go/apikeys"
+	apilogs "github.com/whopio/whopsdk-go/apilogs"
 	appbuilds "github.com/whopio/whopsdk-go/appbuilds"
 	apps "github.com/whopio/whopsdk-go/apps"
 	audiences "github.com/whopio/whopsdk-go/audiences"
@@ -25,6 +26,7 @@ import (
 	checkoutconfigurations "github.com/whopio/whopsdk-go/checkoutconfigurations"
 	companies "github.com/whopio/whopsdk-go/companies"
 	companytokentransactions "github.com/whopio/whopsdk-go/companytokentransactions"
+	confirmationtokens "github.com/whopio/whopsdk-go/confirmationtokens"
 	core "github.com/whopio/whopsdk-go/core"
 	coursechapters "github.com/whopio/whopsdk-go/coursechapters"
 	courselessoninteractions "github.com/whopio/whopsdk-go/courselessoninteractions"
@@ -99,6 +101,7 @@ type Whop struct {
 	Affiliates               *affiliatesclient.Client
 	AiChats                  *aichats.Client
 	APIKeys                  *apikeys.Client
+	APILogs                  *apilogs.Client
 	AppBuilds                *appbuilds.Client
 	Apps                     *apps.Client
 	Audiences                *audiences.Client
@@ -111,6 +114,7 @@ type Whop struct {
 	CheckoutConfigurations   *checkoutconfigurations.Client
 	Companies                *companies.Client
 	CompanyTokenTransactions *companytokentransactions.Client
+	ConfirmationTokens       *confirmationtokens.Client
 	CourseChapters           *coursechapters.Client
 	CourseLessonInteractions *courselessoninteractions.Client
 	CourseLessons            *courselessons.Client
@@ -192,6 +196,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Affiliates:               affiliatesclient.NewClient(options),
 		AiChats:                  aichats.NewClient(options),
 		APIKeys:                  apikeys.NewClient(options),
+		APILogs:                  apilogs.NewClient(options),
 		AppBuilds:                appbuilds.NewClient(options),
 		Apps:                     apps.NewClient(options),
 		Audiences:                audiences.NewClient(options),
@@ -204,6 +209,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		CheckoutConfigurations:   checkoutconfigurations.NewClient(options),
 		Companies:                companies.NewClient(options),
 		CompanyTokenTransactions: companytokentransactions.NewClient(options),
+		ConfirmationTokens:       confirmationtokens.NewClient(options),
 		CourseChapters:           coursechapters.NewClient(options),
 		CourseLessonInteractions: courselessoninteractions.NewClient(options),
 		CourseLessons:            courselessons.NewClient(options),

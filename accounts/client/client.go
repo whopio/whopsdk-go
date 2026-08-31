@@ -308,6 +308,33 @@ func (c *Client) FormCompany(
 	return response.Body, nil
 }
 
+// Suspends a connected account directly owned by the authenticated platform account. This cannot suspend the platform account itself or an account owned by another platform.
+//
+// Example:
+//
+//	request := &whopsdk.SuspendAccountsRequest{
+//	    ID: "id",
+//	}
+//	client.Accounts.Suspend(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Suspend(
+	ctx context.Context,
+	request *whopsdk.SuspendAccountsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Account, error) {
+	response, err := c.WithRawResponse.Suspend(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Transfers ownership of the account to another user, identified by user ID or email address. If the recipient already holds the owner role, ownership moves immediately; otherwise they get an invite and ownership moves when they accept.
 //
 // Example:

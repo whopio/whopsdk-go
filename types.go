@@ -14596,7 +14596,9 @@ const (
 	PaymentMethodTypesEps                    PaymentMethodTypes = "eps"
 	PaymentMethodTypesEuBankTransfer         PaymentMethodTypes = "eu_bank_transfer"
 	PaymentMethodTypesFpx                    PaymentMethodTypes = "fpx"
+	PaymentMethodTypesFlexPay                PaymentMethodTypes = "flex_pay"
 	PaymentMethodTypesGbBankTransfer         PaymentMethodTypes = "gb_bank_transfer"
+	PaymentMethodTypesGcash                  PaymentMethodTypes = "gcash"
 	PaymentMethodTypesGiropay                PaymentMethodTypes = "giropay"
 	PaymentMethodTypesGooglePay              PaymentMethodTypes = "google_pay"
 	PaymentMethodTypesGopay                  PaymentMethodTypes = "gopay"
@@ -14754,8 +14756,12 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesEuBankTransfer, nil
 	case "fpx":
 		return PaymentMethodTypesFpx, nil
+	case "flex_pay":
+		return PaymentMethodTypesFlexPay, nil
 	case "gb_bank_transfer":
 		return PaymentMethodTypesGbBankTransfer, nil
+	case "gcash":
+		return PaymentMethodTypesGcash, nil
 	case "giropay":
 		return PaymentMethodTypesGiropay, nil
 	case "google_pay":
@@ -18654,6 +18660,142 @@ func NewStatusesFromString(s string) (Statuses, error) {
 
 func (s Statuses) Ptr() *Statuses {
 	return &s
+}
+
+var (
+	storefrontAccountFieldID      = big.NewInt(1 << 0)
+	storefrontAccountFieldLogoURL = big.NewInt(1 << 1)
+	storefrontAccountFieldRoute   = big.NewInt(1 << 2)
+	storefrontAccountFieldTitle   = big.NewInt(1 << 3)
+)
+
+type StorefrontAccount struct {
+	// Account ID, prefixed `biz_`.
+	ID string `json:"id" url:"id"`
+	// Account logo image URL. `null` when the account has not set one.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Account public route identifier — the `whop.com/{route}` storefront path.
+	Route string `json:"route" url:"route"`
+	// Account display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *StorefrontAccount) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *StorefrontAccount) GetLogoURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.LogoURL
+}
+
+func (s *StorefrontAccount) GetRoute() string {
+	if s == nil {
+		return ""
+	}
+	return s.Route
+}
+
+func (s *StorefrontAccount) GetTitle() string {
+	if s == nil {
+		return ""
+	}
+	return s.Title
+}
+
+func (s *StorefrontAccount) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *StorefrontAccount) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StorefrontAccount) SetID(id string) {
+	s.ID = id
+	s.require(storefrontAccountFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StorefrontAccount) SetLogoURL(logoURL *string) {
+	s.LogoURL = logoURL
+	s.require(storefrontAccountFieldLogoURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StorefrontAccount) SetRoute(route string) {
+	s.Route = route
+	s.require(storefrontAccountFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StorefrontAccount) SetTitle(title string) {
+	s.Title = title
+	s.require(storefrontAccountFieldTitle)
+}
+
+func (s *StorefrontAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler StorefrontAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = StorefrontAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *StorefrontAccount) MarshalJSON() ([]byte, error) {
+	type embed StorefrontAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *StorefrontAccount) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
 }
 
 // Whether or not the tax is included in a plan's price (or if it hasn't been set up)

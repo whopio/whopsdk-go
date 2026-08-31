@@ -2469,6 +2469,14 @@ func TestSettersCreateEventsRequestContext(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSc", func(t *testing.T) {
+		obj := &CreateEventsRequestContext{}
+		var fernTestValueSc *string
+		obj.SetSc(fernTestValueSc)
+		assert.Equal(t, fernTestValueSc, obj.Sc)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSccid", func(t *testing.T) {
 		obj := &CreateEventsRequestContext{}
 		var fernTestValueSccid *string
@@ -3143,6 +3151,39 @@ func TestGettersCreateEventsRequestContext(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRdtCid() // Should return zero value
+	})
+
+	t.Run("GetSc", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateEventsRequestContext{}
+		var expected *string
+		obj.Sc = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSc(), "getter should return the property value")
+	})
+
+	t.Run("GetSc_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateEventsRequestContext{}
+		obj.Sc = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSc(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSc_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateEventsRequestContext
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSc() // Should return zero value
 	})
 
 	t.Run("GetSccid", func(t *testing.T) {
@@ -4114,6 +4155,37 @@ func TestSettersMarkExplicitCreateEventsRequestContext(t *testing.T) {
 
 		// Act
 		obj.SetRdtCid(fernTestValueRdtCid)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSc_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateEventsRequestContext{}
+		var fernTestValueSc *string
+
+		// Act
+		obj.SetSc(fernTestValueSc)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

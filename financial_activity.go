@@ -18,13 +18,14 @@ var (
 	listFinancialActivityRequestFieldLineTypes            = big.NewInt(1 << 4)
 	listFinancialActivityRequestFieldDirection            = big.NewInt(1 << 5)
 	listFinancialActivityRequestFieldResourceID           = big.NewInt(1 << 6)
-	listFinancialActivityRequestFieldCurrency             = big.NewInt(1 << 7)
-	listFinancialActivityRequestFieldPostedAfter          = big.NewInt(1 << 8)
-	listFinancialActivityRequestFieldPostedBefore         = big.NewInt(1 << 9)
-	listFinancialActivityRequestFieldAvailableAfter       = big.NewInt(1 << 10)
-	listFinancialActivityRequestFieldAvailableBefore      = big.NewInt(1 << 11)
-	listFinancialActivityRequestFieldLimit                = big.NewInt(1 << 12)
-	listFinancialActivityRequestFieldCursor               = big.NewInt(1 << 13)
+	listFinancialActivityRequestFieldActivityID           = big.NewInt(1 << 7)
+	listFinancialActivityRequestFieldCurrency             = big.NewInt(1 << 8)
+	listFinancialActivityRequestFieldPostedAfter          = big.NewInt(1 << 9)
+	listFinancialActivityRequestFieldPostedBefore         = big.NewInt(1 << 10)
+	listFinancialActivityRequestFieldAvailableAfter       = big.NewInt(1 << 11)
+	listFinancialActivityRequestFieldAvailableBefore      = big.NewInt(1 << 12)
+	listFinancialActivityRequestFieldLimit                = big.NewInt(1 << 13)
+	listFinancialActivityRequestFieldCursor               = big.NewInt(1 << 14)
 )
 
 type ListFinancialActivityRequest struct {
@@ -42,6 +43,8 @@ type ListFinancialActivityRequest struct {
 	Direction *ListFinancialActivityRequestDirection `json:"-" url:"direction,omitempty"`
 	// Optional prefixed resource ID. Returns activity associated with that resource.
 	ResourceID *string `json:"-" url:"resource_id,omitempty"`
+	// Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
+	ActivityID *string `json:"-" url:"activity_id,omitempty"`
 	// Optional currency code filter, for example `usd`.
 	Currency *string `json:"-" url:"currency,omitempty"`
 	// Only include rows posted after this ISO 8601 timestamp.
@@ -115,6 +118,13 @@ func (l *ListFinancialActivityRequest) SetDirection(direction *ListFinancialActi
 func (l *ListFinancialActivityRequest) SetResourceID(resourceID *string) {
 	l.ResourceID = resourceID
 	l.require(listFinancialActivityRequestFieldResourceID)
+}
+
+// SetActivityID sets the ActivityID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetActivityID(activityID *string) {
+	l.ActivityID = activityID
+	l.require(listFinancialActivityRequestFieldActivityID)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;

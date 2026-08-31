@@ -32,11 +32,11 @@ type ListRefundsRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Filter refunds to only those associated with this specific payment.
+	// Filter refunds to those associated with this specific payment. Mutually exclusive with company_id and user_id: provide exactly one.
 	PaymentID *string `json:"-" url:"payment_id,omitempty"`
-	// Filter refunds to only those belonging to this company.
+	// Filter refunds to those belonging to this company. Mutually exclusive with payment_id and user_id: provide exactly one.
 	CompanyID *string `json:"-" url:"company_id,omitempty"`
-	// Filter refunds to only those associated with this specific user.
+	// Filter refunds to those associated with this specific user. Mutually exclusive with payment_id and company_id: provide exactly one. Requires a credential belonging to that user; any other credential receives 'You are not authorized'.
 	UserID    *string    `json:"-" url:"user_id,omitempty"`
 	Direction *Direction `json:"-" url:"direction,omitempty"`
 	// Only return refunds created before this timestamp.
@@ -165,6 +165,7 @@ const (
 	PaymentProvidersMultiPsp        PaymentProviders = "multi_psp"
 	PaymentProvidersAdyen           PaymentProviders = "adyen"
 	PaymentProvidersClaritypay      PaymentProviders = "claritypay"
+	PaymentProvidersFlexPay         PaymentProviders = "flex_pay"
 	PaymentProvidersCheckoutDotCom  PaymentProviders = "checkout_dot_com"
 	PaymentProvidersAirwallex       PaymentProviders = "airwallex"
 	PaymentProvidersCoinflow        PaymentProviders = "coinflow"
@@ -196,6 +197,8 @@ func NewPaymentProvidersFromString(s string) (PaymentProviders, error) {
 		return PaymentProvidersAdyen, nil
 	case "claritypay":
 		return PaymentProvidersClaritypay, nil
+	case "flex_pay":
+		return PaymentProvidersFlexPay, nil
 	case "checkout_dot_com":
 		return PaymentProvidersCheckoutDotCom, nil
 	case "airwallex":
