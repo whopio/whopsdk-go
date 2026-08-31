@@ -144,6 +144,7 @@ func (c *Client) Create(
 //
 //	request := &whopsdk.ConnectSocialAccountsRequest{
 //	    Platform: whopsdk.ConnectSocialAccountsRequestPlatformMetaBusiness,
+//	    RedirectURL: "https://example.com/settings/social-accounts",
 //	}
 //	client.SocialAccounts.Connect(
 //	    context.TODO(),

@@ -420,17 +420,18 @@ var (
 	bountyFieldGrossRewardAmount               = big.NewInt(1 << 22)
 	bountyFieldHostingAccount                  = big.NewInt(1 << 23)
 	bountyFieldID                              = big.NewInt(1 << 24)
-	bountyFieldNetRewardAmount                 = big.NewInt(1 << 25)
-	bountyFieldPoster                          = big.NewInt(1 << 26)
-	bountyFieldScheduledFrequency              = big.NewInt(1 << 27)
-	bountyFieldScheduledPublishAt              = big.NewInt(1 << 28)
-	bountyFieldSpotsRemaining                  = big.NewInt(1 << 29)
-	bountyFieldStatus                          = big.NewInt(1 << 30)
-	bountyFieldSubmissionsClosedAt             = big.NewInt(1 << 31)
-	bountyFieldTitle                           = big.NewInt(1 << 32)
-	bountyFieldUnresolvedSubmissionsCount      = big.NewInt(1 << 33)
-	bountyFieldUpdatedAt                       = big.NewInt(1 << 34)
-	bountyFieldViewerAcceptedSubmissionsCount  = big.NewInt(1 << 35)
+	bountyFieldMinTotalVerifiedDurationSeconds = big.NewInt(1 << 25)
+	bountyFieldNetRewardAmount                 = big.NewInt(1 << 26)
+	bountyFieldPoster                          = big.NewInt(1 << 27)
+	bountyFieldScheduledFrequency              = big.NewInt(1 << 28)
+	bountyFieldScheduledPublishAt              = big.NewInt(1 << 29)
+	bountyFieldSpotsRemaining                  = big.NewInt(1 << 30)
+	bountyFieldStatus                          = big.NewInt(1 << 31)
+	bountyFieldSubmissionsClosedAt             = big.NewInt(1 << 32)
+	bountyFieldTitle                           = big.NewInt(1 << 33)
+	bountyFieldUnresolvedSubmissionsCount      = big.NewInt(1 << 34)
+	bountyFieldUpdatedAt                       = big.NewInt(1 << 35)
+	bountyFieldViewerAcceptedSubmissionsCount  = big.NewInt(1 << 36)
 )
 
 type Bounty struct {
@@ -481,6 +482,8 @@ type Bounty struct {
 	HostingAccount *StorefrontAccount `json:"hosting_account,omitempty" url:"hosting_account,omitempty"`
 	// Bounty ID, prefixed `bnty_`.
 	ID string `json:"id" url:"id"`
+	// Total verified footage a submission must accumulate before it can be submitted, in seconds. Always a whole number of hours. Present only on `data_capture` bounties — it is what `net_reward_amount` pays for, so rate displays divide by it. `null` for every other goal type.
+	MinTotalVerifiedDurationSeconds *int `json:"min_total_verified_duration_seconds,omitempty" url:"min_total_verified_duration_seconds,omitempty"`
 	// What a worker is quoted per accepted submission after the platform fee, in whole currency units. The exact post-fee figure, at the standard platform fee rate — a worker who locked a different rate, or who arrived through an affiliate link, is paid a different amount.
 	NetRewardAmount float64 `json:"net_reward_amount" url:"net_reward_amount"`
 	// User who posted the bounty — the account owner when created with an account API key.
@@ -684,6 +687,13 @@ func (b *Bounty) GetID() string {
 		return ""
 	}
 	return b.ID
+}
+
+func (b *Bounty) GetMinTotalVerifiedDurationSeconds() *int {
+	if b == nil {
+		return nil
+	}
+	return b.MinTotalVerifiedDurationSeconds
 }
 
 func (b *Bounty) GetNetRewardAmount() float64 {
@@ -950,6 +960,13 @@ func (b *Bounty) SetHostingAccount(hostingAccount *StorefrontAccount) {
 func (b *Bounty) SetID(id string) {
 	b.ID = id
 	b.require(bountyFieldID)
+}
+
+// SetMinTotalVerifiedDurationSeconds sets the MinTotalVerifiedDurationSeconds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *Bounty) SetMinTotalVerifiedDurationSeconds(minTotalVerifiedDurationSeconds *int) {
+	b.MinTotalVerifiedDurationSeconds = minTotalVerifiedDurationSeconds
+	b.require(bountyFieldMinTotalVerifiedDurationSeconds)
 }
 
 // SetNetRewardAmount sets the NetRewardAmount field and marks it as non-optional;
@@ -1545,17 +1562,18 @@ var (
 	bountyListItemFieldGrossRewardAmount               = big.NewInt(1 << 18)
 	bountyListItemFieldHostingAccount                  = big.NewInt(1 << 19)
 	bountyListItemFieldID                              = big.NewInt(1 << 20)
-	bountyListItemFieldNetRewardAmount                 = big.NewInt(1 << 21)
-	bountyListItemFieldPoster                          = big.NewInt(1 << 22)
-	bountyListItemFieldScheduledFrequency              = big.NewInt(1 << 23)
-	bountyListItemFieldScheduledPublishAt              = big.NewInt(1 << 24)
-	bountyListItemFieldSpotsRemaining                  = big.NewInt(1 << 25)
-	bountyListItemFieldStatus                          = big.NewInt(1 << 26)
-	bountyListItemFieldSubmissionsClosedAt             = big.NewInt(1 << 27)
-	bountyListItemFieldTitle                           = big.NewInt(1 << 28)
-	bountyListItemFieldUnresolvedSubmissionsCount      = big.NewInt(1 << 29)
-	bountyListItemFieldUpdatedAt                       = big.NewInt(1 << 30)
-	bountyListItemFieldViewerAcceptedSubmissionsCount  = big.NewInt(1 << 31)
+	bountyListItemFieldMinTotalVerifiedDurationSeconds = big.NewInt(1 << 21)
+	bountyListItemFieldNetRewardAmount                 = big.NewInt(1 << 22)
+	bountyListItemFieldPoster                          = big.NewInt(1 << 23)
+	bountyListItemFieldScheduledFrequency              = big.NewInt(1 << 24)
+	bountyListItemFieldScheduledPublishAt              = big.NewInt(1 << 25)
+	bountyListItemFieldSpotsRemaining                  = big.NewInt(1 << 26)
+	bountyListItemFieldStatus                          = big.NewInt(1 << 27)
+	bountyListItemFieldSubmissionsClosedAt             = big.NewInt(1 << 28)
+	bountyListItemFieldTitle                           = big.NewInt(1 << 29)
+	bountyListItemFieldUnresolvedSubmissionsCount      = big.NewInt(1 << 30)
+	bountyListItemFieldUpdatedAt                       = big.NewInt(1 << 31)
+	bountyListItemFieldViewerAcceptedSubmissionsCount  = big.NewInt(1 << 32)
 )
 
 type BountyListItem struct {
@@ -1599,6 +1617,8 @@ type BountyListItem struct {
 	HostingAccount *StorefrontAccount `json:"hosting_account,omitempty" url:"hosting_account,omitempty"`
 	// Bounty ID, prefixed `bnty_`.
 	ID string `json:"id" url:"id"`
+	// Total verified footage a submission must accumulate before it can be submitted, in seconds. Always a whole number of hours. Present only on `data_capture` bounties — it is what `net_reward_amount` pays for, so rate displays divide by it. `null` for every other goal type.
+	MinTotalVerifiedDurationSeconds *int `json:"min_total_verified_duration_seconds,omitempty" url:"min_total_verified_duration_seconds,omitempty"`
 	// What a worker is quoted per accepted submission after the platform fee, in whole currency units. The exact post-fee figure, at the standard platform fee rate — a worker who locked a different rate, or who arrived through an affiliate link, is paid a different amount.
 	NetRewardAmount float64 `json:"net_reward_amount" url:"net_reward_amount"`
 	// User who posted the bounty — the account owner when created with an account API key.
@@ -1774,6 +1794,13 @@ func (b *BountyListItem) GetID() string {
 		return ""
 	}
 	return b.ID
+}
+
+func (b *BountyListItem) GetMinTotalVerifiedDurationSeconds() *int {
+	if b == nil {
+		return nil
+	}
+	return b.MinTotalVerifiedDurationSeconds
 }
 
 func (b *BountyListItem) GetNetRewardAmount() float64 {
@@ -2012,6 +2039,13 @@ func (b *BountyListItem) SetHostingAccount(hostingAccount *StorefrontAccount) {
 func (b *BountyListItem) SetID(id string) {
 	b.ID = id
 	b.require(bountyListItemFieldID)
+}
+
+// SetMinTotalVerifiedDurationSeconds sets the MinTotalVerifiedDurationSeconds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BountyListItem) SetMinTotalVerifiedDurationSeconds(minTotalVerifiedDurationSeconds *int) {
+	b.MinTotalVerifiedDurationSeconds = minTotalVerifiedDurationSeconds
+	b.require(bountyListItemFieldMinTotalVerifiedDurationSeconds)
 }
 
 // SetNetRewardAmount sets the NetRewardAmount field and marks it as non-optional;
@@ -3044,125 +3078,6 @@ func NewCaptureSpecVideoStabilizationModeFromString(s string) (CaptureSpecVideoS
 
 func (c CaptureSpecVideoStabilizationMode) Ptr() *CaptureSpecVideoStabilizationMode {
 	return &c
-}
-
-var (
-	storefrontAccountFieldID    = big.NewInt(1 << 0)
-	storefrontAccountFieldRoute = big.NewInt(1 << 1)
-	storefrontAccountFieldTitle = big.NewInt(1 << 2)
-)
-
-type StorefrontAccount struct {
-	// Account ID, prefixed `biz_`.
-	ID string `json:"id" url:"id"`
-	// Account public route identifier — the `whop.com/{route}` storefront path.
-	Route string `json:"route" url:"route"`
-	// Account display name.
-	Title string `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (s *StorefrontAccount) GetID() string {
-	if s == nil {
-		return ""
-	}
-	return s.ID
-}
-
-func (s *StorefrontAccount) GetRoute() string {
-	if s == nil {
-		return ""
-	}
-	return s.Route
-}
-
-func (s *StorefrontAccount) GetTitle() string {
-	if s == nil {
-		return ""
-	}
-	return s.Title
-}
-
-func (s *StorefrontAccount) GetExtraProperties() map[string]interface{} {
-	if s == nil {
-		return nil
-	}
-	return s.extraProperties
-}
-
-func (s *StorefrontAccount) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
-	}
-	s.explicitFields.Or(s.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *StorefrontAccount) SetID(id string) {
-	s.ID = id
-	s.require(storefrontAccountFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *StorefrontAccount) SetRoute(route string) {
-	s.Route = route
-	s.require(storefrontAccountFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *StorefrontAccount) SetTitle(title string) {
-	s.Title = title
-	s.require(storefrontAccountFieldTitle)
-}
-
-func (s *StorefrontAccount) UnmarshalJSON(data []byte) error {
-	type unmarshaler StorefrontAccount
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*s = StorefrontAccount(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *s)
-	if err != nil {
-		return err
-	}
-	s.extraProperties = extraProperties
-	s.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (s *StorefrontAccount) MarshalJSON() ([]byte, error) {
-	type embed StorefrontAccount
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*s),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (s *StorefrontAccount) String() string {
-	if s == nil {
-		return "<nil>"
-	}
-	if len(s.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(s); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", s)
 }
 
 // What the poster wants the work to achieve, declared once here.

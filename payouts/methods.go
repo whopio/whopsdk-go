@@ -3968,15 +3968,18 @@ func (u UpdateMethodsResponseUnavailableReason) Ptr() *UpdateMethodsResponseUnav
 }
 
 var (
-	updateMethodsRequestFieldID       = big.NewInt(1 << 0)
-	updateMethodsRequestFieldNickname = big.NewInt(1 << 1)
+	updateMethodsRequestFieldID        = big.NewInt(1 << 0)
+	updateMethodsRequestFieldIsDefault = big.NewInt(1 << 1)
+	updateMethodsRequestFieldNickname  = big.NewInt(1 << 2)
 )
 
 type UpdateMethodsRequest struct {
 	// Payout method ID, prefixed `potk_`.
 	ID string `json:"-" url:"-"`
+	// Set to `true` to make this the account's default payout method. `false` is not accepted.
+	IsDefault *bool `json:"is_default,omitempty" url:"-"`
 	// New label for the payout method, with at least one non-whitespace character and a maximum of 100 characters.
-	Nickname string `json:"nickname" url:"-"`
+	Nickname *string `json:"nickname,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3996,9 +3999,16 @@ func (u *UpdateMethodsRequest) SetID(id string) {
 	u.require(updateMethodsRequestFieldID)
 }
 
+// SetIsDefault sets the IsDefault field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsRequest) SetIsDefault(isDefault *bool) {
+	u.IsDefault = isDefault
+	u.require(updateMethodsRequestFieldIsDefault)
+}
+
 // SetNickname sets the Nickname field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateMethodsRequest) SetNickname(nickname string) {
+func (u *UpdateMethodsRequest) SetNickname(nickname *string) {
 	u.Nickname = nickname
 	u.require(updateMethodsRequestFieldNickname)
 }

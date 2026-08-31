@@ -118,6 +118,7 @@ const (
 	PermissionActionCompanyTransferOwnership          PermissionAction = "company:transfer_ownership"
 	PermissionActionCompanyCreate                     PermissionAction = "company:create"
 	PermissionActionCompanyCreateChild                PermissionAction = "company:create_child"
+	PermissionActionCompanySuspendChild               PermissionAction = "company:suspend_child"
 	PermissionActionCompanyDelete                     PermissionAction = "company:delete"
 	PermissionActionCompanyDeleteChild                PermissionAction = "company:delete_child"
 	PermissionActionCompanyUpdateChildFees            PermissionAction = "company:update_child_fees"
@@ -447,6 +448,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionCompanyCreate, nil
 	case "company:create_child":
 		return PermissionActionCompanyCreateChild, nil
+	case "company:suspend_child":
+		return PermissionActionCompanySuspendChild, nil
 	case "company:delete":
 		return PermissionActionCompanyDelete, nil
 	case "company:delete_child":

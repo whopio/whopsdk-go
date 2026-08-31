@@ -516,7 +516,7 @@ var (
 
 type Membership struct {
 	// The account (seller) this membership belongs to.
-	Account *MembershipAccount `json:"account" url:"account"`
+	Account *StorefrontAccount `json:"account" url:"account"`
 	// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring plans.
 	CancelAtPeriodEnd bool `json:"cancel_at_period_end" url:"cancel_at_period_end"`
 	// When the membership was created, as an ISO 8601 timestamp.
@@ -549,7 +549,7 @@ type Membership struct {
 	rawJSON         json.RawMessage
 }
 
-func (m *Membership) GetAccount() *MembershipAccount {
+func (m *Membership) GetAccount() *StorefrontAccount {
 	if m == nil {
 		return nil
 	}
@@ -656,7 +656,7 @@ func (m *Membership) require(field *big.Int) {
 
 // SetAccount sets the Account field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Membership) SetAccount(account *MembershipAccount) {
+func (m *Membership) SetAccount(account *StorefrontAccount) {
 	m.Account = account
 	m.require(membershipFieldAccount)
 }
@@ -773,142 +773,6 @@ func (m *Membership) MarshalJSON() ([]byte, error) {
 }
 
 func (m *Membership) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	membershipAccountFieldID      = big.NewInt(1 << 0)
-	membershipAccountFieldLogoURL = big.NewInt(1 << 1)
-	membershipAccountFieldRoute   = big.NewInt(1 << 2)
-	membershipAccountFieldTitle   = big.NewInt(1 << 3)
-)
-
-type MembershipAccount struct {
-	// Account ID, prefixed `biz_`.
-	ID string `json:"id" url:"id"`
-	// Account logo image URL.
-	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
-	// Account public route identifier — the `whop.com/{route}` storefront path.
-	Route string `json:"route" url:"route"`
-	// Account display name.
-	Title string `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MembershipAccount) GetID() string {
-	if m == nil {
-		return ""
-	}
-	return m.ID
-}
-
-func (m *MembershipAccount) GetLogoURL() *string {
-	if m == nil {
-		return nil
-	}
-	return m.LogoURL
-}
-
-func (m *MembershipAccount) GetRoute() string {
-	if m == nil {
-		return ""
-	}
-	return m.Route
-}
-
-func (m *MembershipAccount) GetTitle() string {
-	if m == nil {
-		return ""
-	}
-	return m.Title
-}
-
-func (m *MembershipAccount) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MembershipAccount) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
-	}
-	m.explicitFields.Or(m.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MembershipAccount) SetID(id string) {
-	m.ID = id
-	m.require(membershipAccountFieldID)
-}
-
-// SetLogoURL sets the LogoURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MembershipAccount) SetLogoURL(logoURL *string) {
-	m.LogoURL = logoURL
-	m.require(membershipAccountFieldLogoURL)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MembershipAccount) SetRoute(route string) {
-	m.Route = route
-	m.require(membershipAccountFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MembershipAccount) SetTitle(title string) {
-	m.Title = title
-	m.require(membershipAccountFieldTitle)
-}
-
-func (m *MembershipAccount) UnmarshalJSON(data []byte) error {
-	type unmarshaler MembershipAccount
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MembershipAccount(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MembershipAccount) MarshalJSON() ([]byte, error) {
-	type embed MembershipAccount
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MembershipAccount) String() string {
 	if m == nil {
 		return "<nil>"
 	}

@@ -84,7 +84,7 @@ type ListPaymentsRequest struct {
 	Statuses []*ReceiptStatus `json:"-" url:"statuses,omitempty"`
 	// Filter payments by their current substatus for more granular filtering.
 	Substatuses []*FriendlyReceiptStatus `json:"-" url:"substatuses,omitempty"`
-	// Whether to include payments with a zero amount.
+	// Whether to include payments with a zero amount. Defaults to false, so zero-amount payments are omitted unless you set this to true — a company whose sales are all free plans returns an empty list without it.
 	IncludeFree *bool `json:"-" url:"include_free,omitempty"`
 	// Only return payments created before this timestamp.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
@@ -642,50 +642,51 @@ var (
 	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 15)
 	paymentFieldDisputes                   = big.NewInt(1 << 16)
 	paymentFieldFailureMessage             = big.NewInt(1 << 17)
-	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 18)
-	paymentFieldFinancingTransactions      = big.NewInt(1 << 19)
-	paymentFieldID                         = big.NewInt(1 << 20)
-	paymentFieldLastPaymentAttempt         = big.NewInt(1 << 21)
-	paymentFieldMember                     = big.NewInt(1 << 22)
-	paymentFieldMembership                 = big.NewInt(1 << 23)
-	paymentFieldMetadata                   = big.NewInt(1 << 24)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 25)
-	paymentFieldNextPaymentAttempt         = big.NewInt(1 << 26)
-	paymentFieldPaidAt                     = big.NewInt(1 << 27)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 28)
-	paymentFieldPaymentMethod              = big.NewInt(1 << 29)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 30)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 31)
-	paymentFieldPlan                       = big.NewInt(1 << 32)
-	paymentFieldProduct                    = big.NewInt(1 << 33)
-	paymentFieldPromoCode                  = big.NewInt(1 << 34)
-	paymentFieldRefundable                 = big.NewInt(1 << 35)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 36)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 37)
-	paymentFieldRefunds                    = big.NewInt(1 << 38)
-	paymentFieldResolutions                = big.NewInt(1 << 39)
-	paymentFieldRetryable                  = big.NewInt(1 << 40)
-	paymentFieldRiskScore                  = big.NewInt(1 << 41)
-	paymentFieldRiskSignals                = big.NewInt(1 << 42)
-	paymentFieldSettlementAmount           = big.NewInt(1 << 43)
-	paymentFieldSettlementCurrency         = big.NewInt(1 << 44)
-	paymentFieldSettlementExchangeRate     = big.NewInt(1 << 45)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 46)
-	paymentFieldShipment                   = big.NewInt(1 << 47)
-	paymentFieldShippingAddress            = big.NewInt(1 << 48)
-	paymentFieldStatus                     = big.NewInt(1 << 49)
-	paymentFieldSubstatus                  = big.NewInt(1 << 50)
-	paymentFieldSubtotal                   = big.NewInt(1 << 51)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 52)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 53)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 54)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 55)
-	paymentFieldTotal                      = big.NewInt(1 << 56)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 57)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 58)
-	paymentFieldUser                       = big.NewInt(1 << 59)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 60)
-	paymentFieldVoidable                   = big.NewInt(1 << 61)
+	paymentFieldFees                       = big.NewInt(1 << 18)
+	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 19)
+	paymentFieldFinancingTransactions      = big.NewInt(1 << 20)
+	paymentFieldID                         = big.NewInt(1 << 21)
+	paymentFieldLastPaymentAttempt         = big.NewInt(1 << 22)
+	paymentFieldMember                     = big.NewInt(1 << 23)
+	paymentFieldMembership                 = big.NewInt(1 << 24)
+	paymentFieldMetadata                   = big.NewInt(1 << 25)
+	paymentFieldNeedsTracking              = big.NewInt(1 << 26)
+	paymentFieldNextPaymentAttempt         = big.NewInt(1 << 27)
+	paymentFieldPaidAt                     = big.NewInt(1 << 28)
+	paymentFieldPaymentInstrument          = big.NewInt(1 << 29)
+	paymentFieldPaymentMethod              = big.NewInt(1 << 30)
+	paymentFieldPaymentMethodType          = big.NewInt(1 << 31)
+	paymentFieldPaymentsFailed             = big.NewInt(1 << 32)
+	paymentFieldPlan                       = big.NewInt(1 << 33)
+	paymentFieldProduct                    = big.NewInt(1 << 34)
+	paymentFieldPromoCode                  = big.NewInt(1 << 35)
+	paymentFieldRefundable                 = big.NewInt(1 << 36)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 37)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 38)
+	paymentFieldRefunds                    = big.NewInt(1 << 39)
+	paymentFieldResolutions                = big.NewInt(1 << 40)
+	paymentFieldRetryable                  = big.NewInt(1 << 41)
+	paymentFieldRiskScore                  = big.NewInt(1 << 42)
+	paymentFieldRiskSignals                = big.NewInt(1 << 43)
+	paymentFieldSettlementAmount           = big.NewInt(1 << 44)
+	paymentFieldSettlementCurrency         = big.NewInt(1 << 45)
+	paymentFieldSettlementExchangeRate     = big.NewInt(1 << 46)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 47)
+	paymentFieldShipment                   = big.NewInt(1 << 48)
+	paymentFieldShippingAddress            = big.NewInt(1 << 49)
+	paymentFieldStatus                     = big.NewInt(1 << 50)
+	paymentFieldSubstatus                  = big.NewInt(1 << 51)
+	paymentFieldSubtotal                   = big.NewInt(1 << 52)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 53)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 54)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 55)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 56)
+	paymentFieldTotal                      = big.NewInt(1 << 57)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 58)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 59)
+	paymentFieldUser                       = big.NewInt(1 << 60)
+	paymentFieldVerificationChecks         = big.NewInt(1 << 61)
+	paymentFieldVoidable                   = big.NewInt(1 << 62)
 )
 
 type Payment struct {
@@ -725,6 +726,8 @@ type Payment struct {
 	Disputes []*PaymentDisputesItem `json:"disputes,omitempty" url:"disputes,omitempty"`
 	// If the payment failed, the reason for the failure.
 	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
+	// The fees associated with this specific payment.
+	Fees []*PaymentFeesItem `json:"fees" url:"fees"`
 	// The number of financing installments for the payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
 	FinancingInstallmentsCount *int `json:"financing_installments_count,omitempty" url:"financing_installments_count,omitempty"`
 	// The financing transactions attached to this payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
@@ -945,6 +948,13 @@ func (p *Payment) GetFailureMessage() *string {
 		return nil
 	}
 	return p.FailureMessage
+}
+
+func (p *Payment) GetFees() []*PaymentFeesItem {
+	if p == nil {
+		return nil
+	}
+	return p.Fees
 }
 
 func (p *Payment) GetFinancingInstallmentsCount() *int {
@@ -1393,6 +1403,13 @@ func (p *Payment) SetDisputes(disputes []*PaymentDisputesItem) {
 func (p *Payment) SetFailureMessage(failureMessage *string) {
 	p.FailureMessage = failureMessage
 	p.require(paymentFieldFailureMessage)
+}
+
+// SetFees sets the Fees field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetFees(fees []*PaymentFeesItem) {
+	p.Fees = fees
+	p.require(paymentFieldFees)
 }
 
 // SetFinancingInstallmentsCount sets the FinancingInstallmentsCount field and marks it as non-optional;
@@ -2742,6 +2759,143 @@ func (p *PaymentDisputesItem) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PaymentDisputesItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Represents a fee related to a payment
+var (
+	paymentFeesItemFieldAmount   = big.NewInt(1 << 0)
+	paymentFeesItemFieldCurrency = big.NewInt(1 << 1)
+	paymentFeesItemFieldName     = big.NewInt(1 << 2)
+	paymentFeesItemFieldType     = big.NewInt(1 << 3)
+)
+
+type PaymentFeesItem struct {
+	// The value or amount to display for the fee.
+	Amount float64 `json:"amount" url:"amount"`
+	// The currency of the fee.
+	Currency Currencies `json:"currency" url:"currency"`
+	// The label to display for the fee.
+	Name string `json:"name" url:"name"`
+	// The specific origin of the fee, if applicable.
+	Type SpecificFeeOrigins `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentFeesItem) GetAmount() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.Amount
+}
+
+func (p *PaymentFeesItem) GetCurrency() Currencies {
+	if p == nil {
+		return ""
+	}
+	return p.Currency
+}
+
+func (p *PaymentFeesItem) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PaymentFeesItem) GetType() SpecificFeeOrigins {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PaymentFeesItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentFeesItem) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentFeesItem) SetAmount(amount float64) {
+	p.Amount = amount
+	p.require(paymentFeesItemFieldAmount)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentFeesItem) SetCurrency(currency Currencies) {
+	p.Currency = currency
+	p.require(paymentFeesItemFieldCurrency)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentFeesItem) SetName(name string) {
+	p.Name = name
+	p.require(paymentFeesItemFieldName)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentFeesItem) SetType(type_ SpecificFeeOrigins) {
+	p.Type = type_
+	p.require(paymentFeesItemFieldType)
+}
+
+func (p *PaymentFeesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentFeesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentFeesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentFeesItem) MarshalJSON() ([]byte, error) {
+	type embed PaymentFeesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentFeesItem) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -13323,51 +13477,52 @@ var (
 	createPaymentsResponseFieldDisputeAlertedAt           = big.NewInt(1 << 15)
 	createPaymentsResponseFieldDisputes                   = big.NewInt(1 << 16)
 	createPaymentsResponseFieldFailureMessage             = big.NewInt(1 << 17)
-	createPaymentsResponseFieldFinancingInstallmentsCount = big.NewInt(1 << 18)
-	createPaymentsResponseFieldFinancingTransactions      = big.NewInt(1 << 19)
-	createPaymentsResponseFieldID                         = big.NewInt(1 << 20)
-	createPaymentsResponseFieldLastPaymentAttempt         = big.NewInt(1 << 21)
-	createPaymentsResponseFieldMember                     = big.NewInt(1 << 22)
-	createPaymentsResponseFieldMembership                 = big.NewInt(1 << 23)
-	createPaymentsResponseFieldMetadata                   = big.NewInt(1 << 24)
-	createPaymentsResponseFieldNeedsTracking              = big.NewInt(1 << 25)
-	createPaymentsResponseFieldNextPaymentAttempt         = big.NewInt(1 << 26)
-	createPaymentsResponseFieldPaidAt                     = big.NewInt(1 << 27)
-	createPaymentsResponseFieldPaymentInstrument          = big.NewInt(1 << 28)
-	createPaymentsResponseFieldPaymentMethod              = big.NewInt(1 << 29)
-	createPaymentsResponseFieldPaymentMethodType          = big.NewInt(1 << 30)
-	createPaymentsResponseFieldPaymentsFailed             = big.NewInt(1 << 31)
-	createPaymentsResponseFieldPlan                       = big.NewInt(1 << 32)
-	createPaymentsResponseFieldProduct                    = big.NewInt(1 << 33)
-	createPaymentsResponseFieldPromoCode                  = big.NewInt(1 << 34)
-	createPaymentsResponseFieldRefundable                 = big.NewInt(1 << 35)
-	createPaymentsResponseFieldRefundedAmount             = big.NewInt(1 << 36)
-	createPaymentsResponseFieldRefundedAt                 = big.NewInt(1 << 37)
-	createPaymentsResponseFieldRefunds                    = big.NewInt(1 << 38)
-	createPaymentsResponseFieldResolutions                = big.NewInt(1 << 39)
-	createPaymentsResponseFieldRetryable                  = big.NewInt(1 << 40)
-	createPaymentsResponseFieldRiskScore                  = big.NewInt(1 << 41)
-	createPaymentsResponseFieldRiskSignals                = big.NewInt(1 << 42)
-	createPaymentsResponseFieldSettlementAmount           = big.NewInt(1 << 43)
-	createPaymentsResponseFieldSettlementCurrency         = big.NewInt(1 << 44)
-	createPaymentsResponseFieldSettlementExchangeRate     = big.NewInt(1 << 45)
-	createPaymentsResponseFieldSettlementTimeAt           = big.NewInt(1 << 46)
-	createPaymentsResponseFieldShipment                   = big.NewInt(1 << 47)
-	createPaymentsResponseFieldShippingAddress            = big.NewInt(1 << 48)
-	createPaymentsResponseFieldStatus                     = big.NewInt(1 << 49)
-	createPaymentsResponseFieldSubstatus                  = big.NewInt(1 << 50)
-	createPaymentsResponseFieldSubtotal                   = big.NewInt(1 << 51)
-	createPaymentsResponseFieldTaxAmount                  = big.NewInt(1 << 52)
-	createPaymentsResponseFieldTaxBehavior                = big.NewInt(1 << 53)
-	createPaymentsResponseFieldTaxRefundedAmount          = big.NewInt(1 << 54)
-	createPaymentsResponseFieldThreeDsVerified            = big.NewInt(1 << 55)
-	createPaymentsResponseFieldTotal                      = big.NewInt(1 << 56)
-	createPaymentsResponseFieldUpdatedAt                  = big.NewInt(1 << 57)
-	createPaymentsResponseFieldUsdTotal                   = big.NewInt(1 << 58)
-	createPaymentsResponseFieldUser                       = big.NewInt(1 << 59)
-	createPaymentsResponseFieldVerificationChecks         = big.NewInt(1 << 60)
-	createPaymentsResponseFieldVoidable                   = big.NewInt(1 << 61)
-	createPaymentsResponseFieldClientSecret               = big.NewInt(1 << 62)
+	createPaymentsResponseFieldFees                       = big.NewInt(1 << 18)
+	createPaymentsResponseFieldFinancingInstallmentsCount = big.NewInt(1 << 19)
+	createPaymentsResponseFieldFinancingTransactions      = big.NewInt(1 << 20)
+	createPaymentsResponseFieldID                         = big.NewInt(1 << 21)
+	createPaymentsResponseFieldLastPaymentAttempt         = big.NewInt(1 << 22)
+	createPaymentsResponseFieldMember                     = big.NewInt(1 << 23)
+	createPaymentsResponseFieldMembership                 = big.NewInt(1 << 24)
+	createPaymentsResponseFieldMetadata                   = big.NewInt(1 << 25)
+	createPaymentsResponseFieldNeedsTracking              = big.NewInt(1 << 26)
+	createPaymentsResponseFieldNextPaymentAttempt         = big.NewInt(1 << 27)
+	createPaymentsResponseFieldPaidAt                     = big.NewInt(1 << 28)
+	createPaymentsResponseFieldPaymentInstrument          = big.NewInt(1 << 29)
+	createPaymentsResponseFieldPaymentMethod              = big.NewInt(1 << 30)
+	createPaymentsResponseFieldPaymentMethodType          = big.NewInt(1 << 31)
+	createPaymentsResponseFieldPaymentsFailed             = big.NewInt(1 << 32)
+	createPaymentsResponseFieldPlan                       = big.NewInt(1 << 33)
+	createPaymentsResponseFieldProduct                    = big.NewInt(1 << 34)
+	createPaymentsResponseFieldPromoCode                  = big.NewInt(1 << 35)
+	createPaymentsResponseFieldRefundable                 = big.NewInt(1 << 36)
+	createPaymentsResponseFieldRefundedAmount             = big.NewInt(1 << 37)
+	createPaymentsResponseFieldRefundedAt                 = big.NewInt(1 << 38)
+	createPaymentsResponseFieldRefunds                    = big.NewInt(1 << 39)
+	createPaymentsResponseFieldResolutions                = big.NewInt(1 << 40)
+	createPaymentsResponseFieldRetryable                  = big.NewInt(1 << 41)
+	createPaymentsResponseFieldRiskScore                  = big.NewInt(1 << 42)
+	createPaymentsResponseFieldRiskSignals                = big.NewInt(1 << 43)
+	createPaymentsResponseFieldSettlementAmount           = big.NewInt(1 << 44)
+	createPaymentsResponseFieldSettlementCurrency         = big.NewInt(1 << 45)
+	createPaymentsResponseFieldSettlementExchangeRate     = big.NewInt(1 << 46)
+	createPaymentsResponseFieldSettlementTimeAt           = big.NewInt(1 << 47)
+	createPaymentsResponseFieldShipment                   = big.NewInt(1 << 48)
+	createPaymentsResponseFieldShippingAddress            = big.NewInt(1 << 49)
+	createPaymentsResponseFieldStatus                     = big.NewInt(1 << 50)
+	createPaymentsResponseFieldSubstatus                  = big.NewInt(1 << 51)
+	createPaymentsResponseFieldSubtotal                   = big.NewInt(1 << 52)
+	createPaymentsResponseFieldTaxAmount                  = big.NewInt(1 << 53)
+	createPaymentsResponseFieldTaxBehavior                = big.NewInt(1 << 54)
+	createPaymentsResponseFieldTaxRefundedAmount          = big.NewInt(1 << 55)
+	createPaymentsResponseFieldThreeDsVerified            = big.NewInt(1 << 56)
+	createPaymentsResponseFieldTotal                      = big.NewInt(1 << 57)
+	createPaymentsResponseFieldUpdatedAt                  = big.NewInt(1 << 58)
+	createPaymentsResponseFieldUsdTotal                   = big.NewInt(1 << 59)
+	createPaymentsResponseFieldUser                       = big.NewInt(1 << 60)
+	createPaymentsResponseFieldVerificationChecks         = big.NewInt(1 << 61)
+	createPaymentsResponseFieldVoidable                   = big.NewInt(1 << 62)
+	createPaymentsResponseFieldClientSecret               = big.NewInt(0).Lsh(big.NewInt(1), 63)
 )
 
 type CreatePaymentsResponse struct {
@@ -13407,6 +13562,8 @@ type CreatePaymentsResponse struct {
 	Disputes []*PaymentDisputesItem `json:"disputes,omitempty" url:"disputes,omitempty"`
 	// If the payment failed, the reason for the failure.
 	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
+	// The fees associated with this specific payment.
+	Fees []*PaymentFeesItem `json:"fees" url:"fees"`
 	// The number of financing installments for the payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
 	FinancingInstallmentsCount *int `json:"financing_installments_count,omitempty" url:"financing_installments_count,omitempty"`
 	// The financing transactions attached to this payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
@@ -13629,6 +13786,13 @@ func (c *CreatePaymentsResponse) GetFailureMessage() *string {
 		return nil
 	}
 	return c.FailureMessage
+}
+
+func (c *CreatePaymentsResponse) GetFees() []*PaymentFeesItem {
+	if c == nil {
+		return nil
+	}
+	return c.Fees
 }
 
 func (c *CreatePaymentsResponse) GetFinancingInstallmentsCount() *int {
@@ -14084,6 +14248,13 @@ func (c *CreatePaymentsResponse) SetDisputes(disputes []*PaymentDisputesItem) {
 func (c *CreatePaymentsResponse) SetFailureMessage(failureMessage *string) {
 	c.FailureMessage = failureMessage
 	c.require(createPaymentsResponseFieldFailureMessage)
+}
+
+// SetFees sets the Fees field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsResponse) SetFees(fees []*PaymentFeesItem) {
+	c.Fees = fees
+	c.require(createPaymentsResponseFieldFees)
 }
 
 // SetFinancingInstallmentsCount sets the FinancingInstallmentsCount field and marks it as non-optional;
@@ -16347,51 +16518,52 @@ var (
 	retrievePaymentsResponseFieldDisputeAlertedAt           = big.NewInt(1 << 15)
 	retrievePaymentsResponseFieldDisputes                   = big.NewInt(1 << 16)
 	retrievePaymentsResponseFieldFailureMessage             = big.NewInt(1 << 17)
-	retrievePaymentsResponseFieldFinancingInstallmentsCount = big.NewInt(1 << 18)
-	retrievePaymentsResponseFieldFinancingTransactions      = big.NewInt(1 << 19)
-	retrievePaymentsResponseFieldID                         = big.NewInt(1 << 20)
-	retrievePaymentsResponseFieldLastPaymentAttempt         = big.NewInt(1 << 21)
-	retrievePaymentsResponseFieldMember                     = big.NewInt(1 << 22)
-	retrievePaymentsResponseFieldMembership                 = big.NewInt(1 << 23)
-	retrievePaymentsResponseFieldMetadata                   = big.NewInt(1 << 24)
-	retrievePaymentsResponseFieldNeedsTracking              = big.NewInt(1 << 25)
-	retrievePaymentsResponseFieldNextPaymentAttempt         = big.NewInt(1 << 26)
-	retrievePaymentsResponseFieldPaidAt                     = big.NewInt(1 << 27)
-	retrievePaymentsResponseFieldPaymentInstrument          = big.NewInt(1 << 28)
-	retrievePaymentsResponseFieldPaymentMethod              = big.NewInt(1 << 29)
-	retrievePaymentsResponseFieldPaymentMethodType          = big.NewInt(1 << 30)
-	retrievePaymentsResponseFieldPaymentsFailed             = big.NewInt(1 << 31)
-	retrievePaymentsResponseFieldPlan                       = big.NewInt(1 << 32)
-	retrievePaymentsResponseFieldProduct                    = big.NewInt(1 << 33)
-	retrievePaymentsResponseFieldPromoCode                  = big.NewInt(1 << 34)
-	retrievePaymentsResponseFieldRefundable                 = big.NewInt(1 << 35)
-	retrievePaymentsResponseFieldRefundedAmount             = big.NewInt(1 << 36)
-	retrievePaymentsResponseFieldRefundedAt                 = big.NewInt(1 << 37)
-	retrievePaymentsResponseFieldRefunds                    = big.NewInt(1 << 38)
-	retrievePaymentsResponseFieldResolutions                = big.NewInt(1 << 39)
-	retrievePaymentsResponseFieldRetryable                  = big.NewInt(1 << 40)
-	retrievePaymentsResponseFieldRiskScore                  = big.NewInt(1 << 41)
-	retrievePaymentsResponseFieldRiskSignals                = big.NewInt(1 << 42)
-	retrievePaymentsResponseFieldSettlementAmount           = big.NewInt(1 << 43)
-	retrievePaymentsResponseFieldSettlementCurrency         = big.NewInt(1 << 44)
-	retrievePaymentsResponseFieldSettlementExchangeRate     = big.NewInt(1 << 45)
-	retrievePaymentsResponseFieldSettlementTimeAt           = big.NewInt(1 << 46)
-	retrievePaymentsResponseFieldShipment                   = big.NewInt(1 << 47)
-	retrievePaymentsResponseFieldShippingAddress            = big.NewInt(1 << 48)
-	retrievePaymentsResponseFieldStatus                     = big.NewInt(1 << 49)
-	retrievePaymentsResponseFieldSubstatus                  = big.NewInt(1 << 50)
-	retrievePaymentsResponseFieldSubtotal                   = big.NewInt(1 << 51)
-	retrievePaymentsResponseFieldTaxAmount                  = big.NewInt(1 << 52)
-	retrievePaymentsResponseFieldTaxBehavior                = big.NewInt(1 << 53)
-	retrievePaymentsResponseFieldTaxRefundedAmount          = big.NewInt(1 << 54)
-	retrievePaymentsResponseFieldThreeDsVerified            = big.NewInt(1 << 55)
-	retrievePaymentsResponseFieldTotal                      = big.NewInt(1 << 56)
-	retrievePaymentsResponseFieldUpdatedAt                  = big.NewInt(1 << 57)
-	retrievePaymentsResponseFieldUsdTotal                   = big.NewInt(1 << 58)
-	retrievePaymentsResponseFieldUser                       = big.NewInt(1 << 59)
-	retrievePaymentsResponseFieldVerificationChecks         = big.NewInt(1 << 60)
-	retrievePaymentsResponseFieldVoidable                   = big.NewInt(1 << 61)
-	retrievePaymentsResponseFieldClientSecret               = big.NewInt(1 << 62)
+	retrievePaymentsResponseFieldFees                       = big.NewInt(1 << 18)
+	retrievePaymentsResponseFieldFinancingInstallmentsCount = big.NewInt(1 << 19)
+	retrievePaymentsResponseFieldFinancingTransactions      = big.NewInt(1 << 20)
+	retrievePaymentsResponseFieldID                         = big.NewInt(1 << 21)
+	retrievePaymentsResponseFieldLastPaymentAttempt         = big.NewInt(1 << 22)
+	retrievePaymentsResponseFieldMember                     = big.NewInt(1 << 23)
+	retrievePaymentsResponseFieldMembership                 = big.NewInt(1 << 24)
+	retrievePaymentsResponseFieldMetadata                   = big.NewInt(1 << 25)
+	retrievePaymentsResponseFieldNeedsTracking              = big.NewInt(1 << 26)
+	retrievePaymentsResponseFieldNextPaymentAttempt         = big.NewInt(1 << 27)
+	retrievePaymentsResponseFieldPaidAt                     = big.NewInt(1 << 28)
+	retrievePaymentsResponseFieldPaymentInstrument          = big.NewInt(1 << 29)
+	retrievePaymentsResponseFieldPaymentMethod              = big.NewInt(1 << 30)
+	retrievePaymentsResponseFieldPaymentMethodType          = big.NewInt(1 << 31)
+	retrievePaymentsResponseFieldPaymentsFailed             = big.NewInt(1 << 32)
+	retrievePaymentsResponseFieldPlan                       = big.NewInt(1 << 33)
+	retrievePaymentsResponseFieldProduct                    = big.NewInt(1 << 34)
+	retrievePaymentsResponseFieldPromoCode                  = big.NewInt(1 << 35)
+	retrievePaymentsResponseFieldRefundable                 = big.NewInt(1 << 36)
+	retrievePaymentsResponseFieldRefundedAmount             = big.NewInt(1 << 37)
+	retrievePaymentsResponseFieldRefundedAt                 = big.NewInt(1 << 38)
+	retrievePaymentsResponseFieldRefunds                    = big.NewInt(1 << 39)
+	retrievePaymentsResponseFieldResolutions                = big.NewInt(1 << 40)
+	retrievePaymentsResponseFieldRetryable                  = big.NewInt(1 << 41)
+	retrievePaymentsResponseFieldRiskScore                  = big.NewInt(1 << 42)
+	retrievePaymentsResponseFieldRiskSignals                = big.NewInt(1 << 43)
+	retrievePaymentsResponseFieldSettlementAmount           = big.NewInt(1 << 44)
+	retrievePaymentsResponseFieldSettlementCurrency         = big.NewInt(1 << 45)
+	retrievePaymentsResponseFieldSettlementExchangeRate     = big.NewInt(1 << 46)
+	retrievePaymentsResponseFieldSettlementTimeAt           = big.NewInt(1 << 47)
+	retrievePaymentsResponseFieldShipment                   = big.NewInt(1 << 48)
+	retrievePaymentsResponseFieldShippingAddress            = big.NewInt(1 << 49)
+	retrievePaymentsResponseFieldStatus                     = big.NewInt(1 << 50)
+	retrievePaymentsResponseFieldSubstatus                  = big.NewInt(1 << 51)
+	retrievePaymentsResponseFieldSubtotal                   = big.NewInt(1 << 52)
+	retrievePaymentsResponseFieldTaxAmount                  = big.NewInt(1 << 53)
+	retrievePaymentsResponseFieldTaxBehavior                = big.NewInt(1 << 54)
+	retrievePaymentsResponseFieldTaxRefundedAmount          = big.NewInt(1 << 55)
+	retrievePaymentsResponseFieldThreeDsVerified            = big.NewInt(1 << 56)
+	retrievePaymentsResponseFieldTotal                      = big.NewInt(1 << 57)
+	retrievePaymentsResponseFieldUpdatedAt                  = big.NewInt(1 << 58)
+	retrievePaymentsResponseFieldUsdTotal                   = big.NewInt(1 << 59)
+	retrievePaymentsResponseFieldUser                       = big.NewInt(1 << 60)
+	retrievePaymentsResponseFieldVerificationChecks         = big.NewInt(1 << 61)
+	retrievePaymentsResponseFieldVoidable                   = big.NewInt(1 << 62)
+	retrievePaymentsResponseFieldClientSecret               = big.NewInt(0).Lsh(big.NewInt(1), 63)
 )
 
 type RetrievePaymentsResponse struct {
@@ -16431,6 +16603,8 @@ type RetrievePaymentsResponse struct {
 	Disputes []*PaymentDisputesItem `json:"disputes,omitempty" url:"disputes,omitempty"`
 	// If the payment failed, the reason for the failure.
 	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
+	// The fees associated with this specific payment.
+	Fees []*PaymentFeesItem `json:"fees" url:"fees"`
 	// The number of financing installments for the payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
 	FinancingInstallmentsCount *int `json:"financing_installments_count,omitempty" url:"financing_installments_count,omitempty"`
 	// The financing transactions attached to this payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
@@ -16653,6 +16827,13 @@ func (r *RetrievePaymentsResponse) GetFailureMessage() *string {
 		return nil
 	}
 	return r.FailureMessage
+}
+
+func (r *RetrievePaymentsResponse) GetFees() []*PaymentFeesItem {
+	if r == nil {
+		return nil
+	}
+	return r.Fees
 }
 
 func (r *RetrievePaymentsResponse) GetFinancingInstallmentsCount() *int {
@@ -17108,6 +17289,13 @@ func (r *RetrievePaymentsResponse) SetDisputes(disputes []*PaymentDisputesItem) 
 func (r *RetrievePaymentsResponse) SetFailureMessage(failureMessage *string) {
 	r.FailureMessage = failureMessage
 	r.require(retrievePaymentsResponseFieldFailureMessage)
+}
+
+// SetFees sets the Fees field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePaymentsResponse) SetFees(fees []*PaymentFeesItem) {
+	r.Fees = fees
+	r.require(retrievePaymentsResponseFieldFees)
 }
 
 // SetFinancingInstallmentsCount sets the FinancingInstallmentsCount field and marks it as non-optional;

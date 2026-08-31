@@ -467,6 +467,32 @@ func (r *RetrieveAccountsRequest) SetID(id string) {
 }
 
 var (
+	suspendAccountsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type SuspendAccountsRequest struct {
+	// Connected account ID, prefixed `biz_`.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SuspendAccountsRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SuspendAccountsRequest) SetID(id string) {
+	s.ID = id
+	s.require(suspendAccountsRequestFieldID)
+}
+
+var (
 	transferOwnershipAccountsRequestFieldID         = big.NewInt(1 << 0)
 	transferOwnershipAccountsRequestFieldAsPartner  = big.NewInt(1 << 1)
 	transferOwnershipAccountsRequestFieldIdentifier = big.NewInt(1 << 2)
@@ -689,9 +715,9 @@ type Account struct {
 	SocialLinks       []*AccountSocialLink `json:"social_links" url:"social_links"`
 	// Whether the account settles on stablecoin rails — its balance is held on-chain as USDT and paid out over crypto, rather than as fiat cash.
 	StablecoinRails bool `json:"stablecoin_rails" url:"stablecoin_rails"`
-	// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, and `me`; `null` otherwise.
+	// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, `me`, and `suspend`; `null` otherwise.
 	Status *string `json:"status,omitempty" url:"status,omitempty"`
-	// Why the account was suspended, in language safe to show the account owner. Computed only on `retrieve` and `me`; `null` otherwise, when `status` is not `suspended`, and when the suspension was recorded without a reason.
+	// Why the account was suspended, in language safe to show the account owner. Computed on `retrieve`, `me`, and `suspend`; `null` otherwise, when `status` is not `suspended`, and when the suspension was recorded without a reason.
 	StatusReason *string `json:"status_reason,omitempty" url:"status_reason,omitempty"`
 	// Account store page display configuration.
 	StorePageConfig *AccountStorePageConfig `json:"store_page_config" url:"store_page_config"`

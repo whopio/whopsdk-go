@@ -2,5 +2,5 @@
 
 // An Account represents a person or business on Whop that can have its own profile, wallet, and account-scoped settings. Use accounts for customers, creators, merchants, sellers, or connected businesses your integration supports.
 //
-// Use the Accounts API to create accounts, list accounts visible to your credentials, retrieve or update an account, and retrieve the account associated with the current API key.
+// Use the Accounts API to create accounts, list accounts visible to your credentials, retrieve or update an account, suspend a connected account managed by your platform, and retrieve the account associated with the current API key.
 package accounts
