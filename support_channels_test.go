@@ -575,11 +575,11 @@ func TestSettersMarkExplicitRetrieveSupportChannelsRequest(t *testing.T) {
 }
 
 func TestSettersSupportChannel(t *testing.T) {
-	t.Run("SetCompanyID", func(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
 		obj := &SupportChannel{}
-		var fernTestValueCompanyID *string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
+		var fernTestValueAccountID *string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -626,28 +626,28 @@ func TestSettersSupportChannel(t *testing.T) {
 }
 
 func TestGettersSupportChannel(t *testing.T) {
-	t.Run("GetCompanyID", func(t *testing.T) {
+	t.Run("GetAccountID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SupportChannel{}
 		var expected *string
-		obj.CompanyID = expected
+		obj.AccountID = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetCompanyID(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
 	})
 
-	t.Run("GetCompanyID_NilValue", func(t *testing.T) {
+	t.Run("GetAccountID_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SupportChannel{}
-		obj.CompanyID = nil
+		obj.AccountID = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetCompanyID(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetAccountID(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetCompanyID_NilReceiver", func(t *testing.T) {
+	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SupportChannel
 		// Should not panic - getters should handle nil receiver gracefully
@@ -656,7 +656,7 @@ func TestGettersSupportChannel(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetCompanyID() // Should return zero value
+		_ = obj.GetAccountID() // Should return zero value
 	})
 
 	t.Run("GetCustomName", func(t *testing.T) {
@@ -817,14 +817,14 @@ func TestGettersSupportChannel(t *testing.T) {
 }
 
 func TestSettersMarkExplicitSupportChannel(t *testing.T) {
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SupportChannel{}
-		var fernTestValueCompanyID *string
+		var fernTestValueAccountID *string
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1211,11 +1211,11 @@ func TestSettersMarkExplicitSupportChannelCustomerUser(t *testing.T) {
 }
 
 func TestSettersSupportChannelListItem(t *testing.T) {
-	t.Run("SetCompanyID", func(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
 		obj := &SupportChannelListItem{}
-		var fernTestValueCompanyID *string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
+		var fernTestValueAccountID *string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1262,28 +1262,28 @@ func TestSettersSupportChannelListItem(t *testing.T) {
 }
 
 func TestGettersSupportChannelListItem(t *testing.T) {
-	t.Run("GetCompanyID", func(t *testing.T) {
+	t.Run("GetAccountID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SupportChannelListItem{}
 		var expected *string
-		obj.CompanyID = expected
+		obj.AccountID = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetCompanyID(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
 	})
 
-	t.Run("GetCompanyID_NilValue", func(t *testing.T) {
+	t.Run("GetAccountID_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SupportChannelListItem{}
-		obj.CompanyID = nil
+		obj.AccountID = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetCompanyID(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetAccountID(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetCompanyID_NilReceiver", func(t *testing.T) {
+	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SupportChannelListItem
 		// Should not panic - getters should handle nil receiver gracefully
@@ -1292,7 +1292,7 @@ func TestGettersSupportChannelListItem(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetCompanyID() // Should return zero value
+		_ = obj.GetAccountID() // Should return zero value
 	})
 
 	t.Run("GetCustomName", func(t *testing.T) {
@@ -1453,14 +1453,14 @@ func TestGettersSupportChannelListItem(t *testing.T) {
 }
 
 func TestSettersMarkExplicitSupportChannelListItem(t *testing.T) {
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SupportChannelListItem{}
-		var fernTestValueCompanyID *string
+		var fernTestValueAccountID *string
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
