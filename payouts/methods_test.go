@@ -4844,6 +4844,14 @@ func TestSettersListMethodsResponseDataItemQuote(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetInstantUnavailableReason", func(t *testing.T) {
+		obj := &ListMethodsResponseDataItemQuote{}
+		var fernTestValueInstantUnavailableReason *ListMethodsResponseDataItemQuoteInstantUnavailableReason
+		obj.SetInstantUnavailableReason(fernTestValueInstantUnavailableReason)
+		assert.Equal(t, fernTestValueInstantUnavailableReason, obj.InstantUnavailableReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetMaxLimit", func(t *testing.T) {
 		obj := &ListMethodsResponseDataItemQuote{}
 		var fernTestValueMaxLimit *float64
@@ -4971,6 +4979,39 @@ func TestGettersListMethodsResponseDataItemQuote(t *testing.T) {
 			}
 		}()
 		_ = obj.GetInstant() // Should return zero value
+	})
+
+	t.Run("GetInstantUnavailableReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseDataItemQuote{}
+		var expected *ListMethodsResponseDataItemQuoteInstantUnavailableReason
+		obj.InstantUnavailableReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInstantUnavailableReason(), "getter should return the property value")
+	})
+
+	t.Run("GetInstantUnavailableReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseDataItemQuote{}
+		obj.InstantUnavailableReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInstantUnavailableReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInstantUnavailableReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListMethodsResponseDataItemQuote
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInstantUnavailableReason() // Should return zero value
 	})
 
 	t.Run("GetMaxLimit", func(t *testing.T) {
@@ -5166,6 +5207,37 @@ func TestSettersMarkExplicitListMethodsResponseDataItemQuote(t *testing.T) {
 
 		// Act
 		obj.SetInstant(fernTestValueInstant)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInstantUnavailableReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseDataItemQuote{}
+		var fernTestValueInstantUnavailableReason *ListMethodsResponseDataItemQuoteInstantUnavailableReason
+
+		// Act
+		obj.SetInstantUnavailableReason(fernTestValueInstantUnavailableReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6660,6 +6732,22 @@ func TestSettersMarkExplicitListMethodsResponseLimitsInstant(t *testing.T) {
 }
 
 func TestSettersListMethodsResponseLimitsStandard(t *testing.T) {
+	t.Run("SetErrorCode", func(t *testing.T) {
+		obj := &ListMethodsResponseLimitsStandard{}
+		var fernTestValueErrorCode *ListMethodsResponseLimitsStandardErrorCode
+		obj.SetErrorCode(fernTestValueErrorCode)
+		assert.Equal(t, fernTestValueErrorCode, obj.ErrorCode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetErrorMessage", func(t *testing.T) {
+		obj := &ListMethodsResponseLimitsStandard{}
+		var fernTestValueErrorMessage *string
+		obj.SetErrorMessage(fernTestValueErrorMessage)
+		assert.Equal(t, fernTestValueErrorMessage, obj.ErrorMessage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetMaxAmount", func(t *testing.T) {
 		obj := &ListMethodsResponseLimitsStandard{}
 		var fernTestValueMaxAmount float64
@@ -6671,6 +6759,72 @@ func TestSettersListMethodsResponseLimitsStandard(t *testing.T) {
 }
 
 func TestGettersListMethodsResponseLimitsStandard(t *testing.T) {
+	t.Run("GetErrorCode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseLimitsStandard{}
+		var expected *ListMethodsResponseLimitsStandardErrorCode
+		obj.ErrorCode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetErrorCode(), "getter should return the property value")
+	})
+
+	t.Run("GetErrorCode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseLimitsStandard{}
+		obj.ErrorCode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetErrorCode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetErrorCode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListMethodsResponseLimitsStandard
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetErrorCode() // Should return zero value
+	})
+
+	t.Run("GetErrorMessage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseLimitsStandard{}
+		var expected *string
+		obj.ErrorMessage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetErrorMessage(), "getter should return the property value")
+	})
+
+	t.Run("GetErrorMessage_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseLimitsStandard{}
+		obj.ErrorMessage = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetErrorMessage(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetErrorMessage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListMethodsResponseLimitsStandard
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetErrorMessage() // Should return zero value
+	})
+
 	t.Run("GetMaxAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -6697,6 +6851,68 @@ func TestGettersListMethodsResponseLimitsStandard(t *testing.T) {
 }
 
 func TestSettersMarkExplicitListMethodsResponseLimitsStandard(t *testing.T) {
+	t.Run("SetErrorCode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseLimitsStandard{}
+		var fernTestValueErrorCode *ListMethodsResponseLimitsStandardErrorCode
+
+		// Act
+		obj.SetErrorCode(fernTestValueErrorCode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetErrorMessage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseLimitsStandard{}
+		var fernTestValueErrorMessage *string
+
+		// Act
+		obj.SetErrorMessage(fernTestValueErrorMessage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetMaxAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -10183,6 +10399,28 @@ func TestEnumListMethodsResponseDataItemObject(t *testing.T) {
 	})
 }
 
+func TestEnumListMethodsResponseDataItemQuoteInstantUnavailableReason(t *testing.T) {
+	t.Run("NewFromString_minimum_crypto_sales_not_met", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseDataItemQuoteInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseDataItemQuoteInstantUnavailableReason("minimum_crypto_sales_not_met"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListMethodsResponseDataItemQuoteInstantUnavailableReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListMethodsResponseDataItemQuoteInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListMethodsResponseDataItemStatus(t *testing.T) {
 	t.Run("NewFromString_created", func(t *testing.T) {
 		t.Parallel()
@@ -10377,6 +10615,98 @@ func TestEnumListMethodsResponseLimitsObject(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewListMethodsResponseLimitsObjectFromString("payout_limit")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListMethodsResponseLimitsStandardErrorCode(t *testing.T) {
+	t.Run("NewFromString_account_suspended", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("account_suspended")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("account_suspended"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_block_move_money_out_because_clawback", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("block_move_money_out_because_clawback")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("block_move_money_out_because_clawback"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_supportability_check_payout_status_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("supportability_check_payout_status_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("supportability_check_payout_status_hold"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kyc_completed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("kyc_completed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("kyc_completed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rmi_clear", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("rmi_clear")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("rmi_clear"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_identity_rfi_clear", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("identity_rfi_clear")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("identity_rfi_clear"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ecommerce_fulfillment_connected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("ecommerce_fulfillment_connected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("ecommerce_fulfillment_connected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_block_move_money_out", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("block_move_money_out")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("block_move_money_out"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_block_move_money_out_set_by_parent", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("block_move_money_out_set_by_parent")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("block_move_money_out_set_by_parent"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_usage_review_payout_status_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("card_usage_review_payout_status_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("card_usage_review_payout_status_hold"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_no_available_balance", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("no_available_balance")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("no_available_balance"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("account_suspended")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

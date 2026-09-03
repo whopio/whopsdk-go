@@ -8,6 +8,7 @@ import (
 	require "github.com/stretchr/testify/require"
 	whopsdkgo "github.com/whopio/whopsdk-go"
 	testing "testing"
+	time "time"
 )
 
 func TestSettersRetrieveBreakdownRequest(t *testing.T) {
@@ -43,19 +44,35 @@ func TestSettersRetrieveBreakdownRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetFromDate", func(t *testing.T) {
+	t.Run("SetFrom", func(t *testing.T) {
 		obj := &RetrieveBreakdownRequest{}
-		var fernTestValueFromDate string
-		obj.SetFromDate(fernTestValueFromDate)
-		assert.Equal(t, fernTestValueFromDate, obj.FromDate)
+		var fernTestValueFrom time.Time
+		obj.SetFrom(fernTestValueFrom)
+		assert.Equal(t, fernTestValueFrom, obj.From)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetToDate", func(t *testing.T) {
+	t.Run("SetTo", func(t *testing.T) {
 		obj := &RetrieveBreakdownRequest{}
-		var fernTestValueToDate string
-		obj.SetToDate(fernTestValueToDate)
-		assert.Equal(t, fernTestValueToDate, obj.ToDate)
+		var fernTestValueTo time.Time
+		obj.SetTo(fernTestValueTo)
+		assert.Equal(t, fernTestValueTo, obj.To)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetGroupBy", func(t *testing.T) {
+		obj := &RetrieveBreakdownRequest{}
+		var fernTestValueGroupBy *RetrieveBreakdownRequestGroupBy
+		obj.SetGroupBy(fernTestValueGroupBy)
+		assert.Equal(t, fernTestValueGroupBy, obj.GroupBy)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTimezone", func(t *testing.T) {
+		obj := &RetrieveBreakdownRequest{}
+		var fernTestValueTimezone *string
+		obj.SetTimezone(fernTestValueTimezone)
+		assert.Equal(t, fernTestValueTimezone, obj.Timezone)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -186,14 +203,14 @@ func TestSettersMarkExplicitRetrieveBreakdownRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetFromDate_MarksExplicit", func(t *testing.T) {
+	t.Run("SetFrom_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBreakdownRequest{}
-		var fernTestValueFromDate string
+		var fernTestValueFrom time.Time
 
 		// Act
-		obj.SetFromDate(fernTestValueFromDate)
+		obj.SetFrom(fernTestValueFrom)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -217,14 +234,76 @@ func TestSettersMarkExplicitRetrieveBreakdownRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetToDate_MarksExplicit", func(t *testing.T) {
+	t.Run("SetTo_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBreakdownRequest{}
-		var fernTestValueToDate string
+		var fernTestValueTo time.Time
 
 		// Act
-		obj.SetToDate(fernTestValueToDate)
+		obj.SetTo(fernTestValueTo)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetGroupBy_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownRequest{}
+		var fernTestValueGroupBy *RetrieveBreakdownRequestGroupBy
+
+		// Act
+		obj.SetGroupBy(fernTestValueGroupBy)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTimezone_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownRequest{}
+		var fernTestValueTimezone *string
+
+		// Act
+		obj.SetTimezone(fernTestValueTimezone)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -296,6 +375,14 @@ func TestSettersRetrieveBreakdownResponse(t *testing.T) {
 		var fernTestValueOtherAmount *whopsdkgo.Money
 		obj.SetOtherAmount(fernTestValueOtherAmount)
 		assert.Equal(t, fernTestValueOtherAmount, obj.OtherAmount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetOtherName", func(t *testing.T) {
+		obj := &RetrieveBreakdownResponse{}
+		var fernTestValueOtherName string
+		obj.SetOtherName(fernTestValueOtherName)
+		assert.Equal(t, fernTestValueOtherName, obj.OtherName)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -468,6 +555,29 @@ func TestGettersRetrieveBreakdownResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetOtherAmount() // Should return zero value
+	})
+
+	t.Run("GetOtherName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponse{}
+		var expected string
+		obj.OtherName = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetOtherName(), "getter should return the property value")
+	})
+
+	t.Run("GetOtherName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBreakdownResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetOtherName() // Should return zero value
 	})
 
 }
@@ -659,6 +769,37 @@ func TestSettersMarkExplicitRetrieveBreakdownResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetOtherName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponse{}
+		var fernTestValueOtherName string
+
+		// Act
+		obj.SetOtherName(fernTestValueOtherName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 }
 
 func TestSettersRetrieveBreakdownResponseActivityFilters(t *testing.T) {
@@ -813,6 +954,14 @@ func TestSettersRetrieveBreakdownResponseItemsItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAvatar", func(t *testing.T) {
+		obj := &RetrieveBreakdownResponseItemsItem{}
+		var fernTestValueAvatar *RetrieveBreakdownResponseItemsItemAvatar
+		obj.SetAvatar(fernTestValueAvatar)
+		assert.Equal(t, fernTestValueAvatar, obj.Avatar)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetImageURL", func(t *testing.T) {
 		obj := &RetrieveBreakdownResponseItemsItem{}
 		var fernTestValueImageURL *string
@@ -887,6 +1036,39 @@ func TestGettersRetrieveBreakdownResponseItemsItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAmount() // Should return zero value
+	})
+
+	t.Run("GetAvatar", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponseItemsItem{}
+		var expected *RetrieveBreakdownResponseItemsItemAvatar
+		obj.Avatar = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAvatar(), "getter should return the property value")
+	})
+
+	t.Run("GetAvatar_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponseItemsItem{}
+		obj.Avatar = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAvatar(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAvatar_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBreakdownResponseItemsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAvatar() // Should return zero value
 	})
 
 	t.Run("GetImageURL", func(t *testing.T) {
@@ -1035,6 +1217,37 @@ func TestSettersMarkExplicitRetrieveBreakdownResponseItemsItem(t *testing.T) {
 
 		// Act
 		obj.SetAmount(fernTestValueAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAvatar_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponseItemsItem{}
+		var fernTestValueAvatar *RetrieveBreakdownResponseItemsItemAvatar
+
+		// Act
+		obj.SetAvatar(fernTestValueAvatar)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1215,6 +1428,149 @@ func TestSettersMarkExplicitRetrieveBreakdownResponseItemsItem(t *testing.T) {
 
 }
 
+func TestSettersRetrieveBreakdownResponseItemsItemAvatar(t *testing.T) {
+	t.Run("SetShape", func(t *testing.T) {
+		obj := &RetrieveBreakdownResponseItemsItemAvatar{}
+		var fernTestValueShape RetrieveBreakdownResponseItemsItemAvatarShape
+		obj.SetShape(fernTestValueShape)
+		assert.Equal(t, fernTestValueShape, obj.Shape)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetURL", func(t *testing.T) {
+		obj := &RetrieveBreakdownResponseItemsItemAvatar{}
+		var fernTestValueURL *string
+		obj.SetURL(fernTestValueURL)
+		assert.Equal(t, fernTestValueURL, obj.URL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersRetrieveBreakdownResponseItemsItemAvatar(t *testing.T) {
+	t.Run("GetShape", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponseItemsItemAvatar{}
+		var expected RetrieveBreakdownResponseItemsItemAvatarShape
+		obj.Shape = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetShape(), "getter should return the property value")
+	})
+
+	t.Run("GetShape_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBreakdownResponseItemsItemAvatar
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetShape() // Should return zero value
+	})
+
+	t.Run("GetURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponseItemsItemAvatar{}
+		var expected *string
+		obj.URL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetURL(), "getter should return the property value")
+	})
+
+	t.Run("GetURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponseItemsItemAvatar{}
+		obj.URL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBreakdownResponseItemsItemAvatar
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetURL() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitRetrieveBreakdownResponseItemsItemAvatar(t *testing.T) {
+	t.Run("SetShape_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponseItemsItemAvatar{}
+		var fernTestValueShape RetrieveBreakdownResponseItemsItemAvatarShape
+
+		// Act
+		obj.SetShape(fernTestValueShape)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponseItemsItemAvatar{}
+		var fernTestValueURL *string
+
+		// Act
+		obj.SetURL(fernTestValueURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestJSONMarshalingRetrieveBreakdownResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -1314,6 +1670,39 @@ func TestJSONMarshalingRetrieveBreakdownResponseItemsItem(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingRetrieveBreakdownResponseItemsItemAvatar(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBreakdownResponseItemsItemAvatar{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled RetrieveBreakdownResponseItemsItemAvatar
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj RetrieveBreakdownResponseItemsItemAvatar
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj RetrieveBreakdownResponseItemsItemAvatar
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestStringRetrieveBreakdownResponse(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -1362,6 +1751,22 @@ func TestStringRetrieveBreakdownResponseItemsItem(t *testing.T) {
 	})
 }
 
+func TestStringRetrieveBreakdownResponseItemsItemAvatar(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &RetrieveBreakdownResponseItemsItemAvatar{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBreakdownResponseItemsItemAvatar
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestEnumRetrieveBreakdownRequestBucket(t *testing.T) {
 	t.Run("NewFromString_transfers", func(t *testing.T) {
 		t.Parallel()
@@ -1377,11 +1782,32 @@ func TestEnumRetrieveBreakdownRequestBucket(t *testing.T) {
 		assert.Equal(t, RetrieveBreakdownRequestBucket("payments"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_refunds", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestBucketFromString("refunds")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestBucket("refunds"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ads", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestBucketFromString("ads")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestBucket("ads"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_card_spend", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveBreakdownRequestBucketFromString("card_spend")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveBreakdownRequestBucket("card_spend"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_authorization_releases", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestBucketFromString("card_authorization_releases")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestBucket("card_authorization_releases"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_withdrawals", func(t *testing.T) {
@@ -1441,6 +1867,42 @@ func TestEnumRetrieveBreakdownRequestDirection(t *testing.T) {
 	})
 }
 
+func TestEnumRetrieveBreakdownRequestGroupBy(t *testing.T) {
+	t.Run("NewFromString_day", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestGroupByFromString("day")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestGroupBy("day"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_week", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestGroupByFromString("week")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestGroupBy("week"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_month", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestGroupByFromString("month")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestGroupBy("month"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveBreakdownRequestGroupByFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveBreakdownRequestGroupByFromString("day")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumRetrieveBreakdownResponseActivityFiltersDirection(t *testing.T) {
 	t.Run("NewFromString_money_in", func(t *testing.T) {
 		t.Parallel()
@@ -1485,11 +1947,32 @@ func TestEnumRetrieveBreakdownResponseBucket(t *testing.T) {
 		assert.Equal(t, RetrieveBreakdownResponseBucket("payments"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_refunds", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseBucketFromString("refunds")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseBucket("refunds"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ads", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseBucketFromString("ads")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseBucket("ads"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_card_spend", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveBreakdownResponseBucketFromString("card_spend")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveBreakdownResponseBucket("card_spend"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_authorization_releases", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseBucketFromString("card_authorization_releases")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseBucket("card_authorization_releases"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_withdrawals", func(t *testing.T) {
@@ -1549,6 +2032,35 @@ func TestEnumRetrieveBreakdownResponseDirection(t *testing.T) {
 	})
 }
 
+func TestEnumRetrieveBreakdownResponseItemsItemAvatarShape(t *testing.T) {
+	t.Run("NewFromString_circle", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseItemsItemAvatarShapeFromString("circle")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseItemsItemAvatarShape("circle"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_square", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseItemsItemAvatarShapeFromString("square")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseItemsItemAvatarShape("square"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveBreakdownResponseItemsItemAvatarShapeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveBreakdownResponseItemsItemAvatarShapeFromString("circle")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumRetrieveBreakdownResponseItemsItemObject(t *testing.T) {
 	t.Run("NewFromString_user", func(t *testing.T) {
 		t.Parallel()
@@ -1583,6 +2095,20 @@ func TestEnumRetrieveBreakdownResponseItemsItemObject(t *testing.T) {
 		val, err := NewRetrieveBreakdownResponseItemsItemObjectFromString("balance")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveBreakdownResponseItemsItemObject("balance"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdrawal_adjustment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseItemsItemObjectFromString("withdrawal_adjustment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseItemsItemObject("withdrawal_adjustment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_campaign", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseItemsItemObjectFromString("ad_campaign")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseItemsItemObject("ad_campaign"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -1663,6 +2189,29 @@ func TestExtraPropertiesRetrieveBreakdownResponseItemsItem(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *RetrieveBreakdownResponseItemsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesRetrieveBreakdownResponseItemsItemAvatar(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &RetrieveBreakdownResponseItemsItemAvatar{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBreakdownResponseItemsItemAvatar
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

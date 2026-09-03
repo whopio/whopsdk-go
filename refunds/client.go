@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-2"
+		apiVersionDateDefault := "2026-09-02-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,40 +39,11 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of refunds, with optional filtering by payment, company, user, and creation date.
-//
-// Required permissions:
-//   - `payment:basic:read`
+// Lists refunds, newest first. Without filters this is every refund the caller can read; narrow it to one payment with `payment_id`, one account with `account_id`, or one buyer with `user_id`.
 //
 // Example:
 //
-//	request := &whopsdk.ListRefundsRequest{
-//	    First: whopsdk.Int(
-//	        42,
-//	    ),
-//	    Last: whopsdk.Int(
-//	        42,
-//	    ),
-//	    PaymentID: whopsdk.String(
-//	        "pay_xxxxxxxxxxxxxx",
-//	    ),
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
-//	    UserID: whopsdk.String(
-//	        "user_xxxxxxxxxxxxx",
-//	    ),
-//	    CreatedBefore: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	    CreatedAfter: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	}
+//	request := &whopsdk.ListRefundsRequest{}
 //	client.Refunds.List(
 //	    context.TODO(),
 //	    request,
@@ -81,7 +52,7 @@ func (c *Client) List(
 	ctx context.Context,
 	request *whopsdk.ListRefundsRequest,
 	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.RefundListItem, *whopsdk.ListRefundsResponse], error) {
+) (*core.Page[*string, *whopsdk.Refund, *whopsdk.ListRefundsResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -118,14 +89,14 @@ func (c *Client) List(
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
-	readPageResponse := func(response *whopsdk.ListRefundsResponse) *core.PageResponse[*string, *whopsdk.RefundListItem, *whopsdk.ListRefundsResponse] {
+	readPageResponse := func(response *whopsdk.ListRefundsResponse) *core.PageResponse[*string, *whopsdk.Refund, *whopsdk.ListRefundsResponse] {
 		var zeroValue *string
 		var next *string
 		if response.PageInfo != nil {
 			next = response.PageInfo.EndCursor
 		}
 		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.RefundListItem, *whopsdk.ListRefundsResponse]{
+		return &core.PageResponse[*string, *whopsdk.Refund, *whopsdk.ListRefundsResponse]{
 			Results:  results,
 			Response: response,
 			Next:     next,
@@ -140,20 +111,12 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Retrieves the details of an existing refund.
-//
-// Required permissions:
-//   - `payment:basic:read`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
+// Returns one refund.
 //
 // Example:
 //
 //	request := &whopsdk.RetrieveRefundsRequest{
-//	    ID: "rf_xxxxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Refunds.Retrieve(
 //	    context.TODO(),

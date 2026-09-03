@@ -112,10 +112,9 @@ func TestPayoutsCreateWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.CreatePayoutsRequestBody{
-		Unknown: map[string]any{
-			"key": "value",
-		},
+	request := &whopsdk.CreatePayoutsRequest{
+		Amount:         50,
+		PayoutMethodID: "potk_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Payouts.Create(
 		context.TODO(),

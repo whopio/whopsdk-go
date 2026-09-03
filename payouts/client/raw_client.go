@@ -34,7 +34,7 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 
 func (r *RawClient) Create(
 	ctx context.Context,
-	request *whopsdk.CreatePayoutsRequestBody,
+	request *whopsdk.CreatePayoutsRequest,
 	opts ...option.RequestOption,
 ) (*core.Response[*whopsdk.CreatePayoutsResponse], error) {
 	options := core.NewRequestOptions(opts...)
@@ -48,6 +48,7 @@ func (r *RawClient) Create(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.CreatePayoutsResponse
 	raw, err := r.caller.Call(
 		ctx,

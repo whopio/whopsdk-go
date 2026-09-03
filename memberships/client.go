@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-2"
+		apiVersionDateDefault := "2026-09-02-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -216,7 +216,7 @@ func (c *Client) AddFreeDaysMembership(
 	ctx context.Context,
 	request *whopsdk.AddFreeDaysMembershipRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Membership, error) {
+) (*whopsdk.MembershipLegacy, error) {
 	response, err := c.WithRawResponse.AddFreeDaysMembership(
 		ctx,
 		request,
@@ -357,7 +357,7 @@ func (c *Client) ResyncAccessMembership(
 	ctx context.Context,
 	request *whopsdk.ResyncAccessMembershipRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Membership, error) {
+) (*whopsdk.MembershipLegacy, error) {
 	response, err := c.WithRawResponse.ResyncAccessMembership(
 		ctx,
 		request,
@@ -416,7 +416,7 @@ func (c *Client) UncancelMembership(
 	ctx context.Context,
 	request *whopsdk.UncancelMembershipRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Membership, error) {
+) (*whopsdk.MembershipLegacy, error) {
 	response, err := c.WithRawResponse.UncancelMembership(
 		ctx,
 		request,

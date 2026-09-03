@@ -738,6 +738,14 @@ func TestSettersLedgerActivity(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetUsdAmount", func(t *testing.T) {
+		obj := &LedgerActivity{}
+		var fernTestValueUsdAmount *string
+		obj.SetUsdAmount(fernTestValueUsdAmount)
+		assert.Equal(t, fernTestValueUsdAmount, obj.UsdAmount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetUserEmail", func(t *testing.T) {
 		obj := &LedgerActivity{}
 		var fernTestValueUserEmail *string
@@ -1274,6 +1282,39 @@ func TestGettersLedgerActivity(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSource() // Should return zero value
+	})
+
+	t.Run("GetUsdAmount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivity{}
+		var expected *string
+		obj.UsdAmount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUsdAmount(), "getter should return the property value")
+	})
+
+	t.Run("GetUsdAmount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivity{}
+		obj.UsdAmount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUsdAmount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUsdAmount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *LedgerActivity
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUsdAmount() // Should return zero value
 	})
 
 	t.Run("GetUserEmail", func(t *testing.T) {
@@ -1882,6 +1923,37 @@ func TestSettersMarkExplicitLedgerActivity(t *testing.T) {
 
 		// Act
 		obj.SetSource(fernTestValueSource)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUsdAmount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivity{}
+		var fernTestValueUsdAmount *string
+
+		// Act
+		obj.SetUsdAmount(fernTestValueUsdAmount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12579,6 +12651,13 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("misc_reversal"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_onboarding_reward", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("onboarding_reward")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("onboarding_reward"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_onchain_deposit", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("onchain_deposit")
@@ -13759,6 +13838,13 @@ func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
 		val, err := NewListFinancialActivityRequestLineTypesItemFromString("misc_reversal")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("misc_reversal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_onboarding_reward", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("onboarding_reward")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("onboarding_reward"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_onchain_deposit", func(t *testing.T) {

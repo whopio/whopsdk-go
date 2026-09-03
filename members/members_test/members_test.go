@@ -88,7 +88,13 @@ func TestMembersListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListMembersRequest{}
+	request := &whopsdk.ListMembersRequest{
+		UserIDs: []*string{
+			whopsdk.String(
+				"user_xxxxxxxxxxxxxx",
+			),
+		},
+	}
 	_, invocationErr := client.Members.List(
 		context.TODO(),
 		request,
@@ -98,7 +104,7 @@ func TestMembersListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestMembersListWithWireMock", "GET", "/members", nil, 1)
+	VerifyRequestCount(t, "TestMembersListWithWireMock", "GET", "/members", map[string]interface{}{"user_ids": "user_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestMembersRetrieveWithWireMock(

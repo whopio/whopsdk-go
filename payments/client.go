@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-2"
+		apiVersionDateDefault := "2026-09-02-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,51 +39,11 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of payments for the actor in context, with optional filtering by product, plan, status, billing reason, currency, and creation date.
-//
-// Required permissions:
-//   - `payment:basic:read`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
-//   - `promo_code:basic:read`
-//   - `shipment:basic:read`
+// Lists payments, newest first. Without filters this is every payment the caller can read: a company credential's own account, or for a user every account they can read payments for. Filters narrow by account, buyer, product, plan, membership, status, billing reason, currency, and creation window. Filtering by `billing_reason=subscription_cycle` also matches renewals recorded as `subscription_update`. `settlement_time_at` is null on list rows — retrieve the payment for it.
 //
 // Example:
 //
-//	request := &whopsdk.ListPaymentsRequest{
-//	    First: whopsdk.Int(
-//	        42,
-//	    ),
-//	    Last: whopsdk.Int(
-//	        42,
-//	    ),
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
-//	    CreatedBefore: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	    CreatedAfter: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	    UpdatedBefore: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	    UpdatedAfter: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	}
+//	request := &whopsdk.ListPaymentsRequest{}
 //	client.Payments.List(
 //	    context.TODO(),
 //	    request,
@@ -92,7 +52,7 @@ func (c *Client) List(
 	ctx context.Context,
 	request *whopsdk.ListPaymentsRequest,
 	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.PaymentListItem, *whopsdk.ListPaymentsResponse], error) {
+) (*core.Page[*string, *whopsdk.Payment, *whopsdk.ListPaymentsResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -129,14 +89,14 @@ func (c *Client) List(
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
-	readPageResponse := func(response *whopsdk.ListPaymentsResponse) *core.PageResponse[*string, *whopsdk.PaymentListItem, *whopsdk.ListPaymentsResponse] {
+	readPageResponse := func(response *whopsdk.ListPaymentsResponse) *core.PageResponse[*string, *whopsdk.Payment, *whopsdk.ListPaymentsResponse] {
 		var zeroValue *string
 		var next *string
 		if response.PageInfo != nil {
 			next = response.PageInfo.EndCursor
 		}
 		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.PaymentListItem, *whopsdk.ListPaymentsResponse]{
+		return &core.PageResponse[*string, *whopsdk.Payment, *whopsdk.ListPaymentsResponse]{
 			Results:  results,
 			Response: response,
 			Next:     next,
@@ -151,33 +111,13 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Charge a buyer on-session with a `confirmation_token` for the method they selected, or charge an existing member off-session using a stored payment method. You can provide an existing plan or create one inline. The endpoint returns a payment immediately, but processing continues asynchronously. Use webhooks to learn whether it succeeds or fails, and poll the payment's status endpoint for any step the buyer must complete.
-//
-// Required permissions:
-//   - `payment:charge`
-//   - `plan:create`
-//   - `access_pass:create`
-//   - `access_pass:update`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
-//   - `promo_code:basic:read`
-//   - `shipment:basic:read`
-//   - `payment:dispute:read`
-//   - `payment:resolution_center_case:read`
+// Charges a buyer for a plan. Pass a payment method already on file (`member_id` and `payment_method_id`), or a `confirmation_token` describing a method the buyer just supplied. Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and, for a confirmation-token payment, what the buyer must still do. `plan_id` names the plan to charge for.
 //
 // Example:
 //
 //	request := &whopsdk.CreatePaymentsRequest{
-//	    CreatePaymentsRequestZero: &whopsdk.CreatePaymentsRequestZero{
-//	        CompanyID: "biz_xxxxxxxxxxxxxx",
-//	        ConfirmationToken: "confirmation_token",
-//	        Plan: &whopsdk.CreatePaymentsRequestZeroPlan{
-//	            Currency: whopsdk.CurrenciesUsd,
-//	        },
-//	    },
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
+//	    PlanID: "plan_xxxxxxxxxxxxxx",
 //	}
 //	client.Payments.Create(
 //	    context.TODO(),
@@ -187,7 +127,7 @@ func (c *Client) Create(
 	ctx context.Context,
 	request *whopsdk.CreatePaymentsRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.CreatePaymentsResponse, error) {
+) (*whopsdk.Payment, error) {
 	response, err := c.WithRawResponse.Create(
 		ctx,
 		request,
@@ -199,24 +139,12 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing payment.
-//
-// Required permissions:
-//   - `payment:basic:read`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
-//   - `promo_code:basic:read`
-//   - `shipment:basic:read`
-//   - `payment:dispute:read`
-//   - `payment:resolution_center_case:read`
+// Returns one payment. Related records are ids — resolve a plan, membership, member or shipment on its own endpoint, and list this payment's refunds, disputes or Resolution Center cases with `?payment_id=`.
 //
 // Example:
 //
 //	request := &whopsdk.RetrievePaymentsRequest{
-//	    ID: "pay_xxxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Payments.Retrieve(
 //	    context.TODO(),
@@ -226,7 +154,7 @@ func (c *Client) Retrieve(
 	ctx context.Context,
 	request *whopsdk.RetrievePaymentsRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.RetrievePaymentsResponse, error) {
+) (*whopsdk.Payment, error) {
 	response, err := c.WithRawResponse.Retrieve(
 		ctx,
 		request,
@@ -265,21 +193,12 @@ func (c *Client) Capture(
 	return response.Body, nil
 }
 
-// Returns the list of fees associated with a specific payment, including platform fees and processing fees.
-//
-// Required permissions:
-//   - `payment:basic:read`
+// Returns the fee breakdown of one payment — Whop's fee, processing, affiliate and other lines — each in the currency it was collected in and converted to the payment's settlement currency. The list is complete in one page.
 //
 // Example:
 //
 //	request := &whopsdk.ListFeesPaymentsRequest{
-//	    ID: "pay_xxxxxxxxxxxxxx",
-//	    First: whopsdk.Int(
-//	        42,
-//	    ),
-//	    Last: whopsdk.Int(
-//	        42,
-//	    ),
+//	    ID: "id",
 //	}
 //	client.Payments.ListFees(
 //	    context.TODO(),
@@ -289,86 +208,24 @@ func (c *Client) ListFees(
 	ctx context.Context,
 	request *whopsdk.ListFeesPaymentsRequest,
 	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.ListFeesPaymentsResponseDataItem, *whopsdk.ListFeesPaymentsResponse], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		c.baseURL,
-		"https://api.whop.com/api/v1",
+) (*whopsdk.ListFeesPaymentsResponse, error) {
+	response, err := c.WithRawResponse.ListFees(
+		ctx,
+		request,
+		opts...,
 	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/payments/%v/fees",
-		request.ID,
-	)
-	queryParams, err := internal.QueryValues(request)
 	if err != nil {
 		return nil, err
 	}
-	headers := internal.MergeHeaders(
-		c.options.ToHeader(),
-		options.ToHeader(),
-	)
-	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
-		if pageRequest.Cursor != nil {
-			queryParams.Set("after", *pageRequest.Cursor)
-		}
-		nextURL := endpointURL
-		if len(queryParams) > 0 {
-			nextURL += "?" + queryParams.Encode()
-		}
-		return &internal.CallParams{
-			URL:             nextURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		}
-	}
-	readPageResponse := func(response *whopsdk.ListFeesPaymentsResponse) *core.PageResponse[*string, *whopsdk.ListFeesPaymentsResponseDataItem, *whopsdk.ListFeesPaymentsResponse] {
-		var zeroValue *string
-		var next *string
-		if response.PageInfo != nil {
-			next = response.PageInfo.EndCursor
-		}
-		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.ListFeesPaymentsResponseDataItem, *whopsdk.ListFeesPaymentsResponse]{
-			Results:  results,
-			Response: response,
-			Next:     next,
-			Done:     next == zeroValue || *next == "",
-		}
-	}
-	pager := internal.NewCursorPager(
-		c.caller,
-		prepareCall,
-		readPageResponse,
-	)
-	return pager.GetPage(ctx, request.After)
+	return response.Body, nil
 }
 
-// Issue a full or partial refund for a payment. The refund is processed through the original payment processor and the membership status is updated accordingly.
-//
-// Required permissions:
-//   - `payment:manage`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
-//   - `promo_code:basic:read`
-//   - `shipment:basic:read`
-//   - `payment:dispute:read`
-//   - `payment:resolution_center_case:read`
+// Issues a full or partial refund for a payment. The refund is processed through the original payment processor and the membership status is updated accordingly.
 //
 // Example:
 //
 //	request := &whopsdk.RefundPaymentsRequest{
-//	    ID: "pay_xxxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Payments.Refund(
 //	    context.TODO(),
@@ -390,24 +247,12 @@ func (c *Client) Refund(
 	return response.Body, nil
 }
 
-// Retry a failed or pending payment. This re-attempts the charge using the original payment method and plan details.
-//
-// Required permissions:
-//   - `payment:manage`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
-//   - `promo_code:basic:read`
-//   - `shipment:basic:read`
-//   - `payment:dispute:read`
-//   - `payment:resolution_center_case:read`
+// Retries a failed or pending payment. This re-attempts the charge using the original payment method and plan details.
 //
 // Example:
 //
 //	request := &whopsdk.RetryPaymentsRequest{
-//	    ID: "pay_xxxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Payments.Retry(
 //	    context.TODO(),
@@ -429,24 +274,12 @@ func (c *Client) Retry(
 	return response.Body, nil
 }
 
-// Void a payment that has not yet been settled. Voiding cancels the payment before it is captured by the payment processor.
-//
-// Required permissions:
-//   - `payment:manage`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
-//   - `promo_code:basic:read`
-//   - `shipment:basic:read`
-//   - `payment:dispute:read`
-//   - `payment:resolution_center_case:read`
+// Voids a payment that has not yet been settled. Voiding cancels the payment before it is captured by the payment processor.
 //
 // Example:
 //
 //	request := &whopsdk.VoidPaymentsRequest{
-//	    ID: "pay_xxxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Payments.Void(
 //	    context.TODO(),

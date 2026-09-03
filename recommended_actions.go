@@ -944,11 +944,14 @@ func (l *ListExecutionsRecommendedActionsResponse) String() string {
 }
 
 var (
-	listRecommendedActionsResponseFieldData = big.NewInt(1 << 0)
+	listRecommendedActionsResponseFieldData              = big.NewInt(1 << 0)
+	listRecommendedActionsResponseFieldGenerationPending = big.NewInt(1 << 1)
 )
 
 type ListRecommendedActionsResponse struct {
 	Data []*AccountRecommendedActionChain `json:"data" url:"data"`
+	// Whether generation was queued because the account has no available action chains yet.
+	GenerationPending bool `json:"generation_pending" url:"generation_pending"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -962,6 +965,13 @@ func (l *ListRecommendedActionsResponse) GetData() []*AccountRecommendedActionCh
 		return nil
 	}
 	return l.Data
+}
+
+func (l *ListRecommendedActionsResponse) GetGenerationPending() bool {
+	if l == nil {
+		return false
+	}
+	return l.GenerationPending
 }
 
 func (l *ListRecommendedActionsResponse) GetExtraProperties() map[string]interface{} {
@@ -983,6 +993,13 @@ func (l *ListRecommendedActionsResponse) require(field *big.Int) {
 func (l *ListRecommendedActionsResponse) SetData(data []*AccountRecommendedActionChain) {
 	l.Data = data
 	l.require(listRecommendedActionsResponseFieldData)
+}
+
+// SetGenerationPending sets the GenerationPending field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRecommendedActionsResponse) SetGenerationPending(generationPending bool) {
+	l.GenerationPending = generationPending
+	l.require(listRecommendedActionsResponseFieldGenerationPending)
 }
 
 func (l *ListRecommendedActionsResponse) UnmarshalJSON(data []byte) error {

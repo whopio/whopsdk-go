@@ -21,12 +21,13 @@ var (
 	createAdsRequestFieldLeadFormID         = big.NewInt(1 << 8)
 	createAdsRequestFieldMessagingConfig    = big.NewInt(1 << 9)
 	createAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 10)
-	createAdsRequestFieldPostSource         = big.NewInt(1 << 11)
-	createAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 12)
-	createAdsRequestFieldSocialAccounts     = big.NewInt(1 << 13)
-	createAdsRequestFieldTitle              = big.NewInt(1 << 14)
-	createAdsRequestFieldURL                = big.NewInt(1 << 15)
-	createAdsRequestFieldURLParameters      = big.NewInt(1 << 16)
+	createAdsRequestFieldMusic              = big.NewInt(1 << 11)
+	createAdsRequestFieldPostSource         = big.NewInt(1 << 12)
+	createAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 13)
+	createAdsRequestFieldSocialAccounts     = big.NewInt(1 << 14)
+	createAdsRequestFieldTitle              = big.NewInt(1 << 15)
+	createAdsRequestFieldURL                = big.NewInt(1 << 16)
+	createAdsRequestFieldURLParameters      = big.NewInt(1 << 17)
 )
 
 type CreateAdsRequest struct {
@@ -36,7 +37,7 @@ type CreateAdsRequest struct {
 	AdGroupID *string `json:"ad_group_id,omitempty" url:"-"`
 	// The call-to-action button shown on the ad.
 	CallToAction *CreateAdsRequestCallToAction `json:"call_to_action,omitempty" url:"-"`
-	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Two or more entries with no format become a carousel (2-10 attachments), in order, sharing the ad's copy.
+	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
 	Creatives []*CreateAdsRequestCreativesItem `json:"creatives,omitempty" url:"-"`
 	// The description variants shown on the ad.
 	Descriptions []string `json:"descriptions,omitempty" url:"-"`
@@ -52,6 +53,8 @@ type CreateAdsRequest struct {
 	MessagingConfig *CreateAdsRequestMessagingConfig `json:"messaging_config,omitempty" url:"-"`
 	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
 	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"-"`
+	// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Required for TikTok carousels (image creatives); TikTok-only.
+	Music *CreateAdsRequestMusic `json:"music,omitempty" url:"-"`
 	// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
 	PostSource *CreateAdsRequestPostSource `json:"post_source,omitempty" url:"-"`
 	// The primary text variants shown in the ad body.
@@ -151,6 +154,13 @@ func (c *CreateAdsRequest) SetMessagingConfig(messagingConfig *CreateAdsRequestM
 func (c *CreateAdsRequest) SetMultiAdvertiserAds(multiAdvertiserAds *bool) {
 	c.MultiAdvertiserAds = multiAdvertiserAds
 	c.require(createAdsRequestFieldMultiAdvertiserAds)
+}
+
+// SetMusic sets the Music field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequest) SetMusic(music *CreateAdsRequestMusic) {
+	c.Music = music
+	c.require(createAdsRequestFieldMusic)
 }
 
 // SetPostSource sets the PostSource field and marks it as non-optional;
@@ -661,33 +671,34 @@ var (
 	adFieldLinkClicks                   = big.NewInt(1 << 40)
 	adFieldMessagingConfig              = big.NewInt(1 << 41)
 	adFieldMultiAdvertiserAds           = big.NewInt(1 << 42)
-	adFieldPostID                       = big.NewInt(1 << 43)
-	adFieldPostSource                   = big.NewInt(1 << 44)
-	adFieldPostThumbnailURL             = big.NewInt(1 << 45)
-	adFieldPrimaryTexts                 = big.NewInt(1 << 46)
-	adFieldPurchaseValue                = big.NewInt(1 << 47)
-	adFieldPurchases                    = big.NewInt(1 << 48)
-	adFieldReach                        = big.NewInt(1 << 49)
-	adFieldResultEvent                  = big.NewInt(1 << 50)
-	adFieldResultEventName              = big.NewInt(1 << 51)
-	adFieldResults                      = big.NewInt(1 << 52)
-	adFieldReturnOnAdSpend              = big.NewInt(1 << 53)
-	adFieldScheduleValue                = big.NewInt(1 << 54)
-	adFieldSchedules                    = big.NewInt(1 << 55)
-	adFieldSocialAccounts               = big.NewInt(1 << 56)
-	adFieldSpend                        = big.NewInt(1 << 57)
-	adFieldSpendCurrency                = big.NewInt(1 << 58)
-	adFieldStatus                       = big.NewInt(1 << 59)
-	adFieldSubmittedApplicationValue    = big.NewInt(1 << 60)
-	adFieldSubmittedApplications        = big.NewInt(1 << 61)
-	adFieldTitle                        = big.NewInt(1 << 62)
-	adFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adFieldURL                          = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adFieldURLParameters                = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	adFieldMusic                        = big.NewInt(1 << 43)
+	adFieldPostID                       = big.NewInt(1 << 44)
+	adFieldPostSource                   = big.NewInt(1 << 45)
+	adFieldPostThumbnailURL             = big.NewInt(1 << 46)
+	adFieldPrimaryTexts                 = big.NewInt(1 << 47)
+	adFieldPurchaseValue                = big.NewInt(1 << 48)
+	adFieldPurchases                    = big.NewInt(1 << 49)
+	adFieldReach                        = big.NewInt(1 << 50)
+	adFieldResultEvent                  = big.NewInt(1 << 51)
+	adFieldResultEventName              = big.NewInt(1 << 52)
+	adFieldResults                      = big.NewInt(1 << 53)
+	adFieldReturnOnAdSpend              = big.NewInt(1 << 54)
+	adFieldScheduleValue                = big.NewInt(1 << 55)
+	adFieldSchedules                    = big.NewInt(1 << 56)
+	adFieldSocialAccounts               = big.NewInt(1 << 57)
+	adFieldSpend                        = big.NewInt(1 << 58)
+	adFieldSpendCurrency                = big.NewInt(1 << 59)
+	adFieldStatus                       = big.NewInt(1 << 60)
+	adFieldSubmittedApplicationValue    = big.NewInt(1 << 61)
+	adFieldSubmittedApplications        = big.NewInt(1 << 62)
+	adFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adFieldURL                          = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adFieldURLParameters                = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 70)
 )
 
 type Ad struct {
@@ -773,6 +784,8 @@ type Ad struct {
 	MessagingConfig *AdMessagingConfig `json:"messaging_config,omitempty" url:"messaging_config,omitempty"`
 	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
 	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"multi_advertiser_ads,omitempty"`
+	// The advertiser-uploaded MP3 a TikTok carousel ad plays. TikTok-only; `null` elsewhere and for non-carousel ads.
+	Music *AdMusic `json:"music,omitempty" url:"music,omitempty"`
 	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
 	PostID *string `json:"post_id,omitempty" url:"post_id,omitempty"`
 	// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
@@ -1132,6 +1145,13 @@ func (a *Ad) GetMultiAdvertiserAds() *bool {
 		return nil
 	}
 	return a.MultiAdvertiserAds
+}
+
+func (a *Ad) GetMusic() *AdMusic {
+	if a == nil {
+		return nil
+	}
+	return a.Music
 }
 
 func (a *Ad) GetPostID() *string {
@@ -1636,6 +1656,13 @@ func (a *Ad) SetMessagingConfig(messagingConfig *AdMessagingConfig) {
 func (a *Ad) SetMultiAdvertiserAds(multiAdvertiserAds *bool) {
 	a.MultiAdvertiserAds = multiAdvertiserAds
 	a.require(adFieldMultiAdvertiserAds)
+}
+
+// SetMusic sets the Music field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Ad) SetMusic(music *AdMusic) {
+	a.Music = music
+	a.require(adFieldMusic)
 }
 
 // SetPostID sets the PostID field and marks it as non-optional;
@@ -2763,6 +2790,125 @@ func (a *AdMessagingConfig) MarshalJSON() ([]byte, error) {
 }
 
 func (a *AdMessagingConfig) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	adMusicFieldID   = big.NewInt(1 << 0)
+	adMusicFieldName = big.NewInt(1 << 1)
+	adMusicFieldURL  = big.NewInt(1 << 2)
+)
+
+type AdMusic struct {
+	// The music attachment's file id.
+	ID string `json:"id" url:"id"`
+	// The uploaded file's name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// CDN url of the MP3.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdMusic) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AdMusic) GetName() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Name
+}
+
+func (a *AdMusic) GetURL() *string {
+	if a == nil {
+		return nil
+	}
+	return a.URL
+}
+
+func (a *AdMusic) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdMusic) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdMusic) SetID(id string) {
+	a.ID = id
+	a.require(adMusicFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdMusic) SetName(name *string) {
+	a.Name = name
+	a.require(adMusicFieldName)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdMusic) SetURL(url *string) {
+	a.URL = url
+	a.require(adMusicFieldURL)
+}
+
+func (a *AdMusic) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdMusic
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdMusic(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdMusic) MarshalJSON() ([]byte, error) {
+	type embed AdMusic
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdMusic) String() string {
 	if a == nil {
 		return "<nil>"
 	}
@@ -4627,6 +4773,92 @@ func (c *CreateAdsRequestMessagingConfig) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreateAdsRequestMessagingConfig) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Required for TikTok carousels (image creatives); TikTok-only.
+var (
+	createAdsRequestMusicFieldID = big.NewInt(1 << 0)
+)
+
+type CreateAdsRequestMusic struct {
+	// Uploaded MP3 file ID, prefixed `file_`.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdsRequestMusic) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CreateAdsRequestMusic) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdsRequestMusic) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequestMusic) SetID(id string) {
+	c.ID = id
+	c.require(createAdsRequestMusicFieldID)
+}
+
+func (c *CreateAdsRequestMusic) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdsRequestMusic
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdsRequestMusic(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdsRequestMusic) MarshalJSON() ([]byte, error) {
+	type embed CreateAdsRequestMusic
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdsRequestMusic) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -7087,6 +7319,92 @@ func (u *UpdateAdsRequestMessagingConfig) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Omitted leaves the ad's music untouched. Null removes it before launch; a submitted carousel takes a replacement track instead. TikTok-only.
+var (
+	updateAdsRequestMusicFieldID = big.NewInt(1 << 0)
+)
+
+type UpdateAdsRequestMusic struct {
+	// Uploaded MP3 file ID, prefixed `file_`.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdsRequestMusic) GetID() string {
+	if u == nil {
+		return ""
+	}
+	return u.ID
+}
+
+func (u *UpdateAdsRequestMusic) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdsRequestMusic) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdsRequestMusic) SetID(id string) {
+	u.ID = id
+	u.require(updateAdsRequestMusicFieldID)
+}
+
+func (u *UpdateAdsRequestMusic) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdsRequestMusic
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdsRequestMusic(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdsRequestMusic) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdsRequestMusic
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdsRequestMusic) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 // Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
 type UpdateAdsRequestPostSource string
 
@@ -7232,12 +7550,13 @@ var (
 	updateAdsRequestFieldLeadFormID         = big.NewInt(1 << 7)
 	updateAdsRequestFieldMessagingConfig    = big.NewInt(1 << 8)
 	updateAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 9)
-	updateAdsRequestFieldPostSource         = big.NewInt(1 << 10)
-	updateAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 11)
-	updateAdsRequestFieldSocialAccounts     = big.NewInt(1 << 12)
-	updateAdsRequestFieldTitle              = big.NewInt(1 << 13)
-	updateAdsRequestFieldURL                = big.NewInt(1 << 14)
-	updateAdsRequestFieldURLParameters      = big.NewInt(1 << 15)
+	updateAdsRequestFieldMusic              = big.NewInt(1 << 10)
+	updateAdsRequestFieldPostSource         = big.NewInt(1 << 11)
+	updateAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 12)
+	updateAdsRequestFieldSocialAccounts     = big.NewInt(1 << 13)
+	updateAdsRequestFieldTitle              = big.NewInt(1 << 14)
+	updateAdsRequestFieldURL                = big.NewInt(1 << 15)
+	updateAdsRequestFieldURLParameters      = big.NewInt(1 << 16)
 )
 
 type UpdateAdsRequest struct {
@@ -7245,7 +7564,7 @@ type UpdateAdsRequest struct {
 	ID string `json:"-" url:"-"`
 	// The call-to-action button shown on the ad.
 	CallToAction *UpdateAdsRequestCallToAction `json:"call_to_action,omitempty" url:"-"`
-	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Two or more entries with no format replace it with a carousel (2-10 attachments), in order, sharing the ad's copy.
+	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Entries with no format replace it with a carousel's ordered cards — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
 	Creatives []*UpdateAdsRequestCreativesItem `json:"creatives,omitempty" url:"-"`
 	// The description variants shown on the ad.
 	Descriptions []string `json:"descriptions,omitempty" url:"-"`
@@ -7261,6 +7580,8 @@ type UpdateAdsRequest struct {
 	MessagingConfig *UpdateAdsRequestMessagingConfig `json:"messaging_config,omitempty" url:"-"`
 	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
 	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"-"`
+	// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Omitted leaves the ad's music untouched. Null removes it before launch; a submitted carousel takes a replacement track instead. TikTok-only.
+	Music *UpdateAdsRequestMusic `json:"music,omitempty" url:"-"`
 	// Identifies the network that owns `existing_post_id`. The source is inferred from the ID shape when omitted.
 	PostSource *UpdateAdsRequestPostSource `json:"post_source,omitempty" url:"-"`
 	// The primary text variants shown in the ad body.
@@ -7353,6 +7674,13 @@ func (u *UpdateAdsRequest) SetMessagingConfig(messagingConfig *UpdateAdsRequestM
 func (u *UpdateAdsRequest) SetMultiAdvertiserAds(multiAdvertiserAds *bool) {
 	u.MultiAdvertiserAds = multiAdvertiserAds
 	u.require(updateAdsRequestFieldMultiAdvertiserAds)
+}
+
+// SetMusic sets the Music field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdsRequest) SetMusic(music *UpdateAdsRequestMusic) {
+	u.Music = music
+	u.require(updateAdsRequestFieldMusic)
 }
 
 // SetPostSource sets the PostSource field and marks it as non-optional;

@@ -36,7 +36,7 @@ func (r *RawClient) Create(
 	ctx context.Context,
 	request *whopsdk.CreatePaymentsRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.CreatePaymentsResponse], error) {
+) (*core.Response[*whopsdk.Payment], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -48,7 +48,8 @@ func (r *RawClient) Create(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *whopsdk.CreatePaymentsResponse
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.Payment
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -68,7 +69,7 @@ func (r *RawClient) Create(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.CreatePaymentsResponse]{
+	return &core.Response[*whopsdk.Payment]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -79,7 +80,7 @@ func (r *RawClient) Retrieve(
 	ctx context.Context,
 	request *whopsdk.RetrievePaymentsRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.RetrievePaymentsResponse], error) {
+) (*core.Response[*whopsdk.Payment], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -94,7 +95,7 @@ func (r *RawClient) Retrieve(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *whopsdk.RetrievePaymentsResponse
+	var response *whopsdk.Payment
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -113,7 +114,7 @@ func (r *RawClient) Retrieve(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.RetrievePaymentsResponse]{
+	return &core.Response[*whopsdk.Payment]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -159,6 +160,51 @@ func (r *RawClient) Capture(
 		return nil, err
 	}
 	return &core.Response[*whopsdk.PaymentStatus]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) ListFees(
+	ctx context.Context,
+	request *whopsdk.ListFeesPaymentsRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.ListFeesPaymentsResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/payments/%v/fees",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *whopsdk.ListFeesPaymentsResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.ListFeesPaymentsResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

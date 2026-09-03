@@ -940,7 +940,7 @@ request := &whopsdk.FormCompanyAccountsRequest{
     ExpediteEin: whopsdk.Bool(
         true,
     ),
-    FormationState: whopsdk.FormCompanyAccountsRequestFormationStateTx,
+    FormationState: whopsdk.FormCompanyAccountsRequestFormationStateWy,
     Founders: []*whopsdk.FormCompanyAccountsRequestFoundersItem{
         &whopsdk.FormCompanyAccountsRequestFoundersItem{
             Address: &whopsdk.FormCompanyAccountsRequestFoundersItemAddress{
@@ -1072,7 +1072,7 @@ client.Accounts.FormCompany(
 <dl>
 <dd>
 
-**formationState:** `*whopsdk.FormCompanyAccountsRequestFormationState` — Two-letter code of the US state (or `DC`) to form the company in.
+**formationState:** `*whopsdk.FormCompanyAccountsRequestFormationState` — Two-letter code of the US state (or `DC`) to form the company in. We recommend `WY` because Wyoming formations are completed the same day.
     
 </dd>
 </dl>
@@ -2459,7 +2459,7 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
-**dynamicCreative:** `*bool` — Let the ad platform automatically mix and match this ad group's creatives and copy to find the best-performing combinations. Set at creation; can't be changed afterward.
+**dynamicCreative:** `*bool` — Whether the ad platform automatically mixes and matches this ad group's creatives and copy to find the best-performing combinations. Meta has deprecated it and rejects `true`; ad groups already using it keep it, and it can't be changed afterward.
     
 </dd>
 </dl>
@@ -3397,142 +3397,6 @@ client.AdGroups.Unpause(
 </dl>
 </details>
 
-## AdReports
-<details><summary><code>client.AdReports.Retrieve() -> *whopsdk.AdReport</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Performance report for a company, ad campaigns, ad groups, or ads. Always returns aggregate `summary` totals summed across the scope. Set `granularity` to additionally get a time series, or set `breakdown` (`campaign`/`ad_group`/`ad`) to additionally get per-entity rows inside the requested scope. Exactly one of `companyId`, `adCampaignIds`, `adGroupIds`, or `adIds` must be provided.
-
-Required permissions:
- - `ad_campaign:stats:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.RetrieveAdReportsRequest{
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
-    From: whopsdk.MustParseDateTime(
-        "2023-12-01T05:00:00Z",
-    ),
-    To: whopsdk.MustParseDateTime(
-        "2023-12-01T05:00:00Z",
-    ),
-}
-client.AdReports.Retrieve(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**adCampaignIDs:** `*string` — Scope the report to these ad campaigns (max 100); stats are summed across them. Mutually exclusive with `companyId`, `adGroupIds`, and `adIds`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**adGroupIDs:** `*string` — Scope the report to these ad groups (max 100); stats are summed across them. Mutually exclusive with `companyId`, `adCampaignIds`, and `adIds`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**adIDs:** `*string` — Scope the report to these ads (max 100); stats are summed across them. Mutually exclusive with `companyId`, `adCampaignIds`, and `adGroupIds`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**breakdown:** `*whopsdk.AdReportBreakdownLevels` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**companyID:** `*string` — The unique identifier of a company. Mutually exclusive with `adCampaignIds`, `adGroupIds`, and `adIds`. Use with `breakdown` to fan out across every campaign, ad group, or ad in the company without paging.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**currency:** `*string` — ISO 4217 currency code to report `spend` in. Defaults to the company's ads reporting currency.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**from:** `time.Time` — Inclusive start of the reporting window.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**granularity:** `*whopsdk.Granularities` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**to:** `time.Time` — Inclusive end of the reporting window.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## Ads
 <details><summary><code>client.Ads.List() -> *whopsdk.ListAdsResponse</code></summary>
 <dl>
@@ -3817,7 +3681,7 @@ client.Ads.Create(
 <dl>
 <dd>
 
-**creatives:** `[]*whopsdk.CreateAdsRequestCreativesItem` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Two or more entries with no format become a carousel (2-10 attachments), in order, sharing the ad's copy.
+**creatives:** `[]*whopsdk.CreateAdsRequestCreativesItem` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
     
 </dd>
 </dl>
@@ -3874,6 +3738,14 @@ client.Ads.Create(
 <dd>
 
 **multiAdvertiserAds:** `*bool` — Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**music:** `*whopsdk.CreateAdsRequestMusic` — The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Required for TikTok carousels (image creatives); TikTok-only.
     
 </dd>
 </dl>
@@ -4149,7 +4021,7 @@ client.Ads.Update(
 <dl>
 <dd>
 
-**creatives:** `[]*whopsdk.UpdateAdsRequestCreativesItem` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Two or more entries with no format replace it with a carousel (2-10 attachments), in order, sharing the ad's copy.
+**creatives:** `[]*whopsdk.UpdateAdsRequestCreativesItem` — The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Entries with no format replace it with a carousel's ordered cards — 2-10 of them on Meta, while TikTok runs even a single image as a one-card carousel.
     
 </dd>
 </dl>
@@ -4206,6 +4078,14 @@ client.Ads.Update(
 <dd>
 
 **multiAdvertiserAds:** `*bool` — Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**music:** `*whopsdk.UpdateAdsRequestMusic` — The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Omitted leaves the ad's music untouched. Null removes it before launch; a submitted carousel takes a replacement track instead. TikTok-only.
     
 </dd>
 </dl>
@@ -10412,569 +10292,6 @@ client.CheckoutConfigurations.Delete(
 </dl>
 </details>
 
-## Companies
-<details><summary><code>client.Companies.List() -> *whopsdk.ListCompaniesResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns a paginated list of companies. When parent_company_id is provided, lists connected accounts under that platform. When omitted, lists companies the current user has access to.
-
-Required permissions:
- - `company:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.ListCompaniesRequest{
-    First: whopsdk.Int(
-        42,
-    ),
-    Last: whopsdk.Int(
-        42,
-    ),
-    CreatedBefore: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    CreatedAfter: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-}
-client.Companies.List(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**after:** `*string` — Returns the elements in the list that come after the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**before:** `*string` — Returns the elements in the list that come before the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**first:** `*int` — Returns the first _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**last:** `*int` — Returns the last _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**parentCompanyID:** `*string` — The unique identifier of the parent platform company. When provided, lists connected accounts under that platform. Omit to list the current user's own companies.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**direction:** `*whopsdk.Direction` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**createdBefore:** `*time.Time` — Only return companies created before this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**createdAfter:** `*time.Time` — Only return companies created after this timestamp.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Companies.Create(request) -> *whopsdk.Company</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Create a new company. Pass parent_company_id to create a connected account under a platform, or omit it to create a company for the current user.
-
-Required permissions:
- - `company:create`
- - `company:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.CreateCompaniesRequest{
-    Title: "title",
-}
-client.Companies.Create(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**country:** `*whopsdk.Countries` — The country the company is located in. Defaults to the parent company's country for connected accounts, or the owner's IP-derived country.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**description:** `*string` — A promotional pitch displayed to potential customers on the company's store page.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**email:** `*string` — The email address of the user who will own the connected account. Required when parent_company_id is provided.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**logo:** `*whopsdk.CreateCompaniesRequestLogo` — The company's logo image. Accepts PNG, JPEG, or GIF format.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `map[string]any` — A key-value JSON object of custom metadata to store on the company.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**parentCompanyID:** `*string` — The unique identifier of the parent platform company. When provided, creates a connected account under that platform. Omit to create a company for the current user.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**sendCustomerEmails:** `*bool` — Whether Whop sends transactional emails to customers on behalf of this company. Only applies when creating a connected account.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**title:** `string` — The display name of the company shown to customers.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Companies.Retrieve(ID) -> *whopsdk.Company</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Retrieves the details of an existing company.
-
-Required permissions:
- - `company:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.RetrieveCompaniesRequest{
-    ID: "biz_xxxxxxxxxxxxxx",
-}
-client.Companies.Retrieve(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier or route slug of the company.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Companies.Update(ID, request) -> *whopsdk.Company</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Update a company's title, description, logo, and other settings.
-
-Required permissions:
- - `company:update`
- - `company:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.UpdateCompaniesRequest{
-    ID: "biz_xxxxxxxxxxxxxx",
-}
-client.Companies.Update(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the company to update.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**affiliateApplicationRequired:** `*bool` — Whether prospective affiliates must submit an application before they can promote this company.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**affiliateInstructions:** `*string` — Guidelines and instructions shown to affiliates explaining how to promote this company's products.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**bannerImage:** `*whopsdk.UpdateCompaniesRequestBannerImage` — The company's banner image. Accepts PNG or JPEG format.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**description:** `*string` — A promotional pitch displayed to potential customers on the company's store page.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**featuredAffiliateProductID:** `*string` — The ID of the product to feature on this company's affiliate page. Pass null to clear.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**logo:** `*whopsdk.UpdateCompaniesRequestLogo` — The company's logo image. Accepts PNG, JPEG, or GIF format.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**route:** `*string` — The unique URL slug for the company's store page. Must be lowercase and can include hyphens (e.g., 'my-company'). If not provided, the route will remain unchanged.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**sendCustomerEmails:** `*bool` — Whether Whop sends transactional emails (receipts, renewals, cancelations) to customers on behalf of this company.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**socialLinks:** `[]*whopsdk.UpdateCompaniesRequestSocialLinksItem` — The social media links to display on the company's store page. Pass the full list of desired social links — any existing links not included will be removed.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**targetAudience:** `*string` — The target audience for this company (e.g., 'beginner day traders aged 18-25 looking to learn options').
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**title:** `*string` — The display name of the company shown to customers.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Companies.CreateAPIKey(ParentCompanyID, request) -> *whopsdk.CreateAPIKeyCompaniesResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Create an API key for a connected account (child company) owned by a parent company.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.CreateAPIKeyCompaniesRequest{
-    ParentCompanyID: "parent_company_id",
-    ChildCompanyID: "child_company_id",
-}
-client.Companies.CreateAPIKey(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**parentCompanyID:** `string` — The unique identifier of the parent platform company (e.g. 'biz_xxx').
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**childCompanyID:** `string` — The unique identifier of the connected account to create the API key for (e.g. 'biz_xxx').
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**name:** `*string` — A human-readable name for the API key, such as 'Production API Key'.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**permissions:** `[]*whopsdk.CreateAPIKeyCompaniesRequestPermissionsItem` — Granular permission statements defining which actions this API key can perform. Either permissions or role must be provided.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**role:** `*whopsdk.PermissionSystemRoles` — A system role to inherit permissions from (e.g. owner, admin, moderator). Either role or permissions must be provided.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## CompanyTokenTransactions
 <details><summary><code>client.CompanyTokenTransactions.List() -> *whopsdk.ListCompanyTokenTransactionsResponse</code></summary>
 <dl>
@@ -14122,7 +13439,7 @@ client.Disputes.Submit(
 </dl>
 </details>
 
-<details><summary><code>client.Disputes.SubmitEvidenceDispute(ID) -> *whopsdk.Dispute</code></summary>
+<details><summary><code>client.Disputes.SubmitEvidenceDispute(ID) -> *whopsdk.DisputeLegacy</code></summary>
 <dl>
 <dd>
 
@@ -14192,7 +13509,7 @@ client.Disputes.SubmitEvidenceDispute(
 </dl>
 </details>
 
-<details><summary><code>client.Disputes.UpdateEvidenceDispute(ID, request) -> *whopsdk.Dispute</code></summary>
+<details><summary><code>client.Disputes.UpdateEvidenceDispute(ID, request) -> *whopsdk.DisputeLegacy</code></summary>
 <dl>
 <dd>
 
@@ -17987,7 +17304,7 @@ client.FinancialReports.Retrieve(
 <dl>
 <dd>
 
-**fromDate:** `*string` — Start of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
+**from:** `*time.Time` — Start of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
     
 </dd>
 </dl>
@@ -17995,7 +17312,7 @@ client.FinancialReports.Retrieve(
 <dl>
 <dd>
 
-**toDate:** `*string` — End of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
+**to:** `*time.Time` — Exclusive end of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
     
 </dd>
 </dl>
@@ -18011,7 +17328,7 @@ client.FinancialReports.Retrieve(
 <dl>
 <dd>
 
-**timezone:** `*string` — IANA timezone (for example `America/New_York`) used to bucket report periods and to interpret calendar-day boundaries for balance snapshots. Defaults to UTC. from_date/to_date remain exact instants regardless of this setting.
+**timezone:** `*string` — IANA timezone (for example `America/New_York`) used to bucket report periods. Defaults to UTC. `from` and `to` remain exact instants.
     
 </dd>
 </dl>
@@ -18035,7 +17352,7 @@ client.FinancialReports.Retrieve(
 <dl>
 <dd>
 
-**cumulative:** `*bool` — Platform-wide (global) reports only: when true, return cumulative balances as of to_date (all history, no lower bound) instead of activity within the period.
+**cumulative:** `*bool` — Platform-wide (global) reports only: when true, return cumulative balances as of to (all history, no lower bound) instead of activity within the period.
     
 </dd>
 </dl>
@@ -20585,7 +19902,13 @@ Lists the members of an account. A member is one buyer's relationship with the a
 <dd>
 
 ```go
-request := &whopsdk.ListMembersRequest{}
+request := &whopsdk.ListMembersRequest{
+    UserIDs: []*string{
+        whopsdk.String(
+            "user_xxxxxxxxxxxxxx",
+        ),
+    },
+}
 client.Members.List(
     context.TODO(),
     request,
@@ -20621,6 +19944,14 @@ client.Members.List(
 <dd>
 
 **status:** `*whopsdk.ListMembersRequestStatus` — Filter by whether the member is still part of the account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userIDs:** `*string` — Only return members whose users match these `user_` identifiers.
     
 </dd>
 </dl>
@@ -21118,7 +20449,7 @@ client.Memberships.Update(
 </dl>
 </details>
 
-<details><summary><code>client.Memberships.AddFreeDaysMembership(ID, request) -> *whopsdk.Membership</code></summary>
+<details><summary><code>client.Memberships.AddFreeDaysMembership(ID, request) -> *whopsdk.MembershipLegacy</code></summary>
 <dl>
 <dd>
 
@@ -21465,7 +20796,7 @@ client.Memberships.Resume(
 </dl>
 </details>
 
-<details><summary><code>client.Memberships.ResyncAccessMembership(ID) -> *whopsdk.Membership</code></summary>
+<details><summary><code>client.Memberships.ResyncAccessMembership(ID) -> *whopsdk.MembershipLegacy</code></summary>
 <dl>
 <dd>
 
@@ -21590,7 +20921,7 @@ client.Memberships.Transfer(
 </dl>
 </details>
 
-<details><summary><code>client.Memberships.UncancelMembership(ID) -> *whopsdk.Membership</code></summary>
+<details><summary><code>client.Memberships.UncancelMembership(ID) -> *whopsdk.MembershipLegacy</code></summary>
 <dl>
 <dd>
 
@@ -23491,17 +22822,7 @@ client.PaymentMethods.DeletePaymentMethod(
 <dl>
 <dd>
 
-Returns a paginated list of payments for the actor in context, with optional filtering by product, plan, status, billing reason, currency, and creation date.
-
-Required permissions:
- - `payment:basic:read`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
+Lists payments, newest first. Without filters this is every payment the caller can read: a company credential's own account, or for a user every account they can read payments for. Filters narrow by account, buyer, product, plan, membership, status, billing reason, currency, and creation window. Filtering by `billing_reason=subscription_cycle` also matches renewals recorded as `subscription_update`. `settlement_time_at` is null on list rows — retrieve the payment for it.
 </dd>
 </dl>
 </dd>
@@ -23516,37 +22837,7 @@ Required permissions:
 <dd>
 
 ```go
-request := &whopsdk.ListPaymentsRequest{
-    First: whopsdk.Int(
-        42,
-    ),
-    Last: whopsdk.Int(
-        42,
-    ),
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
-    CreatedBefore: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    CreatedAfter: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    UpdatedBefore: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    UpdatedAfter: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-}
+request := &whopsdk.ListPaymentsRequest{}
 client.Payments.List(
     context.TODO(),
     request,
@@ -23565,7 +22856,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**after:** `*string` — Returns the elements in the list that come after the specified cursor.
+**accountID:** `*string` — Only payments charged by this account, prefixed `biz_`.
     
 </dd>
 </dl>
@@ -23573,7 +22864,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**before:** `*string` — Returns the elements in the list that come before the specified cursor.
+**status:** `*whopsdk.ListPaymentsRequestStatus` — Only payments in this lifecycle state.
     
 </dd>
 </dl>
@@ -23581,7 +22872,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**first:** `*int` — Returns the first _n_ elements from the list.
+**billingReason:** `*whopsdk.ListPaymentsRequestBillingReason` — Only payments charged for this reason.
     
 </dd>
 </dl>
@@ -23589,7 +22880,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**last:** `*int` — Returns the last _n_ elements from the list.
+**currency:** `*string` — Only payments presented in this three-letter currency, such as `usd`.
     
 </dd>
 </dl>
@@ -23597,111 +22888,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of the company to list payments for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**direction:** `*whopsdk.Direction` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**order:** `*whopsdk.ReceiptV2Order` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**productIDs:** `*string` — Filter payments to only those associated with these specific product identifiers.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**billingReasons:** `*whopsdk.BillingReasons` — Filter payments by their billing reason.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**currencies:** `*whopsdk.Currencies` — Filter payments by their currency code.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**planIDs:** `*string` — Filter payments to only those associated with these specific plan identifiers.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**statuses:** `*whopsdk.ReceiptStatus` — Filter payments by their current status.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**substatuses:** `*whopsdk.FriendlyReceiptStatus` — Filter payments by their current substatus for more granular filtering.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**includeFree:** `*bool` — Whether to include payments with a zero amount. Defaults to false, so zero-amount payments are omitted unless you set this to true — a company whose sales are all free plans returns an empty list without it.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**createdBefore:** `*time.Time` — Only return payments created before this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**createdAfter:** `*time.Time` — Only return payments created after this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**updatedBefore:** `*time.Time` — Only return payments last updated before this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**updatedAfter:** `*time.Time` — Only return payments last updated after this timestamp.
+**userID:** `*string` — Only payments made by this buyer, prefixed `user_`.
     
 </dd>
 </dl>
@@ -23717,7 +22904,95 @@ client.Payments.List(
 <dl>
 <dd>
 
-**checkoutConfigurationIDs:** `*string` — Only return payments from these checkout configurations.
+**memberID:** `*string` — Only payments made by this member, prefixed `mber_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**membershipID:** `*string` — Only payments billed under this membership, prefixed `mem_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productID:** `*string` — Only payments for this product, prefixed `prod_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planID:** `*string` — Only payments priced by this plan, prefixed `plan_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdBefore:** `*time.Time` — Only payments created before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdAfter:** `*time.Time` — Only payments created after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListPaymentsRequestOrder` — The field to sort by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListPaymentsRequestDirection` — The sort direction.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — The number of payments to return.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — A cursor; returns payments after this position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — The number of payments to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — A cursor; returns payments before this position.
     
 </dd>
 </dl>
@@ -23729,7 +23004,7 @@ client.Payments.List(
 </dl>
 </details>
 
-<details><summary><code>client.Payments.Create(request) -> *whopsdk.CreatePaymentsResponse</code></summary>
+<details><summary><code>client.Payments.Create(request) -> *whopsdk.Payment</code></summary>
 <dl>
 <dd>
 
@@ -23741,22 +23016,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-Charge a buyer on-session with a `confirmation_token` for the method they selected, or charge an existing member off-session using a stored payment method. You can provide an existing plan or create one inline. The endpoint returns a payment immediately, but processing continues asynchronously. Use webhooks to learn whether it succeeds or fails, and poll the payment's status endpoint for any step the buyer must complete.
-
-Required permissions:
- - `payment:charge`
- - `plan:create`
- - `access_pass:create`
- - `access_pass:update`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
- - `payment:dispute:read`
- - `payment:resolution_center_case:read`
+Charges a buyer for a plan. Pass a payment method already on file (`member_id` and `payment_method_id`), or a `confirmation_token` describing a method the buyer just supplied. Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and, for a confirmation-token payment, what the buyer must still do. `plan_id` names the plan to charge for.
 </dd>
 </dl>
 </dd>
@@ -23772,13 +23032,8 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreatePaymentsRequest{
-    CreatePaymentsRequestZero: &whopsdk.CreatePaymentsRequestZero{
-        CompanyID: "biz_xxxxxxxxxxxxxx",
-        ConfirmationToken: "confirmation_token",
-        Plan: &whopsdk.CreatePaymentsRequestZeroPlan{
-            Currency: whopsdk.CurrenciesUsd,
-        },
-    },
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    PlanID: "plan_xxxxxxxxxxxxxx",
 }
 client.Payments.Create(
     context.TODO(),
@@ -23798,7 +23053,79 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**request:** `*whopsdk.CreatePaymentsRequest` — Parameters for CreatePayment
+**accountID:** `string` — The account to charge for, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**capture:** `*bool` — Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**confirmationToken:** `*string` — A confirmation token describing a payment method the buyer just supplied. Provide this instead of `member_id` and `payment_method_id`; the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete — poll the payment's status for what to do next.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `*string` — Overrides the buyer email carried on the confirmation token, resolving or creating the user the payment belongs to. Ignored unless `confirmation_token` is provided, and when the token was created by a signed-in buyer.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**memberID:** `*string` — The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]*string` — Custom metadata to attach to the payment.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethodID:** `*string` — The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planID:** `string` — The plan to charge for, prefixed `plan_`. It must belong to the account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**promoCodeID:** `*string` — An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**returnURL:** `*string` — Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
     
 </dd>
 </dl>
@@ -23810,7 +23137,7 @@ client.Payments.Create(
 </dl>
 </details>
 
-<details><summary><code>client.Payments.Retrieve(ID) -> *whopsdk.RetrievePaymentsResponse</code></summary>
+<details><summary><code>client.Payments.Retrieve(ID) -> *whopsdk.Payment</code></summary>
 <dl>
 <dd>
 
@@ -23822,19 +23149,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-Retrieves the details of an existing payment.
-
-Required permissions:
- - `payment:basic:read`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
- - `payment:dispute:read`
- - `payment:resolution_center_case:read`
+Returns one payment. Related records are ids — resolve a plan, membership, member or shipment on its own endpoint, and list this payment's refunds, disputes or Resolution Center cases with `?payment_id=`.
 </dd>
 </dl>
 </dd>
@@ -23850,7 +23165,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.RetrievePaymentsRequest{
-    ID: "pay_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Payments.Retrieve(
     context.TODO(),
@@ -23870,7 +23185,7 @@ client.Payments.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the payment.
+**id:** `string` — The payment to retrieve, prefixed `pay_`.
     
 </dd>
 </dl>
@@ -23954,10 +23269,7 @@ client.Payments.Capture(
 <dl>
 <dd>
 
-Returns the list of fees associated with a specific payment, including platform fees and processing fees.
-
-Required permissions:
- - `payment:basic:read`
+Returns the fee breakdown of one payment — Whop's fee, processing, affiliate and other lines — each in the currency it was collected in and converted to the payment's settlement currency. The list is complete in one page.
 </dd>
 </dl>
 </dd>
@@ -23973,13 +23285,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.ListFeesPaymentsRequest{
-    ID: "pay_xxxxxxxxxxxxxx",
-    First: whopsdk.Int(
-        42,
-    ),
-    Last: whopsdk.Int(
-        42,
-    ),
+    ID: "id",
 }
 client.Payments.ListFees(
     context.TODO(),
@@ -23999,39 +23305,7 @@ client.Payments.ListFees(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the payment to list fees for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**after:** `*string` — Returns the elements in the list that come after the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**before:** `*string` — Returns the elements in the list that come before the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**first:** `*int` — Returns the first _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**last:** `*int` — Returns the last _n_ elements from the list.
+**id:** `string` — The payment whose fees to list, prefixed `pay_`.
     
 </dd>
 </dl>
@@ -24055,19 +23329,7 @@ client.Payments.ListFees(
 <dl>
 <dd>
 
-Issue a full or partial refund for a payment. The refund is processed through the original payment processor and the membership status is updated accordingly.
-
-Required permissions:
- - `payment:manage`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
- - `payment:dispute:read`
- - `payment:resolution_center_case:read`
+Issues a full or partial refund for a payment. The refund is processed through the original payment processor and the membership status is updated accordingly.
 </dd>
 </dl>
 </dd>
@@ -24083,7 +23345,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.RefundPaymentsRequest{
-    ID: "pay_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Payments.Refund(
     context.TODO(),
@@ -24103,7 +23365,7 @@ client.Payments.Refund(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the payment to refund.
+**id:** `string` — The payment to refund, prefixed `pay_`.
     
 </dd>
 </dl>
@@ -24135,19 +23397,7 @@ client.Payments.Refund(
 <dl>
 <dd>
 
-Retry a failed or pending payment. This re-attempts the charge using the original payment method and plan details.
-
-Required permissions:
- - `payment:manage`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
- - `payment:dispute:read`
- - `payment:resolution_center_case:read`
+Retries a failed or pending payment. This re-attempts the charge using the original payment method and plan details.
 </dd>
 </dl>
 </dd>
@@ -24163,7 +23413,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.RetryPaymentsRequest{
-    ID: "pay_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Payments.Retry(
     context.TODO(),
@@ -24183,7 +23433,7 @@ client.Payments.Retry(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the payment to retry.
+**id:** `string` — The payment to retry, prefixed `pay_`.
     
 </dd>
 </dl>
@@ -24207,19 +23457,7 @@ client.Payments.Retry(
 <dl>
 <dd>
 
-Void a payment that has not yet been settled. Voiding cancels the payment before it is captured by the payment processor.
-
-Required permissions:
- - `payment:manage`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
- - `promo_code:basic:read`
- - `shipment:basic:read`
- - `payment:dispute:read`
- - `payment:resolution_center_case:read`
+Voids a payment that has not yet been settled. Voiding cancels the payment before it is captured by the payment processor.
 </dd>
 </dl>
 </dd>
@@ -24235,7 +23473,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.VoidPaymentsRequest{
-    ID: "pay_xxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Payments.Void(
     context.TODO(),
@@ -24255,7 +23493,7 @@ client.Payments.Void(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the payment to void.
+**id:** `string` — The payment to void, prefixed `pay_`.
     
 </dd>
 </dl>
@@ -24799,10 +24037,9 @@ Sends money from an account or user balance to a saved payout method for that ow
 <dd>
 
 ```go
-request := &whopsdk.CreatePayoutsRequestBody{
-    Unknown: map[string]any{
-        "key": "value",
-    },
+request := &whopsdk.CreatePayoutsRequest{
+    Amount: 50,
+    PayoutMethodID: "potk_xxxxxxxxxxxxxx",
 }
 client.Payouts.Create(
     context.TODO(),
@@ -24822,7 +24059,95 @@ client.Payouts.Create(
 <dl>
 <dd>
 
-**request:** `*whopsdk.CreatePayoutsRequestBody` 
+**accountID:** `*string` — Account to pay out from, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**acknowledgeBankWarning:** `*bool` — Set to `true` to continue when the destination bank could not confirm the payout method account holder's name, or `false` to have the payout refused in that case so the account holder can correct the name or link their bank first. Omitting the field skips the warning gate — a client that cannot show the warning keeps its pre-gate behavior.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**amount:** `float64` — The amount to pay out in the specified currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `*string` — The currency to pay out. Balances are held per currency and the payout draws only from the balance in this currency, so match the currency the funds arrived in — for example `cad` for an account funded by CAD transfers. When omitted, uses `usd` if that balance can cover a withdrawal, otherwise the account's only other funded currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]string` — Key-value data to attach to the payout, echoed on every read and in webhook payloads. At most 50 keys, key names up to 40 characters, string values up to 500 characters. Never store secrets or regulated personal data here — webhook bodies are retained for delivery inspection.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**notes:** `*string` — Free-form notes to attach to the payout, with a maximum of 255 characters. Omit or pass `null` for no notes.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**payoutMethodID:** `string` — The saved payout method to deliver to (a potk_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platformCoversFees:** `*bool` — Whether the parent platform covers the payout fee instead of the account being paid out. Omit to use the platform's configured fee coverage policy; pass `false` to opt out of it. `true` is only accepted for accounts that belong to a platform, and requires the platform's policy to cover this payout method's category or a caller authorized to manage the platform's child account fees.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**quoteToken:** `*string` — The server-signed quote_token returned by POST /payouts/quotes. Required when the ledger account's payout_quote_required is true; a payout without it is refused with the invalid_payout_quote error type. When provided, Whop will not commit a provider payout below the destination amount the quote showed.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**speed:** `*whopsdk.CreatePayoutsRequestSpeed` — How fast the funds should arrive. `instant` is only accepted when the account and payout method are eligible; otherwise the payout is rejected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**statementDescriptor:** `*string` — Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Without a `quote_token`, omit or pass `null` to use the default descriptor. With a `quote_token`, set this value when creating the quote; the payout request may omit it but cannot add or change it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
     
 </dd>
 </dl>
@@ -24899,7 +24224,7 @@ client.Payouts.CreateQuote(
 <dl>
 <dd>
 
-**currency:** `*string` — The balance currency to pay out.
+**currency:** `*string` — The currency to pay out. When omitted, uses `usd` if that balance can cover a withdrawal, otherwise the account's only other funded currency.
     
 </dd>
 </dl>
@@ -24924,6 +24249,14 @@ client.Payouts.CreateQuote(
 <dd>
 
 **speed:** `*whopsdk.CreateQuotePayoutsRequestSpeed` — How fast the funds should arrive.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**statementDescriptor:** `*string` — Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Omit or pass `null` to use the default descriptor.
     
 </dd>
 </dl>
@@ -28227,7 +27560,7 @@ client.RecommendedActions.Retrieve(
 <dl>
 <dd>
 
-Records that the caller ran a recommended action chain. Nothing is executed server-side yet — the client follows the chain's step CTAs itself; this writes the `recommended_action_chain.executed` analytics event.
+Records that the caller ran a recommended action chain. Nothing is executed server-side yet — the client follows the chain's step CTAs itself; this writes the `recommended_action_chain.executed` analytics event and a `redirected` execution per step.
 </dd>
 </dl>
 </dd>
@@ -28364,10 +27697,7 @@ client.RecommendedActions.ListExecutions(
 <dl>
 <dd>
 
-Returns a paginated list of refunds, with optional filtering by payment, company, user, and creation date.
-
-Required permissions:
- - `payment:basic:read`
+Lists refunds, newest first. Without filters this is every refund the caller can read; narrow it to one payment with `payment_id`, one account with `account_id`, or one buyer with `user_id`.
 </dd>
 </dl>
 </dd>
@@ -28382,33 +27712,7 @@ Required permissions:
 <dd>
 
 ```go
-request := &whopsdk.ListRefundsRequest{
-    First: whopsdk.Int(
-        42,
-    ),
-    Last: whopsdk.Int(
-        42,
-    ),
-    PaymentID: whopsdk.String(
-        "pay_xxxxxxxxxxxxxx",
-    ),
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
-    UserID: whopsdk.String(
-        "user_xxxxxxxxxxxxx",
-    ),
-    CreatedBefore: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    CreatedAfter: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-}
+request := &whopsdk.ListRefundsRequest{}
 client.Refunds.List(
     context.TODO(),
     request,
@@ -28427,7 +27731,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**after:** `*string` — Returns the elements in the list that come after the specified cursor.
+**accountID:** `*string` — Only refunds issued by this account, prefixed `biz_`.
     
 </dd>
 </dl>
@@ -28435,7 +27739,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**before:** `*string` — Returns the elements in the list that come before the specified cursor.
+**paymentID:** `*string` — Only refunds of this payment, prefixed `pay_`.
     
 </dd>
 </dl>
@@ -28443,7 +27747,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**first:** `*int` — Returns the first _n_ elements from the list.
+**userID:** `*string` — Only refunds to this buyer, prefixed `user_`.
     
 </dd>
 </dl>
@@ -28451,7 +27755,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**last:** `*int` — Returns the last _n_ elements from the list.
+**createdBefore:** `*time.Time` — Only refunds requested before this ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -28459,7 +27763,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**paymentID:** `*string` — Filter refunds to those associated with this specific payment. Mutually exclusive with company_id and user_id: provide exactly one.
+**createdAfter:** `*time.Time` — Only refunds requested after this ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -28467,7 +27771,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**companyID:** `*string` — Filter refunds to those belonging to this company. Mutually exclusive with payment_id and user_id: provide exactly one.
+**order:** `*whopsdk.ListRefundsRequestOrder` — The field to sort by.
     
 </dd>
 </dl>
@@ -28475,7 +27779,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**userID:** `*string` — Filter refunds to those associated with this specific user. Mutually exclusive with payment_id and company_id: provide exactly one. Requires a credential belonging to that user; any other credential receives 'You are not authorized'.
+**direction:** `*whopsdk.ListRefundsRequestDirection` — The sort direction.
     
 </dd>
 </dl>
@@ -28483,7 +27787,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**direction:** `*whopsdk.Direction` 
+**first:** `*int` — The number of refunds to return.
     
 </dd>
 </dl>
@@ -28491,7 +27795,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**createdBefore:** `*time.Time` — Only return refunds created before this timestamp.
+**after:** `*string` — A cursor; returns refunds after this position.
     
 </dd>
 </dl>
@@ -28499,7 +27803,15 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**createdAfter:** `*time.Time` — Only return refunds created after this timestamp.
+**last:** `*int` — The number of refunds to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — A cursor; returns refunds before this position.
     
 </dd>
 </dl>
@@ -28523,15 +27835,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-Retrieves the details of an existing refund.
-
-Required permissions:
- - `payment:basic:read`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
+Returns one refund.
 </dd>
 </dl>
 </dd>
@@ -28547,7 +27851,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.RetrieveRefundsRequest{
-    ID: "rf_xxxxxxxxxxxxxxx",
+    ID: "id",
 }
 client.Refunds.Retrieve(
     context.TODO(),
@@ -28567,7 +27871,7 @@ client.Refunds.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the refund.
+**id:** `string` — The refund to retrieve, prefixed `rf_`.
     
 </dd>
 </dl>
@@ -36036,8 +35340,12 @@ request := &financialreports.RetrieveBreakdownRequest{
     Bucket: financialreports.RetrieveBreakdownRequestBucketTransfers,
     Direction: financialreports.RetrieveBreakdownRequestDirectionMoneyIn,
     Currency: "currency",
-    FromDate: "from_date",
-    ToDate: "to_date",
+    From: whopsdk.MustParseDateTime(
+        "2024-01-15T09:30:00Z",
+    ),
+    To: whopsdk.MustParseDateTime(
+        "2024-01-15T09:30:00Z",
+    ),
 }
 client.FinancialReports.Breakdown.Retrieve(
     context.TODO(),
@@ -36089,7 +35397,7 @@ client.FinancialReports.Breakdown.Retrieve(
 <dl>
 <dd>
 
-**fromDate:** `string` — Start of the report window as an ISO 8601 timestamp.
+**from:** `time.Time` — Start of the report window as an ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -36097,7 +35405,23 @@ client.FinancialReports.Breakdown.Retrieve(
 <dl>
 <dd>
 
-**toDate:** `string` — Exclusive end of the report window as an ISO 8601 timestamp.
+**to:** `time.Time` — Exclusive end of the report window as an ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**groupBy:** `*financialreports.RetrieveBreakdownRequestGroupBy` — Period grouping used by the parent report.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**timezone:** `*string` — IANA timezone used by the parent report to bucket periods. Defaults to UTC.
     
 </dd>
 </dl>

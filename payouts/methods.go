@@ -1981,13 +1981,14 @@ func (l ListMethodsResponseDataItemObject) Ptr() *ListMethodsResponseDataItemObj
 
 // Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 var (
-	listMethodsResponseDataItemQuoteFieldAmount       = big.NewInt(1 << 0)
-	listMethodsResponseDataItemQuoteFieldCurrency     = big.NewInt(1 << 1)
-	listMethodsResponseDataItemQuoteFieldExchangeRate = big.NewInt(1 << 2)
-	listMethodsResponseDataItemQuoteFieldInstant      = big.NewInt(1 << 3)
-	listMethodsResponseDataItemQuoteFieldMaxLimit     = big.NewInt(1 << 4)
-	listMethodsResponseDataItemQuoteFieldMinLimit     = big.NewInt(1 << 5)
-	listMethodsResponseDataItemQuoteFieldStandard     = big.NewInt(1 << 6)
+	listMethodsResponseDataItemQuoteFieldAmount                   = big.NewInt(1 << 0)
+	listMethodsResponseDataItemQuoteFieldCurrency                 = big.NewInt(1 << 1)
+	listMethodsResponseDataItemQuoteFieldExchangeRate             = big.NewInt(1 << 2)
+	listMethodsResponseDataItemQuoteFieldInstant                  = big.NewInt(1 << 3)
+	listMethodsResponseDataItemQuoteFieldInstantUnavailableReason = big.NewInt(1 << 4)
+	listMethodsResponseDataItemQuoteFieldMaxLimit                 = big.NewInt(1 << 5)
+	listMethodsResponseDataItemQuoteFieldMinLimit                 = big.NewInt(1 << 6)
+	listMethodsResponseDataItemQuoteFieldStandard                 = big.NewInt(1 << 7)
 )
 
 type ListMethodsResponseDataItemQuote struct {
@@ -1999,6 +2000,8 @@ type ListMethodsResponseDataItemQuote struct {
 	ExchangeRate float64 `json:"exchange_rate" url:"exchange_rate"`
 	// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
 	Instant *ListMethodsResponseDataItemQuoteInstant `json:"instant,omitempty" url:"instant,omitempty"`
+	// Why instant delivery is unavailable for this method. `minimum_crypto_sales_not_met` means the account has not reached the total sales required for instant cryptocurrency payouts. `null` when this restriction does not apply.
+	InstantUnavailableReason *ListMethodsResponseDataItemQuoteInstantUnavailableReason `json:"instant_unavailable_reason,omitempty" url:"instant_unavailable_reason,omitempty"`
 	// Maximum payout amount for this method, in the payout currency.
 	MaxLimit *float64 `json:"max_limit,omitempty" url:"max_limit,omitempty"`
 	// Minimum payout amount for this method, in the payout currency.
@@ -2039,6 +2042,13 @@ func (l *ListMethodsResponseDataItemQuote) GetInstant() *ListMethodsResponseData
 		return nil
 	}
 	return l.Instant
+}
+
+func (l *ListMethodsResponseDataItemQuote) GetInstantUnavailableReason() *ListMethodsResponseDataItemQuoteInstantUnavailableReason {
+	if l == nil {
+		return nil
+	}
+	return l.InstantUnavailableReason
 }
 
 func (l *ListMethodsResponseDataItemQuote) GetMaxLimit() *float64 {
@@ -2102,6 +2112,13 @@ func (l *ListMethodsResponseDataItemQuote) SetExchangeRate(exchangeRate float64)
 func (l *ListMethodsResponseDataItemQuote) SetInstant(instant *ListMethodsResponseDataItemQuoteInstant) {
 	l.Instant = instant
 	l.require(listMethodsResponseDataItemQuoteFieldInstant)
+}
+
+// SetInstantUnavailableReason sets the InstantUnavailableReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseDataItemQuote) SetInstantUnavailableReason(instantUnavailableReason *ListMethodsResponseDataItemQuoteInstantUnavailableReason) {
+	l.InstantUnavailableReason = instantUnavailableReason
+	l.require(listMethodsResponseDataItemQuoteFieldInstantUnavailableReason)
 }
 
 // SetMaxLimit sets the MaxLimit field and marks it as non-optional;
@@ -2268,6 +2285,26 @@ func (l *ListMethodsResponseDataItemQuoteInstant) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// Why instant delivery is unavailable for this method. `minimum_crypto_sales_not_met` means the account has not reached the total sales required for instant cryptocurrency payouts. `null` when this restriction does not apply.
+type ListMethodsResponseDataItemQuoteInstantUnavailableReason string
+
+const (
+	ListMethodsResponseDataItemQuoteInstantUnavailableReasonMinimumCryptoSalesNotMet ListMethodsResponseDataItemQuoteInstantUnavailableReason = "minimum_crypto_sales_not_met"
+)
+
+func NewListMethodsResponseDataItemQuoteInstantUnavailableReasonFromString(s string) (ListMethodsResponseDataItemQuoteInstantUnavailableReason, error) {
+	switch s {
+	case "minimum_crypto_sales_not_met":
+		return ListMethodsResponseDataItemQuoteInstantUnavailableReasonMinimumCryptoSalesNotMet, nil
+	}
+	var t ListMethodsResponseDataItemQuoteInstantUnavailableReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListMethodsResponseDataItemQuoteInstantUnavailableReason) Ptr() *ListMethodsResponseDataItemQuoteInstantUnavailableReason {
+	return &l
 }
 
 // Standard-delivery estimate. Null if the method does not support standard delivery, or the amount does not cover the fee.
@@ -2997,10 +3034,16 @@ func (l ListMethodsResponseLimitsObject) Ptr() *ListMethodsResponseLimitsObject 
 
 // Caps for standard-speed payouts, which draw on settled funds only.
 var (
-	listMethodsResponseLimitsStandardFieldMaxAmount = big.NewInt(1 << 0)
+	listMethodsResponseLimitsStandardFieldErrorCode    = big.NewInt(1 << 0)
+	listMethodsResponseLimitsStandardFieldErrorMessage = big.NewInt(1 << 1)
+	listMethodsResponseLimitsStandardFieldMaxAmount    = big.NewInt(1 << 2)
 )
 
 type ListMethodsResponseLimitsStandard struct {
+	// Why a standard payout cannot move funds right now, or null when the cap is above 0.
+	ErrorCode *ListMethodsResponseLimitsStandardErrorCode `json:"error_code,omitempty" url:"error_code,omitempty"`
+	// Human-readable form of error_code, or null when a standard payout can move funds.
+	ErrorMessage *string `json:"error_message,omitempty" url:"error_message,omitempty"`
 	// The maximum amount a standard payout can move right now, in whole currency units.
 	MaxAmount float64 `json:"max_amount" url:"max_amount"`
 
@@ -3009,6 +3052,20 @@ type ListMethodsResponseLimitsStandard struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListMethodsResponseLimitsStandard) GetErrorCode() *ListMethodsResponseLimitsStandardErrorCode {
+	if l == nil {
+		return nil
+	}
+	return l.ErrorCode
+}
+
+func (l *ListMethodsResponseLimitsStandard) GetErrorMessage() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ErrorMessage
 }
 
 func (l *ListMethodsResponseLimitsStandard) GetMaxAmount() float64 {
@@ -3030,6 +3087,20 @@ func (l *ListMethodsResponseLimitsStandard) require(field *big.Int) {
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetErrorCode sets the ErrorCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseLimitsStandard) SetErrorCode(errorCode *ListMethodsResponseLimitsStandardErrorCode) {
+	l.ErrorCode = errorCode
+	l.require(listMethodsResponseLimitsStandardFieldErrorCode)
+}
+
+// SetErrorMessage sets the ErrorMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseLimitsStandard) SetErrorMessage(errorMessage *string) {
+	l.ErrorMessage = errorMessage
+	l.require(listMethodsResponseLimitsStandardFieldErrorMessage)
 }
 
 // SetMaxAmount sets the MaxAmount field and marks it as non-optional;
@@ -3079,6 +3150,56 @@ func (l *ListMethodsResponseLimitsStandard) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// Why a standard payout cannot move funds right now, or null when the cap is above 0.
+type ListMethodsResponseLimitsStandardErrorCode string
+
+const (
+	ListMethodsResponseLimitsStandardErrorCodeAccountSuspended                    ListMethodsResponseLimitsStandardErrorCode = "account_suspended"
+	ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOutBecauseClawback    ListMethodsResponseLimitsStandardErrorCode = "block_move_money_out_because_clawback"
+	ListMethodsResponseLimitsStandardErrorCodeSupportabilityCheckPayoutStatusHold ListMethodsResponseLimitsStandardErrorCode = "supportability_check_payout_status_hold"
+	ListMethodsResponseLimitsStandardErrorCodeKycCompleted                        ListMethodsResponseLimitsStandardErrorCode = "kyc_completed"
+	ListMethodsResponseLimitsStandardErrorCodeRmiClear                            ListMethodsResponseLimitsStandardErrorCode = "rmi_clear"
+	ListMethodsResponseLimitsStandardErrorCodeIdentityRfiClear                    ListMethodsResponseLimitsStandardErrorCode = "identity_rfi_clear"
+	ListMethodsResponseLimitsStandardErrorCodeEcommerceFulfillmentConnected       ListMethodsResponseLimitsStandardErrorCode = "ecommerce_fulfillment_connected"
+	ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOut                   ListMethodsResponseLimitsStandardErrorCode = "block_move_money_out"
+	ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOutSetByParent        ListMethodsResponseLimitsStandardErrorCode = "block_move_money_out_set_by_parent"
+	ListMethodsResponseLimitsStandardErrorCodeCardUsageReviewPayoutStatusHold     ListMethodsResponseLimitsStandardErrorCode = "card_usage_review_payout_status_hold"
+	ListMethodsResponseLimitsStandardErrorCodeNoAvailableBalance                  ListMethodsResponseLimitsStandardErrorCode = "no_available_balance"
+)
+
+func NewListMethodsResponseLimitsStandardErrorCodeFromString(s string) (ListMethodsResponseLimitsStandardErrorCode, error) {
+	switch s {
+	case "account_suspended":
+		return ListMethodsResponseLimitsStandardErrorCodeAccountSuspended, nil
+	case "block_move_money_out_because_clawback":
+		return ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOutBecauseClawback, nil
+	case "supportability_check_payout_status_hold":
+		return ListMethodsResponseLimitsStandardErrorCodeSupportabilityCheckPayoutStatusHold, nil
+	case "kyc_completed":
+		return ListMethodsResponseLimitsStandardErrorCodeKycCompleted, nil
+	case "rmi_clear":
+		return ListMethodsResponseLimitsStandardErrorCodeRmiClear, nil
+	case "identity_rfi_clear":
+		return ListMethodsResponseLimitsStandardErrorCodeIdentityRfiClear, nil
+	case "ecommerce_fulfillment_connected":
+		return ListMethodsResponseLimitsStandardErrorCodeEcommerceFulfillmentConnected, nil
+	case "block_move_money_out":
+		return ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOut, nil
+	case "block_move_money_out_set_by_parent":
+		return ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOutSetByParent, nil
+	case "card_usage_review_payout_status_hold":
+		return ListMethodsResponseLimitsStandardErrorCodeCardUsageReviewPayoutStatusHold, nil
+	case "no_available_balance":
+		return ListMethodsResponseLimitsStandardErrorCodeNoAvailableBalance, nil
+	}
+	var t ListMethodsResponseLimitsStandardErrorCode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListMethodsResponseLimitsStandardErrorCode) Ptr() *ListMethodsResponseLimitsStandardErrorCode {
+	return &l
 }
 
 var (

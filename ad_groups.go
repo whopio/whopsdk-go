@@ -57,7 +57,7 @@ type CreateAdGroupsRequest struct {
 	DetailedTargeting *AdGroupDetailedTargetingBody `json:"detailed_targeting,omitempty" url:"-"`
 	// Device platforms and operating systems to target.
 	Devices *AdGroupDevicesBody `json:"devices,omitempty" url:"-"`
-	// Let the ad platform automatically mix and match this ad group's creatives and copy to find the best-performing combinations. Set at creation; can't be changed afterward.
+	// Whether the ad platform automatically mixes and matches this ad group's creatives and copy to find the best-performing combinations. Meta has deprecated it and rejects `true`; ad groups already using it keep it, and it can't be changed afterward.
 	DynamicCreative *bool `json:"dynamic_creative,omitempty" url:"-"`
 	// When the ad group stops delivering, as an ISO 8601 timestamp. Omit to run until paused.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
