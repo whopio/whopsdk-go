@@ -95,7 +95,7 @@ func TestFeeMarkupsListWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: "biz_xxxxxxxxxxxxxx",
+		AccountID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.FeeMarkups.List(
 		context.TODO(),
@@ -106,7 +106,7 @@ func TestFeeMarkupsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestFeeMarkupsListWithWireMock", "GET", "/fee_markups", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestFeeMarkupsListWithWireMock", "GET", "/fee_markups", map[string]interface{}{"first": "42", "last": "42", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestFeeMarkupsCreateWithWireMock(
@@ -121,7 +121,7 @@ func TestFeeMarkupsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateFeeMarkupsRequest{
-		CompanyID: "biz_xxxxxxxxxxxxxx",
+		AccountID: "biz_xxxxxxxxxxxxxx",
 		FeeType:   whopsdk.FeeMarkupTypesCryptoWithdrawalMarkup,
 	}
 	_, invocationErr := client.FeeMarkups.Create(

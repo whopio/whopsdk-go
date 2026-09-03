@@ -95,7 +95,6 @@ func TestEntriesListWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: "biz_xxxxxxxxxxxxxx",
 		CreatedBefore: whopsdk.Time(
 			whopsdk.MustParseDateTime(
 				"2023-12-01T05:00:00Z",
@@ -106,6 +105,7 @@ func TestEntriesListWithWireMock(
 				"2023-12-01T05:00:00Z",
 			),
 		),
+		AccountID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Entries.List(
 		context.TODO(),
@@ -116,7 +116,7 @@ func TestEntriesListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestEntriesListWithWireMock", "GET", "/entries", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z"}, 1)
+	VerifyRequestCount(t, "TestEntriesListWithWireMock", "GET", "/entries", map[string]interface{}{"first": "42", "last": "42", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestEntriesRetrieveWithWireMock(

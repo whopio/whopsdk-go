@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	createAccountLinksRequestFieldCompanyID  = big.NewInt(1 << 0)
+	createAccountLinksRequestFieldAccountID  = big.NewInt(1 << 0)
 	createAccountLinksRequestFieldRefreshURL = big.NewInt(1 << 1)
 	createAccountLinksRequestFieldReturnURL  = big.NewInt(1 << 2)
 	createAccountLinksRequestFieldUseCase    = big.NewInt(1 << 3)
@@ -19,7 +19,7 @@ var (
 
 type CreateAccountLinksRequest struct {
 	// The unique identifier of the company to generate the link for, starting with 'biz_'. Must be a sub-merchant of the API key's company.
-	CompanyID string `json:"company_id" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
 	// The URL to redirect the user to if the session expires and needs to be re-authenticated, such as 'https://example.com/refresh'.
 	RefreshURL string `json:"refresh_url" url:"-"`
 	// The URL to redirect the user to when they want to return to your site, such as 'https://example.com/return'.
@@ -38,11 +38,11 @@ func (c *CreateAccountLinksRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAccountLinksRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createAccountLinksRequestFieldCompanyID)
+func (c *CreateAccountLinksRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createAccountLinksRequestFieldAccountID)
 }
 
 // SetRefreshURL sets the RefreshURL field and marks it as non-optional;

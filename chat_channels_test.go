@@ -42,19 +42,19 @@ func TestSettersListChatChannelsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetCompanyID", func(t *testing.T) {
-		obj := &ListChatChannelsRequest{}
-		var fernTestValueCompanyID string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetProductID", func(t *testing.T) {
 		obj := &ListChatChannelsRequest{}
 		var fernTestValueProductID *string
 		obj.SetProductID(fernTestValueProductID)
 		assert.Equal(t, fernTestValueProductID, obj.ProductID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &ListChatChannelsRequest{}
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -185,14 +185,14 @@ func TestSettersMarkExplicitListChatChannelsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetProductID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListChatChannelsRequest{}
-		var fernTestValueCompanyID string
+		var fernTestValueProductID *string
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetProductID(fernTestValueProductID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -216,14 +216,14 @@ func TestSettersMarkExplicitListChatChannelsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetProductID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListChatChannelsRequest{}
-		var fernTestValueProductID *string
+		var fernTestValueAccountID string
 
 		// Act
-		obj.SetProductID(fernTestValueProductID)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

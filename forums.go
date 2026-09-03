@@ -14,8 +14,8 @@ var (
 	listForumsRequestFieldBefore    = big.NewInt(1 << 1)
 	listForumsRequestFieldFirst     = big.NewInt(1 << 2)
 	listForumsRequestFieldLast      = big.NewInt(1 << 3)
-	listForumsRequestFieldCompanyID = big.NewInt(1 << 4)
-	listForumsRequestFieldProductID = big.NewInt(1 << 5)
+	listForumsRequestFieldProductID = big.NewInt(1 << 4)
+	listForumsRequestFieldAccountID = big.NewInt(1 << 5)
 )
 
 type ListForumsRequest struct {
@@ -27,10 +27,10 @@ type ListForumsRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list forums for.
-	CompanyID string `json:"-" url:"company_id"`
 	// The unique identifier of a product to filter by. When set, only forums connected to this product are returned.
 	ProductID *string `json:"-" url:"product_id,omitempty"`
+	// The unique identifier of the company to list forums for.
+	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -71,18 +71,18 @@ func (l *ListForumsRequest) SetLast(last *int) {
 	l.require(listForumsRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListForumsRequest) SetCompanyID(companyID string) {
-	l.CompanyID = companyID
-	l.require(listForumsRequestFieldCompanyID)
-}
-
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListForumsRequest) SetProductID(productID *string) {
 	l.ProductID = productID
 	l.require(listForumsRequestFieldProductID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListForumsRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(listForumsRequestFieldAccountID)
 }
 
 var (

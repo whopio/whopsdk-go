@@ -98,9 +98,6 @@ func TestPaymentMethodsListWithWireMock(
 		MemberID: whopsdk.String(
 			"mber_xxxxxxxxxxxxx",
 		),
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
 		CreatedBefore: whopsdk.Time(
 			whopsdk.MustParseDateTime(
 				"2023-12-01T05:00:00Z",
@@ -110,6 +107,9 @@ func TestPaymentMethodsListWithWireMock(
 			whopsdk.MustParseDateTime(
 				"2023-12-01T05:00:00Z",
 			),
+		),
+		AccountID: whopsdk.String(
+			"biz_xxxxxxxxxxxxxx",
 		),
 	}
 	_, invocationErr := client.PaymentMethods.List(
@@ -121,7 +121,7 @@ func TestPaymentMethodsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentMethodsListWithWireMock", "GET", "/payment_methods", map[string]interface{}{"first": "42", "last": "42", "member_id": "mber_xxxxxxxxxxxxx", "company_id": "biz_xxxxxxxxxxxxxx", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z"}, 1)
+	VerifyRequestCount(t, "TestPaymentMethodsListWithWireMock", "GET", "/payment_methods", map[string]interface{}{"first": "42", "last": "42", "member_id": "mber_xxxxxxxxxxxxx", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestPaymentMethodsRetrieveWithWireMock(
@@ -137,11 +137,11 @@ func TestPaymentMethodsRetrieveWithWireMock(
 	)
 	request := &whopsdk.RetrievePaymentMethodsRequest{
 		ID: "payt_xxxxxxxxxxxxx",
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
 		MemberID: whopsdk.String(
 			"mber_xxxxxxxxxxxxx",
+		),
+		AccountID: whopsdk.String(
+			"biz_xxxxxxxxxxxxxx",
 		),
 	}
 	_, invocationErr := client.PaymentMethods.Retrieve(
@@ -153,7 +153,7 @@ func TestPaymentMethodsRetrieveWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentMethodsRetrieveWithWireMock", "GET", "/payment_methods/payt_xxxxxxxxxxxxx", map[string]interface{}{"company_id": "biz_xxxxxxxxxxxxxx", "member_id": "mber_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestPaymentMethodsRetrieveWithWireMock", "GET", "/payment_methods/payt_xxxxxxxxxxxxx", map[string]interface{}{"member_id": "mber_xxxxxxxxxxxxx", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestPaymentMethodsDeletePaymentMethodWithWireMock(
@@ -169,11 +169,11 @@ func TestPaymentMethodsDeletePaymentMethodWithWireMock(
 	)
 	request := &whopsdk.DeletePaymentMethodRequest{
 		ID: "payt_xxxxxxxxxxxxx",
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
 		MemberID: whopsdk.String(
 			"mber_xxxxxxxxxxxxx",
+		),
+		AccountID: whopsdk.String(
+			"biz_xxxxxxxxxxxxxx",
 		),
 	}
 	_, invocationErr := client.PaymentMethods.DeletePaymentMethod(
@@ -185,5 +185,5 @@ func TestPaymentMethodsDeletePaymentMethodWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentMethodsDeletePaymentMethodWithWireMock", "DELETE", "/payment_methods/payt_xxxxxxxxxxxxx", map[string]interface{}{"company_id": "biz_xxxxxxxxxxxxxx", "member_id": "mber_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestPaymentMethodsDeletePaymentMethodWithWireMock", "DELETE", "/payment_methods/payt_xxxxxxxxxxxxx", map[string]interface{}{"member_id": "mber_xxxxxxxxxxxxx", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }

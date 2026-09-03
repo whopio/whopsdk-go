@@ -95,10 +95,10 @@ func TestCompanyTokenTransactionsListWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: "biz_xxxxxxxxxxxxxx",
 		UserID: whopsdk.String(
 			"user_xxxxxxxxxxxxx",
 		),
+		AccountID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.CompanyTokenTransactions.List(
 		context.TODO(),
@@ -109,7 +109,7 @@ func TestCompanyTokenTransactionsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestCompanyTokenTransactionsListWithWireMock", "GET", "/company_token_transactions", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx", "user_id": "user_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestCompanyTokenTransactionsListWithWireMock", "GET", "/company_token_transactions", map[string]interface{}{"first": "42", "last": "42", "user_id": "user_xxxxxxxxxxxxx", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestCompanyTokenTransactionsCreateWithWireMock(
@@ -125,8 +125,8 @@ func TestCompanyTokenTransactionsCreateWithWireMock(
 	)
 	request := &whopsdk.CreateCompanyTokenTransactionsRequest{
 		Transfer: &whopsdk.CreateCompanyTokenTransactionsRequestTransfer{
+			AccountID:         "biz_xxxxxxxxxxxxxx",
 			Amount:            6.9,
-			CompanyID:         "biz_xxxxxxxxxxxxxx",
 			DestinationUserID: "destination_user_id",
 			UserID:            "user_xxxxxxxxxxxxx",
 		},

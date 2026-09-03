@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-1"
+		apiVersionDateDefault := "2026-09-02-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -54,9 +54,6 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
 //	    UserID: whopsdk.String(
 //	        "user_xxxxxxxxxxxxx",
 //	    ),
@@ -69,6 +66,9 @@ func NewClient(options *core.RequestOptions) *Client {
 //	        whopsdk.MustParseDateTime(
 //	            "2023-12-01T05:00:00Z",
 //	        ),
+//	    ),
+//	    AccountID: whopsdk.String(
+//	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
 //	client.AuthorizedUsers.List(
@@ -147,7 +147,7 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateAuthorizedUsersRequest{
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	    Role: whopsdk.GrantableAuthorizedUserRolesOwner,
 //	    UserID: "user_xxxxxxxxxxxxx",
 //	}
@@ -211,7 +211,7 @@ func (c *Client) Retrieve(
 //
 //	request := &whopsdk.DeleteAuthorizedUsersRequest{
 //	    ID: "ausr_xxxxxxxxxxxxx",
-//	    CompanyID: whopsdk.String(
+//	    AccountID: whopsdk.String(
 //	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}

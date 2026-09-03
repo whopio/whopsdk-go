@@ -95,9 +95,6 @@ func TestAuthorizedUsersListWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
 		UserID: whopsdk.String(
 			"user_xxxxxxxxxxxxx",
 		),
@@ -111,6 +108,9 @@ func TestAuthorizedUsersListWithWireMock(
 				"2023-12-01T05:00:00Z",
 			),
 		),
+		AccountID: whopsdk.String(
+			"biz_xxxxxxxxxxxxxx",
+		),
 	}
 	_, invocationErr := client.AuthorizedUsers.List(
 		context.TODO(),
@@ -121,7 +121,7 @@ func TestAuthorizedUsersListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestAuthorizedUsersListWithWireMock", "GET", "/authorized_users", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx", "user_id": "user_xxxxxxxxxxxxx", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z"}, 1)
+	VerifyRequestCount(t, "TestAuthorizedUsersListWithWireMock", "GET", "/authorized_users", map[string]interface{}{"first": "42", "last": "42", "user_id": "user_xxxxxxxxxxxxx", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestAuthorizedUsersCreateWithWireMock(
@@ -136,7 +136,7 @@ func TestAuthorizedUsersCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateAuthorizedUsersRequest{
-		CompanyID: "biz_xxxxxxxxxxxxxx",
+		AccountID: "biz_xxxxxxxxxxxxxx",
 		Role:      whopsdk.GrantableAuthorizedUserRolesOwner,
 		UserID:    "user_xxxxxxxxxxxxx",
 	}
@@ -191,7 +191,7 @@ func TestAuthorizedUsersDeleteWithWireMock(
 	)
 	request := &whopsdk.DeleteAuthorizedUsersRequest{
 		ID: "ausr_xxxxxxxxxxxxx",
-		CompanyID: whopsdk.String(
+		AccountID: whopsdk.String(
 			"biz_xxxxxxxxxxxxxx",
 		),
 	}
@@ -204,5 +204,5 @@ func TestAuthorizedUsersDeleteWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestAuthorizedUsersDeleteWithWireMock", "DELETE", "/authorized_users/ausr_xxxxxxxxxxxxx", map[string]interface{}{"company_id": "biz_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestAuthorizedUsersDeleteWithWireMock", "DELETE", "/authorized_users/ausr_xxxxxxxxxxxxx", map[string]interface{}{"account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }

@@ -114,6 +114,7 @@ const (
 	RetrieveBreakdownRequestBucketPayments                  RetrieveBreakdownRequestBucket = "payments"
 	RetrieveBreakdownRequestBucketRefunds                   RetrieveBreakdownRequestBucket = "refunds"
 	RetrieveBreakdownRequestBucketAds                       RetrieveBreakdownRequestBucket = "ads"
+	RetrieveBreakdownRequestBucketApplicationFees           RetrieveBreakdownRequestBucket = "application_fees"
 	RetrieveBreakdownRequestBucketCardSpend                 RetrieveBreakdownRequestBucket = "card_spend"
 	RetrieveBreakdownRequestBucketCardAuthorizationReleases RetrieveBreakdownRequestBucket = "card_authorization_releases"
 	RetrieveBreakdownRequestBucketWithdrawals               RetrieveBreakdownRequestBucket = "withdrawals"
@@ -130,6 +131,8 @@ func NewRetrieveBreakdownRequestBucketFromString(s string) (RetrieveBreakdownReq
 		return RetrieveBreakdownRequestBucketRefunds, nil
 	case "ads":
 		return RetrieveBreakdownRequestBucketAds, nil
+	case "application_fees":
+		return RetrieveBreakdownRequestBucketApplicationFees, nil
 	case "card_spend":
 		return RetrieveBreakdownRequestBucketCardSpend, nil
 	case "card_authorization_releases":
@@ -503,6 +506,7 @@ const (
 	RetrieveBreakdownResponseBucketPayments                  RetrieveBreakdownResponseBucket = "payments"
 	RetrieveBreakdownResponseBucketRefunds                   RetrieveBreakdownResponseBucket = "refunds"
 	RetrieveBreakdownResponseBucketAds                       RetrieveBreakdownResponseBucket = "ads"
+	RetrieveBreakdownResponseBucketApplicationFees           RetrieveBreakdownResponseBucket = "application_fees"
 	RetrieveBreakdownResponseBucketCardSpend                 RetrieveBreakdownResponseBucket = "card_spend"
 	RetrieveBreakdownResponseBucketCardAuthorizationReleases RetrieveBreakdownResponseBucket = "card_authorization_releases"
 	RetrieveBreakdownResponseBucketWithdrawals               RetrieveBreakdownResponseBucket = "withdrawals"
@@ -519,6 +523,8 @@ func NewRetrieveBreakdownResponseBucketFromString(s string) (RetrieveBreakdownRe
 		return RetrieveBreakdownResponseBucketRefunds, nil
 	case "ads":
 		return RetrieveBreakdownResponseBucketAds, nil
+	case "application_fees":
+		return RetrieveBreakdownResponseBucketApplicationFees, nil
 	case "card_spend":
 		return RetrieveBreakdownResponseBucketCardSpend, nil
 	case "card_authorization_releases":

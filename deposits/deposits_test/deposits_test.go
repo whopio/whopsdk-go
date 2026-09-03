@@ -89,9 +89,7 @@ func TestDepositsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateDepositsRequest{
-		Destination: &whopsdk.CreateDepositsRequestDestination{
-			String: "destination",
-		},
+		Destination: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Deposits.Create(
 		context.TODO(),

@@ -11,17 +11,17 @@ import (
 )
 
 var (
-	createTopupsRequestFieldAmount          = big.NewInt(1 << 0)
-	createTopupsRequestFieldCompanyID       = big.NewInt(1 << 1)
+	createTopupsRequestFieldAccountID       = big.NewInt(1 << 0)
+	createTopupsRequestFieldAmount          = big.NewInt(1 << 1)
 	createTopupsRequestFieldCurrency        = big.NewInt(1 << 2)
 	createTopupsRequestFieldPaymentMethodID = big.NewInt(1 << 3)
 )
 
 type CreateTopupsRequest struct {
+	// The unique identifier of the company to add funds to, starting with 'biz_'.
+	AccountID string `json:"account_id" url:"-"`
 	// The amount to add to the balance in the specified currency. For example, 50.00 for $50.00 USD.
 	Amount float64 `json:"amount" url:"-"`
-	// The unique identifier of the company to add funds to, starting with 'biz_'.
-	CompanyID string `json:"company_id" url:"-"`
 	// The currency for the top-up amount, such as 'usd'.
 	Currency Currencies `json:"currency" url:"-"`
 	// The unique identifier of the stored payment method to charge for the top-up.
@@ -38,18 +38,18 @@ func (c *CreateTopupsRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTopupsRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createTopupsRequestFieldAccountID)
+}
+
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateTopupsRequest) SetAmount(amount float64) {
 	c.Amount = amount
 	c.require(createTopupsRequestFieldAmount)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTopupsRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createTopupsRequestFieldCompanyID)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;

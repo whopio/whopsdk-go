@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-1"
+		apiVersionDateDefault := "2026-09-02-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -53,7 +53,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: whopsdk.String(
+//	    AccountID: whopsdk.String(
 //	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
@@ -132,7 +132,7 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateSupportChannelsRequest{
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	    UserID: "user_xxxxxxxxxxxxx",
 //	}
 //	client.SupportChannels.Create(

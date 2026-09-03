@@ -15,9 +15,9 @@ var (
 	listIdentityProfileRequestFieldBefore      = big.NewInt(1 << 1)
 	listIdentityProfileRequestFieldFirst       = big.NewInt(1 << 2)
 	listIdentityProfileRequestFieldLast        = big.NewInt(1 << 3)
-	listIdentityProfileRequestFieldCompanyID   = big.NewInt(1 << 4)
-	listIdentityProfileRequestFieldProfileType = big.NewInt(1 << 5)
-	listIdentityProfileRequestFieldStatus      = big.NewInt(1 << 6)
+	listIdentityProfileRequestFieldProfileType = big.NewInt(1 << 4)
+	listIdentityProfileRequestFieldStatus      = big.NewInt(1 << 5)
+	listIdentityProfileRequestFieldAccountID   = big.NewInt(1 << 6)
 )
 
 type ListIdentityProfileRequest struct {
@@ -28,11 +28,11 @@ type ListIdentityProfileRequest struct {
 	// Returns the first _n_ elements from the list.
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
-	CompanyID   *string                  `json:"-" url:"company_id,omitempty"`
+	Last        *int                     `json:"-" url:"last,omitempty"`
 	ProfileType *IdentityProfileKinds    `json:"-" url:"profile_type,omitempty"`
 	Status      *IdentityProfileStatuses `json:"-" url:"status,omitempty"`
+	// The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -73,13 +73,6 @@ func (l *ListIdentityProfileRequest) SetLast(last *int) {
 	l.require(listIdentityProfileRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListIdentityProfileRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listIdentityProfileRequestFieldCompanyID)
-}
-
 // SetProfileType sets the ProfileType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListIdentityProfileRequest) SetProfileType(profileType *IdentityProfileKinds) {
@@ -92,6 +85,13 @@ func (l *ListIdentityProfileRequest) SetProfileType(profileType *IdentityProfile
 func (l *ListIdentityProfileRequest) SetStatus(status *IdentityProfileStatuses) {
 	l.Status = status
 	l.require(listIdentityProfileRequestFieldStatus)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListIdentityProfileRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listIdentityProfileRequestFieldAccountID)
 }
 
 var (

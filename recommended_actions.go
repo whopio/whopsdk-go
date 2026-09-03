@@ -321,7 +321,7 @@ type AccountRecommendedActionChainStep struct {
 	Description string `json:"description" url:"description"`
 	// Why the step failed, or `null`
 	Error *string `json:"error,omitempty" url:"error,omitempty"`
-	// Whether the client should navigate to the CTA or open the programmatic execution dialog
+	// Whether the client should navigate to the CTA, open the programmatic execution dialog, or run the CTA as a Whop AI prompt
 	ExecutionType AccountRecommendedActionChainStepExecutionType `json:"execution_type" url:"execution_type"`
 	// The filled-in request body for the step's endpoint, or `null` when it was not recorded
 	Input map[string]any `json:"input,omitempty" url:"input,omitempty"`
@@ -567,12 +567,13 @@ func (a *AccountRecommendedActionChainStep) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Whether the client should navigate to the CTA or open the programmatic execution dialog
+// Whether the client should navigate to the CTA, open the programmatic execution dialog, or run the CTA as a Whop AI prompt
 type AccountRecommendedActionChainStepExecutionType string
 
 const (
 	AccountRecommendedActionChainStepExecutionTypeRedirect    AccountRecommendedActionChainStepExecutionType = "redirect"
 	AccountRecommendedActionChainStepExecutionTypeProgramatic AccountRecommendedActionChainStepExecutionType = "programatic"
+	AccountRecommendedActionChainStepExecutionTypeWhopAi      AccountRecommendedActionChainStepExecutionType = "whop_ai"
 )
 
 func NewAccountRecommendedActionChainStepExecutionTypeFromString(s string) (AccountRecommendedActionChainStepExecutionType, error) {
@@ -581,6 +582,8 @@ func NewAccountRecommendedActionChainStepExecutionTypeFromString(s string) (Acco
 		return AccountRecommendedActionChainStepExecutionTypeRedirect, nil
 	case "programatic":
 		return AccountRecommendedActionChainStepExecutionTypeProgramatic, nil
+	case "whop_ai":
+		return AccountRecommendedActionChainStepExecutionTypeWhopAi, nil
 	}
 	var t AccountRecommendedActionChainStepExecutionType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

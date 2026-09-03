@@ -95,7 +95,6 @@ func TestExperiencesListWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: "biz_xxxxxxxxxxxxxx",
 		ProductID: whopsdk.String(
 			"prod_xxxxxxxxxxxxx",
 		),
@@ -112,6 +111,7 @@ func TestExperiencesListWithWireMock(
 				"2023-12-01T05:00:00Z",
 			),
 		),
+		AccountID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Experiences.List(
 		context.TODO(),
@@ -122,7 +122,7 @@ func TestExperiencesListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestExperiencesListWithWireMock", "GET", "/experiences", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx", "product_id": "prod_xxxxxxxxxxxxx", "app_id": "app_xxxxxxxxxxxxxx", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z"}, 1)
+	VerifyRequestCount(t, "TestExperiencesListWithWireMock", "GET", "/experiences", map[string]interface{}{"first": "42", "last": "42", "product_id": "prod_xxxxxxxxxxxxx", "app_id": "app_xxxxxxxxxxxxxx", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestExperiencesCreateWithWireMock(
@@ -137,8 +137,8 @@ func TestExperiencesCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateExperiencesRequest{
+		AccountID: "biz_xxxxxxxxxxxxxx",
 		AppID:     "app_xxxxxxxxxxxxxx",
-		CompanyID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Experiences.Create(
 		context.TODO(),

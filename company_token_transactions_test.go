@@ -43,14 +43,6 @@ func TestSettersListCompanyTokenTransactionsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetCompanyID", func(t *testing.T) {
-		obj := &ListCompanyTokenTransactionsRequest{}
-		var fernTestValueCompanyID string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetUserID", func(t *testing.T) {
 		obj := &ListCompanyTokenTransactionsRequest{}
 		var fernTestValueUserID *string
@@ -64,6 +56,14 @@ func TestSettersListCompanyTokenTransactionsRequest(t *testing.T) {
 		var fernTestValueTransactionType *CompanyTokenTransactionTypes
 		obj.SetTransactionType(fernTestValueTransactionType)
 		assert.Equal(t, fernTestValueTransactionType, obj.TransactionType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &ListCompanyTokenTransactionsRequest{}
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -194,37 +194,6 @@ func TestSettersMarkExplicitListCompanyTokenTransactionsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListCompanyTokenTransactionsRequest{}
-		var fernTestValueCompanyID string
-
-		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetUserID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -264,6 +233,37 @@ func TestSettersMarkExplicitListCompanyTokenTransactionsRequest(t *testing.T) {
 
 		// Act
 		obj.SetTransactionType(fernTestValueTransactionType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListCompanyTokenTransactionsRequest{}
+		var fernTestValueAccountID string
+
+		// Act
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2780,19 +2780,19 @@ func TestGettersCreateCompanyTokenTransactionsRequest(t *testing.T) {
 }
 
 func TestSettersCreateCompanyTokenTransactionsRequestAdd(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &CreateCompanyTokenTransactionsRequestAdd{}
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAmount", func(t *testing.T) {
 		obj := &CreateCompanyTokenTransactionsRequestAdd{}
 		var fernTestValueAmount float64
 		obj.SetAmount(fernTestValueAmount)
 		assert.Equal(t, fernTestValueAmount, obj.Amount)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetCompanyID", func(t *testing.T) {
-		obj := &CreateCompanyTokenTransactionsRequestAdd{}
-		var fernTestValueCompanyID string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2823,6 +2823,29 @@ func TestSettersCreateCompanyTokenTransactionsRequestAdd(t *testing.T) {
 }
 
 func TestGettersCreateCompanyTokenTransactionsRequestAdd(t *testing.T) {
+	t.Run("GetAccountID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCompanyTokenTransactionsRequestAdd{}
+		var expected string
+		obj.AccountID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateCompanyTokenTransactionsRequestAdd
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccountID() // Should return zero value
+	})
+
 	t.Run("GetAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2844,29 +2867,6 @@ func TestGettersCreateCompanyTokenTransactionsRequestAdd(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAmount() // Should return zero value
-	})
-
-	t.Run("GetCompanyID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCompanyTokenTransactionsRequestAdd{}
-		var expected string
-		obj.CompanyID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetCompanyID(), "getter should return the property value")
-	})
-
-	t.Run("GetCompanyID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateCompanyTokenTransactionsRequestAdd
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetCompanyID() // Should return zero value
 	})
 
 	t.Run("GetDescription", func(t *testing.T) {
@@ -2961,14 +2961,14 @@ func TestGettersCreateCompanyTokenTransactionsRequestAdd(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateCompanyTokenTransactionsRequestAdd(t *testing.T) {
-	t.Run("SetAmount_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateCompanyTokenTransactionsRequestAdd{}
-		var fernTestValueAmount float64
+		var fernTestValueAccountID string
 
 		// Act
-		obj.SetAmount(fernTestValueAmount)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2992,14 +2992,14 @@ func TestSettersMarkExplicitCreateCompanyTokenTransactionsRequestAdd(t *testing.
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateCompanyTokenTransactionsRequestAdd{}
-		var fernTestValueCompanyID string
+		var fernTestValueAmount float64
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetAmount(fernTestValueAmount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3119,19 +3119,19 @@ func TestSettersMarkExplicitCreateCompanyTokenTransactionsRequestAdd(t *testing.
 }
 
 func TestSettersCreateCompanyTokenTransactionsRequestSubtract(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &CreateCompanyTokenTransactionsRequestSubtract{}
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAmount", func(t *testing.T) {
 		obj := &CreateCompanyTokenTransactionsRequestSubtract{}
 		var fernTestValueAmount float64
 		obj.SetAmount(fernTestValueAmount)
 		assert.Equal(t, fernTestValueAmount, obj.Amount)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetCompanyID", func(t *testing.T) {
-		obj := &CreateCompanyTokenTransactionsRequestSubtract{}
-		var fernTestValueCompanyID string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3162,6 +3162,29 @@ func TestSettersCreateCompanyTokenTransactionsRequestSubtract(t *testing.T) {
 }
 
 func TestGettersCreateCompanyTokenTransactionsRequestSubtract(t *testing.T) {
+	t.Run("GetAccountID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCompanyTokenTransactionsRequestSubtract{}
+		var expected string
+		obj.AccountID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateCompanyTokenTransactionsRequestSubtract
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccountID() // Should return zero value
+	})
+
 	t.Run("GetAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3183,29 +3206,6 @@ func TestGettersCreateCompanyTokenTransactionsRequestSubtract(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAmount() // Should return zero value
-	})
-
-	t.Run("GetCompanyID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCompanyTokenTransactionsRequestSubtract{}
-		var expected string
-		obj.CompanyID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetCompanyID(), "getter should return the property value")
-	})
-
-	t.Run("GetCompanyID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateCompanyTokenTransactionsRequestSubtract
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetCompanyID() // Should return zero value
 	})
 
 	t.Run("GetDescription", func(t *testing.T) {
@@ -3300,14 +3300,14 @@ func TestGettersCreateCompanyTokenTransactionsRequestSubtract(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateCompanyTokenTransactionsRequestSubtract(t *testing.T) {
-	t.Run("SetAmount_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateCompanyTokenTransactionsRequestSubtract{}
-		var fernTestValueAmount float64
+		var fernTestValueAccountID string
 
 		// Act
-		obj.SetAmount(fernTestValueAmount)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3331,14 +3331,14 @@ func TestSettersMarkExplicitCreateCompanyTokenTransactionsRequestSubtract(t *tes
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateCompanyTokenTransactionsRequestSubtract{}
-		var fernTestValueCompanyID string
+		var fernTestValueAmount float64
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetAmount(fernTestValueAmount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3458,19 +3458,19 @@ func TestSettersMarkExplicitCreateCompanyTokenTransactionsRequestSubtract(t *tes
 }
 
 func TestSettersCreateCompanyTokenTransactionsRequestTransfer(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &CreateCompanyTokenTransactionsRequestTransfer{}
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAmount", func(t *testing.T) {
 		obj := &CreateCompanyTokenTransactionsRequestTransfer{}
 		var fernTestValueAmount float64
 		obj.SetAmount(fernTestValueAmount)
 		assert.Equal(t, fernTestValueAmount, obj.Amount)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetCompanyID", func(t *testing.T) {
-		obj := &CreateCompanyTokenTransactionsRequestTransfer{}
-		var fernTestValueCompanyID string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3509,6 +3509,29 @@ func TestSettersCreateCompanyTokenTransactionsRequestTransfer(t *testing.T) {
 }
 
 func TestGettersCreateCompanyTokenTransactionsRequestTransfer(t *testing.T) {
+	t.Run("GetAccountID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCompanyTokenTransactionsRequestTransfer{}
+		var expected string
+		obj.AccountID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateCompanyTokenTransactionsRequestTransfer
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccountID() // Should return zero value
+	})
+
 	t.Run("GetAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3530,29 +3553,6 @@ func TestGettersCreateCompanyTokenTransactionsRequestTransfer(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAmount() // Should return zero value
-	})
-
-	t.Run("GetCompanyID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateCompanyTokenTransactionsRequestTransfer{}
-		var expected string
-		obj.CompanyID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetCompanyID(), "getter should return the property value")
-	})
-
-	t.Run("GetCompanyID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateCompanyTokenTransactionsRequestTransfer
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetCompanyID() // Should return zero value
 	})
 
 	t.Run("GetDescription", func(t *testing.T) {
@@ -3670,14 +3670,14 @@ func TestGettersCreateCompanyTokenTransactionsRequestTransfer(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateCompanyTokenTransactionsRequestTransfer(t *testing.T) {
-	t.Run("SetAmount_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateCompanyTokenTransactionsRequestTransfer{}
-		var fernTestValueAmount float64
+		var fernTestValueAccountID string
 
 		// Act
-		obj.SetAmount(fernTestValueAmount)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3701,14 +3701,14 @@ func TestSettersMarkExplicitCreateCompanyTokenTransactionsRequestTransfer(t *tes
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateCompanyTokenTransactionsRequestTransfer{}
-		var fernTestValueCompanyID string
+		var fernTestValueAmount float64
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetAmount(fernTestValueAmount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

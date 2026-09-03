@@ -37,13 +37,13 @@ func (a *ArchiveAffiliatesRequest) SetID(id string) {
 }
 
 var (
-	createAffiliatesRequestFieldCompanyID      = big.NewInt(1 << 0)
+	createAffiliatesRequestFieldAccountID      = big.NewInt(1 << 0)
 	createAffiliatesRequestFieldUserIdentifier = big.NewInt(1 << 1)
 )
 
 type CreateAffiliatesRequest struct {
 	// The ID of the company to create the affiliate for.
-	CompanyID string `json:"company_id" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
 	// The user identifier (username, email, user ID, or Discord ID).
 	UserIdentifier string `json:"user_identifier" url:"-"`
 
@@ -58,11 +58,11 @@ func (c *CreateAffiliatesRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAffiliatesRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createAffiliatesRequestFieldCompanyID)
+func (c *CreateAffiliatesRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createAffiliatesRequestFieldAccountID)
 }
 
 // SetUserIdentifier sets the UserIdentifier field and marks it as non-optional;
@@ -98,11 +98,11 @@ var (
 	listAffiliatesRequestFieldBefore    = big.NewInt(1 << 1)
 	listAffiliatesRequestFieldFirst     = big.NewInt(1 << 2)
 	listAffiliatesRequestFieldLast      = big.NewInt(1 << 3)
-	listAffiliatesRequestFieldCompanyID = big.NewInt(1 << 4)
-	listAffiliatesRequestFieldDirection = big.NewInt(1 << 5)
-	listAffiliatesRequestFieldOrder     = big.NewInt(1 << 6)
-	listAffiliatesRequestFieldQuery     = big.NewInt(1 << 7)
-	listAffiliatesRequestFieldStatus    = big.NewInt(1 << 8)
+	listAffiliatesRequestFieldDirection = big.NewInt(1 << 4)
+	listAffiliatesRequestFieldOrder     = big.NewInt(1 << 5)
+	listAffiliatesRequestFieldQuery     = big.NewInt(1 << 6)
+	listAffiliatesRequestFieldStatus    = big.NewInt(1 << 7)
+	listAffiliatesRequestFieldAccountID = big.NewInt(1 << 8)
 )
 
 type ListAffiliatesRequest struct {
@@ -113,14 +113,14 @@ type ListAffiliatesRequest struct {
 	// Returns the first _n_ elements from the list.
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list affiliates for.
-	CompanyID string                     `json:"-" url:"company_id"`
+	Last      *int                       `json:"-" url:"last,omitempty"`
 	Direction *Direction                 `json:"-" url:"direction,omitempty"`
 	Order     *AffiliatesSortableColumns `json:"-" url:"order,omitempty"`
 	// Search affiliates by username.
 	Query  *string `json:"-" url:"query,omitempty"`
 	Status *Status `json:"-" url:"status,omitempty"`
+	// The unique identifier of the company to list affiliates for.
+	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -161,13 +161,6 @@ func (l *ListAffiliatesRequest) SetLast(last *int) {
 	l.require(listAffiliatesRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListAffiliatesRequest) SetCompanyID(companyID string) {
-	l.CompanyID = companyID
-	l.require(listAffiliatesRequestFieldCompanyID)
-}
-
 // SetDirection sets the Direction field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListAffiliatesRequest) SetDirection(direction *Direction) {
@@ -194,6 +187,13 @@ func (l *ListAffiliatesRequest) SetQuery(query *string) {
 func (l *ListAffiliatesRequest) SetStatus(status *Status) {
 	l.Status = status
 	l.require(listAffiliatesRequestFieldStatus)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAffiliatesRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(listAffiliatesRequestFieldAccountID)
 }
 
 var (

@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	createAccessTokensRequestFieldCompanyID     = big.NewInt(1 << 0)
+	createAccessTokensRequestFieldAccountID     = big.NewInt(1 << 0)
 	createAccessTokensRequestFieldExpiresAt     = big.NewInt(1 << 1)
 	createAccessTokensRequestFieldScopedActions = big.NewInt(1 << 2)
 	createAccessTokensRequestFieldUserID        = big.NewInt(1 << 3)
@@ -19,7 +19,7 @@ var (
 
 type CreateAccessTokensRequest struct {
 	// The unique identifier of the company to generate the token for, starting with 'biz_'. The API key must have permission to access this company.
-	CompanyID *string `json:"company_id,omitempty" url:"-"`
+	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// The expiration timestamp for the access token. Defaults to 1 hour from now, with a maximum of 3 hours.
 	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"-"`
 	// An array of permission scopes to grant to the access token. If empty or omitted, all permissions from the authenticating credential are inherited. Must be a subset of the credential's permissions.
@@ -38,11 +38,11 @@ func (c *CreateAccessTokensRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAccessTokensRequest) SetCompanyID(companyID *string) {
-	c.CompanyID = companyID
-	c.require(createAccessTokensRequestFieldCompanyID)
+func (c *CreateAccessTokensRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createAccessTokensRequestFieldAccountID)
 }
 
 // SetExpiresAt sets the ExpiresAt field and marks it as non-optional;

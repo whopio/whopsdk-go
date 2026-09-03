@@ -13,19 +13,13 @@ import (
 var (
 	createDepositsRequestFieldAmount      = big.NewInt(1 << 0)
 	createDepositsRequestFieldDestination = big.NewInt(1 << 1)
-	createDepositsRequestFieldMetadata    = big.NewInt(1 << 2)
-	createDepositsRequestFieldNetwork     = big.NewInt(1 << 3)
 )
 
 type CreateDepositsRequest struct {
 	// Amount to prefill on hosted deposit page.
 	Amount *float64 `json:"amount,omitempty" url:"-"`
-	// Destination account ID or wallet address. Object form is supported for compatibility. Any business resolves by its account ID without authentication; a user account resolves only for that same authenticated user.
-	Destination *CreateDepositsRequestDestination `json:"destination" url:"-"`
-	// Metadata to include with the deposit response.
-	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
-	// Destination network override. Defaults to the destination wallet's own network.
-	Network *CreateDepositsRequestNetwork `json:"network,omitempty" url:"-"`
+	// Account ID to fund, `biz_` or `user_`. Any business resolves without authentication; a user account resolves only for that same authenticated user.
+	Destination string `json:"destination" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -47,23 +41,9 @@ func (c *CreateDepositsRequest) SetAmount(amount *float64) {
 
 // SetDestination sets the Destination field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDepositsRequest) SetDestination(destination *CreateDepositsRequestDestination) {
+func (c *CreateDepositsRequest) SetDestination(destination string) {
 	c.Destination = destination
 	c.require(createDepositsRequestFieldDestination)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDepositsRequest) SetMetadata(metadata map[string]any) {
-	c.Metadata = metadata
-	c.require(createDepositsRequestFieldMetadata)
-}
-
-// SetNetwork sets the Network field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDepositsRequest) SetNetwork(network *CreateDepositsRequestNetwork) {
-	c.Network = network
-	c.require(createDepositsRequestFieldNetwork)
 }
 
 func (c *CreateDepositsRequest) UnmarshalJSON(data []byte) error {
@@ -87,264 +67,21 @@ func (c *CreateDepositsRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-// Destination account ID or wallet address. Object form is supported for compatibility. Any business resolves by its account ID without authentication; a user account resolves only for that same authenticated user.
-type CreateDepositsRequestDestination struct {
-	String                                    string
-	CreateDepositsRequestDestinationAccountID *CreateDepositsRequestDestinationAccountID
-
-	typ string
-}
-
-func (c *CreateDepositsRequestDestination) GetString() string {
-	if c == nil {
-		return ""
-	}
-	return c.String
-}
-
-func (c *CreateDepositsRequestDestination) GetCreateDepositsRequestDestinationAccountID() *CreateDepositsRequestDestinationAccountID {
-	if c == nil {
-		return nil
-	}
-	return c.CreateDepositsRequestDestinationAccountID
-}
-
-func (c *CreateDepositsRequestDestination) UnmarshalJSON(data []byte) error {
-	var valueString string
-	if err := json.Unmarshal(data, &valueString); err == nil {
-		c.typ = "String"
-		c.String = valueString
-		return nil
-	}
-	valueCreateDepositsRequestDestinationAccountID := new(CreateDepositsRequestDestinationAccountID)
-	if err := json.Unmarshal(data, &valueCreateDepositsRequestDestinationAccountID); err == nil {
-		c.typ = "CreateDepositsRequestDestinationAccountID"
-		c.CreateDepositsRequestDestinationAccountID = valueCreateDepositsRequestDestinationAccountID
-		return nil
-	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
-}
-
-func (c CreateDepositsRequestDestination) MarshalJSON() ([]byte, error) {
-	if c.typ == "String" || c.String != "" {
-		return json.Marshal(c.String)
-	}
-	if c.typ == "CreateDepositsRequestDestinationAccountID" || c.CreateDepositsRequestDestinationAccountID != nil {
-		return json.Marshal(c.CreateDepositsRequestDestinationAccountID)
-	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
-}
-
-type CreateDepositsRequestDestinationVisitor interface {
-	VisitString(string) error
-	VisitCreateDepositsRequestDestinationAccountID(*CreateDepositsRequestDestinationAccountID) error
-}
-
-func (c *CreateDepositsRequestDestination) Accept(visitor CreateDepositsRequestDestinationVisitor) error {
-	if c.typ == "String" || c.String != "" {
-		return visitor.VisitString(c.String)
-	}
-	if c.typ == "CreateDepositsRequestDestinationAccountID" || c.CreateDepositsRequestDestinationAccountID != nil {
-		return visitor.VisitCreateDepositsRequestDestinationAccountID(c.CreateDepositsRequestDestinationAccountID)
-	}
-	return fmt.Errorf("type %T does not include a non-empty union type", c)
-}
-
-var (
-	createDepositsRequestDestinationAccountIDFieldAccountID = big.NewInt(1 << 0)
-	createDepositsRequestDestinationAccountIDFieldAddress   = big.NewInt(1 << 1)
-	createDepositsRequestDestinationAccountIDFieldNetwork   = big.NewInt(1 << 2)
-)
-
-type CreateDepositsRequestDestinationAccountID struct {
-	// Destination account ID.
-	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// Destination wallet address.
-	Address *string `json:"address,omitempty" url:"address,omitempty"`
-	// Destination wallet network.
-	Network *CreateDepositsRequestDestinationAccountIDNetwork `json:"network,omitempty" url:"network,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateDepositsRequestDestinationAccountID) GetAccountID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.AccountID
-}
-
-func (c *CreateDepositsRequestDestinationAccountID) GetAddress() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Address
-}
-
-func (c *CreateDepositsRequestDestinationAccountID) GetNetwork() *CreateDepositsRequestDestinationAccountIDNetwork {
-	if c == nil {
-		return nil
-	}
-	return c.Network
-}
-
-func (c *CreateDepositsRequestDestinationAccountID) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateDepositsRequestDestinationAccountID) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDepositsRequestDestinationAccountID) SetAccountID(accountID *string) {
-	c.AccountID = accountID
-	c.require(createDepositsRequestDestinationAccountIDFieldAccountID)
-}
-
-// SetAddress sets the Address field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDepositsRequestDestinationAccountID) SetAddress(address *string) {
-	c.Address = address
-	c.require(createDepositsRequestDestinationAccountIDFieldAddress)
-}
-
-// SetNetwork sets the Network field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDepositsRequestDestinationAccountID) SetNetwork(network *CreateDepositsRequestDestinationAccountIDNetwork) {
-	c.Network = network
-	c.require(createDepositsRequestDestinationAccountIDFieldNetwork)
-}
-
-func (c *CreateDepositsRequestDestinationAccountID) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateDepositsRequestDestinationAccountID
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateDepositsRequestDestinationAccountID(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateDepositsRequestDestinationAccountID) MarshalJSON() ([]byte, error) {
-	type embed CreateDepositsRequestDestinationAccountID
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateDepositsRequestDestinationAccountID) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Destination wallet network.
-type CreateDepositsRequestDestinationAccountIDNetwork string
-
-const (
-	CreateDepositsRequestDestinationAccountIDNetworkEthereum CreateDepositsRequestDestinationAccountIDNetwork = "ethereum"
-	CreateDepositsRequestDestinationAccountIDNetworkPolygon  CreateDepositsRequestDestinationAccountIDNetwork = "polygon"
-	CreateDepositsRequestDestinationAccountIDNetworkBase     CreateDepositsRequestDestinationAccountIDNetwork = "base"
-	CreateDepositsRequestDestinationAccountIDNetworkSolana   CreateDepositsRequestDestinationAccountIDNetwork = "solana"
-)
-
-func NewCreateDepositsRequestDestinationAccountIDNetworkFromString(s string) (CreateDepositsRequestDestinationAccountIDNetwork, error) {
-	switch s {
-	case "ethereum":
-		return CreateDepositsRequestDestinationAccountIDNetworkEthereum, nil
-	case "polygon":
-		return CreateDepositsRequestDestinationAccountIDNetworkPolygon, nil
-	case "base":
-		return CreateDepositsRequestDestinationAccountIDNetworkBase, nil
-	case "solana":
-		return CreateDepositsRequestDestinationAccountIDNetworkSolana, nil
-	}
-	var t CreateDepositsRequestDestinationAccountIDNetwork
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateDepositsRequestDestinationAccountIDNetwork) Ptr() *CreateDepositsRequestDestinationAccountIDNetwork {
-	return &c
-}
-
-// Destination network override. Defaults to the destination wallet's own network.
-type CreateDepositsRequestNetwork string
-
-const (
-	CreateDepositsRequestNetworkEthereum CreateDepositsRequestNetwork = "ethereum"
-	CreateDepositsRequestNetworkPolygon  CreateDepositsRequestNetwork = "polygon"
-	CreateDepositsRequestNetworkBase     CreateDepositsRequestNetwork = "base"
-	CreateDepositsRequestNetworkSolana   CreateDepositsRequestNetwork = "solana"
-)
-
-func NewCreateDepositsRequestNetworkFromString(s string) (CreateDepositsRequestNetwork, error) {
-	switch s {
-	case "ethereum":
-		return CreateDepositsRequestNetworkEthereum, nil
-	case "polygon":
-		return CreateDepositsRequestNetworkPolygon, nil
-	case "base":
-		return CreateDepositsRequestNetworkBase, nil
-	case "solana":
-		return CreateDepositsRequestNetworkSolana, nil
-	}
-	var t CreateDepositsRequestNetwork
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateDepositsRequestNetwork) Ptr() *CreateDepositsRequestNetwork {
-	return &c
-}
-
 var (
 	createDepositsResponseFieldAccountID = big.NewInt(1 << 0)
 	createDepositsResponseFieldAmount    = big.NewInt(1 << 1)
 	createDepositsResponseFieldHostedURL = big.NewInt(1 << 2)
-	createDepositsResponseFieldMetadata  = big.NewInt(1 << 3)
-	createDepositsResponseFieldMethods   = big.NewInt(1 << 4)
-	createDepositsResponseFieldObject    = big.NewInt(1 << 5)
+	createDepositsResponseFieldMethods   = big.NewInt(1 << 3)
+	createDepositsResponseFieldObject    = big.NewInt(1 << 4)
 )
 
 type CreateDepositsResponse struct {
-	// Account ID of the destination owner. Null for raw wallet address destinations.
+	// Account ID of the destination owner.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// Requested deposit amount.
 	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
 	// URL of the hosted deposit page. Only present for business destinations.
 	HostedURL *string `json:"hosted_url,omitempty" url:"hosted_url,omitempty"`
-	// Metadata from the request.
-	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// Available deposit methods for destination.
 	Methods *CreateDepositsResponseMethods `json:"methods" url:"methods"`
 	Object  CreateDepositsResponseObject   `json:"object" url:"object"`
@@ -375,13 +112,6 @@ func (c *CreateDepositsResponse) GetHostedURL() *string {
 		return nil
 	}
 	return c.HostedURL
-}
-
-func (c *CreateDepositsResponse) GetMetadata() map[string]any {
-	if c == nil {
-		return nil
-	}
-	return c.Metadata
 }
 
 func (c *CreateDepositsResponse) GetMethods() *CreateDepositsResponseMethods {
@@ -431,13 +161,6 @@ func (c *CreateDepositsResponse) SetAmount(amount *string) {
 func (c *CreateDepositsResponse) SetHostedURL(hostedURL *string) {
 	c.HostedURL = hostedURL
 	c.require(createDepositsResponseFieldHostedURL)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDepositsResponse) SetMetadata(metadata map[string]any) {
-	c.Metadata = metadata
-	c.require(createDepositsResponseFieldMetadata)
 }
 
 // SetMethods sets the Methods field and marks it as non-optional;

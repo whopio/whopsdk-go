@@ -12,17 +12,17 @@ import (
 
 var (
 	describeStatsRequestFieldResource  = big.NewInt(1 << 0)
-	describeStatsRequestFieldCompanyID = big.NewInt(1 << 1)
-	describeStatsRequestFieldUserID    = big.NewInt(1 << 2)
+	describeStatsRequestFieldUserID    = big.NewInt(1 << 1)
+	describeStatsRequestFieldAccountID = big.NewInt(1 << 2)
 )
 
 type DescribeStatsRequest struct {
 	// Resource path using : as separator (e.g., 'receipts', 'payments:membership', 'receipts:gross_revenue').
 	Resource *string `json:"-" url:"resource,omitempty"`
-	// Scope query to a specific company.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
 	// Scope query to a specific user.
 	UserID *string `json:"-" url:"user_id,omitempty"`
+	// Scope query to a specific company.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -42,18 +42,18 @@ func (d *DescribeStatsRequest) SetResource(resource *string) {
 	d.require(describeStatsRequestFieldResource)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsRequest) SetCompanyID(companyID *string) {
-	d.CompanyID = companyID
-	d.require(describeStatsRequestFieldCompanyID)
-}
-
 // SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DescribeStatsRequest) SetUserID(userID *string) {
 	d.UserID = userID
 	d.require(describeStatsRequestFieldUserID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DescribeStatsRequest) SetAccountID(accountID *string) {
+	d.AccountID = accountID
+	d.require(describeStatsRequestFieldAccountID)
 }
 
 var (
@@ -64,8 +64,8 @@ var (
 	metricStatsRequestFieldTimeZone    = big.NewInt(1 << 4)
 	metricStatsRequestFieldFrom        = big.NewInt(1 << 5)
 	metricStatsRequestFieldTo          = big.NewInt(1 << 6)
-	metricStatsRequestFieldCompanyID   = big.NewInt(1 << 7)
-	metricStatsRequestFieldUserID      = big.NewInt(1 << 8)
+	metricStatsRequestFieldUserID      = big.NewInt(1 << 7)
+	metricStatsRequestFieldAccountID   = big.NewInt(1 << 8)
 )
 
 type MetricStatsRequest struct {
@@ -83,10 +83,10 @@ type MetricStatsRequest struct {
 	From *time.Time `json:"-" url:"from,omitempty"`
 	// End of time range (unix timestamp).
 	To *time.Time `json:"-" url:"to,omitempty"`
-	// Scope query to a specific company.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
 	// Scope query to a specific user.
 	UserID *string `json:"-" url:"user_id,omitempty"`
+	// Scope query to a specific company.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -148,18 +148,18 @@ func (m *MetricStatsRequest) SetTo(to *time.Time) {
 	m.require(metricStatsRequestFieldTo)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsRequest) SetCompanyID(companyID *string) {
-	m.CompanyID = companyID
-	m.require(metricStatsRequestFieldCompanyID)
-}
-
 // SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *MetricStatsRequest) SetUserID(userID *string) {
 	m.UserID = userID
 	m.require(metricStatsRequestFieldUserID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MetricStatsRequest) SetAccountID(accountID *string) {
+	m.AccountID = accountID
+	m.require(metricStatsRequestFieldAccountID)
 }
 
 var (
@@ -170,8 +170,8 @@ var (
 	rawStatsRequestFieldCursor        = big.NewInt(1 << 4)
 	rawStatsRequestFieldSort          = big.NewInt(1 << 5)
 	rawStatsRequestFieldSortDirection = big.NewInt(1 << 6)
-	rawStatsRequestFieldCompanyID     = big.NewInt(1 << 7)
-	rawStatsRequestFieldUserID        = big.NewInt(1 << 8)
+	rawStatsRequestFieldUserID        = big.NewInt(1 << 7)
+	rawStatsRequestFieldAccountID     = big.NewInt(1 << 8)
 )
 
 type RawStatsRequest struct {
@@ -188,10 +188,10 @@ type RawStatsRequest struct {
 	// Column to sort by.
 	Sort          *string    `json:"-" url:"sort,omitempty"`
 	SortDirection *Direction `json:"-" url:"sort_direction,omitempty"`
-	// Scope query to a specific company.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
 	// Scope query to a specific user.
 	UserID *string `json:"-" url:"user_id,omitempty"`
+	// Scope query to a specific company.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -253,18 +253,18 @@ func (r *RawStatsRequest) SetSortDirection(sortDirection *Direction) {
 	r.require(rawStatsRequestFieldSortDirection)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsRequest) SetCompanyID(companyID *string) {
-	r.CompanyID = companyID
-	r.require(rawStatsRequestFieldCompanyID)
-}
-
 // SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RawStatsRequest) SetUserID(userID *string) {
 	r.UserID = userID
 	r.require(rawStatsRequestFieldUserID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RawStatsRequest) SetAccountID(accountID *string) {
+	r.AccountID = accountID
+	r.require(rawStatsRequestFieldAccountID)
 }
 
 var (

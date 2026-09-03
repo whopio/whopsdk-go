@@ -68,8 +68,8 @@ func (a *AttachExperiencesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	createExperiencesRequestFieldAppID                = big.NewInt(1 << 0)
-	createExperiencesRequestFieldCompanyID            = big.NewInt(1 << 1)
+	createExperiencesRequestFieldAccountID            = big.NewInt(1 << 0)
+	createExperiencesRequestFieldAppID                = big.NewInt(1 << 1)
 	createExperiencesRequestFieldIsPublic             = big.NewInt(1 << 2)
 	createExperiencesRequestFieldLogo                 = big.NewInt(1 << 3)
 	createExperiencesRequestFieldName                 = big.NewInt(1 << 4)
@@ -78,10 +78,10 @@ var (
 )
 
 type CreateExperiencesRequest struct {
+	// The unique identifier of the company to create this experience for.
+	AccountID string `json:"account_id" url:"-"`
 	// The unique identifier of the app that powers this experience.
 	AppID string `json:"app_id" url:"-"`
-	// The unique identifier of the company to create this experience for.
-	CompanyID string `json:"company_id" url:"-"`
 	// Whether the experience is publicly accessible without a membership.
 	IsPublic *bool `json:"is_public,omitempty" url:"-"`
 	// A logo image displayed alongside the experience name.
@@ -104,18 +104,18 @@ func (c *CreateExperiencesRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateExperiencesRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createExperiencesRequestFieldAccountID)
+}
+
 // SetAppID sets the AppID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateExperiencesRequest) SetAppID(appID string) {
 	c.AppID = appID
 	c.require(createExperiencesRequestFieldAppID)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateExperiencesRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createExperiencesRequestFieldCompanyID)
 }
 
 // SetIsPublic sets the IsPublic field and marks it as non-optional;
@@ -319,11 +319,11 @@ var (
 	listExperiencesRequestFieldBefore        = big.NewInt(1 << 1)
 	listExperiencesRequestFieldFirst         = big.NewInt(1 << 2)
 	listExperiencesRequestFieldLast          = big.NewInt(1 << 3)
-	listExperiencesRequestFieldCompanyID     = big.NewInt(1 << 4)
-	listExperiencesRequestFieldProductID     = big.NewInt(1 << 5)
-	listExperiencesRequestFieldAppID         = big.NewInt(1 << 6)
-	listExperiencesRequestFieldCreatedBefore = big.NewInt(1 << 7)
-	listExperiencesRequestFieldCreatedAfter  = big.NewInt(1 << 8)
+	listExperiencesRequestFieldProductID     = big.NewInt(1 << 4)
+	listExperiencesRequestFieldAppID         = big.NewInt(1 << 5)
+	listExperiencesRequestFieldCreatedBefore = big.NewInt(1 << 6)
+	listExperiencesRequestFieldCreatedAfter  = big.NewInt(1 << 7)
+	listExperiencesRequestFieldAccountID     = big.NewInt(1 << 8)
 )
 
 type ListExperiencesRequest struct {
@@ -335,8 +335,6 @@ type ListExperiencesRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list experiences for.
-	CompanyID string `json:"-" url:"company_id"`
 	// Filter to only experiences attached to this product identifier.
 	ProductID *string `json:"-" url:"product_id,omitempty"`
 	// Filter to only experiences powered by this app identifier.
@@ -345,6 +343,8 @@ type ListExperiencesRequest struct {
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Only return experiences created after this timestamp.
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
+	// The unique identifier of the company to list experiences for.
+	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -385,13 +385,6 @@ func (l *ListExperiencesRequest) SetLast(last *int) {
 	l.require(listExperiencesRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListExperiencesRequest) SetCompanyID(companyID string) {
-	l.CompanyID = companyID
-	l.require(listExperiencesRequestFieldCompanyID)
-}
-
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListExperiencesRequest) SetProductID(productID *string) {
@@ -418,6 +411,13 @@ func (l *ListExperiencesRequest) SetCreatedBefore(createdBefore *time.Time) {
 func (l *ListExperiencesRequest) SetCreatedAfter(createdAfter *time.Time) {
 	l.CreatedAfter = createdAfter
 	l.require(listExperiencesRequestFieldCreatedAfter)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListExperiencesRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(listExperiencesRequestFieldAccountID)
 }
 
 var (

@@ -11,21 +11,22 @@ import (
 )
 
 var (
-	listFinancialActivityRequestFieldAccountID            = big.NewInt(1 << 0)
-	listFinancialActivityRequestFieldUserID               = big.NewInt(1 << 1)
-	listFinancialActivityRequestFieldIncludeOwnedAccounts = big.NewInt(1 << 2)
-	listFinancialActivityRequestFieldIncludeResource      = big.NewInt(1 << 3)
-	listFinancialActivityRequestFieldLineTypes            = big.NewInt(1 << 4)
-	listFinancialActivityRequestFieldDirection            = big.NewInt(1 << 5)
-	listFinancialActivityRequestFieldResourceID           = big.NewInt(1 << 6)
-	listFinancialActivityRequestFieldActivityID           = big.NewInt(1 << 7)
-	listFinancialActivityRequestFieldCurrency             = big.NewInt(1 << 8)
-	listFinancialActivityRequestFieldPostedAfter          = big.NewInt(1 << 9)
-	listFinancialActivityRequestFieldPostedBefore         = big.NewInt(1 << 10)
-	listFinancialActivityRequestFieldAvailableAfter       = big.NewInt(1 << 11)
-	listFinancialActivityRequestFieldAvailableBefore      = big.NewInt(1 << 12)
-	listFinancialActivityRequestFieldLimit                = big.NewInt(1 << 13)
-	listFinancialActivityRequestFieldCursor               = big.NewInt(1 << 14)
+	listFinancialActivityRequestFieldAccountID                = big.NewInt(1 << 0)
+	listFinancialActivityRequestFieldUserID                   = big.NewInt(1 << 1)
+	listFinancialActivityRequestFieldIncludeOwnedAccounts     = big.NewInt(1 << 2)
+	listFinancialActivityRequestFieldIncludeResource          = big.NewInt(1 << 3)
+	listFinancialActivityRequestFieldLineTypes                = big.NewInt(1 << 4)
+	listFinancialActivityRequestFieldDirection                = big.NewInt(1 << 5)
+	listFinancialActivityRequestFieldResourceID               = big.NewInt(1 << 6)
+	listFinancialActivityRequestFieldActivityID               = big.NewInt(1 << 7)
+	listFinancialActivityRequestFieldExcludeInternalMovements = big.NewInt(1 << 8)
+	listFinancialActivityRequestFieldCurrency                 = big.NewInt(1 << 9)
+	listFinancialActivityRequestFieldPostedAfter              = big.NewInt(1 << 10)
+	listFinancialActivityRequestFieldPostedBefore             = big.NewInt(1 << 11)
+	listFinancialActivityRequestFieldAvailableAfter           = big.NewInt(1 << 12)
+	listFinancialActivityRequestFieldAvailableBefore          = big.NewInt(1 << 13)
+	listFinancialActivityRequestFieldLimit                    = big.NewInt(1 << 14)
+	listFinancialActivityRequestFieldCursor                   = big.NewInt(1 << 15)
 )
 
 type ListFinancialActivityRequest struct {
@@ -45,6 +46,8 @@ type ListFinancialActivityRequest struct {
 	ResourceID *string `json:"-" url:"resource_id,omitempty"`
 	// Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
 	ActivityID *string `json:"-" url:"activity_id,omitempty"`
+	// Whether to exclude balance reservations and balanced movements between the account's own balances.
+	ExcludeInternalMovements *bool `json:"-" url:"exclude_internal_movements,omitempty"`
 	// Optional currency code filter, for example `usd`.
 	Currency *string `json:"-" url:"currency,omitempty"`
 	// Only include rows posted after this ISO 8601 timestamp.
@@ -125,6 +128,13 @@ func (l *ListFinancialActivityRequest) SetResourceID(resourceID *string) {
 func (l *ListFinancialActivityRequest) SetActivityID(activityID *string) {
 	l.ActivityID = activityID
 	l.require(listFinancialActivityRequestFieldActivityID)
+}
+
+// SetExcludeInternalMovements sets the ExcludeInternalMovements field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetExcludeInternalMovements(excludeInternalMovements *bool) {
+	l.ExcludeInternalMovements = excludeInternalMovements
+	l.require(listFinancialActivityRequestFieldExcludeInternalMovements)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -4372,20 +4382,21 @@ var (
 	ledgerActivitySourceFieldFromAmount          = big.NewInt(1 << 6)
 	ledgerActivitySourceFieldFromCurrency        = big.NewInt(1 << 7)
 	ledgerActivitySourceFieldID                  = big.NewInt(1 << 8)
-	ledgerActivitySourceFieldObject              = big.NewInt(1 << 9)
-	ledgerActivitySourceFieldPayerName           = big.NewInt(1 << 10)
-	ledgerActivitySourceFieldPaymentAmount       = big.NewInt(1 << 11)
-	ledgerActivitySourceFieldPaymentMethodType   = big.NewInt(1 << 12)
-	ledgerActivitySourceFieldPaymentProcessor    = big.NewInt(1 << 13)
-	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 14)
-	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 15)
-	ledgerActivitySourceFieldReason              = big.NewInt(1 << 16)
-	ledgerActivitySourceFieldRiskReviewHold      = big.NewInt(1 << 17)
-	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 18)
-	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 19)
-	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 20)
-	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 21)
-	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 22)
+	ledgerActivitySourceFieldNotes               = big.NewInt(1 << 9)
+	ledgerActivitySourceFieldObject              = big.NewInt(1 << 10)
+	ledgerActivitySourceFieldPayerName           = big.NewInt(1 << 11)
+	ledgerActivitySourceFieldPaymentAmount       = big.NewInt(1 << 12)
+	ledgerActivitySourceFieldPaymentMethodType   = big.NewInt(1 << 13)
+	ledgerActivitySourceFieldPaymentProcessor    = big.NewInt(1 << 14)
+	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 15)
+	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 16)
+	ledgerActivitySourceFieldReason              = big.NewInt(1 << 17)
+	ledgerActivitySourceFieldRiskReviewHold      = big.NewInt(1 << 18)
+	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 19)
+	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 20)
+	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 21)
+	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 22)
+	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 23)
 )
 
 type LedgerActivitySource struct {
@@ -4406,7 +4417,9 @@ type LedgerActivitySource struct {
 	// Lowercase currency code converted from (swap sources only).
 	FromCurrency *string `json:"from_currency,omitempty" url:"from_currency,omitempty"`
 	ID           string  `json:"id" url:"id"`
-	Object       string  `json:"object" url:"object"`
+	// Memo attached to the transfer source, or null when none was provided.
+	Notes  *string `json:"notes,omitempty" url:"notes,omitempty"`
+	Object string  `json:"object" url:"object"`
 	// Name of the entity processing the payout (payout sources only; requires payout:withdrawal:read).
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
 	// Total charged by the payment source.
@@ -4503,6 +4516,13 @@ func (l *LedgerActivitySource) GetID() string {
 		return ""
 	}
 	return l.ID
+}
+
+func (l *LedgerActivitySource) GetNotes() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Notes
 }
 
 func (l *LedgerActivitySource) GetObject() string {
@@ -4678,6 +4698,13 @@ func (l *LedgerActivitySource) SetFromCurrency(fromCurrency *string) {
 func (l *LedgerActivitySource) SetID(id string) {
 	l.ID = id
 	l.require(ledgerActivitySourceFieldID)
+}
+
+// SetNotes sets the Notes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetNotes(notes *string) {
+	l.Notes = notes
+	l.require(ledgerActivitySourceFieldNotes)
 }
 
 // SetObject sets the Object field and marks it as non-optional;

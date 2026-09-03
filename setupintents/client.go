@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-1"
+		apiVersionDateDefault := "2026-09-02-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -55,7 +55,6 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
 //	    CreatedBefore: whopsdk.Time(
 //	        whopsdk.MustParseDateTime(
 //	            "2023-12-01T05:00:00Z",
@@ -66,6 +65,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //	            "2023-12-01T05:00:00Z",
 //	        ),
 //	    ),
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.SetupIntents.List(
 //	    context.TODO(),
@@ -145,7 +145,7 @@ func (c *Client) List(
 //
 //	request := &whopsdk.CreateSetupIntentsRequest{
 //	    CreateSetupIntentsRequestConfirmationToken: &whopsdk.CreateSetupIntentsRequestConfirmationToken{
-//	        CompanyID: "biz_xxxxxxxxxxxxxx",
+//	        AccountID: "biz_xxxxxxxxxxxxxx",
 //	        ConfirmationToken: "ctok_xxxxxxxxxxxxxx",
 //	    },
 //	}

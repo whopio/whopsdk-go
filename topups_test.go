@@ -11,19 +11,19 @@ import (
 )
 
 func TestSettersCreateTopupsRequest(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &CreateTopupsRequest{}
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAmount", func(t *testing.T) {
 		obj := &CreateTopupsRequest{}
 		var fernTestValueAmount float64
 		obj.SetAmount(fernTestValueAmount)
 		assert.Equal(t, fernTestValueAmount, obj.Amount)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetCompanyID", func(t *testing.T) {
-		obj := &CreateTopupsRequest{}
-		var fernTestValueCompanyID string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -46,14 +46,14 @@ func TestSettersCreateTopupsRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateTopupsRequest(t *testing.T) {
-	t.Run("SetAmount_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateTopupsRequest{}
-		var fernTestValueAmount float64
+		var fernTestValueAccountID string
 
 		// Act
-		obj.SetAmount(fernTestValueAmount)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -77,14 +77,14 @@ func TestSettersMarkExplicitCreateTopupsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateTopupsRequest{}
-		var fernTestValueCompanyID string
+		var fernTestValueAmount float64
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetAmount(fernTestValueAmount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

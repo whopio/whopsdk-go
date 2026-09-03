@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-1"
+		apiVersionDateDefault := "2026-09-02-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -67,11 +67,11 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.DescribeStatsRequest{
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
 //	    UserID: whopsdk.String(
 //	        "user_xxxxxxxxxxxxx",
+//	    ),
+//	    AccountID: whopsdk.String(
+//	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
 //	client.Stats.DescribeStats(
@@ -113,11 +113,11 @@ func (c *Client) DescribeStats(
 //	            "2023-12-01T05:00:00Z",
 //	        ),
 //	    ),
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
 //	    UserID: whopsdk.String(
 //	        "user_xxxxxxxxxxxxx",
+//	    ),
+//	    AccountID: whopsdk.String(
+//	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
 //	client.Stats.MetricStats(
@@ -162,11 +162,11 @@ func (c *Client) MetricStats(
 //	    Limit: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
 //	    UserID: whopsdk.String(
 //	        "user_xxxxxxxxxxxxx",
+//	    ),
+//	    AccountID: whopsdk.String(
+//	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
 //	client.Stats.RawStats(
