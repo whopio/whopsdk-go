@@ -159,7 +159,7 @@ var (
 	listCoursesRequestFieldFirst        = big.NewInt(1 << 2)
 	listCoursesRequestFieldLast         = big.NewInt(1 << 3)
 	listCoursesRequestFieldExperienceID = big.NewInt(1 << 4)
-	listCoursesRequestFieldCompanyID    = big.NewInt(1 << 5)
+	listCoursesRequestFieldAccountID    = big.NewInt(1 << 5)
 )
 
 type ListCoursesRequest struct {
@@ -174,7 +174,7 @@ type ListCoursesRequest struct {
 	// The unique identifier of the experience to list courses for.
 	ExperienceID *string `json:"-" url:"experience_id,omitempty"`
 	// The unique identifier of the company to list courses for.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -222,11 +222,11 @@ func (l *ListCoursesRequest) SetExperienceID(experienceID *string) {
 	l.require(listCoursesRequestFieldExperienceID)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCoursesRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listCoursesRequestFieldCompanyID)
+func (l *ListCoursesRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listCoursesRequestFieldAccountID)
 }
 
 var (

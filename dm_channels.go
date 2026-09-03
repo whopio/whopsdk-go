@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	createDmChannelsRequestFieldCompanyID            = big.NewInt(1 << 0)
+	createDmChannelsRequestFieldAccountID            = big.NewInt(1 << 0)
 	createDmChannelsRequestFieldCustomName           = big.NewInt(1 << 1)
 	createDmChannelsRequestFieldNotificationsEnabled = big.NewInt(1 << 2)
 	createDmChannelsRequestFieldWithUserIDs          = big.NewInt(1 << 3)
@@ -19,7 +19,7 @@ var (
 
 type CreateDmChannelsRequest struct {
 	// The unique identifier of the company to scope this DM channel to. When set, the channel is visible only within that company context.
-	CompanyID *string `json:"company_id,omitempty" url:"-"`
+	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// A custom display name for the DM channel. For example, 'Project Discussion'.
 	CustomName *string `json:"custom_name,omitempty" url:"-"`
 	// Whether Whop app notifications are enabled for this direct message channel. Webhooks still fire.
@@ -38,11 +38,11 @@ func (c *CreateDmChannelsRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDmChannelsRequest) SetCompanyID(companyID *string) {
-	c.CompanyID = companyID
-	c.require(createDmChannelsRequestFieldCompanyID)
+func (c *CreateDmChannelsRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createDmChannelsRequestFieldAccountID)
 }
 
 // SetCustomName sets the CustomName field and marks it as non-optional;
@@ -118,7 +118,7 @@ var (
 	listDmChannelsRequestFieldBefore    = big.NewInt(1 << 1)
 	listDmChannelsRequestFieldFirst     = big.NewInt(1 << 2)
 	listDmChannelsRequestFieldLast      = big.NewInt(1 << 3)
-	listDmChannelsRequestFieldCompanyID = big.NewInt(1 << 4)
+	listDmChannelsRequestFieldAccountID = big.NewInt(1 << 4)
 )
 
 type ListDmChannelsRequest struct {
@@ -131,7 +131,7 @@ type ListDmChannelsRequest struct {
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
 	// The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -172,11 +172,11 @@ func (l *ListDmChannelsRequest) SetLast(last *int) {
 	l.require(listDmChannelsRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListDmChannelsRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listDmChannelsRequestFieldCompanyID)
+func (l *ListDmChannelsRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listDmChannelsRequestFieldAccountID)
 }
 
 var (

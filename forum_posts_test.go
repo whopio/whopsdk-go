@@ -11,19 +11,19 @@ import (
 )
 
 func TestSettersCreateForumPostsRequest(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &CreateForumPostsRequest{}
+		var fernTestValueAccountID *string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAttachments", func(t *testing.T) {
 		obj := &CreateForumPostsRequest{}
 		var fernTestValueAttachments []*CreateForumPostsRequestAttachmentsItem
 		obj.SetAttachments(fernTestValueAttachments)
 		assert.Equal(t, fernTestValueAttachments, obj.Attachments)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetCompanyID", func(t *testing.T) {
-		obj := &CreateForumPostsRequest{}
-		var fernTestValueCompanyID *string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -118,14 +118,14 @@ func TestSettersCreateForumPostsRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateForumPostsRequest(t *testing.T) {
-	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateForumPostsRequest{}
-		var fernTestValueAttachments []*CreateForumPostsRequestAttachmentsItem
+		var fernTestValueAccountID *string
 
 		// Act
-		obj.SetAttachments(fernTestValueAttachments)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -149,14 +149,14 @@ func TestSettersMarkExplicitCreateForumPostsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateForumPostsRequest{}
-		var fernTestValueCompanyID *string
+		var fernTestValueAttachments []*CreateForumPostsRequestAttachmentsItem
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetAttachments(fernTestValueAttachments)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

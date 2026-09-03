@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-1"
+		apiVersionDateDefault := "2026-09-02-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -55,10 +55,10 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
 //	    UserID: whopsdk.String(
 //	        "user_xxxxxxxxxxxxx",
 //	    ),
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.CompanyTokenTransactions.List(
 //	    context.TODO(),
@@ -138,8 +138,8 @@ func (c *Client) List(
 //
 //	request := &whopsdk.CreateCompanyTokenTransactionsRequest{
 //	    Transfer: &whopsdk.CreateCompanyTokenTransactionsRequestTransfer{
+//	        AccountID: "biz_xxxxxxxxxxxxxx",
 //	        Amount: 6.9,
-//	        CompanyID: "biz_xxxxxxxxxxxxxx",
 //	        DestinationUserID: "destination_user_id",
 //	        UserID: "user_xxxxxxxxxxxxx",
 //	    },

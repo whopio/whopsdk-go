@@ -95,7 +95,7 @@ func TestIdentityProfilesListIdentityProfileWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: whopsdk.String(
+		AccountID: whopsdk.String(
 			"biz_xxxxxxxxxxxxxx",
 		),
 	}
@@ -108,7 +108,7 @@ func TestIdentityProfilesListIdentityProfileWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestIdentityProfilesListIdentityProfileWithWireMock", "GET", "/identity_profiles", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestIdentityProfilesListIdentityProfileWithWireMock", "GET", "/identity_profiles", map[string]interface{}{"first": "42", "last": "42", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestIdentityProfilesRetrieveIdentityProfileWithWireMock(

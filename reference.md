@@ -46,7 +46,7 @@ client.AccessTokens.Create(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of the company to generate the token for, starting with 'biz_'. The API key must have permission to access this company.
+**accountID:** `*string` — The unique identifier of the company to generate the token for, starting with 'biz_'. The API key must have permission to access this company.
     
 </dd>
 </dl>
@@ -111,7 +111,7 @@ Generate a URL that directs a sub-merchant to their account portal, such as the 
 
 ```go
 request := &whopsdk.CreateAccountLinksRequest{
-    CompanyID: "biz_xxxxxxxxxxxxxx",
+    AccountID: "biz_xxxxxxxxxxxxxx",
     RefreshURL: "refresh_url",
     ReturnURL: "return_url",
     UseCase: whopsdk.AccountLinkUseCasesAccountOnboarding,
@@ -134,7 +134,7 @@ client.AccountLinks.Create(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to generate the link for, starting with 'biz_'. Must be a sub-merchant of the API key's company.
+**accountID:** `string` — The unique identifier of the company to generate the link for, starting with 'biz_'. Must be a sub-merchant of the API key's company.
     
 </dd>
 </dl>
@@ -4387,7 +4387,7 @@ request := &whopsdk.ListAffiliatesRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: "biz_xxxxxxxxxxxxxx",
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.Affiliates.List(
     context.TODO(),
@@ -4439,14 +4439,6 @@ client.Affiliates.List(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to list affiliates for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **direction:** `*whopsdk.Direction` 
     
 </dd>
@@ -4472,6 +4464,14 @@ client.Affiliates.List(
 <dd>
 
 **status:** `*whopsdk.Status` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The unique identifier of the company to list affiliates for.
     
 </dd>
 </dl>
@@ -4514,7 +4514,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreateAffiliatesRequest{
-    CompanyID: "biz_xxxxxxxxxxxxxx",
+    AccountID: "biz_xxxxxxxxxxxxxx",
     UserIdentifier: "user_identifier",
 }
 client.Affiliates.Create(
@@ -4535,7 +4535,7 @@ client.Affiliates.Create(
 <dl>
 <dd>
 
-**companyID:** `string` — The ID of the company to create the affiliate for.
+**accountID:** `string` — The ID of the company to create the affiliate for.
     
 </dd>
 </dl>
@@ -7640,9 +7640,6 @@ request := &whopsdk.ListAuthorizedUsersRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
     UserID: whopsdk.String(
         "user_xxxxxxxxxxxxx",
     ),
@@ -7655,6 +7652,9 @@ request := &whopsdk.ListAuthorizedUsersRequest{
         whopsdk.MustParseDateTime(
             "2023-12-01T05:00:00Z",
         ),
+    ),
+    AccountID: whopsdk.String(
+        "biz_xxxxxxxxxxxxxx",
     ),
 }
 client.AuthorizedUsers.List(
@@ -7707,14 +7707,6 @@ client.AuthorizedUsers.List(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of the company to list authorized users for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **userID:** `*string` — Filter results to a specific user to check if they are an authorized team member.
     
 </dd>
@@ -7740,6 +7732,14 @@ client.AuthorizedUsers.List(
 <dd>
 
 **createdAfter:** `*time.Time` — Only return authorized users created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The unique identifier of the company to list authorized users for.
     
 </dd>
 </dl>
@@ -7783,7 +7783,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreateAuthorizedUsersRequest{
-    CompanyID: "biz_xxxxxxxxxxxxxx",
+    AccountID: "biz_xxxxxxxxxxxxxx",
     Role: whopsdk.GrantableAuthorizedUserRolesOwner,
     UserID: "user_xxxxxxxxxxxxx",
 }
@@ -7805,7 +7805,7 @@ client.AuthorizedUsers.Create(
 <dl>
 <dd>
 
-**companyID:** `string` — The ID of the company to add the authorized user to.
+**accountID:** `string` — The ID of the company to add the authorized user to.
     
 </dd>
 </dl>
@@ -7945,7 +7945,7 @@ Required permissions:
 ```go
 request := &whopsdk.DeleteAuthorizedUsersRequest{
     ID: "ausr_xxxxxxxxxxxxx",
-    CompanyID: whopsdk.String(
+    AccountID: whopsdk.String(
         "biz_xxxxxxxxxxxxxx",
     ),
 }
@@ -7975,7 +7975,7 @@ client.AuthorizedUsers.Delete(
 <dl>
 <dd>
 
-**companyID:** `*string` — The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
+**accountID:** `*string` — The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
     
 </dd>
 </dl>
@@ -9669,10 +9669,10 @@ request := &whopsdk.ListChatChannelsRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: "biz_xxxxxxxxxxxxxx",
     ProductID: whopsdk.String(
         "prod_xxxxxxxxxxxxx",
     ),
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.ChatChannels.List(
     context.TODO(),
@@ -9724,7 +9724,7 @@ client.ChatChannels.List(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to list chat channels for.
+**productID:** `*string` — The unique identifier of a product to filter by. When set, only chat channels connected to this product are returned.
     
 </dd>
 </dl>
@@ -9732,7 +9732,7 @@ client.ChatChannels.List(
 <dl>
 <dd>
 
-**productID:** `*string` — The unique identifier of a product to filter by. When set, only chat channels connected to this product are returned.
+**accountID:** `string` — The unique identifier of the company to list chat channels for.
     
 </dd>
 </dl>
@@ -10332,10 +10332,10 @@ request := &whopsdk.ListCompanyTokenTransactionsRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: "biz_xxxxxxxxxxxxxx",
     UserID: whopsdk.String(
         "user_xxxxxxxxxxxxx",
     ),
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.CompanyTokenTransactions.List(
     context.TODO(),
@@ -10387,14 +10387,6 @@ client.CompanyTokenTransactions.List(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to list token transactions for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **userID:** `*string` — Filter transactions to only those involving this specific user.
     
 </dd>
@@ -10404,6 +10396,14 @@ client.CompanyTokenTransactions.List(
 <dd>
 
 **transactionType:** `*whopsdk.CompanyTokenTransactionTypes` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The unique identifier of the company to list token transactions for.
     
 </dd>
 </dl>
@@ -10449,8 +10449,8 @@ Required permissions:
 ```go
 request := &whopsdk.CreateCompanyTokenTransactionsRequest{
     Transfer: &whopsdk.CreateCompanyTokenTransactionsRequestTransfer{
+        AccountID: "biz_xxxxxxxxxxxxxx",
         Amount: 6.9,
-        CompanyID: "biz_xxxxxxxxxxxxxx",
         DestinationUserID: "destination_user_id",
         UserID: "user_xxxxxxxxxxxxx",
     },
@@ -12265,7 +12265,7 @@ request := &whopsdk.ListCoursesRequest{
     ExperienceID: whopsdk.String(
         "exp_xxxxxxxxxxxxxx",
     ),
-    CompanyID: whopsdk.String(
+    AccountID: whopsdk.String(
         "biz_xxxxxxxxxxxxxx",
     ),
 }
@@ -12327,7 +12327,7 @@ client.Courses.List(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of the company to list courses for.
+**accountID:** `*string` — The unique identifier of the company to list courses for.
     
 </dd>
 </dl>
@@ -12757,9 +12757,7 @@ Retrieve the deposit methods for an account, including crypto and bank transfer.
 
 ```go
 request := &whopsdk.CreateDepositsRequest{
-    Destination: &whopsdk.CreateDepositsRequestDestination{
-        String: "destination",
-    },
+    Destination: "biz_xxxxxxxxxxxxxx",
 }
 client.Deposits.Create(
     context.TODO(),
@@ -12787,23 +12785,7 @@ client.Deposits.Create(
 <dl>
 <dd>
 
-**destination:** `*whopsdk.CreateDepositsRequestDestination` — Destination account ID or wallet address. Object form is supported for compatibility. Any business resolves by its account ID without authentication; a user account resolves only for that same authenticated user.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `map[string]any` — Metadata to include with the deposit response.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**network:** `*whopsdk.CreateDepositsRequestNetwork` — Destination network override. Defaults to the destination wallet's own network.
+**destination:** `string` — Account ID to fund, `biz_` or `user_`. Any business resolves without authentication; a user account resolves only for that same authenticated user.
     
 </dd>
 </dl>
@@ -13802,7 +13784,7 @@ request := &whopsdk.ListDmChannelsRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: whopsdk.String(
+    AccountID: whopsdk.String(
         "biz_xxxxxxxxxxxxxx",
     ),
 }
@@ -13856,7 +13838,7 @@ client.DmChannels.List(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
+**accountID:** `*string` — The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
     
 </dd>
 </dl>
@@ -13921,7 +13903,7 @@ client.DmChannels.Create(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of the company to scope this DM channel to. When set, the channel is visible only within that company context.
+**accountID:** `*string` — The unique identifier of the company to scope this DM channel to. When set, the channel is visible only within that company context.
     
 </dd>
 </dl>
@@ -14580,7 +14562,6 @@ request := &whopsdk.ListEntriesRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: "biz_xxxxxxxxxxxxxx",
     CreatedBefore: whopsdk.Time(
         whopsdk.MustParseDateTime(
             "2023-12-01T05:00:00Z",
@@ -14591,6 +14572,7 @@ request := &whopsdk.ListEntriesRequest{
             "2023-12-01T05:00:00Z",
         ),
     ),
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.Entries.List(
     context.TODO(),
@@ -14635,14 +14617,6 @@ client.Entries.List(
 <dd>
 
 **last:** `*int` — Returns the last _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**companyID:** `string` — The unique identifier of the company to list waitlist entries for.
     
 </dd>
 </dl>
@@ -14699,6 +14673,14 @@ client.Entries.List(
 <dd>
 
 **createdAfter:** `*time.Time` — Only return entries created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The unique identifier of the company to list waitlist entries for.
     
 </dd>
 </dl>
@@ -15505,7 +15487,6 @@ request := &whopsdk.ListExperiencesRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: "biz_xxxxxxxxxxxxxx",
     ProductID: whopsdk.String(
         "prod_xxxxxxxxxxxxx",
     ),
@@ -15522,6 +15503,7 @@ request := &whopsdk.ListExperiencesRequest{
             "2023-12-01T05:00:00Z",
         ),
     ),
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.Experiences.List(
     context.TODO(),
@@ -15573,14 +15555,6 @@ client.Experiences.List(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to list experiences for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **productID:** `*string` — Filter to only experiences attached to this product identifier.
     
 </dd>
@@ -15606,6 +15580,14 @@ client.Experiences.List(
 <dd>
 
 **createdAfter:** `*time.Time` — Only return experiences created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The unique identifier of the company to list experiences for.
     
 </dd>
 </dl>
@@ -15646,8 +15628,8 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreateExperiencesRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
     AppID: "app_xxxxxxxxxxxxxx",
-    CompanyID: "biz_xxxxxxxxxxxxxx",
 }
 client.Experiences.Create(
     context.TODO(),
@@ -15667,7 +15649,7 @@ client.Experiences.Create(
 <dl>
 <dd>
 
-**appID:** `string` — The unique identifier of the app that powers this experience.
+**accountID:** `string` — The unique identifier of the company to create this experience for.
     
 </dd>
 </dl>
@@ -15675,7 +15657,7 @@ client.Experiences.Create(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to create this experience for.
+**appID:** `string` — The unique identifier of the app that powers this experience.
     
 </dd>
 </dl>
@@ -16480,7 +16462,7 @@ request := &whopsdk.ListFeeMarkupsRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: "biz_xxxxxxxxxxxxxx",
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.FeeMarkups.List(
     context.TODO(),
@@ -16532,7 +16514,7 @@ client.FeeMarkups.List(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to list fee markups for. Pass a platform account identifier to retrieve platform default markups.
+**accountID:** `string` — The unique identifier of the company to list fee markups for. Pass a platform account identifier to retrieve platform default markups.
     
 </dd>
 </dl>
@@ -16575,7 +16557,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreateFeeMarkupsRequest{
-    CompanyID: "biz_xxxxxxxxxxxxxx",
+    AccountID: "biz_xxxxxxxxxxxxxx",
     FeeType: whopsdk.FeeMarkupTypesCryptoWithdrawalMarkup,
 }
 client.FeeMarkups.Create(
@@ -16596,7 +16578,7 @@ client.FeeMarkups.Create(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to create or update the fee markup for.
+**accountID:** `string` — The unique identifier of the company to create or update the fee markup for.
     
 </dd>
 </dl>
@@ -17162,6 +17144,14 @@ client.FinancialActivity.List(
 <dl>
 <dd>
 
+**excludeInternalMovements:** `*bool` — Whether to exclude balance reservations and balanced movements between the account's own balances.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **currency:** `*string` — Optional currency code filter, for example `usd`.
     
 </dd>
@@ -17557,7 +17547,7 @@ client.ForumPosts.Create(
 <dl>
 <dd>
 
-**attachments:** `[]*whopsdk.CreateForumPostsRequestAttachmentsItem` — A list of file attachments to include with the post, such as images or videos.
+**accountID:** `*string` — The unique identifier of the company whose public forum to post in. Required when experience_id is 'public'. For example, 'biz_xxxxx'.
     
 </dd>
 </dl>
@@ -17565,7 +17555,7 @@ client.ForumPosts.Create(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of the company whose public forum to post in. Required when experience_id is 'public'. For example, 'biz_xxxxx'.
+**attachments:** `[]*whopsdk.CreateForumPostsRequestAttachmentsItem` — A list of file attachments to include with the post, such as images or videos.
     
 </dd>
 </dl>
@@ -17866,10 +17856,10 @@ request := &whopsdk.ListForumsRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: "biz_xxxxxxxxxxxxxx",
     ProductID: whopsdk.String(
         "prod_xxxxxxxxxxxxx",
     ),
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.Forums.List(
     context.TODO(),
@@ -17921,7 +17911,7 @@ client.Forums.List(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to list forums for.
+**productID:** `*string` — The unique identifier of a product to filter by. When set, only forums connected to this product are returned.
     
 </dd>
 </dl>
@@ -17929,7 +17919,7 @@ client.Forums.List(
 <dl>
 <dd>
 
-**productID:** `*string` — The unique identifier of a product to filter by. When set, only forums connected to this product are returned.
+**accountID:** `string` — The unique identifier of the company to list forums for.
     
 </dd>
 </dl>
@@ -18145,7 +18135,7 @@ request := &whopsdk.ListIdentityProfileRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: whopsdk.String(
+    AccountID: whopsdk.String(
         "biz_xxxxxxxxxxxxxx",
     ),
 }
@@ -18199,14 +18189,6 @@ client.IdentityProfiles.ListIdentityProfile(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **profileType:** `*whopsdk.IdentityProfileKinds` 
     
 </dd>
@@ -18216,6 +18198,14 @@ client.IdentityProfiles.ListIdentityProfile(
 <dd>
 
 **status:** `*whopsdk.IdentityProfileStatuses` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
     
 </dd>
 </dl>
@@ -18498,9 +18488,6 @@ request := &whopsdk.ListInvoicesRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
     CreatedBefore: whopsdk.Time(
         whopsdk.MustParseDateTime(
             "2023-12-01T05:00:00Z",
@@ -18510,6 +18497,9 @@ request := &whopsdk.ListInvoicesRequest{
         whopsdk.MustParseDateTime(
             "2023-12-01T05:00:00Z",
         ),
+    ),
+    AccountID: whopsdk.String(
+        "biz_xxxxxxxxxxxxxx",
     ),
 }
 client.Invoices.List(
@@ -18555,14 +18545,6 @@ client.Invoices.List(
 <dd>
 
 **last:** `*int` — Returns the last _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**companyID:** `*string` — The unique identifier of the company to list invoices for.
     
 </dd>
 </dl>
@@ -18622,6 +18604,14 @@ client.Invoices.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The unique identifier of the company to list invoices for.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -18665,8 +18655,8 @@ Required permissions:
 ```go
 request := &whopsdk.CreateInvoicesRequest{
     CreateInvoicesRequestProduct: &whopsdk.CreateInvoicesRequestProduct{
+        AccountID: "biz_xxxxxxxxxxxxxx",
         CollectionMethod: whopsdk.InvoiceCollectionMethodsSendInvoice,
-        CompanyID: "biz_xxxxxxxxxxxxxx",
         Plan: &whopsdk.CreateInvoicesRequestProductPlan{},
         Product: &whopsdk.CreateInvoicesRequestProductProduct{
             Title: "title",
@@ -19303,7 +19293,6 @@ request := &whopsdk.ListLeadsRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: "biz_xxxxxxxxxxxxxx",
     CreatedAfter: whopsdk.Time(
         whopsdk.MustParseDateTime(
             "2023-12-01T05:00:00Z",
@@ -19314,6 +19303,7 @@ request := &whopsdk.ListLeadsRequest{
             "2023-12-01T05:00:00Z",
         ),
     ),
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.Leads.List(
     context.TODO(),
@@ -19365,14 +19355,6 @@ client.Leads.List(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to list leads for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **createdAfter:** `*time.Time` — Only return leads created after this timestamp.
     
 </dd>
@@ -19390,6 +19372,14 @@ client.Leads.List(
 <dd>
 
 **productIDs:** `*string` — Filter leads to only those associated with these specific product identifiers.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The unique identifier of the company to list leads for.
     
 </dd>
 </dl>
@@ -19435,7 +19425,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreateLeadsRequest{
-    CompanyID: "biz_xxxxxxxxxxxxxx",
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.Leads.Create(
     context.TODO(),
@@ -19455,7 +19445,7 @@ client.Leads.Create(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to create the lead for, starting with 'biz_'.
+**accountID:** `string` — The unique identifier of the company to create the lead for, starting with 'biz_'.
     
 </dd>
 </dl>
@@ -22475,9 +22465,6 @@ request := &whopsdk.ListPaymentMethodsRequest{
     MemberID: whopsdk.String(
         "mber_xxxxxxxxxxxxx",
     ),
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
     CreatedBefore: whopsdk.Time(
         whopsdk.MustParseDateTime(
             "2023-12-01T05:00:00Z",
@@ -22487,6 +22474,9 @@ request := &whopsdk.ListPaymentMethodsRequest{
         whopsdk.MustParseDateTime(
             "2023-12-01T05:00:00Z",
         ),
+    ),
+    AccountID: whopsdk.String(
+        "biz_xxxxxxxxxxxxxx",
     ),
 }
 client.PaymentMethods.List(
@@ -22540,14 +22530,6 @@ client.PaymentMethods.List(
 <dd>
 
 **memberID:** `*string` — The unique identifier of the member to list payment methods for. Omit this and company_id to list your own saved payment methods.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**companyID:** `*string` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -22631,6 +22613,14 @@ client.PaymentMethods.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -22671,11 +22661,11 @@ Required permissions:
 ```go
 request := &whopsdk.RetrievePaymentMethodsRequest{
     ID: "payt_xxxxxxxxxxxxx",
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
     MemberID: whopsdk.String(
         "mber_xxxxxxxxxxxxx",
+    ),
+    AccountID: whopsdk.String(
+        "biz_xxxxxxxxxxxxxx",
     ),
 }
 client.PaymentMethods.Retrieve(
@@ -22704,7 +22694,7 @@ client.PaymentMethods.Retrieve(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+**memberID:** `*string` — The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -22712,7 +22702,7 @@ client.PaymentMethods.Retrieve(
 <dl>
 <dd>
 
-**memberID:** `*string` — The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+**accountID:** `*string` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -22756,11 +22746,11 @@ Required permissions:
 ```go
 request := &whopsdk.DeletePaymentMethodRequest{
     ID: "payt_xxxxxxxxxxxxx",
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
     MemberID: whopsdk.String(
         "mber_xxxxxxxxxxxxx",
+    ),
+    AccountID: whopsdk.String(
+        "biz_xxxxxxxxxxxxxx",
     ),
 }
 client.PaymentMethods.DeletePaymentMethod(
@@ -22789,7 +22779,7 @@ client.PaymentMethods.DeletePaymentMethod(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+**memberID:** `*string` — The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -22797,7 +22787,7 @@ client.PaymentMethods.DeletePaymentMethod(
 <dl>
 <dd>
 
-**memberID:** `*string` — The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+**accountID:** `*string` — The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
     
 </dd>
 </dl>
@@ -23736,7 +23726,7 @@ request := &whopsdk.ListPayoutMethodRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: "biz_xxxxxxxxxxxxxx",
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.PayoutMethods.ListPayoutMethod(
     context.TODO(),
@@ -23788,7 +23778,7 @@ client.PayoutMethods.ListPayoutMethod(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to list payout methods for.
+**accountID:** `string` — The unique identifier of the company to list payout methods for.
     
 </dd>
 </dl>
@@ -29088,7 +29078,6 @@ request := &whopsdk.ListSetupIntentsRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: "biz_xxxxxxxxxxxxxx",
     CreatedBefore: whopsdk.Time(
         whopsdk.MustParseDateTime(
             "2023-12-01T05:00:00Z",
@@ -29099,6 +29088,7 @@ request := &whopsdk.ListSetupIntentsRequest{
             "2023-12-01T05:00:00Z",
         ),
     ),
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.SetupIntents.List(
     context.TODO(),
@@ -29150,14 +29140,6 @@ client.SetupIntents.List(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to list setup intents for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **direction:** `*whopsdk.Direction` 
     
 </dd>
@@ -29175,6 +29157,14 @@ client.SetupIntents.List(
 <dd>
 
 **createdAfter:** `*time.Time` — Only return setup intents created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The unique identifier of the company to list setup intents for.
     
 </dd>
 </dl>
@@ -29220,7 +29210,7 @@ Required permissions:
 ```go
 request := &whopsdk.CreateSetupIntentsRequest{
     CreateSetupIntentsRequestConfirmationToken: &whopsdk.CreateSetupIntentsRequestConfirmationToken{
-        CompanyID: "biz_xxxxxxxxxxxxxx",
+        AccountID: "biz_xxxxxxxxxxxxxx",
         ConfirmationToken: "ctok_xxxxxxxxxxxxxx",
     },
 }
@@ -30402,11 +30392,11 @@ Required permissions:
 
 ```go
 request := &whopsdk.DescribeStatsRequest{
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
     UserID: whopsdk.String(
         "user_xxxxxxxxxxxxx",
+    ),
+    AccountID: whopsdk.String(
+        "biz_xxxxxxxxxxxxxx",
     ),
 }
 client.Stats.DescribeStats(
@@ -30435,7 +30425,7 @@ client.Stats.DescribeStats(
 <dl>
 <dd>
 
-**companyID:** `*string` — Scope query to a specific company.
+**userID:** `*string` — Scope query to a specific user.
     
 </dd>
 </dl>
@@ -30443,7 +30433,7 @@ client.Stats.DescribeStats(
 <dl>
 <dd>
 
-**userID:** `*string` — Scope query to a specific user.
+**accountID:** `*string` — Scope query to a specific company.
     
 </dd>
 </dl>
@@ -30497,11 +30487,11 @@ request := &whopsdk.MetricStatsRequest{
             "2023-12-01T05:00:00Z",
         ),
     ),
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
     UserID: whopsdk.String(
         "user_xxxxxxxxxxxxx",
+    ),
+    AccountID: whopsdk.String(
+        "biz_xxxxxxxxxxxxxx",
     ),
 }
 client.Stats.MetricStats(
@@ -30578,7 +30568,7 @@ client.Stats.MetricStats(
 <dl>
 <dd>
 
-**companyID:** `*string` — Scope query to a specific company.
+**userID:** `*string` — Scope query to a specific user.
     
 </dd>
 </dl>
@@ -30586,7 +30576,7 @@ client.Stats.MetricStats(
 <dl>
 <dd>
 
-**userID:** `*string` — Scope query to a specific user.
+**accountID:** `*string` — Scope query to a specific company.
     
 </dd>
 </dl>
@@ -30643,11 +30633,11 @@ request := &whopsdk.RawStatsRequest{
     Limit: whopsdk.Int(
         42,
     ),
-    CompanyID: whopsdk.String(
-        "biz_xxxxxxxxxxxxxx",
-    ),
     UserID: whopsdk.String(
         "user_xxxxxxxxxxxxx",
+    ),
+    AccountID: whopsdk.String(
+        "biz_xxxxxxxxxxxxxx",
     ),
 }
 client.Stats.RawStats(
@@ -30724,7 +30714,7 @@ client.Stats.RawStats(
 <dl>
 <dd>
 
-**companyID:** `*string` — Scope query to a specific company.
+**userID:** `*string` — Scope query to a specific user.
     
 </dd>
 </dl>
@@ -30732,7 +30722,7 @@ client.Stats.RawStats(
 <dl>
 <dd>
 
-**userID:** `*string` — Scope query to a specific user.
+**accountID:** `*string` — Scope query to a specific company.
     
 </dd>
 </dl>
@@ -31131,7 +31121,7 @@ request := &whopsdk.ListSupportChannelsRequest{
     Last: whopsdk.Int(
         42,
     ),
-    CompanyID: whopsdk.String(
+    AccountID: whopsdk.String(
         "biz_xxxxxxxxxxxxxx",
     ),
 }
@@ -31185,14 +31175,6 @@ client.SupportChannels.List(
 <dl>
 <dd>
 
-**companyID:** `*string` — The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **view:** `*whopsdk.SupportChannelView` 
     
 </dd>
@@ -31218,6 +31200,14 @@ client.SupportChannels.List(
 <dd>
 
 **order:** `*whopsdk.MessageChannelOrder` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
     
 </dd>
 </dl>
@@ -31260,7 +31250,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreateSupportChannelsRequest{
-    CompanyID: "biz_xxxxxxxxxxxxxx",
+    AccountID: "biz_xxxxxxxxxxxxxx",
     UserID: "user_xxxxxxxxxxxxx",
 }
 client.SupportChannels.Create(
@@ -31281,7 +31271,7 @@ client.SupportChannels.Create(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to create the support channel in.
+**accountID:** `string` — The unique identifier of the company to create the support channel in.
     
 </dd>
 </dl>
@@ -32200,8 +32190,8 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreateTopupsRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
     Amount: 6.9,
-    CompanyID: "biz_xxxxxxxxxxxxxx",
     Currency: whopsdk.CurrenciesUsd,
     PaymentMethodID: "pmt_xxxxxxxxxxxxxx",
 }
@@ -32223,7 +32213,7 @@ client.Topups.Create(
 <dl>
 <dd>
 
-**amount:** `float64` — The amount to add to the balance in the specified currency. For example, 50.00 for $50.00 USD.
+**accountID:** `string` — The unique identifier of the company to add funds to, starting with 'biz_'.
     
 </dd>
 </dl>
@@ -32231,7 +32221,7 @@ client.Topups.Create(
 <dl>
 <dd>
 
-**companyID:** `string` — The unique identifier of the company to add funds to, starting with 'biz_'.
+**amount:** `float64` — The amount to add to the balance in the specified currency. For example, 50.00 for $50.00 USD.
     
 </dd>
 </dl>

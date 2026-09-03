@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	createAuthorizedUsersRequestFieldCompanyID  = big.NewInt(1 << 0)
+	createAuthorizedUsersRequestFieldAccountID  = big.NewInt(1 << 0)
 	createAuthorizedUsersRequestFieldElevation  = big.NewInt(1 << 1)
 	createAuthorizedUsersRequestFieldRole       = big.NewInt(1 << 2)
 	createAuthorizedUsersRequestFieldSendEmails = big.NewInt(1 << 3)
@@ -20,7 +20,7 @@ var (
 
 type CreateAuthorizedUsersRequest struct {
 	// The ID of the company to add the authorized user to.
-	CompanyID string `json:"company_id" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
 	// Re-authentication proof required to perform this sensitive action.
 	Elevation *CreateAuthorizedUsersRequestElevation `json:"elevation,omitempty" url:"-"`
 	// The role to assign to the authorized user within the company. Supported roles: 'moderator', 'sales_manager'.
@@ -41,11 +41,11 @@ func (c *CreateAuthorizedUsersRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAuthorizedUsersRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createAuthorizedUsersRequestFieldCompanyID)
+func (c *CreateAuthorizedUsersRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createAuthorizedUsersRequestFieldAccountID)
 }
 
 // SetElevation sets the Elevation field and marks it as non-optional;
@@ -99,14 +99,14 @@ func (c *CreateAuthorizedUsersRequest) MarshalJSON() ([]byte, error) {
 
 var (
 	deleteAuthorizedUsersRequestFieldID        = big.NewInt(1 << 0)
-	deleteAuthorizedUsersRequestFieldCompanyID = big.NewInt(1 << 1)
+	deleteAuthorizedUsersRequestFieldAccountID = big.NewInt(1 << 1)
 )
 
 type DeleteAuthorizedUsersRequest struct {
 	// The ID of the authorized user or user to remove.
 	ID string `json:"-" url:"-"`
 	// The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -126,11 +126,11 @@ func (d *DeleteAuthorizedUsersRequest) SetID(id string) {
 	d.require(deleteAuthorizedUsersRequestFieldID)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeleteAuthorizedUsersRequest) SetCompanyID(companyID *string) {
-	d.CompanyID = companyID
-	d.require(deleteAuthorizedUsersRequestFieldCompanyID)
+func (d *DeleteAuthorizedUsersRequest) SetAccountID(accountID *string) {
+	d.AccountID = accountID
+	d.require(deleteAuthorizedUsersRequestFieldAccountID)
 }
 
 var (
@@ -138,11 +138,11 @@ var (
 	listAuthorizedUsersRequestFieldBefore        = big.NewInt(1 << 1)
 	listAuthorizedUsersRequestFieldFirst         = big.NewInt(1 << 2)
 	listAuthorizedUsersRequestFieldLast          = big.NewInt(1 << 3)
-	listAuthorizedUsersRequestFieldCompanyID     = big.NewInt(1 << 4)
-	listAuthorizedUsersRequestFieldUserID        = big.NewInt(1 << 5)
-	listAuthorizedUsersRequestFieldRole          = big.NewInt(1 << 6)
-	listAuthorizedUsersRequestFieldCreatedBefore = big.NewInt(1 << 7)
-	listAuthorizedUsersRequestFieldCreatedAfter  = big.NewInt(1 << 8)
+	listAuthorizedUsersRequestFieldUserID        = big.NewInt(1 << 4)
+	listAuthorizedUsersRequestFieldRole          = big.NewInt(1 << 5)
+	listAuthorizedUsersRequestFieldCreatedBefore = big.NewInt(1 << 6)
+	listAuthorizedUsersRequestFieldCreatedAfter  = big.NewInt(1 << 7)
+	listAuthorizedUsersRequestFieldAccountID     = big.NewInt(1 << 8)
 )
 
 type ListAuthorizedUsersRequest struct {
@@ -154,8 +154,6 @@ type ListAuthorizedUsersRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list authorized users for.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
 	// Filter results to a specific user to check if they are an authorized team member.
 	UserID *string              `json:"-" url:"user_id,omitempty"`
 	Role   *AuthorizedUserRoles `json:"-" url:"role,omitempty"`
@@ -163,6 +161,8 @@ type ListAuthorizedUsersRequest struct {
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Only return authorized users created after this timestamp.
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
+	// The unique identifier of the company to list authorized users for.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -203,13 +203,6 @@ func (l *ListAuthorizedUsersRequest) SetLast(last *int) {
 	l.require(listAuthorizedUsersRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListAuthorizedUsersRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listAuthorizedUsersRequestFieldCompanyID)
-}
-
 // SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListAuthorizedUsersRequest) SetUserID(userID *string) {
@@ -236,6 +229,13 @@ func (l *ListAuthorizedUsersRequest) SetCreatedBefore(createdBefore *time.Time) 
 func (l *ListAuthorizedUsersRequest) SetCreatedAfter(createdAfter *time.Time) {
 	l.CreatedAfter = createdAfter
 	l.require(listAuthorizedUsersRequestFieldCreatedAfter)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAuthorizedUsersRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listAuthorizedUsersRequestFieldAccountID)
 }
 
 var (

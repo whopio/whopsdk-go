@@ -98,7 +98,7 @@ func TestCoursesListWithWireMock(
 		ExperienceID: whopsdk.String(
 			"exp_xxxxxxxxxxxxxx",
 		),
-		CompanyID: whopsdk.String(
+		AccountID: whopsdk.String(
 			"biz_xxxxxxxxxxxxxx",
 		),
 	}
@@ -111,7 +111,7 @@ func TestCoursesListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestCoursesListWithWireMock", "GET", "/courses", map[string]interface{}{"first": "42", "last": "42", "experience_id": "exp_xxxxxxxxxxxxxx", "company_id": "biz_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestCoursesListWithWireMock", "GET", "/courses", map[string]interface{}{"first": "42", "last": "42", "experience_id": "exp_xxxxxxxxxxxxxx", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestCoursesCreateWithWireMock(

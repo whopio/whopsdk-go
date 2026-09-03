@@ -14,8 +14,8 @@ var (
 	listChatChannelsRequestFieldBefore    = big.NewInt(1 << 1)
 	listChatChannelsRequestFieldFirst     = big.NewInt(1 << 2)
 	listChatChannelsRequestFieldLast      = big.NewInt(1 << 3)
-	listChatChannelsRequestFieldCompanyID = big.NewInt(1 << 4)
-	listChatChannelsRequestFieldProductID = big.NewInt(1 << 5)
+	listChatChannelsRequestFieldProductID = big.NewInt(1 << 4)
+	listChatChannelsRequestFieldAccountID = big.NewInt(1 << 5)
 )
 
 type ListChatChannelsRequest struct {
@@ -27,10 +27,10 @@ type ListChatChannelsRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list chat channels for.
-	CompanyID string `json:"-" url:"company_id"`
 	// The unique identifier of a product to filter by. When set, only chat channels connected to this product are returned.
 	ProductID *string `json:"-" url:"product_id,omitempty"`
+	// The unique identifier of the company to list chat channels for.
+	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -71,18 +71,18 @@ func (l *ListChatChannelsRequest) SetLast(last *int) {
 	l.require(listChatChannelsRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListChatChannelsRequest) SetCompanyID(companyID string) {
-	l.CompanyID = companyID
-	l.require(listChatChannelsRequestFieldCompanyID)
-}
-
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListChatChannelsRequest) SetProductID(productID *string) {
 	l.ProductID = productID
 	l.require(listChatChannelsRequestFieldProductID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListChatChannelsRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(listChatChannelsRequestFieldAccountID)
 }
 
 var (

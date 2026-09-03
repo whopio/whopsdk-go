@@ -12,17 +12,17 @@ import (
 
 var (
 	deletePaymentMethodRequestFieldID        = big.NewInt(1 << 0)
-	deletePaymentMethodRequestFieldCompanyID = big.NewInt(1 << 1)
-	deletePaymentMethodRequestFieldMemberID  = big.NewInt(1 << 2)
+	deletePaymentMethodRequestFieldMemberID  = big.NewInt(1 << 1)
+	deletePaymentMethodRequestFieldAccountID = big.NewInt(1 << 2)
 )
 
 type DeletePaymentMethodRequest struct {
 	// The unique identifier of the payment method to delete.
 	ID string `json:"-" url:"-"`
-	// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
 	// The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
 	MemberID *string `json:"-" url:"member_id,omitempty"`
+	// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -42,18 +42,18 @@ func (d *DeletePaymentMethodRequest) SetID(id string) {
 	d.require(deletePaymentMethodRequestFieldID)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeletePaymentMethodRequest) SetCompanyID(companyID *string) {
-	d.CompanyID = companyID
-	d.require(deletePaymentMethodRequestFieldCompanyID)
-}
-
 // SetMemberID sets the MemberID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DeletePaymentMethodRequest) SetMemberID(memberID *string) {
 	d.MemberID = memberID
 	d.require(deletePaymentMethodRequestFieldMemberID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeletePaymentMethodRequest) SetAccountID(accountID *string) {
+	d.AccountID = accountID
+	d.require(deletePaymentMethodRequestFieldAccountID)
 }
 
 var (
@@ -62,17 +62,17 @@ var (
 	listPaymentMethodsRequestFieldFirst              = big.NewInt(1 << 2)
 	listPaymentMethodsRequestFieldLast               = big.NewInt(1 << 3)
 	listPaymentMethodsRequestFieldMemberID           = big.NewInt(1 << 4)
-	listPaymentMethodsRequestFieldCompanyID          = big.NewInt(1 << 5)
-	listPaymentMethodsRequestFieldDirection          = big.NewInt(1 << 6)
-	listPaymentMethodsRequestFieldCreatedBefore      = big.NewInt(1 << 7)
-	listPaymentMethodsRequestFieldCreatedAfter       = big.NewInt(1 << 8)
-	listPaymentMethodsRequestFieldFutureUsage        = big.NewInt(1 << 9)
-	listPaymentMethodsRequestFieldPaymentMethodTypes = big.NewInt(1 << 10)
-	listPaymentMethodsRequestFieldCardBrands         = big.NewInt(1 << 11)
-	listPaymentMethodsRequestFieldCardFundingTypes   = big.NewInt(1 << 12)
-	listPaymentMethodsRequestFieldHasPayerDocument   = big.NewInt(1 << 13)
-	listPaymentMethodsRequestFieldExpired            = big.NewInt(1 << 14)
-	listPaymentMethodsRequestFieldBroken             = big.NewInt(1 << 15)
+	listPaymentMethodsRequestFieldDirection          = big.NewInt(1 << 5)
+	listPaymentMethodsRequestFieldCreatedBefore      = big.NewInt(1 << 6)
+	listPaymentMethodsRequestFieldCreatedAfter       = big.NewInt(1 << 7)
+	listPaymentMethodsRequestFieldFutureUsage        = big.NewInt(1 << 8)
+	listPaymentMethodsRequestFieldPaymentMethodTypes = big.NewInt(1 << 9)
+	listPaymentMethodsRequestFieldCardBrands         = big.NewInt(1 << 10)
+	listPaymentMethodsRequestFieldCardFundingTypes   = big.NewInt(1 << 11)
+	listPaymentMethodsRequestFieldHasPayerDocument   = big.NewInt(1 << 12)
+	listPaymentMethodsRequestFieldExpired            = big.NewInt(1 << 13)
+	listPaymentMethodsRequestFieldBroken             = big.NewInt(1 << 14)
+	listPaymentMethodsRequestFieldAccountID          = big.NewInt(1 << 15)
 )
 
 type ListPaymentMethodsRequest struct {
@@ -85,9 +85,7 @@ type ListPaymentMethodsRequest struct {
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
 	// The unique identifier of the member to list payment methods for. Omit this and company_id to list your own saved payment methods.
-	MemberID *string `json:"-" url:"member_id,omitempty"`
-	// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
-	CompanyID *string    `json:"-" url:"company_id,omitempty"`
+	MemberID  *string    `json:"-" url:"member_id,omitempty"`
 	Direction *Direction `json:"-" url:"direction,omitempty"`
 	// Only return payment methods created before this timestamp.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
@@ -106,6 +104,8 @@ type ListPaymentMethodsRequest struct {
 	Expired *bool `json:"-" url:"expired,omitempty"`
 	// Filter by whether the stored credential has permanently stopped charging, such as a vault entry its provider closed.
 	Broken *bool `json:"-" url:"broken,omitempty"`
+	// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -151,13 +151,6 @@ func (l *ListPaymentMethodsRequest) SetLast(last *int) {
 func (l *ListPaymentMethodsRequest) SetMemberID(memberID *string) {
 	l.MemberID = memberID
 	l.require(listPaymentMethodsRequestFieldMemberID)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentMethodsRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listPaymentMethodsRequestFieldCompanyID)
 }
 
 // SetDirection sets the Direction field and marks it as non-optional;
@@ -230,19 +223,26 @@ func (l *ListPaymentMethodsRequest) SetBroken(broken *bool) {
 	l.require(listPaymentMethodsRequestFieldBroken)
 }
 
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentMethodsRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listPaymentMethodsRequestFieldAccountID)
+}
+
 var (
 	retrievePaymentMethodsRequestFieldID        = big.NewInt(1 << 0)
-	retrievePaymentMethodsRequestFieldCompanyID = big.NewInt(1 << 1)
-	retrievePaymentMethodsRequestFieldMemberID  = big.NewInt(1 << 2)
+	retrievePaymentMethodsRequestFieldMemberID  = big.NewInt(1 << 1)
+	retrievePaymentMethodsRequestFieldAccountID = big.NewInt(1 << 2)
 )
 
 type RetrievePaymentMethodsRequest struct {
 	// The unique identifier of the payment method.
 	ID string `json:"-" url:"-"`
-	// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
 	// The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
 	MemberID *string `json:"-" url:"member_id,omitempty"`
+	// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -262,18 +262,18 @@ func (r *RetrievePaymentMethodsRequest) SetID(id string) {
 	r.require(retrievePaymentMethodsRequestFieldID)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentMethodsRequest) SetCompanyID(companyID *string) {
-	r.CompanyID = companyID
-	r.require(retrievePaymentMethodsRequestFieldCompanyID)
-}
-
 // SetMemberID sets the MemberID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrievePaymentMethodsRequest) SetMemberID(memberID *string) {
 	r.MemberID = memberID
 	r.require(retrievePaymentMethodsRequestFieldMemberID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePaymentMethodsRequest) SetAccountID(accountID *string) {
+	r.AccountID = accountID
+	r.require(retrievePaymentMethodsRequestFieldAccountID)
 }
 
 // The funding types of a card

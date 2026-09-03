@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	createForumPostsRequestFieldAttachments     = big.NewInt(1 << 0)
-	createForumPostsRequestFieldCompanyID       = big.NewInt(1 << 1)
+	createForumPostsRequestFieldAccountID       = big.NewInt(1 << 0)
+	createForumPostsRequestFieldAttachments     = big.NewInt(1 << 1)
 	createForumPostsRequestFieldContent         = big.NewInt(1 << 2)
 	createForumPostsRequestFieldExperienceID    = big.NewInt(1 << 3)
 	createForumPostsRequestFieldIsMention       = big.NewInt(1 << 4)
@@ -27,10 +27,10 @@ var (
 )
 
 type CreateForumPostsRequest struct {
+	// The unique identifier of the company whose public forum to post in. Required when experience_id is 'public'. For example, 'biz_xxxxx'.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// A list of file attachments to include with the post, such as images or videos.
 	Attachments []*CreateForumPostsRequestAttachmentsItem `json:"attachments,omitempty" url:"-"`
-	// The unique identifier of the company whose public forum to post in. Required when experience_id is 'public'. For example, 'biz_xxxxx'.
-	CompanyID *string `json:"company_id,omitempty" url:"-"`
 	// The main body of the post in Markdown format. For example, 'Check out this **update**'. Hidden if the post is paywalled and the viewer has not purchased access.
 	Content *string `json:"content,omitempty" url:"-"`
 	// The unique identifier of the experience to create this post in. For example, 'exp_xxxxx'. Pass 'public' along with company_id to automatically use the company's public forum.
@@ -65,18 +65,18 @@ func (c *CreateForumPostsRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForumPostsRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createForumPostsRequestFieldAccountID)
+}
+
 // SetAttachments sets the Attachments field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateForumPostsRequest) SetAttachments(attachments []*CreateForumPostsRequestAttachmentsItem) {
 	c.Attachments = attachments
 	c.require(createForumPostsRequestFieldAttachments)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateForumPostsRequest) SetCompanyID(companyID *string) {
-	c.CompanyID = companyID
-	c.require(createForumPostsRequestFieldCompanyID)
 }
 
 // SetContent sets the Content field and marks it as non-optional;

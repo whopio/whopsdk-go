@@ -95,7 +95,7 @@ func TestAffiliatesListWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: "biz_xxxxxxxxxxxxxx",
+		AccountID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Affiliates.List(
 		context.TODO(),
@@ -106,7 +106,7 @@ func TestAffiliatesListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestAffiliatesListWithWireMock", "GET", "/affiliates", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestAffiliatesListWithWireMock", "GET", "/affiliates", map[string]interface{}{"first": "42", "last": "42", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestAffiliatesCreateWithWireMock(
@@ -121,7 +121,7 @@ func TestAffiliatesCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateAffiliatesRequest{
-		CompanyID:      "biz_xxxxxxxxxxxxxx",
+		AccountID:      "biz_xxxxxxxxxxxxxx",
 		UserIdentifier: "user_identifier",
 	}
 	_, invocationErr := client.Affiliates.Create(

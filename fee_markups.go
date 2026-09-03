@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	createFeeMarkupsRequestFieldCompanyID     = big.NewInt(1 << 0)
+	createFeeMarkupsRequestFieldAccountID     = big.NewInt(1 << 0)
 	createFeeMarkupsRequestFieldFeeType       = big.NewInt(1 << 1)
 	createFeeMarkupsRequestFieldFixedFeeUsd   = big.NewInt(1 << 2)
 	createFeeMarkupsRequestFieldMetadata      = big.NewInt(1 << 3)
@@ -21,7 +21,7 @@ var (
 
 type CreateFeeMarkupsRequest struct {
 	// The unique identifier of the company to create or update the fee markup for.
-	CompanyID string `json:"company_id" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
 	// The type of fee this markup applies to, such as processing or platform fees.
 	FeeType FeeMarkupTypes `json:"fee_type" url:"-"`
 	// The fixed fee amount in USD to charge per transaction. Must be between 0 and 50.
@@ -44,11 +44,11 @@ func (c *CreateFeeMarkupsRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFeeMarkupsRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createFeeMarkupsRequestFieldCompanyID)
+func (c *CreateFeeMarkupsRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createFeeMarkupsRequestFieldAccountID)
 }
 
 // SetFeeType sets the FeeType field and marks it as non-optional;
@@ -138,7 +138,7 @@ var (
 	listFeeMarkupsRequestFieldBefore    = big.NewInt(1 << 1)
 	listFeeMarkupsRequestFieldFirst     = big.NewInt(1 << 2)
 	listFeeMarkupsRequestFieldLast      = big.NewInt(1 << 3)
-	listFeeMarkupsRequestFieldCompanyID = big.NewInt(1 << 4)
+	listFeeMarkupsRequestFieldAccountID = big.NewInt(1 << 4)
 )
 
 type ListFeeMarkupsRequest struct {
@@ -151,7 +151,7 @@ type ListFeeMarkupsRequest struct {
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
 	// The unique identifier of the company to list fee markups for. Pass a platform account identifier to retrieve platform default markups.
-	CompanyID string `json:"-" url:"company_id"`
+	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -192,11 +192,11 @@ func (l *ListFeeMarkupsRequest) SetLast(last *int) {
 	l.require(listFeeMarkupsRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeeMarkupsRequest) SetCompanyID(companyID string) {
-	l.CompanyID = companyID
-	l.require(listFeeMarkupsRequestFieldCompanyID)
+func (l *ListFeeMarkupsRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(listFeeMarkupsRequestFieldAccountID)
 }
 
 // A fee markup configuration that defines additional charges applied to transactions for a platform's connected accounts.

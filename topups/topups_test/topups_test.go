@@ -89,8 +89,8 @@ func TestTopupsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateTopupsRequest{
+		AccountID:       "biz_xxxxxxxxxxxxxx",
 		Amount:          6.9,
-		CompanyID:       "biz_xxxxxxxxxxxxxx",
 		Currency:        whopsdk.CurrenciesUsd,
 		PaymentMethodID: "pmt_xxxxxxxxxxxxxx",
 	}

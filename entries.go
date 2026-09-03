@@ -67,14 +67,14 @@ var (
 	listEntriesRequestFieldBefore        = big.NewInt(1 << 1)
 	listEntriesRequestFieldFirst         = big.NewInt(1 << 2)
 	listEntriesRequestFieldLast          = big.NewInt(1 << 3)
-	listEntriesRequestFieldCompanyID     = big.NewInt(1 << 4)
-	listEntriesRequestFieldDirection     = big.NewInt(1 << 5)
-	listEntriesRequestFieldOrder         = big.NewInt(1 << 6)
-	listEntriesRequestFieldProductIDs    = big.NewInt(1 << 7)
-	listEntriesRequestFieldPlanIDs       = big.NewInt(1 << 8)
-	listEntriesRequestFieldStatuses      = big.NewInt(1 << 9)
-	listEntriesRequestFieldCreatedBefore = big.NewInt(1 << 10)
-	listEntriesRequestFieldCreatedAfter  = big.NewInt(1 << 11)
+	listEntriesRequestFieldDirection     = big.NewInt(1 << 4)
+	listEntriesRequestFieldOrder         = big.NewInt(1 << 5)
+	listEntriesRequestFieldProductIDs    = big.NewInt(1 << 6)
+	listEntriesRequestFieldPlanIDs       = big.NewInt(1 << 7)
+	listEntriesRequestFieldStatuses      = big.NewInt(1 << 8)
+	listEntriesRequestFieldCreatedBefore = big.NewInt(1 << 9)
+	listEntriesRequestFieldCreatedAfter  = big.NewInt(1 << 10)
+	listEntriesRequestFieldAccountID     = big.NewInt(1 << 11)
 )
 
 type ListEntriesRequest struct {
@@ -85,9 +85,7 @@ type ListEntriesRequest struct {
 	// Returns the first _n_ elements from the list.
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list waitlist entries for.
-	CompanyID string                  `json:"-" url:"company_id"`
+	Last      *int                    `json:"-" url:"last,omitempty"`
 	Direction *Direction              `json:"-" url:"direction,omitempty"`
 	Order     *EntriesSortableColumns `json:"-" url:"order,omitempty"`
 	// Filter entries to only those for specific products.
@@ -100,6 +98,8 @@ type ListEntriesRequest struct {
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Only return entries created after this timestamp.
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
+	// The unique identifier of the company to list waitlist entries for.
+	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -138,13 +138,6 @@ func (l *ListEntriesRequest) SetFirst(first *int) {
 func (l *ListEntriesRequest) SetLast(last *int) {
 	l.Last = last
 	l.require(listEntriesRequestFieldLast)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEntriesRequest) SetCompanyID(companyID string) {
-	l.CompanyID = companyID
-	l.require(listEntriesRequestFieldCompanyID)
 }
 
 // SetDirection sets the Direction field and marks it as non-optional;
@@ -194,6 +187,13 @@ func (l *ListEntriesRequest) SetCreatedBefore(createdBefore *time.Time) {
 func (l *ListEntriesRequest) SetCreatedAfter(createdAfter *time.Time) {
 	l.CreatedAfter = createdAfter
 	l.require(listEntriesRequestFieldCreatedAfter)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEntriesRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(listEntriesRequestFieldAccountID)
 }
 
 var (

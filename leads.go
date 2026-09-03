@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	createLeadsRequestFieldCompanyID = big.NewInt(1 << 0)
+	createLeadsRequestFieldAccountID = big.NewInt(1 << 0)
 	createLeadsRequestFieldMetadata  = big.NewInt(1 << 1)
 	createLeadsRequestFieldProductID = big.NewInt(1 << 2)
 	createLeadsRequestFieldReferrer  = big.NewInt(1 << 3)
@@ -20,7 +20,7 @@ var (
 
 type CreateLeadsRequest struct {
 	// The unique identifier of the company to create the lead for, starting with 'biz_'.
-	CompanyID string `json:"company_id" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
 	// A JSON object of custom metadata to attach to the lead for tracking purposes.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
 	// The unique identifier of the product the lead is interested in, starting with 'prod_'.
@@ -41,11 +41,11 @@ func (c *CreateLeadsRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateLeadsRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createLeadsRequestFieldCompanyID)
+func (c *CreateLeadsRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createLeadsRequestFieldAccountID)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
@@ -102,10 +102,10 @@ var (
 	listLeadsRequestFieldBefore        = big.NewInt(1 << 1)
 	listLeadsRequestFieldFirst         = big.NewInt(1 << 2)
 	listLeadsRequestFieldLast          = big.NewInt(1 << 3)
-	listLeadsRequestFieldCompanyID     = big.NewInt(1 << 4)
-	listLeadsRequestFieldCreatedAfter  = big.NewInt(1 << 5)
-	listLeadsRequestFieldCreatedBefore = big.NewInt(1 << 6)
-	listLeadsRequestFieldProductIDs    = big.NewInt(1 << 7)
+	listLeadsRequestFieldCreatedAfter  = big.NewInt(1 << 4)
+	listLeadsRequestFieldCreatedBefore = big.NewInt(1 << 5)
+	listLeadsRequestFieldProductIDs    = big.NewInt(1 << 6)
+	listLeadsRequestFieldAccountID     = big.NewInt(1 << 7)
 )
 
 type ListLeadsRequest struct {
@@ -117,14 +117,14 @@ type ListLeadsRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list leads for.
-	CompanyID string `json:"-" url:"company_id"`
 	// Only return leads created after this timestamp.
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
 	// Only return leads created before this timestamp.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Filter leads to only those associated with these specific product identifiers.
 	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// The unique identifier of the company to list leads for.
+	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -165,13 +165,6 @@ func (l *ListLeadsRequest) SetLast(last *int) {
 	l.require(listLeadsRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListLeadsRequest) SetCompanyID(companyID string) {
-	l.CompanyID = companyID
-	l.require(listLeadsRequestFieldCompanyID)
-}
-
 // SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListLeadsRequest) SetCreatedAfter(createdAfter *time.Time) {
@@ -191,6 +184,13 @@ func (l *ListLeadsRequest) SetCreatedBefore(createdBefore *time.Time) {
 func (l *ListLeadsRequest) SetProductIDs(productIDs []*string) {
 	l.ProductIDs = productIDs
 	l.require(listLeadsRequestFieldProductIDs)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLeadsRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(listLeadsRequestFieldAccountID)
 }
 
 var (

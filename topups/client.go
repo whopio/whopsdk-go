@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-1"
+		apiVersionDateDefault := "2026-09-02-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -46,8 +46,8 @@ func NewClient(options *core.RequestOptions) *Client {
 // Example:
 //
 //	request := &whopsdk.CreateTopupsRequest{
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	    Amount: 6.9,
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
 //	    Currency: whopsdk.CurrenciesUsd,
 //	    PaymentMethodID: "pmt_xxxxxxxxxxxxxx",
 //	}

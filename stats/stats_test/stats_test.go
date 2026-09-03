@@ -111,11 +111,11 @@ func TestStatsDescribeStatsWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.DescribeStatsRequest{
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
 		UserID: whopsdk.String(
 			"user_xxxxxxxxxxxxx",
+		),
+		AccountID: whopsdk.String(
+			"biz_xxxxxxxxxxxxxx",
 		),
 	}
 	_, invocationErr := client.Stats.DescribeStats(
@@ -127,7 +127,7 @@ func TestStatsDescribeStatsWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestStatsDescribeStatsWithWireMock", "GET", "/stats/describe", map[string]interface{}{"company_id": "biz_xxxxxxxxxxxxxx", "user_id": "user_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestStatsDescribeStatsWithWireMock", "GET", "/stats/describe", map[string]interface{}{"user_id": "user_xxxxxxxxxxxxx", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestStatsMetricStatsWithWireMock(
@@ -153,11 +153,11 @@ func TestStatsMetricStatsWithWireMock(
 				"2023-12-01T05:00:00Z",
 			),
 		),
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
 		UserID: whopsdk.String(
 			"user_xxxxxxxxxxxxx",
+		),
+		AccountID: whopsdk.String(
+			"biz_xxxxxxxxxxxxxx",
 		),
 	}
 	_, invocationErr := client.Stats.MetricStats(
@@ -169,7 +169,7 @@ func TestStatsMetricStatsWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestStatsMetricStatsWithWireMock", "GET", "/stats/metric", map[string]interface{}{"resource": "resource", "from": "2023-12-01T05:00:00.000Z", "to": "2023-12-01T05:00:00.000Z", "company_id": "biz_xxxxxxxxxxxxxx", "user_id": "user_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestStatsMetricStatsWithWireMock", "GET", "/stats/metric", map[string]interface{}{"resource": "resource", "from": "2023-12-01T05:00:00.000Z", "to": "2023-12-01T05:00:00.000Z", "user_id": "user_xxxxxxxxxxxxx", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestStatsRawStatsWithWireMock(
@@ -198,11 +198,11 @@ func TestStatsRawStatsWithWireMock(
 		Limit: whopsdk.Int(
 			42,
 		),
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
 		UserID: whopsdk.String(
 			"user_xxxxxxxxxxxxx",
+		),
+		AccountID: whopsdk.String(
+			"biz_xxxxxxxxxxxxxx",
 		),
 	}
 	_, invocationErr := client.Stats.RawStats(
@@ -214,7 +214,7 @@ func TestStatsRawStatsWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestStatsRawStatsWithWireMock", "GET", "/stats/raw", map[string]interface{}{"resource": "resource", "from": "2023-12-01T05:00:00.000Z", "to": "2023-12-01T05:00:00.000Z", "limit": "42", "company_id": "biz_xxxxxxxxxxxxxx", "user_id": "user_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestStatsRawStatsWithWireMock", "GET", "/stats/raw", map[string]interface{}{"resource": "resource", "from": "2023-12-01T05:00:00.000Z", "to": "2023-12-01T05:00:00.000Z", "limit": "42", "user_id": "user_xxxxxxxxxxxxx", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestStatsRetrieveWithWireMock(

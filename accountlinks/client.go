@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-1"
+		apiVersionDateDefault := "2026-09-02-2"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -43,7 +43,7 @@ func NewClient(options *core.RequestOptions) *Client {
 // Example:
 //
 //	request := &whopsdk.CreateAccountLinksRequest{
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	    RefreshURL: "refresh_url",
 //	    ReturnURL: "return_url",
 //	    UseCase: whopsdk.AccountLinkUseCasesAccountOnboarding,

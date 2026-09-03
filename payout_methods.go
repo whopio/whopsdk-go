@@ -15,7 +15,7 @@ var (
 	listPayoutMethodRequestFieldBefore    = big.NewInt(1 << 1)
 	listPayoutMethodRequestFieldFirst     = big.NewInt(1 << 2)
 	listPayoutMethodRequestFieldLast      = big.NewInt(1 << 3)
-	listPayoutMethodRequestFieldCompanyID = big.NewInt(1 << 4)
+	listPayoutMethodRequestFieldAccountID = big.NewInt(1 << 4)
 )
 
 type ListPayoutMethodRequest struct {
@@ -28,7 +28,7 @@ type ListPayoutMethodRequest struct {
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
 	// The unique identifier of the company to list payout methods for.
-	CompanyID string `json:"-" url:"company_id"`
+	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -69,11 +69,11 @@ func (l *ListPayoutMethodRequest) SetLast(last *int) {
 	l.require(listPayoutMethodRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPayoutMethodRequest) SetCompanyID(companyID string) {
-	l.CompanyID = companyID
-	l.require(listPayoutMethodRequestFieldCompanyID)
+func (l *ListPayoutMethodRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(listPayoutMethodRequestFieldAccountID)
 }
 
 var (

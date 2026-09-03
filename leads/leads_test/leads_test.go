@@ -95,7 +95,6 @@ func TestLeadsListWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: "biz_xxxxxxxxxxxxxx",
 		CreatedAfter: whopsdk.Time(
 			whopsdk.MustParseDateTime(
 				"2023-12-01T05:00:00Z",
@@ -106,6 +105,7 @@ func TestLeadsListWithWireMock(
 				"2023-12-01T05:00:00Z",
 			),
 		),
+		AccountID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Leads.List(
 		context.TODO(),
@@ -116,7 +116,7 @@ func TestLeadsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestLeadsListWithWireMock", "GET", "/leads", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx", "created_after": "2023-12-01T05:00:00.000Z", "created_before": "2023-12-01T05:00:00.000Z"}, 1)
+	VerifyRequestCount(t, "TestLeadsListWithWireMock", "GET", "/leads", map[string]interface{}{"first": "42", "last": "42", "created_after": "2023-12-01T05:00:00.000Z", "created_before": "2023-12-01T05:00:00.000Z", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestLeadsCreateWithWireMock(
@@ -131,7 +131,7 @@ func TestLeadsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateLeadsRequest{
-		CompanyID: "biz_xxxxxxxxxxxxxx",
+		AccountID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Leads.Create(
 		context.TODO(),

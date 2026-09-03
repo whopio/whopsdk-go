@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	createSupportChannelsRequestFieldCompanyID            = big.NewInt(1 << 0)
+	createSupportChannelsRequestFieldAccountID            = big.NewInt(1 << 0)
 	createSupportChannelsRequestFieldCustomName           = big.NewInt(1 << 1)
 	createSupportChannelsRequestFieldNotificationsEnabled = big.NewInt(1 << 2)
 	createSupportChannelsRequestFieldUserID               = big.NewInt(1 << 3)
@@ -19,7 +19,7 @@ var (
 
 type CreateSupportChannelsRequest struct {
 	// The unique identifier of the company to create the support channel in.
-	CompanyID string `json:"company_id" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
 	// Optional custom display name for the support channel.
 	CustomName *string `json:"custom_name,omitempty" url:"-"`
 	// Whether Whop app notifications are enabled for this support channel. Webhooks still fire.
@@ -38,11 +38,11 @@ func (c *CreateSupportChannelsRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateSupportChannelsRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createSupportChannelsRequestFieldCompanyID)
+func (c *CreateSupportChannelsRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createSupportChannelsRequestFieldAccountID)
 }
 
 // SetCustomName sets the CustomName field and marks it as non-optional;
@@ -92,11 +92,11 @@ var (
 	listSupportChannelsRequestFieldBefore    = big.NewInt(1 << 1)
 	listSupportChannelsRequestFieldFirst     = big.NewInt(1 << 2)
 	listSupportChannelsRequestFieldLast      = big.NewInt(1 << 3)
-	listSupportChannelsRequestFieldCompanyID = big.NewInt(1 << 4)
-	listSupportChannelsRequestFieldView      = big.NewInt(1 << 5)
-	listSupportChannelsRequestFieldOpen      = big.NewInt(1 << 6)
-	listSupportChannelsRequestFieldDirection = big.NewInt(1 << 7)
-	listSupportChannelsRequestFieldOrder     = big.NewInt(1 << 8)
+	listSupportChannelsRequestFieldView      = big.NewInt(1 << 4)
+	listSupportChannelsRequestFieldOpen      = big.NewInt(1 << 5)
+	listSupportChannelsRequestFieldDirection = big.NewInt(1 << 6)
+	listSupportChannelsRequestFieldOrder     = big.NewInt(1 << 7)
+	listSupportChannelsRequestFieldAccountID = big.NewInt(1 << 8)
 )
 
 type ListSupportChannelsRequest struct {
@@ -107,14 +107,14 @@ type ListSupportChannelsRequest struct {
 	// Returns the first _n_ elements from the list.
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
-	CompanyID *string             `json:"-" url:"company_id,omitempty"`
-	View      *SupportChannelView `json:"-" url:"view,omitempty"`
+	Last *int                `json:"-" url:"last,omitempty"`
+	View *SupportChannelView `json:"-" url:"view,omitempty"`
 	// Whether to filter by open or resolved support channels. Set to true to only return channels awaiting a response, or false for resolved channels.
 	Open      *bool                `json:"-" url:"open,omitempty"`
 	Direction *Direction           `json:"-" url:"direction,omitempty"`
 	Order     *MessageChannelOrder `json:"-" url:"order,omitempty"`
+	// The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -155,13 +155,6 @@ func (l *ListSupportChannelsRequest) SetLast(last *int) {
 	l.require(listSupportChannelsRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListSupportChannelsRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listSupportChannelsRequestFieldCompanyID)
-}
-
 // SetView sets the View field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListSupportChannelsRequest) SetView(view *SupportChannelView) {
@@ -188,6 +181,13 @@ func (l *ListSupportChannelsRequest) SetDirection(direction *Direction) {
 func (l *ListSupportChannelsRequest) SetOrder(order *MessageChannelOrder) {
 	l.Order = order
 	l.require(listSupportChannelsRequestFieldOrder)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportChannelsRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listSupportChannelsRequestFieldAccountID)
 }
 
 var (

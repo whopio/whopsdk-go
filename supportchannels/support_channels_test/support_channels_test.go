@@ -95,7 +95,7 @@ func TestSupportChannelsListWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: whopsdk.String(
+		AccountID: whopsdk.String(
 			"biz_xxxxxxxxxxxxxx",
 		),
 	}
@@ -108,7 +108,7 @@ func TestSupportChannelsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestSupportChannelsListWithWireMock", "GET", "/support_channels", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestSupportChannelsListWithWireMock", "GET", "/support_channels", map[string]interface{}{"first": "42", "last": "42", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestSupportChannelsCreateWithWireMock(
@@ -123,7 +123,7 @@ func TestSupportChannelsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateSupportChannelsRequest{
-		CompanyID: "biz_xxxxxxxxxxxxxx",
+		AccountID: "biz_xxxxxxxxxxxxxx",
 		UserID:    "user_xxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.SupportChannels.Create(
