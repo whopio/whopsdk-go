@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-2"
+		apiVersionDateDefault := "2026-09-02-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -46,7 +46,13 @@ func NewClient(options *core.RequestOptions) *Client {
 //
 // Example:
 //
-//	request := &whopsdk.ListMembersRequest{}
+//	request := &whopsdk.ListMembersRequest{
+//	    UserIDs: []*string{
+//	        whopsdk.String(
+//	            "user_xxxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
 //	client.Members.List(
 //	    context.TODO(),
 //	    request,

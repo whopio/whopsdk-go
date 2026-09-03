@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -14,8 +15,8 @@ var (
 	retrieveFinancialReportsRequestFieldReportType                 = big.NewInt(1 << 1)
 	retrieveFinancialReportsRequestFieldCurrency                   = big.NewInt(1 << 2)
 	retrieveFinancialReportsRequestFieldInCurrency                 = big.NewInt(1 << 3)
-	retrieveFinancialReportsRequestFieldFromDate                   = big.NewInt(1 << 4)
-	retrieveFinancialReportsRequestFieldToDate                     = big.NewInt(1 << 5)
+	retrieveFinancialReportsRequestFieldFrom                       = big.NewInt(1 << 4)
+	retrieveFinancialReportsRequestFieldTo                         = big.NewInt(1 << 5)
 	retrieveFinancialReportsRequestFieldGroupBy                    = big.NewInt(1 << 6)
 	retrieveFinancialReportsRequestFieldTimezone                   = big.NewInt(1 << 7)
 	retrieveFinancialReportsRequestFieldLineTypes                  = big.NewInt(1 << 8)
@@ -34,19 +35,19 @@ type RetrieveFinancialReportsRequest struct {
 	Currency *string `json:"-" url:"currency,omitempty"`
 	// Aggregate all activity into this display currency via FX conversion.
 	InCurrency *string `json:"-" url:"in_currency,omitempty"`
-	// Start of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
-	FromDate *string `json:"-" url:"from_date,omitempty"`
-	// End of the report window as an ISO 8601 timestamp (UTC). Required for platform-wide (global) reports.
-	ToDate *string `json:"-" url:"to_date,omitempty"`
+	// Start of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
+	From *time.Time `json:"-" url:"from,omitempty"`
+	// Exclusive end of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
+	To *time.Time `json:"-" url:"to,omitempty"`
 	// Grouping granularity for report rows.
 	GroupBy *RetrieveFinancialReportsRequestGroupBy `json:"-" url:"group_by,omitempty"`
-	// IANA timezone (for example `America/New_York`) used to bucket report periods and to interpret calendar-day boundaries for balance snapshots. Defaults to UTC. from_date/to_date remain exact instants regardless of this setting.
+	// IANA timezone (for example `America/New_York`) used to bucket report periods. Defaults to UTC. `from` and `to` remain exact instants.
 	Timezone *string `json:"-" url:"timezone,omitempty"`
 	// Account-level balance activity only: ledger line categories to include.
 	LineTypes []*RetrieveFinancialReportsRequestLineTypesItem `json:"-" url:"line_types,omitempty"`
 	// Account-level balance activity only: include money moving in or money moving out.
 	Direction *RetrieveFinancialReportsRequestDirection `json:"-" url:"direction,omitempty"`
-	// Platform-wide (global) reports only: when true, return cumulative balances as of to_date (all history, no lower bound) instead of activity within the period.
+	// Platform-wide (global) reports only: when true, return cumulative balances as of to (all history, no lower bound) instead of activity within the period.
 	Cumulative *bool `json:"-" url:"cumulative,omitempty"`
 	// Platform-wide (global) reports only: narrow the report to ledger lines on the ledger account owned by this account ID (a biz_ identifier). Ignored unless account_id is `global`.
 	ScopeAccountID *string `json:"-" url:"scope_account_id,omitempty"`
@@ -92,18 +93,18 @@ func (r *RetrieveFinancialReportsRequest) SetInCurrency(inCurrency *string) {
 	r.require(retrieveFinancialReportsRequestFieldInCurrency)
 }
 
-// SetFromDate sets the FromDate field and marks it as non-optional;
+// SetFrom sets the From field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveFinancialReportsRequest) SetFromDate(fromDate *string) {
-	r.FromDate = fromDate
-	r.require(retrieveFinancialReportsRequestFieldFromDate)
+func (r *RetrieveFinancialReportsRequest) SetFrom(from *time.Time) {
+	r.From = from
+	r.require(retrieveFinancialReportsRequestFieldFrom)
 }
 
-// SetToDate sets the ToDate field and marks it as non-optional;
+// SetTo sets the To field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveFinancialReportsRequest) SetToDate(toDate *string) {
-	r.ToDate = toDate
-	r.require(retrieveFinancialReportsRequestFieldToDate)
+func (r *RetrieveFinancialReportsRequest) SetTo(to *time.Time) {
+	r.To = to
+	r.require(retrieveFinancialReportsRequestFieldTo)
 }
 
 // SetGroupBy sets the GroupBy field and marks it as non-optional;
@@ -268,6 +269,7 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemMiscPurchase                              RetrieveFinancialReportsRequestLineTypesItem = "misc_purchase"
 	RetrieveFinancialReportsRequestLineTypesItemMiscRefund                                RetrieveFinancialReportsRequestLineTypesItem = "misc_refund"
 	RetrieveFinancialReportsRequestLineTypesItemMiscReversal                              RetrieveFinancialReportsRequestLineTypesItem = "misc_reversal"
+	RetrieveFinancialReportsRequestLineTypesItemOnboardingReward                          RetrieveFinancialReportsRequestLineTypesItem = "onboarding_reward"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainDeposit                            RetrieveFinancialReportsRequestLineTypesItem = "onchain_deposit"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainSwapSource                         RetrieveFinancialReportsRequestLineTypesItem = "onchain_swap_source"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainSwapTarget                         RetrieveFinancialReportsRequestLineTypesItem = "onchain_swap_target"
@@ -463,6 +465,8 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemMiscRefund, nil
 	case "misc_reversal":
 		return RetrieveFinancialReportsRequestLineTypesItemMiscReversal, nil
+	case "onboarding_reward":
+		return RetrieveFinancialReportsRequestLineTypesItemOnboardingReward, nil
 	case "onchain_deposit":
 		return RetrieveFinancialReportsRequestLineTypesItemOnchainDeposit, nil
 	case "onchain_swap_source":
@@ -1352,6 +1356,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAdPublisherPayoutReceived                 RetrieveFinancialReportsResponseRowsItemLineCategory = "ad_publisher_payout_received"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAdSpendCharge                             RetrieveFinancialReportsResponseRowsItemLineCategory = "ad_spend_charge"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAdSpendMargin                             RetrieveFinancialReportsResponseRowsItemLineCategory = "ad_spend_margin"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryAdSpendPurchase                           RetrieveFinancialReportsResponseRowsItemLineCategory = "ad_spend_purchase"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAdsCardSpread                             RetrieveFinancialReportsResponseRowsItemLineCategory = "ads_card_spread"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAffiliateFee                              RetrieveFinancialReportsResponseRowsItemLineCategory = "affiliate_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAggregatedFee                             RetrieveFinancialReportsResponseRowsItemLineCategory = "aggregated_fee"
@@ -1451,6 +1456,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryMiscPurchase                              RetrieveFinancialReportsResponseRowsItemLineCategory = "misc_purchase"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryMiscRefund                                RetrieveFinancialReportsResponseRowsItemLineCategory = "misc_refund"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryMiscReversal                              RetrieveFinancialReportsResponseRowsItemLineCategory = "misc_reversal"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryOnboardingReward                          RetrieveFinancialReportsResponseRowsItemLineCategory = "onboarding_reward"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainDeposit                            RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_deposit"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainDepositOffset                      RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_deposit_offset"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainSwapOffset                         RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_swap_offset"
@@ -1650,6 +1656,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryAdSpendCharge, nil
 	case "ad_spend_margin":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryAdSpendMargin, nil
+	case "ad_spend_purchase":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryAdSpendPurchase, nil
 	case "ads_card_spread":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryAdsCardSpread, nil
 	case "affiliate_fee":
@@ -1848,6 +1856,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryMiscRefund, nil
 	case "misc_reversal":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryMiscReversal, nil
+	case "onboarding_reward":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnboardingReward, nil
 	case "onchain_deposit":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainDeposit, nil
 	case "onchain_deposit_offset":

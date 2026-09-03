@@ -7,6 +7,7 @@ import (
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
 	testing "testing"
+	time "time"
 )
 
 func TestSettersRetrieveFinancialReportsRequest(t *testing.T) {
@@ -42,19 +43,19 @@ func TestSettersRetrieveFinancialReportsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetFromDate", func(t *testing.T) {
+	t.Run("SetFrom", func(t *testing.T) {
 		obj := &RetrieveFinancialReportsRequest{}
-		var fernTestValueFromDate *string
-		obj.SetFromDate(fernTestValueFromDate)
-		assert.Equal(t, fernTestValueFromDate, obj.FromDate)
+		var fernTestValueFrom *time.Time
+		obj.SetFrom(fernTestValueFrom)
+		assert.Equal(t, fernTestValueFrom, obj.From)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetToDate", func(t *testing.T) {
+	t.Run("SetTo", func(t *testing.T) {
 		obj := &RetrieveFinancialReportsRequest{}
-		var fernTestValueToDate *string
-		obj.SetToDate(fernTestValueToDate)
-		assert.Equal(t, fernTestValueToDate, obj.ToDate)
+		var fernTestValueTo *time.Time
+		obj.SetTo(fernTestValueTo)
+		assert.Equal(t, fernTestValueTo, obj.To)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -241,14 +242,14 @@ func TestSettersMarkExplicitRetrieveFinancialReportsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetFromDate_MarksExplicit", func(t *testing.T) {
+	t.Run("SetFrom_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveFinancialReportsRequest{}
-		var fernTestValueFromDate *string
+		var fernTestValueFrom *time.Time
 
 		// Act
-		obj.SetFromDate(fernTestValueFromDate)
+		obj.SetFrom(fernTestValueFrom)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -272,14 +273,14 @@ func TestSettersMarkExplicitRetrieveFinancialReportsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetToDate_MarksExplicit", func(t *testing.T) {
+	t.Run("SetTo_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveFinancialReportsRequest{}
-		var fernTestValueToDate *string
+		var fernTestValueTo *time.Time
 
 		// Act
-		obj.SetToDate(fernTestValueToDate)
+		obj.SetTo(fernTestValueTo)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2625,6 +2626,13 @@ func TestEnumRetrieveFinancialReportsRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("misc_reversal"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_onboarding_reward", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("onboarding_reward")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("onboarding_reward"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_onchain_deposit", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("onchain_deposit")
@@ -3519,6 +3527,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemLineCategory(t *testing.T) 
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("ad_spend_margin"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_ad_spend_purchase", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("ad_spend_purchase")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("ad_spend_purchase"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_ads_card_spread", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("ads_card_spread")
@@ -4210,6 +4225,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemLineCategory(t *testing.T) 
 		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("misc_reversal")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("misc_reversal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_onboarding_reward", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("onboarding_reward")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("onboarding_reward"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_onchain_deposit", func(t *testing.T) {

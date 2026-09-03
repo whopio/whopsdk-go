@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-2"
+		apiVersionDateDefault := "2026-09-02-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -242,7 +242,7 @@ func (c *Client) SubmitEvidenceDispute(
 	ctx context.Context,
 	request *whopsdk.SubmitEvidenceDisputeRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Dispute, error) {
+) (*whopsdk.DisputeLegacy, error) {
 	response, err := c.WithRawResponse.SubmitEvidenceDispute(
 		ctx,
 		request,
@@ -279,7 +279,7 @@ func (c *Client) UpdateEvidenceDispute(
 	ctx context.Context,
 	request *whopsdk.UpdateEvidenceDisputeRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Dispute, error) {
+) (*whopsdk.DisputeLegacy, error) {
 	response, err := c.WithRawResponse.UpdateEvidenceDispute(
 		ctx,
 		request,

@@ -11,6 +11,7 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
+	whopsdk "github.com/whopio/whopsdk-go"
 	client "github.com/whopio/whopsdk-go/client"
 	financialreports "github.com/whopio/whopsdk-go/financialreports"
 	option "github.com/whopio/whopsdk-go/option"
@@ -93,8 +94,12 @@ func TestFinancialReportsBreakdownRetrieveWithWireMock(
 		Bucket:    financialreports.RetrieveBreakdownRequestBucketTransfers,
 		Direction: financialreports.RetrieveBreakdownRequestDirectionMoneyIn,
 		Currency:  "currency",
-		FromDate:  "from_date",
-		ToDate:    "to_date",
+		From: whopsdk.MustParseDateTime(
+			"2024-01-15T09:30:00Z",
+		),
+		To: whopsdk.MustParseDateTime(
+			"2024-01-15T09:30:00Z",
+		),
 	}
 	_, invocationErr := client.FinancialReports.Breakdown.Retrieve(
 		context.TODO(),
@@ -105,5 +110,5 @@ func TestFinancialReportsBreakdownRetrieveWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestFinancialReportsBreakdownRetrieveWithWireMock", "GET", "/financial_reports/breakdown", map[string]interface{}{"account_id": "account_id", "bucket": "transfers", "direction": "money_in", "currency": "currency", "from_date": "from_date", "to_date": "to_date"}, 1)
+	VerifyRequestCount(t, "TestFinancialReportsBreakdownRetrieveWithWireMock", "GET", "/financial_reports/breakdown", map[string]interface{}{"account_id": "account_id", "bucket": "transfers", "direction": "money_in", "currency": "currency", "from": "2024-01-15T09:30:00.000Z", "to": "2024-01-15T09:30:00.000Z"}, 1)
 }

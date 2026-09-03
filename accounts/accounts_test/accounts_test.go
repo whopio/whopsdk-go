@@ -235,7 +235,7 @@ func TestAccountsFormCompanyWithWireMock(
 		ExpediteEin: whopsdk.Bool(
 			true,
 		),
-		FormationState: whopsdk.FormCompanyAccountsRequestFormationStateTx,
+		FormationState: whopsdk.FormCompanyAccountsRequestFormationStateWy,
 		Founders: []*whopsdk.FormCompanyAccountsRequestFoundersItem{
 			&whopsdk.FormCompanyAccountsRequestFoundersItem{
 				Address: &whopsdk.FormCompanyAccountsRequestFoundersItemAddress{

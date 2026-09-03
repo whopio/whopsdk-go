@@ -222,7 +222,7 @@ func (r *RawClient) SubmitEvidenceDispute(
 	ctx context.Context,
 	request *whopsdk.SubmitEvidenceDisputeRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.Dispute], error) {
+) (*core.Response[*whopsdk.DisputeLegacy], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -237,7 +237,7 @@ func (r *RawClient) SubmitEvidenceDispute(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *whopsdk.Dispute
+	var response *whopsdk.DisputeLegacy
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -256,7 +256,7 @@ func (r *RawClient) SubmitEvidenceDispute(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.Dispute]{
+	return &core.Response[*whopsdk.DisputeLegacy]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -267,7 +267,7 @@ func (r *RawClient) UpdateEvidenceDispute(
 	ctx context.Context,
 	request *whopsdk.UpdateEvidenceDisputeRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.Dispute], error) {
+) (*core.Response[*whopsdk.DisputeLegacy], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -283,7 +283,7 @@ func (r *RawClient) UpdateEvidenceDispute(
 		options.ToHeader(),
 	)
 	headers.Add("Content-Type", "application/json")
-	var response *whopsdk.Dispute
+	var response *whopsdk.DisputeLegacy
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -303,7 +303,7 @@ func (r *RawClient) UpdateEvidenceDispute(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.Dispute]{
+	return &core.Response[*whopsdk.DisputeLegacy]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

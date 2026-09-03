@@ -3,4 +3,6 @@
 // A Payment Method Domain registers a hostname with a wallet provider so its payment methods can appear at a checkout served from that domain. The domain proves ownership by hosting the provider's association file — for Apple Pay, at `/.well-known/apple-developer-merchantid-domain-association` — and `status` reports whether verification has completed.
 //
 // Use the Payment Method Domains API to register domains for your account or its connected accounts, retry verification once the association file is hosted, and remove domains that should no longer serve wallet payments. A domain a platform shares with its connected accounts at checkout is listed on the platform's account, not on each connected account.
+//
+// Wallet buttons at checkout depend on this: embedded surfaces like the [Express Checkout element](/elements/beta/checkout/expressCheckout) only render Apple Pay on a `verified` domain (first-party whop.com pages are pre-approved). To verify a domain, [create it](/api-reference/beta/payment-method-domains/create-payment-method-domain), host the association file at the path above, then [retry verification](/api-reference/beta/payment-method-domains/verify-payment-method-domain) until `status` is `verified`.
 package paymentmethoddomains

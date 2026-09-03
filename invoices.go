@@ -2518,6 +2518,29 @@ func (i InvoicesSortableColumns) Ptr() *InvoicesSortableColumns {
 	return &i
 }
 
+// The type of plan that can be attached to a product
+type PlanTypes string
+
+const (
+	PlanTypesRenewal PlanTypes = "renewal"
+	PlanTypesOneTime PlanTypes = "one_time"
+)
+
+func NewPlanTypesFromString(s string) (PlanTypes, error) {
+	switch s {
+	case "renewal":
+		return PlanTypesRenewal, nil
+	case "one_time":
+		return PlanTypesOneTime, nil
+	}
+	var t PlanTypes
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlanTypes) Ptr() *PlanTypes {
+	return &p
+}
+
 // The methods of how a plan can be released.
 type ReleaseMethod string
 
@@ -2895,6 +2918,35 @@ func NewTaxIdentifierTypesFromString(s string) (TaxIdentifierTypes, error) {
 
 func (t TaxIdentifierTypes) Ptr() *TaxIdentifierTypes {
 	return &t
+}
+
+// Visibility of a resource
+type Visibility string
+
+const (
+	VisibilityVisible   Visibility = "visible"
+	VisibilityHidden    Visibility = "hidden"
+	VisibilityArchived  Visibility = "archived"
+	VisibilityQuickLink Visibility = "quick_link"
+)
+
+func NewVisibilityFromString(s string) (Visibility, error) {
+	switch s {
+	case "visible":
+		return VisibilityVisible, nil
+	case "hidden":
+		return VisibilityHidden, nil
+	case "archived":
+		return VisibilityArchived, nil
+	case "quick_link":
+		return VisibilityQuickLink, nil
+	}
+	var t Visibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (v Visibility) Ptr() *Visibility {
+	return &v
 }
 
 // Parameters for CreateInvoice

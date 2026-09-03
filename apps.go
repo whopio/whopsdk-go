@@ -505,18 +505,19 @@ var (
 	appFieldOpenapiPath               = big.NewInt(1 << 23)
 	appFieldOrigin                    = big.NewInt(1 << 24)
 	appFieldPreviewToken              = big.NewInt(1 << 25)
-	appFieldProductID                 = big.NewInt(1 << 26)
-	appFieldProductionAndroidBuild    = big.NewInt(1 << 27)
-	appFieldProductionIosBuild        = big.NewInt(1 << 28)
-	appFieldProductionWebBuild        = big.NewInt(1 << 29)
-	appFieldRedirectURIs              = big.NewInt(1 << 30)
-	appFieldRequestedPermissions      = big.NewInt(1 << 31)
-	appFieldRequiredScopes            = big.NewInt(1 << 32)
-	appFieldRoute                     = big.NewInt(1 << 33)
-	appFieldSecrets                   = big.NewInt(1 << 34)
-	appFieldSkillsPath                = big.NewInt(1 << 35)
-	appFieldStatus                    = big.NewInt(1 << 36)
-	appFieldVerified                  = big.NewInt(1 << 37)
+	appFieldPreviousHostedURLs        = big.NewInt(1 << 26)
+	appFieldProductID                 = big.NewInt(1 << 27)
+	appFieldProductionAndroidBuild    = big.NewInt(1 << 28)
+	appFieldProductionIosBuild        = big.NewInt(1 << 29)
+	appFieldProductionWebBuild        = big.NewInt(1 << 30)
+	appFieldRedirectURIs              = big.NewInt(1 << 31)
+	appFieldRequestedPermissions      = big.NewInt(1 << 32)
+	appFieldRequiredScopes            = big.NewInt(1 << 33)
+	appFieldRoute                     = big.NewInt(1 << 34)
+	appFieldSecrets                   = big.NewInt(1 << 35)
+	appFieldSkillsPath                = big.NewInt(1 << 36)
+	appFieldStatus                    = big.NewInt(1 << 37)
+	appFieldVerified                  = big.NewInt(1 << 38)
 )
 
 type App struct {
@@ -569,7 +570,8 @@ type App struct {
 	// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
 	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
 	// A short-lived signed pass scoping the caller to this app's gated preview hosts — every build preview and the live dev-server sandbox. Add it to a preview host as the `__whop_preview` query param (or `x-whop-preview-token` header). `null` unless the caller is a team member who can read the app's developer settings.
-	PreviewToken *string `json:"preview_token,omitempty" url:"preview_token,omitempty"`
+	PreviewToken       *string  `json:"preview_token,omitempty" url:"preview_token,omitempty"`
+	PreviousHostedURLs []string `json:"previous_hosted_urls" url:"previous_hosted_urls"`
 	// ID of the app's product listing on the Whop app store, or `null` when the app has no associated product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The approved build currently served on Android, or `null` when none is deployed.
@@ -779,6 +781,13 @@ func (a *App) GetPreviewToken() *string {
 		return nil
 	}
 	return a.PreviewToken
+}
+
+func (a *App) GetPreviousHostedURLs() []string {
+	if a == nil {
+		return nil
+	}
+	return a.PreviousHostedURLs
 }
 
 func (a *App) GetProductID() *string {
@@ -1059,6 +1068,13 @@ func (a *App) SetOrigin(origin *string) {
 func (a *App) SetPreviewToken(previewToken *string) {
 	a.PreviewToken = previewToken
 	a.require(appFieldPreviewToken)
+}
+
+// SetPreviousHostedURLs sets the PreviousHostedURLs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetPreviousHostedURLs(previousHostedURLs []string) {
+	a.PreviousHostedURLs = previousHostedURLs
+	a.require(appFieldPreviousHostedURLs)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -2249,10 +2265,11 @@ var (
 	appListItemFieldName                      = big.NewInt(1 << 15)
 	appListItemFieldOpenapiPath               = big.NewInt(1 << 16)
 	appListItemFieldOrigin                    = big.NewInt(1 << 17)
-	appListItemFieldRoute                     = big.NewInt(1 << 18)
-	appListItemFieldSkillsPath                = big.NewInt(1 << 19)
-	appListItemFieldStatus                    = big.NewInt(1 << 20)
-	appListItemFieldVerified                  = big.NewInt(1 << 21)
+	appListItemFieldPreviousHostedURLs        = big.NewInt(1 << 18)
+	appListItemFieldRoute                     = big.NewInt(1 << 19)
+	appListItemFieldSkillsPath                = big.NewInt(1 << 20)
+	appListItemFieldStatus                    = big.NewInt(1 << 21)
+	appListItemFieldVerified                  = big.NewInt(1 << 22)
 )
 
 type AppListItem struct {
@@ -2290,7 +2307,8 @@ type AppListItem struct {
 	// URL path to the app's OpenAPI spec file, or `null` when not configured.
 	OpenapiPath *string `json:"openapi_path,omitempty" url:"openapi_path,omitempty"`
 	// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
-	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
+	Origin             *string  `json:"origin,omitempty" url:"origin,omitempty"`
+	PreviousHostedURLs []string `json:"previous_hosted_urls" url:"previous_hosted_urls"`
 	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
 	// URL path to the app's skills directory, or `null` when not configured.
@@ -2431,6 +2449,13 @@ func (a *AppListItem) GetOrigin() *string {
 		return nil
 	}
 	return a.Origin
+}
+
+func (a *AppListItem) GetPreviousHostedURLs() []string {
+	if a == nil {
+		return nil
+	}
+	return a.PreviousHostedURLs
 }
 
 func (a *AppListItem) GetRoute() *string {
@@ -2599,6 +2624,13 @@ func (a *AppListItem) SetOpenapiPath(openapiPath *string) {
 func (a *AppListItem) SetOrigin(origin *string) {
 	a.Origin = origin
 	a.require(appListItemFieldOrigin)
+}
+
+// SetPreviousHostedURLs sets the PreviousHostedURLs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetPreviousHostedURLs(previousHostedURLs []string) {
+	a.PreviousHostedURLs = previousHostedURLs
+	a.require(appListItemFieldPreviousHostedURLs)
 }
 
 // SetRoute sets the Route field and marks it as non-optional;

@@ -11,38 +11,42 @@ import (
 )
 
 var (
-	listRefundsRequestFieldAfter         = big.NewInt(1 << 0)
-	listRefundsRequestFieldBefore        = big.NewInt(1 << 1)
-	listRefundsRequestFieldFirst         = big.NewInt(1 << 2)
-	listRefundsRequestFieldLast          = big.NewInt(1 << 3)
-	listRefundsRequestFieldPaymentID     = big.NewInt(1 << 4)
-	listRefundsRequestFieldCompanyID     = big.NewInt(1 << 5)
-	listRefundsRequestFieldUserID        = big.NewInt(1 << 6)
-	listRefundsRequestFieldDirection     = big.NewInt(1 << 7)
-	listRefundsRequestFieldCreatedBefore = big.NewInt(1 << 8)
-	listRefundsRequestFieldCreatedAfter  = big.NewInt(1 << 9)
+	listRefundsRequestFieldAccountID     = big.NewInt(1 << 0)
+	listRefundsRequestFieldPaymentID     = big.NewInt(1 << 1)
+	listRefundsRequestFieldUserID        = big.NewInt(1 << 2)
+	listRefundsRequestFieldCreatedBefore = big.NewInt(1 << 3)
+	listRefundsRequestFieldCreatedAfter  = big.NewInt(1 << 4)
+	listRefundsRequestFieldOrder         = big.NewInt(1 << 5)
+	listRefundsRequestFieldDirection     = big.NewInt(1 << 6)
+	listRefundsRequestFieldFirst         = big.NewInt(1 << 7)
+	listRefundsRequestFieldAfter         = big.NewInt(1 << 8)
+	listRefundsRequestFieldLast          = big.NewInt(1 << 9)
+	listRefundsRequestFieldBefore        = big.NewInt(1 << 10)
 )
 
 type ListRefundsRequest struct {
-	// Returns the elements in the list that come after the specified cursor.
-	After *string `json:"-" url:"after,omitempty"`
-	// Returns the elements in the list that come before the specified cursor.
-	Before *string `json:"-" url:"before,omitempty"`
-	// Returns the first _n_ elements from the list.
-	First *int `json:"-" url:"first,omitempty"`
-	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
-	// Filter refunds to those associated with this specific payment. Mutually exclusive with company_id and user_id: provide exactly one.
+	// Only refunds issued by this account, prefixed `biz_`.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Only refunds of this payment, prefixed `pay_`.
 	PaymentID *string `json:"-" url:"payment_id,omitempty"`
-	// Filter refunds to those belonging to this company. Mutually exclusive with payment_id and user_id: provide exactly one.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
-	// Filter refunds to those associated with this specific user. Mutually exclusive with payment_id and company_id: provide exactly one. Requires a credential belonging to that user; any other credential receives 'You are not authorized'.
-	UserID    *string    `json:"-" url:"user_id,omitempty"`
-	Direction *Direction `json:"-" url:"direction,omitempty"`
-	// Only return refunds created before this timestamp.
+	// Only refunds to this buyer, prefixed `user_`.
+	UserID *string `json:"-" url:"user_id,omitempty"`
+	// Only refunds requested before this ISO 8601 timestamp.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
-	// Only return refunds created after this timestamp.
+	// Only refunds requested after this ISO 8601 timestamp.
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
+	// The field to sort by.
+	Order *ListRefundsRequestOrder `json:"-" url:"order,omitempty"`
+	// The sort direction.
+	Direction *ListRefundsRequestDirection `json:"-" url:"direction,omitempty"`
+	// The number of refunds to return.
+	First *int `json:"-" url:"first,omitempty"`
+	// A cursor; returns refunds after this position.
+	After *string `json:"-" url:"after,omitempty"`
+	// The number of refunds to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// A cursor; returns refunds before this position.
+	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -55,32 +59,11 @@ func (l *ListRefundsRequest) require(field *big.Int) {
 	l.explicitFields.Or(l.explicitFields, field)
 }
 
-// SetAfter sets the After field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListRefundsRequest) SetAfter(after *string) {
-	l.After = after
-	l.require(listRefundsRequestFieldAfter)
-}
-
-// SetBefore sets the Before field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListRefundsRequest) SetBefore(before *string) {
-	l.Before = before
-	l.require(listRefundsRequestFieldBefore)
-}
-
-// SetFirst sets the First field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListRefundsRequest) SetFirst(first *int) {
-	l.First = first
-	l.require(listRefundsRequestFieldFirst)
-}
-
-// SetLast sets the Last field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListRefundsRequest) SetLast(last *int) {
-	l.Last = last
-	l.require(listRefundsRequestFieldLast)
+func (l *ListRefundsRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listRefundsRequestFieldAccountID)
 }
 
 // SetPaymentID sets the PaymentID field and marks it as non-optional;
@@ -90,25 +73,11 @@ func (l *ListRefundsRequest) SetPaymentID(paymentID *string) {
 	l.require(listRefundsRequestFieldPaymentID)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListRefundsRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listRefundsRequestFieldCompanyID)
-}
-
 // SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListRefundsRequest) SetUserID(userID *string) {
 	l.UserID = userID
 	l.require(listRefundsRequestFieldUserID)
-}
-
-// SetDirection sets the Direction field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListRefundsRequest) SetDirection(direction *Direction) {
-	l.Direction = direction
-	l.require(listRefundsRequestFieldDirection)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
@@ -125,12 +94,54 @@ func (l *ListRefundsRequest) SetCreatedAfter(createdAfter *time.Time) {
 	l.require(listRefundsRequestFieldCreatedAfter)
 }
 
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRefundsRequest) SetOrder(order *ListRefundsRequestOrder) {
+	l.Order = order
+	l.require(listRefundsRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRefundsRequest) SetDirection(direction *ListRefundsRequestDirection) {
+	l.Direction = direction
+	l.require(listRefundsRequestFieldDirection)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRefundsRequest) SetFirst(first *int) {
+	l.First = first
+	l.require(listRefundsRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRefundsRequest) SetAfter(after *string) {
+	l.After = after
+	l.require(listRefundsRequestFieldAfter)
+}
+
+// SetLast sets the Last field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRefundsRequest) SetLast(last *int) {
+	l.Last = last
+	l.require(listRefundsRequestFieldLast)
+}
+
+// SetBefore sets the Before field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRefundsRequest) SetBefore(before *string) {
+	l.Before = before
+	l.require(listRefundsRequestFieldBefore)
+}
+
 var (
 	retrieveRefundsRequestFieldID = big.NewInt(1 << 0)
 )
 
 type RetrieveRefundsRequest struct {
-	// The unique identifier of the refund.
+	// The refund to retrieve, prefixed `rf_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -151,115 +162,61 @@ func (r *RetrieveRefundsRequest) SetID(id string) {
 	r.require(retrieveRefundsRequestFieldID)
 }
 
-// The different payment providers.
-type PaymentProviders string
-
-const (
-	PaymentProvidersStripe          PaymentProviders = "stripe"
-	PaymentProvidersCoinbase        PaymentProviders = "coinbase"
-	PaymentProvidersPaypal          PaymentProviders = "paypal"
-	PaymentProvidersApple           PaymentProviders = "apple"
-	PaymentProvidersSezzle          PaymentProviders = "sezzle"
-	PaymentProvidersSplitit         PaymentProviders = "splitit"
-	PaymentProvidersPlatformBalance PaymentProviders = "platform_balance"
-	PaymentProvidersMultiPsp        PaymentProviders = "multi_psp"
-	PaymentProvidersAdyen           PaymentProviders = "adyen"
-	PaymentProvidersClaritypay      PaymentProviders = "claritypay"
-	PaymentProvidersFlexPay         PaymentProviders = "flex_pay"
-	PaymentProvidersCheckoutDotCom  PaymentProviders = "checkout_dot_com"
-	PaymentProvidersAirwallex       PaymentProviders = "airwallex"
-	PaymentProvidersCoinflow        PaymentProviders = "coinflow"
-	PaymentProvidersSequra          PaymentProviders = "sequra"
-	PaymentProvidersDlocal          PaymentProviders = "dlocal"
-	PaymentProvidersMasspay         PaymentProviders = "masspay"
-	PaymentProvidersBraintree       PaymentProviders = "braintree"
-)
-
-func NewPaymentProvidersFromString(s string) (PaymentProviders, error) {
-	switch s {
-	case "stripe":
-		return PaymentProvidersStripe, nil
-	case "coinbase":
-		return PaymentProvidersCoinbase, nil
-	case "paypal":
-		return PaymentProvidersPaypal, nil
-	case "apple":
-		return PaymentProvidersApple, nil
-	case "sezzle":
-		return PaymentProvidersSezzle, nil
-	case "splitit":
-		return PaymentProvidersSplitit, nil
-	case "platform_balance":
-		return PaymentProvidersPlatformBalance, nil
-	case "multi_psp":
-		return PaymentProvidersMultiPsp, nil
-	case "adyen":
-		return PaymentProvidersAdyen, nil
-	case "claritypay":
-		return PaymentProvidersClaritypay, nil
-	case "flex_pay":
-		return PaymentProvidersFlexPay, nil
-	case "checkout_dot_com":
-		return PaymentProvidersCheckoutDotCom, nil
-	case "airwallex":
-		return PaymentProvidersAirwallex, nil
-	case "coinflow":
-		return PaymentProvidersCoinflow, nil
-	case "sequra":
-		return PaymentProvidersSequra, nil
-	case "dlocal":
-		return PaymentProvidersDlocal, nil
-	case "masspay":
-		return PaymentProvidersMasspay, nil
-	case "braintree":
-		return PaymentProvidersBraintree, nil
-	}
-	var t PaymentProviders
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PaymentProviders) Ptr() *PaymentProviders {
-	return &p
-}
-
-// A refund represents a full or partial reversal of a payment, including the amount, status, and payment provider.
 var (
-	refundFieldAmount            = big.NewInt(1 << 0)
-	refundFieldCreatedAt         = big.NewInt(1 << 1)
-	refundFieldCurrency          = big.NewInt(1 << 2)
-	refundFieldID                = big.NewInt(1 << 3)
-	refundFieldPayment           = big.NewInt(1 << 4)
-	refundFieldProvider          = big.NewInt(1 << 5)
-	refundFieldProviderCreatedAt = big.NewInt(1 << 6)
-	refundFieldReferenceStatus   = big.NewInt(1 << 7)
-	refundFieldReferenceType     = big.NewInt(1 << 8)
-	refundFieldReferenceValue    = big.NewInt(1 << 9)
-	refundFieldStatus            = big.NewInt(1 << 10)
+	refundFieldAccountID         = big.NewInt(1 << 0)
+	refundFieldAmount            = big.NewInt(1 << 1)
+	refundFieldCreatedAt         = big.NewInt(1 << 2)
+	refundFieldFailureMessage    = big.NewInt(1 << 3)
+	refundFieldFailureReason     = big.NewInt(1 << 4)
+	refundFieldID                = big.NewInt(1 << 5)
+	refundFieldOriginalAmount    = big.NewInt(1 << 6)
+	refundFieldPaymentID         = big.NewInt(1 << 7)
+	refundFieldProvider          = big.NewInt(1 << 8)
+	refundFieldProviderCreatedAt = big.NewInt(1 << 9)
+	refundFieldReason            = big.NewInt(1 << 10)
+	refundFieldReferenceStatus   = big.NewInt(1 << 11)
+	refundFieldReferenceType     = big.NewInt(1 << 12)
+	refundFieldReferenceValue    = big.NewInt(1 << 13)
+	refundFieldStatus            = big.NewInt(1 << 14)
+	refundFieldUpdatedAt         = big.NewInt(1 << 15)
+	refundFieldVisaRdr           = big.NewInt(1 << 16)
 )
 
 type Refund struct {
-	// The refunded amount as a decimal in the specified currency, such as 10.43 for $10.43 USD.
-	Amount float64 `json:"amount" url:"amount"`
-	// The datetime the refund was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The three-letter ISO currency code for the refunded amount.
-	Currency Currencies `json:"currency" url:"currency"`
-	// The unique identifier for the refund.
+	// The account that issued the refund, prefixed `biz_`.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The refunded amount as it settled, in the payment's settlement currency, so pages of refunds net against the payment's `refunded_amount`. Converted at the rate in force when the refund was issued, not the payment's original rate. Null only when no exchange rate is recorded for a legacy multi-currency payment.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
+	// When the refund was requested, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// The provider's own explanation of the failure, or null.
+	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
+	// Why the refund failed, normalized across providers. Null unless the refund failed or was canceled.
+	FailureReason *RefundFailureReason `json:"failure_reason,omitempty" url:"failure_reason,omitempty"`
+	// Refund ID, prefixed `rf_`.
 	ID string `json:"id" url:"id"`
-	// The original payment that this refund was issued against. Null if the payment is no longer available.
-	Payment *RefundPayment `json:"payment,omitempty" url:"payment,omitempty"`
-	// The payment provider that processed the refund.
-	Provider PaymentProviders `json:"provider" url:"provider"`
-	// The timestamp when the refund was created in the payment provider's system. Null if not available from the provider.
-	ProviderCreatedAt *time.Time `json:"provider_created_at,omitempty" url:"provider_created_at,omitempty"`
-	// The availability status of the refund tracking reference from the payment processor. Null if no reference was provided.
-	ReferenceStatus *RefundReferenceStatuses `json:"reference_status,omitempty" url:"reference_status,omitempty"`
-	// The type of tracking reference provided by the payment processor, such as an acquirer reference number. Null if no reference was provided.
-	ReferenceType *RefundReferenceTypes `json:"reference_type,omitempty" url:"reference_type,omitempty"`
-	// The tracking reference value from the payment processor, used to trace the refund through banking networks. Null if no reference was provided.
+	// The refunded amount in the currency the processor moved.
+	OriginalAmount *Money `json:"original_amount" url:"original_amount"`
+	// The payment this refund reverses, prefixed `pay_`.
+	PaymentID string `json:"payment_id" url:"payment_id"`
+	// The payment provider that processed the refund, such as `paypal` or `coinbase`.
+	Provider string `json:"provider" url:"provider"`
+	// When the provider created the refund, as an ISO 8601 timestamp.
+	ProviderCreatedAt *string `json:"provider_created_at,omitempty" url:"provider_created_at,omitempty"`
+	// Why the refund was issued, when recorded.
+	Reason *RefundReason `json:"reason,omitempty" url:"reason,omitempty"`
+	// Whether a banking-network tracking reference is available for this refund.
+	ReferenceStatus *RefundReferenceStatus `json:"reference_status,omitempty" url:"reference_status,omitempty"`
+	// The kind of tracking reference, such as an acquirer reference number.
+	ReferenceType *RefundReferenceType `json:"reference_type,omitempty" url:"reference_type,omitempty"`
+	// The tracking reference the buyer's bank can trace the refund by.
 	ReferenceValue *string `json:"reference_value,omitempty" url:"reference_value,omitempty"`
-	// The current processing status of the refund, such as pending, succeeded, or failed.
-	Status RefundStatuses `json:"status" url:"status"`
+	// Where the refund stands with the processor: `pending`, `requires_action`, `succeeded`, `failed`, or `canceled`.
+	Status RefundStatus `json:"status" url:"status"`
+	// When the refund last changed, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// True when the card network initiated the refund through Rapid Dispute Resolution.
+	VisaRdr bool `json:"visa_rdr" url:"visa_rdr"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -268,25 +225,39 @@ type Refund struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *Refund) GetAmount() float64 {
+func (r *Refund) GetAccountID() *string {
 	if r == nil {
-		return 0
+		return nil
+	}
+	return r.AccountID
+}
+
+func (r *Refund) GetAmount() *Money {
+	if r == nil {
+		return nil
 	}
 	return r.Amount
 }
 
-func (r *Refund) GetCreatedAt() time.Time {
+func (r *Refund) GetCreatedAt() string {
 	if r == nil {
-		return time.Time{}
+		return ""
 	}
 	return r.CreatedAt
 }
 
-func (r *Refund) GetCurrency() Currencies {
+func (r *Refund) GetFailureMessage() *string {
 	if r == nil {
-		return ""
+		return nil
 	}
-	return r.Currency
+	return r.FailureMessage
+}
+
+func (r *Refund) GetFailureReason() *RefundFailureReason {
+	if r == nil {
+		return nil
+	}
+	return r.FailureReason
 }
 
 func (r *Refund) GetID() string {
@@ -296,35 +267,49 @@ func (r *Refund) GetID() string {
 	return r.ID
 }
 
-func (r *Refund) GetPayment() *RefundPayment {
+func (r *Refund) GetOriginalAmount() *Money {
 	if r == nil {
 		return nil
 	}
-	return r.Payment
+	return r.OriginalAmount
 }
 
-func (r *Refund) GetProvider() PaymentProviders {
+func (r *Refund) GetPaymentID() string {
+	if r == nil {
+		return ""
+	}
+	return r.PaymentID
+}
+
+func (r *Refund) GetProvider() string {
 	if r == nil {
 		return ""
 	}
 	return r.Provider
 }
 
-func (r *Refund) GetProviderCreatedAt() *time.Time {
+func (r *Refund) GetProviderCreatedAt() *string {
 	if r == nil {
 		return nil
 	}
 	return r.ProviderCreatedAt
 }
 
-func (r *Refund) GetReferenceStatus() *RefundReferenceStatuses {
+func (r *Refund) GetReason() *RefundReason {
+	if r == nil {
+		return nil
+	}
+	return r.Reason
+}
+
+func (r *Refund) GetReferenceStatus() *RefundReferenceStatus {
 	if r == nil {
 		return nil
 	}
 	return r.ReferenceStatus
 }
 
-func (r *Refund) GetReferenceType() *RefundReferenceTypes {
+func (r *Refund) GetReferenceType() *RefundReferenceType {
 	if r == nil {
 		return nil
 	}
@@ -338,11 +323,25 @@ func (r *Refund) GetReferenceValue() *string {
 	return r.ReferenceValue
 }
 
-func (r *Refund) GetStatus() RefundStatuses {
+func (r *Refund) GetStatus() RefundStatus {
 	if r == nil {
 		return ""
 	}
 	return r.Status
+}
+
+func (r *Refund) GetUpdatedAt() string {
+	if r == nil {
+		return ""
+	}
+	return r.UpdatedAt
+}
+
+func (r *Refund) GetVisaRdr() bool {
+	if r == nil {
+		return false
+	}
+	return r.VisaRdr
 }
 
 func (r *Refund) GetExtraProperties() map[string]interface{} {
@@ -359,25 +358,39 @@ func (r *Refund) require(field *big.Int) {
 	r.explicitFields.Or(r.explicitFields, field)
 }
 
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *Refund) SetAccountID(accountID *string) {
+	r.AccountID = accountID
+	r.require(refundFieldAccountID)
+}
+
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Refund) SetAmount(amount float64) {
+func (r *Refund) SetAmount(amount *Money) {
 	r.Amount = amount
 	r.require(refundFieldAmount)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Refund) SetCreatedAt(createdAt time.Time) {
+func (r *Refund) SetCreatedAt(createdAt string) {
 	r.CreatedAt = createdAt
 	r.require(refundFieldCreatedAt)
 }
 
-// SetCurrency sets the Currency field and marks it as non-optional;
+// SetFailureMessage sets the FailureMessage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Refund) SetCurrency(currency Currencies) {
-	r.Currency = currency
-	r.require(refundFieldCurrency)
+func (r *Refund) SetFailureMessage(failureMessage *string) {
+	r.FailureMessage = failureMessage
+	r.require(refundFieldFailureMessage)
+}
+
+// SetFailureReason sets the FailureReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *Refund) SetFailureReason(failureReason *RefundFailureReason) {
+	r.FailureReason = failureReason
+	r.require(refundFieldFailureReason)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -387,37 +400,51 @@ func (r *Refund) SetID(id string) {
 	r.require(refundFieldID)
 }
 
-// SetPayment sets the Payment field and marks it as non-optional;
+// SetOriginalAmount sets the OriginalAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Refund) SetPayment(payment *RefundPayment) {
-	r.Payment = payment
-	r.require(refundFieldPayment)
+func (r *Refund) SetOriginalAmount(originalAmount *Money) {
+	r.OriginalAmount = originalAmount
+	r.require(refundFieldOriginalAmount)
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *Refund) SetPaymentID(paymentID string) {
+	r.PaymentID = paymentID
+	r.require(refundFieldPaymentID)
 }
 
 // SetProvider sets the Provider field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Refund) SetProvider(provider PaymentProviders) {
+func (r *Refund) SetProvider(provider string) {
 	r.Provider = provider
 	r.require(refundFieldProvider)
 }
 
 // SetProviderCreatedAt sets the ProviderCreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Refund) SetProviderCreatedAt(providerCreatedAt *time.Time) {
+func (r *Refund) SetProviderCreatedAt(providerCreatedAt *string) {
 	r.ProviderCreatedAt = providerCreatedAt
 	r.require(refundFieldProviderCreatedAt)
 }
 
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *Refund) SetReason(reason *RefundReason) {
+	r.Reason = reason
+	r.require(refundFieldReason)
+}
+
 // SetReferenceStatus sets the ReferenceStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Refund) SetReferenceStatus(referenceStatus *RefundReferenceStatuses) {
+func (r *Refund) SetReferenceStatus(referenceStatus *RefundReferenceStatus) {
 	r.ReferenceStatus = referenceStatus
 	r.require(refundFieldReferenceStatus)
 }
 
 // SetReferenceType sets the ReferenceType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Refund) SetReferenceType(referenceType *RefundReferenceTypes) {
+func (r *Refund) SetReferenceType(referenceType *RefundReferenceType) {
 	r.ReferenceType = referenceType
 	r.require(refundFieldReferenceType)
 }
@@ -431,26 +458,32 @@ func (r *Refund) SetReferenceValue(referenceValue *string) {
 
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *Refund) SetStatus(status RefundStatuses) {
+func (r *Refund) SetStatus(status RefundStatus) {
 	r.Status = status
 	r.require(refundFieldStatus)
 }
 
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *Refund) SetUpdatedAt(updatedAt string) {
+	r.UpdatedAt = updatedAt
+	r.require(refundFieldUpdatedAt)
+}
+
+// SetVisaRdr sets the VisaRdr field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *Refund) SetVisaRdr(visaRdr bool) {
+	r.VisaRdr = visaRdr
+	r.require(refundFieldVisaRdr)
+}
+
 func (r *Refund) UnmarshalJSON(data []byte) error {
-	type embed Refund
-	var unmarshaler = struct {
-		embed
-		CreatedAt         *internal.DateTime `json:"created_at"`
-		ProviderCreatedAt *internal.DateTime `json:"provider_created_at,omitempty"`
-	}{
-		embed: embed(*r),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+	type unmarshaler Refund
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*r = Refund(unmarshaler.embed)
-	r.CreatedAt = unmarshaler.CreatedAt.Time()
-	r.ProviderCreatedAt = unmarshaler.ProviderCreatedAt.TimePtr()
+	*r = Refund(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
@@ -464,12 +497,8 @@ func (r *Refund) MarshalJSON() ([]byte, error) {
 	type embed Refund
 	var marshaler = struct {
 		embed
-		CreatedAt         *internal.DateTime `json:"created_at"`
-		ProviderCreatedAt *internal.DateTime `json:"provider_created_at,omitempty"`
 	}{
-		embed:             embed(*r),
-		CreatedAt:         internal.NewDateTime(r.CreatedAt),
-		ProviderCreatedAt: internal.NewOptionalDateTime(r.ProviderCreatedAt),
+		embed: embed(*r),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -490,1414 +519,209 @@ func (r *Refund) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// A refund represents a full or partial reversal of a payment, including the amount, status, and payment provider.
-var (
-	refundListItemFieldAmount            = big.NewInt(1 << 0)
-	refundListItemFieldCreatedAt         = big.NewInt(1 << 1)
-	refundListItemFieldCurrency          = big.NewInt(1 << 2)
-	refundListItemFieldID                = big.NewInt(1 << 3)
-	refundListItemFieldPayment           = big.NewInt(1 << 4)
-	refundListItemFieldProvider          = big.NewInt(1 << 5)
-	refundListItemFieldProviderCreatedAt = big.NewInt(1 << 6)
-	refundListItemFieldReferenceStatus   = big.NewInt(1 << 7)
-	refundListItemFieldReferenceType     = big.NewInt(1 << 8)
-	refundListItemFieldReferenceValue    = big.NewInt(1 << 9)
-	refundListItemFieldStatus            = big.NewInt(1 << 10)
-)
-
-type RefundListItem struct {
-	// The refunded amount as a decimal in the specified currency, such as 10.43 for $10.43 USD.
-	Amount float64 `json:"amount" url:"amount"`
-	// The datetime the refund was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The three-letter ISO currency code for the refunded amount.
-	Currency Currencies `json:"currency" url:"currency"`
-	// The unique identifier for the refund.
-	ID string `json:"id" url:"id"`
-	// The original payment that this refund was issued against. Null if the payment is no longer available.
-	Payment *RefundListItemPayment `json:"payment,omitempty" url:"payment,omitempty"`
-	// The payment provider that processed the refund.
-	Provider PaymentProviders `json:"provider" url:"provider"`
-	// The timestamp when the refund was created in the payment provider's system. Null if not available from the provider.
-	ProviderCreatedAt *time.Time `json:"provider_created_at,omitempty" url:"provider_created_at,omitempty"`
-	// The availability status of the refund tracking reference from the payment processor. Null if no reference was provided.
-	ReferenceStatus *RefundReferenceStatuses `json:"reference_status,omitempty" url:"reference_status,omitempty"`
-	// The type of tracking reference provided by the payment processor, such as an acquirer reference number. Null if no reference was provided.
-	ReferenceType *RefundReferenceTypes `json:"reference_type,omitempty" url:"reference_type,omitempty"`
-	// The tracking reference value from the payment processor, used to trace the refund through banking networks. Null if no reference was provided.
-	ReferenceValue *string `json:"reference_value,omitempty" url:"reference_value,omitempty"`
-	// The current processing status of the refund, such as pending, succeeded, or failed.
-	Status RefundStatuses `json:"status" url:"status"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RefundListItem) GetAmount() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.Amount
-}
-
-func (r *RefundListItem) GetCreatedAt() time.Time {
-	if r == nil {
-		return time.Time{}
-	}
-	return r.CreatedAt
-}
-
-func (r *RefundListItem) GetCurrency() Currencies {
-	if r == nil {
-		return ""
-	}
-	return r.Currency
-}
-
-func (r *RefundListItem) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RefundListItem) GetPayment() *RefundListItemPayment {
-	if r == nil {
-		return nil
-	}
-	return r.Payment
-}
-
-func (r *RefundListItem) GetProvider() PaymentProviders {
-	if r == nil {
-		return ""
-	}
-	return r.Provider
-}
-
-func (r *RefundListItem) GetProviderCreatedAt() *time.Time {
-	if r == nil {
-		return nil
-	}
-	return r.ProviderCreatedAt
-}
-
-func (r *RefundListItem) GetReferenceStatus() *RefundReferenceStatuses {
-	if r == nil {
-		return nil
-	}
-	return r.ReferenceStatus
-}
-
-func (r *RefundListItem) GetReferenceType() *RefundReferenceTypes {
-	if r == nil {
-		return nil
-	}
-	return r.ReferenceType
-}
-
-func (r *RefundListItem) GetReferenceValue() *string {
-	if r == nil {
-		return nil
-	}
-	return r.ReferenceValue
-}
-
-func (r *RefundListItem) GetStatus() RefundStatuses {
-	if r == nil {
-		return ""
-	}
-	return r.Status
-}
-
-func (r *RefundListItem) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RefundListItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetAmount sets the Amount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetAmount(amount float64) {
-	r.Amount = amount
-	r.require(refundListItemFieldAmount)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetCreatedAt(createdAt time.Time) {
-	r.CreatedAt = createdAt
-	r.require(refundListItemFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetCurrency(currency Currencies) {
-	r.Currency = currency
-	r.require(refundListItemFieldCurrency)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetID(id string) {
-	r.ID = id
-	r.require(refundListItemFieldID)
-}
-
-// SetPayment sets the Payment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetPayment(payment *RefundListItemPayment) {
-	r.Payment = payment
-	r.require(refundListItemFieldPayment)
-}
-
-// SetProvider sets the Provider field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetProvider(provider PaymentProviders) {
-	r.Provider = provider
-	r.require(refundListItemFieldProvider)
-}
-
-// SetProviderCreatedAt sets the ProviderCreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetProviderCreatedAt(providerCreatedAt *time.Time) {
-	r.ProviderCreatedAt = providerCreatedAt
-	r.require(refundListItemFieldProviderCreatedAt)
-}
-
-// SetReferenceStatus sets the ReferenceStatus field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetReferenceStatus(referenceStatus *RefundReferenceStatuses) {
-	r.ReferenceStatus = referenceStatus
-	r.require(refundListItemFieldReferenceStatus)
-}
-
-// SetReferenceType sets the ReferenceType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetReferenceType(referenceType *RefundReferenceTypes) {
-	r.ReferenceType = referenceType
-	r.require(refundListItemFieldReferenceType)
-}
-
-// SetReferenceValue sets the ReferenceValue field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetReferenceValue(referenceValue *string) {
-	r.ReferenceValue = referenceValue
-	r.require(refundListItemFieldReferenceValue)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItem) SetStatus(status RefundStatuses) {
-	r.Status = status
-	r.require(refundListItemFieldStatus)
-}
-
-func (r *RefundListItem) UnmarshalJSON(data []byte) error {
-	type embed RefundListItem
-	var unmarshaler = struct {
-		embed
-		CreatedAt         *internal.DateTime `json:"created_at"`
-		ProviderCreatedAt *internal.DateTime `json:"provider_created_at,omitempty"`
-	}{
-		embed: embed(*r),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*r = RefundListItem(unmarshaler.embed)
-	r.CreatedAt = unmarshaler.CreatedAt.Time()
-	r.ProviderCreatedAt = unmarshaler.ProviderCreatedAt.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RefundListItem) MarshalJSON() ([]byte, error) {
-	type embed RefundListItem
-	var marshaler = struct {
-		embed
-		CreatedAt         *internal.DateTime `json:"created_at"`
-		ProviderCreatedAt *internal.DateTime `json:"provider_created_at,omitempty"`
-	}{
-		embed:             embed(*r),
-		CreatedAt:         internal.NewDateTime(r.CreatedAt),
-		ProviderCreatedAt: internal.NewOptionalDateTime(r.ProviderCreatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RefundListItem) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// The original payment that this refund was issued against. Null if the payment is no longer available.
-var (
-	refundListItemPaymentFieldID = big.NewInt(1 << 0)
-)
-
-type RefundListItemPayment struct {
-	// The unique identifier for the payment.
-	ID string `json:"id" url:"id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RefundListItemPayment) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RefundListItemPayment) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RefundListItemPayment) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundListItemPayment) SetID(id string) {
-	r.ID = id
-	r.require(refundListItemPaymentFieldID)
-}
-
-func (r *RefundListItemPayment) UnmarshalJSON(data []byte) error {
-	type unmarshaler RefundListItemPayment
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RefundListItemPayment(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RefundListItemPayment) MarshalJSON() ([]byte, error) {
-	type embed RefundListItemPayment
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RefundListItemPayment) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// The original payment that this refund was issued against. Null if the payment is no longer available.
-var (
-	refundPaymentFieldBillingReason     = big.NewInt(1 << 0)
-	refundPaymentFieldCardBrand         = big.NewInt(1 << 1)
-	refundPaymentFieldCardLast4         = big.NewInt(1 << 2)
-	refundPaymentFieldCreatedAt         = big.NewInt(1 << 3)
-	refundPaymentFieldCurrency          = big.NewInt(1 << 4)
-	refundPaymentFieldDisputeAlertedAt  = big.NewInt(1 << 5)
-	refundPaymentFieldID                = big.NewInt(1 << 6)
-	refundPaymentFieldMember            = big.NewInt(1 << 7)
-	refundPaymentFieldMembership        = big.NewInt(1 << 8)
-	refundPaymentFieldMetadata          = big.NewInt(1 << 9)
-	refundPaymentFieldPaidAt            = big.NewInt(1 << 10)
-	refundPaymentFieldPaymentMethodType = big.NewInt(1 << 11)
-	refundPaymentFieldPlan              = big.NewInt(1 << 12)
-	refundPaymentFieldProduct           = big.NewInt(1 << 13)
-	refundPaymentFieldSubtotal          = big.NewInt(1 << 14)
-	refundPaymentFieldTaxAmount         = big.NewInt(1 << 15)
-	refundPaymentFieldTaxBehavior       = big.NewInt(1 << 16)
-	refundPaymentFieldTaxRefundedAmount = big.NewInt(1 << 17)
-	refundPaymentFieldTotal             = big.NewInt(1 << 18)
-	refundPaymentFieldUsdTotal          = big.NewInt(1 << 19)
-	refundPaymentFieldUser              = big.NewInt(1 << 20)
-)
-
-type RefundPayment struct {
-	// The machine-readable reason this charge was created, such as initial subscription purchase, renewal cycle, or one-time payment.
-	BillingReason *BillingReasons `json:"billing_reason,omitempty" url:"billing_reason,omitempty"`
-	// Card network reported by the processor (e.g., 'visa', 'mastercard', 'amex'). Present only when the payment method type is 'card'.
-	CardBrand *CardBrands `json:"card_brand,omitempty" url:"card_brand,omitempty"`
-	// The last four digits of the card used to make this payment. Null if the payment was not made with a card.
-	CardLast4 *string `json:"card_last4,omitempty" url:"card_last4,omitempty"`
-	// The datetime the payment was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
-	Currency Currencies `json:"currency" url:"currency"`
-	// When an alert came in that this transaction will be disputed
-	DisputeAlertedAt *time.Time `json:"dispute_alerted_at,omitempty" url:"dispute_alerted_at,omitempty"`
-	// The unique identifier for the payment.
-	ID string `json:"id" url:"id"`
-	// The member attached to this payment.
-	Member *RefundPaymentMember `json:"member,omitempty" url:"member,omitempty"`
-	// The membership attached to this payment.
-	Membership *RefundPaymentMembership `json:"membership,omitempty" url:"membership,omitempty"`
-	// The custom metadata stored on this payment. This will be copied over to the checkout configuration for which this payment was made
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// The time at which this payment was successfully collected. Null if the payment has not yet succeeded. As a Unix timestamp.
-	PaidAt *time.Time `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	// The type of payment instrument used for this payment (e.g., card, Cash App, iDEAL, Klarna, crypto). Null when the processor does not supply a type.
-	PaymentMethodType *PaymentMethodTypes `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
-	// The plan attached to this payment.
-	Plan *RefundPaymentPlan `json:"plan,omitempty" url:"plan,omitempty"`
-	// The product this payment was made for
-	Product *RefundPaymentProduct `json:"product,omitempty" url:"product,omitempty"`
-	// The subtotal to show to the creator (excluding buyer fees).
-	Subtotal *float64 `json:"subtotal,omitempty" url:"subtotal,omitempty"`
-	// The calculated amount of the sales/VAT tax (if applicable).
-	TaxAmount *float64 `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	// The type of tax inclusivity applied to the payment, for determining whether the tax is included in the final price, or paid on top.
-	TaxBehavior *ReceiptTaxBehaviors `json:"tax_behavior,omitempty" url:"tax_behavior,omitempty"`
-	// The amount of tax that has been refunded (if applicable).
-	TaxRefundedAmount *float64 `json:"tax_refunded_amount,omitempty" url:"tax_refunded_amount,omitempty"`
-	// The total to show to the creator (excluding buyer fees).
-	Total *float64 `json:"total,omitempty" url:"total,omitempty"`
-	// The total in USD to show to the creator (excluding buyer fees).
-	UsdTotal *float64 `json:"usd_total,omitempty" url:"usd_total,omitempty"`
-	// The user that made this payment.
-	User *RefundPaymentUser `json:"user,omitempty" url:"user,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RefundPayment) GetBillingReason() *BillingReasons {
-	if r == nil {
-		return nil
-	}
-	return r.BillingReason
-}
-
-func (r *RefundPayment) GetCardBrand() *CardBrands {
-	if r == nil {
-		return nil
-	}
-	return r.CardBrand
-}
-
-func (r *RefundPayment) GetCardLast4() *string {
-	if r == nil {
-		return nil
-	}
-	return r.CardLast4
-}
-
-func (r *RefundPayment) GetCreatedAt() time.Time {
-	if r == nil {
-		return time.Time{}
-	}
-	return r.CreatedAt
-}
-
-func (r *RefundPayment) GetCurrency() Currencies {
-	if r == nil {
-		return ""
-	}
-	return r.Currency
-}
-
-func (r *RefundPayment) GetDisputeAlertedAt() *time.Time {
-	if r == nil {
-		return nil
-	}
-	return r.DisputeAlertedAt
-}
-
-func (r *RefundPayment) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RefundPayment) GetMember() *RefundPaymentMember {
-	if r == nil {
-		return nil
-	}
-	return r.Member
-}
-
-func (r *RefundPayment) GetMembership() *RefundPaymentMembership {
-	if r == nil {
-		return nil
-	}
-	return r.Membership
-}
-
-func (r *RefundPayment) GetMetadata() map[string]any {
-	if r == nil {
-		return nil
-	}
-	return r.Metadata
-}
-
-func (r *RefundPayment) GetPaidAt() *time.Time {
-	if r == nil {
-		return nil
-	}
-	return r.PaidAt
-}
-
-func (r *RefundPayment) GetPaymentMethodType() *PaymentMethodTypes {
-	if r == nil {
-		return nil
-	}
-	return r.PaymentMethodType
-}
-
-func (r *RefundPayment) GetPlan() *RefundPaymentPlan {
-	if r == nil {
-		return nil
-	}
-	return r.Plan
-}
-
-func (r *RefundPayment) GetProduct() *RefundPaymentProduct {
-	if r == nil {
-		return nil
-	}
-	return r.Product
-}
-
-func (r *RefundPayment) GetSubtotal() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.Subtotal
-}
-
-func (r *RefundPayment) GetTaxAmount() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.TaxAmount
-}
-
-func (r *RefundPayment) GetTaxBehavior() *ReceiptTaxBehaviors {
-	if r == nil {
-		return nil
-	}
-	return r.TaxBehavior
-}
-
-func (r *RefundPayment) GetTaxRefundedAmount() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.TaxRefundedAmount
-}
-
-func (r *RefundPayment) GetTotal() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.Total
-}
-
-func (r *RefundPayment) GetUsdTotal() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.UsdTotal
-}
-
-func (r *RefundPayment) GetUser() *RefundPaymentUser {
-	if r == nil {
-		return nil
-	}
-	return r.User
-}
-
-func (r *RefundPayment) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RefundPayment) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetBillingReason sets the BillingReason field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetBillingReason(billingReason *BillingReasons) {
-	r.BillingReason = billingReason
-	r.require(refundPaymentFieldBillingReason)
-}
-
-// SetCardBrand sets the CardBrand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetCardBrand(cardBrand *CardBrands) {
-	r.CardBrand = cardBrand
-	r.require(refundPaymentFieldCardBrand)
-}
-
-// SetCardLast4 sets the CardLast4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetCardLast4(cardLast4 *string) {
-	r.CardLast4 = cardLast4
-	r.require(refundPaymentFieldCardLast4)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetCreatedAt(createdAt time.Time) {
-	r.CreatedAt = createdAt
-	r.require(refundPaymentFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetCurrency(currency Currencies) {
-	r.Currency = currency
-	r.require(refundPaymentFieldCurrency)
-}
-
-// SetDisputeAlertedAt sets the DisputeAlertedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetDisputeAlertedAt(disputeAlertedAt *time.Time) {
-	r.DisputeAlertedAt = disputeAlertedAt
-	r.require(refundPaymentFieldDisputeAlertedAt)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetID(id string) {
-	r.ID = id
-	r.require(refundPaymentFieldID)
-}
-
-// SetMember sets the Member field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetMember(member *RefundPaymentMember) {
-	r.Member = member
-	r.require(refundPaymentFieldMember)
-}
-
-// SetMembership sets the Membership field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetMembership(membership *RefundPaymentMembership) {
-	r.Membership = membership
-	r.require(refundPaymentFieldMembership)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetMetadata(metadata map[string]any) {
-	r.Metadata = metadata
-	r.require(refundPaymentFieldMetadata)
-}
-
-// SetPaidAt sets the PaidAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetPaidAt(paidAt *time.Time) {
-	r.PaidAt = paidAt
-	r.require(refundPaymentFieldPaidAt)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetPaymentMethodType(paymentMethodType *PaymentMethodTypes) {
-	r.PaymentMethodType = paymentMethodType
-	r.require(refundPaymentFieldPaymentMethodType)
-}
-
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetPlan(plan *RefundPaymentPlan) {
-	r.Plan = plan
-	r.require(refundPaymentFieldPlan)
-}
-
-// SetProduct sets the Product field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetProduct(product *RefundPaymentProduct) {
-	r.Product = product
-	r.require(refundPaymentFieldProduct)
-}
-
-// SetSubtotal sets the Subtotal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetSubtotal(subtotal *float64) {
-	r.Subtotal = subtotal
-	r.require(refundPaymentFieldSubtotal)
-}
-
-// SetTaxAmount sets the TaxAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetTaxAmount(taxAmount *float64) {
-	r.TaxAmount = taxAmount
-	r.require(refundPaymentFieldTaxAmount)
-}
-
-// SetTaxBehavior sets the TaxBehavior field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetTaxBehavior(taxBehavior *ReceiptTaxBehaviors) {
-	r.TaxBehavior = taxBehavior
-	r.require(refundPaymentFieldTaxBehavior)
-}
-
-// SetTaxRefundedAmount sets the TaxRefundedAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetTaxRefundedAmount(taxRefundedAmount *float64) {
-	r.TaxRefundedAmount = taxRefundedAmount
-	r.require(refundPaymentFieldTaxRefundedAmount)
-}
-
-// SetTotal sets the Total field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetTotal(total *float64) {
-	r.Total = total
-	r.require(refundPaymentFieldTotal)
-}
-
-// SetUsdTotal sets the UsdTotal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetUsdTotal(usdTotal *float64) {
-	r.UsdTotal = usdTotal
-	r.require(refundPaymentFieldUsdTotal)
-}
-
-// SetUser sets the User field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPayment) SetUser(user *RefundPaymentUser) {
-	r.User = user
-	r.require(refundPaymentFieldUser)
-}
-
-func (r *RefundPayment) UnmarshalJSON(data []byte) error {
-	type embed RefundPayment
-	var unmarshaler = struct {
-		embed
-		CreatedAt        *internal.DateTime `json:"created_at"`
-		DisputeAlertedAt *internal.DateTime `json:"dispute_alerted_at,omitempty"`
-		PaidAt           *internal.DateTime `json:"paid_at,omitempty"`
-	}{
-		embed: embed(*r),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*r = RefundPayment(unmarshaler.embed)
-	r.CreatedAt = unmarshaler.CreatedAt.Time()
-	r.DisputeAlertedAt = unmarshaler.DisputeAlertedAt.TimePtr()
-	r.PaidAt = unmarshaler.PaidAt.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RefundPayment) MarshalJSON() ([]byte, error) {
-	type embed RefundPayment
-	var marshaler = struct {
-		embed
-		CreatedAt        *internal.DateTime `json:"created_at"`
-		DisputeAlertedAt *internal.DateTime `json:"dispute_alerted_at,omitempty"`
-		PaidAt           *internal.DateTime `json:"paid_at,omitempty"`
-	}{
-		embed:            embed(*r),
-		CreatedAt:        internal.NewDateTime(r.CreatedAt),
-		DisputeAlertedAt: internal.NewOptionalDateTime(r.DisputeAlertedAt),
-		PaidAt:           internal.NewOptionalDateTime(r.PaidAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RefundPayment) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// The member attached to this payment.
-var (
-	refundPaymentMemberFieldID    = big.NewInt(1 << 0)
-	refundPaymentMemberFieldPhone = big.NewInt(1 << 1)
-)
-
-type RefundPaymentMember struct {
-	// The unique identifier for the company member.
-	ID string `json:"id" url:"id"`
-	// The phone number for the member, if available.
-	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RefundPaymentMember) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RefundPaymentMember) GetPhone() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Phone
-}
-
-func (r *RefundPaymentMember) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RefundPaymentMember) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentMember) SetID(id string) {
-	r.ID = id
-	r.require(refundPaymentMemberFieldID)
-}
-
-// SetPhone sets the Phone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentMember) SetPhone(phone *string) {
-	r.Phone = phone
-	r.require(refundPaymentMemberFieldPhone)
-}
-
-func (r *RefundPaymentMember) UnmarshalJSON(data []byte) error {
-	type unmarshaler RefundPaymentMember
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RefundPaymentMember(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RefundPaymentMember) MarshalJSON() ([]byte, error) {
-	type embed RefundPaymentMember
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RefundPaymentMember) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// The membership attached to this payment.
-var (
-	refundPaymentMembershipFieldID     = big.NewInt(1 << 0)
-	refundPaymentMembershipFieldStatus = big.NewInt(1 << 1)
-)
-
-type RefundPaymentMembership struct {
-	// The unique identifier for the membership.
-	ID string `json:"id" url:"id"`
-	// The state of the membership.
-	Status MembershipStatus `json:"status" url:"status"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RefundPaymentMembership) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RefundPaymentMembership) GetStatus() MembershipStatus {
-	if r == nil {
-		return ""
-	}
-	return r.Status
-}
-
-func (r *RefundPaymentMembership) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RefundPaymentMembership) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentMembership) SetID(id string) {
-	r.ID = id
-	r.require(refundPaymentMembershipFieldID)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentMembership) SetStatus(status MembershipStatus) {
-	r.Status = status
-	r.require(refundPaymentMembershipFieldStatus)
-}
-
-func (r *RefundPaymentMembership) UnmarshalJSON(data []byte) error {
-	type unmarshaler RefundPaymentMembership
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RefundPaymentMembership(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RefundPaymentMembership) MarshalJSON() ([]byte, error) {
-	type embed RefundPaymentMembership
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RefundPaymentMembership) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// The plan attached to this payment.
-var (
-	refundPaymentPlanFieldID       = big.NewInt(1 << 0)
-	refundPaymentPlanFieldMetadata = big.NewInt(1 << 1)
-)
-
-type RefundPaymentPlan struct {
-	// The unique identifier for the plan.
-	ID string `json:"id" url:"id"`
-	// Custom key-value pairs stored on the plan. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this plan.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RefundPaymentPlan) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RefundPaymentPlan) GetMetadata() map[string]any {
-	if r == nil {
-		return nil
-	}
-	return r.Metadata
-}
-
-func (r *RefundPaymentPlan) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RefundPaymentPlan) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentPlan) SetID(id string) {
-	r.ID = id
-	r.require(refundPaymentPlanFieldID)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentPlan) SetMetadata(metadata map[string]any) {
-	r.Metadata = metadata
-	r.require(refundPaymentPlanFieldMetadata)
-}
-
-func (r *RefundPaymentPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler RefundPaymentPlan
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RefundPaymentPlan(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RefundPaymentPlan) MarshalJSON() ([]byte, error) {
-	type embed RefundPaymentPlan
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RefundPaymentPlan) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// The product this payment was made for
-var (
-	refundPaymentProductFieldID       = big.NewInt(1 << 0)
-	refundPaymentProductFieldMetadata = big.NewInt(1 << 1)
-)
-
-type RefundPaymentProduct struct {
-	// The unique identifier for the product.
-	ID string `json:"id" url:"id"`
-	// Custom key-value pairs stored on the product and included in payment and membership webhook payloads. Max 50 keys, 100 characters per key, 500 characters per string value.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RefundPaymentProduct) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RefundPaymentProduct) GetMetadata() map[string]any {
-	if r == nil {
-		return nil
-	}
-	return r.Metadata
-}
-
-func (r *RefundPaymentProduct) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RefundPaymentProduct) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentProduct) SetID(id string) {
-	r.ID = id
-	r.require(refundPaymentProductFieldID)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentProduct) SetMetadata(metadata map[string]any) {
-	r.Metadata = metadata
-	r.require(refundPaymentProductFieldMetadata)
-}
-
-func (r *RefundPaymentProduct) UnmarshalJSON(data []byte) error {
-	type unmarshaler RefundPaymentProduct
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RefundPaymentProduct(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RefundPaymentProduct) MarshalJSON() ([]byte, error) {
-	type embed RefundPaymentProduct
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RefundPaymentProduct) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// The user that made this payment.
-var (
-	refundPaymentUserFieldEmail    = big.NewInt(1 << 0)
-	refundPaymentUserFieldID       = big.NewInt(1 << 1)
-	refundPaymentUserFieldName     = big.NewInt(1 << 2)
-	refundPaymentUserFieldUsername = big.NewInt(1 << 3)
-)
-
-type RefundPaymentUser struct {
-	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
-	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// The unique identifier for the user.
-	ID string `json:"id" url:"id"`
-	// The user's display name shown on their public profile.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The user's unique username shown on their public profile.
-	Username string `json:"username" url:"username"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RefundPaymentUser) GetEmail() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Email
-}
-
-func (r *RefundPaymentUser) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RefundPaymentUser) GetName() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Name
-}
-
-func (r *RefundPaymentUser) GetUsername() string {
-	if r == nil {
-		return ""
-	}
-	return r.Username
-}
-
-func (r *RefundPaymentUser) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RefundPaymentUser) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetEmail sets the Email field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentUser) SetEmail(email *string) {
-	r.Email = email
-	r.require(refundPaymentUserFieldEmail)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentUser) SetID(id string) {
-	r.ID = id
-	r.require(refundPaymentUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentUser) SetName(name *string) {
-	r.Name = name
-	r.require(refundPaymentUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RefundPaymentUser) SetUsername(username string) {
-	r.Username = username
-	r.require(refundPaymentUserFieldUsername)
-}
-
-func (r *RefundPaymentUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler RefundPaymentUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RefundPaymentUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RefundPaymentUser) MarshalJSON() ([]byte, error) {
-	type embed RefundPaymentUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RefundPaymentUser) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// The status of the refund reference.
-type RefundReferenceStatuses string
+// Why the refund failed, normalized across providers. Null unless the refund failed or was canceled.
+type RefundFailureReason string
 
 const (
-	RefundReferenceStatusesAvailable   RefundReferenceStatuses = "available"
-	RefundReferenceStatusesPending     RefundReferenceStatuses = "pending"
-	RefundReferenceStatusesUnavailable RefundReferenceStatuses = "unavailable"
+	RefundFailureReasonBankDeclined          RefundFailureReason = "bank_declined"
+	RefundFailureReasonExpiredOrCanceledCard RefundFailureReason = "expired_or_canceled_card"
+	RefundFailureReasonLostOrStolenCard      RefundFailureReason = "lost_or_stolen_card"
+	RefundFailureReasonInsufficientFunds     RefundFailureReason = "insufficient_funds"
+	RefundFailureReasonChargeDisputed        RefundFailureReason = "charge_disputed"
+	RefundFailureReasonNotRefundable         RefundFailureReason = "not_refundable"
+	RefundFailureReasonMerchantRequest       RefundFailureReason = "merchant_request"
+	RefundFailureReasonUnknown               RefundFailureReason = "unknown"
 )
 
-func NewRefundReferenceStatusesFromString(s string) (RefundReferenceStatuses, error) {
+func NewRefundFailureReasonFromString(s string) (RefundFailureReason, error) {
+	switch s {
+	case "bank_declined":
+		return RefundFailureReasonBankDeclined, nil
+	case "expired_or_canceled_card":
+		return RefundFailureReasonExpiredOrCanceledCard, nil
+	case "lost_or_stolen_card":
+		return RefundFailureReasonLostOrStolenCard, nil
+	case "insufficient_funds":
+		return RefundFailureReasonInsufficientFunds, nil
+	case "charge_disputed":
+		return RefundFailureReasonChargeDisputed, nil
+	case "not_refundable":
+		return RefundFailureReasonNotRefundable, nil
+	case "merchant_request":
+		return RefundFailureReasonMerchantRequest, nil
+	case "unknown":
+		return RefundFailureReasonUnknown, nil
+	}
+	var t RefundFailureReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RefundFailureReason) Ptr() *RefundFailureReason {
+	return &r
+}
+
+// Why the refund was issued, when recorded.
+type RefundReason string
+
+const (
+	RefundReasonDuplicate               RefundReason = "duplicate"
+	RefundReasonFraudulent              RefundReason = "fraudulent"
+	RefundReasonRequestedByCustomer     RefundReason = "requested_by_customer"
+	RefundReasonExpiredUncapturedCharge RefundReason = "expired_uncaptured_charge"
+)
+
+func NewRefundReasonFromString(s string) (RefundReason, error) {
+	switch s {
+	case "duplicate":
+		return RefundReasonDuplicate, nil
+	case "fraudulent":
+		return RefundReasonFraudulent, nil
+	case "requested_by_customer":
+		return RefundReasonRequestedByCustomer, nil
+	case "expired_uncaptured_charge":
+		return RefundReasonExpiredUncapturedCharge, nil
+	}
+	var t RefundReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RefundReason) Ptr() *RefundReason {
+	return &r
+}
+
+// Whether a banking-network tracking reference is available for this refund.
+type RefundReferenceStatus string
+
+const (
+	RefundReferenceStatusAvailable   RefundReferenceStatus = "available"
+	RefundReferenceStatusPending     RefundReferenceStatus = "pending"
+	RefundReferenceStatusUnavailable RefundReferenceStatus = "unavailable"
+)
+
+func NewRefundReferenceStatusFromString(s string) (RefundReferenceStatus, error) {
 	switch s {
 	case "available":
-		return RefundReferenceStatusesAvailable, nil
+		return RefundReferenceStatusAvailable, nil
 	case "pending":
-		return RefundReferenceStatusesPending, nil
+		return RefundReferenceStatusPending, nil
 	case "unavailable":
-		return RefundReferenceStatusesUnavailable, nil
+		return RefundReferenceStatusUnavailable, nil
 	}
-	var t RefundReferenceStatuses
+	var t RefundReferenceStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (r RefundReferenceStatuses) Ptr() *RefundReferenceStatuses {
+func (r RefundReferenceStatus) Ptr() *RefundReferenceStatus {
 	return &r
 }
 
-// The type of refund reference that was made available by the payment provider.
-type RefundReferenceTypes string
+// The kind of tracking reference, such as an acquirer reference number.
+type RefundReferenceType string
 
 const (
-	RefundReferenceTypesAcquirerReferenceNumber  RefundReferenceTypes = "acquirer_reference_number"
-	RefundReferenceTypesRetrievalReferenceNumber RefundReferenceTypes = "retrieval_reference_number"
-	RefundReferenceTypesSystemTraceAuditNumber   RefundReferenceTypes = "system_trace_audit_number"
+	RefundReferenceTypeAcquirerReferenceNumber  RefundReferenceType = "acquirer_reference_number"
+	RefundReferenceTypeRetrievalReferenceNumber RefundReferenceType = "retrieval_reference_number"
+	RefundReferenceTypeSystemTraceAuditNumber   RefundReferenceType = "system_trace_audit_number"
 )
 
-func NewRefundReferenceTypesFromString(s string) (RefundReferenceTypes, error) {
+func NewRefundReferenceTypeFromString(s string) (RefundReferenceType, error) {
 	switch s {
 	case "acquirer_reference_number":
-		return RefundReferenceTypesAcquirerReferenceNumber, nil
+		return RefundReferenceTypeAcquirerReferenceNumber, nil
 	case "retrieval_reference_number":
-		return RefundReferenceTypesRetrievalReferenceNumber, nil
+		return RefundReferenceTypeRetrievalReferenceNumber, nil
 	case "system_trace_audit_number":
-		return RefundReferenceTypesSystemTraceAuditNumber, nil
+		return RefundReferenceTypeSystemTraceAuditNumber, nil
 	}
-	var t RefundReferenceTypes
+	var t RefundReferenceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (r RefundReferenceTypes) Ptr() *RefundReferenceTypes {
+func (r RefundReferenceType) Ptr() *RefundReferenceType {
 	return &r
 }
 
-// The connection type for Refund.
+// Where the refund stands with the processor: `pending`, `requires_action`, `succeeded`, `failed`, or `canceled`.
+type RefundStatus string
+
+const (
+	RefundStatusPending        RefundStatus = "pending"
+	RefundStatusRequiresAction RefundStatus = "requires_action"
+	RefundStatusSucceeded      RefundStatus = "succeeded"
+	RefundStatusFailed         RefundStatus = "failed"
+	RefundStatusCanceled       RefundStatus = "canceled"
+)
+
+func NewRefundStatusFromString(s string) (RefundStatus, error) {
+	switch s {
+	case "pending":
+		return RefundStatusPending, nil
+	case "requires_action":
+		return RefundStatusRequiresAction, nil
+	case "succeeded":
+		return RefundStatusSucceeded, nil
+	case "failed":
+		return RefundStatusFailed, nil
+	case "canceled":
+		return RefundStatusCanceled, nil
+	}
+	var t RefundStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RefundStatus) Ptr() *RefundStatus {
+	return &r
+}
+
+type ListRefundsRequestDirection string
+
+const (
+	ListRefundsRequestDirectionAsc  ListRefundsRequestDirection = "asc"
+	ListRefundsRequestDirectionDesc ListRefundsRequestDirection = "desc"
+)
+
+func NewListRefundsRequestDirectionFromString(s string) (ListRefundsRequestDirection, error) {
+	switch s {
+	case "asc":
+		return ListRefundsRequestDirectionAsc, nil
+	case "desc":
+		return ListRefundsRequestDirectionDesc, nil
+	}
+	var t ListRefundsRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListRefundsRequestDirection) Ptr() *ListRefundsRequestDirection {
+	return &l
+}
+
+type ListRefundsRequestOrder string
+
+const (
+	ListRefundsRequestOrderCreatedAt ListRefundsRequestOrder = "created_at"
+)
+
+func NewListRefundsRequestOrderFromString(s string) (ListRefundsRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return ListRefundsRequestOrderCreatedAt, nil
+	}
+	var t ListRefundsRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListRefundsRequestOrder) Ptr() *ListRefundsRequestOrder {
+	return &l
+}
+
 var (
 	listRefundsResponseFieldData     = big.NewInt(1 << 0)
 	listRefundsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
 type ListRefundsResponse struct {
-	// A list of nodes.
-	Data []*RefundListItem `json:"data" url:"data"`
-	// Information to aid in pagination.
-	PageInfo *PageInfo `json:"page_info" url:"page_info"`
+	Data     []*Refund                    `json:"data" url:"data"`
+	PageInfo *ListRefundsResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1906,14 +730,14 @@ type ListRefundsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListRefundsResponse) GetData() []*RefundListItem {
+func (l *ListRefundsResponse) GetData() []*Refund {
 	if l == nil {
 		return nil
 	}
 	return l.Data
 }
 
-func (l *ListRefundsResponse) GetPageInfo() *PageInfo {
+func (l *ListRefundsResponse) GetPageInfo() *ListRefundsResponsePageInfo {
 	if l == nil {
 		return nil
 	}
@@ -1936,14 +760,14 @@ func (l *ListRefundsResponse) require(field *big.Int) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListRefundsResponse) SetData(data []*RefundListItem) {
+func (l *ListRefundsResponse) SetData(data []*Refund) {
 	l.Data = data
 	l.require(listRefundsResponseFieldData)
 }
 
 // SetPageInfo sets the PageInfo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListRefundsResponse) SetPageInfo(pageInfo *PageInfo) {
+func (l *ListRefundsResponse) SetPageInfo(pageInfo *ListRefundsResponsePageInfo) {
 	l.PageInfo = pageInfo
 	l.require(listRefundsResponseFieldPageInfo)
 }
@@ -1991,6 +815,138 @@ func (l *ListRefundsResponse) String() string {
 }
 
 var (
+	listRefundsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	listRefundsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	listRefundsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	listRefundsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+type ListRefundsResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListRefundsResponsePageInfo) GetEndCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EndCursor
+}
+
+func (l *ListRefundsResponsePageInfo) GetHasNextPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasNextPage
+}
+
+func (l *ListRefundsResponsePageInfo) GetHasPreviousPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasPreviousPage
+}
+
+func (l *ListRefundsResponsePageInfo) GetStartCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.StartCursor
+}
+
+func (l *ListRefundsResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListRefundsResponsePageInfo) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRefundsResponsePageInfo) SetEndCursor(endCursor *string) {
+	l.EndCursor = endCursor
+	l.require(listRefundsResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRefundsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	l.HasNextPage = hasNextPage
+	l.require(listRefundsResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRefundsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	l.HasPreviousPage = hasPreviousPage
+	l.require(listRefundsResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRefundsResponsePageInfo) SetStartCursor(startCursor *string) {
+	l.StartCursor = startCursor
+	l.require(listRefundsResponsePageInfoFieldStartCursor)
+}
+
+func (l *ListRefundsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListRefundsResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListRefundsResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListRefundsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed ListRefundsResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListRefundsResponsePageInfo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
 	postRefundCreatedPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postRefundCreatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postRefundCreatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
@@ -2007,8 +963,8 @@ type PostRefundCreatedPayload struct {
 	// The API version for this webhook
 	APIVersion PostRefundCreatedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Refund `json:"data" url:"data"`
+	APIVersionDate *string       `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *RefundLegacy `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -2046,7 +1002,7 @@ func (p *PostRefundCreatedPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostRefundCreatedPayload) GetData() *Refund {
+func (p *PostRefundCreatedPayload) GetData() *RefundLegacy {
 	if p == nil {
 		return nil
 	}
@@ -2118,7 +1074,7 @@ func (p *PostRefundCreatedPayload) SetAPIVersionDate(apiVersionDate *string) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostRefundCreatedPayload) SetData(data *Refund) {
+func (p *PostRefundCreatedPayload) SetData(data *RefundLegacy) {
 	p.Data = data
 	p.require(postRefundCreatedPayloadFieldData)
 }
@@ -2258,8 +1214,8 @@ type PostRefundUpdatedPayload struct {
 	// The API version for this webhook
 	APIVersion PostRefundUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Refund `json:"data" url:"data"`
+	APIVersionDate *string       `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *RefundLegacy `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -2297,7 +1253,7 @@ func (p *PostRefundUpdatedPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostRefundUpdatedPayload) GetData() *Refund {
+func (p *PostRefundUpdatedPayload) GetData() *RefundLegacy {
 	if p == nil {
 		return nil
 	}
@@ -2369,7 +1325,7 @@ func (p *PostRefundUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostRefundUpdatedPayload) SetData(data *Refund) {
+func (p *PostRefundUpdatedPayload) SetData(data *RefundLegacy) {
 	p.Data = data
 	p.require(postRefundUpdatedPayloadFieldData)
 }

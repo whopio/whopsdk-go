@@ -57,13 +57,171 @@ func (c *CancelPayoutsRequest) SetUserID(userID *string) {
 }
 
 var (
-	createQuotePayoutsRequestFieldAccountID          = big.NewInt(1 << 0)
-	createQuotePayoutsRequestFieldAmount             = big.NewInt(1 << 1)
-	createQuotePayoutsRequestFieldCurrency           = big.NewInt(1 << 2)
-	createQuotePayoutsRequestFieldPayoutMethodID     = big.NewInt(1 << 3)
-	createQuotePayoutsRequestFieldPlatformCoversFees = big.NewInt(1 << 4)
-	createQuotePayoutsRequestFieldSpeed              = big.NewInt(1 << 5)
-	createQuotePayoutsRequestFieldUserID             = big.NewInt(1 << 6)
+	createPayoutsRequestFieldAccountID              = big.NewInt(1 << 0)
+	createPayoutsRequestFieldAcknowledgeBankWarning = big.NewInt(1 << 1)
+	createPayoutsRequestFieldAmount                 = big.NewInt(1 << 2)
+	createPayoutsRequestFieldCurrency               = big.NewInt(1 << 3)
+	createPayoutsRequestFieldMetadata               = big.NewInt(1 << 4)
+	createPayoutsRequestFieldNotes                  = big.NewInt(1 << 5)
+	createPayoutsRequestFieldPayoutMethodID         = big.NewInt(1 << 6)
+	createPayoutsRequestFieldPlatformCoversFees     = big.NewInt(1 << 7)
+	createPayoutsRequestFieldQuoteToken             = big.NewInt(1 << 8)
+	createPayoutsRequestFieldSpeed                  = big.NewInt(1 << 9)
+	createPayoutsRequestFieldStatementDescriptor    = big.NewInt(1 << 10)
+	createPayoutsRequestFieldUserID                 = big.NewInt(1 << 11)
+)
+
+type CreatePayoutsRequest struct {
+	// Account to pay out from, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
+	// Set to `true` to continue when the destination bank could not confirm the payout method account holder's name, or `false` to have the payout refused in that case so the account holder can correct the name or link their bank first. Omitting the field skips the warning gate — a client that cannot show the warning keeps its pre-gate behavior.
+	AcknowledgeBankWarning *bool `json:"acknowledge_bank_warning,omitempty" url:"-"`
+	// The amount to pay out in the specified currency.
+	Amount float64 `json:"amount" url:"-"`
+	// The currency to pay out. Balances are held per currency and the payout draws only from the balance in this currency, so match the currency the funds arrived in — for example `cad` for an account funded by CAD transfers. When omitted, uses `usd` if that balance can cover a withdrawal, otherwise the account's only other funded currency.
+	Currency *string `json:"currency,omitempty" url:"-"`
+	// Key-value data to attach to the payout, echoed on every read and in webhook payloads. At most 50 keys, key names up to 40 characters, string values up to 500 characters. Never store secrets or regulated personal data here — webhook bodies are retained for delivery inspection.
+	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
+	// Free-form notes to attach to the payout, with a maximum of 255 characters. Omit or pass `null` for no notes.
+	Notes *string `json:"notes,omitempty" url:"-"`
+	// The saved payout method to deliver to (a potk_ identifier).
+	PayoutMethodID string `json:"payout_method_id" url:"-"`
+	// Whether the parent platform covers the payout fee instead of the account being paid out. Omit to use the platform's configured fee coverage policy; pass `false` to opt out of it. `true` is only accepted for accounts that belong to a platform, and requires the platform's policy to cover this payout method's category or a caller authorized to manage the platform's child account fees.
+	PlatformCoversFees *bool `json:"platform_covers_fees,omitempty" url:"-"`
+	// The server-signed quote_token returned by POST /payouts/quotes. Required when the ledger account's payout_quote_required is true; a payout without it is refused with the invalid_payout_quote error type. When provided, Whop will not commit a provider payout below the destination amount the quote showed.
+	QuoteToken *string `json:"quote_token,omitempty" url:"-"`
+	// How fast the funds should arrive. `instant` is only accepted when the account and payout method are eligible; otherwise the payout is rejected.
+	Speed *CreatePayoutsRequestSpeed `json:"speed,omitempty" url:"-"`
+	// Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Without a `quote_token`, omit or pass `null` to use the default descriptor. With a `quote_token`, set this value when creating the quote; the payout request may omit it but cannot add or change it.
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"-"`
+	// User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+	UserID *string `json:"user_id,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreatePayoutsRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createPayoutsRequestFieldAccountID)
+}
+
+// SetAcknowledgeBankWarning sets the AcknowledgeBankWarning field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetAcknowledgeBankWarning(acknowledgeBankWarning *bool) {
+	c.AcknowledgeBankWarning = acknowledgeBankWarning
+	c.require(createPayoutsRequestFieldAcknowledgeBankWarning)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetAmount(amount float64) {
+	c.Amount = amount
+	c.require(createPayoutsRequestFieldAmount)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetCurrency(currency *string) {
+	c.Currency = currency
+	c.require(createPayoutsRequestFieldCurrency)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetMetadata(metadata map[string]string) {
+	c.Metadata = metadata
+	c.require(createPayoutsRequestFieldMetadata)
+}
+
+// SetNotes sets the Notes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetNotes(notes *string) {
+	c.Notes = notes
+	c.require(createPayoutsRequestFieldNotes)
+}
+
+// SetPayoutMethodID sets the PayoutMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetPayoutMethodID(payoutMethodID string) {
+	c.PayoutMethodID = payoutMethodID
+	c.require(createPayoutsRequestFieldPayoutMethodID)
+}
+
+// SetPlatformCoversFees sets the PlatformCoversFees field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetPlatformCoversFees(platformCoversFees *bool) {
+	c.PlatformCoversFees = platformCoversFees
+	c.require(createPayoutsRequestFieldPlatformCoversFees)
+}
+
+// SetQuoteToken sets the QuoteToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetQuoteToken(quoteToken *string) {
+	c.QuoteToken = quoteToken
+	c.require(createPayoutsRequestFieldQuoteToken)
+}
+
+// SetSpeed sets the Speed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetSpeed(speed *CreatePayoutsRequestSpeed) {
+	c.Speed = speed
+	c.require(createPayoutsRequestFieldSpeed)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetStatementDescriptor(statementDescriptor *string) {
+	c.StatementDescriptor = statementDescriptor
+	c.require(createPayoutsRequestFieldStatementDescriptor)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsRequest) SetUserID(userID *string) {
+	c.UserID = userID
+	c.require(createPayoutsRequestFieldUserID)
+}
+
+func (c *CreatePayoutsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePayoutsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreatePayoutsRequest(body)
+	return nil
+}
+
+func (c *CreatePayoutsRequest) MarshalJSON() ([]byte, error) {
+	type embed CreatePayoutsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	createQuotePayoutsRequestFieldAccountID           = big.NewInt(1 << 0)
+	createQuotePayoutsRequestFieldAmount              = big.NewInt(1 << 1)
+	createQuotePayoutsRequestFieldCurrency            = big.NewInt(1 << 2)
+	createQuotePayoutsRequestFieldPayoutMethodID      = big.NewInt(1 << 3)
+	createQuotePayoutsRequestFieldPlatformCoversFees  = big.NewInt(1 << 4)
+	createQuotePayoutsRequestFieldSpeed               = big.NewInt(1 << 5)
+	createQuotePayoutsRequestFieldStatementDescriptor = big.NewInt(1 << 6)
+	createQuotePayoutsRequestFieldUserID              = big.NewInt(1 << 7)
 )
 
 type CreateQuotePayoutsRequest struct {
@@ -71,7 +229,7 @@ type CreateQuotePayoutsRequest struct {
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// The amount to pay out in the specified currency.
 	Amount float64 `json:"amount" url:"-"`
-	// The balance currency to pay out.
+	// The currency to pay out. When omitted, uses `usd` if that balance can cover a withdrawal, otherwise the account's only other funded currency.
 	Currency *string `json:"currency,omitempty" url:"-"`
 	// The saved payout method to quote (a potk_ identifier).
 	PayoutMethodID string `json:"payout_method_id" url:"-"`
@@ -79,6 +237,8 @@ type CreateQuotePayoutsRequest struct {
 	PlatformCoversFees *bool `json:"platform_covers_fees,omitempty" url:"-"`
 	// How fast the funds should arrive.
 	Speed *CreateQuotePayoutsRequestSpeed `json:"speed,omitempty" url:"-"`
+	// Text that appears on the recipient's bank statement. Must be 5-22 alphanumeric characters (A-Z, a-z, 0-9). Omit or pass `null` to use the default descriptor.
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"-"`
 	// User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
 	UserID *string `json:"user_id,omitempty" url:"-"`
 
@@ -133,6 +293,13 @@ func (c *CreateQuotePayoutsRequest) SetPlatformCoversFees(platformCoversFees *bo
 func (c *CreateQuotePayoutsRequest) SetSpeed(speed *CreateQuotePayoutsRequestSpeed) {
 	c.Speed = speed
 	c.require(createQuotePayoutsRequestFieldSpeed)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsRequest) SetStatementDescriptor(statementDescriptor *string) {
+	c.StatementDescriptor = statementDescriptor
+	c.require(createQuotePayoutsRequestFieldStatementDescriptor)
 }
 
 // SetUserID sets the UserID field and marks it as non-optional;
@@ -367,9 +534,10 @@ var (
 	cancelPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 18)
 	cancelPayoutsResponseFieldSource              = big.NewInt(1 << 19)
 	cancelPayoutsResponseFieldSpeed               = big.NewInt(1 << 20)
-	cancelPayoutsResponseFieldStatus              = big.NewInt(1 << 21)
-	cancelPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 22)
-	cancelPayoutsResponseFieldTraceCode           = big.NewInt(1 << 23)
+	cancelPayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 21)
+	cancelPayoutsResponseFieldStatus              = big.NewInt(1 << 22)
+	cancelPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 23)
+	cancelPayoutsResponseFieldTraceCode           = big.NewInt(1 << 24)
 )
 
 type CancelPayoutsResponse struct {
@@ -414,6 +582,8 @@ type CancelPayoutsResponse struct {
 	Source *CancelPayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed CancelPayoutsResponseSpeed `json:"speed" url:"speed"`
+	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status CancelPayoutsResponseStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
@@ -573,6 +743,13 @@ func (c *CancelPayoutsResponse) GetSpeed() CancelPayoutsResponseSpeed {
 		return ""
 	}
 	return c.Speed
+}
+
+func (c *CancelPayoutsResponse) GetStatementDescriptor() *string {
+	if c == nil {
+		return nil
+	}
+	return c.StatementDescriptor
 }
 
 func (c *CancelPayoutsResponse) GetStatus() CancelPayoutsResponseStatus {
@@ -755,6 +932,13 @@ func (c *CancelPayoutsResponse) SetSource(source *CancelPayoutsResponseSource) {
 func (c *CancelPayoutsResponse) SetSpeed(speed CancelPayoutsResponseSpeed) {
 	c.Speed = speed
 	c.require(cancelPayoutsResponseFieldSpeed)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetStatementDescriptor(statementDescriptor *string) {
+	c.StatementDescriptor = statementDescriptor
+	c.require(cancelPayoutsResponseFieldStatementDescriptor)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -1359,67 +1543,26 @@ func (c CancelPayoutsResponseStatus) Ptr() *CancelPayoutsResponseStatus {
 	return &c
 }
 
-type CreatePayoutsRequestBody struct {
-	Unknown any
-
-	typ string
-}
-
-func (c *CreatePayoutsRequestBody) GetUnknown() any {
-	if c == nil {
-		return nil
-	}
-	return c.Unknown
-}
-
-func (c *CreatePayoutsRequestBody) UnmarshalJSON(data []byte) error {
-	var valueUnknown any
-	if err := json.Unmarshal(data, &valueUnknown); err == nil {
-		c.typ = "Unknown"
-		c.Unknown = valueUnknown
-		return nil
-	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
-}
-
-func (c CreatePayoutsRequestBody) MarshalJSON() ([]byte, error) {
-	if c.typ == "Unknown" || c.Unknown != nil {
-		return json.Marshal(c.Unknown)
-	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
-}
-
-type CreatePayoutsRequestBodyVisitor interface {
-	VisitUnknown(any) error
-}
-
-func (c *CreatePayoutsRequestBody) Accept(visitor CreatePayoutsRequestBodyVisitor) error {
-	if c.typ == "Unknown" || c.Unknown != nil {
-		return visitor.VisitUnknown(c.Unknown)
-	}
-	return fmt.Errorf("type %T does not include a non-empty union type", c)
-}
-
 // How fast the funds should arrive. `instant` is only accepted when the account and payout method are eligible; otherwise the payout is rejected.
-type CreatePayoutsRequestBodySpeed string
+type CreatePayoutsRequestSpeed string
 
 const (
-	CreatePayoutsRequestBodySpeedStandard CreatePayoutsRequestBodySpeed = "standard"
-	CreatePayoutsRequestBodySpeedInstant  CreatePayoutsRequestBodySpeed = "instant"
+	CreatePayoutsRequestSpeedStandard CreatePayoutsRequestSpeed = "standard"
+	CreatePayoutsRequestSpeedInstant  CreatePayoutsRequestSpeed = "instant"
 )
 
-func NewCreatePayoutsRequestBodySpeedFromString(s string) (CreatePayoutsRequestBodySpeed, error) {
+func NewCreatePayoutsRequestSpeedFromString(s string) (CreatePayoutsRequestSpeed, error) {
 	switch s {
 	case "standard":
-		return CreatePayoutsRequestBodySpeedStandard, nil
+		return CreatePayoutsRequestSpeedStandard, nil
 	case "instant":
-		return CreatePayoutsRequestBodySpeedInstant, nil
+		return CreatePayoutsRequestSpeedInstant, nil
 	}
-	var t CreatePayoutsRequestBodySpeed
+	var t CreatePayoutsRequestSpeed
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreatePayoutsRequestBodySpeed) Ptr() *CreatePayoutsRequestBodySpeed {
+func (c CreatePayoutsRequestSpeed) Ptr() *CreatePayoutsRequestSpeed {
 	return &c
 }
 
@@ -1445,9 +1588,10 @@ var (
 	createPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 18)
 	createPayoutsResponseFieldSource              = big.NewInt(1 << 19)
 	createPayoutsResponseFieldSpeed               = big.NewInt(1 << 20)
-	createPayoutsResponseFieldStatus              = big.NewInt(1 << 21)
-	createPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 22)
-	createPayoutsResponseFieldTraceCode           = big.NewInt(1 << 23)
+	createPayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 21)
+	createPayoutsResponseFieldStatus              = big.NewInt(1 << 22)
+	createPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 23)
+	createPayoutsResponseFieldTraceCode           = big.NewInt(1 << 24)
 )
 
 type CreatePayoutsResponse struct {
@@ -1492,6 +1636,8 @@ type CreatePayoutsResponse struct {
 	Source *CreatePayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed CreatePayoutsResponseSpeed `json:"speed" url:"speed"`
+	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status, in the same vocabulary as GET /payouts.
 	Status CreatePayoutsResponseStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
@@ -1651,6 +1797,13 @@ func (c *CreatePayoutsResponse) GetSpeed() CreatePayoutsResponseSpeed {
 		return ""
 	}
 	return c.Speed
+}
+
+func (c *CreatePayoutsResponse) GetStatementDescriptor() *string {
+	if c == nil {
+		return nil
+	}
+	return c.StatementDescriptor
 }
 
 func (c *CreatePayoutsResponse) GetStatus() CreatePayoutsResponseStatus {
@@ -1833,6 +1986,13 @@ func (c *CreatePayoutsResponse) SetSource(source *CreatePayoutsResponseSource) {
 func (c *CreatePayoutsResponse) SetSpeed(speed CreatePayoutsResponseSpeed) {
 	c.Speed = speed
 	c.require(createPayoutsResponseFieldSpeed)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsResponse) SetStatementDescriptor(statementDescriptor *string) {
+	c.StatementDescriptor = statementDescriptor
+	c.require(createPayoutsResponseFieldStatementDescriptor)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -2894,9 +3054,10 @@ var (
 	listPayoutsResponseDataItemFieldPayoutRequestID     = big.NewInt(1 << 18)
 	listPayoutsResponseDataItemFieldSource              = big.NewInt(1 << 19)
 	listPayoutsResponseDataItemFieldSpeed               = big.NewInt(1 << 20)
-	listPayoutsResponseDataItemFieldStatus              = big.NewInt(1 << 21)
-	listPayoutsResponseDataItemFieldStatusDetail        = big.NewInt(1 << 22)
-	listPayoutsResponseDataItemFieldTraceCode           = big.NewInt(1 << 23)
+	listPayoutsResponseDataItemFieldStatementDescriptor = big.NewInt(1 << 21)
+	listPayoutsResponseDataItemFieldStatus              = big.NewInt(1 << 22)
+	listPayoutsResponseDataItemFieldStatusDetail        = big.NewInt(1 << 23)
+	listPayoutsResponseDataItemFieldTraceCode           = big.NewInt(1 << 24)
 )
 
 type ListPayoutsResponseDataItem struct {
@@ -2941,6 +3102,8 @@ type ListPayoutsResponseDataItem struct {
 	Source *ListPayoutsResponseDataItemSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed ListPayoutsResponseDataItemSpeed `json:"speed" url:"speed"`
+	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status ListPayoutsResponseDataItemStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
@@ -3100,6 +3263,13 @@ func (l *ListPayoutsResponseDataItem) GetSpeed() ListPayoutsResponseDataItemSpee
 		return ""
 	}
 	return l.Speed
+}
+
+func (l *ListPayoutsResponseDataItem) GetStatementDescriptor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.StatementDescriptor
 }
 
 func (l *ListPayoutsResponseDataItem) GetStatus() ListPayoutsResponseDataItemStatus {
@@ -3282,6 +3452,13 @@ func (l *ListPayoutsResponseDataItem) SetSource(source *ListPayoutsResponseDataI
 func (l *ListPayoutsResponseDataItem) SetSpeed(speed ListPayoutsResponseDataItemSpeed) {
 	l.Speed = speed
 	l.require(listPayoutsResponseDataItemFieldSpeed)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPayoutsResponseDataItem) SetStatementDescriptor(statementDescriptor *string) {
+	l.StatementDescriptor = statementDescriptor
+	l.require(listPayoutsResponseDataItemFieldStatementDescriptor)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -4271,9 +4448,10 @@ var (
 	postPayoutCreatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
 	postPayoutCreatedPayloadDataFieldSource              = big.NewInt(1 << 19)
 	postPayoutCreatedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
-	postPayoutCreatedPayloadDataFieldStatus              = big.NewInt(1 << 21)
-	postPayoutCreatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 22)
-	postPayoutCreatedPayloadDataFieldTraceCode           = big.NewInt(1 << 23)
+	postPayoutCreatedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 21)
+	postPayoutCreatedPayloadDataFieldStatus              = big.NewInt(1 << 22)
+	postPayoutCreatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 23)
+	postPayoutCreatedPayloadDataFieldTraceCode           = big.NewInt(1 << 24)
 )
 
 type PostPayoutCreatedPayloadData struct {
@@ -4318,6 +4496,8 @@ type PostPayoutCreatedPayloadData struct {
 	Source *PostPayoutCreatedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed PostPayoutCreatedPayloadDataSpeed `json:"speed" url:"speed"`
+	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status PostPayoutCreatedPayloadDataStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
@@ -4477,6 +4657,13 @@ func (p *PostPayoutCreatedPayloadData) GetSpeed() PostPayoutCreatedPayloadDataSp
 		return ""
 	}
 	return p.Speed
+}
+
+func (p *PostPayoutCreatedPayloadData) GetStatementDescriptor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StatementDescriptor
 }
 
 func (p *PostPayoutCreatedPayloadData) GetStatus() PostPayoutCreatedPayloadDataStatus {
@@ -4659,6 +4846,13 @@ func (p *PostPayoutCreatedPayloadData) SetSource(source *PostPayoutCreatedPayloa
 func (p *PostPayoutCreatedPayloadData) SetSpeed(speed PostPayoutCreatedPayloadDataSpeed) {
 	p.Speed = speed
 	p.require(postPayoutCreatedPayloadDataFieldSpeed)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetStatementDescriptor(statementDescriptor *string) {
+	p.StatementDescriptor = statementDescriptor
+	p.require(postPayoutCreatedPayloadDataFieldStatementDescriptor)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -6238,13 +6432,14 @@ func (p PostPayoutMethodCreatedPayloadDataObject) Ptr() *PostPayoutMethodCreated
 
 // Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 var (
-	postPayoutMethodCreatedPayloadDataQuoteFieldAmount       = big.NewInt(1 << 0)
-	postPayoutMethodCreatedPayloadDataQuoteFieldCurrency     = big.NewInt(1 << 1)
-	postPayoutMethodCreatedPayloadDataQuoteFieldExchangeRate = big.NewInt(1 << 2)
-	postPayoutMethodCreatedPayloadDataQuoteFieldInstant      = big.NewInt(1 << 3)
-	postPayoutMethodCreatedPayloadDataQuoteFieldMaxLimit     = big.NewInt(1 << 4)
-	postPayoutMethodCreatedPayloadDataQuoteFieldMinLimit     = big.NewInt(1 << 5)
-	postPayoutMethodCreatedPayloadDataQuoteFieldStandard     = big.NewInt(1 << 6)
+	postPayoutMethodCreatedPayloadDataQuoteFieldAmount                   = big.NewInt(1 << 0)
+	postPayoutMethodCreatedPayloadDataQuoteFieldCurrency                 = big.NewInt(1 << 1)
+	postPayoutMethodCreatedPayloadDataQuoteFieldExchangeRate             = big.NewInt(1 << 2)
+	postPayoutMethodCreatedPayloadDataQuoteFieldInstant                  = big.NewInt(1 << 3)
+	postPayoutMethodCreatedPayloadDataQuoteFieldInstantUnavailableReason = big.NewInt(1 << 4)
+	postPayoutMethodCreatedPayloadDataQuoteFieldMaxLimit                 = big.NewInt(1 << 5)
+	postPayoutMethodCreatedPayloadDataQuoteFieldMinLimit                 = big.NewInt(1 << 6)
+	postPayoutMethodCreatedPayloadDataQuoteFieldStandard                 = big.NewInt(1 << 7)
 )
 
 type PostPayoutMethodCreatedPayloadDataQuote struct {
@@ -6256,6 +6451,8 @@ type PostPayoutMethodCreatedPayloadDataQuote struct {
 	ExchangeRate float64 `json:"exchange_rate" url:"exchange_rate"`
 	// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
 	Instant *PostPayoutMethodCreatedPayloadDataQuoteInstant `json:"instant,omitempty" url:"instant,omitempty"`
+	// Why instant delivery is unavailable for this method. `minimum_crypto_sales_not_met` means the account has not reached the total sales required for instant cryptocurrency payouts. `null` when this restriction does not apply.
+	InstantUnavailableReason *PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason `json:"instant_unavailable_reason,omitempty" url:"instant_unavailable_reason,omitempty"`
 	// Maximum payout amount for this method, in the payout currency.
 	MaxLimit *float64 `json:"max_limit,omitempty" url:"max_limit,omitempty"`
 	// Minimum payout amount for this method, in the payout currency.
@@ -6296,6 +6493,13 @@ func (p *PostPayoutMethodCreatedPayloadDataQuote) GetInstant() *PostPayoutMethod
 		return nil
 	}
 	return p.Instant
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataQuote) GetInstantUnavailableReason() *PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason {
+	if p == nil {
+		return nil
+	}
+	return p.InstantUnavailableReason
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataQuote) GetMaxLimit() *float64 {
@@ -6359,6 +6563,13 @@ func (p *PostPayoutMethodCreatedPayloadDataQuote) SetExchangeRate(exchangeRate f
 func (p *PostPayoutMethodCreatedPayloadDataQuote) SetInstant(instant *PostPayoutMethodCreatedPayloadDataQuoteInstant) {
 	p.Instant = instant
 	p.require(postPayoutMethodCreatedPayloadDataQuoteFieldInstant)
+}
+
+// SetInstantUnavailableReason sets the InstantUnavailableReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutMethodCreatedPayloadDataQuote) SetInstantUnavailableReason(instantUnavailableReason *PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason) {
+	p.InstantUnavailableReason = instantUnavailableReason
+	p.require(postPayoutMethodCreatedPayloadDataQuoteFieldInstantUnavailableReason)
 }
 
 // SetMaxLimit sets the MaxLimit field and marks it as non-optional;
@@ -6525,6 +6736,26 @@ func (p *PostPayoutMethodCreatedPayloadDataQuoteInstant) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+// Why instant delivery is unavailable for this method. `minimum_crypto_sales_not_met` means the account has not reached the total sales required for instant cryptocurrency payouts. `null` when this restriction does not apply.
+type PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason string
+
+const (
+	PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReasonMinimumCryptoSalesNotMet PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason = "minimum_crypto_sales_not_met"
+)
+
+func NewPostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReasonFromString(s string) (PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason, error) {
+	switch s {
+	case "minimum_crypto_sales_not_met":
+		return PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReasonMinimumCryptoSalesNotMet, nil
+	}
+	var t PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason) Ptr() *PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason {
+	return &p
 }
 
 // Standard-delivery estimate. Null if the method does not support standard delivery, or the amount does not cover the fee.
@@ -7179,9 +7410,10 @@ var (
 	postPayoutReversedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
 	postPayoutReversedPayloadDataFieldSource              = big.NewInt(1 << 19)
 	postPayoutReversedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
-	postPayoutReversedPayloadDataFieldStatus              = big.NewInt(1 << 21)
-	postPayoutReversedPayloadDataFieldStatusDetail        = big.NewInt(1 << 22)
-	postPayoutReversedPayloadDataFieldTraceCode           = big.NewInt(1 << 23)
+	postPayoutReversedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 21)
+	postPayoutReversedPayloadDataFieldStatus              = big.NewInt(1 << 22)
+	postPayoutReversedPayloadDataFieldStatusDetail        = big.NewInt(1 << 23)
+	postPayoutReversedPayloadDataFieldTraceCode           = big.NewInt(1 << 24)
 )
 
 type PostPayoutReversedPayloadData struct {
@@ -7226,6 +7458,8 @@ type PostPayoutReversedPayloadData struct {
 	Source *PostPayoutReversedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed PostPayoutReversedPayloadDataSpeed `json:"speed" url:"speed"`
+	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status PostPayoutReversedPayloadDataStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
@@ -7385,6 +7619,13 @@ func (p *PostPayoutReversedPayloadData) GetSpeed() PostPayoutReversedPayloadData
 		return ""
 	}
 	return p.Speed
+}
+
+func (p *PostPayoutReversedPayloadData) GetStatementDescriptor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StatementDescriptor
 }
 
 func (p *PostPayoutReversedPayloadData) GetStatus() PostPayoutReversedPayloadDataStatus {
@@ -7567,6 +7808,13 @@ func (p *PostPayoutReversedPayloadData) SetSource(source *PostPayoutReversedPayl
 func (p *PostPayoutReversedPayloadData) SetSpeed(speed PostPayoutReversedPayloadDataSpeed) {
 	p.Speed = speed
 	p.require(postPayoutReversedPayloadDataFieldSpeed)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutReversedPayloadData) SetStatementDescriptor(statementDescriptor *string) {
+	p.StatementDescriptor = statementDescriptor
+	p.require(postPayoutReversedPayloadDataFieldStatementDescriptor)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -8444,9 +8692,10 @@ var (
 	postPayoutUpdatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 18)
 	postPayoutUpdatedPayloadDataFieldSource              = big.NewInt(1 << 19)
 	postPayoutUpdatedPayloadDataFieldSpeed               = big.NewInt(1 << 20)
-	postPayoutUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 21)
-	postPayoutUpdatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 22)
-	postPayoutUpdatedPayloadDataFieldTraceCode           = big.NewInt(1 << 23)
+	postPayoutUpdatedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 21)
+	postPayoutUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 22)
+	postPayoutUpdatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 23)
+	postPayoutUpdatedPayloadDataFieldTraceCode           = big.NewInt(1 << 24)
 )
 
 type PostPayoutUpdatedPayloadData struct {
@@ -8491,6 +8740,8 @@ type PostPayoutUpdatedPayloadData struct {
 	Source *PostPayoutUpdatedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed PostPayoutUpdatedPayloadDataSpeed `json:"speed" url:"speed"`
+	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status PostPayoutUpdatedPayloadDataStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
@@ -8650,6 +8901,13 @@ func (p *PostPayoutUpdatedPayloadData) GetSpeed() PostPayoutUpdatedPayloadDataSp
 		return ""
 	}
 	return p.Speed
+}
+
+func (p *PostPayoutUpdatedPayloadData) GetStatementDescriptor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StatementDescriptor
 }
 
 func (p *PostPayoutUpdatedPayloadData) GetStatus() PostPayoutUpdatedPayloadDataStatus {
@@ -8832,6 +9090,13 @@ func (p *PostPayoutUpdatedPayloadData) SetSource(source *PostPayoutUpdatedPayloa
 func (p *PostPayoutUpdatedPayloadData) SetSpeed(speed PostPayoutUpdatedPayloadDataSpeed) {
 	p.Speed = speed
 	p.require(postPayoutUpdatedPayloadDataFieldSpeed)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutUpdatedPayloadData) SetStatementDescriptor(statementDescriptor *string) {
+	p.StatementDescriptor = statementDescriptor
+	p.require(postPayoutUpdatedPayloadDataFieldStatementDescriptor)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -9478,9 +9743,10 @@ var (
 	retrievePayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 18)
 	retrievePayoutsResponseFieldSource              = big.NewInt(1 << 19)
 	retrievePayoutsResponseFieldSpeed               = big.NewInt(1 << 20)
-	retrievePayoutsResponseFieldStatus              = big.NewInt(1 << 21)
-	retrievePayoutsResponseFieldStatusDetail        = big.NewInt(1 << 22)
-	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 23)
+	retrievePayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 21)
+	retrievePayoutsResponseFieldStatus              = big.NewInt(1 << 22)
+	retrievePayoutsResponseFieldStatusDetail        = big.NewInt(1 << 23)
+	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 24)
 )
 
 type RetrievePayoutsResponse struct {
@@ -9525,6 +9791,8 @@ type RetrievePayoutsResponse struct {
 	Source *RetrievePayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed RetrievePayoutsResponseSpeed `json:"speed" url:"speed"`
+	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status RetrievePayoutsResponseStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
@@ -9684,6 +9952,13 @@ func (r *RetrievePayoutsResponse) GetSpeed() RetrievePayoutsResponseSpeed {
 		return ""
 	}
 	return r.Speed
+}
+
+func (r *RetrievePayoutsResponse) GetStatementDescriptor() *string {
+	if r == nil {
+		return nil
+	}
+	return r.StatementDescriptor
 }
 
 func (r *RetrievePayoutsResponse) GetStatus() RetrievePayoutsResponseStatus {
@@ -9866,6 +10141,13 @@ func (r *RetrievePayoutsResponse) SetSource(source *RetrievePayoutsResponseSourc
 func (r *RetrievePayoutsResponse) SetSpeed(speed RetrievePayoutsResponseSpeed) {
 	r.Speed = speed
 	r.require(retrievePayoutsResponseFieldSpeed)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponse) SetStatementDescriptor(statementDescriptor *string) {
+	r.StatementDescriptor = statementDescriptor
+	r.require(retrievePayoutsResponseFieldStatementDescriptor)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;

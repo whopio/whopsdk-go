@@ -498,6 +498,70 @@ func (t *TransferMembershipsRequest) SetID(id string) {
 	t.require(transferMembershipsRequestFieldID)
 }
 
+// The different reasons a user can choose for why they are canceling their membership.
+type CancelOptions string
+
+const (
+	CancelOptionsTooExpensive    CancelOptions = "too_expensive"
+	CancelOptionsSwitching       CancelOptions = "switching"
+	CancelOptionsMissingFeatures CancelOptions = "missing_features"
+	CancelOptionsTechnicalIssues CancelOptions = "technical_issues"
+	CancelOptionsBadExperience   CancelOptions = "bad_experience"
+	CancelOptionsOther           CancelOptions = "other"
+	CancelOptionsTesting         CancelOptions = "testing"
+)
+
+func NewCancelOptionsFromString(s string) (CancelOptions, error) {
+	switch s {
+	case "too_expensive":
+		return CancelOptionsTooExpensive, nil
+	case "switching":
+		return CancelOptionsSwitching, nil
+	case "missing_features":
+		return CancelOptionsMissingFeatures, nil
+	case "technical_issues":
+		return CancelOptionsTechnicalIssues, nil
+	case "bad_experience":
+		return CancelOptionsBadExperience, nil
+	case "other":
+		return CancelOptionsOther, nil
+	case "testing":
+		return CancelOptionsTesting, nil
+	}
+	var t CancelOptions
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelOptions) Ptr() *CancelOptions {
+	return &c
+}
+
+// The state of a membership after a customer provides a cancelation reason.
+type CancelationStatus string
+
+const (
+	CancelationStatusWonBack   CancelationStatus = "won_back"
+	CancelationStatusLeft      CancelationStatus = "left"
+	CancelationStatusCanceling CancelationStatus = "canceling"
+)
+
+func NewCancelationStatusFromString(s string) (CancelationStatus, error) {
+	switch s {
+	case "won_back":
+		return CancelationStatusWonBack, nil
+	case "left":
+		return CancelationStatusLeft, nil
+	case "canceling":
+		return CancelationStatusCanceling, nil
+	}
+	var t CancelationStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelationStatus) Ptr() *CancelationStatus {
+	return &c
+}
+
 var (
 	membershipFieldAccount           = big.NewInt(1 << 0)
 	membershipFieldCancelAtPeriodEnd = big.NewInt(1 << 1)
@@ -773,6 +837,1334 @@ func (m *Membership) MarshalJSON() ([]byte, error) {
 }
 
 func (m *Membership) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// A membership represents an active relationship between a user and a product. It tracks the user's access, billing status, and renewal schedule.
+var (
+	membershipLegacyFieldCancelAtPeriodEnd       = big.NewInt(1 << 0)
+	membershipLegacyFieldCancelOption            = big.NewInt(1 << 1)
+	membershipLegacyFieldCancelationStatus       = big.NewInt(1 << 2)
+	membershipLegacyFieldCanceledAt              = big.NewInt(1 << 3)
+	membershipLegacyFieldCancellationReason      = big.NewInt(1 << 4)
+	membershipLegacyFieldCheckoutConfigurationID = big.NewInt(1 << 5)
+	membershipLegacyFieldCompany                 = big.NewInt(1 << 6)
+	membershipLegacyFieldCreatedAt               = big.NewInt(1 << 7)
+	membershipLegacyFieldCurrency                = big.NewInt(1 << 8)
+	membershipLegacyFieldCustomFieldResponses    = big.NewInt(1 << 9)
+	membershipLegacyFieldFormattedRenewalPrice   = big.NewInt(1 << 10)
+	membershipLegacyFieldID                      = big.NewInt(1 << 11)
+	membershipLegacyFieldInitialPricePaid        = big.NewInt(1 << 12)
+	membershipLegacyFieldJoinedAt                = big.NewInt(1 << 13)
+	membershipLegacyFieldLicenseKey              = big.NewInt(1 << 14)
+	membershipLegacyFieldManageURL               = big.NewInt(1 << 15)
+	membershipLegacyFieldMember                  = big.NewInt(1 << 16)
+	membershipLegacyFieldMetadata                = big.NewInt(1 << 17)
+	membershipLegacyFieldPaymentCollectionPaused = big.NewInt(1 << 18)
+	membershipLegacyFieldPlan                    = big.NewInt(1 << 19)
+	membershipLegacyFieldProduct                 = big.NewInt(1 << 20)
+	membershipLegacyFieldPromoCode               = big.NewInt(1 << 21)
+	membershipLegacyFieldRenewalPeriodEnd        = big.NewInt(1 << 22)
+	membershipLegacyFieldRenewalPeriodStart      = big.NewInt(1 << 23)
+	membershipLegacyFieldStatus                  = big.NewInt(1 << 24)
+	membershipLegacyFieldUpdatedAt               = big.NewInt(1 << 25)
+	membershipLegacyFieldUser                    = big.NewInt(1 << 26)
+)
+
+type MembershipLegacy struct {
+	// Whether this membership is set to cancel at the end of the current billing cycle. Only applies to memberships with a recurring plan.
+	CancelAtPeriodEnd bool `json:"cancel_at_period_end" url:"cancel_at_period_end"`
+	// The category selected for why the member canceled (e.g. too_expensive, switching, missing_features).
+	CancelOption *CancelOptions `json:"cancel_option,omitempty" url:"cancel_option,omitempty"`
+	// Whether the customer is canceling, left, or was won back. Null if the membership has no cancellation reason or its cancellation state is indeterminate.
+	CancelationStatus *CancelationStatus `json:"cancelation_status,omitempty" url:"cancelation_status,omitempty"`
+	// The time the customer initiated cancellation of this membership. As a Unix timestamp. Null if the membership has not been canceled.
+	CanceledAt *time.Time `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
+	// Free-text explanation provided by the customer when canceling. Null if the customer did not provide a reason.
+	CancellationReason *string `json:"cancellation_reason,omitempty" url:"cancellation_reason,omitempty"`
+	// The ID of the checkout session/configuration that produced this membership, if any. Use this to map memberships back to the checkout configuration that created them.
+	CheckoutConfigurationID *string `json:"checkout_configuration_id,omitempty" url:"checkout_configuration_id,omitempty"`
+	// The company this membership belongs to.
+	Company *MembershipLegacyCompany `json:"company" url:"company"`
+	// The datetime the membership was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// The three-letter ISO currency code for this membership's billing. Null if the membership is free.
+	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
+	// The customer's responses to custom checkout questions configured on the product at the time of purchase.
+	CustomFieldResponses []*MembershipLegacyCustomFieldResponsesItem `json:"custom_field_responses" url:"custom_field_responses"`
+	// The recurring renewal price for this membership, formatted with currency symbol and billing interval. Null if the membership is not recurring.
+	FormattedRenewalPrice *string `json:"formatted_renewal_price,omitempty" url:"formatted_renewal_price,omitempty"`
+	// The unique identifier for the membership.
+	ID string `json:"id" url:"id"`
+	// The amount the customer paid when first purchasing this membership, formatted with currency symbol.
+	InitialPricePaid string `json:"initial_price_paid" url:"initial_price_paid"`
+	// The time the user first joined the company associated with this membership. As a Unix timestamp. Null if the member record does not exist.
+	JoinedAt *time.Time `json:"joined_at,omitempty" url:"joined_at,omitempty"`
+	// The software license key associated with this membership. Only present if the product includes a Whop Software Licensing experience. Null otherwise.
+	LicenseKey *string `json:"license_key,omitempty" url:"license_key,omitempty"`
+	// The URL where the customer can view and manage this membership, including cancellation and plan changes. Null if no member record exists.
+	ManageURL *string `json:"manage_url,omitempty" url:"manage_url,omitempty"`
+	// The member record linking the user to the company for this membership. Null if the member record has not been created yet.
+	Member *MembershipLegacyMember `json:"member,omitempty" url:"member,omitempty"`
+	// Custom key-value pairs for the membership (commonly used for software licensing, e.g., HWID). Max 50 keys, 100 chars per key, 500 chars per string value.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Whether recurring payment collection for this membership is temporarily paused by the company.
+	PaymentCollectionPaused bool `json:"payment_collection_paused" url:"payment_collection_paused"`
+	// The plan the customer purchased to create this membership.
+	Plan *MembershipLegacyPlan `json:"plan" url:"plan"`
+	// The product this membership grants access to.
+	Product *MembershipLegacyProduct `json:"product" url:"product"`
+	// The promotional code currently applied to this membership's billing. Null if no promo code is active.
+	PromoCode *MembershipLegacyPromoCode `json:"promo_code,omitempty" url:"promo_code,omitempty"`
+	// The end of the current billing period for this recurring membership. As a Unix timestamp. Null if the membership is not recurring.
+	RenewalPeriodEnd *time.Time `json:"renewal_period_end,omitempty" url:"renewal_period_end,omitempty"`
+	// The start of the current billing period for this recurring membership. As a Unix timestamp. Null if the membership is not recurring.
+	RenewalPeriodStart *time.Time `json:"renewal_period_start,omitempty" url:"renewal_period_start,omitempty"`
+	// The current lifecycle status of the membership (e.g., active, trialing, past_due, canceled, expired, completed).
+	Status MembershipStatus `json:"status" url:"status"`
+	// The datetime the membership was last updated.
+	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
+	// The user who owns this membership. Null if the user account has been deleted.
+	User *MembershipLegacyUser `json:"user,omitempty" url:"user,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacy) GetCancelAtPeriodEnd() bool {
+	if m == nil {
+		return false
+	}
+	return m.CancelAtPeriodEnd
+}
+
+func (m *MembershipLegacy) GetCancelOption() *CancelOptions {
+	if m == nil {
+		return nil
+	}
+	return m.CancelOption
+}
+
+func (m *MembershipLegacy) GetCancelationStatus() *CancelationStatus {
+	if m == nil {
+		return nil
+	}
+	return m.CancelationStatus
+}
+
+func (m *MembershipLegacy) GetCanceledAt() *time.Time {
+	if m == nil {
+		return nil
+	}
+	return m.CanceledAt
+}
+
+func (m *MembershipLegacy) GetCancellationReason() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CancellationReason
+}
+
+func (m *MembershipLegacy) GetCheckoutConfigurationID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CheckoutConfigurationID
+}
+
+func (m *MembershipLegacy) GetCompany() *MembershipLegacyCompany {
+	if m == nil {
+		return nil
+	}
+	return m.Company
+}
+
+func (m *MembershipLegacy) GetCreatedAt() time.Time {
+	if m == nil {
+		return time.Time{}
+	}
+	return m.CreatedAt
+}
+
+func (m *MembershipLegacy) GetCurrency() *Currencies {
+	if m == nil {
+		return nil
+	}
+	return m.Currency
+}
+
+func (m *MembershipLegacy) GetCustomFieldResponses() []*MembershipLegacyCustomFieldResponsesItem {
+	if m == nil {
+		return nil
+	}
+	return m.CustomFieldResponses
+}
+
+func (m *MembershipLegacy) GetFormattedRenewalPrice() *string {
+	if m == nil {
+		return nil
+	}
+	return m.FormattedRenewalPrice
+}
+
+func (m *MembershipLegacy) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacy) GetInitialPricePaid() string {
+	if m == nil {
+		return ""
+	}
+	return m.InitialPricePaid
+}
+
+func (m *MembershipLegacy) GetJoinedAt() *time.Time {
+	if m == nil {
+		return nil
+	}
+	return m.JoinedAt
+}
+
+func (m *MembershipLegacy) GetLicenseKey() *string {
+	if m == nil {
+		return nil
+	}
+	return m.LicenseKey
+}
+
+func (m *MembershipLegacy) GetManageURL() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ManageURL
+}
+
+func (m *MembershipLegacy) GetMember() *MembershipLegacyMember {
+	if m == nil {
+		return nil
+	}
+	return m.Member
+}
+
+func (m *MembershipLegacy) GetMetadata() map[string]any {
+	if m == nil {
+		return nil
+	}
+	return m.Metadata
+}
+
+func (m *MembershipLegacy) GetPaymentCollectionPaused() bool {
+	if m == nil {
+		return false
+	}
+	return m.PaymentCollectionPaused
+}
+
+func (m *MembershipLegacy) GetPlan() *MembershipLegacyPlan {
+	if m == nil {
+		return nil
+	}
+	return m.Plan
+}
+
+func (m *MembershipLegacy) GetProduct() *MembershipLegacyProduct {
+	if m == nil {
+		return nil
+	}
+	return m.Product
+}
+
+func (m *MembershipLegacy) GetPromoCode() *MembershipLegacyPromoCode {
+	if m == nil {
+		return nil
+	}
+	return m.PromoCode
+}
+
+func (m *MembershipLegacy) GetRenewalPeriodEnd() *time.Time {
+	if m == nil {
+		return nil
+	}
+	return m.RenewalPeriodEnd
+}
+
+func (m *MembershipLegacy) GetRenewalPeriodStart() *time.Time {
+	if m == nil {
+		return nil
+	}
+	return m.RenewalPeriodStart
+}
+
+func (m *MembershipLegacy) GetStatus() MembershipStatus {
+	if m == nil {
+		return ""
+	}
+	return m.Status
+}
+
+func (m *MembershipLegacy) GetUpdatedAt() time.Time {
+	if m == nil {
+		return time.Time{}
+	}
+	return m.UpdatedAt
+}
+
+func (m *MembershipLegacy) GetUser() *MembershipLegacyUser {
+	if m == nil {
+		return nil
+	}
+	return m.User
+}
+
+func (m *MembershipLegacy) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacy) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetCancelAtPeriodEnd sets the CancelAtPeriodEnd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCancelAtPeriodEnd(cancelAtPeriodEnd bool) {
+	m.CancelAtPeriodEnd = cancelAtPeriodEnd
+	m.require(membershipLegacyFieldCancelAtPeriodEnd)
+}
+
+// SetCancelOption sets the CancelOption field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCancelOption(cancelOption *CancelOptions) {
+	m.CancelOption = cancelOption
+	m.require(membershipLegacyFieldCancelOption)
+}
+
+// SetCancelationStatus sets the CancelationStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCancelationStatus(cancelationStatus *CancelationStatus) {
+	m.CancelationStatus = cancelationStatus
+	m.require(membershipLegacyFieldCancelationStatus)
+}
+
+// SetCanceledAt sets the CanceledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCanceledAt(canceledAt *time.Time) {
+	m.CanceledAt = canceledAt
+	m.require(membershipLegacyFieldCanceledAt)
+}
+
+// SetCancellationReason sets the CancellationReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCancellationReason(cancellationReason *string) {
+	m.CancellationReason = cancellationReason
+	m.require(membershipLegacyFieldCancellationReason)
+}
+
+// SetCheckoutConfigurationID sets the CheckoutConfigurationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCheckoutConfigurationID(checkoutConfigurationID *string) {
+	m.CheckoutConfigurationID = checkoutConfigurationID
+	m.require(membershipLegacyFieldCheckoutConfigurationID)
+}
+
+// SetCompany sets the Company field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCompany(company *MembershipLegacyCompany) {
+	m.Company = company
+	m.require(membershipLegacyFieldCompany)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCreatedAt(createdAt time.Time) {
+	m.CreatedAt = createdAt
+	m.require(membershipLegacyFieldCreatedAt)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCurrency(currency *Currencies) {
+	m.Currency = currency
+	m.require(membershipLegacyFieldCurrency)
+}
+
+// SetCustomFieldResponses sets the CustomFieldResponses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCustomFieldResponses(customFieldResponses []*MembershipLegacyCustomFieldResponsesItem) {
+	m.CustomFieldResponses = customFieldResponses
+	m.require(membershipLegacyFieldCustomFieldResponses)
+}
+
+// SetFormattedRenewalPrice sets the FormattedRenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetFormattedRenewalPrice(formattedRenewalPrice *string) {
+	m.FormattedRenewalPrice = formattedRenewalPrice
+	m.require(membershipLegacyFieldFormattedRenewalPrice)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyFieldID)
+}
+
+// SetInitialPricePaid sets the InitialPricePaid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetInitialPricePaid(initialPricePaid string) {
+	m.InitialPricePaid = initialPricePaid
+	m.require(membershipLegacyFieldInitialPricePaid)
+}
+
+// SetJoinedAt sets the JoinedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetJoinedAt(joinedAt *time.Time) {
+	m.JoinedAt = joinedAt
+	m.require(membershipLegacyFieldJoinedAt)
+}
+
+// SetLicenseKey sets the LicenseKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetLicenseKey(licenseKey *string) {
+	m.LicenseKey = licenseKey
+	m.require(membershipLegacyFieldLicenseKey)
+}
+
+// SetManageURL sets the ManageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetManageURL(manageURL *string) {
+	m.ManageURL = manageURL
+	m.require(membershipLegacyFieldManageURL)
+}
+
+// SetMember sets the Member field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetMember(member *MembershipLegacyMember) {
+	m.Member = member
+	m.require(membershipLegacyFieldMember)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetMetadata(metadata map[string]any) {
+	m.Metadata = metadata
+	m.require(membershipLegacyFieldMetadata)
+}
+
+// SetPaymentCollectionPaused sets the PaymentCollectionPaused field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetPaymentCollectionPaused(paymentCollectionPaused bool) {
+	m.PaymentCollectionPaused = paymentCollectionPaused
+	m.require(membershipLegacyFieldPaymentCollectionPaused)
+}
+
+// SetPlan sets the Plan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetPlan(plan *MembershipLegacyPlan) {
+	m.Plan = plan
+	m.require(membershipLegacyFieldPlan)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetProduct(product *MembershipLegacyProduct) {
+	m.Product = product
+	m.require(membershipLegacyFieldProduct)
+}
+
+// SetPromoCode sets the PromoCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetPromoCode(promoCode *MembershipLegacyPromoCode) {
+	m.PromoCode = promoCode
+	m.require(membershipLegacyFieldPromoCode)
+}
+
+// SetRenewalPeriodEnd sets the RenewalPeriodEnd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetRenewalPeriodEnd(renewalPeriodEnd *time.Time) {
+	m.RenewalPeriodEnd = renewalPeriodEnd
+	m.require(membershipLegacyFieldRenewalPeriodEnd)
+}
+
+// SetRenewalPeriodStart sets the RenewalPeriodStart field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetRenewalPeriodStart(renewalPeriodStart *time.Time) {
+	m.RenewalPeriodStart = renewalPeriodStart
+	m.require(membershipLegacyFieldRenewalPeriodStart)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetStatus(status MembershipStatus) {
+	m.Status = status
+	m.require(membershipLegacyFieldStatus)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetUpdatedAt(updatedAt time.Time) {
+	m.UpdatedAt = updatedAt
+	m.require(membershipLegacyFieldUpdatedAt)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetUser(user *MembershipLegacyUser) {
+	m.User = user
+	m.require(membershipLegacyFieldUser)
+}
+
+func (m *MembershipLegacy) UnmarshalJSON(data []byte) error {
+	type embed MembershipLegacy
+	var unmarshaler = struct {
+		embed
+		CanceledAt         *internal.DateTime `json:"canceled_at,omitempty"`
+		CreatedAt          *internal.DateTime `json:"created_at"`
+		JoinedAt           *internal.DateTime `json:"joined_at,omitempty"`
+		RenewalPeriodEnd   *internal.DateTime `json:"renewal_period_end,omitempty"`
+		RenewalPeriodStart *internal.DateTime `json:"renewal_period_start,omitempty"`
+		UpdatedAt          *internal.DateTime `json:"updated_at"`
+	}{
+		embed: embed(*m),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*m = MembershipLegacy(unmarshaler.embed)
+	m.CanceledAt = unmarshaler.CanceledAt.TimePtr()
+	m.CreatedAt = unmarshaler.CreatedAt.Time()
+	m.JoinedAt = unmarshaler.JoinedAt.TimePtr()
+	m.RenewalPeriodEnd = unmarshaler.RenewalPeriodEnd.TimePtr()
+	m.RenewalPeriodStart = unmarshaler.RenewalPeriodStart.TimePtr()
+	m.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacy) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacy
+	var marshaler = struct {
+		embed
+		CanceledAt         *internal.DateTime `json:"canceled_at,omitempty"`
+		CreatedAt          *internal.DateTime `json:"created_at"`
+		JoinedAt           *internal.DateTime `json:"joined_at,omitempty"`
+		RenewalPeriodEnd   *internal.DateTime `json:"renewal_period_end,omitempty"`
+		RenewalPeriodStart *internal.DateTime `json:"renewal_period_start,omitempty"`
+		UpdatedAt          *internal.DateTime `json:"updated_at"`
+	}{
+		embed:              embed(*m),
+		CanceledAt:         internal.NewOptionalDateTime(m.CanceledAt),
+		CreatedAt:          internal.NewDateTime(m.CreatedAt),
+		JoinedAt:           internal.NewOptionalDateTime(m.JoinedAt),
+		RenewalPeriodEnd:   internal.NewOptionalDateTime(m.RenewalPeriodEnd),
+		RenewalPeriodStart: internal.NewOptionalDateTime(m.RenewalPeriodStart),
+		UpdatedAt:          internal.NewDateTime(m.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacy) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The company this membership belongs to.
+var (
+	membershipLegacyCompanyFieldID    = big.NewInt(1 << 0)
+	membershipLegacyCompanyFieldTitle = big.NewInt(1 << 1)
+)
+
+type MembershipLegacyCompany struct {
+	// The unique identifier for the company.
+	ID string `json:"id" url:"id"`
+	// The display name of the company shown to customers.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyCompany) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyCompany) GetTitle() string {
+	if m == nil {
+		return ""
+	}
+	return m.Title
+}
+
+func (m *MembershipLegacyCompany) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyCompany) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyCompany) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyCompanyFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyCompany) SetTitle(title string) {
+	m.Title = title
+	m.require(membershipLegacyCompanyFieldTitle)
+}
+
+func (m *MembershipLegacyCompany) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyCompany
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyCompany(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyCompany) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyCompany
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyCompany) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The response from a custom field on checkout
+var (
+	membershipLegacyCustomFieldResponsesItemFieldAnswer   = big.NewInt(1 << 0)
+	membershipLegacyCustomFieldResponsesItemFieldID       = big.NewInt(1 << 1)
+	membershipLegacyCustomFieldResponsesItemFieldQuestion = big.NewInt(1 << 2)
+)
+
+type MembershipLegacyCustomFieldResponsesItem struct {
+	// The response a user gave to the specific question or field.
+	Answer string `json:"answer" url:"answer"`
+	// The unique identifier for the custom field response.
+	ID string `json:"id" url:"id"`
+	// The question asked by the custom field
+	Question string `json:"question" url:"question"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) GetAnswer() string {
+	if m == nil {
+		return ""
+	}
+	return m.Answer
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) GetQuestion() string {
+	if m == nil {
+		return ""
+	}
+	return m.Question
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetAnswer sets the Answer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyCustomFieldResponsesItem) SetAnswer(answer string) {
+	m.Answer = answer
+	m.require(membershipLegacyCustomFieldResponsesItemFieldAnswer)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyCustomFieldResponsesItem) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyCustomFieldResponsesItemFieldID)
+}
+
+// SetQuestion sets the Question field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyCustomFieldResponsesItem) SetQuestion(question string) {
+	m.Question = question
+	m.require(membershipLegacyCustomFieldResponsesItemFieldQuestion)
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyCustomFieldResponsesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyCustomFieldResponsesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyCustomFieldResponsesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The member record linking the user to the company for this membership. Null if the member record has not been created yet.
+var (
+	membershipLegacyMemberFieldID = big.NewInt(1 << 0)
+)
+
+type MembershipLegacyMember struct {
+	// The unique identifier for the member.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyMember) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyMember) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyMember) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyMember) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyMemberFieldID)
+}
+
+func (m *MembershipLegacyMember) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyMember
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyMember(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyMember) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyMember
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyMember) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The plan the customer purchased to create this membership.
+var (
+	membershipLegacyPlanFieldID       = big.NewInt(1 << 0)
+	membershipLegacyPlanFieldMetadata = big.NewInt(1 << 1)
+)
+
+type MembershipLegacyPlan struct {
+	// The unique identifier for the plan.
+	ID string `json:"id" url:"id"`
+	// Custom key-value pairs stored on the plan. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this plan.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyPlan) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyPlan) GetMetadata() map[string]any {
+	if m == nil {
+		return nil
+	}
+	return m.Metadata
+}
+
+func (m *MembershipLegacyPlan) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyPlan) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyPlan) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyPlanFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyPlan) SetMetadata(metadata map[string]any) {
+	m.Metadata = metadata
+	m.require(membershipLegacyPlanFieldMetadata)
+}
+
+func (m *MembershipLegacyPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyPlan) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyPlan) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The product this membership grants access to.
+var (
+	membershipLegacyProductFieldID       = big.NewInt(1 << 0)
+	membershipLegacyProductFieldMetadata = big.NewInt(1 << 1)
+	membershipLegacyProductFieldTitle    = big.NewInt(1 << 2)
+)
+
+type MembershipLegacyProduct struct {
+	// The unique identifier for the product.
+	ID string `json:"id" url:"id"`
+	// Custom key-value pairs stored on the product and included in payment and membership webhook payloads. Max 50 keys, 100 characters per key, 500 characters per string value.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// The display name of the product shown to customers on the product page and in search results.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyProduct) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyProduct) GetMetadata() map[string]any {
+	if m == nil {
+		return nil
+	}
+	return m.Metadata
+}
+
+func (m *MembershipLegacyProduct) GetTitle() string {
+	if m == nil {
+		return ""
+	}
+	return m.Title
+}
+
+func (m *MembershipLegacyProduct) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyProduct) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyProduct) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyProductFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyProduct) SetMetadata(metadata map[string]any) {
+	m.Metadata = metadata
+	m.require(membershipLegacyProductFieldMetadata)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyProduct) SetTitle(title string) {
+	m.Title = title
+	m.require(membershipLegacyProductFieldTitle)
+}
+
+func (m *MembershipLegacyProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyProduct) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyProduct) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The promotional code currently applied to this membership's billing. Null if no promo code is active.
+var (
+	membershipLegacyPromoCodeFieldID = big.NewInt(1 << 0)
+)
+
+type MembershipLegacyPromoCode struct {
+	// The unique identifier for the promo code.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyPromoCode) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyPromoCode) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyPromoCode) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyPromoCode) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyPromoCodeFieldID)
+}
+
+func (m *MembershipLegacyPromoCode) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyPromoCode
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyPromoCode(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyPromoCode) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyPromoCode
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyPromoCode) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The user who owns this membership. Null if the user account has been deleted.
+var (
+	membershipLegacyUserFieldEmail      = big.NewInt(1 << 0)
+	membershipLegacyUserFieldID         = big.NewInt(1 << 1)
+	membershipLegacyUserFieldName       = big.NewInt(1 << 2)
+	membershipLegacyUserFieldProfilePic = big.NewInt(1 << 3)
+	membershipLegacyUserFieldUsername   = big.NewInt(1 << 4)
+)
+
+type MembershipLegacyUser struct {
+	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The unique identifier for the user.
+	ID string `json:"id" url:"id"`
+	// The user's display name shown on their public profile.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The URL of the user's profile picture. Use profilePicture for the full attachment object.
+	ProfilePic string `json:"profile_pic" url:"profile_pic"`
+	// The user's unique username shown on their public profile.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyUser) GetEmail() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Email
+}
+
+func (m *MembershipLegacyUser) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyUser) GetName() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Name
+}
+
+func (m *MembershipLegacyUser) GetProfilePic() string {
+	if m == nil {
+		return ""
+	}
+	return m.ProfilePic
+}
+
+func (m *MembershipLegacyUser) GetUsername() string {
+	if m == nil {
+		return ""
+	}
+	return m.Username
+}
+
+func (m *MembershipLegacyUser) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyUser) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyUser) SetEmail(email *string) {
+	m.Email = email
+	m.require(membershipLegacyUserFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyUser) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyUser) SetName(name *string) {
+	m.Name = name
+	m.require(membershipLegacyUserFieldName)
+}
+
+// SetProfilePic sets the ProfilePic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyUser) SetProfilePic(profilePic string) {
+	m.ProfilePic = profilePic
+	m.require(membershipLegacyUserFieldProfilePic)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyUser) SetUsername(username string) {
+	m.Username = username
+	m.require(membershipLegacyUserFieldUsername)
+}
+
+func (m *MembershipLegacyUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyUser) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyUser) String() string {
 	if m == nil {
 		return "<nil>"
 	}

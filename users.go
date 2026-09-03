@@ -328,7 +328,7 @@ type User struct {
 	Bio *string `json:"bio,omitempty" url:"bio,omitempty"`
 	// When the user was created, as an ISO 8601 timestamp
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// The user's gross USD income over time. Populated only on single-user self reads for callers with balance-read scope; `null` otherwise.
+	// The user's gross USD income over time, including a Partner commission breakdown. Populated only on single-user self reads for callers with balance-read scope; `null` otherwise.
 	EarningsUsd *UserEarnings `json:"earnings_usd,omitempty" url:"earnings_usd,omitempty"`
 	// The user's email address. Populated only on the self view (retrieved with the reserved id `me`) for callers with email-read scope; `null` otherwise, or while the account has no confirmed email yet.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -1691,8 +1691,9 @@ func (u *UserBanner) String() string {
 var (
 	userEarningsFieldFirstEarnedAt = big.NewInt(1 << 0)
 	userEarningsFieldOwnedAccounts = big.NewInt(1 << 1)
-	userEarningsFieldPersonal      = big.NewInt(1 << 2)
-	userEarningsFieldTotal         = big.NewInt(1 << 3)
+	userEarningsFieldPartners      = big.NewInt(1 << 2)
+	userEarningsFieldPersonal      = big.NewInt(1 << 3)
+	userEarningsFieldTotal         = big.NewInt(1 << 4)
 )
 
 type UserEarnings struct {
@@ -1700,6 +1701,8 @@ type UserEarnings struct {
 	FirstEarnedAt *string `json:"first_earned_at,omitempty" url:"first_earned_at,omitempty"`
 	// Gross income from accounts the user owns or is owner-authorized on.
 	OwnedAccounts *UserEarningsAmount `json:"owned_accounts" url:"owned_accounts"`
+	// Partner commissions posted to the user's wallet. Pending Partner payouts are excluded until they post; later reversals do not reduce gross income.
+	Partners *UserEarningsAmount `json:"partners" url:"partners"`
 	// Gross income from the user's personal wallet.
 	Personal *UserEarningsAmount `json:"personal" url:"personal"`
 	// Gross income from the user's personal wallet plus accounts they own or are owner-authorized on.
@@ -1724,6 +1727,13 @@ func (u *UserEarnings) GetOwnedAccounts() *UserEarningsAmount {
 		return nil
 	}
 	return u.OwnedAccounts
+}
+
+func (u *UserEarnings) GetPartners() *UserEarningsAmount {
+	if u == nil {
+		return nil
+	}
+	return u.Partners
 }
 
 func (u *UserEarnings) GetPersonal() *UserEarningsAmount {
@@ -1766,6 +1776,13 @@ func (u *UserEarnings) SetFirstEarnedAt(firstEarnedAt *string) {
 func (u *UserEarnings) SetOwnedAccounts(ownedAccounts *UserEarningsAmount) {
 	u.OwnedAccounts = ownedAccounts
 	u.require(userEarningsFieldOwnedAccounts)
+}
+
+// SetPartners sets the Partners field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserEarnings) SetPartners(partners *UserEarningsAmount) {
+	u.Partners = partners
+	u.require(userEarningsFieldPartners)
 }
 
 // SetPersonal sets the Personal field and marks it as non-optional;

@@ -194,9 +194,10 @@ var (
 	ledgerActivityFieldProductName     = big.NewInt(1 << 14)
 	ledgerActivityFieldResource        = big.NewInt(1 << 15)
 	ledgerActivityFieldSource          = big.NewInt(1 << 16)
-	ledgerActivityFieldUserEmail       = big.NewInt(1 << 17)
-	ledgerActivityFieldUserID          = big.NewInt(1 << 18)
-	ledgerActivityFieldUserName        = big.NewInt(1 << 19)
+	ledgerActivityFieldUsdAmount       = big.NewInt(1 << 17)
+	ledgerActivityFieldUserEmail       = big.NewInt(1 << 18)
+	ledgerActivityFieldUserID          = big.NewInt(1 << 19)
+	ledgerActivityFieldUserName        = big.NewInt(1 << 20)
 )
 
 type LedgerActivity struct {
@@ -233,6 +234,8 @@ type LedgerActivity struct {
 	Resource *LedgerActivityResource `json:"resource,omitempty" url:"resource,omitempty"`
 	// Source of this ledger activity.
 	Source *LedgerActivitySource `json:"source,omitempty" url:"source,omitempty"`
+	// Dollar value of this movement as a decimal string, signed like `amount`. Converted from the posted amount at the rate that was live when the line posted — the same pricing the wallet balance chart and the financial reports use — so a crypto row carries its dollar value too. `null` for a currency Whop holds no exchange rate for.
+	UsdAmount *string `json:"usd_amount,omitempty" url:"usd_amount,omitempty"`
 	// Email of the customer associated with the payment. Requires member:email:read.
 	UserEmail *string `json:"user_email,omitempty" url:"user_email,omitempty"`
 	// ID of the customer associated with the payment.
@@ -364,6 +367,13 @@ func (l *LedgerActivity) GetSource() *LedgerActivitySource {
 		return nil
 	}
 	return l.Source
+}
+
+func (l *LedgerActivity) GetUsdAmount() *string {
+	if l == nil {
+		return nil
+	}
+	return l.UsdAmount
 }
 
 func (l *LedgerActivity) GetUserEmail() *string {
@@ -518,6 +528,13 @@ func (l *LedgerActivity) SetResource(resource *LedgerActivityResource) {
 func (l *LedgerActivity) SetSource(source *LedgerActivitySource) {
 	l.Source = source
 	l.require(ledgerActivityFieldSource)
+}
+
+// SetUsdAmount sets the UsdAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivity) SetUsdAmount(usdAmount *string) {
+	l.UsdAmount = usdAmount
+	l.require(ledgerActivityFieldUsdAmount)
 }
 
 // SetUserEmail sets the UserEmail field and marks it as non-optional;
@@ -1163,6 +1180,7 @@ const (
 	LedgerActivityLineTypeMiscPurchase                              LedgerActivityLineType = "misc_purchase"
 	LedgerActivityLineTypeMiscRefund                                LedgerActivityLineType = "misc_refund"
 	LedgerActivityLineTypeMiscReversal                              LedgerActivityLineType = "misc_reversal"
+	LedgerActivityLineTypeOnboardingReward                          LedgerActivityLineType = "onboarding_reward"
 	LedgerActivityLineTypeOnchainDeposit                            LedgerActivityLineType = "onchain_deposit"
 	LedgerActivityLineTypeOnchainSwapSource                         LedgerActivityLineType = "onchain_swap_source"
 	LedgerActivityLineTypeOnchainSwapTarget                         LedgerActivityLineType = "onchain_swap_target"
@@ -1356,6 +1374,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeMiscRefund, nil
 	case "misc_reversal":
 		return LedgerActivityLineTypeMiscReversal, nil
+	case "onboarding_reward":
+		return LedgerActivityLineTypeOnboardingReward, nil
 	case "onchain_deposit":
 		return LedgerActivityLineTypeOnchainDeposit, nil
 	case "onchain_swap_source":
@@ -5001,6 +5021,7 @@ const (
 	ListFinancialActivityRequestLineTypesItemMiscPurchase                              ListFinancialActivityRequestLineTypesItem = "misc_purchase"
 	ListFinancialActivityRequestLineTypesItemMiscRefund                                ListFinancialActivityRequestLineTypesItem = "misc_refund"
 	ListFinancialActivityRequestLineTypesItemMiscReversal                              ListFinancialActivityRequestLineTypesItem = "misc_reversal"
+	ListFinancialActivityRequestLineTypesItemOnboardingReward                          ListFinancialActivityRequestLineTypesItem = "onboarding_reward"
 	ListFinancialActivityRequestLineTypesItemOnchainDeposit                            ListFinancialActivityRequestLineTypesItem = "onchain_deposit"
 	ListFinancialActivityRequestLineTypesItemOnchainSwapSource                         ListFinancialActivityRequestLineTypesItem = "onchain_swap_source"
 	ListFinancialActivityRequestLineTypesItemOnchainSwapTarget                         ListFinancialActivityRequestLineTypesItem = "onchain_swap_target"
@@ -5196,6 +5217,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemMiscRefund, nil
 	case "misc_reversal":
 		return ListFinancialActivityRequestLineTypesItemMiscReversal, nil
+	case "onboarding_reward":
+		return ListFinancialActivityRequestLineTypesItemOnboardingReward, nil
 	case "onchain_deposit":
 		return ListFinancialActivityRequestLineTypesItemOnchainDeposit, nil
 	case "onchain_swap_source":

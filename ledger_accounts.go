@@ -44,9 +44,10 @@ var (
 	ledgerAccountFieldOwner                  = big.NewInt(1 << 3)
 	ledgerAccountFieldPaymentsApprovalStatus = big.NewInt(1 << 4)
 	ledgerAccountFieldPayoutAccountDetails   = big.NewInt(1 << 5)
-	ledgerAccountFieldSettlementTimeAt       = big.NewInt(1 << 6)
-	ledgerAccountFieldTransferFee            = big.NewInt(1 << 7)
-	ledgerAccountFieldTreasuryBalance        = big.NewInt(1 << 8)
+	ledgerAccountFieldPayoutQuoteRequired    = big.NewInt(1 << 6)
+	ledgerAccountFieldSettlementTimeAt       = big.NewInt(1 << 7)
+	ledgerAccountFieldTransferFee            = big.NewInt(1 << 8)
+	ledgerAccountFieldTreasuryBalance        = big.NewInt(1 << 9)
 )
 
 type LedgerAccount struct {
@@ -62,6 +63,8 @@ type LedgerAccount struct {
 	PaymentsApprovalStatus *PaymentsApprovalStatuses `json:"payments_approval_status,omitempty" url:"payments_approval_status,omitempty"`
 	// The payout account associated with the LedgerAccount, if any.
 	PayoutAccountDetails *LedgerAccountPayoutAccountDetails `json:"payout_account_details,omitempty" url:"payout_account_details,omitempty"`
+	// Whether a payout from this account must be confirmed against a provider-backed quote first. When true, create a quote with POST /payouts/quotes and send its quote_token when creating the payout.
+	PayoutQuoteRequired bool `json:"payout_quote_required" url:"payout_quote_required"`
 	// The settlement batch most recently posted to this account's available balance, at midnight UTC. Every payment settling in that batch carries the same `settlement_time_at`.
 	SettlementTimeAt *time.Time `json:"settlement_time_at,omitempty" url:"settlement_time_at,omitempty"`
 	// The fee for transfers, if applicable.
@@ -116,6 +119,13 @@ func (l *LedgerAccount) GetPayoutAccountDetails() *LedgerAccountPayoutAccountDet
 		return nil
 	}
 	return l.PayoutAccountDetails
+}
+
+func (l *LedgerAccount) GetPayoutQuoteRequired() bool {
+	if l == nil {
+		return false
+	}
+	return l.PayoutQuoteRequired
 }
 
 func (l *LedgerAccount) GetSettlementTimeAt() *time.Time {
@@ -193,6 +203,13 @@ func (l *LedgerAccount) SetPaymentsApprovalStatus(paymentsApprovalStatus *Paymen
 func (l *LedgerAccount) SetPayoutAccountDetails(payoutAccountDetails *LedgerAccountPayoutAccountDetails) {
 	l.PayoutAccountDetails = payoutAccountDetails
 	l.require(ledgerAccountFieldPayoutAccountDetails)
+}
+
+// SetPayoutQuoteRequired sets the PayoutQuoteRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerAccount) SetPayoutQuoteRequired(payoutQuoteRequired bool) {
+	l.PayoutQuoteRequired = payoutQuoteRequired
+	l.require(ledgerAccountFieldPayoutQuoteRequired)
 }
 
 // SetSettlementTimeAt sets the SettlementTimeAt field and marks it as non-optional;

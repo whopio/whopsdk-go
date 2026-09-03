@@ -8,6 +8,7 @@ import (
 	whopsdkgo "github.com/whopio/whopsdk-go"
 	internal "github.com/whopio/whopsdk-go/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -15,8 +16,10 @@ var (
 	retrieveBreakdownRequestFieldBucket    = big.NewInt(1 << 1)
 	retrieveBreakdownRequestFieldDirection = big.NewInt(1 << 2)
 	retrieveBreakdownRequestFieldCurrency  = big.NewInt(1 << 3)
-	retrieveBreakdownRequestFieldFromDate  = big.NewInt(1 << 4)
-	retrieveBreakdownRequestFieldToDate    = big.NewInt(1 << 5)
+	retrieveBreakdownRequestFieldFrom      = big.NewInt(1 << 4)
+	retrieveBreakdownRequestFieldTo        = big.NewInt(1 << 5)
+	retrieveBreakdownRequestFieldGroupBy   = big.NewInt(1 << 6)
+	retrieveBreakdownRequestFieldTimezone  = big.NewInt(1 << 7)
 )
 
 type RetrieveBreakdownRequest struct {
@@ -29,9 +32,13 @@ type RetrieveBreakdownRequest struct {
 	// The report currency to explain.
 	Currency string `json:"-" url:"currency"`
 	// Start of the report window as an ISO 8601 timestamp.
-	FromDate string `json:"-" url:"from_date"`
+	From time.Time `json:"-" url:"from"`
 	// Exclusive end of the report window as an ISO 8601 timestamp.
-	ToDate string `json:"-" url:"to_date"`
+	To time.Time `json:"-" url:"to"`
+	// Period grouping used by the parent report.
+	GroupBy *RetrieveBreakdownRequestGroupBy `json:"-" url:"group_by,omitempty"`
+	// IANA timezone used by the parent report to bucket periods. Defaults to UTC.
+	Timezone *string `json:"-" url:"timezone,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -72,28 +79,45 @@ func (r *RetrieveBreakdownRequest) SetCurrency(currency string) {
 	r.require(retrieveBreakdownRequestFieldCurrency)
 }
 
-// SetFromDate sets the FromDate field and marks it as non-optional;
+// SetFrom sets the From field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveBreakdownRequest) SetFromDate(fromDate string) {
-	r.FromDate = fromDate
-	r.require(retrieveBreakdownRequestFieldFromDate)
+func (r *RetrieveBreakdownRequest) SetFrom(from time.Time) {
+	r.From = from
+	r.require(retrieveBreakdownRequestFieldFrom)
 }
 
-// SetToDate sets the ToDate field and marks it as non-optional;
+// SetTo sets the To field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveBreakdownRequest) SetToDate(toDate string) {
-	r.ToDate = toDate
-	r.require(retrieveBreakdownRequestFieldToDate)
+func (r *RetrieveBreakdownRequest) SetTo(to time.Time) {
+	r.To = to
+	r.require(retrieveBreakdownRequestFieldTo)
+}
+
+// SetGroupBy sets the GroupBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBreakdownRequest) SetGroupBy(groupBy *RetrieveBreakdownRequestGroupBy) {
+	r.GroupBy = groupBy
+	r.require(retrieveBreakdownRequestFieldGroupBy)
+}
+
+// SetTimezone sets the Timezone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBreakdownRequest) SetTimezone(timezone *string) {
+	r.Timezone = timezone
+	r.require(retrieveBreakdownRequestFieldTimezone)
 }
 
 type RetrieveBreakdownRequestBucket string
 
 const (
-	RetrieveBreakdownRequestBucketTransfers   RetrieveBreakdownRequestBucket = "transfers"
-	RetrieveBreakdownRequestBucketPayments    RetrieveBreakdownRequestBucket = "payments"
-	RetrieveBreakdownRequestBucketCardSpend   RetrieveBreakdownRequestBucket = "card_spend"
-	RetrieveBreakdownRequestBucketWithdrawals RetrieveBreakdownRequestBucket = "withdrawals"
-	RetrieveBreakdownRequestBucketSwaps       RetrieveBreakdownRequestBucket = "swaps"
+	RetrieveBreakdownRequestBucketTransfers                 RetrieveBreakdownRequestBucket = "transfers"
+	RetrieveBreakdownRequestBucketPayments                  RetrieveBreakdownRequestBucket = "payments"
+	RetrieveBreakdownRequestBucketRefunds                   RetrieveBreakdownRequestBucket = "refunds"
+	RetrieveBreakdownRequestBucketAds                       RetrieveBreakdownRequestBucket = "ads"
+	RetrieveBreakdownRequestBucketCardSpend                 RetrieveBreakdownRequestBucket = "card_spend"
+	RetrieveBreakdownRequestBucketCardAuthorizationReleases RetrieveBreakdownRequestBucket = "card_authorization_releases"
+	RetrieveBreakdownRequestBucketWithdrawals               RetrieveBreakdownRequestBucket = "withdrawals"
+	RetrieveBreakdownRequestBucketSwaps                     RetrieveBreakdownRequestBucket = "swaps"
 )
 
 func NewRetrieveBreakdownRequestBucketFromString(s string) (RetrieveBreakdownRequestBucket, error) {
@@ -102,8 +126,14 @@ func NewRetrieveBreakdownRequestBucketFromString(s string) (RetrieveBreakdownReq
 		return RetrieveBreakdownRequestBucketTransfers, nil
 	case "payments":
 		return RetrieveBreakdownRequestBucketPayments, nil
+	case "refunds":
+		return RetrieveBreakdownRequestBucketRefunds, nil
+	case "ads":
+		return RetrieveBreakdownRequestBucketAds, nil
 	case "card_spend":
 		return RetrieveBreakdownRequestBucketCardSpend, nil
+	case "card_authorization_releases":
+		return RetrieveBreakdownRequestBucketCardAuthorizationReleases, nil
 	case "withdrawals":
 		return RetrieveBreakdownRequestBucketWithdrawals, nil
 	case "swaps":
@@ -139,6 +169,31 @@ func (r RetrieveBreakdownRequestDirection) Ptr() *RetrieveBreakdownRequestDirect
 	return &r
 }
 
+type RetrieveBreakdownRequestGroupBy string
+
+const (
+	RetrieveBreakdownRequestGroupByDay   RetrieveBreakdownRequestGroupBy = "day"
+	RetrieveBreakdownRequestGroupByWeek  RetrieveBreakdownRequestGroupBy = "week"
+	RetrieveBreakdownRequestGroupByMonth RetrieveBreakdownRequestGroupBy = "month"
+)
+
+func NewRetrieveBreakdownRequestGroupByFromString(s string) (RetrieveBreakdownRequestGroupBy, error) {
+	switch s {
+	case "day":
+		return RetrieveBreakdownRequestGroupByDay, nil
+	case "week":
+		return RetrieveBreakdownRequestGroupByWeek, nil
+	case "month":
+		return RetrieveBreakdownRequestGroupByMonth, nil
+	}
+	var t RetrieveBreakdownRequestGroupBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveBreakdownRequestGroupBy) Ptr() *RetrieveBreakdownRequestGroupBy {
+	return &r
+}
+
 var (
 	retrieveBreakdownResponseFieldActivityFilters = big.NewInt(1 << 0)
 	retrieveBreakdownResponseFieldBucket          = big.NewInt(1 << 1)
@@ -146,6 +201,7 @@ var (
 	retrieveBreakdownResponseFieldDirection       = big.NewInt(1 << 3)
 	retrieveBreakdownResponseFieldItems           = big.NewInt(1 << 4)
 	retrieveBreakdownResponseFieldOtherAmount     = big.NewInt(1 << 5)
+	retrieveBreakdownResponseFieldOtherName       = big.NewInt(1 << 6)
 )
 
 type RetrieveBreakdownResponse struct {
@@ -155,6 +211,7 @@ type RetrieveBreakdownResponse struct {
 	Direction       RetrieveBreakdownResponseDirection        `json:"direction" url:"direction"`
 	Items           []*RetrieveBreakdownResponseItemsItem     `json:"items" url:"items"`
 	OtherAmount     *whopsdkgo.Money                          `json:"other_amount,omitempty" url:"other_amount,omitempty"`
+	OtherName       string                                    `json:"other_name" url:"other_name"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -203,6 +260,13 @@ func (r *RetrieveBreakdownResponse) GetOtherAmount() *whopsdkgo.Money {
 		return nil
 	}
 	return r.OtherAmount
+}
+
+func (r *RetrieveBreakdownResponse) GetOtherName() string {
+	if r == nil {
+		return ""
+	}
+	return r.OtherName
 }
 
 func (r *RetrieveBreakdownResponse) GetExtraProperties() map[string]interface{} {
@@ -259,6 +323,13 @@ func (r *RetrieveBreakdownResponse) SetItems(items []*RetrieveBreakdownResponseI
 func (r *RetrieveBreakdownResponse) SetOtherAmount(otherAmount *whopsdkgo.Money) {
 	r.OtherAmount = otherAmount
 	r.require(retrieveBreakdownResponseFieldOtherAmount)
+}
+
+// SetOtherName sets the OtherName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBreakdownResponse) SetOtherName(otherName string) {
+	r.OtherName = otherName
+	r.require(retrieveBreakdownResponseFieldOtherName)
 }
 
 func (r *RetrieveBreakdownResponse) UnmarshalJSON(data []byte) error {
@@ -428,11 +499,14 @@ func (r RetrieveBreakdownResponseActivityFiltersDirection) Ptr() *RetrieveBreakd
 type RetrieveBreakdownResponseBucket string
 
 const (
-	RetrieveBreakdownResponseBucketTransfers   RetrieveBreakdownResponseBucket = "transfers"
-	RetrieveBreakdownResponseBucketPayments    RetrieveBreakdownResponseBucket = "payments"
-	RetrieveBreakdownResponseBucketCardSpend   RetrieveBreakdownResponseBucket = "card_spend"
-	RetrieveBreakdownResponseBucketWithdrawals RetrieveBreakdownResponseBucket = "withdrawals"
-	RetrieveBreakdownResponseBucketSwaps       RetrieveBreakdownResponseBucket = "swaps"
+	RetrieveBreakdownResponseBucketTransfers                 RetrieveBreakdownResponseBucket = "transfers"
+	RetrieveBreakdownResponseBucketPayments                  RetrieveBreakdownResponseBucket = "payments"
+	RetrieveBreakdownResponseBucketRefunds                   RetrieveBreakdownResponseBucket = "refunds"
+	RetrieveBreakdownResponseBucketAds                       RetrieveBreakdownResponseBucket = "ads"
+	RetrieveBreakdownResponseBucketCardSpend                 RetrieveBreakdownResponseBucket = "card_spend"
+	RetrieveBreakdownResponseBucketCardAuthorizationReleases RetrieveBreakdownResponseBucket = "card_authorization_releases"
+	RetrieveBreakdownResponseBucketWithdrawals               RetrieveBreakdownResponseBucket = "withdrawals"
+	RetrieveBreakdownResponseBucketSwaps                     RetrieveBreakdownResponseBucket = "swaps"
 )
 
 func NewRetrieveBreakdownResponseBucketFromString(s string) (RetrieveBreakdownResponseBucket, error) {
@@ -441,8 +515,14 @@ func NewRetrieveBreakdownResponseBucketFromString(s string) (RetrieveBreakdownRe
 		return RetrieveBreakdownResponseBucketTransfers, nil
 	case "payments":
 		return RetrieveBreakdownResponseBucketPayments, nil
+	case "refunds":
+		return RetrieveBreakdownResponseBucketRefunds, nil
+	case "ads":
+		return RetrieveBreakdownResponseBucketAds, nil
 	case "card_spend":
 		return RetrieveBreakdownResponseBucketCardSpend, nil
+	case "card_authorization_releases":
+		return RetrieveBreakdownResponseBucketCardAuthorizationReleases, nil
 	case "withdrawals":
 		return RetrieveBreakdownResponseBucketWithdrawals, nil
 	case "swaps":
@@ -480,16 +560,19 @@ func (r RetrieveBreakdownResponseDirection) Ptr() *RetrieveBreakdownResponseDire
 
 var (
 	retrieveBreakdownResponseItemsItemFieldAmount     = big.NewInt(1 << 0)
-	retrieveBreakdownResponseItemsItemFieldImageURL   = big.NewInt(1 << 1)
-	retrieveBreakdownResponseItemsItemFieldKey        = big.NewInt(1 << 2)
-	retrieveBreakdownResponseItemsItemFieldName       = big.NewInt(1 << 3)
-	retrieveBreakdownResponseItemsItemFieldObject     = big.NewInt(1 << 4)
-	retrieveBreakdownResponseItemsItemFieldResourceID = big.NewInt(1 << 5)
+	retrieveBreakdownResponseItemsItemFieldAvatar     = big.NewInt(1 << 1)
+	retrieveBreakdownResponseItemsItemFieldImageURL   = big.NewInt(1 << 2)
+	retrieveBreakdownResponseItemsItemFieldKey        = big.NewInt(1 << 3)
+	retrieveBreakdownResponseItemsItemFieldName       = big.NewInt(1 << 4)
+	retrieveBreakdownResponseItemsItemFieldObject     = big.NewInt(1 << 5)
+	retrieveBreakdownResponseItemsItemFieldResourceID = big.NewInt(1 << 6)
 )
 
 type RetrieveBreakdownResponseItemsItem struct {
-	Amount   *whopsdkgo.Money `json:"amount" url:"amount"`
-	ImageURL *string          `json:"image_url,omitempty" url:"image_url,omitempty"`
+	Amount *whopsdkgo.Money `json:"amount" url:"amount"`
+	// How to draw the row's icon. `null` when the row has nothing to show (balances, adjustments, ad campaigns), so clients render no icon rather than a placeholder.
+	Avatar   *RetrieveBreakdownResponseItemsItemAvatar `json:"avatar,omitempty" url:"avatar,omitempty"`
+	ImageURL *string                                   `json:"image_url,omitempty" url:"image_url,omitempty"`
 	// An opaque identifier for this grouping within the breakdown.
 	Key    string                                   `json:"key" url:"key"`
 	Name   string                                   `json:"name" url:"name"`
@@ -509,6 +592,13 @@ func (r *RetrieveBreakdownResponseItemsItem) GetAmount() *whopsdkgo.Money {
 		return nil
 	}
 	return r.Amount
+}
+
+func (r *RetrieveBreakdownResponseItemsItem) GetAvatar() *RetrieveBreakdownResponseItemsItemAvatar {
+	if r == nil {
+		return nil
+	}
+	return r.Avatar
 }
 
 func (r *RetrieveBreakdownResponseItemsItem) GetImageURL() *string {
@@ -565,6 +655,13 @@ func (r *RetrieveBreakdownResponseItemsItem) require(field *big.Int) {
 func (r *RetrieveBreakdownResponseItemsItem) SetAmount(amount *whopsdkgo.Money) {
 	r.Amount = amount
 	r.require(retrieveBreakdownResponseItemsItemFieldAmount)
+}
+
+// SetAvatar sets the Avatar field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBreakdownResponseItemsItem) SetAvatar(avatar *RetrieveBreakdownResponseItemsItemAvatar) {
+	r.Avatar = avatar
+	r.require(retrieveBreakdownResponseItemsItemFieldAvatar)
 }
 
 // SetImageURL sets the ImageURL field and marks it as non-optional;
@@ -644,14 +741,139 @@ func (r *RetrieveBreakdownResponseItemsItem) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
+var (
+	retrieveBreakdownResponseItemsItemAvatarFieldShape = big.NewInt(1 << 0)
+	retrieveBreakdownResponseItemsItemAvatarFieldURL   = big.NewInt(1 << 1)
+)
+
+type RetrieveBreakdownResponseItemsItemAvatar struct {
+	Shape RetrieveBreakdownResponseItemsItemAvatarShape `json:"shape" url:"shape"`
+	// The image to show, or `null` to fall back to the row's initials.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveBreakdownResponseItemsItemAvatar) GetShape() RetrieveBreakdownResponseItemsItemAvatarShape {
+	if r == nil {
+		return ""
+	}
+	return r.Shape
+}
+
+func (r *RetrieveBreakdownResponseItemsItemAvatar) GetURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.URL
+}
+
+func (r *RetrieveBreakdownResponseItemsItemAvatar) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveBreakdownResponseItemsItemAvatar) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetShape sets the Shape field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBreakdownResponseItemsItemAvatar) SetShape(shape RetrieveBreakdownResponseItemsItemAvatarShape) {
+	r.Shape = shape
+	r.require(retrieveBreakdownResponseItemsItemAvatarFieldShape)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBreakdownResponseItemsItemAvatar) SetURL(url *string) {
+	r.URL = url
+	r.require(retrieveBreakdownResponseItemsItemAvatarFieldURL)
+}
+
+func (r *RetrieveBreakdownResponseItemsItemAvatar) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveBreakdownResponseItemsItemAvatar
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveBreakdownResponseItemsItemAvatar(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveBreakdownResponseItemsItemAvatar) MarshalJSON() ([]byte, error) {
+	type embed RetrieveBreakdownResponseItemsItemAvatar
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveBreakdownResponseItemsItemAvatar) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+type RetrieveBreakdownResponseItemsItemAvatarShape string
+
+const (
+	RetrieveBreakdownResponseItemsItemAvatarShapeCircle RetrieveBreakdownResponseItemsItemAvatarShape = "circle"
+	RetrieveBreakdownResponseItemsItemAvatarShapeSquare RetrieveBreakdownResponseItemsItemAvatarShape = "square"
+)
+
+func NewRetrieveBreakdownResponseItemsItemAvatarShapeFromString(s string) (RetrieveBreakdownResponseItemsItemAvatarShape, error) {
+	switch s {
+	case "circle":
+		return RetrieveBreakdownResponseItemsItemAvatarShapeCircle, nil
+	case "square":
+		return RetrieveBreakdownResponseItemsItemAvatarShapeSquare, nil
+	}
+	var t RetrieveBreakdownResponseItemsItemAvatarShape
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveBreakdownResponseItemsItemAvatarShape) Ptr() *RetrieveBreakdownResponseItemsItemAvatarShape {
+	return &r
+}
+
 type RetrieveBreakdownResponseItemsItemObject string
 
 const (
-	RetrieveBreakdownResponseItemsItemObjectUser              RetrieveBreakdownResponseItemsItemObject = "user"
-	RetrieveBreakdownResponseItemsItemObjectAccount           RetrieveBreakdownResponseItemsItemObject = "account"
-	RetrieveBreakdownResponseItemsItemObjectMerchant          RetrieveBreakdownResponseItemsItemObject = "merchant"
-	RetrieveBreakdownResponseItemsItemObjectPayoutDestination RetrieveBreakdownResponseItemsItemObject = "payout_destination"
-	RetrieveBreakdownResponseItemsItemObjectBalance           RetrieveBreakdownResponseItemsItemObject = "balance"
+	RetrieveBreakdownResponseItemsItemObjectUser                 RetrieveBreakdownResponseItemsItemObject = "user"
+	RetrieveBreakdownResponseItemsItemObjectAccount              RetrieveBreakdownResponseItemsItemObject = "account"
+	RetrieveBreakdownResponseItemsItemObjectMerchant             RetrieveBreakdownResponseItemsItemObject = "merchant"
+	RetrieveBreakdownResponseItemsItemObjectPayoutDestination    RetrieveBreakdownResponseItemsItemObject = "payout_destination"
+	RetrieveBreakdownResponseItemsItemObjectBalance              RetrieveBreakdownResponseItemsItemObject = "balance"
+	RetrieveBreakdownResponseItemsItemObjectWithdrawalAdjustment RetrieveBreakdownResponseItemsItemObject = "withdrawal_adjustment"
+	RetrieveBreakdownResponseItemsItemObjectAdCampaign           RetrieveBreakdownResponseItemsItemObject = "ad_campaign"
 )
 
 func NewRetrieveBreakdownResponseItemsItemObjectFromString(s string) (RetrieveBreakdownResponseItemsItemObject, error) {
@@ -666,6 +888,10 @@ func NewRetrieveBreakdownResponseItemsItemObjectFromString(s string) (RetrieveBr
 		return RetrieveBreakdownResponseItemsItemObjectPayoutDestination, nil
 	case "balance":
 		return RetrieveBreakdownResponseItemsItemObjectBalance, nil
+	case "withdrawal_adjustment":
+		return RetrieveBreakdownResponseItemsItemObjectWithdrawalAdjustment, nil
+	case "ad_campaign":
+		return RetrieveBreakdownResponseItemsItemObjectAdCampaign, nil
 	}
 	var t RetrieveBreakdownResponseItemsItemObject
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

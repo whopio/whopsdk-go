@@ -14,15 +14,16 @@ var (
 	listMembersRequestFieldAccountID     = big.NewInt(1 << 0)
 	listMembersRequestFieldAccessLevel   = big.NewInt(1 << 1)
 	listMembersRequestFieldStatus        = big.NewInt(1 << 2)
-	listMembersRequestFieldQuery         = big.NewInt(1 << 3)
-	listMembersRequestFieldCreatedAfter  = big.NewInt(1 << 4)
-	listMembersRequestFieldCreatedBefore = big.NewInt(1 << 5)
-	listMembersRequestFieldOrder         = big.NewInt(1 << 6)
-	listMembersRequestFieldDirection     = big.NewInt(1 << 7)
-	listMembersRequestFieldFirst         = big.NewInt(1 << 8)
-	listMembersRequestFieldAfter         = big.NewInt(1 << 9)
-	listMembersRequestFieldLast          = big.NewInt(1 << 10)
-	listMembersRequestFieldBefore        = big.NewInt(1 << 11)
+	listMembersRequestFieldUserIDs       = big.NewInt(1 << 3)
+	listMembersRequestFieldQuery         = big.NewInt(1 << 4)
+	listMembersRequestFieldCreatedAfter  = big.NewInt(1 << 5)
+	listMembersRequestFieldCreatedBefore = big.NewInt(1 << 6)
+	listMembersRequestFieldOrder         = big.NewInt(1 << 7)
+	listMembersRequestFieldDirection     = big.NewInt(1 << 8)
+	listMembersRequestFieldFirst         = big.NewInt(1 << 9)
+	listMembersRequestFieldAfter         = big.NewInt(1 << 10)
+	listMembersRequestFieldLast          = big.NewInt(1 << 11)
+	listMembersRequestFieldBefore        = big.NewInt(1 << 12)
 )
 
 type ListMembersRequest struct {
@@ -32,6 +33,8 @@ type ListMembersRequest struct {
 	AccessLevel *ListMembersRequestAccessLevel `json:"-" url:"access_level,omitempty"`
 	// Filter by whether the member is still part of the account.
 	Status *ListMembersRequestStatus `json:"-" url:"status,omitempty"`
+	// Only return members whose users match these `user_` identifiers.
+	UserIDs []*string `json:"-" url:"user_ids,omitempty"`
 	// Search members by name or username. An exact email address also matches when the credential holds the member:email:read scope.
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only members who joined after this ISO 8601 timestamp.
@@ -81,6 +84,13 @@ func (l *ListMembersRequest) SetAccessLevel(accessLevel *ListMembersRequestAcces
 func (l *ListMembersRequest) SetStatus(status *ListMembersRequestStatus) {
 	l.Status = status
 	l.require(listMembersRequestFieldStatus)
+}
+
+// SetUserIDs sets the UserIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetUserIDs(userIDs []*string) {
+	l.UserIDs = userIDs
+	l.require(listMembersRequestFieldUserIDs)
 }
 
 // SetQuery sets the Query field and marks it as non-optional;
@@ -181,7 +191,8 @@ var (
 	memberFieldLastAccessedAt = big.NewInt(1 << 5)
 	memberFieldPhoneNumber    = big.NewInt(1 << 6)
 	memberFieldStatus         = big.NewInt(1 << 7)
-	memberFieldUser           = big.NewInt(1 << 8)
+	memberFieldTokenBalance   = big.NewInt(1 << 8)
+	memberFieldUser           = big.NewInt(1 << 9)
 )
 
 type Member struct {
@@ -201,6 +212,8 @@ type Member struct {
 	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
 	// `joined` while the member is part of the account, `left` after they leave.
 	Status MemberStatus `json:"status" url:"status"`
+	// The member's current token balance for this account, computed from token transactions.
+	TokenBalance float64 `json:"token_balance" url:"token_balance"`
 	// The user behind this member. `null` when the buyer is another business rather than a person.
 	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
 
@@ -265,6 +278,13 @@ func (m *Member) GetStatus() MemberStatus {
 		return ""
 	}
 	return m.Status
+}
+
+func (m *Member) GetTokenBalance() float64 {
+	if m == nil {
+		return 0
+	}
+	return m.TokenBalance
 }
 
 func (m *Member) GetUser() *UserSummary {
@@ -342,6 +362,13 @@ func (m *Member) SetPhoneNumber(phoneNumber *string) {
 func (m *Member) SetStatus(status MemberStatus) {
 	m.Status = status
 	m.require(memberFieldStatus)
+}
+
+// SetTokenBalance sets the TokenBalance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetTokenBalance(tokenBalance float64) {
+	m.TokenBalance = tokenBalance
+	m.require(memberFieldTokenBalance)
 }
 
 // SetUser sets the User field and marks it as non-optional;

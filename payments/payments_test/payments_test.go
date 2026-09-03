@@ -88,37 +88,7 @@ func TestPaymentsListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListPaymentsRequest{
-		First: whopsdk.Int(
-			42,
-		),
-		Last: whopsdk.Int(
-			42,
-		),
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
-		CreatedBefore: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		CreatedAfter: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		UpdatedBefore: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		UpdatedAfter: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-	}
+	request := &whopsdk.ListPaymentsRequest{}
 	_, invocationErr := client.Payments.List(
 		context.TODO(),
 		request,
@@ -128,7 +98,7 @@ func TestPaymentsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsListWithWireMock", "GET", "/payments", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z", "updated_before": "2023-12-01T05:00:00.000Z", "updated_after": "2023-12-01T05:00:00.000Z"}, 1)
+	VerifyRequestCount(t, "TestPaymentsListWithWireMock", "GET", "/payments", nil, 1)
 }
 
 func TestPaymentsCreateWithWireMock(
@@ -143,13 +113,8 @@ func TestPaymentsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreatePaymentsRequest{
-		CreatePaymentsRequestZero: &whopsdk.CreatePaymentsRequestZero{
-			CompanyID:         "biz_xxxxxxxxxxxxxx",
-			ConfirmationToken: "confirmation_token",
-			Plan: &whopsdk.CreatePaymentsRequestZeroPlan{
-				Currency: whopsdk.CurrenciesUsd,
-			},
-		},
+		AccountID: "biz_xxxxxxxxxxxxxx",
+		PlanID:    "plan_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Payments.Create(
 		context.TODO(),
@@ -175,7 +140,7 @@ func TestPaymentsRetrieveWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.RetrievePaymentsRequest{
-		ID: "pay_xxxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.Payments.Retrieve(
 		context.TODO(),
@@ -186,7 +151,7 @@ func TestPaymentsRetrieveWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsRetrieveWithWireMock", "GET", "/payments/pay_xxxxxxxxxxxxxx", nil, 1)
+	VerifyRequestCount(t, "TestPaymentsRetrieveWithWireMock", "GET", "/payments/id", nil, 1)
 }
 
 func TestPaymentsCaptureWithWireMock(
@@ -227,13 +192,7 @@ func TestPaymentsListFeesWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.ListFeesPaymentsRequest{
-		ID: "pay_xxxxxxxxxxxxxx",
-		First: whopsdk.Int(
-			42,
-		),
-		Last: whopsdk.Int(
-			42,
-		),
+		ID: "id",
 	}
 	_, invocationErr := client.Payments.ListFees(
 		context.TODO(),
@@ -244,7 +203,7 @@ func TestPaymentsListFeesWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsListFeesWithWireMock", "GET", "/payments/pay_xxxxxxxxxxxxxx/fees", map[string]interface{}{"first": "42", "last": "42"}, 1)
+	VerifyRequestCount(t, "TestPaymentsListFeesWithWireMock", "GET", "/payments/id/fees", nil, 1)
 }
 
 func TestPaymentsRefundWithWireMock(
@@ -259,7 +218,7 @@ func TestPaymentsRefundWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.RefundPaymentsRequest{
-		ID: "pay_xxxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.Payments.Refund(
 		context.TODO(),
@@ -270,7 +229,7 @@ func TestPaymentsRefundWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsRefundWithWireMock", "POST", "/payments/pay_xxxxxxxxxxxxxx/refund", nil, 1)
+	VerifyRequestCount(t, "TestPaymentsRefundWithWireMock", "POST", "/payments/id/refund", nil, 1)
 }
 
 func TestPaymentsRetryWithWireMock(
@@ -285,7 +244,7 @@ func TestPaymentsRetryWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.RetryPaymentsRequest{
-		ID: "pay_xxxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.Payments.Retry(
 		context.TODO(),
@@ -296,7 +255,7 @@ func TestPaymentsRetryWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsRetryWithWireMock", "POST", "/payments/pay_xxxxxxxxxxxxxx/retry", nil, 1)
+	VerifyRequestCount(t, "TestPaymentsRetryWithWireMock", "POST", "/payments/id/retry", nil, 1)
 }
 
 func TestPaymentsVoidWithWireMock(
@@ -311,7 +270,7 @@ func TestPaymentsVoidWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.VoidPaymentsRequest{
-		ID: "pay_xxxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.Payments.Void(
 		context.TODO(),
@@ -322,7 +281,7 @@ func TestPaymentsVoidWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsVoidWithWireMock", "POST", "/payments/pay_xxxxxxxxxxxxxx/void", nil, 1)
+	VerifyRequestCount(t, "TestPaymentsVoidWithWireMock", "POST", "/payments/id/void", nil, 1)
 }
 
 func TestPaymentsUpdateReturnURLWithWireMock(

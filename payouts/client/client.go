@@ -26,7 +26,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-2"
+		apiVersionDateDefault := "2026-09-02-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -121,10 +121,9 @@ func (c *Client) List(
 //
 // Example:
 //
-//	request := &whopsdk.CreatePayoutsRequestBody{
-//	    Unknown: map[string]any{
-//	        "key": "value",
-//	    },
+//	request := &whopsdk.CreatePayoutsRequest{
+//	    Amount: 50,
+//	    PayoutMethodID: "potk_xxxxxxxxxxxxxx",
 //	}
 //	client.Payouts.Create(
 //	    context.TODO(),
@@ -132,7 +131,7 @@ func (c *Client) List(
 //	)
 func (c *Client) Create(
 	ctx context.Context,
-	request *whopsdk.CreatePayoutsRequestBody,
+	request *whopsdk.CreatePayoutsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.CreatePayoutsResponse, error) {
 	response, err := c.WithRawResponse.Create(

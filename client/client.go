@@ -8,7 +8,6 @@ import (
 	client "github.com/whopio/whopsdk-go/accounts/client"
 	adcampaigns "github.com/whopio/whopsdk-go/adcampaigns"
 	adgroups "github.com/whopio/whopsdk-go/adgroups"
-	adreports "github.com/whopio/whopsdk-go/adreports"
 	ads "github.com/whopio/whopsdk-go/ads"
 	affiliatesclient "github.com/whopio/whopsdk-go/affiliates/client"
 	aichats "github.com/whopio/whopsdk-go/aichats"
@@ -24,7 +23,6 @@ import (
 	cardtransactions "github.com/whopio/whopsdk-go/cardtransactions"
 	chatchannels "github.com/whopio/whopsdk-go/chatchannels"
 	checkoutconfigurations "github.com/whopio/whopsdk-go/checkoutconfigurations"
-	companies "github.com/whopio/whopsdk-go/companies"
 	companytokentransactions "github.com/whopio/whopsdk-go/companytokentransactions"
 	confirmationtokens "github.com/whopio/whopsdk-go/confirmationtokens"
 	core "github.com/whopio/whopsdk-go/core"
@@ -96,7 +94,6 @@ type Whop struct {
 	Accounts                 *client.Client
 	AdCampaigns              *adcampaigns.Client
 	AdGroups                 *adgroups.Client
-	AdReports                *adreports.Client
 	Ads                      *ads.Client
 	Affiliates               *affiliatesclient.Client
 	AiChats                  *aichats.Client
@@ -112,7 +109,6 @@ type Whop struct {
 	Cards                    *cards.Client
 	ChatChannels             *chatchannels.Client
 	CheckoutConfigurations   *checkoutconfigurations.Client
-	Companies                *companies.Client
 	CompanyTokenTransactions *companytokentransactions.Client
 	ConfirmationTokens       *confirmationtokens.Client
 	CourseChapters           *coursechapters.Client
@@ -182,7 +178,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-25-2"
+		apiVersionDateDefault := "2026-09-02-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -191,7 +187,6 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Accounts:                 client.NewClient(options),
 		AdCampaigns:              adcampaigns.NewClient(options),
 		AdGroups:                 adgroups.NewClient(options),
-		AdReports:                adreports.NewClient(options),
 		Ads:                      ads.NewClient(options),
 		Affiliates:               affiliatesclient.NewClient(options),
 		AiChats:                  aichats.NewClient(options),
@@ -207,7 +202,6 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Cards:                    cards.NewClient(options),
 		ChatChannels:             chatchannels.NewClient(options),
 		CheckoutConfigurations:   checkoutconfigurations.NewClient(options),
-		Companies:                companies.NewClient(options),
 		CompanyTokenTransactions: companytokentransactions.NewClient(options),
 		ConfirmationTokens:       confirmationtokens.NewClient(options),
 		CourseChapters:           coursechapters.NewClient(options),

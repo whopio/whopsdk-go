@@ -144,7 +144,7 @@ type FormCompanyAccountsRequest struct {
 	EntityType *FormCompanyAccountsRequestEntityType `json:"entity_type,omitempty" url:"-"`
 	// Request expedited EIN processing for an additional fee. Available only when no founder supplies an SSN.
 	ExpediteEin *bool `json:"expedite_ein,omitempty" url:"-"`
-	// Two-letter code of the US state (or `DC`) to form the company in.
+	// Two-letter code of the US state (or `DC`) to form the company in. We recommend `WY` because Wyoming formations are completed the same day.
 	FormationState FormCompanyAccountsRequestFormationState `json:"formation_state" url:"-"`
 	// The company's founders. Exactly one must be marked `is_primary` — the responsible party for the filing.
 	Founders []*FormCompanyAccountsRequestFoundersItem `json:"founders" url:"-"`
@@ -5391,7 +5391,7 @@ func (f FormCompanyAccountsRequestEntityType) Ptr() *FormCompanyAccountsRequestE
 	return &f
 }
 
-// Two-letter code of the US state (or `DC`) to form the company in.
+// Two-letter code of the US state (or `DC`) to form the company in. We recommend `WY` because Wyoming formations are completed the same day.
 type FormCompanyAccountsRequestFormationState string
 
 const (

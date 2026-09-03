@@ -88,33 +88,7 @@ func TestRefundsListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListRefundsRequest{
-		First: whopsdk.Int(
-			42,
-		),
-		Last: whopsdk.Int(
-			42,
-		),
-		PaymentID: whopsdk.String(
-			"pay_xxxxxxxxxxxxxx",
-		),
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
-		UserID: whopsdk.String(
-			"user_xxxxxxxxxxxxx",
-		),
-		CreatedBefore: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		CreatedAfter: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-	}
+	request := &whopsdk.ListRefundsRequest{}
 	_, invocationErr := client.Refunds.List(
 		context.TODO(),
 		request,
@@ -124,7 +98,7 @@ func TestRefundsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestRefundsListWithWireMock", "GET", "/refunds", map[string]interface{}{"first": "42", "last": "42", "payment_id": "pay_xxxxxxxxxxxxxx", "company_id": "biz_xxxxxxxxxxxxxx", "user_id": "user_xxxxxxxxxxxxx", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z"}, 1)
+	VerifyRequestCount(t, "TestRefundsListWithWireMock", "GET", "/refunds", nil, 1)
 }
 
 func TestRefundsRetrieveWithWireMock(
@@ -139,7 +113,7 @@ func TestRefundsRetrieveWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.RetrieveRefundsRequest{
-		ID: "rf_xxxxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.Refunds.Retrieve(
 		context.TODO(),
@@ -150,5 +124,5 @@ func TestRefundsRetrieveWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestRefundsRetrieveWithWireMock", "GET", "/refunds/rf_xxxxxxxxxxxxxxx", nil, 1)
+	VerifyRequestCount(t, "TestRefundsRetrieveWithWireMock", "GET", "/refunds/id", nil, 1)
 }
