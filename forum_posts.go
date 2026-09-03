@@ -33,7 +33,7 @@ type CreateForumPostsRequest struct {
 	Attachments []*CreateForumPostsRequestAttachmentsItem `json:"attachments,omitempty" url:"-"`
 	// The main body of the post in Markdown format. For example, 'Check out this **update**'. Hidden if the post is paywalled and the viewer has not purchased access.
 	Content *string `json:"content,omitempty" url:"-"`
-	// The unique identifier of the experience to create this post in. For example, 'exp_xxxxx'. Pass 'public' along with company_id to automatically use the company's public forum.
+	// The unique identifier of the experience to create this post in. For example, 'exp_xxxxx'. Pass 'public' along with account_id to automatically use the account's public forum.
 	ExperienceID string `json:"experience_id" url:"-"`
 	// Whether to send this post as a mention notification to all users in the experience who have mentions enabled.
 	IsMention *bool `json:"is_mention,omitempty" url:"-"`

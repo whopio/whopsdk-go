@@ -11691,7 +11691,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"company_id\": \"company_id\",\n      \"custom_name\": \"Project Alpha Team\",\n      \"customer_user\": {\n        \"id\": \"user_xxxxxxxxxxxxx\",\n        \"name\": \"John Doe\",\n        \"username\": \"johndoe42\"\n      },\n      \"id\": \"id\",\n      \"last_message_at\": \"2023-12-01T05:00:00Z\",\n      \"resolved_at\": \"2023-12-01T05:00:00Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": true,\n    \"has_previous_page\": true,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"account_id\",\n      \"custom_name\": \"Project Alpha Team\",\n      \"customer_user\": {\n        \"id\": \"user_xxxxxxxxxxxxx\",\n        \"name\": \"John Doe\",\n        \"username\": \"johndoe42\"\n      },\n      \"id\": \"id\",\n      \"last_message_at\": \"2023-12-01T05:00:00Z\",\n      \"resolved_at\": \"2023-12-01T05:00:00Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": true,\n    \"has_previous_page\": true,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -11723,7 +11723,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"company_id\": \"company_id\",\n  \"custom_name\": \"Project Alpha Team\",\n  \"customer_user\": {\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  },\n  \"id\": \"id\",\n  \"last_message_at\": \"2023-12-01T05:00:00Z\",\n  \"resolved_at\": \"2023-12-01T05:00:00Z\"\n}",
+        "body": "{\n  \"account_id\": \"account_id\",\n  \"custom_name\": \"Project Alpha Team\",\n  \"customer_user\": {\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  },\n  \"id\": \"id\",\n  \"last_message_at\": \"2023-12-01T05:00:00Z\",\n  \"resolved_at\": \"2023-12-01T05:00:00Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -11759,7 +11759,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"company_id\": \"company_id\",\n  \"custom_name\": \"Project Alpha Team\",\n  \"customer_user\": {\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  },\n  \"id\": \"id\",\n  \"last_message_at\": \"2023-12-01T05:00:00Z\",\n  \"resolved_at\": \"2023-12-01T05:00:00Z\"\n}",
+        "body": "{\n  \"account_id\": \"account_id\",\n  \"custom_name\": \"Project Alpha Team\",\n  \"customer_user\": {\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  },\n  \"id\": \"id\",\n  \"last_message_at\": \"2023-12-01T05:00:00Z\",\n  \"resolved_at\": \"2023-12-01T05:00:00Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }

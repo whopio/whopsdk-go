@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	createAiChatsRequestFieldCurrentCompanyID   = big.NewInt(1 << 0)
+	createAiChatsRequestFieldCurrentAccountID   = big.NewInt(1 << 0)
 	createAiChatsRequestFieldMessageAttachments = big.NewInt(1 << 1)
 	createAiChatsRequestFieldMessageSource      = big.NewInt(1 << 2)
 	createAiChatsRequestFieldMessageText        = big.NewInt(1 << 3)
@@ -20,8 +20,8 @@ var (
 )
 
 type CreateAiChatsRequest struct {
-	// The unique identifier of the company to set as context for the AI chat (e.g., "biz_XXXXX").
-	CurrentCompanyID *string `json:"current_company_id,omitempty" url:"-"`
+	// The unique identifier of the account to set as context for the AI chat (e.g., "biz_XXXXX").
+	CurrentAccountID *string `json:"current_account_id,omitempty" url:"-"`
 	// A list of previously uploaded file attachments to include with the first message.
 	MessageAttachments []*CreateAiChatsRequestMessageAttachmentsItem `json:"message_attachments,omitempty" url:"-"`
 	// The source of the message.
@@ -44,11 +44,11 @@ func (c *CreateAiChatsRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetCurrentCompanyID sets the CurrentCompanyID field and marks it as non-optional;
+// SetCurrentAccountID sets the CurrentAccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAiChatsRequest) SetCurrentCompanyID(currentCompanyID *string) {
-	c.CurrentCompanyID = currentCompanyID
-	c.require(createAiChatsRequestFieldCurrentCompanyID)
+func (c *CreateAiChatsRequest) SetCurrentAccountID(currentAccountID *string) {
+	c.CurrentAccountID = currentAccountID
+	c.require(createAiChatsRequestFieldCurrentAccountID)
 }
 
 // SetMessageAttachments sets the MessageAttachments field and marks it as non-optional;
@@ -1113,7 +1113,7 @@ func (l *ListAiChatsResponse) String() string {
 
 var (
 	updateAiChatsRequestFieldID                     = big.NewInt(1 << 0)
-	updateAiChatsRequestFieldCurrentCompanyID       = big.NewInt(1 << 1)
+	updateAiChatsRequestFieldCurrentAccountID       = big.NewInt(1 << 1)
 	updateAiChatsRequestFieldNotificationPreference = big.NewInt(1 << 2)
 	updateAiChatsRequestFieldTitle                  = big.NewInt(1 << 3)
 )
@@ -1121,8 +1121,8 @@ var (
 type UpdateAiChatsRequest struct {
 	// The unique identifier of the AI chat to update (e.g., "ai_chat_XXXXX").
 	ID string `json:"-" url:"-"`
-	// The unique identifier of the company to set as context for the AI chat (e.g., "biz_XXXXX").
-	CurrentCompanyID *string `json:"current_company_id,omitempty" url:"-"`
+	// The unique identifier of the account to set as context for the AI chat (e.g., "biz_XXXXX").
+	CurrentAccountID *string `json:"current_account_id,omitempty" url:"-"`
 	// The notification preference for the AI chat.
 	NotificationPreference *AiChatNotificationPreferences `json:"notification_preference,omitempty" url:"-"`
 	// The new display title for the AI chat thread (e.g., "Help with billing").
@@ -1146,11 +1146,11 @@ func (u *UpdateAiChatsRequest) SetID(id string) {
 	u.require(updateAiChatsRequestFieldID)
 }
 
-// SetCurrentCompanyID sets the CurrentCompanyID field and marks it as non-optional;
+// SetCurrentAccountID sets the CurrentAccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAiChatsRequest) SetCurrentCompanyID(currentCompanyID *string) {
-	u.CurrentCompanyID = currentCompanyID
-	u.require(updateAiChatsRequestFieldCurrentCompanyID)
+func (u *UpdateAiChatsRequest) SetCurrentAccountID(currentAccountID *string) {
+	u.CurrentAccountID = currentAccountID
+	u.require(updateAiChatsRequestFieldCurrentAccountID)
 }
 
 // SetNotificationPreference sets the NotificationPreference field and marks it as non-optional;

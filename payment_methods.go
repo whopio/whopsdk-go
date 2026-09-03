@@ -19,7 +19,7 @@ var (
 type DeletePaymentMethodRequest struct {
 	// The unique identifier of the payment method to delete.
 	ID string `json:"-" url:"-"`
-	// The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+	// The unique identifier of the member. Provide either this or account_id, not both. Omit both to address your own saved payment methods.
 	MemberID *string `json:"-" url:"member_id,omitempty"`
 	// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
@@ -84,7 +84,7 @@ type ListPaymentMethodsRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the member to list payment methods for. Omit this and company_id to list your own saved payment methods.
+	// The unique identifier of the member to list payment methods for. Omit this and account_id to list your own saved payment methods.
 	MemberID  *string    `json:"-" url:"member_id,omitempty"`
 	Direction *Direction `json:"-" url:"direction,omitempty"`
 	// Only return payment methods created before this timestamp.
@@ -239,7 +239,7 @@ var (
 type RetrievePaymentMethodsRequest struct {
 	// The unique identifier of the payment method.
 	ID string `json:"-" url:"-"`
-	// The unique identifier of the member. Provide either this or company_id, not both. Omit both to address your own saved payment methods.
+	// The unique identifier of the member. Provide either this or account_id, not both. Omit both to address your own saved payment methods.
 	MemberID *string `json:"-" url:"member_id,omitempty"`
 	// The unique identifier of the company. Provide either this or member_id, not both. Omit both to address your own saved payment methods.
 	AccountID *string `json:"-" url:"account_id,omitempty"`

@@ -11,11 +11,11 @@ import (
 )
 
 func TestSettersCreateAiChatsRequest(t *testing.T) {
-	t.Run("SetCurrentCompanyID", func(t *testing.T) {
+	t.Run("SetCurrentAccountID", func(t *testing.T) {
 		obj := &CreateAiChatsRequest{}
-		var fernTestValueCurrentCompanyID *string
-		obj.SetCurrentCompanyID(fernTestValueCurrentCompanyID)
-		assert.Equal(t, fernTestValueCurrentCompanyID, obj.CurrentCompanyID)
+		var fernTestValueCurrentAccountID *string
+		obj.SetCurrentAccountID(fernTestValueCurrentAccountID)
+		assert.Equal(t, fernTestValueCurrentAccountID, obj.CurrentAccountID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -62,14 +62,14 @@ func TestSettersCreateAiChatsRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateAiChatsRequest(t *testing.T) {
-	t.Run("SetCurrentCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetCurrentAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateAiChatsRequest{}
-		var fernTestValueCurrentCompanyID *string
+		var fernTestValueCurrentAccountID *string
 
 		// Act
-		obj.SetCurrentCompanyID(fernTestValueCurrentCompanyID)
+		obj.SetCurrentAccountID(fernTestValueCurrentAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2110,11 +2110,11 @@ func TestSettersUpdateAiChatsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetCurrentCompanyID", func(t *testing.T) {
+	t.Run("SetCurrentAccountID", func(t *testing.T) {
 		obj := &UpdateAiChatsRequest{}
-		var fernTestValueCurrentCompanyID *string
-		obj.SetCurrentCompanyID(fernTestValueCurrentCompanyID)
-		assert.Equal(t, fernTestValueCurrentCompanyID, obj.CurrentCompanyID)
+		var fernTestValueCurrentAccountID *string
+		obj.SetCurrentAccountID(fernTestValueCurrentAccountID)
+		assert.Equal(t, fernTestValueCurrentAccountID, obj.CurrentAccountID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2168,14 +2168,14 @@ func TestSettersMarkExplicitUpdateAiChatsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCurrentCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetCurrentAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateAiChatsRequest{}
-		var fernTestValueCurrentCompanyID *string
+		var fernTestValueCurrentAccountID *string
 
 		// Act
-		obj.SetCurrentCompanyID(fernTestValueCurrentCompanyID)
+		obj.SetCurrentAccountID(fernTestValueCurrentAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

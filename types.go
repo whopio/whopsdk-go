@@ -6619,8 +6619,8 @@ func (c CheckoutConfigurationCurrency) Ptr() *CheckoutConfigurationCurrency {
 
 // A checkout configuration is a reusable configuration for a checkout, including the plan, affiliate, and custom metadata. Payments and memberships created from a checkout session inherit its metadata.
 var (
-	checkoutConfigurationListItemFieldAffiliateCode              = big.NewInt(1 << 0)
-	checkoutConfigurationListItemFieldCompanyID                  = big.NewInt(1 << 1)
+	checkoutConfigurationListItemFieldAccountID                  = big.NewInt(1 << 0)
+	checkoutConfigurationListItemFieldAffiliateCode              = big.NewInt(1 << 1)
 	checkoutConfigurationListItemFieldCurrency                   = big.NewInt(1 << 2)
 	checkoutConfigurationListItemFieldID                         = big.NewInt(1 << 3)
 	checkoutConfigurationListItemFieldMetadata                   = big.NewInt(1 << 4)
@@ -6632,10 +6632,10 @@ var (
 )
 
 type CheckoutConfigurationListItem struct {
+	// The ID of the account to use for the checkout configuration
+	AccountID string `json:"account_id" url:"account_id"`
 	// The affiliate code to use for the checkout configuration
 	AffiliateCode *string `json:"affiliate_code,omitempty" url:"affiliate_code,omitempty"`
-	// The ID of the company to use for the checkout configuration
-	CompanyID string `json:"company_id" url:"company_id"`
 	// The currency to use for the configuration when in 'setup' mode. This is used to target which currency specific payment methods are available. If not provided, it will default to 'usd' when in setup mode.
 	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
 	// The unique identifier for the checkout session.
@@ -6660,18 +6660,18 @@ type CheckoutConfigurationListItem struct {
 	rawJSON         json.RawMessage
 }
 
+func (c *CheckoutConfigurationListItem) GetAccountID() string {
+	if c == nil {
+		return ""
+	}
+	return c.AccountID
+}
+
 func (c *CheckoutConfigurationListItem) GetAffiliateCode() *string {
 	if c == nil {
 		return nil
 	}
 	return c.AffiliateCode
-}
-
-func (c *CheckoutConfigurationListItem) GetCompanyID() string {
-	if c == nil {
-		return ""
-	}
-	return c.CompanyID
 }
 
 func (c *CheckoutConfigurationListItem) GetCurrency() *Currencies {
@@ -6744,18 +6744,18 @@ func (c *CheckoutConfigurationListItem) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationListItem) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(checkoutConfigurationListItemFieldAccountID)
+}
+
 // SetAffiliateCode sets the AffiliateCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CheckoutConfigurationListItem) SetAffiliateCode(affiliateCode *string) {
 	c.AffiliateCode = affiliateCode
 	c.require(checkoutConfigurationListItemFieldAffiliateCode)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutConfigurationListItem) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(checkoutConfigurationListItemFieldCompanyID)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;

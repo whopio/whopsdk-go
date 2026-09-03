@@ -12032,19 +12032,19 @@ func TestSettersMarkExplicitCheckoutConfiguration(t *testing.T) {
 }
 
 func TestSettersCheckoutConfigurationListItem(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &CheckoutConfigurationListItem{}
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAffiliateCode", func(t *testing.T) {
 		obj := &CheckoutConfigurationListItem{}
 		var fernTestValueAffiliateCode *string
 		obj.SetAffiliateCode(fernTestValueAffiliateCode)
 		assert.Equal(t, fernTestValueAffiliateCode, obj.AffiliateCode)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetCompanyID", func(t *testing.T) {
-		obj := &CheckoutConfigurationListItem{}
-		var fernTestValueCompanyID string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -12115,6 +12115,29 @@ func TestSettersCheckoutConfigurationListItem(t *testing.T) {
 }
 
 func TestGettersCheckoutConfigurationListItem(t *testing.T) {
+	t.Run("GetAccountID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CheckoutConfigurationListItem{}
+		var expected string
+		obj.AccountID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CheckoutConfigurationListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccountID() // Should return zero value
+	})
+
 	t.Run("GetAffiliateCode", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -12146,29 +12169,6 @@ func TestGettersCheckoutConfigurationListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAffiliateCode() // Should return zero value
-	})
-
-	t.Run("GetCompanyID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CheckoutConfigurationListItem{}
-		var expected string
-		obj.CompanyID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetCompanyID(), "getter should return the property value")
-	})
-
-	t.Run("GetCompanyID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CheckoutConfigurationListItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetCompanyID() // Should return zero value
 	})
 
 	t.Run("GetCurrency", func(t *testing.T) {
@@ -12408,14 +12408,14 @@ func TestGettersCheckoutConfigurationListItem(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCheckoutConfigurationListItem(t *testing.T) {
-	t.Run("SetAffiliateCode_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CheckoutConfigurationListItem{}
-		var fernTestValueAffiliateCode *string
+		var fernTestValueAccountID string
 
 		// Act
-		obj.SetAffiliateCode(fernTestValueAffiliateCode)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12439,14 +12439,14 @@ func TestSettersMarkExplicitCheckoutConfigurationListItem(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAffiliateCode_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CheckoutConfigurationListItem{}
-		var fernTestValueCompanyID string
+		var fernTestValueAffiliateCode *string
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetAffiliateCode(fernTestValueAffiliateCode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
