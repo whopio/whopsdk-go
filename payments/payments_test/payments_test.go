@@ -284,6 +284,32 @@ func TestPaymentsVoidWithWireMock(
 	VerifyRequestCount(t, "TestPaymentsVoidWithWireMock", "POST", "/payments/id/void", nil, 1)
 }
 
+func TestPaymentsResumeWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.ResumePaymentsRequest{
+		PaymentID: "payment_id",
+	}
+	_, invocationErr := client.Payments.Resume(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPaymentsResumeWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPaymentsResumeWithWireMock", "POST", "/payments/payment_id/resume", nil, 1)
+}
+
 func TestPaymentsUpdateReturnURLWithWireMock(
 	t *testing.T,
 ) {

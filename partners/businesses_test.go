@@ -3991,6 +3991,14 @@ func TestSettersListBusinessesResponseDataItemVolumeUsd(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetLast30D", func(t *testing.T) {
+		obj := &ListBusinessesResponseDataItemVolumeUsd{}
+		var fernTestValueLast30D string
+		obj.SetLast30D(fernTestValueLast30D)
+		assert.Equal(t, fernTestValueLast30D, obj.Last30D)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSettled", func(t *testing.T) {
 		obj := &ListBusinessesResponseDataItemVolumeUsd{}
 		var fernTestValueSettled string
@@ -4046,6 +4054,29 @@ func TestGettersListBusinessesResponseDataItemVolumeUsd(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAwaitingSettlement() // Should return zero value
+	})
+
+	t.Run("GetLast30D", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItemVolumeUsd{}
+		var expected string
+		obj.Last30D = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLast30D(), "getter should return the property value")
+	})
+
+	t.Run("GetLast30D_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListBusinessesResponseDataItemVolumeUsd
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLast30D() // Should return zero value
 	})
 
 	t.Run("GetSettled", func(t *testing.T) {
@@ -4113,6 +4144,37 @@ func TestSettersMarkExplicitListBusinessesResponseDataItemVolumeUsd(t *testing.T
 
 		// Act
 		obj.SetAwaitingSettlement(fernTestValueAwaitingSettlement)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLast30D_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItemVolumeUsd{}
+		var fernTestValueLast30D string
+
+		// Act
+		obj.SetLast30D(fernTestValueLast30D)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7931,6 +7993,14 @@ func TestSettersRetrieveBusinessesResponseVolumeUsd(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetLast30D", func(t *testing.T) {
+		obj := &RetrieveBusinessesResponseVolumeUsd{}
+		var fernTestValueLast30D string
+		obj.SetLast30D(fernTestValueLast30D)
+		assert.Equal(t, fernTestValueLast30D, obj.Last30D)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSettled", func(t *testing.T) {
 		obj := &RetrieveBusinessesResponseVolumeUsd{}
 		var fernTestValueSettled string
@@ -7986,6 +8056,29 @@ func TestGettersRetrieveBusinessesResponseVolumeUsd(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAwaitingSettlement() // Should return zero value
+	})
+
+	t.Run("GetLast30D", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponseVolumeUsd{}
+		var expected string
+		obj.Last30D = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLast30D(), "getter should return the property value")
+	})
+
+	t.Run("GetLast30D_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBusinessesResponseVolumeUsd
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLast30D() // Should return zero value
 	})
 
 	t.Run("GetSettled", func(t *testing.T) {
@@ -8053,6 +8146,37 @@ func TestSettersMarkExplicitRetrieveBusinessesResponseVolumeUsd(t *testing.T) {
 
 		// Act
 		obj.SetAwaitingSettlement(fernTestValueAwaitingSettlement)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLast30D_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponseVolumeUsd{}
+		var fernTestValueLast30D string
+
+		// Act
+		obj.SetLast30D(fernTestValueLast30D)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9544,6 +9668,13 @@ func TestEnumListBusinessesRequestOrder(t *testing.T) {
 		val, err := NewListBusinessesRequestOrderFromString("volume_usd")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListBusinessesRequestOrder("volume_usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_volume_30d_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListBusinessesRequestOrderFromString("volume_30d_usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListBusinessesRequestOrder("volume_30d_usd"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_earnings_usd", func(t *testing.T) {

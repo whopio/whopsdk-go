@@ -13224,6 +13224,41 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("withdrawal_topup_adjustment"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_deposit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("deposit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("deposit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet_transfer_incoming", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("wallet_transfer_incoming")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("wallet_transfer_incoming"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_wallet_transfer_outgoing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("wallet_transfer_outgoing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("wallet_transfer_outgoing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_swap_source", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("swap_source")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("swap_source"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_swap_target", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("swap_target")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("swap_target"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewLedgerActivityLineTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)

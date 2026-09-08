@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-2"
+		apiVersionDateDefault := "2026-09-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -291,6 +291,33 @@ func (c *Client) Void(
 	opts ...option.RequestOption,
 ) (*whopsdk.Payment, error) {
 	response, err := c.WithRawResponse.Void(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Starts a fresh on-session attempt with the saved card for a subscription renewal that is waiting on the customer to authenticate; the bank's step then arrives in `next_action` on the following status reads. Only the payment's own customer may call it — with the payment's `client_secret` or their own session — and it is a no-op for any payment that is not a parked renewal.
+//
+// Example:
+//
+//	request := &whopsdk.ResumePaymentsRequest{
+//	    PaymentID: "payment_id",
+//	}
+//	client.Payments.Resume(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Resume(
+	ctx context.Context,
+	request *whopsdk.ResumePaymentsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.PaymentStatus, error) {
+	response, err := c.WithRawResponse.Resume(
 		ctx,
 		request,
 		opts...,

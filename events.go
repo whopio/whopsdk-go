@@ -4132,6 +4132,7 @@ type ListEventsResponseDataItemRelatedAudienceSourceType string
 const (
 	ListEventsResponseDataItemRelatedAudienceSourceTypeCsvUpload    ListEventsResponseDataItemRelatedAudienceSourceType = "csv_upload"
 	ListEventsResponseDataItemRelatedAudienceSourceTypePeopleFilter ListEventsResponseDataItemRelatedAudienceSourceType = "people_filter"
+	ListEventsResponseDataItemRelatedAudienceSourceTypeEngagement   ListEventsResponseDataItemRelatedAudienceSourceType = "engagement"
 )
 
 func NewListEventsResponseDataItemRelatedAudienceSourceTypeFromString(s string) (ListEventsResponseDataItemRelatedAudienceSourceType, error) {
@@ -4140,6 +4141,8 @@ func NewListEventsResponseDataItemRelatedAudienceSourceTypeFromString(s string) 
 		return ListEventsResponseDataItemRelatedAudienceSourceTypeCsvUpload, nil
 	case "people_filter":
 		return ListEventsResponseDataItemRelatedAudienceSourceTypePeopleFilter, nil
+	case "engagement":
+		return ListEventsResponseDataItemRelatedAudienceSourceTypeEngagement, nil
 	}
 	var t ListEventsResponseDataItemRelatedAudienceSourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

@@ -2050,17 +2050,18 @@ func (a *AccountRequiredAction) String() string {
 type AccountRequiredActionAction string
 
 const (
-	AccountRequiredActionActionDepositFunds              AccountRequiredActionAction = "deposit_funds"
-	AccountRequiredActionActionSubmitInformationRequest  AccountRequiredActionAction = "submit_information_request"
-	AccountRequiredActionActionReauthorizePayoutMethods  AccountRequiredActionAction = "reauthorize_payout_methods"
-	AccountRequiredActionActionUpdatePayoutProfile       AccountRequiredActionAction = "update_payout_profile"
-	AccountRequiredActionActionCardUsageReview           AccountRequiredActionAction = "card_usage_review"
-	AccountRequiredActionActionVerifyIdentity            AccountRequiredActionAction = "verify_identity"
-	AccountRequiredActionActionSignFormationDocuments    AccountRequiredActionAction = "sign_formation_documents"
-	AccountRequiredActionActionConnectFulfillmentTracker AccountRequiredActionAction = "connect_fulfillment_tracker"
-	AccountRequiredActionActionSetupApplePayDomains      AccountRequiredActionAction = "setup_apple_pay_domains"
-	AccountRequiredActionActionConfigureTaxRemitter      AccountRequiredActionAction = "configure_tax_remitter"
-	AccountRequiredActionActionAddVatRegistration        AccountRequiredActionAction = "add_vat_registration"
+	AccountRequiredActionActionDepositFunds                    AccountRequiredActionAction = "deposit_funds"
+	AccountRequiredActionActionSubmitInformationRequest        AccountRequiredActionAction = "submit_information_request"
+	AccountRequiredActionActionUpdateAutomaticWithdrawalMethod AccountRequiredActionAction = "update_automatic_withdrawal_method"
+	AccountRequiredActionActionReauthorizePayoutMethods        AccountRequiredActionAction = "reauthorize_payout_methods"
+	AccountRequiredActionActionUpdatePayoutProfile             AccountRequiredActionAction = "update_payout_profile"
+	AccountRequiredActionActionCardUsageReview                 AccountRequiredActionAction = "card_usage_review"
+	AccountRequiredActionActionVerifyIdentity                  AccountRequiredActionAction = "verify_identity"
+	AccountRequiredActionActionSignFormationDocuments          AccountRequiredActionAction = "sign_formation_documents"
+	AccountRequiredActionActionConnectFulfillmentTracker       AccountRequiredActionAction = "connect_fulfillment_tracker"
+	AccountRequiredActionActionSetupApplePayDomains            AccountRequiredActionAction = "setup_apple_pay_domains"
+	AccountRequiredActionActionConfigureTaxRemitter            AccountRequiredActionAction = "configure_tax_remitter"
+	AccountRequiredActionActionAddVatRegistration              AccountRequiredActionAction = "add_vat_registration"
 )
 
 func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAction, error) {
@@ -2069,6 +2070,8 @@ func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAc
 		return AccountRequiredActionActionDepositFunds, nil
 	case "submit_information_request":
 		return AccountRequiredActionActionSubmitInformationRequest, nil
+	case "update_automatic_withdrawal_method":
+		return AccountRequiredActionActionUpdateAutomaticWithdrawalMethod, nil
 	case "reauthorize_payout_methods":
 		return AccountRequiredActionActionReauthorizePayoutMethods, nil
 	case "update_payout_profile":
@@ -4752,41 +4755,6 @@ func (b *BadRequestErrorBodyError) String() string {
 	return fmt.Sprintf("%#v", b)
 }
 
-// The reason why a specific payment was billed
-type BillingReasons string
-
-const (
-	BillingReasonsSubscriptionCreate BillingReasons = "subscription_create"
-	BillingReasonsSubscriptionCycle  BillingReasons = "subscription_cycle"
-	BillingReasonsSubscriptionUpdate BillingReasons = "subscription_update"
-	BillingReasonsOneTime            BillingReasons = "one_time"
-	BillingReasonsManual             BillingReasons = "manual"
-	BillingReasonsSubscription       BillingReasons = "subscription"
-)
-
-func NewBillingReasonsFromString(s string) (BillingReasons, error) {
-	switch s {
-	case "subscription_create":
-		return BillingReasonsSubscriptionCreate, nil
-	case "subscription_cycle":
-		return BillingReasonsSubscriptionCycle, nil
-	case "subscription_update":
-		return BillingReasonsSubscriptionUpdate, nil
-	case "one_time":
-		return BillingReasonsOneTime, nil
-	case "manual":
-		return BillingReasonsManual, nil
-	case "subscription":
-		return BillingReasonsSubscription, nil
-	}
-	var t BillingReasons
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (b BillingReasons) Ptr() *BillingReasons {
-	return &b
-}
-
 var (
 	bountySubmissionLivestreamFeedFieldEndedAt         = big.NewInt(1 << 0)
 	bountySubmissionLivestreamFeedFieldID              = big.NewInt(1 << 1)
@@ -5065,6 +5033,70 @@ func NewBusinessGoalTypesFromString(s string) (BusinessGoalTypes, error) {
 
 func (b BusinessGoalTypes) Ptr() *BusinessGoalTypes {
 	return &b
+}
+
+// The different reasons a user can choose for why they are canceling their membership.
+type CancelOptions string
+
+const (
+	CancelOptionsTooExpensive    CancelOptions = "too_expensive"
+	CancelOptionsSwitching       CancelOptions = "switching"
+	CancelOptionsMissingFeatures CancelOptions = "missing_features"
+	CancelOptionsTechnicalIssues CancelOptions = "technical_issues"
+	CancelOptionsBadExperience   CancelOptions = "bad_experience"
+	CancelOptionsOther           CancelOptions = "other"
+	CancelOptionsTesting         CancelOptions = "testing"
+)
+
+func NewCancelOptionsFromString(s string) (CancelOptions, error) {
+	switch s {
+	case "too_expensive":
+		return CancelOptionsTooExpensive, nil
+	case "switching":
+		return CancelOptionsSwitching, nil
+	case "missing_features":
+		return CancelOptionsMissingFeatures, nil
+	case "technical_issues":
+		return CancelOptionsTechnicalIssues, nil
+	case "bad_experience":
+		return CancelOptionsBadExperience, nil
+	case "other":
+		return CancelOptionsOther, nil
+	case "testing":
+		return CancelOptionsTesting, nil
+	}
+	var t CancelOptions
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelOptions) Ptr() *CancelOptions {
+	return &c
+}
+
+// The state of a membership after a customer provides a cancelation reason.
+type CancelationStatus string
+
+const (
+	CancelationStatusWonBack   CancelationStatus = "won_back"
+	CancelationStatusLeft      CancelationStatus = "left"
+	CancelationStatusCanceling CancelationStatus = "canceling"
+)
+
+func NewCancelationStatusFromString(s string) (CancelationStatus, error) {
+	switch s {
+	case "won_back":
+		return CancelationStatusWonBack, nil
+	case "left":
+		return CancelationStatusLeft, nil
+	case "canceling":
+		return CancelationStatusCanceling, nil
+	}
+	var t CancelationStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelationStatus) Ptr() *CancelationStatus {
+	return &c
 }
 
 // Possible card brands that a payment token can have
@@ -6621,14 +6653,15 @@ func (c CheckoutConfigurationCurrency) Ptr() *CheckoutConfigurationCurrency {
 var (
 	checkoutConfigurationListItemFieldAccountID                  = big.NewInt(1 << 0)
 	checkoutConfigurationListItemFieldAffiliateCode              = big.NewInt(1 << 1)
-	checkoutConfigurationListItemFieldCurrency                   = big.NewInt(1 << 2)
-	checkoutConfigurationListItemFieldID                         = big.NewInt(1 << 3)
-	checkoutConfigurationListItemFieldMetadata                   = big.NewInt(1 << 4)
-	checkoutConfigurationListItemFieldMode                       = big.NewInt(1 << 5)
-	checkoutConfigurationListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 6)
-	checkoutConfigurationListItemFieldPlan                       = big.NewInt(1 << 7)
-	checkoutConfigurationListItemFieldPurchaseURL                = big.NewInt(1 << 8)
-	checkoutConfigurationListItemFieldRedirectURL                = big.NewInt(1 << 9)
+	checkoutConfigurationListItemFieldCompanyID                  = big.NewInt(1 << 2)
+	checkoutConfigurationListItemFieldCurrency                   = big.NewInt(1 << 3)
+	checkoutConfigurationListItemFieldID                         = big.NewInt(1 << 4)
+	checkoutConfigurationListItemFieldMetadata                   = big.NewInt(1 << 5)
+	checkoutConfigurationListItemFieldMode                       = big.NewInt(1 << 6)
+	checkoutConfigurationListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 7)
+	checkoutConfigurationListItemFieldPlan                       = big.NewInt(1 << 8)
+	checkoutConfigurationListItemFieldPurchaseURL                = big.NewInt(1 << 9)
+	checkoutConfigurationListItemFieldRedirectURL                = big.NewInt(1 << 10)
 )
 
 type CheckoutConfigurationListItem struct {
@@ -6636,6 +6669,8 @@ type CheckoutConfigurationListItem struct {
 	AccountID string `json:"account_id" url:"account_id"`
 	// The affiliate code to use for the checkout configuration
 	AffiliateCode *string `json:"affiliate_code,omitempty" url:"affiliate_code,omitempty"`
+	// The ID of the account to use for the checkout configuration
+	CompanyID string `json:"company_id" url:"company_id"`
 	// The currency to use for the configuration when in 'setup' mode. This is used to target which currency specific payment methods are available. If not provided, it will default to 'usd' when in setup mode.
 	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
 	// The unique identifier for the checkout session.
@@ -6672,6 +6707,13 @@ func (c *CheckoutConfigurationListItem) GetAffiliateCode() *string {
 		return nil
 	}
 	return c.AffiliateCode
+}
+
+func (c *CheckoutConfigurationListItem) GetCompanyID() string {
+	if c == nil {
+		return ""
+	}
+	return c.CompanyID
 }
 
 func (c *CheckoutConfigurationListItem) GetCurrency() *Currencies {
@@ -6756,6 +6798,13 @@ func (c *CheckoutConfigurationListItem) SetAccountID(accountID string) {
 func (c *CheckoutConfigurationListItem) SetAffiliateCode(affiliateCode *string) {
 	c.AffiliateCode = affiliateCode
 	c.require(checkoutConfigurationListItemFieldAffiliateCode)
+}
+
+// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckoutConfigurationListItem) SetCompanyID(companyID string) {
+	c.CompanyID = companyID
+	c.require(checkoutConfigurationListItemFieldCompanyID)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -9636,6 +9685,2601 @@ func (d DisputeAlertTypes) Ptr() *DisputeAlertTypes {
 
 // A dispute is a chargeback or payment challenge filed against a company, including evidence and response status.
 var (
+	disputeLegacyFieldAccessActivityLog               = big.NewInt(1 << 0)
+	disputeLegacyFieldAmount                          = big.NewInt(1 << 1)
+	disputeLegacyFieldBillingAddress                  = big.NewInt(1 << 2)
+	disputeLegacyFieldCancellationPolicyAttachment    = big.NewInt(1 << 3)
+	disputeLegacyFieldCancellationPolicyDisclosure    = big.NewInt(1 << 4)
+	disputeLegacyFieldCompany                         = big.NewInt(1 << 5)
+	disputeLegacyFieldCreatedAt                       = big.NewInt(1 << 6)
+	disputeLegacyFieldCurrency                        = big.NewInt(1 << 7)
+	disputeLegacyFieldCustomerCommunicationAttachment = big.NewInt(1 << 8)
+	disputeLegacyFieldCustomerEmailAddress            = big.NewInt(1 << 9)
+	disputeLegacyFieldCustomerName                    = big.NewInt(1 << 10)
+	disputeLegacyFieldEditable                        = big.NewInt(1 << 11)
+	disputeLegacyFieldID                              = big.NewInt(1 << 12)
+	disputeLegacyFieldNeedsResponseBy                 = big.NewInt(1 << 13)
+	disputeLegacyFieldNotes                           = big.NewInt(1 << 14)
+	disputeLegacyFieldPayment                         = big.NewInt(1 << 15)
+	disputeLegacyFieldPlan                            = big.NewInt(1 << 16)
+	disputeLegacyFieldProduct                         = big.NewInt(1 << 17)
+	disputeLegacyFieldProductDescription              = big.NewInt(1 << 18)
+	disputeLegacyFieldReason                          = big.NewInt(1 << 19)
+	disputeLegacyFieldReasonCode                      = big.NewInt(1 << 20)
+	disputeLegacyFieldRefundPolicyAttachment          = big.NewInt(1 << 21)
+	disputeLegacyFieldRefundPolicyDisclosure          = big.NewInt(1 << 22)
+	disputeLegacyFieldRefundRefusalExplanation        = big.NewInt(1 << 23)
+	disputeLegacyFieldServiceDate                     = big.NewInt(1 << 24)
+	disputeLegacyFieldStatus                          = big.NewInt(1 << 25)
+	disputeLegacyFieldUncategorizedAttachment         = big.NewInt(1 << 26)
+	disputeLegacyFieldVisaRdr                         = big.NewInt(1 << 27)
+)
+
+type DisputeLegacy struct {
+	// A log of IP-based access activity for the customer on Whop, submitted as evidence in the dispute.
+	AccessActivityLog *string `json:"access_activity_log,omitempty" url:"access_activity_log,omitempty"`
+	// The disputed amount in the specified currency, formatted as a decimal.
+	Amount float64 `json:"amount" url:"amount"`
+	// The customer's billing address from their payment details, submitted as evidence in the dispute.
+	BillingAddress *string `json:"billing_address,omitempty" url:"billing_address,omitempty"`
+	// The cancellation policy document uploaded as dispute evidence. Null if no cancellation policy has been provided.
+	CancellationPolicyAttachment *DisputeLegacyCancellationPolicyAttachment `json:"cancellation_policy_attachment,omitempty" url:"cancellation_policy_attachment,omitempty"`
+	// A text disclosure describing the company's cancellation policy, submitted as dispute evidence.
+	CancellationPolicyDisclosure *string `json:"cancellation_policy_disclosure,omitempty" url:"cancellation_policy_disclosure,omitempty"`
+	// The company that the dispute was filed against.
+	Company *DisputeLegacyCompany `json:"company,omitempty" url:"company,omitempty"`
+	// The datetime the dispute was created.
+	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// The three-letter ISO currency code for the disputed amount.
+	Currency Currencies `json:"currency" url:"currency"`
+	// Evidence of customer communication or product usage, uploaded as a dispute attachment. Null if not provided.
+	CustomerCommunicationAttachment *DisputeLegacyCustomerCommunicationAttachment `json:"customer_communication_attachment,omitempty" url:"customer_communication_attachment,omitempty"`
+	// The customer's email address from their payment details, included in the evidence packet sent to the payment processor. Editable before submission.
+	CustomerEmailAddress *string `json:"customer_email_address,omitempty" url:"customer_email_address,omitempty"`
+	// The customer's full name from their payment details, included in the evidence packet sent to the payment processor. Editable before submission.
+	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
+	// Whether the dispute evidence can still be edited and submitted.
+	Editable *bool `json:"editable,omitempty" url:"editable,omitempty"`
+	// The unique identifier for the dispute.
+	ID string `json:"id" url:"id"`
+	// The deadline by which dispute evidence must be submitted. Null if no response deadline is set.
+	NeedsResponseBy *time.Time `json:"needs_response_by,omitempty" url:"needs_response_by,omitempty"`
+	// Additional freeform notes submitted by the company as part of the dispute evidence.
+	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
+	// The original payment that was disputed.
+	Payment *DisputeLegacyPayment `json:"payment,omitempty" url:"payment,omitempty"`
+	// The plan associated with the disputed payment. Null if the dispute is not linked to a specific plan.
+	Plan *DisputeLegacyPlan `json:"plan,omitempty" url:"plan,omitempty"`
+	// The product associated with the disputed payment. Null if the dispute is not linked to a specific product.
+	Product *DisputeLegacyProduct `json:"product,omitempty" url:"product,omitempty"`
+	// A description of the product or service provided, submitted as dispute evidence.
+	ProductDescription *string `json:"product_description,omitempty" url:"product_description,omitempty"`
+	// A human-readable reason for the dispute.
+	Reason *string `json:"reason,omitempty" url:"reason,omitempty"`
+	// The card network reason code for the dispute. Null when the payment processor did not provide one.
+	ReasonCode *string `json:"reason_code,omitempty" url:"reason_code,omitempty"`
+	// The refund policy document uploaded as dispute evidence. Null if no refund policy has been provided.
+	RefundPolicyAttachment *DisputeLegacyRefundPolicyAttachment `json:"refund_policy_attachment,omitempty" url:"refund_policy_attachment,omitempty"`
+	// A text disclosure describing the company's refund policy, submitted as dispute evidence.
+	RefundPolicyDisclosure *string `json:"refund_policy_disclosure,omitempty" url:"refund_policy_disclosure,omitempty"`
+	// An explanation from the company for why a refund was refused, submitted as dispute evidence.
+	RefundRefusalExplanation *string `json:"refund_refusal_explanation,omitempty" url:"refund_refusal_explanation,omitempty"`
+	// The date when the product or service was delivered to the customer, submitted as dispute evidence.
+	ServiceDate *string `json:"service_date,omitempty" url:"service_date,omitempty"`
+	// The current status of the dispute lifecycle, such as needs_response, under_review, won, or lost.
+	Status DisputeStatuses `json:"status" url:"status"`
+	// An additional attachment that does not fit into the standard evidence categories. Null if not provided.
+	UncategorizedAttachment *DisputeLegacyUncategorizedAttachment `json:"uncategorized_attachment,omitempty" url:"uncategorized_attachment,omitempty"`
+	// Whether the dispute was automatically resolved through Visa Rapid Dispute Resolution (RDR).
+	VisaRdr bool `json:"visa_rdr" url:"visa_rdr"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacy) GetAccessActivityLog() *string {
+	if d == nil {
+		return nil
+	}
+	return d.AccessActivityLog
+}
+
+func (d *DisputeLegacy) GetAmount() float64 {
+	if d == nil {
+		return 0
+	}
+	return d.Amount
+}
+
+func (d *DisputeLegacy) GetBillingAddress() *string {
+	if d == nil {
+		return nil
+	}
+	return d.BillingAddress
+}
+
+func (d *DisputeLegacy) GetCancellationPolicyAttachment() *DisputeLegacyCancellationPolicyAttachment {
+	if d == nil {
+		return nil
+	}
+	return d.CancellationPolicyAttachment
+}
+
+func (d *DisputeLegacy) GetCancellationPolicyDisclosure() *string {
+	if d == nil {
+		return nil
+	}
+	return d.CancellationPolicyDisclosure
+}
+
+func (d *DisputeLegacy) GetCompany() *DisputeLegacyCompany {
+	if d == nil {
+		return nil
+	}
+	return d.Company
+}
+
+func (d *DisputeLegacy) GetCreatedAt() *time.Time {
+	if d == nil {
+		return nil
+	}
+	return d.CreatedAt
+}
+
+func (d *DisputeLegacy) GetCurrency() Currencies {
+	if d == nil {
+		return ""
+	}
+	return d.Currency
+}
+
+func (d *DisputeLegacy) GetCustomerCommunicationAttachment() *DisputeLegacyCustomerCommunicationAttachment {
+	if d == nil {
+		return nil
+	}
+	return d.CustomerCommunicationAttachment
+}
+
+func (d *DisputeLegacy) GetCustomerEmailAddress() *string {
+	if d == nil {
+		return nil
+	}
+	return d.CustomerEmailAddress
+}
+
+func (d *DisputeLegacy) GetCustomerName() *string {
+	if d == nil {
+		return nil
+	}
+	return d.CustomerName
+}
+
+func (d *DisputeLegacy) GetEditable() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Editable
+}
+
+func (d *DisputeLegacy) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacy) GetNeedsResponseBy() *time.Time {
+	if d == nil {
+		return nil
+	}
+	return d.NeedsResponseBy
+}
+
+func (d *DisputeLegacy) GetNotes() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Notes
+}
+
+func (d *DisputeLegacy) GetPayment() *DisputeLegacyPayment {
+	if d == nil {
+		return nil
+	}
+	return d.Payment
+}
+
+func (d *DisputeLegacy) GetPlan() *DisputeLegacyPlan {
+	if d == nil {
+		return nil
+	}
+	return d.Plan
+}
+
+func (d *DisputeLegacy) GetProduct() *DisputeLegacyProduct {
+	if d == nil {
+		return nil
+	}
+	return d.Product
+}
+
+func (d *DisputeLegacy) GetProductDescription() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ProductDescription
+}
+
+func (d *DisputeLegacy) GetReason() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Reason
+}
+
+func (d *DisputeLegacy) GetReasonCode() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ReasonCode
+}
+
+func (d *DisputeLegacy) GetRefundPolicyAttachment() *DisputeLegacyRefundPolicyAttachment {
+	if d == nil {
+		return nil
+	}
+	return d.RefundPolicyAttachment
+}
+
+func (d *DisputeLegacy) GetRefundPolicyDisclosure() *string {
+	if d == nil {
+		return nil
+	}
+	return d.RefundPolicyDisclosure
+}
+
+func (d *DisputeLegacy) GetRefundRefusalExplanation() *string {
+	if d == nil {
+		return nil
+	}
+	return d.RefundRefusalExplanation
+}
+
+func (d *DisputeLegacy) GetServiceDate() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ServiceDate
+}
+
+func (d *DisputeLegacy) GetStatus() DisputeStatuses {
+	if d == nil {
+		return ""
+	}
+	return d.Status
+}
+
+func (d *DisputeLegacy) GetUncategorizedAttachment() *DisputeLegacyUncategorizedAttachment {
+	if d == nil {
+		return nil
+	}
+	return d.UncategorizedAttachment
+}
+
+func (d *DisputeLegacy) GetVisaRdr() bool {
+	if d == nil {
+		return false
+	}
+	return d.VisaRdr
+}
+
+func (d *DisputeLegacy) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacy) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetAccessActivityLog sets the AccessActivityLog field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetAccessActivityLog(accessActivityLog *string) {
+	d.AccessActivityLog = accessActivityLog
+	d.require(disputeLegacyFieldAccessActivityLog)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetAmount(amount float64) {
+	d.Amount = amount
+	d.require(disputeLegacyFieldAmount)
+}
+
+// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetBillingAddress(billingAddress *string) {
+	d.BillingAddress = billingAddress
+	d.require(disputeLegacyFieldBillingAddress)
+}
+
+// SetCancellationPolicyAttachment sets the CancellationPolicyAttachment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetCancellationPolicyAttachment(cancellationPolicyAttachment *DisputeLegacyCancellationPolicyAttachment) {
+	d.CancellationPolicyAttachment = cancellationPolicyAttachment
+	d.require(disputeLegacyFieldCancellationPolicyAttachment)
+}
+
+// SetCancellationPolicyDisclosure sets the CancellationPolicyDisclosure field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetCancellationPolicyDisclosure(cancellationPolicyDisclosure *string) {
+	d.CancellationPolicyDisclosure = cancellationPolicyDisclosure
+	d.require(disputeLegacyFieldCancellationPolicyDisclosure)
+}
+
+// SetCompany sets the Company field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetCompany(company *DisputeLegacyCompany) {
+	d.Company = company
+	d.require(disputeLegacyFieldCompany)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetCreatedAt(createdAt *time.Time) {
+	d.CreatedAt = createdAt
+	d.require(disputeLegacyFieldCreatedAt)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetCurrency(currency Currencies) {
+	d.Currency = currency
+	d.require(disputeLegacyFieldCurrency)
+}
+
+// SetCustomerCommunicationAttachment sets the CustomerCommunicationAttachment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetCustomerCommunicationAttachment(customerCommunicationAttachment *DisputeLegacyCustomerCommunicationAttachment) {
+	d.CustomerCommunicationAttachment = customerCommunicationAttachment
+	d.require(disputeLegacyFieldCustomerCommunicationAttachment)
+}
+
+// SetCustomerEmailAddress sets the CustomerEmailAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetCustomerEmailAddress(customerEmailAddress *string) {
+	d.CustomerEmailAddress = customerEmailAddress
+	d.require(disputeLegacyFieldCustomerEmailAddress)
+}
+
+// SetCustomerName sets the CustomerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetCustomerName(customerName *string) {
+	d.CustomerName = customerName
+	d.require(disputeLegacyFieldCustomerName)
+}
+
+// SetEditable sets the Editable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetEditable(editable *bool) {
+	d.Editable = editable
+	d.require(disputeLegacyFieldEditable)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyFieldID)
+}
+
+// SetNeedsResponseBy sets the NeedsResponseBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetNeedsResponseBy(needsResponseBy *time.Time) {
+	d.NeedsResponseBy = needsResponseBy
+	d.require(disputeLegacyFieldNeedsResponseBy)
+}
+
+// SetNotes sets the Notes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetNotes(notes *string) {
+	d.Notes = notes
+	d.require(disputeLegacyFieldNotes)
+}
+
+// SetPayment sets the Payment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetPayment(payment *DisputeLegacyPayment) {
+	d.Payment = payment
+	d.require(disputeLegacyFieldPayment)
+}
+
+// SetPlan sets the Plan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetPlan(plan *DisputeLegacyPlan) {
+	d.Plan = plan
+	d.require(disputeLegacyFieldPlan)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetProduct(product *DisputeLegacyProduct) {
+	d.Product = product
+	d.require(disputeLegacyFieldProduct)
+}
+
+// SetProductDescription sets the ProductDescription field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetProductDescription(productDescription *string) {
+	d.ProductDescription = productDescription
+	d.require(disputeLegacyFieldProductDescription)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetReason(reason *string) {
+	d.Reason = reason
+	d.require(disputeLegacyFieldReason)
+}
+
+// SetReasonCode sets the ReasonCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetReasonCode(reasonCode *string) {
+	d.ReasonCode = reasonCode
+	d.require(disputeLegacyFieldReasonCode)
+}
+
+// SetRefundPolicyAttachment sets the RefundPolicyAttachment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetRefundPolicyAttachment(refundPolicyAttachment *DisputeLegacyRefundPolicyAttachment) {
+	d.RefundPolicyAttachment = refundPolicyAttachment
+	d.require(disputeLegacyFieldRefundPolicyAttachment)
+}
+
+// SetRefundPolicyDisclosure sets the RefundPolicyDisclosure field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetRefundPolicyDisclosure(refundPolicyDisclosure *string) {
+	d.RefundPolicyDisclosure = refundPolicyDisclosure
+	d.require(disputeLegacyFieldRefundPolicyDisclosure)
+}
+
+// SetRefundRefusalExplanation sets the RefundRefusalExplanation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetRefundRefusalExplanation(refundRefusalExplanation *string) {
+	d.RefundRefusalExplanation = refundRefusalExplanation
+	d.require(disputeLegacyFieldRefundRefusalExplanation)
+}
+
+// SetServiceDate sets the ServiceDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetServiceDate(serviceDate *string) {
+	d.ServiceDate = serviceDate
+	d.require(disputeLegacyFieldServiceDate)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetStatus(status DisputeStatuses) {
+	d.Status = status
+	d.require(disputeLegacyFieldStatus)
+}
+
+// SetUncategorizedAttachment sets the UncategorizedAttachment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetUncategorizedAttachment(uncategorizedAttachment *DisputeLegacyUncategorizedAttachment) {
+	d.UncategorizedAttachment = uncategorizedAttachment
+	d.require(disputeLegacyFieldUncategorizedAttachment)
+}
+
+// SetVisaRdr sets the VisaRdr field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacy) SetVisaRdr(visaRdr bool) {
+	d.VisaRdr = visaRdr
+	d.require(disputeLegacyFieldVisaRdr)
+}
+
+func (d *DisputeLegacy) UnmarshalJSON(data []byte) error {
+	type embed DisputeLegacy
+	var unmarshaler = struct {
+		embed
+		CreatedAt       *internal.DateTime `json:"created_at,omitempty"`
+		NeedsResponseBy *internal.DateTime `json:"needs_response_by,omitempty"`
+	}{
+		embed: embed(*d),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*d = DisputeLegacy(unmarshaler.embed)
+	d.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	d.NeedsResponseBy = unmarshaler.NeedsResponseBy.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacy) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacy
+	var marshaler = struct {
+		embed
+		CreatedAt       *internal.DateTime `json:"created_at,omitempty"`
+		NeedsResponseBy *internal.DateTime `json:"needs_response_by,omitempty"`
+	}{
+		embed:           embed(*d),
+		CreatedAt:       internal.NewOptionalDateTime(d.CreatedAt),
+		NeedsResponseBy: internal.NewOptionalDateTime(d.NeedsResponseBy),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacy) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The cancellation policy document uploaded as dispute evidence. Null if no cancellation policy has been provided.
+var (
+	disputeLegacyCancellationPolicyAttachmentFieldContentType = big.NewInt(1 << 0)
+	disputeLegacyCancellationPolicyAttachmentFieldFilename    = big.NewInt(1 << 1)
+	disputeLegacyCancellationPolicyAttachmentFieldID          = big.NewInt(1 << 2)
+	disputeLegacyCancellationPolicyAttachmentFieldURL         = big.NewInt(1 << 3)
+)
+
+type DisputeLegacyCancellationPolicyAttachment struct {
+	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
+	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
+	// The original filename of the uploaded attachment, including its file extension.
+	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
+	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
+	ID string `json:"id" url:"id"`
+	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyCancellationPolicyAttachment) GetContentType() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ContentType
+}
+
+func (d *DisputeLegacyCancellationPolicyAttachment) GetFilename() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Filename
+}
+
+func (d *DisputeLegacyCancellationPolicyAttachment) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyCancellationPolicyAttachment) GetURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.URL
+}
+
+func (d *DisputeLegacyCancellationPolicyAttachment) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyCancellationPolicyAttachment) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyCancellationPolicyAttachment) SetContentType(contentType *string) {
+	d.ContentType = contentType
+	d.require(disputeLegacyCancellationPolicyAttachmentFieldContentType)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyCancellationPolicyAttachment) SetFilename(filename *string) {
+	d.Filename = filename
+	d.require(disputeLegacyCancellationPolicyAttachmentFieldFilename)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyCancellationPolicyAttachment) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyCancellationPolicyAttachmentFieldID)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyCancellationPolicyAttachment) SetURL(url *string) {
+	d.URL = url
+	d.require(disputeLegacyCancellationPolicyAttachmentFieldURL)
+}
+
+func (d *DisputeLegacyCancellationPolicyAttachment) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyCancellationPolicyAttachment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyCancellationPolicyAttachment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyCancellationPolicyAttachment) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyCancellationPolicyAttachment
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyCancellationPolicyAttachment) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The company that the dispute was filed against.
+var (
+	disputeLegacyCompanyFieldID    = big.NewInt(1 << 0)
+	disputeLegacyCompanyFieldTitle = big.NewInt(1 << 1)
+)
+
+type DisputeLegacyCompany struct {
+	// The unique identifier for the company.
+	ID string `json:"id" url:"id"`
+	// The written name of the company.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyCompany) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyCompany) GetTitle() string {
+	if d == nil {
+		return ""
+	}
+	return d.Title
+}
+
+func (d *DisputeLegacyCompany) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyCompany) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyCompany) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyCompanyFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyCompany) SetTitle(title string) {
+	d.Title = title
+	d.require(disputeLegacyCompanyFieldTitle)
+}
+
+func (d *DisputeLegacyCompany) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyCompany
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyCompany(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyCompany) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyCompany
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyCompany) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// Evidence of customer communication or product usage, uploaded as a dispute attachment. Null if not provided.
+var (
+	disputeLegacyCustomerCommunicationAttachmentFieldContentType = big.NewInt(1 << 0)
+	disputeLegacyCustomerCommunicationAttachmentFieldFilename    = big.NewInt(1 << 1)
+	disputeLegacyCustomerCommunicationAttachmentFieldID          = big.NewInt(1 << 2)
+	disputeLegacyCustomerCommunicationAttachmentFieldURL         = big.NewInt(1 << 3)
+)
+
+type DisputeLegacyCustomerCommunicationAttachment struct {
+	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
+	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
+	// The original filename of the uploaded attachment, including its file extension.
+	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
+	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
+	ID string `json:"id" url:"id"`
+	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyCustomerCommunicationAttachment) GetContentType() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ContentType
+}
+
+func (d *DisputeLegacyCustomerCommunicationAttachment) GetFilename() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Filename
+}
+
+func (d *DisputeLegacyCustomerCommunicationAttachment) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyCustomerCommunicationAttachment) GetURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.URL
+}
+
+func (d *DisputeLegacyCustomerCommunicationAttachment) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyCustomerCommunicationAttachment) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyCustomerCommunicationAttachment) SetContentType(contentType *string) {
+	d.ContentType = contentType
+	d.require(disputeLegacyCustomerCommunicationAttachmentFieldContentType)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyCustomerCommunicationAttachment) SetFilename(filename *string) {
+	d.Filename = filename
+	d.require(disputeLegacyCustomerCommunicationAttachmentFieldFilename)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyCustomerCommunicationAttachment) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyCustomerCommunicationAttachmentFieldID)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyCustomerCommunicationAttachment) SetURL(url *string) {
+	d.URL = url
+	d.require(disputeLegacyCustomerCommunicationAttachmentFieldURL)
+}
+
+func (d *DisputeLegacyCustomerCommunicationAttachment) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyCustomerCommunicationAttachment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyCustomerCommunicationAttachment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyCustomerCommunicationAttachment) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyCustomerCommunicationAttachment
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyCustomerCommunicationAttachment) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The original payment that was disputed.
+var (
+	disputeLegacyPaymentFieldBillingReason     = big.NewInt(1 << 0)
+	disputeLegacyPaymentFieldCardBrand         = big.NewInt(1 << 1)
+	disputeLegacyPaymentFieldCardLast4         = big.NewInt(1 << 2)
+	disputeLegacyPaymentFieldCreatedAt         = big.NewInt(1 << 3)
+	disputeLegacyPaymentFieldCurrency          = big.NewInt(1 << 4)
+	disputeLegacyPaymentFieldDisputeAlertedAt  = big.NewInt(1 << 5)
+	disputeLegacyPaymentFieldID                = big.NewInt(1 << 6)
+	disputeLegacyPaymentFieldMember            = big.NewInt(1 << 7)
+	disputeLegacyPaymentFieldMembership        = big.NewInt(1 << 8)
+	disputeLegacyPaymentFieldPaidAt            = big.NewInt(1 << 9)
+	disputeLegacyPaymentFieldPaymentInstrument = big.NewInt(1 << 10)
+	disputeLegacyPaymentFieldPaymentMethodType = big.NewInt(1 << 11)
+	disputeLegacyPaymentFieldSubtotal          = big.NewInt(1 << 12)
+	disputeLegacyPaymentFieldTotal             = big.NewInt(1 << 13)
+	disputeLegacyPaymentFieldUsdTotal          = big.NewInt(1 << 14)
+	disputeLegacyPaymentFieldUser              = big.NewInt(1 << 15)
+)
+
+type DisputeLegacyPayment struct {
+	// The machine-readable reason this charge was created, such as initial subscription purchase, renewal cycle, or one-time payment.
+	BillingReason *BillingReasons `json:"billing_reason,omitempty" url:"billing_reason,omitempty"`
+	// Card network reported by the processor (e.g., 'visa', 'mastercard', 'amex'). Present only when the payment method type is 'card'.
+	CardBrand *CardBrands `json:"card_brand,omitempty" url:"card_brand,omitempty"`
+	// The last four digits of the card used to make this payment. Null if the payment was not made with a card.
+	CardLast4 *string `json:"card_last4,omitempty" url:"card_last4,omitempty"`
+	// The datetime the payment was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
+	Currency Currencies `json:"currency" url:"currency"`
+	// When an alert came in that this transaction will be disputed
+	DisputeAlertedAt *time.Time `json:"dispute_alerted_at,omitempty" url:"dispute_alerted_at,omitempty"`
+	// The unique identifier for the payment.
+	ID string `json:"id" url:"id"`
+	// The member attached to this payment.
+	Member *DisputeLegacyPaymentMember `json:"member,omitempty" url:"member,omitempty"`
+	// The membership attached to this payment.
+	Membership *DisputeLegacyPaymentMembership `json:"membership,omitempty" url:"membership,omitempty"`
+	// The time at which this payment was successfully collected. Null if the payment has not yet succeeded. As a Unix timestamp.
+	PaidAt *time.Time `json:"paid_at,omitempty" url:"paid_at,omitempty"`
+	// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the receipt names no payment method.
+	PaymentInstrument *DisputeLegacyPaymentPaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
+	// The type of payment instrument used for this payment (e.g., card, Cash App, iDEAL, Klarna, crypto). Null when the processor does not supply a type.
+	PaymentMethodType *PaymentMethodTypes `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
+	// The subtotal to show to the creator (excluding buyer fees).
+	Subtotal *float64 `json:"subtotal,omitempty" url:"subtotal,omitempty"`
+	// The total to show to the creator (excluding buyer fees).
+	Total *float64 `json:"total,omitempty" url:"total,omitempty"`
+	// The total in USD to show to the creator (excluding buyer fees).
+	UsdTotal *float64 `json:"usd_total,omitempty" url:"usd_total,omitempty"`
+	// The user that made this payment.
+	User *DisputeLegacyPaymentUser `json:"user,omitempty" url:"user,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyPayment) GetBillingReason() *BillingReasons {
+	if d == nil {
+		return nil
+	}
+	return d.BillingReason
+}
+
+func (d *DisputeLegacyPayment) GetCardBrand() *CardBrands {
+	if d == nil {
+		return nil
+	}
+	return d.CardBrand
+}
+
+func (d *DisputeLegacyPayment) GetCardLast4() *string {
+	if d == nil {
+		return nil
+	}
+	return d.CardLast4
+}
+
+func (d *DisputeLegacyPayment) GetCreatedAt() time.Time {
+	if d == nil {
+		return time.Time{}
+	}
+	return d.CreatedAt
+}
+
+func (d *DisputeLegacyPayment) GetCurrency() Currencies {
+	if d == nil {
+		return ""
+	}
+	return d.Currency
+}
+
+func (d *DisputeLegacyPayment) GetDisputeAlertedAt() *time.Time {
+	if d == nil {
+		return nil
+	}
+	return d.DisputeAlertedAt
+}
+
+func (d *DisputeLegacyPayment) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyPayment) GetMember() *DisputeLegacyPaymentMember {
+	if d == nil {
+		return nil
+	}
+	return d.Member
+}
+
+func (d *DisputeLegacyPayment) GetMembership() *DisputeLegacyPaymentMembership {
+	if d == nil {
+		return nil
+	}
+	return d.Membership
+}
+
+func (d *DisputeLegacyPayment) GetPaidAt() *time.Time {
+	if d == nil {
+		return nil
+	}
+	return d.PaidAt
+}
+
+func (d *DisputeLegacyPayment) GetPaymentInstrument() *DisputeLegacyPaymentPaymentInstrument {
+	if d == nil {
+		return nil
+	}
+	return d.PaymentInstrument
+}
+
+func (d *DisputeLegacyPayment) GetPaymentMethodType() *PaymentMethodTypes {
+	if d == nil {
+		return nil
+	}
+	return d.PaymentMethodType
+}
+
+func (d *DisputeLegacyPayment) GetSubtotal() *float64 {
+	if d == nil {
+		return nil
+	}
+	return d.Subtotal
+}
+
+func (d *DisputeLegacyPayment) GetTotal() *float64 {
+	if d == nil {
+		return nil
+	}
+	return d.Total
+}
+
+func (d *DisputeLegacyPayment) GetUsdTotal() *float64 {
+	if d == nil {
+		return nil
+	}
+	return d.UsdTotal
+}
+
+func (d *DisputeLegacyPayment) GetUser() *DisputeLegacyPaymentUser {
+	if d == nil {
+		return nil
+	}
+	return d.User
+}
+
+func (d *DisputeLegacyPayment) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyPayment) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetBillingReason sets the BillingReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetBillingReason(billingReason *BillingReasons) {
+	d.BillingReason = billingReason
+	d.require(disputeLegacyPaymentFieldBillingReason)
+}
+
+// SetCardBrand sets the CardBrand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetCardBrand(cardBrand *CardBrands) {
+	d.CardBrand = cardBrand
+	d.require(disputeLegacyPaymentFieldCardBrand)
+}
+
+// SetCardLast4 sets the CardLast4 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetCardLast4(cardLast4 *string) {
+	d.CardLast4 = cardLast4
+	d.require(disputeLegacyPaymentFieldCardLast4)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetCreatedAt(createdAt time.Time) {
+	d.CreatedAt = createdAt
+	d.require(disputeLegacyPaymentFieldCreatedAt)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetCurrency(currency Currencies) {
+	d.Currency = currency
+	d.require(disputeLegacyPaymentFieldCurrency)
+}
+
+// SetDisputeAlertedAt sets the DisputeAlertedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetDisputeAlertedAt(disputeAlertedAt *time.Time) {
+	d.DisputeAlertedAt = disputeAlertedAt
+	d.require(disputeLegacyPaymentFieldDisputeAlertedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyPaymentFieldID)
+}
+
+// SetMember sets the Member field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetMember(member *DisputeLegacyPaymentMember) {
+	d.Member = member
+	d.require(disputeLegacyPaymentFieldMember)
+}
+
+// SetMembership sets the Membership field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetMembership(membership *DisputeLegacyPaymentMembership) {
+	d.Membership = membership
+	d.require(disputeLegacyPaymentFieldMembership)
+}
+
+// SetPaidAt sets the PaidAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetPaidAt(paidAt *time.Time) {
+	d.PaidAt = paidAt
+	d.require(disputeLegacyPaymentFieldPaidAt)
+}
+
+// SetPaymentInstrument sets the PaymentInstrument field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetPaymentInstrument(paymentInstrument *DisputeLegacyPaymentPaymentInstrument) {
+	d.PaymentInstrument = paymentInstrument
+	d.require(disputeLegacyPaymentFieldPaymentInstrument)
+}
+
+// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetPaymentMethodType(paymentMethodType *PaymentMethodTypes) {
+	d.PaymentMethodType = paymentMethodType
+	d.require(disputeLegacyPaymentFieldPaymentMethodType)
+}
+
+// SetSubtotal sets the Subtotal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetSubtotal(subtotal *float64) {
+	d.Subtotal = subtotal
+	d.require(disputeLegacyPaymentFieldSubtotal)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetTotal(total *float64) {
+	d.Total = total
+	d.require(disputeLegacyPaymentFieldTotal)
+}
+
+// SetUsdTotal sets the UsdTotal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetUsdTotal(usdTotal *float64) {
+	d.UsdTotal = usdTotal
+	d.require(disputeLegacyPaymentFieldUsdTotal)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPayment) SetUser(user *DisputeLegacyPaymentUser) {
+	d.User = user
+	d.require(disputeLegacyPaymentFieldUser)
+}
+
+func (d *DisputeLegacyPayment) UnmarshalJSON(data []byte) error {
+	type embed DisputeLegacyPayment
+	var unmarshaler = struct {
+		embed
+		CreatedAt        *internal.DateTime `json:"created_at"`
+		DisputeAlertedAt *internal.DateTime `json:"dispute_alerted_at,omitempty"`
+		PaidAt           *internal.DateTime `json:"paid_at,omitempty"`
+	}{
+		embed: embed(*d),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*d = DisputeLegacyPayment(unmarshaler.embed)
+	d.CreatedAt = unmarshaler.CreatedAt.Time()
+	d.DisputeAlertedAt = unmarshaler.DisputeAlertedAt.TimePtr()
+	d.PaidAt = unmarshaler.PaidAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyPayment) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyPayment
+	var marshaler = struct {
+		embed
+		CreatedAt        *internal.DateTime `json:"created_at"`
+		DisputeAlertedAt *internal.DateTime `json:"dispute_alerted_at,omitempty"`
+		PaidAt           *internal.DateTime `json:"paid_at,omitempty"`
+	}{
+		embed:            embed(*d),
+		CreatedAt:        internal.NewDateTime(d.CreatedAt),
+		DisputeAlertedAt: internal.NewOptionalDateTime(d.DisputeAlertedAt),
+		PaidAt:           internal.NewOptionalDateTime(d.PaidAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyPayment) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The member attached to this payment.
+var (
+	disputeLegacyPaymentMemberFieldID    = big.NewInt(1 << 0)
+	disputeLegacyPaymentMemberFieldPhone = big.NewInt(1 << 1)
+)
+
+type DisputeLegacyPaymentMember struct {
+	// The unique identifier for the company member.
+	ID string `json:"id" url:"id"`
+	// The phone number for the member, if available.
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyPaymentMember) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyPaymentMember) GetPhone() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Phone
+}
+
+func (d *DisputeLegacyPaymentMember) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyPaymentMember) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentMember) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyPaymentMemberFieldID)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentMember) SetPhone(phone *string) {
+	d.Phone = phone
+	d.require(disputeLegacyPaymentMemberFieldPhone)
+}
+
+func (d *DisputeLegacyPaymentMember) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyPaymentMember
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyPaymentMember(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyPaymentMember) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyPaymentMember
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyPaymentMember) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The membership attached to this payment.
+var (
+	disputeLegacyPaymentMembershipFieldID     = big.NewInt(1 << 0)
+	disputeLegacyPaymentMembershipFieldStatus = big.NewInt(1 << 1)
+)
+
+type DisputeLegacyPaymentMembership struct {
+	// The unique identifier for the membership.
+	ID string `json:"id" url:"id"`
+	// The state of the membership.
+	Status MembershipStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyPaymentMembership) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyPaymentMembership) GetStatus() MembershipStatus {
+	if d == nil {
+		return ""
+	}
+	return d.Status
+}
+
+func (d *DisputeLegacyPaymentMembership) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyPaymentMembership) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentMembership) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyPaymentMembershipFieldID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentMembership) SetStatus(status MembershipStatus) {
+	d.Status = status
+	d.require(disputeLegacyPaymentMembershipFieldStatus)
+}
+
+func (d *DisputeLegacyPaymentMembership) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyPaymentMembership
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyPaymentMembership(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyPaymentMembership) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyPaymentMembership
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyPaymentMembership) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the receipt names no payment method.
+var (
+	disputeLegacyPaymentPaymentInstrumentFieldDisplayName       = big.NewInt(1 << 0)
+	disputeLegacyPaymentPaymentInstrumentFieldIcons             = big.NewInt(1 << 1)
+	disputeLegacyPaymentPaymentInstrumentFieldInstallmentCount  = big.NewInt(1 << 2)
+	disputeLegacyPaymentPaymentInstrumentFieldPaymentMethodType = big.NewInt(1 << 3)
+)
+
+type DisputeLegacyPaymentPaymentInstrument struct {
+	// Buyer-facing instrument name — "Visa •••• 4242" when the card surfaced, else the method's own name ("Klarna").
+	DisplayName string `json:"display_name" url:"display_name"`
+	// The standard icon set: square and card shapes, each in light and dark colorways.
+	Icons *DisputeLegacyPaymentPaymentInstrumentIcons `json:"icons" url:"icons"`
+	// Installment methods only: how many payments the charge splits into. Data, not copy — compose and translate the label client-side.
+	InstallmentCount *int `json:"installment_count,omitempty" url:"installment_count,omitempty"`
+	// The payment method type identifier, e.g. `card`, `klarna`, `apple_pay`.
+	PaymentMethodType string `json:"payment_method_type" url:"payment_method_type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrument) GetDisplayName() string {
+	if d == nil {
+		return ""
+	}
+	return d.DisplayName
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrument) GetIcons() *DisputeLegacyPaymentPaymentInstrumentIcons {
+	if d == nil {
+		return nil
+	}
+	return d.Icons
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrument) GetInstallmentCount() *int {
+	if d == nil {
+		return nil
+	}
+	return d.InstallmentCount
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrument) GetPaymentMethodType() string {
+	if d == nil {
+		return ""
+	}
+	return d.PaymentMethodType
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrument) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrument) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetDisplayName sets the DisplayName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentPaymentInstrument) SetDisplayName(displayName string) {
+	d.DisplayName = displayName
+	d.require(disputeLegacyPaymentPaymentInstrumentFieldDisplayName)
+}
+
+// SetIcons sets the Icons field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentPaymentInstrument) SetIcons(icons *DisputeLegacyPaymentPaymentInstrumentIcons) {
+	d.Icons = icons
+	d.require(disputeLegacyPaymentPaymentInstrumentFieldIcons)
+}
+
+// SetInstallmentCount sets the InstallmentCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentPaymentInstrument) SetInstallmentCount(installmentCount *int) {
+	d.InstallmentCount = installmentCount
+	d.require(disputeLegacyPaymentPaymentInstrumentFieldInstallmentCount)
+}
+
+// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentPaymentInstrument) SetPaymentMethodType(paymentMethodType string) {
+	d.PaymentMethodType = paymentMethodType
+	d.require(disputeLegacyPaymentPaymentInstrumentFieldPaymentMethodType)
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrument) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyPaymentPaymentInstrument
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyPaymentPaymentInstrument(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrument) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyPaymentPaymentInstrument
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrument) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The standard icon set: square and card shapes, each in light and dark colorways.
+var (
+	disputeLegacyPaymentPaymentInstrumentIconsFieldSquare = big.NewInt(1 << 0)
+)
+
+type DisputeLegacyPaymentPaymentInstrumentIcons struct {
+	// The square tile (32x32).
+	Square *DisputeLegacyPaymentPaymentInstrumentIconsSquare `json:"square" url:"square"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIcons) GetSquare() *DisputeLegacyPaymentPaymentInstrumentIconsSquare {
+	if d == nil {
+		return nil
+	}
+	return d.Square
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIcons) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIcons) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetSquare sets the Square field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentPaymentInstrumentIcons) SetSquare(square *DisputeLegacyPaymentPaymentInstrumentIconsSquare) {
+	d.Square = square
+	d.require(disputeLegacyPaymentPaymentInstrumentIconsFieldSquare)
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIcons) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyPaymentPaymentInstrumentIcons
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyPaymentPaymentInstrumentIcons(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIcons) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyPaymentPaymentInstrumentIcons
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIcons) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The square tile (32x32).
+var (
+	disputeLegacyPaymentPaymentInstrumentIconsSquareFieldDark  = big.NewInt(1 << 0)
+	disputeLegacyPaymentPaymentInstrumentIconsSquareFieldLight = big.NewInt(1 << 1)
+)
+
+type DisputeLegacyPaymentPaymentInstrumentIconsSquare struct {
+	// The colorway for dark surfaces.
+	Dark *DisputeLegacyPaymentPaymentInstrumentIconsSquareDark `json:"dark" url:"dark"`
+	// The colorway for light surfaces.
+	Light *DisputeLegacyPaymentPaymentInstrumentIconsSquareLight `json:"light" url:"light"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquare) GetDark() *DisputeLegacyPaymentPaymentInstrumentIconsSquareDark {
+	if d == nil {
+		return nil
+	}
+	return d.Dark
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquare) GetLight() *DisputeLegacyPaymentPaymentInstrumentIconsSquareLight {
+	if d == nil {
+		return nil
+	}
+	return d.Light
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquare) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquare) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetDark sets the Dark field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquare) SetDark(dark *DisputeLegacyPaymentPaymentInstrumentIconsSquareDark) {
+	d.Dark = dark
+	d.require(disputeLegacyPaymentPaymentInstrumentIconsSquareFieldDark)
+}
+
+// SetLight sets the Light field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquare) SetLight(light *DisputeLegacyPaymentPaymentInstrumentIconsSquareLight) {
+	d.Light = light
+	d.require(disputeLegacyPaymentPaymentInstrumentIconsSquareFieldLight)
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquare) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyPaymentPaymentInstrumentIconsSquare
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyPaymentPaymentInstrumentIconsSquare(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquare) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyPaymentPaymentInstrumentIconsSquare
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquare) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The colorway for dark surfaces.
+var (
+	disputeLegacyPaymentPaymentInstrumentIconsSquareDarkFieldSvg = big.NewInt(1 << 0)
+)
+
+type DisputeLegacyPaymentPaymentInstrumentIconsSquareDark struct {
+	// The vector file. Prefer this everywhere SVG renders.
+	Svg string `json:"svg" url:"svg"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareDark) GetSvg() string {
+	if d == nil {
+		return ""
+	}
+	return d.Svg
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareDark) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareDark) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetSvg sets the Svg field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareDark) SetSvg(svg string) {
+	d.Svg = svg
+	d.require(disputeLegacyPaymentPaymentInstrumentIconsSquareDarkFieldSvg)
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareDark) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyPaymentPaymentInstrumentIconsSquareDark
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyPaymentPaymentInstrumentIconsSquareDark(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareDark) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyPaymentPaymentInstrumentIconsSquareDark
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareDark) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The colorway for light surfaces.
+var (
+	disputeLegacyPaymentPaymentInstrumentIconsSquareLightFieldSvg = big.NewInt(1 << 0)
+)
+
+type DisputeLegacyPaymentPaymentInstrumentIconsSquareLight struct {
+	// The vector file. Prefer this everywhere SVG renders.
+	Svg string `json:"svg" url:"svg"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareLight) GetSvg() string {
+	if d == nil {
+		return ""
+	}
+	return d.Svg
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareLight) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareLight) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetSvg sets the Svg field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareLight) SetSvg(svg string) {
+	d.Svg = svg
+	d.require(disputeLegacyPaymentPaymentInstrumentIconsSquareLightFieldSvg)
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareLight) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyPaymentPaymentInstrumentIconsSquareLight
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyPaymentPaymentInstrumentIconsSquareLight(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareLight) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyPaymentPaymentInstrumentIconsSquareLight
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyPaymentPaymentInstrumentIconsSquareLight) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The user that made this payment.
+var (
+	disputeLegacyPaymentUserFieldEmail    = big.NewInt(1 << 0)
+	disputeLegacyPaymentUserFieldID       = big.NewInt(1 << 1)
+	disputeLegacyPaymentUserFieldName     = big.NewInt(1 << 2)
+	disputeLegacyPaymentUserFieldUsername = big.NewInt(1 << 3)
+)
+
+type DisputeLegacyPaymentUser struct {
+	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The unique identifier for the user.
+	ID string `json:"id" url:"id"`
+	// The user's display name shown on their public profile.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's unique username shown on their public profile.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyPaymentUser) GetEmail() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Email
+}
+
+func (d *DisputeLegacyPaymentUser) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyPaymentUser) GetName() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Name
+}
+
+func (d *DisputeLegacyPaymentUser) GetUsername() string {
+	if d == nil {
+		return ""
+	}
+	return d.Username
+}
+
+func (d *DisputeLegacyPaymentUser) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyPaymentUser) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentUser) SetEmail(email *string) {
+	d.Email = email
+	d.require(disputeLegacyPaymentUserFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentUser) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyPaymentUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentUser) SetName(name *string) {
+	d.Name = name
+	d.require(disputeLegacyPaymentUserFieldName)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPaymentUser) SetUsername(username string) {
+	d.Username = username
+	d.require(disputeLegacyPaymentUserFieldUsername)
+}
+
+func (d *DisputeLegacyPaymentUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyPaymentUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyPaymentUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyPaymentUser) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyPaymentUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyPaymentUser) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The plan associated with the disputed payment. Null if the dispute is not linked to a specific plan.
+var (
+	disputeLegacyPlanFieldID = big.NewInt(1 << 0)
+)
+
+type DisputeLegacyPlan struct {
+	// The unique identifier for the plan.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyPlan) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyPlan) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyPlan) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyPlan) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyPlanFieldID)
+}
+
+func (d *DisputeLegacyPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyPlan) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyPlan) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The product associated with the disputed payment. Null if the dispute is not linked to a specific product.
+var (
+	disputeLegacyProductFieldID    = big.NewInt(1 << 0)
+	disputeLegacyProductFieldTitle = big.NewInt(1 << 1)
+)
+
+type DisputeLegacyProduct struct {
+	// The unique identifier for the product.
+	ID string `json:"id" url:"id"`
+	// The display name of the product shown to customers on the product page and in search results.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyProduct) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyProduct) GetTitle() string {
+	if d == nil {
+		return ""
+	}
+	return d.Title
+}
+
+func (d *DisputeLegacyProduct) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyProduct) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyProduct) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyProductFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyProduct) SetTitle(title string) {
+	d.Title = title
+	d.require(disputeLegacyProductFieldTitle)
+}
+
+func (d *DisputeLegacyProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyProduct) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyProduct) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// The refund policy document uploaded as dispute evidence. Null if no refund policy has been provided.
+var (
+	disputeLegacyRefundPolicyAttachmentFieldContentType = big.NewInt(1 << 0)
+	disputeLegacyRefundPolicyAttachmentFieldFilename    = big.NewInt(1 << 1)
+	disputeLegacyRefundPolicyAttachmentFieldID          = big.NewInt(1 << 2)
+	disputeLegacyRefundPolicyAttachmentFieldURL         = big.NewInt(1 << 3)
+)
+
+type DisputeLegacyRefundPolicyAttachment struct {
+	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
+	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
+	// The original filename of the uploaded attachment, including its file extension.
+	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
+	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
+	ID string `json:"id" url:"id"`
+	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyRefundPolicyAttachment) GetContentType() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ContentType
+}
+
+func (d *DisputeLegacyRefundPolicyAttachment) GetFilename() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Filename
+}
+
+func (d *DisputeLegacyRefundPolicyAttachment) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyRefundPolicyAttachment) GetURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.URL
+}
+
+func (d *DisputeLegacyRefundPolicyAttachment) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyRefundPolicyAttachment) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyRefundPolicyAttachment) SetContentType(contentType *string) {
+	d.ContentType = contentType
+	d.require(disputeLegacyRefundPolicyAttachmentFieldContentType)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyRefundPolicyAttachment) SetFilename(filename *string) {
+	d.Filename = filename
+	d.require(disputeLegacyRefundPolicyAttachmentFieldFilename)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyRefundPolicyAttachment) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyRefundPolicyAttachmentFieldID)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyRefundPolicyAttachment) SetURL(url *string) {
+	d.URL = url
+	d.require(disputeLegacyRefundPolicyAttachmentFieldURL)
+}
+
+func (d *DisputeLegacyRefundPolicyAttachment) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyRefundPolicyAttachment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyRefundPolicyAttachment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyRefundPolicyAttachment) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyRefundPolicyAttachment
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyRefundPolicyAttachment) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// An additional attachment that does not fit into the standard evidence categories. Null if not provided.
+var (
+	disputeLegacyUncategorizedAttachmentFieldContentType = big.NewInt(1 << 0)
+	disputeLegacyUncategorizedAttachmentFieldFilename    = big.NewInt(1 << 1)
+	disputeLegacyUncategorizedAttachmentFieldID          = big.NewInt(1 << 2)
+	disputeLegacyUncategorizedAttachmentFieldURL         = big.NewInt(1 << 3)
+)
+
+type DisputeLegacyUncategorizedAttachment struct {
+	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
+	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
+	// The original filename of the uploaded attachment, including its file extension.
+	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
+	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
+	ID string `json:"id" url:"id"`
+	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisputeLegacyUncategorizedAttachment) GetContentType() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ContentType
+}
+
+func (d *DisputeLegacyUncategorizedAttachment) GetFilename() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Filename
+}
+
+func (d *DisputeLegacyUncategorizedAttachment) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DisputeLegacyUncategorizedAttachment) GetURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.URL
+}
+
+func (d *DisputeLegacyUncategorizedAttachment) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisputeLegacyUncategorizedAttachment) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyUncategorizedAttachment) SetContentType(contentType *string) {
+	d.ContentType = contentType
+	d.require(disputeLegacyUncategorizedAttachmentFieldContentType)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyUncategorizedAttachment) SetFilename(filename *string) {
+	d.Filename = filename
+	d.require(disputeLegacyUncategorizedAttachmentFieldFilename)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyUncategorizedAttachment) SetID(id string) {
+	d.ID = id
+	d.require(disputeLegacyUncategorizedAttachmentFieldID)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeLegacyUncategorizedAttachment) SetURL(url *string) {
+	d.URL = url
+	d.require(disputeLegacyUncategorizedAttachmentFieldURL)
+}
+
+func (d *DisputeLegacyUncategorizedAttachment) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisputeLegacyUncategorizedAttachment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisputeLegacyUncategorizedAttachment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisputeLegacyUncategorizedAttachment) MarshalJSON() ([]byte, error) {
+	type embed DisputeLegacyUncategorizedAttachment
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisputeLegacyUncategorizedAttachment) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// A dispute is a chargeback or payment challenge filed against a company, including evidence and response status.
+var (
 	disputeListItemFieldAmount          = big.NewInt(1 << 0)
 	disputeListItemFieldCompany         = big.NewInt(1 << 1)
 	disputeListItemFieldCreatedAt       = big.NewInt(1 << 2)
@@ -10844,6 +13488,50 @@ func (d *DisputeListItemProduct) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
+}
+
+// The possible statuses of a dispute
+type DisputeStatuses string
+
+const (
+	DisputeStatusesWarningNeedsResponse DisputeStatuses = "warning_needs_response"
+	DisputeStatusesWarningUnderReview   DisputeStatuses = "warning_under_review"
+	DisputeStatusesWarningClosed        DisputeStatuses = "warning_closed"
+	DisputeStatusesNeedsResponse        DisputeStatuses = "needs_response"
+	DisputeStatusesUnderReview          DisputeStatuses = "under_review"
+	DisputeStatusesWon                  DisputeStatuses = "won"
+	DisputeStatusesLost                 DisputeStatuses = "lost"
+	DisputeStatusesClosed               DisputeStatuses = "closed"
+	DisputeStatusesOther                DisputeStatuses = "other"
+)
+
+func NewDisputeStatusesFromString(s string) (DisputeStatuses, error) {
+	switch s {
+	case "warning_needs_response":
+		return DisputeStatusesWarningNeedsResponse, nil
+	case "warning_under_review":
+		return DisputeStatusesWarningUnderReview, nil
+	case "warning_closed":
+		return DisputeStatusesWarningClosed, nil
+	case "needs_response":
+		return DisputeStatusesNeedsResponse, nil
+	case "under_review":
+		return DisputeStatusesUnderReview, nil
+	case "won":
+		return DisputeStatusesWon, nil
+	case "lost":
+		return DisputeStatusesLost, nil
+	case "closed":
+		return DisputeStatusesClosed, nil
+	case "other":
+		return DisputeStatusesOther, nil
+	}
+	var t DisputeStatuses
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DisputeStatuses) Ptr() *DisputeStatuses {
+	return &d
 }
 
 var (
@@ -13129,6 +15817,1334 @@ func (m MembershipCancellationModes) Ptr() *MembershipCancellationModes {
 
 // A membership represents an active relationship between a user and a product. It tracks the user's access, billing status, and renewal schedule.
 var (
+	membershipLegacyFieldCancelAtPeriodEnd       = big.NewInt(1 << 0)
+	membershipLegacyFieldCancelOption            = big.NewInt(1 << 1)
+	membershipLegacyFieldCancelationStatus       = big.NewInt(1 << 2)
+	membershipLegacyFieldCanceledAt              = big.NewInt(1 << 3)
+	membershipLegacyFieldCancellationReason      = big.NewInt(1 << 4)
+	membershipLegacyFieldCheckoutConfigurationID = big.NewInt(1 << 5)
+	membershipLegacyFieldCompany                 = big.NewInt(1 << 6)
+	membershipLegacyFieldCreatedAt               = big.NewInt(1 << 7)
+	membershipLegacyFieldCurrency                = big.NewInt(1 << 8)
+	membershipLegacyFieldCustomFieldResponses    = big.NewInt(1 << 9)
+	membershipLegacyFieldFormattedRenewalPrice   = big.NewInt(1 << 10)
+	membershipLegacyFieldID                      = big.NewInt(1 << 11)
+	membershipLegacyFieldInitialPricePaid        = big.NewInt(1 << 12)
+	membershipLegacyFieldJoinedAt                = big.NewInt(1 << 13)
+	membershipLegacyFieldLicenseKey              = big.NewInt(1 << 14)
+	membershipLegacyFieldManageURL               = big.NewInt(1 << 15)
+	membershipLegacyFieldMember                  = big.NewInt(1 << 16)
+	membershipLegacyFieldMetadata                = big.NewInt(1 << 17)
+	membershipLegacyFieldPaymentCollectionPaused = big.NewInt(1 << 18)
+	membershipLegacyFieldPlan                    = big.NewInt(1 << 19)
+	membershipLegacyFieldProduct                 = big.NewInt(1 << 20)
+	membershipLegacyFieldPromoCode               = big.NewInt(1 << 21)
+	membershipLegacyFieldRenewalPeriodEnd        = big.NewInt(1 << 22)
+	membershipLegacyFieldRenewalPeriodStart      = big.NewInt(1 << 23)
+	membershipLegacyFieldStatus                  = big.NewInt(1 << 24)
+	membershipLegacyFieldUpdatedAt               = big.NewInt(1 << 25)
+	membershipLegacyFieldUser                    = big.NewInt(1 << 26)
+)
+
+type MembershipLegacy struct {
+	// Whether this membership is set to cancel at the end of the current billing cycle. Only applies to memberships with a recurring plan.
+	CancelAtPeriodEnd bool `json:"cancel_at_period_end" url:"cancel_at_period_end"`
+	// The category selected for why the member canceled (e.g. too_expensive, switching, missing_features).
+	CancelOption *CancelOptions `json:"cancel_option,omitempty" url:"cancel_option,omitempty"`
+	// Whether the customer is canceling, left, or was won back. Null if the membership has no cancellation reason or its cancellation state is indeterminate.
+	CancelationStatus *CancelationStatus `json:"cancelation_status,omitempty" url:"cancelation_status,omitempty"`
+	// The time the customer initiated cancellation of this membership. As a Unix timestamp. Null if the membership has not been canceled.
+	CanceledAt *time.Time `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
+	// Free-text explanation provided by the customer when canceling. Null if the customer did not provide a reason.
+	CancellationReason *string `json:"cancellation_reason,omitempty" url:"cancellation_reason,omitempty"`
+	// The ID of the checkout session/configuration that produced this membership, if any. Use this to map memberships back to the checkout configuration that created them.
+	CheckoutConfigurationID *string `json:"checkout_configuration_id,omitempty" url:"checkout_configuration_id,omitempty"`
+	// The company this membership belongs to.
+	Company *MembershipLegacyCompany `json:"company" url:"company"`
+	// The datetime the membership was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// The three-letter ISO currency code for this membership's billing. Null if the membership is free.
+	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
+	// The customer's responses to custom checkout questions configured on the product at the time of purchase.
+	CustomFieldResponses []*MembershipLegacyCustomFieldResponsesItem `json:"custom_field_responses" url:"custom_field_responses"`
+	// The recurring renewal price for this membership, formatted with currency symbol and billing interval. Null if the membership is not recurring.
+	FormattedRenewalPrice *string `json:"formatted_renewal_price,omitempty" url:"formatted_renewal_price,omitempty"`
+	// The unique identifier for the membership.
+	ID string `json:"id" url:"id"`
+	// The amount the customer paid when first purchasing this membership, formatted with currency symbol.
+	InitialPricePaid string `json:"initial_price_paid" url:"initial_price_paid"`
+	// The time the user first joined the company associated with this membership. As a Unix timestamp. Null if the member record does not exist.
+	JoinedAt *time.Time `json:"joined_at,omitempty" url:"joined_at,omitempty"`
+	// The software license key associated with this membership. Only present if the product includes a Whop Software Licensing experience. Null otherwise.
+	LicenseKey *string `json:"license_key,omitempty" url:"license_key,omitempty"`
+	// The URL where the customer can view and manage this membership, including cancellation and plan changes. Null if no member record exists.
+	ManageURL *string `json:"manage_url,omitempty" url:"manage_url,omitempty"`
+	// The member record linking the user to the company for this membership. Null if the member record has not been created yet.
+	Member *MembershipLegacyMember `json:"member,omitempty" url:"member,omitempty"`
+	// Custom key-value pairs for the membership (commonly used for software licensing, e.g., HWID). Max 50 keys, 100 chars per key, 500 chars per string value.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Whether recurring payment collection for this membership is temporarily paused by the company.
+	PaymentCollectionPaused bool `json:"payment_collection_paused" url:"payment_collection_paused"`
+	// The plan the customer purchased to create this membership.
+	Plan *MembershipLegacyPlan `json:"plan" url:"plan"`
+	// The product this membership grants access to.
+	Product *MembershipLegacyProduct `json:"product" url:"product"`
+	// The promotional code currently applied to this membership's billing. Null if no promo code is active.
+	PromoCode *MembershipLegacyPromoCode `json:"promo_code,omitempty" url:"promo_code,omitempty"`
+	// The end of the current billing period for this recurring membership. As a Unix timestamp. Null if the membership is not recurring.
+	RenewalPeriodEnd *time.Time `json:"renewal_period_end,omitempty" url:"renewal_period_end,omitempty"`
+	// The start of the current billing period for this recurring membership. As a Unix timestamp. Null if the membership is not recurring.
+	RenewalPeriodStart *time.Time `json:"renewal_period_start,omitempty" url:"renewal_period_start,omitempty"`
+	// The current lifecycle status of the membership (e.g., active, trialing, past_due, canceled, expired, completed).
+	Status MembershipStatus `json:"status" url:"status"`
+	// The datetime the membership was last updated.
+	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
+	// The user who owns this membership. Null if the user account has been deleted.
+	User *MembershipLegacyUser `json:"user,omitempty" url:"user,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacy) GetCancelAtPeriodEnd() bool {
+	if m == nil {
+		return false
+	}
+	return m.CancelAtPeriodEnd
+}
+
+func (m *MembershipLegacy) GetCancelOption() *CancelOptions {
+	if m == nil {
+		return nil
+	}
+	return m.CancelOption
+}
+
+func (m *MembershipLegacy) GetCancelationStatus() *CancelationStatus {
+	if m == nil {
+		return nil
+	}
+	return m.CancelationStatus
+}
+
+func (m *MembershipLegacy) GetCanceledAt() *time.Time {
+	if m == nil {
+		return nil
+	}
+	return m.CanceledAt
+}
+
+func (m *MembershipLegacy) GetCancellationReason() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CancellationReason
+}
+
+func (m *MembershipLegacy) GetCheckoutConfigurationID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CheckoutConfigurationID
+}
+
+func (m *MembershipLegacy) GetCompany() *MembershipLegacyCompany {
+	if m == nil {
+		return nil
+	}
+	return m.Company
+}
+
+func (m *MembershipLegacy) GetCreatedAt() time.Time {
+	if m == nil {
+		return time.Time{}
+	}
+	return m.CreatedAt
+}
+
+func (m *MembershipLegacy) GetCurrency() *Currencies {
+	if m == nil {
+		return nil
+	}
+	return m.Currency
+}
+
+func (m *MembershipLegacy) GetCustomFieldResponses() []*MembershipLegacyCustomFieldResponsesItem {
+	if m == nil {
+		return nil
+	}
+	return m.CustomFieldResponses
+}
+
+func (m *MembershipLegacy) GetFormattedRenewalPrice() *string {
+	if m == nil {
+		return nil
+	}
+	return m.FormattedRenewalPrice
+}
+
+func (m *MembershipLegacy) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacy) GetInitialPricePaid() string {
+	if m == nil {
+		return ""
+	}
+	return m.InitialPricePaid
+}
+
+func (m *MembershipLegacy) GetJoinedAt() *time.Time {
+	if m == nil {
+		return nil
+	}
+	return m.JoinedAt
+}
+
+func (m *MembershipLegacy) GetLicenseKey() *string {
+	if m == nil {
+		return nil
+	}
+	return m.LicenseKey
+}
+
+func (m *MembershipLegacy) GetManageURL() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ManageURL
+}
+
+func (m *MembershipLegacy) GetMember() *MembershipLegacyMember {
+	if m == nil {
+		return nil
+	}
+	return m.Member
+}
+
+func (m *MembershipLegacy) GetMetadata() map[string]any {
+	if m == nil {
+		return nil
+	}
+	return m.Metadata
+}
+
+func (m *MembershipLegacy) GetPaymentCollectionPaused() bool {
+	if m == nil {
+		return false
+	}
+	return m.PaymentCollectionPaused
+}
+
+func (m *MembershipLegacy) GetPlan() *MembershipLegacyPlan {
+	if m == nil {
+		return nil
+	}
+	return m.Plan
+}
+
+func (m *MembershipLegacy) GetProduct() *MembershipLegacyProduct {
+	if m == nil {
+		return nil
+	}
+	return m.Product
+}
+
+func (m *MembershipLegacy) GetPromoCode() *MembershipLegacyPromoCode {
+	if m == nil {
+		return nil
+	}
+	return m.PromoCode
+}
+
+func (m *MembershipLegacy) GetRenewalPeriodEnd() *time.Time {
+	if m == nil {
+		return nil
+	}
+	return m.RenewalPeriodEnd
+}
+
+func (m *MembershipLegacy) GetRenewalPeriodStart() *time.Time {
+	if m == nil {
+		return nil
+	}
+	return m.RenewalPeriodStart
+}
+
+func (m *MembershipLegacy) GetStatus() MembershipStatus {
+	if m == nil {
+		return ""
+	}
+	return m.Status
+}
+
+func (m *MembershipLegacy) GetUpdatedAt() time.Time {
+	if m == nil {
+		return time.Time{}
+	}
+	return m.UpdatedAt
+}
+
+func (m *MembershipLegacy) GetUser() *MembershipLegacyUser {
+	if m == nil {
+		return nil
+	}
+	return m.User
+}
+
+func (m *MembershipLegacy) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacy) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetCancelAtPeriodEnd sets the CancelAtPeriodEnd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCancelAtPeriodEnd(cancelAtPeriodEnd bool) {
+	m.CancelAtPeriodEnd = cancelAtPeriodEnd
+	m.require(membershipLegacyFieldCancelAtPeriodEnd)
+}
+
+// SetCancelOption sets the CancelOption field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCancelOption(cancelOption *CancelOptions) {
+	m.CancelOption = cancelOption
+	m.require(membershipLegacyFieldCancelOption)
+}
+
+// SetCancelationStatus sets the CancelationStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCancelationStatus(cancelationStatus *CancelationStatus) {
+	m.CancelationStatus = cancelationStatus
+	m.require(membershipLegacyFieldCancelationStatus)
+}
+
+// SetCanceledAt sets the CanceledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCanceledAt(canceledAt *time.Time) {
+	m.CanceledAt = canceledAt
+	m.require(membershipLegacyFieldCanceledAt)
+}
+
+// SetCancellationReason sets the CancellationReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCancellationReason(cancellationReason *string) {
+	m.CancellationReason = cancellationReason
+	m.require(membershipLegacyFieldCancellationReason)
+}
+
+// SetCheckoutConfigurationID sets the CheckoutConfigurationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCheckoutConfigurationID(checkoutConfigurationID *string) {
+	m.CheckoutConfigurationID = checkoutConfigurationID
+	m.require(membershipLegacyFieldCheckoutConfigurationID)
+}
+
+// SetCompany sets the Company field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCompany(company *MembershipLegacyCompany) {
+	m.Company = company
+	m.require(membershipLegacyFieldCompany)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCreatedAt(createdAt time.Time) {
+	m.CreatedAt = createdAt
+	m.require(membershipLegacyFieldCreatedAt)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCurrency(currency *Currencies) {
+	m.Currency = currency
+	m.require(membershipLegacyFieldCurrency)
+}
+
+// SetCustomFieldResponses sets the CustomFieldResponses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetCustomFieldResponses(customFieldResponses []*MembershipLegacyCustomFieldResponsesItem) {
+	m.CustomFieldResponses = customFieldResponses
+	m.require(membershipLegacyFieldCustomFieldResponses)
+}
+
+// SetFormattedRenewalPrice sets the FormattedRenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetFormattedRenewalPrice(formattedRenewalPrice *string) {
+	m.FormattedRenewalPrice = formattedRenewalPrice
+	m.require(membershipLegacyFieldFormattedRenewalPrice)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyFieldID)
+}
+
+// SetInitialPricePaid sets the InitialPricePaid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetInitialPricePaid(initialPricePaid string) {
+	m.InitialPricePaid = initialPricePaid
+	m.require(membershipLegacyFieldInitialPricePaid)
+}
+
+// SetJoinedAt sets the JoinedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetJoinedAt(joinedAt *time.Time) {
+	m.JoinedAt = joinedAt
+	m.require(membershipLegacyFieldJoinedAt)
+}
+
+// SetLicenseKey sets the LicenseKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetLicenseKey(licenseKey *string) {
+	m.LicenseKey = licenseKey
+	m.require(membershipLegacyFieldLicenseKey)
+}
+
+// SetManageURL sets the ManageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetManageURL(manageURL *string) {
+	m.ManageURL = manageURL
+	m.require(membershipLegacyFieldManageURL)
+}
+
+// SetMember sets the Member field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetMember(member *MembershipLegacyMember) {
+	m.Member = member
+	m.require(membershipLegacyFieldMember)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetMetadata(metadata map[string]any) {
+	m.Metadata = metadata
+	m.require(membershipLegacyFieldMetadata)
+}
+
+// SetPaymentCollectionPaused sets the PaymentCollectionPaused field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetPaymentCollectionPaused(paymentCollectionPaused bool) {
+	m.PaymentCollectionPaused = paymentCollectionPaused
+	m.require(membershipLegacyFieldPaymentCollectionPaused)
+}
+
+// SetPlan sets the Plan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetPlan(plan *MembershipLegacyPlan) {
+	m.Plan = plan
+	m.require(membershipLegacyFieldPlan)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetProduct(product *MembershipLegacyProduct) {
+	m.Product = product
+	m.require(membershipLegacyFieldProduct)
+}
+
+// SetPromoCode sets the PromoCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetPromoCode(promoCode *MembershipLegacyPromoCode) {
+	m.PromoCode = promoCode
+	m.require(membershipLegacyFieldPromoCode)
+}
+
+// SetRenewalPeriodEnd sets the RenewalPeriodEnd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetRenewalPeriodEnd(renewalPeriodEnd *time.Time) {
+	m.RenewalPeriodEnd = renewalPeriodEnd
+	m.require(membershipLegacyFieldRenewalPeriodEnd)
+}
+
+// SetRenewalPeriodStart sets the RenewalPeriodStart field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetRenewalPeriodStart(renewalPeriodStart *time.Time) {
+	m.RenewalPeriodStart = renewalPeriodStart
+	m.require(membershipLegacyFieldRenewalPeriodStart)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetStatus(status MembershipStatus) {
+	m.Status = status
+	m.require(membershipLegacyFieldStatus)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetUpdatedAt(updatedAt time.Time) {
+	m.UpdatedAt = updatedAt
+	m.require(membershipLegacyFieldUpdatedAt)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetUser(user *MembershipLegacyUser) {
+	m.User = user
+	m.require(membershipLegacyFieldUser)
+}
+
+func (m *MembershipLegacy) UnmarshalJSON(data []byte) error {
+	type embed MembershipLegacy
+	var unmarshaler = struct {
+		embed
+		CanceledAt         *internal.DateTime `json:"canceled_at,omitempty"`
+		CreatedAt          *internal.DateTime `json:"created_at"`
+		JoinedAt           *internal.DateTime `json:"joined_at,omitempty"`
+		RenewalPeriodEnd   *internal.DateTime `json:"renewal_period_end,omitempty"`
+		RenewalPeriodStart *internal.DateTime `json:"renewal_period_start,omitempty"`
+		UpdatedAt          *internal.DateTime `json:"updated_at"`
+	}{
+		embed: embed(*m),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*m = MembershipLegacy(unmarshaler.embed)
+	m.CanceledAt = unmarshaler.CanceledAt.TimePtr()
+	m.CreatedAt = unmarshaler.CreatedAt.Time()
+	m.JoinedAt = unmarshaler.JoinedAt.TimePtr()
+	m.RenewalPeriodEnd = unmarshaler.RenewalPeriodEnd.TimePtr()
+	m.RenewalPeriodStart = unmarshaler.RenewalPeriodStart.TimePtr()
+	m.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacy) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacy
+	var marshaler = struct {
+		embed
+		CanceledAt         *internal.DateTime `json:"canceled_at,omitempty"`
+		CreatedAt          *internal.DateTime `json:"created_at"`
+		JoinedAt           *internal.DateTime `json:"joined_at,omitempty"`
+		RenewalPeriodEnd   *internal.DateTime `json:"renewal_period_end,omitempty"`
+		RenewalPeriodStart *internal.DateTime `json:"renewal_period_start,omitempty"`
+		UpdatedAt          *internal.DateTime `json:"updated_at"`
+	}{
+		embed:              embed(*m),
+		CanceledAt:         internal.NewOptionalDateTime(m.CanceledAt),
+		CreatedAt:          internal.NewDateTime(m.CreatedAt),
+		JoinedAt:           internal.NewOptionalDateTime(m.JoinedAt),
+		RenewalPeriodEnd:   internal.NewOptionalDateTime(m.RenewalPeriodEnd),
+		RenewalPeriodStart: internal.NewOptionalDateTime(m.RenewalPeriodStart),
+		UpdatedAt:          internal.NewDateTime(m.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacy) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The company this membership belongs to.
+var (
+	membershipLegacyCompanyFieldID    = big.NewInt(1 << 0)
+	membershipLegacyCompanyFieldTitle = big.NewInt(1 << 1)
+)
+
+type MembershipLegacyCompany struct {
+	// The unique identifier for the company.
+	ID string `json:"id" url:"id"`
+	// The display name of the company shown to customers.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyCompany) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyCompany) GetTitle() string {
+	if m == nil {
+		return ""
+	}
+	return m.Title
+}
+
+func (m *MembershipLegacyCompany) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyCompany) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyCompany) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyCompanyFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyCompany) SetTitle(title string) {
+	m.Title = title
+	m.require(membershipLegacyCompanyFieldTitle)
+}
+
+func (m *MembershipLegacyCompany) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyCompany
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyCompany(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyCompany) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyCompany
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyCompany) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The response from a custom field on checkout
+var (
+	membershipLegacyCustomFieldResponsesItemFieldAnswer   = big.NewInt(1 << 0)
+	membershipLegacyCustomFieldResponsesItemFieldID       = big.NewInt(1 << 1)
+	membershipLegacyCustomFieldResponsesItemFieldQuestion = big.NewInt(1 << 2)
+)
+
+type MembershipLegacyCustomFieldResponsesItem struct {
+	// The response a user gave to the specific question or field.
+	Answer string `json:"answer" url:"answer"`
+	// The unique identifier for the custom field response.
+	ID string `json:"id" url:"id"`
+	// The question asked by the custom field
+	Question string `json:"question" url:"question"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) GetAnswer() string {
+	if m == nil {
+		return ""
+	}
+	return m.Answer
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) GetQuestion() string {
+	if m == nil {
+		return ""
+	}
+	return m.Question
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetAnswer sets the Answer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyCustomFieldResponsesItem) SetAnswer(answer string) {
+	m.Answer = answer
+	m.require(membershipLegacyCustomFieldResponsesItemFieldAnswer)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyCustomFieldResponsesItem) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyCustomFieldResponsesItemFieldID)
+}
+
+// SetQuestion sets the Question field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyCustomFieldResponsesItem) SetQuestion(question string) {
+	m.Question = question
+	m.require(membershipLegacyCustomFieldResponsesItemFieldQuestion)
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyCustomFieldResponsesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyCustomFieldResponsesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyCustomFieldResponsesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyCustomFieldResponsesItem) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The member record linking the user to the company for this membership. Null if the member record has not been created yet.
+var (
+	membershipLegacyMemberFieldID = big.NewInt(1 << 0)
+)
+
+type MembershipLegacyMember struct {
+	// The unique identifier for the member.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyMember) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyMember) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyMember) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyMember) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyMemberFieldID)
+}
+
+func (m *MembershipLegacyMember) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyMember
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyMember(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyMember) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyMember
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyMember) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The plan the customer purchased to create this membership.
+var (
+	membershipLegacyPlanFieldID       = big.NewInt(1 << 0)
+	membershipLegacyPlanFieldMetadata = big.NewInt(1 << 1)
+)
+
+type MembershipLegacyPlan struct {
+	// The unique identifier for the plan.
+	ID string `json:"id" url:"id"`
+	// Custom key-value pairs stored on the plan. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this plan.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyPlan) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyPlan) GetMetadata() map[string]any {
+	if m == nil {
+		return nil
+	}
+	return m.Metadata
+}
+
+func (m *MembershipLegacyPlan) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyPlan) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyPlan) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyPlanFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyPlan) SetMetadata(metadata map[string]any) {
+	m.Metadata = metadata
+	m.require(membershipLegacyPlanFieldMetadata)
+}
+
+func (m *MembershipLegacyPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyPlan) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyPlan) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The product this membership grants access to.
+var (
+	membershipLegacyProductFieldID       = big.NewInt(1 << 0)
+	membershipLegacyProductFieldMetadata = big.NewInt(1 << 1)
+	membershipLegacyProductFieldTitle    = big.NewInt(1 << 2)
+)
+
+type MembershipLegacyProduct struct {
+	// The unique identifier for the product.
+	ID string `json:"id" url:"id"`
+	// Custom key-value pairs stored on the product and included in payment and membership webhook payloads. Max 50 keys, 100 characters per key, 500 characters per string value.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// The display name of the product shown to customers on the product page and in search results.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyProduct) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyProduct) GetMetadata() map[string]any {
+	if m == nil {
+		return nil
+	}
+	return m.Metadata
+}
+
+func (m *MembershipLegacyProduct) GetTitle() string {
+	if m == nil {
+		return ""
+	}
+	return m.Title
+}
+
+func (m *MembershipLegacyProduct) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyProduct) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyProduct) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyProductFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyProduct) SetMetadata(metadata map[string]any) {
+	m.Metadata = metadata
+	m.require(membershipLegacyProductFieldMetadata)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyProduct) SetTitle(title string) {
+	m.Title = title
+	m.require(membershipLegacyProductFieldTitle)
+}
+
+func (m *MembershipLegacyProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyProduct) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyProduct) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The promotional code currently applied to this membership's billing. Null if no promo code is active.
+var (
+	membershipLegacyPromoCodeFieldID = big.NewInt(1 << 0)
+)
+
+type MembershipLegacyPromoCode struct {
+	// The unique identifier for the promo code.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyPromoCode) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyPromoCode) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyPromoCode) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyPromoCode) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyPromoCodeFieldID)
+}
+
+func (m *MembershipLegacyPromoCode) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyPromoCode
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyPromoCode(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyPromoCode) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyPromoCode
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyPromoCode) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The user who owns this membership. Null if the user account has been deleted.
+var (
+	membershipLegacyUserFieldEmail      = big.NewInt(1 << 0)
+	membershipLegacyUserFieldID         = big.NewInt(1 << 1)
+	membershipLegacyUserFieldName       = big.NewInt(1 << 2)
+	membershipLegacyUserFieldProfilePic = big.NewInt(1 << 3)
+	membershipLegacyUserFieldUsername   = big.NewInt(1 << 4)
+)
+
+type MembershipLegacyUser struct {
+	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The unique identifier for the user.
+	ID string `json:"id" url:"id"`
+	// The user's display name shown on their public profile.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The URL of the user's profile picture. Use profilePicture for the full attachment object.
+	ProfilePic string `json:"profile_pic" url:"profile_pic"`
+	// The user's unique username shown on their public profile.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyUser) GetEmail() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Email
+}
+
+func (m *MembershipLegacyUser) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipLegacyUser) GetName() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Name
+}
+
+func (m *MembershipLegacyUser) GetProfilePic() string {
+	if m == nil {
+		return ""
+	}
+	return m.ProfilePic
+}
+
+func (m *MembershipLegacyUser) GetUsername() string {
+	if m == nil {
+		return ""
+	}
+	return m.Username
+}
+
+func (m *MembershipLegacyUser) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyUser) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyUser) SetEmail(email *string) {
+	m.Email = email
+	m.require(membershipLegacyUserFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyUser) SetID(id string) {
+	m.ID = id
+	m.require(membershipLegacyUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyUser) SetName(name *string) {
+	m.Name = name
+	m.require(membershipLegacyUserFieldName)
+}
+
+// SetProfilePic sets the ProfilePic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyUser) SetProfilePic(profilePic string) {
+	m.ProfilePic = profilePic
+	m.require(membershipLegacyUserFieldProfilePic)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyUser) SetUsername(username string) {
+	m.Username = username
+	m.require(membershipLegacyUserFieldUsername)
+}
+
+func (m *MembershipLegacyUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyUser) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyUser) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// A membership represents an active relationship between a user and a product. It tracks the user's access, billing status, and renewal schedule.
+var (
 	membershipListItemFieldCancelAtPeriodEnd       = big.NewInt(1 << 0)
 	membershipListItemFieldCancelOption            = big.NewInt(1 << 1)
 	membershipListItemFieldCancelationStatus       = big.NewInt(1 << 2)
@@ -14316,50 +18332,6 @@ func (m *MembershipListItemUser) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", m)
-}
-
-// The status of a membership
-type MembershipStatus string
-
-const (
-	MembershipStatusTrialing   MembershipStatus = "trialing"
-	MembershipStatusActive     MembershipStatus = "active"
-	MembershipStatusPastDue    MembershipStatus = "past_due"
-	MembershipStatusCompleted  MembershipStatus = "completed"
-	MembershipStatusCanceled   MembershipStatus = "canceled"
-	MembershipStatusExpired    MembershipStatus = "expired"
-	MembershipStatusUnresolved MembershipStatus = "unresolved"
-	MembershipStatusDrafted    MembershipStatus = "drafted"
-	MembershipStatusCanceling  MembershipStatus = "canceling"
-)
-
-func NewMembershipStatusFromString(s string) (MembershipStatus, error) {
-	switch s {
-	case "trialing":
-		return MembershipStatusTrialing, nil
-	case "active":
-		return MembershipStatusActive, nil
-	case "past_due":
-		return MembershipStatusPastDue, nil
-	case "completed":
-		return MembershipStatusCompleted, nil
-	case "canceled":
-		return MembershipStatusCanceled, nil
-	case "expired":
-		return MembershipStatusExpired, nil
-	case "unresolved":
-		return MembershipStatusUnresolved, nil
-	case "drafted":
-		return MembershipStatusDrafted, nil
-	case "canceling":
-		return MembershipStatusCanceling, nil
-	}
-	var t MembershipStatus
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (m MembershipStatus) Ptr() *MembershipStatus {
-	return &m
 }
 
 // Which columns can be used to sort.
@@ -16857,33 +20829,34 @@ var (
 	paymentLegacyFieldPlan                       = big.NewInt(1 << 33)
 	paymentLegacyFieldProduct                    = big.NewInt(1 << 34)
 	paymentLegacyFieldPromoCode                  = big.NewInt(1 << 35)
-	paymentLegacyFieldRefundable                 = big.NewInt(1 << 36)
-	paymentLegacyFieldRefundedAmount             = big.NewInt(1 << 37)
-	paymentLegacyFieldRefundedAt                 = big.NewInt(1 << 38)
-	paymentLegacyFieldRefunds                    = big.NewInt(1 << 39)
-	paymentLegacyFieldResolutions                = big.NewInt(1 << 40)
-	paymentLegacyFieldRetryable                  = big.NewInt(1 << 41)
-	paymentLegacyFieldRiskScore                  = big.NewInt(1 << 42)
-	paymentLegacyFieldRiskSignals                = big.NewInt(1 << 43)
-	paymentLegacyFieldSettlementAmount           = big.NewInt(1 << 44)
-	paymentLegacyFieldSettlementCurrency         = big.NewInt(1 << 45)
-	paymentLegacyFieldSettlementExchangeRate     = big.NewInt(1 << 46)
-	paymentLegacyFieldSettlementTimeAt           = big.NewInt(1 << 47)
-	paymentLegacyFieldShipment                   = big.NewInt(1 << 48)
-	paymentLegacyFieldShippingAddress            = big.NewInt(1 << 49)
-	paymentLegacyFieldStatus                     = big.NewInt(1 << 50)
-	paymentLegacyFieldSubstatus                  = big.NewInt(1 << 51)
-	paymentLegacyFieldSubtotal                   = big.NewInt(1 << 52)
-	paymentLegacyFieldTaxAmount                  = big.NewInt(1 << 53)
-	paymentLegacyFieldTaxBehavior                = big.NewInt(1 << 54)
-	paymentLegacyFieldTaxRefundedAmount          = big.NewInt(1 << 55)
-	paymentLegacyFieldThreeDsVerified            = big.NewInt(1 << 56)
-	paymentLegacyFieldTotal                      = big.NewInt(1 << 57)
-	paymentLegacyFieldUpdatedAt                  = big.NewInt(1 << 58)
-	paymentLegacyFieldUsdTotal                   = big.NewInt(1 << 59)
-	paymentLegacyFieldUser                       = big.NewInt(1 << 60)
-	paymentLegacyFieldVerificationChecks         = big.NewInt(1 << 61)
-	paymentLegacyFieldVoidable                   = big.NewInt(1 << 62)
+	paymentLegacyFieldRecoveryURL                = big.NewInt(1 << 36)
+	paymentLegacyFieldRefundable                 = big.NewInt(1 << 37)
+	paymentLegacyFieldRefundedAmount             = big.NewInt(1 << 38)
+	paymentLegacyFieldRefundedAt                 = big.NewInt(1 << 39)
+	paymentLegacyFieldRefunds                    = big.NewInt(1 << 40)
+	paymentLegacyFieldResolutions                = big.NewInt(1 << 41)
+	paymentLegacyFieldRetryable                  = big.NewInt(1 << 42)
+	paymentLegacyFieldRiskScore                  = big.NewInt(1 << 43)
+	paymentLegacyFieldRiskSignals                = big.NewInt(1 << 44)
+	paymentLegacyFieldSettlementAmount           = big.NewInt(1 << 45)
+	paymentLegacyFieldSettlementCurrency         = big.NewInt(1 << 46)
+	paymentLegacyFieldSettlementExchangeRate     = big.NewInt(1 << 47)
+	paymentLegacyFieldSettlementTimeAt           = big.NewInt(1 << 48)
+	paymentLegacyFieldShipment                   = big.NewInt(1 << 49)
+	paymentLegacyFieldShippingAddress            = big.NewInt(1 << 50)
+	paymentLegacyFieldStatus                     = big.NewInt(1 << 51)
+	paymentLegacyFieldSubstatus                  = big.NewInt(1 << 52)
+	paymentLegacyFieldSubtotal                   = big.NewInt(1 << 53)
+	paymentLegacyFieldTaxAmount                  = big.NewInt(1 << 54)
+	paymentLegacyFieldTaxBehavior                = big.NewInt(1 << 55)
+	paymentLegacyFieldTaxRefundedAmount          = big.NewInt(1 << 56)
+	paymentLegacyFieldThreeDsVerified            = big.NewInt(1 << 57)
+	paymentLegacyFieldTotal                      = big.NewInt(1 << 58)
+	paymentLegacyFieldUpdatedAt                  = big.NewInt(1 << 59)
+	paymentLegacyFieldUsdTotal                   = big.NewInt(1 << 60)
+	paymentLegacyFieldUser                       = big.NewInt(1 << 61)
+	paymentLegacyFieldVerificationChecks         = big.NewInt(1 << 62)
+	paymentLegacyFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 63)
 )
 
 type PaymentLegacy struct {
@@ -16959,6 +20932,8 @@ type PaymentLegacy struct {
 	Product *PaymentLegacyProduct `json:"product,omitempty" url:"product,omitempty"`
 	// The promo code used for this payment.
 	PromoCode *PaymentLegacyPromoCode `json:"promo_code,omitempty" url:"promo_code,omitempty"`
+	// Whop-hosted URL where the buyer can sign in and complete 3D Secure for a failed subscription renewal. `null` when recovery is unavailable or you lack `member:basic:read`.
+	RecoveryURL *string `json:"recovery_url,omitempty" url:"recovery_url,omitempty"`
 	// True only for payments that are `paid`, have not been fully refunded, and were processed by a payment processor that allows refunds.
 	Refundable bool `json:"refundable" url:"refundable"`
 	// The payment refund amount(if applicable).
@@ -17271,6 +21246,13 @@ func (p *PaymentLegacy) GetPromoCode() *PaymentLegacyPromoCode {
 		return nil
 	}
 	return p.PromoCode
+}
+
+func (p *PaymentLegacy) GetRecoveryURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.RecoveryURL
 }
 
 func (p *PaymentLegacy) GetRefundable() bool {
@@ -17726,6 +21708,13 @@ func (p *PaymentLegacy) SetProduct(product *PaymentLegacyProduct) {
 func (p *PaymentLegacy) SetPromoCode(promoCode *PaymentLegacyPromoCode) {
 	p.PromoCode = promoCode
 	p.require(paymentLegacyFieldPromoCode)
+}
+
+// SetRecoveryURL sets the RecoveryURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLegacy) SetRecoveryURL(recoveryURL *string) {
+	p.RecoveryURL = recoveryURL
+	p.require(paymentLegacyFieldRecoveryURL)
 }
 
 // SetRefundable sets the Refundable field and marks it as non-optional;
@@ -26399,6 +30388,8 @@ const (
 	PaymentMethodTypesMbWay                  PaymentMethodTypes = "mb_way"
 	PaymentMethodTypesMPesa                  PaymentMethodTypes = "m_pesa"
 	PaymentMethodTypesMercadoPago            PaymentMethodTypes = "mercado_pago"
+	PaymentMethodTypesMercadoPagoAr          PaymentMethodTypes = "mercado_pago_ar"
+	PaymentMethodTypesMercadoPagoMx          PaymentMethodTypes = "mercado_pago_mx"
 	PaymentMethodTypesMobilepay              PaymentMethodTypes = "mobilepay"
 	PaymentMethodTypesModo                   PaymentMethodTypes = "modo"
 	PaymentMethodTypesMondu                  PaymentMethodTypes = "mondu"
@@ -26412,7 +30403,12 @@ const (
 	PaymentMethodTypesNgMarket               PaymentMethodTypes = "ng_market"
 	PaymentMethodTypesNgUssd                 PaymentMethodTypes = "ng_ussd"
 	PaymentMethodTypesNgWallet               PaymentMethodTypes = "ng_wallet"
+	PaymentMethodTypesNupay                  PaymentMethodTypes = "nupay"
 	PaymentMethodTypesNzBankAccount          PaymentMethodTypes = "nz_bank_account"
+	PaymentMethodTypesOney                   PaymentMethodTypes = "oney"
+	PaymentMethodTypesOney3X                 PaymentMethodTypes = "oney_3x"
+	PaymentMethodTypesOney4X                 PaymentMethodTypes = "oney_4x"
+	PaymentMethodTypesOpay                   PaymentMethodTypes = "opay"
 	PaymentMethodTypesOxxo                   PaymentMethodTypes = "oxxo"
 	PaymentMethodTypesP24                    PaymentMethodTypes = "p24"
 	PaymentMethodTypesPagoEfectivo           PaymentMethodTypes = "pago_efectivo"
@@ -26452,6 +30448,7 @@ const (
 	PaymentMethodTypesUsBankAccount          PaymentMethodTypes = "us_bank_account"
 	PaymentMethodTypesUsBankTransfer         PaymentMethodTypes = "us_bank_transfer"
 	PaymentMethodTypesVenmo                  PaymentMethodTypes = "venmo"
+	PaymentMethodTypesVerve                  PaymentMethodTypes = "verve"
 	PaymentMethodTypesVipps                  PaymentMethodTypes = "vipps"
 	PaymentMethodTypesWebpay                 PaymentMethodTypes = "webpay"
 	PaymentMethodTypesWechatPay              PaymentMethodTypes = "wechat_pay"
@@ -26581,6 +30578,10 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesMPesa, nil
 	case "mercado_pago":
 		return PaymentMethodTypesMercadoPago, nil
+	case "mercado_pago_ar":
+		return PaymentMethodTypesMercadoPagoAr, nil
+	case "mercado_pago_mx":
+		return PaymentMethodTypesMercadoPagoMx, nil
 	case "mobilepay":
 		return PaymentMethodTypesMobilepay, nil
 	case "modo":
@@ -26607,8 +30608,18 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesNgUssd, nil
 	case "ng_wallet":
 		return PaymentMethodTypesNgWallet, nil
+	case "nupay":
+		return PaymentMethodTypesNupay, nil
 	case "nz_bank_account":
 		return PaymentMethodTypesNzBankAccount, nil
+	case "oney":
+		return PaymentMethodTypesOney, nil
+	case "oney_3x":
+		return PaymentMethodTypesOney3X, nil
+	case "oney_4x":
+		return PaymentMethodTypesOney4X, nil
+	case "opay":
+		return PaymentMethodTypesOpay, nil
 	case "oxxo":
 		return PaymentMethodTypesOxxo, nil
 	case "p24":
@@ -26687,6 +30698,8 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesUsBankTransfer, nil
 	case "venmo":
 		return PaymentMethodTypesVenmo, nil
+	case "verve":
+		return PaymentMethodTypesVerve, nil
 	case "vipps":
 		return PaymentMethodTypesVipps, nil
 	case "webpay":
@@ -29855,6 +33868,91 @@ func NewReceiptV2OrderFromString(s string) (ReceiptV2Order, error) {
 
 func (r ReceiptV2Order) Ptr() *ReceiptV2Order {
 	return &r
+}
+
+var (
+	recommendedActionFieldID = big.NewInt(1 << 0)
+)
+
+type RecommendedAction struct {
+	// Recommended action ID, prefixed `reca_`
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RecommendedAction) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *RecommendedAction) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RecommendedAction) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RecommendedAction) SetID(id string) {
+	r.ID = id
+	r.require(recommendedActionFieldID)
+}
+
+func (r *RecommendedAction) UnmarshalJSON(data []byte) error {
+	type unmarshaler RecommendedAction
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RecommendedAction(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RecommendedAction) MarshalJSON() ([]byte, error) {
+	type embed RecommendedAction
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RecommendedAction) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
 }
 
 // A refund represents a full or partial reversal of a payment, including the amount, status, and payment provider.
@@ -37041,6 +41139,8 @@ const (
 	WebhookEventShipmentUpdated                    WebhookEvent = "shipment.updated"
 	WebhookEventMemberCreated                      WebhookEvent = "member.created"
 	WebhookEventAdCampaignPaymentFailed            WebhookEvent = "ad_campaign.payment_failed"
+	WebhookEventAdCampaignUpdated                  WebhookEvent = "ad_campaign.updated"
+	WebhookEventAdUpdated                          WebhookEvent = "ad.updated"
 	WebhookEventChatMessageCreated                 WebhookEvent = "chat.message.created"
 	WebhookEventChatReactionCreated                WebhookEvent = "chat.reaction.created"
 	WebhookEventPaymentCreated                     WebhookEvent = "payment.created"
@@ -37193,6 +41293,10 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventMemberCreated, nil
 	case "ad_campaign.payment_failed":
 		return WebhookEventAdCampaignPaymentFailed, nil
+	case "ad_campaign.updated":
+		return WebhookEventAdCampaignUpdated, nil
+	case "ad.updated":
+		return WebhookEventAdUpdated, nil
 	case "chat.message.created":
 		return WebhookEventChatMessageCreated, nil
 	case "chat.reaction.created":

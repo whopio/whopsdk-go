@@ -167,53 +167,6 @@ func (r *RawClient) Update(
 	}, nil
 }
 
-func (r *RawClient) AddFreeDaysMembership(
-	ctx context.Context,
-	request *whopsdk.AddFreeDaysMembershipRequest,
-	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.MembershipLegacy], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		r.baseURL,
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/memberships/%v/add_free_days",
-		request.ID,
-	)
-	headers := internal.MergeHeaders(
-		r.options.ToHeader(),
-		options.ToHeader(),
-	)
-	headers.Add("Content-Type", "application/json")
-	var response *whopsdk.MembershipLegacy
-	raw, err := r.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodPost,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Request:         request,
-			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &core.Response[*whopsdk.MembershipLegacy]{
-		StatusCode: raw.StatusCode,
-		Header:     raw.Header,
-		Body:       response,
-	}, nil
-}
-
 func (r *RawClient) Cancel(
 	ctx context.Context,
 	request *whopsdk.CancelMembershipsRequest,
@@ -400,11 +353,11 @@ func (r *RawClient) Resume(
 	}, nil
 }
 
-func (r *RawClient) ResyncAccessMembership(
+func (r *RawClient) ResyncAccess(
 	ctx context.Context,
-	request *whopsdk.ResyncAccessMembershipRequest,
+	request *whopsdk.ResyncAccessMembershipsRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.MembershipLegacy], error) {
+) (*core.Response[*whopsdk.Membership], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -419,7 +372,7 @@ func (r *RawClient) ResyncAccessMembership(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *whopsdk.MembershipLegacy
+	var response *whopsdk.Membership
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -438,7 +391,7 @@ func (r *RawClient) ResyncAccessMembership(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.MembershipLegacy]{
+	return &core.Response[*whopsdk.Membership]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -484,51 +437,6 @@ func (r *RawClient) Transfer(
 		return nil, err
 	}
 	return &core.Response[*whopsdk.TransferMembershipsResponse]{
-		StatusCode: raw.StatusCode,
-		Header:     raw.Header,
-		Body:       response,
-	}, nil
-}
-
-func (r *RawClient) UncancelMembership(
-	ctx context.Context,
-	request *whopsdk.UncancelMembershipRequest,
-	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.MembershipLegacy], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		r.baseURL,
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/memberships/%v/uncancel",
-		request.ID,
-	)
-	headers := internal.MergeHeaders(
-		r.options.ToHeader(),
-		options.ToHeader(),
-	)
-	var response *whopsdk.MembershipLegacy
-	raw, err := r.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodPost,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &core.Response[*whopsdk.MembershipLegacy]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

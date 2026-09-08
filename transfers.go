@@ -15,12 +15,14 @@ var (
 	createTransfersRequestFieldCurrency        = big.NewInt(1 << 1)
 	createTransfersRequestFieldDestinationID   = big.NewInt(1 << 2)
 	createTransfersRequestFieldExpiresAt       = big.NewInt(1 << 3)
-	createTransfersRequestFieldIdempotenceKey  = big.NewInt(1 << 4)
-	createTransfersRequestFieldMetadata        = big.NewInt(1 << 5)
-	createTransfersRequestFieldNotes           = big.NewInt(1 << 6)
-	createTransfersRequestFieldOriginID        = big.NewInt(1 << 7)
-	createTransfersRequestFieldRedeemableCount = big.NewInt(1 << 8)
-	createTransfersRequestFieldType            = big.NewInt(1 << 9)
+	createTransfersRequestFieldFeedID          = big.NewInt(1 << 4)
+	createTransfersRequestFieldFeedType        = big.NewInt(1 << 5)
+	createTransfersRequestFieldIdempotenceKey  = big.NewInt(1 << 6)
+	createTransfersRequestFieldMetadata        = big.NewInt(1 << 7)
+	createTransfersRequestFieldNotes           = big.NewInt(1 << 8)
+	createTransfersRequestFieldOriginID        = big.NewInt(1 << 9)
+	createTransfersRequestFieldRedeemableCount = big.NewInt(1 << 10)
+	createTransfersRequestFieldType            = big.NewInt(1 << 11)
 )
 
 type CreateTransfersRequest struct {
@@ -32,6 +34,10 @@ type CreateTransfersRequest struct {
 	DestinationID *string `json:"destination_id,omitempty" url:"-"`
 	// claim_link only. Link expiry as an ISO 8601 timestamp. Defaults to 24 hours from creation.
 	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"-"`
+	// Ledger transfers only. The feed the transfer was initiated from. Given with `feed_type`, the payment receipt posts into that feed instead of a direct message.
+	FeedID *string `json:"feed_id,omitempty" url:"-"`
+	// Ledger transfers only. The type of the feed named by `feed_id`.
+	FeedType *CreateTransfersRequestFeedType `json:"feed_type,omitempty" url:"-"`
 	// Ledger transfers and wallet sends. A unique key that makes retries safe. Retrying with the same key returns the original transfer, or attaches to the original wallet send, instead of moving money twice.
 	IdempotenceKey *string `json:"idempotence_key,omitempty" url:"-"`
 	// Ledger transfers only. Custom key-value pairs attached to the transfer. Max 50 keys, 100 chars per key, 500 chars per string value.
@@ -82,6 +88,20 @@ func (c *CreateTransfersRequest) SetDestinationID(destinationID *string) {
 func (c *CreateTransfersRequest) SetExpiresAt(expiresAt *time.Time) {
 	c.ExpiresAt = expiresAt
 	c.require(createTransfersRequestFieldExpiresAt)
+}
+
+// SetFeedID sets the FeedID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequest) SetFeedID(feedID *string) {
+	c.FeedID = feedID
+	c.require(createTransfersRequestFieldFeedID)
+}
+
+// SetFeedType sets the FeedType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequest) SetFeedType(feedType *CreateTransfersRequestFeedType) {
+	c.FeedType = feedType
+	c.require(createTransfersRequestFieldFeedType)
 }
 
 // SetIdempotenceKey sets the IdempotenceKey field and marks it as non-optional;
@@ -345,6 +365,41 @@ func (r *RetrieveTransfersRequest) require(field *big.Int) {
 func (r *RetrieveTransfersRequest) SetID(id string) {
 	r.ID = id
 	r.require(retrieveTransfersRequestFieldID)
+}
+
+// Ledger transfers only. The type of the feed named by `feed_id`.
+type CreateTransfersRequestFeedType string
+
+const (
+	CreateTransfersRequestFeedTypeDmsFeed        CreateTransfersRequestFeedType = "dms_feed"
+	CreateTransfersRequestFeedTypeChatFeed       CreateTransfersRequestFeedType = "chat_feed"
+	CreateTransfersRequestFeedTypeForumFeed      CreateTransfersRequestFeedType = "forum_feed"
+	CreateTransfersRequestFeedTypeLivestreamFeed CreateTransfersRequestFeedType = "livestream_feed"
+	CreateTransfersRequestFeedTypeUniversalPost  CreateTransfersRequestFeedType = "universal_post"
+	CreateTransfersRequestFeedTypeUser           CreateTransfersRequestFeedType = "user"
+)
+
+func NewCreateTransfersRequestFeedTypeFromString(s string) (CreateTransfersRequestFeedType, error) {
+	switch s {
+	case "dms_feed":
+		return CreateTransfersRequestFeedTypeDmsFeed, nil
+	case "chat_feed":
+		return CreateTransfersRequestFeedTypeChatFeed, nil
+	case "forum_feed":
+		return CreateTransfersRequestFeedTypeForumFeed, nil
+	case "livestream_feed":
+		return CreateTransfersRequestFeedTypeLivestreamFeed, nil
+	case "universal_post":
+		return CreateTransfersRequestFeedTypeUniversalPost, nil
+	case "user":
+		return CreateTransfersRequestFeedTypeUser, nil
+	}
+	var t CreateTransfersRequestFeedType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateTransfersRequestFeedType) Ptr() *CreateTransfersRequestFeedType {
+	return &c
 }
 
 // The kind of money movement, which decides what comes back. Defaults to ledger. `ledger` moves credit between two Whop balances and returns a `transfer`; `wallet_send` sends USDT from the origin account's Ethereum wallet and returns a `send`; `claim_link` funds a shareable link anyone with the URL can redeem and returns a `claim_link`. A `ledger` transfer from a stablecoin-rails account settles on-chain when covered, and still returns a `transfer`.

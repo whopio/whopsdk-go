@@ -127,39 +127,6 @@ func TestAppsCreateWithWireMock(
 	VerifyRequestCount(t, "TestAppsCreateWithWireMock", "POST", "/apps", nil, 1)
 }
 
-func TestAppsUpdatePermissionsAppWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.UpdatePermissionsAppRequest{
-		AppID: "app_id",
-		RequestedPermissions: []*whopsdk.UpdatePermissionsAppRequestRequestedPermissionsItem{
-			&whopsdk.UpdatePermissionsAppRequestRequestedPermissionsItem{
-				Action:        "action",
-				IsRequired:    true,
-				Justification: "justification",
-			},
-		},
-	}
-	_, invocationErr := client.Apps.UpdatePermissionsApp(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestAppsUpdatePermissionsAppWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestAppsUpdatePermissionsAppWithWireMock", "PATCH", "/apps/app_id/permissions", nil, 1)
-}
-
 func TestAppsRetrieveWithWireMock(
 	t *testing.T,
 ) {

@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -5530,6 +5531,976 @@ func (l *ListAdsResponsePageInfo) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	postAdUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postAdUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postAdUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postAdUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postAdUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postAdUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postAdUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postAdUpdatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+type PostAdUpdatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostAdUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string                   `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *PostAdUpdatedPayloadData `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostAdUpdatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdUpdatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostAdUpdatedPayload) GetAPIVersion() PostAdUpdatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostAdUpdatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostAdUpdatedPayload) GetData() *PostAdUpdatedPayloadData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostAdUpdatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdUpdatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostAdUpdatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostAdUpdatedPayload) GetType() PostAdUpdatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostAdUpdatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdUpdatedPayload) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postAdUpdatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetAPIVersion(apiVersion PostAdUpdatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postAdUpdatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postAdUpdatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetData(data *PostAdUpdatedPayloadData) {
+	p.Data = data
+	p.require(postAdUpdatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postAdUpdatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postAdUpdatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postAdUpdatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetType(type_ PostAdUpdatedPayloadType) {
+	p.Type = type_
+	p.require(postAdUpdatedPayloadFieldType)
+}
+
+func (p *PostAdUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostAdUpdatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostAdUpdatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostAdUpdatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdUpdatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostAdUpdatedPayloadAPIVersion string
+
+const (
+	PostAdUpdatedPayloadAPIVersionV1 PostAdUpdatedPayloadAPIVersion = "v1"
+)
+
+func NewPostAdUpdatedPayloadAPIVersionFromString(s string) (PostAdUpdatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostAdUpdatedPayloadAPIVersionV1, nil
+	}
+	var t PostAdUpdatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadAPIVersion) Ptr() *PostAdUpdatedPayloadAPIVersion {
+	return &p
+}
+
+var (
+	postAdUpdatedPayloadDataFieldAdCampaign         = big.NewInt(1 << 0)
+	postAdUpdatedPayloadDataFieldAdGroup            = big.NewInt(1 << 1)
+	postAdUpdatedPayloadDataFieldCallToAction       = big.NewInt(1 << 2)
+	postAdUpdatedPayloadDataFieldCreatedAt          = big.NewInt(1 << 3)
+	postAdUpdatedPayloadDataFieldCreatives          = big.NewInt(1 << 4)
+	postAdUpdatedPayloadDataFieldDeliveryStatus     = big.NewInt(1 << 5)
+	postAdUpdatedPayloadDataFieldDescriptions       = big.NewInt(1 << 6)
+	postAdUpdatedPayloadDataFieldExistingPostID     = big.NewInt(1 << 7)
+	postAdUpdatedPayloadDataFieldHeadlines          = big.NewInt(1 << 8)
+	postAdUpdatedPayloadDataFieldID                 = big.NewInt(1 << 9)
+	postAdUpdatedPayloadDataFieldIssues             = big.NewInt(1 << 10)
+	postAdUpdatedPayloadDataFieldLeadForm           = big.NewInt(1 << 11)
+	postAdUpdatedPayloadDataFieldLeadFormID         = big.NewInt(1 << 12)
+	postAdUpdatedPayloadDataFieldMessagingConfig    = big.NewInt(1 << 13)
+	postAdUpdatedPayloadDataFieldMultiAdvertiserAds = big.NewInt(1 << 14)
+	postAdUpdatedPayloadDataFieldMusic              = big.NewInt(1 << 15)
+	postAdUpdatedPayloadDataFieldPostID             = big.NewInt(1 << 16)
+	postAdUpdatedPayloadDataFieldPostSource         = big.NewInt(1 << 17)
+	postAdUpdatedPayloadDataFieldPostThumbnailURL   = big.NewInt(1 << 18)
+	postAdUpdatedPayloadDataFieldPrimaryTexts       = big.NewInt(1 << 19)
+	postAdUpdatedPayloadDataFieldSocialAccounts     = big.NewInt(1 << 20)
+	postAdUpdatedPayloadDataFieldStatus             = big.NewInt(1 << 21)
+	postAdUpdatedPayloadDataFieldTitle              = big.NewInt(1 << 22)
+	postAdUpdatedPayloadDataFieldUpdatedAt          = big.NewInt(1 << 23)
+	postAdUpdatedPayloadDataFieldURL                = big.NewInt(1 << 24)
+	postAdUpdatedPayloadDataFieldURLParameters      = big.NewInt(1 << 25)
+)
+
+type PostAdUpdatedPayloadData struct {
+	// The ad campaign this ad belongs to.
+	AdCampaign *AdEntityReference `json:"ad_campaign" url:"ad_campaign"`
+	// The ad group this ad belongs to.
+	AdGroup *AdEntityReference `json:"ad_group" url:"ad_group"`
+	// The call-to-action button shown on the ad.
+	CallToAction *PostAdUpdatedPayloadDataCallToAction `json:"call_to_action,omitempty" url:"call_to_action,omitempty"`
+	// When the ad was created, as an ISO 8601 timestamp.
+	CreatedAt string        `json:"created_at" url:"created_at"`
+	Creatives []*AdCreative `json:"creatives" url:"creatives"`
+	// Whether the ad is delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+	DeliveryStatus PostAdUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
+	Descriptions   []string                               `json:"descriptions" url:"descriptions"`
+	// The post you pointed this ad at, when it promotes one you already published — a Facebook post, Instagram media, or TikTok video ID. `null` when the ad uses uploaded creatives.
+	ExistingPostID *string  `json:"existing_post_id,omitempty" url:"existing_post_id,omitempty"`
+	Headlines      []string `json:"headlines" url:"headlines"`
+	// Unique identifier for the ad, prefixed `ad_`.
+	ID     string             `json:"id" url:"id"`
+	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
+	// The instant lead form shown when someone taps this ad. `null` when the ad group's conversion_location is not an instant-form destination.
+	LeadForm *AdLeadForm `json:"lead_form,omitempty" url:"lead_form,omitempty"`
+	// The ad platform's ID for the instant form the ad uses. Set when the ad references an existing form via `lead_form_id`, or once a form built from `lead_form` has been created on the platform.
+	LeadFormID *string `json:"lead_form_id,omitempty" url:"lead_form_id,omitempty"`
+	// Welcome message for click-to-message ads, shown when the conversation opens. `null` when the ad has none.
+	MessagingConfig *AdMessagingConfig `json:"messaging_config,omitempty" url:"messaging_config,omitempty"`
+	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
+	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"multi_advertiser_ads,omitempty"`
+	// The advertiser-uploaded MP3 a TikTok carousel ad plays. TikTok-only; `null` elsewhere and for non-carousel ads.
+	Music *AdMusic `json:"music,omitempty" url:"music,omitempty"`
+	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
+	PostID *string `json:"post_id,omitempty" url:"post_id,omitempty"`
+	// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
+	PostSource *PostAdUpdatedPayloadDataPostSource `json:"post_source,omitempty" url:"post_source,omitempty"`
+	// Preview image of the post named by `existing_post_id`. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
+	PostThumbnailURL *string              `json:"post_thumbnail_url,omitempty" url:"post_thumbnail_url,omitempty"`
+	PrimaryTexts     []string             `json:"primary_texts" url:"primary_texts"`
+	SocialAccounts   []*AdEntityReference `json:"social_accounts" url:"social_accounts"`
+	// Whether the ad is enabled. `active` and `paused` are set by you; `in_review` and `rejected` come from ad review.
+	Status PostAdUpdatedPayloadDataStatus `json:"status" url:"status"`
+	// Display title of the ad.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// When the ad was last updated, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// The URL the ad links to, without its query string. Parameters belong in `url_parameters`; any you send on `url` are moved there.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+	// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters on top; those are reserved and rejected if you set them. Which keys are reserved depends on the ad's network — Meta: utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid; TikTok: waid, wasid, wacid, ad_id, adset_id, campaign_id, utm_source, utm_medium, utm_placement, utm_whop, tw_source, tw_adid.
+	URLParameters map[string]any `json:"url_parameters" url:"url_parameters"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdUpdatedPayloadData) GetAdCampaign() *AdEntityReference {
+	if p == nil {
+		return nil
+	}
+	return p.AdCampaign
+}
+
+func (p *PostAdUpdatedPayloadData) GetAdGroup() *AdEntityReference {
+	if p == nil {
+		return nil
+	}
+	return p.AdGroup
+}
+
+func (p *PostAdUpdatedPayloadData) GetCallToAction() *PostAdUpdatedPayloadDataCallToAction {
+	if p == nil {
+		return nil
+	}
+	return p.CallToAction
+}
+
+func (p *PostAdUpdatedPayloadData) GetCreatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.CreatedAt
+}
+
+func (p *PostAdUpdatedPayloadData) GetCreatives() []*AdCreative {
+	if p == nil {
+		return nil
+	}
+	return p.Creatives
+}
+
+func (p *PostAdUpdatedPayloadData) GetDeliveryStatus() PostAdUpdatedPayloadDataDeliveryStatus {
+	if p == nil {
+		return ""
+	}
+	return p.DeliveryStatus
+}
+
+func (p *PostAdUpdatedPayloadData) GetDescriptions() []string {
+	if p == nil {
+		return nil
+	}
+	return p.Descriptions
+}
+
+func (p *PostAdUpdatedPayloadData) GetExistingPostID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ExistingPostID
+}
+
+func (p *PostAdUpdatedPayloadData) GetHeadlines() []string {
+	if p == nil {
+		return nil
+	}
+	return p.Headlines
+}
+
+func (p *PostAdUpdatedPayloadData) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdUpdatedPayloadData) GetIssues() []*AdPlatformIssue {
+	if p == nil {
+		return nil
+	}
+	return p.Issues
+}
+
+func (p *PostAdUpdatedPayloadData) GetLeadForm() *AdLeadForm {
+	if p == nil {
+		return nil
+	}
+	return p.LeadForm
+}
+
+func (p *PostAdUpdatedPayloadData) GetLeadFormID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LeadFormID
+}
+
+func (p *PostAdUpdatedPayloadData) GetMessagingConfig() *AdMessagingConfig {
+	if p == nil {
+		return nil
+	}
+	return p.MessagingConfig
+}
+
+func (p *PostAdUpdatedPayloadData) GetMultiAdvertiserAds() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.MultiAdvertiserAds
+}
+
+func (p *PostAdUpdatedPayloadData) GetMusic() *AdMusic {
+	if p == nil {
+		return nil
+	}
+	return p.Music
+}
+
+func (p *PostAdUpdatedPayloadData) GetPostID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PostID
+}
+
+func (p *PostAdUpdatedPayloadData) GetPostSource() *PostAdUpdatedPayloadDataPostSource {
+	if p == nil {
+		return nil
+	}
+	return p.PostSource
+}
+
+func (p *PostAdUpdatedPayloadData) GetPostThumbnailURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PostThumbnailURL
+}
+
+func (p *PostAdUpdatedPayloadData) GetPrimaryTexts() []string {
+	if p == nil {
+		return nil
+	}
+	return p.PrimaryTexts
+}
+
+func (p *PostAdUpdatedPayloadData) GetSocialAccounts() []*AdEntityReference {
+	if p == nil {
+		return nil
+	}
+	return p.SocialAccounts
+}
+
+func (p *PostAdUpdatedPayloadData) GetStatus() PostAdUpdatedPayloadDataStatus {
+	if p == nil {
+		return ""
+	}
+	return p.Status
+}
+
+func (p *PostAdUpdatedPayloadData) GetTitle() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Title
+}
+
+func (p *PostAdUpdatedPayloadData) GetUpdatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.UpdatedAt
+}
+
+func (p *PostAdUpdatedPayloadData) GetURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.URL
+}
+
+func (p *PostAdUpdatedPayloadData) GetURLParameters() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.URLParameters
+}
+
+func (p *PostAdUpdatedPayloadData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdUpdatedPayloadData) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAdCampaign sets the AdCampaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetAdCampaign(adCampaign *AdEntityReference) {
+	p.AdCampaign = adCampaign
+	p.require(postAdUpdatedPayloadDataFieldAdCampaign)
+}
+
+// SetAdGroup sets the AdGroup field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetAdGroup(adGroup *AdEntityReference) {
+	p.AdGroup = adGroup
+	p.require(postAdUpdatedPayloadDataFieldAdGroup)
+}
+
+// SetCallToAction sets the CallToAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetCallToAction(callToAction *PostAdUpdatedPayloadDataCallToAction) {
+	p.CallToAction = callToAction
+	p.require(postAdUpdatedPayloadDataFieldCallToAction)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetCreatedAt(createdAt string) {
+	p.CreatedAt = createdAt
+	p.require(postAdUpdatedPayloadDataFieldCreatedAt)
+}
+
+// SetCreatives sets the Creatives field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetCreatives(creatives []*AdCreative) {
+	p.Creatives = creatives
+	p.require(postAdUpdatedPayloadDataFieldCreatives)
+}
+
+// SetDeliveryStatus sets the DeliveryStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetDeliveryStatus(deliveryStatus PostAdUpdatedPayloadDataDeliveryStatus) {
+	p.DeliveryStatus = deliveryStatus
+	p.require(postAdUpdatedPayloadDataFieldDeliveryStatus)
+}
+
+// SetDescriptions sets the Descriptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetDescriptions(descriptions []string) {
+	p.Descriptions = descriptions
+	p.require(postAdUpdatedPayloadDataFieldDescriptions)
+}
+
+// SetExistingPostID sets the ExistingPostID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetExistingPostID(existingPostID *string) {
+	p.ExistingPostID = existingPostID
+	p.require(postAdUpdatedPayloadDataFieldExistingPostID)
+}
+
+// SetHeadlines sets the Headlines field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetHeadlines(headlines []string) {
+	p.Headlines = headlines
+	p.require(postAdUpdatedPayloadDataFieldHeadlines)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetID(id string) {
+	p.ID = id
+	p.require(postAdUpdatedPayloadDataFieldID)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetIssues(issues []*AdPlatformIssue) {
+	p.Issues = issues
+	p.require(postAdUpdatedPayloadDataFieldIssues)
+}
+
+// SetLeadForm sets the LeadForm field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetLeadForm(leadForm *AdLeadForm) {
+	p.LeadForm = leadForm
+	p.require(postAdUpdatedPayloadDataFieldLeadForm)
+}
+
+// SetLeadFormID sets the LeadFormID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetLeadFormID(leadFormID *string) {
+	p.LeadFormID = leadFormID
+	p.require(postAdUpdatedPayloadDataFieldLeadFormID)
+}
+
+// SetMessagingConfig sets the MessagingConfig field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetMessagingConfig(messagingConfig *AdMessagingConfig) {
+	p.MessagingConfig = messagingConfig
+	p.require(postAdUpdatedPayloadDataFieldMessagingConfig)
+}
+
+// SetMultiAdvertiserAds sets the MultiAdvertiserAds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetMultiAdvertiserAds(multiAdvertiserAds *bool) {
+	p.MultiAdvertiserAds = multiAdvertiserAds
+	p.require(postAdUpdatedPayloadDataFieldMultiAdvertiserAds)
+}
+
+// SetMusic sets the Music field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetMusic(music *AdMusic) {
+	p.Music = music
+	p.require(postAdUpdatedPayloadDataFieldMusic)
+}
+
+// SetPostID sets the PostID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetPostID(postID *string) {
+	p.PostID = postID
+	p.require(postAdUpdatedPayloadDataFieldPostID)
+}
+
+// SetPostSource sets the PostSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetPostSource(postSource *PostAdUpdatedPayloadDataPostSource) {
+	p.PostSource = postSource
+	p.require(postAdUpdatedPayloadDataFieldPostSource)
+}
+
+// SetPostThumbnailURL sets the PostThumbnailURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetPostThumbnailURL(postThumbnailURL *string) {
+	p.PostThumbnailURL = postThumbnailURL
+	p.require(postAdUpdatedPayloadDataFieldPostThumbnailURL)
+}
+
+// SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetPrimaryTexts(primaryTexts []string) {
+	p.PrimaryTexts = primaryTexts
+	p.require(postAdUpdatedPayloadDataFieldPrimaryTexts)
+}
+
+// SetSocialAccounts sets the SocialAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetSocialAccounts(socialAccounts []*AdEntityReference) {
+	p.SocialAccounts = socialAccounts
+	p.require(postAdUpdatedPayloadDataFieldSocialAccounts)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetStatus(status PostAdUpdatedPayloadDataStatus) {
+	p.Status = status
+	p.require(postAdUpdatedPayloadDataFieldStatus)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetTitle(title *string) {
+	p.Title = title
+	p.require(postAdUpdatedPayloadDataFieldTitle)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetUpdatedAt(updatedAt string) {
+	p.UpdatedAt = updatedAt
+	p.require(postAdUpdatedPayloadDataFieldUpdatedAt)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetURL(url *string) {
+	p.URL = url
+	p.require(postAdUpdatedPayloadDataFieldURL)
+}
+
+// SetURLParameters sets the URLParameters field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetURLParameters(urlParameters map[string]any) {
+	p.URLParameters = urlParameters
+	p.require(postAdUpdatedPayloadDataFieldURLParameters)
+}
+
+func (p *PostAdUpdatedPayloadData) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostAdUpdatedPayloadData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostAdUpdatedPayloadData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdUpdatedPayloadData) MarshalJSON() ([]byte, error) {
+	type embed PostAdUpdatedPayloadData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdUpdatedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The call-to-action button shown on the ad.
+type PostAdUpdatedPayloadDataCallToAction string
+
+const (
+	PostAdUpdatedPayloadDataCallToActionLearnMore            PostAdUpdatedPayloadDataCallToAction = "learn_more"
+	PostAdUpdatedPayloadDataCallToActionShopNow              PostAdUpdatedPayloadDataCallToAction = "shop_now"
+	PostAdUpdatedPayloadDataCallToActionSignUp               PostAdUpdatedPayloadDataCallToAction = "sign_up"
+	PostAdUpdatedPayloadDataCallToActionSubscribe            PostAdUpdatedPayloadDataCallToAction = "subscribe"
+	PostAdUpdatedPayloadDataCallToActionGetStarted           PostAdUpdatedPayloadDataCallToAction = "get_started"
+	PostAdUpdatedPayloadDataCallToActionBookNow              PostAdUpdatedPayloadDataCallToAction = "book_now"
+	PostAdUpdatedPayloadDataCallToActionApplyNow             PostAdUpdatedPayloadDataCallToAction = "apply_now"
+	PostAdUpdatedPayloadDataCallToActionContactUs            PostAdUpdatedPayloadDataCallToAction = "contact_us"
+	PostAdUpdatedPayloadDataCallToActionDownload             PostAdUpdatedPayloadDataCallToAction = "download"
+	PostAdUpdatedPayloadDataCallToActionOrderNow             PostAdUpdatedPayloadDataCallToAction = "order_now"
+	PostAdUpdatedPayloadDataCallToActionBuyNow               PostAdUpdatedPayloadDataCallToAction = "buy_now"
+	PostAdUpdatedPayloadDataCallToActionGetQuote             PostAdUpdatedPayloadDataCallToAction = "get_quote"
+	PostAdUpdatedPayloadDataCallToActionMessagePage          PostAdUpdatedPayloadDataCallToAction = "message_page"
+	PostAdUpdatedPayloadDataCallToActionWhatsappMessage      PostAdUpdatedPayloadDataCallToAction = "whatsapp_message"
+	PostAdUpdatedPayloadDataCallToActionInstagramMessage     PostAdUpdatedPayloadDataCallToAction = "instagram_message"
+	PostAdUpdatedPayloadDataCallToActionCallNow              PostAdUpdatedPayloadDataCallToAction = "call_now"
+	PostAdUpdatedPayloadDataCallToActionGetDirections        PostAdUpdatedPayloadDataCallToAction = "get_directions"
+	PostAdUpdatedPayloadDataCallToActionSendUpdates          PostAdUpdatedPayloadDataCallToAction = "send_updates"
+	PostAdUpdatedPayloadDataCallToActionGetOffer             PostAdUpdatedPayloadDataCallToAction = "get_offer"
+	PostAdUpdatedPayloadDataCallToActionWatchMore            PostAdUpdatedPayloadDataCallToAction = "watch_more"
+	PostAdUpdatedPayloadDataCallToActionListenNow            PostAdUpdatedPayloadDataCallToAction = "listen_now"
+	PostAdUpdatedPayloadDataCallToActionPlayGame             PostAdUpdatedPayloadDataCallToAction = "play_game"
+	PostAdUpdatedPayloadDataCallToActionOpenLink             PostAdUpdatedPayloadDataCallToAction = "open_link"
+	PostAdUpdatedPayloadDataCallToActionNoButton             PostAdUpdatedPayloadDataCallToAction = "no_button"
+	PostAdUpdatedPayloadDataCallToActionGetOfferView         PostAdUpdatedPayloadDataCallToAction = "get_offer_view"
+	PostAdUpdatedPayloadDataCallToActionGetEventTickets      PostAdUpdatedPayloadDataCallToAction = "get_event_tickets"
+	PostAdUpdatedPayloadDataCallToActionSeeMenu              PostAdUpdatedPayloadDataCallToAction = "see_menu"
+	PostAdUpdatedPayloadDataCallToActionRequestTime          PostAdUpdatedPayloadDataCallToAction = "request_time"
+	PostAdUpdatedPayloadDataCallToActionEventRsvp            PostAdUpdatedPayloadDataCallToAction = "event_rsvp"
+	PostAdUpdatedPayloadDataCallToActionSeeDetails           PostAdUpdatedPayloadDataCallToAction = "see_details"
+	PostAdUpdatedPayloadDataCallToActionViewInstagramProfile PostAdUpdatedPayloadDataCallToAction = "view_instagram_profile"
+)
+
+func NewPostAdUpdatedPayloadDataCallToActionFromString(s string) (PostAdUpdatedPayloadDataCallToAction, error) {
+	switch s {
+	case "learn_more":
+		return PostAdUpdatedPayloadDataCallToActionLearnMore, nil
+	case "shop_now":
+		return PostAdUpdatedPayloadDataCallToActionShopNow, nil
+	case "sign_up":
+		return PostAdUpdatedPayloadDataCallToActionSignUp, nil
+	case "subscribe":
+		return PostAdUpdatedPayloadDataCallToActionSubscribe, nil
+	case "get_started":
+		return PostAdUpdatedPayloadDataCallToActionGetStarted, nil
+	case "book_now":
+		return PostAdUpdatedPayloadDataCallToActionBookNow, nil
+	case "apply_now":
+		return PostAdUpdatedPayloadDataCallToActionApplyNow, nil
+	case "contact_us":
+		return PostAdUpdatedPayloadDataCallToActionContactUs, nil
+	case "download":
+		return PostAdUpdatedPayloadDataCallToActionDownload, nil
+	case "order_now":
+		return PostAdUpdatedPayloadDataCallToActionOrderNow, nil
+	case "buy_now":
+		return PostAdUpdatedPayloadDataCallToActionBuyNow, nil
+	case "get_quote":
+		return PostAdUpdatedPayloadDataCallToActionGetQuote, nil
+	case "message_page":
+		return PostAdUpdatedPayloadDataCallToActionMessagePage, nil
+	case "whatsapp_message":
+		return PostAdUpdatedPayloadDataCallToActionWhatsappMessage, nil
+	case "instagram_message":
+		return PostAdUpdatedPayloadDataCallToActionInstagramMessage, nil
+	case "call_now":
+		return PostAdUpdatedPayloadDataCallToActionCallNow, nil
+	case "get_directions":
+		return PostAdUpdatedPayloadDataCallToActionGetDirections, nil
+	case "send_updates":
+		return PostAdUpdatedPayloadDataCallToActionSendUpdates, nil
+	case "get_offer":
+		return PostAdUpdatedPayloadDataCallToActionGetOffer, nil
+	case "watch_more":
+		return PostAdUpdatedPayloadDataCallToActionWatchMore, nil
+	case "listen_now":
+		return PostAdUpdatedPayloadDataCallToActionListenNow, nil
+	case "play_game":
+		return PostAdUpdatedPayloadDataCallToActionPlayGame, nil
+	case "open_link":
+		return PostAdUpdatedPayloadDataCallToActionOpenLink, nil
+	case "no_button":
+		return PostAdUpdatedPayloadDataCallToActionNoButton, nil
+	case "get_offer_view":
+		return PostAdUpdatedPayloadDataCallToActionGetOfferView, nil
+	case "get_event_tickets":
+		return PostAdUpdatedPayloadDataCallToActionGetEventTickets, nil
+	case "see_menu":
+		return PostAdUpdatedPayloadDataCallToActionSeeMenu, nil
+	case "request_time":
+		return PostAdUpdatedPayloadDataCallToActionRequestTime, nil
+	case "event_rsvp":
+		return PostAdUpdatedPayloadDataCallToActionEventRsvp, nil
+	case "see_details":
+		return PostAdUpdatedPayloadDataCallToActionSeeDetails, nil
+	case "view_instagram_profile":
+		return PostAdUpdatedPayloadDataCallToActionViewInstagramProfile, nil
+	}
+	var t PostAdUpdatedPayloadDataCallToAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadDataCallToAction) Ptr() *PostAdUpdatedPayloadDataCallToAction {
+	return &p
+}
+
+// Whether the ad is delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+type PostAdUpdatedPayloadDataDeliveryStatus string
+
+const (
+	PostAdUpdatedPayloadDataDeliveryStatusRejected        PostAdUpdatedPayloadDataDeliveryStatus = "rejected"
+	PostAdUpdatedPayloadDataDeliveryStatusInReview        PostAdUpdatedPayloadDataDeliveryStatus = "in_review"
+	PostAdUpdatedPayloadDataDeliveryStatusDraft           PostAdUpdatedPayloadDataDeliveryStatus = "draft"
+	PostAdUpdatedPayloadDataDeliveryStatusCampaignPaused  PostAdUpdatedPayloadDataDeliveryStatus = "campaign_paused"
+	PostAdUpdatedPayloadDataDeliveryStatusAdGroupPaused   PostAdUpdatedPayloadDataDeliveryStatus = "ad_group_paused"
+	PostAdUpdatedPayloadDataDeliveryStatusPaused          PostAdUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdUpdatedPayloadDataDeliveryStatusProcessing      PostAdUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdUpdatedPayloadDataDeliveryStatusIssues          PostAdUpdatedPayloadDataDeliveryStatus = "issues"
+	PostAdUpdatedPayloadDataDeliveryStatusScheduled       PostAdUpdatedPayloadDataDeliveryStatus = "scheduled"
+	PostAdUpdatedPayloadDataDeliveryStatusLearningLimited PostAdUpdatedPayloadDataDeliveryStatus = "learning_limited"
+	PostAdUpdatedPayloadDataDeliveryStatusLearning        PostAdUpdatedPayloadDataDeliveryStatus = "learning"
+	PostAdUpdatedPayloadDataDeliveryStatusActive          PostAdUpdatedPayloadDataDeliveryStatus = "active"
+)
+
+func NewPostAdUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdUpdatedPayloadDataDeliveryStatus, error) {
+	switch s {
+	case "rejected":
+		return PostAdUpdatedPayloadDataDeliveryStatusRejected, nil
+	case "in_review":
+		return PostAdUpdatedPayloadDataDeliveryStatusInReview, nil
+	case "draft":
+		return PostAdUpdatedPayloadDataDeliveryStatusDraft, nil
+	case "campaign_paused":
+		return PostAdUpdatedPayloadDataDeliveryStatusCampaignPaused, nil
+	case "ad_group_paused":
+		return PostAdUpdatedPayloadDataDeliveryStatusAdGroupPaused, nil
+	case "paused":
+		return PostAdUpdatedPayloadDataDeliveryStatusPaused, nil
+	case "processing":
+		return PostAdUpdatedPayloadDataDeliveryStatusProcessing, nil
+	case "issues":
+		return PostAdUpdatedPayloadDataDeliveryStatusIssues, nil
+	case "scheduled":
+		return PostAdUpdatedPayloadDataDeliveryStatusScheduled, nil
+	case "learning_limited":
+		return PostAdUpdatedPayloadDataDeliveryStatusLearningLimited, nil
+	case "learning":
+		return PostAdUpdatedPayloadDataDeliveryStatusLearning, nil
+	case "active":
+		return PostAdUpdatedPayloadDataDeliveryStatusActive, nil
+	}
+	var t PostAdUpdatedPayloadDataDeliveryStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadDataDeliveryStatus) Ptr() *PostAdUpdatedPayloadDataDeliveryStatus {
+	return &p
+}
+
+// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
+type PostAdUpdatedPayloadDataPostSource string
+
+const (
+	PostAdUpdatedPayloadDataPostSourceFacebook  PostAdUpdatedPayloadDataPostSource = "facebook"
+	PostAdUpdatedPayloadDataPostSourceInstagram PostAdUpdatedPayloadDataPostSource = "instagram"
+)
+
+func NewPostAdUpdatedPayloadDataPostSourceFromString(s string) (PostAdUpdatedPayloadDataPostSource, error) {
+	switch s {
+	case "facebook":
+		return PostAdUpdatedPayloadDataPostSourceFacebook, nil
+	case "instagram":
+		return PostAdUpdatedPayloadDataPostSourceInstagram, nil
+	}
+	var t PostAdUpdatedPayloadDataPostSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadDataPostSource) Ptr() *PostAdUpdatedPayloadDataPostSource {
+	return &p
+}
+
+// Whether the ad is enabled. `active` and `paused` are set by you; `in_review` and `rejected` come from ad review.
+type PostAdUpdatedPayloadDataStatus string
+
+const (
+	PostAdUpdatedPayloadDataStatusActive   PostAdUpdatedPayloadDataStatus = "active"
+	PostAdUpdatedPayloadDataStatusPaused   PostAdUpdatedPayloadDataStatus = "paused"
+	PostAdUpdatedPayloadDataStatusInReview PostAdUpdatedPayloadDataStatus = "in_review"
+	PostAdUpdatedPayloadDataStatusRejected PostAdUpdatedPayloadDataStatus = "rejected"
+)
+
+func NewPostAdUpdatedPayloadDataStatusFromString(s string) (PostAdUpdatedPayloadDataStatus, error) {
+	switch s {
+	case "active":
+		return PostAdUpdatedPayloadDataStatusActive, nil
+	case "paused":
+		return PostAdUpdatedPayloadDataStatusPaused, nil
+	case "in_review":
+		return PostAdUpdatedPayloadDataStatusInReview, nil
+	case "rejected":
+		return PostAdUpdatedPayloadDataStatusRejected, nil
+	}
+	var t PostAdUpdatedPayloadDataStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadDataStatus) Ptr() *PostAdUpdatedPayloadDataStatus {
+	return &p
+}
+
+// The webhook event type
+type PostAdUpdatedPayloadType string
+
+const (
+	PostAdUpdatedPayloadTypeAdUpdated PostAdUpdatedPayloadType = "ad.updated"
+)
+
+func NewPostAdUpdatedPayloadTypeFromString(s string) (PostAdUpdatedPayloadType, error) {
+	switch s {
+	case "ad.updated":
+		return PostAdUpdatedPayloadTypeAdUpdated, nil
+	}
+	var t PostAdUpdatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadType) Ptr() *PostAdUpdatedPayloadType {
+	return &p
 }
 
 type RetrieveAdsRequestAttributionModel string

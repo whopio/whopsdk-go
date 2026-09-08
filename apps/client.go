@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-2"
+		apiVersionDateDefault := "2026-09-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -134,43 +134,6 @@ func (c *Client) Create(
 	)
 	if err != nil {
 		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Updates the permission requirements for an app
-//
-// Required permissions:
-//   - `developer:update_app_authorization`
-//
-// Example:
-//
-//	request := &whopsdk.UpdatePermissionsAppRequest{
-//	    AppID: "app_id",
-//	    RequestedPermissions: []*whopsdk.UpdatePermissionsAppRequestRequestedPermissionsItem{
-//	        &whopsdk.UpdatePermissionsAppRequestRequestedPermissionsItem{
-//	            Action: "action",
-//	            IsRequired: true,
-//	            Justification: "justification",
-//	        },
-//	    },
-//	}
-//	client.Apps.UpdatePermissionsApp(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) UpdatePermissionsApp(
-	ctx context.Context,
-	request *whopsdk.UpdatePermissionsAppRequest,
-	opts ...option.RequestOption,
-) (bool, error) {
-	response, err := c.WithRawResponse.UpdatePermissionsApp(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return false, err
 	}
 	return response.Body, nil
 }

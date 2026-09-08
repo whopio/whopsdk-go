@@ -16,7 +16,7 @@ var (
 )
 
 type CreateDepositsRequest struct {
-	// Amount to prefill on hosted deposit page.
+	// Amount to prefill on hosted deposit page. Crypto deposits require a $10 minimum.
 	Amount *float64 `json:"amount,omitempty" url:"-"`
 	// Account ID to fund, `biz_` or `user_`. Any business resolves without authentication; a user account resolves only for that same authenticated user.
 	Destination string `json:"destination" url:"-"`
@@ -228,7 +228,7 @@ var (
 type CreateDepositsResponseMethods struct {
 	// Bank deposit details. Only present when bank deposits are active for the destination account.
 	Bank *CreateDepositsResponseMethodsBank `json:"bank,omitempty" url:"bank,omitempty"`
-	// Crypto networks available for this deposit, each with its on-chain deposit address and the tokens accepted on that network.
+	// Crypto networks available for this deposit, each with its on-chain deposit address and the tokens accepted on that network. Crypto deposits require a $10 minimum.
 	Crypto []*CreateDepositsResponseMethodsCryptoItem `json:"crypto" url:"crypto"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

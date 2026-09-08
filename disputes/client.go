@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-2"
+		apiVersionDateDefault := "2026-09-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -207,80 +207,6 @@ func (c *Client) Submit(
 	opts ...option.RequestOption,
 ) (*whopsdk.Dispute, error) {
 	response, err := c.WithRawResponse.Submit(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Submit a payment dispute to the payment processor for review. Once submitted, no further edits can be made.
-//
-// Required permissions:
-//   - `payment:dispute`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `company:basic:read`
-//   - `payment:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
-//
-// Example:
-//
-//	request := &whopsdk.SubmitEvidenceDisputeRequest{
-//	    ID: "dspt_xxxxxxxxxxxxx",
-//	}
-//	client.Disputes.SubmitEvidenceDispute(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) SubmitEvidenceDispute(
-	ctx context.Context,
-	request *whopsdk.SubmitEvidenceDisputeRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.DisputeLegacy, error) {
-	response, err := c.WithRawResponse.SubmitEvidenceDispute(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Update a dispute with evidence data to attempt to win the dispute.
-//
-// Required permissions:
-//   - `payment:dispute`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `company:basic:read`
-//   - `payment:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
-//
-// Example:
-//
-//	request := &whopsdk.UpdateEvidenceDisputeRequest{
-//	    ID: "dspt_xxxxxxxxxxxxx",
-//	}
-//	client.Disputes.UpdateEvidenceDispute(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) UpdateEvidenceDispute(
-	ctx context.Context,
-	request *whopsdk.UpdateEvidenceDisputeRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.DisputeLegacy, error) {
-	response, err := c.WithRawResponse.UpdateEvidenceDispute(
 		ctx,
 		request,
 		opts...,

@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-2"
+		apiVersionDateDefault := "2026-09-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -78,6 +78,34 @@ func (c *Client) Leaderboard(
 	opts ...option.RequestOption,
 ) (*whopsdk.LeaderboardPartnersResponse, error) {
 	response, err := c.WithRawResponse.Leaderboard(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Resolves the public reward terms and whether redemption capacity remains. Immediate rewards claim capacity at business creation; qualified rewards claim it when the business reaches the threshold.
+//
+// Example:
+//
+//	request := &whopsdk.RetrieveLinkPartnersRequest{
+//	    PartnerUsername: "partner_username",
+//	    RewardSlug: "reward_slug",
+//	}
+//	client.Partners.RetrieveLink(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) RetrieveLink(
+	ctx context.Context,
+	request *whopsdk.RetrieveLinkPartnersRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.OnboardingReward, error) {
+	response, err := c.WithRawResponse.RetrieveLink(
 		ctx,
 		request,
 		opts...,

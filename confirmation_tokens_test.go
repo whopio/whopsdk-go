@@ -1898,6 +1898,14 @@ func TestSettersCreateConfirmationTokensRequestBillingDetails(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPhone", func(t *testing.T) {
+		obj := &CreateConfirmationTokensRequestBillingDetails{}
+		var fernTestValuePhone *string
+		obj.SetPhone(fernTestValuePhone)
+		assert.Equal(t, fernTestValuePhone, obj.Phone)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersCreateConfirmationTokensRequestBillingDetails(t *testing.T) {
@@ -1988,6 +1996,39 @@ func TestGettersCreateConfirmationTokensRequestBillingDetails(t *testing.T) {
 			}
 		}()
 		_ = obj.GetName() // Should return zero value
+	})
+
+	t.Run("GetPhone", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateConfirmationTokensRequestBillingDetails{}
+		var expected *string
+		obj.Phone = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPhone(), "getter should return the property value")
+	})
+
+	t.Run("GetPhone_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateConfirmationTokensRequestBillingDetails{}
+		obj.Phone = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPhone(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPhone_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateConfirmationTokensRequestBillingDetails
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPhone() // Should return zero value
 	})
 
 }
@@ -2086,6 +2127,37 @@ func TestSettersMarkExplicitCreateConfirmationTokensRequestBillingDetails(t *tes
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetPhone_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateConfirmationTokensRequestBillingDetails{}
+		var fernTestValuePhone *string
+
+		// Act
+		obj.SetPhone(fernTestValuePhone)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 }
 
 func TestSettersCreateConfirmationTokensRequestPaymentMethod(t *testing.T) {
@@ -2142,6 +2214,14 @@ func TestSettersCreateConfirmationTokensRequestPaymentMethod(t *testing.T) {
 		var fernTestValuePayerDocument *CreateConfirmationTokensRequestPaymentMethodPayerDocument
 		obj.SetPayerDocument(fernTestValuePayerDocument)
 		assert.Equal(t, fernTestValuePayerDocument, obj.PayerDocument)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRedirect", func(t *testing.T) {
+		obj := &CreateConfirmationTokensRequestPaymentMethod{}
+		var fernTestValueRedirect *CreateConfirmationTokensRequestPaymentMethodRedirect
+		obj.SetRedirect(fernTestValueRedirect)
+		assert.Equal(t, fernTestValueRedirect, obj.Redirect)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2383,6 +2463,39 @@ func TestGettersCreateConfirmationTokensRequestPaymentMethod(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPayerDocument() // Should return zero value
+	})
+
+	t.Run("GetRedirect", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateConfirmationTokensRequestPaymentMethod{}
+		var expected *CreateConfirmationTokensRequestPaymentMethodRedirect
+		obj.Redirect = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRedirect(), "getter should return the property value")
+	})
+
+	t.Run("GetRedirect_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateConfirmationTokensRequestPaymentMethod{}
+		obj.Redirect = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRedirect(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRedirect_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateConfirmationTokensRequestPaymentMethod
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRedirect() // Should return zero value
 	})
 
 	t.Run("GetSaved", func(t *testing.T) {
@@ -2648,6 +2761,37 @@ func TestSettersMarkExplicitCreateConfirmationTokensRequestPaymentMethod(t *test
 
 		// Act
 		obj.SetPayerDocument(fernTestValuePayerDocument)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRedirect_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateConfirmationTokensRequestPaymentMethod{}
+		var fernTestValueRedirect *CreateConfirmationTokensRequestPaymentMethodRedirect
+
+		// Act
+		obj.SetRedirect(fernTestValueRedirect)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3899,6 +4043,39 @@ func TestJSONMarshalingCreateConfirmationTokensRequestPaymentMethodPayerDocument
 	})
 }
 
+func TestJSONMarshalingCreateConfirmationTokensRequestPaymentMethodRedirect(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateConfirmationTokensRequestPaymentMethodRedirect{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateConfirmationTokensRequestPaymentMethodRedirect
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateConfirmationTokensRequestPaymentMethodRedirect
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateConfirmationTokensRequestPaymentMethodRedirect
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingCreateConfirmationTokensRequestPaymentMethodSaved(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -4170,6 +4347,22 @@ func TestStringCreateConfirmationTokensRequestPaymentMethodPayerDocument(t *test
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *CreateConfirmationTokensRequestPaymentMethodPayerDocument
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreateConfirmationTokensRequestPaymentMethodRedirect(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateConfirmationTokensRequestPaymentMethodRedirect{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateConfirmationTokensRequestPaymentMethodRedirect
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -4754,6 +4947,29 @@ func TestExtraPropertiesCreateConfirmationTokensRequestPaymentMethodPayerDocumen
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *CreateConfirmationTokensRequestPaymentMethodPayerDocument
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateConfirmationTokensRequestPaymentMethodRedirect(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateConfirmationTokensRequestPaymentMethodRedirect{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateConfirmationTokensRequestPaymentMethodRedirect
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

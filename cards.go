@@ -10312,7 +10312,7 @@ func (r RetrieveCardsResponseType) Ptr() *RetrieveCardsResponseType {
 	return &r
 }
 
-// New billing address. Requires line1, city, region, postal_code, and country_code. On an invited card, passing billing alone (as the invited user) completes onboarding and starts card provisioning.
+// The billing address. On an issued card this replaces the card's billing address and region is also required. On an invited card, sending it as the invited user completes onboarding and starts card provisioning.
 var (
 	updateCardsRequestBillingFieldCity        = big.NewInt(1 << 0)
 	updateCardsRequestBillingFieldCountryCode = big.NewInt(1 << 1)
@@ -10333,8 +10333,8 @@ type UpdateCardsRequestBilling struct {
 	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
 	// Billing postal code.
 	PostalCode string `json:"postal_code" url:"postal_code"`
-	// Billing region or state.
-	Region string `json:"region" url:"region"`
+	// Billing region or state. Required when updating an issued card's billing address.
+	Region *string `json:"region,omitempty" url:"region,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -10378,9 +10378,9 @@ func (u *UpdateCardsRequestBilling) GetPostalCode() string {
 	return u.PostalCode
 }
 
-func (u *UpdateCardsRequestBilling) GetRegion() string {
+func (u *UpdateCardsRequestBilling) GetRegion() *string {
 	if u == nil {
-		return ""
+		return nil
 	}
 	return u.Region
 }
@@ -10436,7 +10436,7 @@ func (u *UpdateCardsRequestBilling) SetPostalCode(postalCode string) {
 
 // SetRegion sets the Region field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateCardsRequestBilling) SetRegion(region string) {
+func (u *UpdateCardsRequestBilling) SetRegion(region *string) {
 	u.Region = region
 	u.require(updateCardsRequestBillingFieldRegion)
 }
@@ -10469,6 +10469,143 @@ func (u *UpdateCardsRequestBilling) MarshalJSON() ([]byte, error) {
 }
 
 func (u *UpdateCardsRequestBilling) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Details for the invited cardholder, accepted only while completing onboarding on an invited card. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not.
+var (
+	updateCardsRequestCardholderFieldEmail     = big.NewInt(1 << 0)
+	updateCardsRequestCardholderFieldFirstName = big.NewInt(1 << 1)
+	updateCardsRequestCardholderFieldLastName  = big.NewInt(1 << 2)
+	updateCardsRequestCardholderFieldPhone     = big.NewInt(1 << 3)
+)
+
+type UpdateCardsRequestCardholder struct {
+	// Email address for the invited cardholder.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// Legal first name of the invited cardholder.
+	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	// Legal last name of the invited cardholder.
+	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	// Phone number for the invited cardholder.
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateCardsRequestCardholder) GetEmail() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Email
+}
+
+func (u *UpdateCardsRequestCardholder) GetFirstName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.FirstName
+}
+
+func (u *UpdateCardsRequestCardholder) GetLastName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.LastName
+}
+
+func (u *UpdateCardsRequestCardholder) GetPhone() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Phone
+}
+
+func (u *UpdateCardsRequestCardholder) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateCardsRequestCardholder) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCardsRequestCardholder) SetEmail(email *string) {
+	u.Email = email
+	u.require(updateCardsRequestCardholderFieldEmail)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCardsRequestCardholder) SetFirstName(firstName *string) {
+	u.FirstName = firstName
+	u.require(updateCardsRequestCardholderFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCardsRequestCardholder) SetLastName(lastName *string) {
+	u.LastName = lastName
+	u.require(updateCardsRequestCardholderFieldLastName)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCardsRequestCardholder) SetPhone(phone *string) {
+	u.Phone = phone
+	u.require(updateCardsRequestCardholderFieldPhone)
+}
+
+func (u *UpdateCardsRequestCardholder) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateCardsRequestCardholder
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateCardsRequestCardholder(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateCardsRequestCardholder) MarshalJSON() ([]byte, error) {
+	type embed UpdateCardsRequestCardholder
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateCardsRequestCardholder) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -11368,14 +11505,15 @@ var (
 	updateCardsRequestFieldAccountID           = big.NewInt(1 << 1)
 	updateCardsRequestFieldBilling             = big.NewInt(1 << 2)
 	updateCardsRequestFieldCanceled            = big.NewInt(1 << 3)
-	updateCardsRequestFieldFrozen              = big.NewInt(1 << 4)
-	updateCardsRequestFieldName                = big.NewInt(1 << 5)
-	updateCardsRequestFieldPin                 = big.NewInt(1 << 6)
-	updateCardsRequestFieldRemoveLimit         = big.NewInt(1 << 7)
-	updateCardsRequestFieldSpendLimit          = big.NewInt(1 << 8)
-	updateCardsRequestFieldSpendLimitFrequency = big.NewInt(1 << 9)
-	updateCardsRequestFieldTransactionLimit    = big.NewInt(1 << 10)
-	updateCardsRequestFieldUserID              = big.NewInt(1 << 11)
+	updateCardsRequestFieldCardholder          = big.NewInt(1 << 4)
+	updateCardsRequestFieldFrozen              = big.NewInt(1 << 5)
+	updateCardsRequestFieldName                = big.NewInt(1 << 6)
+	updateCardsRequestFieldPin                 = big.NewInt(1 << 7)
+	updateCardsRequestFieldRemoveLimit         = big.NewInt(1 << 8)
+	updateCardsRequestFieldSpendLimit          = big.NewInt(1 << 9)
+	updateCardsRequestFieldSpendLimitFrequency = big.NewInt(1 << 10)
+	updateCardsRequestFieldTransactionLimit    = big.NewInt(1 << 11)
+	updateCardsRequestFieldUserID              = big.NewInt(1 << 12)
 )
 
 type UpdateCardsRequest struct {
@@ -11383,10 +11521,12 @@ type UpdateCardsRequest struct {
 	ID string `json:"-" url:"-"`
 	// The owning account ID (a biz_ identifier). Provide this or user_id.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// New billing address. Requires line1, city, region, postal_code, and country_code. On an invited card, passing billing alone (as the invited user) completes onboarding and starts card provisioning.
+	// The billing address. On an issued card this replaces the card's billing address and region is also required. On an invited card, sending it as the invited user completes onboarding and starts card provisioning.
 	Billing *UpdateCardsRequestBilling `json:"billing,omitempty" url:"-"`
 	// Pass `true` to permanently cancel the card. A canceled card cannot be uncanceled. Cannot be combined with other fields.
 	Canceled *bool `json:"canceled,omitempty" url:"-"`
+	// Details for the invited cardholder, accepted only while completing onboarding on an invited card. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not.
+	Cardholder *UpdateCardsRequestCardholder `json:"cardholder,omitempty" url:"-"`
 	// Pass `true` to freeze the card, `false` to unfreeze it. The assigned cardholder may freeze their own card without the payout:account:update scope.
 	Frozen *bool `json:"frozen,omitempty" url:"-"`
 	// A display name for the card.
@@ -11441,6 +11581,13 @@ func (u *UpdateCardsRequest) SetBilling(billing *UpdateCardsRequestBilling) {
 func (u *UpdateCardsRequest) SetCanceled(canceled *bool) {
 	u.Canceled = canceled
 	u.require(updateCardsRequestFieldCanceled)
+}
+
+// SetCardholder sets the Cardholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCardsRequest) SetCardholder(cardholder *UpdateCardsRequestCardholder) {
+	u.Cardholder = cardholder
+	u.require(updateCardsRequestFieldCardholder)
 }
 
 // SetFrozen sets the Frozen field and marks it as non-optional;

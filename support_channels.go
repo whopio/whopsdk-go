@@ -242,16 +242,19 @@ func (m MessageChannelOrder) Ptr() *MessageChannelOrder {
 // A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 var (
 	supportChannelFieldAccountID     = big.NewInt(1 << 0)
-	supportChannelFieldCustomName    = big.NewInt(1 << 1)
-	supportChannelFieldCustomerUser  = big.NewInt(1 << 2)
-	supportChannelFieldID            = big.NewInt(1 << 3)
-	supportChannelFieldLastMessageAt = big.NewInt(1 << 4)
-	supportChannelFieldResolvedAt    = big.NewInt(1 << 5)
+	supportChannelFieldCompanyID     = big.NewInt(1 << 1)
+	supportChannelFieldCustomName    = big.NewInt(1 << 2)
+	supportChannelFieldCustomerUser  = big.NewInt(1 << 3)
+	supportChannelFieldID            = big.NewInt(1 << 4)
+	supportChannelFieldLastMessageAt = big.NewInt(1 << 5)
+	supportChannelFieldResolvedAt    = big.NewInt(1 << 6)
 )
 
 type SupportChannel struct {
 	// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
+	CompanyID *string `json:"company_id,omitempty" url:"company_id,omitempty"`
 	// A custom display name assigned to this channel by the user. Null if no custom name has been set.
 	CustomName *string `json:"custom_name,omitempty" url:"custom_name,omitempty"`
 	// The customer who initiated this support conversation. Null if this is not a support chat.
@@ -275,6 +278,13 @@ func (s *SupportChannel) GetAccountID() *string {
 		return nil
 	}
 	return s.AccountID
+}
+
+func (s *SupportChannel) GetCompanyID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CompanyID
 }
 
 func (s *SupportChannel) GetCustomName() *string {
@@ -331,6 +341,13 @@ func (s *SupportChannel) require(field *big.Int) {
 func (s *SupportChannel) SetAccountID(accountID *string) {
 	s.AccountID = accountID
 	s.require(supportChannelFieldAccountID)
+}
+
+// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannel) SetCompanyID(companyID *string) {
+	s.CompanyID = companyID
+	s.require(supportChannelFieldCompanyID)
 }
 
 // SetCustomName sets the CustomName field and marks it as non-optional;
@@ -545,16 +562,19 @@ func (s *SupportChannelCustomerUser) String() string {
 // A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 var (
 	supportChannelListItemFieldAccountID     = big.NewInt(1 << 0)
-	supportChannelListItemFieldCustomName    = big.NewInt(1 << 1)
-	supportChannelListItemFieldCustomerUser  = big.NewInt(1 << 2)
-	supportChannelListItemFieldID            = big.NewInt(1 << 3)
-	supportChannelListItemFieldLastMessageAt = big.NewInt(1 << 4)
-	supportChannelListItemFieldResolvedAt    = big.NewInt(1 << 5)
+	supportChannelListItemFieldCompanyID     = big.NewInt(1 << 1)
+	supportChannelListItemFieldCustomName    = big.NewInt(1 << 2)
+	supportChannelListItemFieldCustomerUser  = big.NewInt(1 << 3)
+	supportChannelListItemFieldID            = big.NewInt(1 << 4)
+	supportChannelListItemFieldLastMessageAt = big.NewInt(1 << 5)
+	supportChannelListItemFieldResolvedAt    = big.NewInt(1 << 6)
 )
 
 type SupportChannelListItem struct {
 	// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
+	CompanyID *string `json:"company_id,omitempty" url:"company_id,omitempty"`
 	// A custom display name assigned to this channel by the user. Null if no custom name has been set.
 	CustomName *string `json:"custom_name,omitempty" url:"custom_name,omitempty"`
 	// The customer who initiated this support conversation. Null if this is not a support chat.
@@ -578,6 +598,13 @@ func (s *SupportChannelListItem) GetAccountID() *string {
 		return nil
 	}
 	return s.AccountID
+}
+
+func (s *SupportChannelListItem) GetCompanyID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CompanyID
 }
 
 func (s *SupportChannelListItem) GetCustomName() *string {
@@ -634,6 +661,13 @@ func (s *SupportChannelListItem) require(field *big.Int) {
 func (s *SupportChannelListItem) SetAccountID(accountID *string) {
 	s.AccountID = accountID
 	s.require(supportChannelListItemFieldAccountID)
+}
+
+// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItem) SetCompanyID(companyID *string) {
+	s.CompanyID = companyID
+	s.require(supportChannelListItemFieldCompanyID)
 }
 
 // SetCustomName sets the CustomName field and marks it as non-optional;

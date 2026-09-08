@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-2"
+		apiVersionDateDefault := "2026-09-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -195,39 +195,6 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Add free days to extend a membership's current billing period, expiration date, or Stripe trial.
-//
-// Required permissions:
-//   - `member:manage`
-//   - `member:email:read`
-//   - `member:basic:read`
-//
-// Example:
-//
-//	request := &whopsdk.AddFreeDaysMembershipRequest{
-//	    ID: "mem_xxxxxxxxxxxxxx",
-//	    FreeDays: 42,
-//	}
-//	client.Memberships.AddFreeDaysMembership(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) AddFreeDaysMembership(
-	ctx context.Context,
-	request *whopsdk.AddFreeDaysMembershipRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.MembershipLegacy, error) {
-	response, err := c.WithRawResponse.AddFreeDaysMembership(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
 // Cancels a membership. Pass `cancel_at_period_end: true` to stop auto-renewal and keep access until the current billing period ends. Omit it (or pass `false`) to revoke access immediately. Buyers cannot cancel buy-now-pay-later (`splitit`, `sezzle`) or non-trial split-pay memberships.
 //
 // Example:
@@ -337,28 +304,23 @@ func (c *Client) Resume(
 	return response.Body, nil
 }
 
-// Re-run access fulfillment for a membership. Recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and cannot be resynced here. The outcome is written to the membership's logs.
-//
-// Required permissions:
-//   - `membership:resync_access`
-//   - `member:email:read`
-//   - `member:basic:read`
+// Re-runs access fulfillment for a membership: recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and is not resynced. The work runs in the background and the outcome is written to the membership's logs.
 //
 // Example:
 //
-//	request := &whopsdk.ResyncAccessMembershipRequest{
-//	    ID: "mem_xxxxxxxxxxxxxx",
+//	request := &whopsdk.ResyncAccessMembershipsRequest{
+//	    ID: "id",
 //	}
-//	client.Memberships.ResyncAccessMembership(
+//	client.Memberships.ResyncAccess(
 //	    context.TODO(),
 //	    request,
 //	)
-func (c *Client) ResyncAccessMembership(
+func (c *Client) ResyncAccess(
 	ctx context.Context,
-	request *whopsdk.ResyncAccessMembershipRequest,
+	request *whopsdk.ResyncAccessMembershipsRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.MembershipLegacy, error) {
-	response, err := c.WithRawResponse.ResyncAccessMembership(
+) (*whopsdk.Membership, error) {
+	response, err := c.WithRawResponse.ResyncAccess(
 		ctx,
 		request,
 		opts...,
@@ -386,38 +348,6 @@ func (c *Client) Transfer(
 	opts ...option.RequestOption,
 ) (*whopsdk.TransferMembershipsResponse, error) {
 	response, err := c.WithRawResponse.Transfer(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Reverse a pending cancellation for a membership that was scheduled to cancel at period end.
-//
-// Required permissions:
-//   - `member:manage`
-//   - `member:email:read`
-//   - `member:basic:read`
-//
-// Example:
-//
-//	request := &whopsdk.UncancelMembershipRequest{
-//	    ID: "mem_xxxxxxxxxxxxxx",
-//	}
-//	client.Memberships.UncancelMembership(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) UncancelMembership(
-	ctx context.Context,
-	request *whopsdk.UncancelMembershipRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.MembershipLegacy, error) {
-	response, err := c.WithRawResponse.UncancelMembership(
 		ctx,
 		request,
 		opts...,

@@ -182,33 +182,6 @@ func TestMembershipsUpdateWithWireMock(
 	VerifyRequestCount(t, "TestMembershipsUpdateWithWireMock", "PATCH", "/memberships/id", nil, 1)
 }
 
-func TestMembershipsAddFreeDaysMembershipWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.AddFreeDaysMembershipRequest{
-		ID:       "mem_xxxxxxxxxxxxxx",
-		FreeDays: 42,
-	}
-	_, invocationErr := client.Memberships.AddFreeDaysMembership(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestMembershipsAddFreeDaysMembershipWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestMembershipsAddFreeDaysMembershipWithWireMock", "POST", "/memberships/mem_xxxxxxxxxxxxxx/add_free_days", nil, 1)
-}
-
 func TestMembershipsCancelWithWireMock(
 	t *testing.T,
 ) {
@@ -314,7 +287,7 @@ func TestMembershipsResumeWithWireMock(
 	VerifyRequestCount(t, "TestMembershipsResumeWithWireMock", "POST", "/memberships/id/resume", nil, 1)
 }
 
-func TestMembershipsResyncAccessMembershipWithWireMock(
+func TestMembershipsResyncAccessWithWireMock(
 	t *testing.T,
 ) {
 	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
@@ -325,19 +298,19 @@ func TestMembershipsResyncAccessMembershipWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ResyncAccessMembershipRequest{
-		ID: "mem_xxxxxxxxxxxxxx",
+	request := &whopsdk.ResyncAccessMembershipsRequest{
+		ID: "id",
 	}
-	_, invocationErr := client.Memberships.ResyncAccessMembership(
+	_, invocationErr := client.Memberships.ResyncAccess(
 		context.TODO(),
 		request,
 		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestMembershipsResyncAccessMembershipWithWireMock"}},
+			http.Header{"X-Test-Id": []string{"TestMembershipsResyncAccessWithWireMock"}},
 		),
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestMembershipsResyncAccessMembershipWithWireMock", "POST", "/memberships/mem_xxxxxxxxxxxxxx/resync_access", nil, 1)
+	VerifyRequestCount(t, "TestMembershipsResyncAccessWithWireMock", "POST", "/memberships/id/resync_access", nil, 1)
 }
 
 func TestMembershipsTransferWithWireMock(
@@ -364,30 +337,4 @@ func TestMembershipsTransferWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestMembershipsTransferWithWireMock", "POST", "/memberships/id/transfer", nil, 1)
-}
-
-func TestMembershipsUncancelMembershipWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.UncancelMembershipRequest{
-		ID: "mem_xxxxxxxxxxxxxx",
-	}
-	_, invocationErr := client.Memberships.UncancelMembership(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestMembershipsUncancelMembershipWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestMembershipsUncancelMembershipWithWireMock", "POST", "/memberships/mem_xxxxxxxxxxxxxx/uncancel", nil, 1)
 }

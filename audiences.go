@@ -72,34 +72,40 @@ var (
 	createAudiencesRequestFieldAutoRefresh      = big.NewInt(1 << 2)
 	createAudiencesRequestFieldColumnMapping    = big.NewInt(1 << 3)
 	createAudiencesRequestFieldCount            = big.NewInt(1 << 4)
-	createAudiencesRequestFieldFileID           = big.NewInt(1 << 5)
-	createAudiencesRequestFieldFilters          = big.NewInt(1 << 6)
-	createAudiencesRequestFieldName             = big.NewInt(1 << 7)
-	createAudiencesRequestFieldPercentage       = big.NewInt(1 << 8)
-	createAudiencesRequestFieldSourceAudienceID = big.NewInt(1 << 9)
+	createAudiencesRequestFieldEngagement       = big.NewInt(1 << 5)
+	createAudiencesRequestFieldFileID           = big.NewInt(1 << 6)
+	createAudiencesRequestFieldFilters          = big.NewInt(1 << 7)
+	createAudiencesRequestFieldName             = big.NewInt(1 << 8)
+	createAudiencesRequestFieldPercentage       = big.NewInt(1 << 9)
+	createAudiencesRequestFieldSourceAudienceID = big.NewInt(1 << 10)
+	createAudiencesRequestFieldSourceType       = big.NewInt(1 << 11)
 )
 
 type CreateAudiencesRequest struct {
 	// Account ID, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
-	// What to create. Defaults to `custom` (CSV upload).
+	// Audience type. Defaults to `custom`.
 	AudienceType *CreateAudiencesRequestAudienceType `json:"audience_type,omitempty" url:"-"`
 	// Filter audiences only, and set only at creation. `true` (the default) rebuilds membership from the filters twice a day. `false` keeps whoever matched at creation and never rebuilds.
 	AutoRefresh *bool `json:"auto_refresh,omitempty" url:"-"`
-	// Custom audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
+	// CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
 	ColumnMapping *CreateAudiencesRequestColumnMapping `json:"column_mapping,omitempty" url:"-"`
 	// Lookalikes only. Number of lookalike audiences to create (1–6).
 	Count *int `json:"count,omitempty" url:"-"`
-	// Custom audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
+	// Rules for membership based on social engagement. Requires a connected social account with advertising access.
+	Engagement *CreateAudiencesRequestEngagement `json:"engagement,omitempty" url:"-"`
+	// CSV audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
 	FileID *string `json:"file_id,omitempty" url:"-"`
 	// Filter audiences only. The People filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. Date filters must be rolling windows — `first_seen_within_days` or `last_seen_within_days` — so the audience re-anchors on every refresh; fixed dates such as `first_seen_after` are rejected. Source values are canonical source paths (`whop:<campaign>:<group>:<ad>`, `ext:<platform>:...`, `referrer:<domain>`, `direct`), exact or with a trailing `:*` wildcard.
 	Filters map[string]any `json:"filters,omitempty" url:"-"`
 	// Audience display name. Required for custom audiences; lookalike names are generated from the source audience.
 	Name *string `json:"name,omitempty" url:"-"`
-	// Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`.
+	// Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`. For example, 3 audiences at 6% creates 0–2%, 2–4%, and 4–6% bands.
 	Percentage *int `json:"percentage,omitempty" url:"-"`
-	// Lookalikes only. The ready custom audience (`adaud_`) to build from; it needs at least 100 matched people.
+	// Lookalikes only. The ready custom audience (`adaud_`) to build from; uploaded and People audiences need at least 100 matched people. Meta validates engagement audience eligibility when creating the lookalike.
 	SourceAudienceID *string `json:"source_audience_id,omitempty" url:"-"`
+	// Custom audience source. Inferred from `engagement`, then `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
+	SourceType *CreateAudiencesRequestSourceType `json:"source_type,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -147,6 +153,13 @@ func (c *CreateAudiencesRequest) SetCount(count *int) {
 	c.require(createAudiencesRequestFieldCount)
 }
 
+// SetEngagement sets the Engagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAudiencesRequest) SetEngagement(engagement *CreateAudiencesRequestEngagement) {
+	c.Engagement = engagement
+	c.require(createAudiencesRequestFieldEngagement)
+}
+
 // SetFileID sets the FileID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAudiencesRequest) SetFileID(fileID *string) {
@@ -180,6 +193,13 @@ func (c *CreateAudiencesRequest) SetPercentage(percentage *int) {
 func (c *CreateAudiencesRequest) SetSourceAudienceID(sourceAudienceID *string) {
 	c.SourceAudienceID = sourceAudienceID
 	c.require(createAudiencesRequestFieldSourceAudienceID)
+}
+
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAudiencesRequest) SetSourceType(sourceType *CreateAudiencesRequestSourceType) {
+	c.SourceType = sourceType
+	c.require(createAudiencesRequestFieldSourceType)
 }
 
 func (c *CreateAudiencesRequest) UnmarshalJSON(data []byte) error {
@@ -243,9 +263,9 @@ type ListAudiencesRequest struct {
 	AccountID string `json:"-" url:"account_id"`
 	// Audience ID, prefixed `adaud_`, used to filter the response to one audience.
 	AudienceID *string `json:"-" url:"audience_id,omitempty"`
-	// Filter by audience type: `custom` (uploaded lists) or `lookalike`.
+	// Filter by custom or lookalike audiences.
 	AudienceType *ListAudiencesRequestAudienceType `json:"-" url:"audience_type,omitempty"`
-	// Filter by member source: `csv_upload` (uploaded lists) or `people_filter` (automatic audiences built from saved People filters).
+	// Filter by uploaded customer lists, Whop People filters, or social engagement.
 	SourceType *ListAudiencesRequestSourceType `json:"-" url:"source_type,omitempty"`
 	// Number of audiences to return. Defaults to 20; maximum 100.
 	First *int `json:"-" url:"first,omitempty"`
@@ -309,35 +329,38 @@ var (
 	audienceFieldAudienceType           = big.NewInt(1 << 0)
 	audienceFieldAutoRefresh            = big.NewInt(1 << 1)
 	audienceFieldCreatedAt              = big.NewInt(1 << 2)
-	audienceFieldErrorMessage           = big.NewInt(1 << 3)
-	audienceFieldFilters                = big.NewInt(1 << 4)
-	audienceFieldID                     = big.NewInt(1 << 5)
-	audienceFieldLastRefreshedAt        = big.NewInt(1 << 6)
-	audienceFieldLookalikeRatio         = big.NewInt(1 << 7)
-	audienceFieldLookalikeStartingRatio = big.NewInt(1 << 8)
-	audienceFieldMatchRates             = big.NewInt(1 << 9)
-	audienceFieldMatchedRows            = big.NewInt(1 << 10)
-	audienceFieldName                   = big.NewInt(1 << 11)
-	audienceFieldPlatformAudienceIDs    = big.NewInt(1 << 12)
-	audienceFieldProcessedRows          = big.NewInt(1 << 13)
-	audienceFieldProgressPercent        = big.NewInt(1 << 14)
-	audienceFieldSourceAudienceID       = big.NewInt(1 << 15)
-	audienceFieldSourceType             = big.NewInt(1 << 16)
-	audienceFieldStatus                 = big.NewInt(1 << 17)
-	audienceFieldTotalRows              = big.NewInt(1 << 18)
-	audienceFieldUpdatedAt              = big.NewInt(1 << 19)
+	audienceFieldEngagement             = big.NewInt(1 << 3)
+	audienceFieldErrorMessage           = big.NewInt(1 << 4)
+	audienceFieldFilters                = big.NewInt(1 << 5)
+	audienceFieldID                     = big.NewInt(1 << 6)
+	audienceFieldLastRefreshedAt        = big.NewInt(1 << 7)
+	audienceFieldLookalikeRatio         = big.NewInt(1 << 8)
+	audienceFieldLookalikeStartingRatio = big.NewInt(1 << 9)
+	audienceFieldMatchRates             = big.NewInt(1 << 10)
+	audienceFieldMatchedRows            = big.NewInt(1 << 11)
+	audienceFieldName                   = big.NewInt(1 << 12)
+	audienceFieldPlatformAudienceIDs    = big.NewInt(1 << 13)
+	audienceFieldProcessedRows          = big.NewInt(1 << 14)
+	audienceFieldProgressPercent        = big.NewInt(1 << 15)
+	audienceFieldSourceAudienceID       = big.NewInt(1 << 16)
+	audienceFieldSourceType             = big.NewInt(1 << 17)
+	audienceFieldStatus                 = big.NewInt(1 << 18)
+	audienceFieldTotalRows              = big.NewInt(1 << 19)
+	audienceFieldUpdatedAt              = big.NewInt(1 << 20)
 )
 
 type Audience struct {
-	// `custom` = a customer list (uploaded, or built from saved People filters); `lookalike` = Meta lookalike built from a custom audience.
+	// Whether the audience targets a defined group of people or people similar to an existing audience.
 	AudienceType AudienceAudienceType `json:"audience_type" url:"audience_type"`
-	// Whether membership keeps updating. `true` rebuilds it from the saved filters twice a day, so people join and leave as they start and stop matching. `false` keeps whoever matched when it was built and never rebuilds. Always `false` for uploaded lists and lookalikes.
+	// Whether Whop rebuilds membership from saved People filters twice a day. When `false`, People audiences keep the members matched at creation. Always `false` for uploaded lists, lookalikes, and engagement audiences. Engagement membership is maintained by Meta.
 	AutoRefresh bool `json:"auto_refresh" url:"auto_refresh"`
 	// When the audience was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
+	// Social engagement rules maintained by the ad platform. `null` for other audience sources.
+	Engagement *AudienceEngagement `json:"engagement,omitempty" url:"engagement,omitempty"`
 	// Processing error message. `null` unless processing is partial or failed.
 	ErrorMessage *string `json:"error_message,omitempty" url:"error_message,omitempty"`
-	// For audiences built from People filters: the filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. `null` for uploaded lists and lookalikes.
+	// Saved Whop People filters that define membership, using the same keys as `GET /people`. `null` for uploaded lists, engagement audiences, and lookalikes.
 	Filters map[string]any `json:"filters,omitempty" url:"filters,omitempty"`
 	// Audience ID, prefixed `adaud_`.
 	ID string `json:"id" url:"id"`
@@ -348,22 +371,22 @@ type Audience struct {
 	// For lookalikes: the lower bound of the similarity band as a fraction. `null` for custom audiences and first-tier lookalikes.
 	LookalikeStartingRatio *float64             `json:"lookalike_starting_ratio,omitempty" url:"lookalike_starting_ratio,omitempty"`
 	MatchRates             []*AudienceMatchRate `json:"match_rates" url:"match_rates"`
-	// Members successfully uploaded to connected ad accounts. Always 0 for lookalikes.
+	// Members successfully uploaded to connected ad accounts. Always 0 for lookalikes and engagement audiences.
 	MatchedRows float64 `json:"matched_rows" url:"matched_rows"`
 	// Audience display name.
 	Name                string   `json:"name" url:"name"`
 	PlatformAudienceIDs []string `json:"platform_audience_ids" url:"platform_audience_ids"`
-	// Members processed from the source so far. Always 0 for lookalikes.
+	// Members processed from the source so far. Always 0 for lookalikes and engagement audiences.
 	ProcessedRows float64 `json:"processed_rows" url:"processed_rows"`
 	// Processing progress from 0 to 100.
 	ProgressPercent float64 `json:"progress_percent" url:"progress_percent"`
 	// For lookalikes: the audience this lookalike was built from. `null` for custom audiences.
 	SourceAudienceID *string `json:"source_audience_id,omitempty" url:"source_audience_id,omitempty"`
-	// Where members come from. `csv_upload` = an uploaded customer list; `people_filter` = built from saved People filters. See `auto_refresh` for whether a `people_filter` audience keeps updating.
+	// Membership source: an uploaded CSV, Whop People filters, or social engagement.
 	SourceType AudienceSourceType `json:"source_type" url:"source_type"`
-	// Current state of the audience import. `syncing` means Whop is sending matched rows to connected ad accounts. When status is `partial` or `failed`, `error_message` explains what went wrong.
+	// Current state of audience creation. For engagement audiences, `ready` means the rules were created on Meta; membership may still be populating. `syncing` means Whop is sending matched rows to connected ad accounts. When status is `partial` or `failed`, `error_message` explains what went wrong.
 	Status AudienceStatus `json:"status" url:"status"`
-	// Total members detected in the source — CSV rows for uploaded lists, matching people for automatic audiences. Always 0 for lookalikes.
+	// Total members detected in the source — CSV rows for uploaded lists, matching people for automatic audiences. Always 0 for lookalikes and engagement audiences.
 	TotalRows float64 `json:"total_rows" url:"total_rows"`
 	// When the audience was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -394,6 +417,13 @@ func (a *Audience) GetCreatedAt() string {
 		return ""
 	}
 	return a.CreatedAt
+}
+
+func (a *Audience) GetEngagement() *AudienceEngagement {
+	if a == nil {
+		return nil
+	}
+	return a.Engagement
 }
 
 func (a *Audience) GetErrorMessage() *string {
@@ -548,6 +578,13 @@ func (a *Audience) SetAutoRefresh(autoRefresh bool) {
 func (a *Audience) SetCreatedAt(createdAt string) {
 	a.CreatedAt = createdAt
 	a.require(audienceFieldCreatedAt)
+}
+
+// SetEngagement sets the Engagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Audience) SetEngagement(engagement *AudienceEngagement) {
+	a.Engagement = engagement
+	a.require(audienceFieldEngagement)
 }
 
 // SetErrorMessage sets the ErrorMessage field and marks it as non-optional;
@@ -711,7 +748,7 @@ func (a *Audience) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// `custom` = a customer list (uploaded, or built from saved People filters); `lookalike` = Meta lookalike built from a custom audience.
+// Whether the audience targets a defined group of people or people similar to an existing audience.
 type AudienceAudienceType string
 
 const (
@@ -731,6 +768,997 @@ func NewAudienceAudienceTypeFromString(s string) (AudienceAudienceType, error) {
 }
 
 func (a AudienceAudienceType) Ptr() *AudienceAudienceType {
+	return &a
+}
+
+var (
+	audienceEngagementFieldExclude  = big.NewInt(1 << 0)
+	audienceEngagementFieldInclude  = big.NewInt(1 << 1)
+	audienceEngagementFieldPlatform = big.NewInt(1 << 2)
+)
+
+type AudienceEngagement struct {
+	// Exclude anyone matching any exclusion rule. Supply 0–10 rules. Video audiences do not support exclusions; use a separate audience in ad-group exclusions.
+	Exclude []*AudienceEngagementRule `json:"exclude" url:"exclude"`
+	// Match any inclusion rule. Supply 1–10 rules. Video rules must share a retention window and cannot be combined with other sources.
+	Include []*AudienceEngagementRule `json:"include" url:"include"`
+	// Ad platform that maintains membership.
+	Platform AudienceEngagementPlatform `json:"platform" url:"platform"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AudienceEngagement) GetExclude() []*AudienceEngagementRule {
+	if a == nil {
+		return nil
+	}
+	return a.Exclude
+}
+
+func (a *AudienceEngagement) GetInclude() []*AudienceEngagementRule {
+	if a == nil {
+		return nil
+	}
+	return a.Include
+}
+
+func (a *AudienceEngagement) GetPlatform() AudienceEngagementPlatform {
+	if a == nil {
+		return ""
+	}
+	return a.Platform
+}
+
+func (a *AudienceEngagement) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AudienceEngagement) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetExclude sets the Exclude field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagement) SetExclude(exclude []*AudienceEngagementRule) {
+	a.Exclude = exclude
+	a.require(audienceEngagementFieldExclude)
+}
+
+// SetInclude sets the Include field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagement) SetInclude(include []*AudienceEngagementRule) {
+	a.Include = include
+	a.require(audienceEngagementFieldInclude)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagement) SetPlatform(platform AudienceEngagementPlatform) {
+	a.Platform = platform
+	a.require(audienceEngagementFieldPlatform)
+}
+
+func (a *AudienceEngagement) UnmarshalJSON(data []byte) error {
+	type unmarshaler AudienceEngagement
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AudienceEngagement(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AudienceEngagement) MarshalJSON() ([]byte, error) {
+	type embed AudienceEngagement
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AudienceEngagement) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	audienceEngagementFacebookPageRuleFieldEvent           = big.NewInt(1 << 0)
+	audienceEngagementFacebookPageRuleFieldRetentionDays   = big.NewInt(1 << 1)
+	audienceEngagementFacebookPageRuleFieldSocialAccountID = big.NewInt(1 << 2)
+)
+
+type AudienceEngagementFacebookPageRule struct {
+	// Interaction that qualifies a person for this rule.
+	Event AudienceEngagementFacebookPageRuleEvent `json:"event" url:"event"`
+	// Rolling membership window in days, from 1 to 730. Use 0 for `liked`, which tracks current likes and cannot be combined with other events.
+	RetentionDays int `json:"retention_days" url:"retention_days"`
+	// Connected social account ID, prefixed `sacc_`, with advertising access.
+	SocialAccountID string `json:"social_account_id" url:"social_account_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AudienceEngagementFacebookPageRule) GetEvent() AudienceEngagementFacebookPageRuleEvent {
+	if a == nil {
+		return ""
+	}
+	return a.Event
+}
+
+func (a *AudienceEngagementFacebookPageRule) GetRetentionDays() int {
+	if a == nil {
+		return 0
+	}
+	return a.RetentionDays
+}
+
+func (a *AudienceEngagementFacebookPageRule) GetSocialAccountID() string {
+	if a == nil {
+		return ""
+	}
+	return a.SocialAccountID
+}
+
+func (a *AudienceEngagementFacebookPageRule) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AudienceEngagementFacebookPageRule) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetEvent sets the Event field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementFacebookPageRule) SetEvent(event AudienceEngagementFacebookPageRuleEvent) {
+	a.Event = event
+	a.require(audienceEngagementFacebookPageRuleFieldEvent)
+}
+
+// SetRetentionDays sets the RetentionDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementFacebookPageRule) SetRetentionDays(retentionDays int) {
+	a.RetentionDays = retentionDays
+	a.require(audienceEngagementFacebookPageRuleFieldRetentionDays)
+}
+
+// SetSocialAccountID sets the SocialAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementFacebookPageRule) SetSocialAccountID(socialAccountID string) {
+	a.SocialAccountID = socialAccountID
+	a.require(audienceEngagementFacebookPageRuleFieldSocialAccountID)
+}
+
+func (a *AudienceEngagementFacebookPageRule) UnmarshalJSON(data []byte) error {
+	type unmarshaler AudienceEngagementFacebookPageRule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AudienceEngagementFacebookPageRule(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AudienceEngagementFacebookPageRule) MarshalJSON() ([]byte, error) {
+	type embed AudienceEngagementFacebookPageRule
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AudienceEngagementFacebookPageRule) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Interaction that qualifies a person for this rule.
+type AudienceEngagementFacebookPageRuleEvent string
+
+const (
+	AudienceEngagementFacebookPageRuleEventEngaged         AudienceEngagementFacebookPageRuleEvent = "engaged"
+	AudienceEngagementFacebookPageRuleEventVisited         AudienceEngagementFacebookPageRuleEvent = "visited"
+	AudienceEngagementFacebookPageRuleEventLiked           AudienceEngagementFacebookPageRuleEvent = "liked"
+	AudienceEngagementFacebookPageRuleEventMessaged        AudienceEngagementFacebookPageRuleEvent = "messaged"
+	AudienceEngagementFacebookPageRuleEventCtaClicked      AudienceEngagementFacebookPageRuleEvent = "cta_clicked"
+	AudienceEngagementFacebookPageRuleEventSaved           AudienceEngagementFacebookPageRuleEvent = "saved"
+	AudienceEngagementFacebookPageRuleEventPostInteraction AudienceEngagementFacebookPageRuleEvent = "post_interaction"
+)
+
+func NewAudienceEngagementFacebookPageRuleEventFromString(s string) (AudienceEngagementFacebookPageRuleEvent, error) {
+	switch s {
+	case "engaged":
+		return AudienceEngagementFacebookPageRuleEventEngaged, nil
+	case "visited":
+		return AudienceEngagementFacebookPageRuleEventVisited, nil
+	case "liked":
+		return AudienceEngagementFacebookPageRuleEventLiked, nil
+	case "messaged":
+		return AudienceEngagementFacebookPageRuleEventMessaged, nil
+	case "cta_clicked":
+		return AudienceEngagementFacebookPageRuleEventCtaClicked, nil
+	case "saved":
+		return AudienceEngagementFacebookPageRuleEventSaved, nil
+	case "post_interaction":
+		return AudienceEngagementFacebookPageRuleEventPostInteraction, nil
+	}
+	var t AudienceEngagementFacebookPageRuleEvent
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AudienceEngagementFacebookPageRuleEvent) Ptr() *AudienceEngagementFacebookPageRuleEvent {
+	return &a
+}
+
+var (
+	audienceEngagementInstagramProfileRuleFieldEvent           = big.NewInt(1 << 0)
+	audienceEngagementInstagramProfileRuleFieldRetentionDays   = big.NewInt(1 << 1)
+	audienceEngagementInstagramProfileRuleFieldSocialAccountID = big.NewInt(1 << 2)
+)
+
+type AudienceEngagementInstagramProfileRule struct {
+	// Interaction that qualifies a person for this rule.
+	Event AudienceEngagementInstagramProfileRuleEvent `json:"event" url:"event"`
+	// Rolling membership window in days, from 1 to 730.
+	RetentionDays int `json:"retention_days" url:"retention_days"`
+	// Connected social account ID, prefixed `sacc_`, with advertising access.
+	SocialAccountID string `json:"social_account_id" url:"social_account_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AudienceEngagementInstagramProfileRule) GetEvent() AudienceEngagementInstagramProfileRuleEvent {
+	if a == nil {
+		return ""
+	}
+	return a.Event
+}
+
+func (a *AudienceEngagementInstagramProfileRule) GetRetentionDays() int {
+	if a == nil {
+		return 0
+	}
+	return a.RetentionDays
+}
+
+func (a *AudienceEngagementInstagramProfileRule) GetSocialAccountID() string {
+	if a == nil {
+		return ""
+	}
+	return a.SocialAccountID
+}
+
+func (a *AudienceEngagementInstagramProfileRule) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AudienceEngagementInstagramProfileRule) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetEvent sets the Event field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementInstagramProfileRule) SetEvent(event AudienceEngagementInstagramProfileRuleEvent) {
+	a.Event = event
+	a.require(audienceEngagementInstagramProfileRuleFieldEvent)
+}
+
+// SetRetentionDays sets the RetentionDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementInstagramProfileRule) SetRetentionDays(retentionDays int) {
+	a.RetentionDays = retentionDays
+	a.require(audienceEngagementInstagramProfileRuleFieldRetentionDays)
+}
+
+// SetSocialAccountID sets the SocialAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementInstagramProfileRule) SetSocialAccountID(socialAccountID string) {
+	a.SocialAccountID = socialAccountID
+	a.require(audienceEngagementInstagramProfileRuleFieldSocialAccountID)
+}
+
+func (a *AudienceEngagementInstagramProfileRule) UnmarshalJSON(data []byte) error {
+	type unmarshaler AudienceEngagementInstagramProfileRule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AudienceEngagementInstagramProfileRule(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AudienceEngagementInstagramProfileRule) MarshalJSON() ([]byte, error) {
+	type embed AudienceEngagementInstagramProfileRule
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AudienceEngagementInstagramProfileRule) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Interaction that qualifies a person for this rule.
+type AudienceEngagementInstagramProfileRuleEvent string
+
+const (
+	AudienceEngagementInstagramProfileRuleEventAll                   AudienceEngagementInstagramProfileRuleEvent = "all"
+	AudienceEngagementInstagramProfileRuleEventEngaged               AudienceEngagementInstagramProfileRuleEvent = "engaged"
+	AudienceEngagementInstagramProfileRuleEventVisited               AudienceEngagementInstagramProfileRuleEvent = "visited"
+	AudienceEngagementInstagramProfileRuleEventMessaged              AudienceEngagementInstagramProfileRuleEvent = "messaged"
+	AudienceEngagementInstagramProfileRuleEventSaved                 AudienceEngagementInstagramProfileRuleEvent = "saved"
+	AudienceEngagementInstagramProfileRuleEventAdLiked               AudienceEngagementInstagramProfileRuleEvent = "ad_liked"
+	AudienceEngagementInstagramProfileRuleEventAdCommented           AudienceEngagementInstagramProfileRuleEvent = "ad_commented"
+	AudienceEngagementInstagramProfileRuleEventAdShared              AudienceEngagementInstagramProfileRuleEvent = "ad_shared"
+	AudienceEngagementInstagramProfileRuleEventAdSaved               AudienceEngagementInstagramProfileRuleEvent = "ad_saved"
+	AudienceEngagementInstagramProfileRuleEventAdCtaClicked          AudienceEngagementInstagramProfileRuleEvent = "ad_cta_clicked"
+	AudienceEngagementInstagramProfileRuleEventAdCarouselSwiped      AudienceEngagementInstagramProfileRuleEvent = "ad_carousel_swiped"
+	AudienceEngagementInstagramProfileRuleEventOrganicLiked          AudienceEngagementInstagramProfileRuleEvent = "organic_liked"
+	AudienceEngagementInstagramProfileRuleEventOrganicCommented      AudienceEngagementInstagramProfileRuleEvent = "organic_commented"
+	AudienceEngagementInstagramProfileRuleEventOrganicShared         AudienceEngagementInstagramProfileRuleEvent = "organic_shared"
+	AudienceEngagementInstagramProfileRuleEventOrganicSaved          AudienceEngagementInstagramProfileRuleEvent = "organic_saved"
+	AudienceEngagementInstagramProfileRuleEventOrganicSwiped         AudienceEngagementInstagramProfileRuleEvent = "organic_swiped"
+	AudienceEngagementInstagramProfileRuleEventOrganicCarouselSwiped AudienceEngagementInstagramProfileRuleEvent = "organic_carousel_swiped"
+)
+
+func NewAudienceEngagementInstagramProfileRuleEventFromString(s string) (AudienceEngagementInstagramProfileRuleEvent, error) {
+	switch s {
+	case "all":
+		return AudienceEngagementInstagramProfileRuleEventAll, nil
+	case "engaged":
+		return AudienceEngagementInstagramProfileRuleEventEngaged, nil
+	case "visited":
+		return AudienceEngagementInstagramProfileRuleEventVisited, nil
+	case "messaged":
+		return AudienceEngagementInstagramProfileRuleEventMessaged, nil
+	case "saved":
+		return AudienceEngagementInstagramProfileRuleEventSaved, nil
+	case "ad_liked":
+		return AudienceEngagementInstagramProfileRuleEventAdLiked, nil
+	case "ad_commented":
+		return AudienceEngagementInstagramProfileRuleEventAdCommented, nil
+	case "ad_shared":
+		return AudienceEngagementInstagramProfileRuleEventAdShared, nil
+	case "ad_saved":
+		return AudienceEngagementInstagramProfileRuleEventAdSaved, nil
+	case "ad_cta_clicked":
+		return AudienceEngagementInstagramProfileRuleEventAdCtaClicked, nil
+	case "ad_carousel_swiped":
+		return AudienceEngagementInstagramProfileRuleEventAdCarouselSwiped, nil
+	case "organic_liked":
+		return AudienceEngagementInstagramProfileRuleEventOrganicLiked, nil
+	case "organic_commented":
+		return AudienceEngagementInstagramProfileRuleEventOrganicCommented, nil
+	case "organic_shared":
+		return AudienceEngagementInstagramProfileRuleEventOrganicShared, nil
+	case "organic_saved":
+		return AudienceEngagementInstagramProfileRuleEventOrganicSaved, nil
+	case "organic_swiped":
+		return AudienceEngagementInstagramProfileRuleEventOrganicSwiped, nil
+	case "organic_carousel_swiped":
+		return AudienceEngagementInstagramProfileRuleEventOrganicCarouselSwiped, nil
+	}
+	var t AudienceEngagementInstagramProfileRuleEvent
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AudienceEngagementInstagramProfileRuleEvent) Ptr() *AudienceEngagementInstagramProfileRuleEvent {
+	return &a
+}
+
+var (
+	audienceEngagementLeadFormRuleFieldEvent           = big.NewInt(1 << 0)
+	audienceEngagementLeadFormRuleFieldPlatformFormIDs = big.NewInt(1 << 1)
+	audienceEngagementLeadFormRuleFieldRetentionDays   = big.NewInt(1 << 2)
+	audienceEngagementLeadFormRuleFieldSocialAccountID = big.NewInt(1 << 3)
+)
+
+type AudienceEngagementLeadFormRule struct {
+	// Interaction that qualifies a person for this rule.
+	Event           AudienceEngagementLeadFormRuleEvent `json:"event" url:"event"`
+	PlatformFormIDs []string                            `json:"platform_form_ids" url:"platform_form_ids"`
+	// Rolling membership window in days, from 1 to 90.
+	RetentionDays int `json:"retention_days" url:"retention_days"`
+	// Connected social account ID, prefixed `sacc_`, with advertising access.
+	SocialAccountID string `json:"social_account_id" url:"social_account_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AudienceEngagementLeadFormRule) GetEvent() AudienceEngagementLeadFormRuleEvent {
+	if a == nil {
+		return ""
+	}
+	return a.Event
+}
+
+func (a *AudienceEngagementLeadFormRule) GetPlatformFormIDs() []string {
+	if a == nil {
+		return nil
+	}
+	return a.PlatformFormIDs
+}
+
+func (a *AudienceEngagementLeadFormRule) GetRetentionDays() int {
+	if a == nil {
+		return 0
+	}
+	return a.RetentionDays
+}
+
+func (a *AudienceEngagementLeadFormRule) GetSocialAccountID() string {
+	if a == nil {
+		return ""
+	}
+	return a.SocialAccountID
+}
+
+func (a *AudienceEngagementLeadFormRule) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AudienceEngagementLeadFormRule) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetEvent sets the Event field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementLeadFormRule) SetEvent(event AudienceEngagementLeadFormRuleEvent) {
+	a.Event = event
+	a.require(audienceEngagementLeadFormRuleFieldEvent)
+}
+
+// SetPlatformFormIDs sets the PlatformFormIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementLeadFormRule) SetPlatformFormIDs(platformFormIDs []string) {
+	a.PlatformFormIDs = platformFormIDs
+	a.require(audienceEngagementLeadFormRuleFieldPlatformFormIDs)
+}
+
+// SetRetentionDays sets the RetentionDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementLeadFormRule) SetRetentionDays(retentionDays int) {
+	a.RetentionDays = retentionDays
+	a.require(audienceEngagementLeadFormRuleFieldRetentionDays)
+}
+
+// SetSocialAccountID sets the SocialAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementLeadFormRule) SetSocialAccountID(socialAccountID string) {
+	a.SocialAccountID = socialAccountID
+	a.require(audienceEngagementLeadFormRuleFieldSocialAccountID)
+}
+
+func (a *AudienceEngagementLeadFormRule) UnmarshalJSON(data []byte) error {
+	type unmarshaler AudienceEngagementLeadFormRule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AudienceEngagementLeadFormRule(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AudienceEngagementLeadFormRule) MarshalJSON() ([]byte, error) {
+	type embed AudienceEngagementLeadFormRule
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AudienceEngagementLeadFormRule) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Interaction that qualifies a person for this rule.
+type AudienceEngagementLeadFormRuleEvent string
+
+const (
+	AudienceEngagementLeadFormRuleEventOpened       AudienceEngagementLeadFormRuleEvent = "opened"
+	AudienceEngagementLeadFormRuleEventSubmitted    AudienceEngagementLeadFormRuleEvent = "submitted"
+	AudienceEngagementLeadFormRuleEventNotSubmitted AudienceEngagementLeadFormRuleEvent = "not_submitted"
+)
+
+func NewAudienceEngagementLeadFormRuleEventFromString(s string) (AudienceEngagementLeadFormRuleEvent, error) {
+	switch s {
+	case "opened":
+		return AudienceEngagementLeadFormRuleEventOpened, nil
+	case "submitted":
+		return AudienceEngagementLeadFormRuleEventSubmitted, nil
+	case "not_submitted":
+		return AudienceEngagementLeadFormRuleEventNotSubmitted, nil
+	}
+	var t AudienceEngagementLeadFormRuleEvent
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AudienceEngagementLeadFormRuleEvent) Ptr() *AudienceEngagementLeadFormRuleEvent {
+	return &a
+}
+
+// Ad platform that maintains membership.
+type AudienceEngagementPlatform string
+
+const (
+	AudienceEngagementPlatformMeta AudienceEngagementPlatform = "meta"
+)
+
+func NewAudienceEngagementPlatformFromString(s string) (AudienceEngagementPlatform, error) {
+	switch s {
+	case "meta":
+		return AudienceEngagementPlatformMeta, nil
+	}
+	var t AudienceEngagementPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AudienceEngagementPlatform) Ptr() *AudienceEngagementPlatform {
+	return &a
+}
+
+type AudienceEngagementRule struct {
+	Object           string
+	FacebookPage     *AudienceEngagementFacebookPageRule
+	InstagramProfile *AudienceEngagementInstagramProfileRule
+	LeadForm         *AudienceEngagementLeadFormRule
+	Video            *AudienceEngagementVideoRule
+
+	rawJSON json.RawMessage
+}
+
+func (a *AudienceEngagementRule) GetObject() string {
+	if a == nil {
+		return ""
+	}
+	return a.Object
+}
+
+func (a *AudienceEngagementRule) GetFacebookPage() *AudienceEngagementFacebookPageRule {
+	if a == nil {
+		return nil
+	}
+	return a.FacebookPage
+}
+
+func (a *AudienceEngagementRule) GetInstagramProfile() *AudienceEngagementInstagramProfileRule {
+	if a == nil {
+		return nil
+	}
+	return a.InstagramProfile
+}
+
+func (a *AudienceEngagementRule) GetLeadForm() *AudienceEngagementLeadFormRule {
+	if a == nil {
+		return nil
+	}
+	return a.LeadForm
+}
+
+func (a *AudienceEngagementRule) GetVideo() *AudienceEngagementVideoRule {
+	if a == nil {
+		return nil
+	}
+	return a.Video
+}
+
+func (a *AudienceEngagementRule) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Object string `json:"object"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	a.Object = unmarshaler.Object
+	if unmarshaler.Object == "" {
+		return fmt.Errorf("%T did not include discriminant object", a)
+	}
+	switch unmarshaler.Object {
+	case "facebook_page":
+		value := new(AudienceEngagementFacebookPageRule)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		a.FacebookPage = value
+	case "instagram_profile":
+		value := new(AudienceEngagementInstagramProfileRule)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		a.InstagramProfile = value
+	case "lead_form":
+		value := new(AudienceEngagementLeadFormRule)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		a.LeadForm = value
+	case "video":
+		value := new(AudienceEngagementVideoRule)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		a.Video = value
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a AudienceEngagementRule) MarshalJSON() ([]byte, error) {
+	if err := a.validate(); err != nil {
+		return nil, err
+	}
+	if a.FacebookPage != nil {
+		return internal.MarshalJSONWithExtraProperty(a.FacebookPage, "object", "facebook_page")
+	}
+	if a.InstagramProfile != nil {
+		return internal.MarshalJSONWithExtraProperty(a.InstagramProfile, "object", "instagram_profile")
+	}
+	if a.LeadForm != nil {
+		return internal.MarshalJSONWithExtraProperty(a.LeadForm, "object", "lead_form")
+	}
+	if a.Video != nil {
+		return internal.MarshalJSONWithExtraProperty(a.Video, "object", "video")
+	}
+	if len(a.rawJSON) > 0 {
+		return a.rawJSON, nil
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", a)
+}
+
+type AudienceEngagementRuleVisitor interface {
+	VisitFacebookPage(*AudienceEngagementFacebookPageRule) error
+	VisitInstagramProfile(*AudienceEngagementInstagramProfileRule) error
+	VisitLeadForm(*AudienceEngagementLeadFormRule) error
+	VisitVideo(*AudienceEngagementVideoRule) error
+}
+
+func (a *AudienceEngagementRule) Accept(visitor AudienceEngagementRuleVisitor) error {
+	if a.FacebookPage != nil {
+		return visitor.VisitFacebookPage(a.FacebookPage)
+	}
+	if a.InstagramProfile != nil {
+		return visitor.VisitInstagramProfile(a.InstagramProfile)
+	}
+	if a.LeadForm != nil {
+		return visitor.VisitLeadForm(a.LeadForm)
+	}
+	if a.Video != nil {
+		return visitor.VisitVideo(a.Video)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", a)
+}
+
+func (a *AudienceEngagementRule) validate() error {
+	if a == nil {
+		return fmt.Errorf("type %T is nil", a)
+	}
+	var fields []string
+	if a.FacebookPage != nil {
+		fields = append(fields, "facebook_page")
+	}
+	if a.InstagramProfile != nil {
+		fields = append(fields, "instagram_profile")
+	}
+	if a.LeadForm != nil {
+		fields = append(fields, "lead_form")
+	}
+	if a.Video != nil {
+		fields = append(fields, "video")
+	}
+	if len(fields) == 0 {
+		if a.Object != "" {
+			if len(a.rawJSON) > 0 {
+				return nil
+			}
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", a, a.Object)
+		}
+		return fmt.Errorf("type %T is empty", a)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", a, fields)
+	}
+	if a.Object != "" {
+		field := fields[0]
+		if a.Object != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				a,
+				a.Object,
+				a,
+			)
+		}
+	}
+	return nil
+}
+
+var (
+	audienceEngagementVideoRuleFieldEvent            = big.NewInt(1 << 0)
+	audienceEngagementVideoRuleFieldPlatformVideoIDs = big.NewInt(1 << 1)
+	audienceEngagementVideoRuleFieldRetentionDays    = big.NewInt(1 << 2)
+	audienceEngagementVideoRuleFieldSocialAccountID  = big.NewInt(1 << 3)
+)
+
+type AudienceEngagementVideoRule struct {
+	// Interaction that qualifies a person for this rule.
+	Event            AudienceEngagementVideoRuleEvent `json:"event" url:"event"`
+	PlatformVideoIDs []string                         `json:"platform_video_ids" url:"platform_video_ids"`
+	// Rolling membership window in days, from 1 to 365.
+	RetentionDays int `json:"retention_days" url:"retention_days"`
+	// Connected social account ID, prefixed `sacc_`, with advertising access.
+	SocialAccountID string `json:"social_account_id" url:"social_account_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AudienceEngagementVideoRule) GetEvent() AudienceEngagementVideoRuleEvent {
+	if a == nil {
+		return ""
+	}
+	return a.Event
+}
+
+func (a *AudienceEngagementVideoRule) GetPlatformVideoIDs() []string {
+	if a == nil {
+		return nil
+	}
+	return a.PlatformVideoIDs
+}
+
+func (a *AudienceEngagementVideoRule) GetRetentionDays() int {
+	if a == nil {
+		return 0
+	}
+	return a.RetentionDays
+}
+
+func (a *AudienceEngagementVideoRule) GetSocialAccountID() string {
+	if a == nil {
+		return ""
+	}
+	return a.SocialAccountID
+}
+
+func (a *AudienceEngagementVideoRule) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AudienceEngagementVideoRule) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetEvent sets the Event field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementVideoRule) SetEvent(event AudienceEngagementVideoRuleEvent) {
+	a.Event = event
+	a.require(audienceEngagementVideoRuleFieldEvent)
+}
+
+// SetPlatformVideoIDs sets the PlatformVideoIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementVideoRule) SetPlatformVideoIDs(platformVideoIDs []string) {
+	a.PlatformVideoIDs = platformVideoIDs
+	a.require(audienceEngagementVideoRuleFieldPlatformVideoIDs)
+}
+
+// SetRetentionDays sets the RetentionDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementVideoRule) SetRetentionDays(retentionDays int) {
+	a.RetentionDays = retentionDays
+	a.require(audienceEngagementVideoRuleFieldRetentionDays)
+}
+
+// SetSocialAccountID sets the SocialAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementVideoRule) SetSocialAccountID(socialAccountID string) {
+	a.SocialAccountID = socialAccountID
+	a.require(audienceEngagementVideoRuleFieldSocialAccountID)
+}
+
+func (a *AudienceEngagementVideoRule) UnmarshalJSON(data []byte) error {
+	type unmarshaler AudienceEngagementVideoRule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AudienceEngagementVideoRule(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AudienceEngagementVideoRule) MarshalJSON() ([]byte, error) {
+	type embed AudienceEngagementVideoRule
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AudienceEngagementVideoRule) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Interaction that qualifies a person for this rule.
+type AudienceEngagementVideoRuleEvent string
+
+const (
+	AudienceEngagementVideoRuleEventWatched3Seconds  AudienceEngagementVideoRuleEvent = "watched_3_seconds"
+	AudienceEngagementVideoRuleEventWatched10Seconds AudienceEngagementVideoRuleEvent = "watched_10_seconds"
+	AudienceEngagementVideoRuleEventWatched15Seconds AudienceEngagementVideoRuleEvent = "watched_15_seconds"
+	AudienceEngagementVideoRuleEventWatched25Percent AudienceEngagementVideoRuleEvent = "watched_25_percent"
+	AudienceEngagementVideoRuleEventWatched50Percent AudienceEngagementVideoRuleEvent = "watched_50_percent"
+	AudienceEngagementVideoRuleEventWatched75Percent AudienceEngagementVideoRuleEvent = "watched_75_percent"
+	AudienceEngagementVideoRuleEventWatched95Percent AudienceEngagementVideoRuleEvent = "watched_95_percent"
+)
+
+func NewAudienceEngagementVideoRuleEventFromString(s string) (AudienceEngagementVideoRuleEvent, error) {
+	switch s {
+	case "watched_3_seconds":
+		return AudienceEngagementVideoRuleEventWatched3Seconds, nil
+	case "watched_10_seconds":
+		return AudienceEngagementVideoRuleEventWatched10Seconds, nil
+	case "watched_15_seconds":
+		return AudienceEngagementVideoRuleEventWatched15Seconds, nil
+	case "watched_25_percent":
+		return AudienceEngagementVideoRuleEventWatched25Percent, nil
+	case "watched_50_percent":
+		return AudienceEngagementVideoRuleEventWatched50Percent, nil
+	case "watched_75_percent":
+		return AudienceEngagementVideoRuleEventWatched75Percent, nil
+	case "watched_95_percent":
+		return AudienceEngagementVideoRuleEventWatched95Percent, nil
+	}
+	var t AudienceEngagementVideoRuleEvent
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AudienceEngagementVideoRuleEvent) Ptr() *AudienceEngagementVideoRuleEvent {
 	return &a
 }
 
@@ -916,12 +1944,13 @@ func (a AudienceMatchRateStatus) Ptr() *AudienceMatchRateStatus {
 	return &a
 }
 
-// Where members come from. `csv_upload` = an uploaded customer list; `people_filter` = built from saved People filters. See `auto_refresh` for whether a `people_filter` audience keeps updating.
+// Membership source: an uploaded CSV, Whop People filters, or social engagement.
 type AudienceSourceType string
 
 const (
 	AudienceSourceTypeCsvUpload    AudienceSourceType = "csv_upload"
 	AudienceSourceTypePeopleFilter AudienceSourceType = "people_filter"
+	AudienceSourceTypeEngagement   AudienceSourceType = "engagement"
 )
 
 func NewAudienceSourceTypeFromString(s string) (AudienceSourceType, error) {
@@ -930,6 +1959,8 @@ func NewAudienceSourceTypeFromString(s string) (AudienceSourceType, error) {
 		return AudienceSourceTypeCsvUpload, nil
 	case "people_filter":
 		return AudienceSourceTypePeopleFilter, nil
+	case "engagement":
+		return AudienceSourceTypeEngagement, nil
 	}
 	var t AudienceSourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -939,7 +1970,7 @@ func (a AudienceSourceType) Ptr() *AudienceSourceType {
 	return &a
 }
 
-// Current state of the audience import. `syncing` means Whop is sending matched rows to connected ad accounts. When status is `partial` or `failed`, `error_message` explains what went wrong.
+// Current state of audience creation. For engagement audiences, `ready` means the rules were created on Meta; membership may still be populating. `syncing` means Whop is sending matched rows to connected ad accounts. When status is `partial` or `failed`, `error_message` explains what went wrong.
 type AudienceStatus string
 
 const (
@@ -974,7 +2005,7 @@ func (a AudienceStatus) Ptr() *AudienceStatus {
 	return &a
 }
 
-// What to create. Defaults to `custom` (CSV upload).
+// Audience type. Defaults to `custom`.
 type CreateAudiencesRequestAudienceType string
 
 const (
@@ -997,7 +2028,7 @@ func (c CreateAudiencesRequestAudienceType) Ptr() *CreateAudiencesRequestAudienc
 	return &c
 }
 
-// Custom audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
+// CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
 var (
 	createAudiencesRequestColumnMappingFieldCountry   = big.NewInt(1 << 0)
 	createAudiencesRequestColumnMappingFieldEmail     = big.NewInt(1 << 1)
@@ -1166,6 +2197,172 @@ func (c *CreateAudiencesRequestColumnMapping) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// Rules for membership based on social engagement. Requires a connected social account with advertising access.
+var (
+	createAudiencesRequestEngagementFieldExclude  = big.NewInt(1 << 0)
+	createAudiencesRequestEngagementFieldInclude  = big.NewInt(1 << 1)
+	createAudiencesRequestEngagementFieldPlatform = big.NewInt(1 << 2)
+)
+
+type CreateAudiencesRequestEngagement struct {
+	// Exclude anyone matching any exclusion rule. Defaults to an empty array. Video audiences do not support exclusions; use a separate audience in ad-group exclusions.
+	Exclude []*AudienceEngagementRule `json:"exclude,omitempty" url:"exclude,omitempty"`
+	// Match any inclusion rule. Video rules must share a retention window and cannot be combined with other sources.
+	Include []*AudienceEngagementRule `json:"include" url:"include"`
+	// Ad platform that maintains membership.
+	Platform CreateAudiencesRequestEngagementPlatform `json:"platform" url:"platform"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAudiencesRequestEngagement) GetExclude() []*AudienceEngagementRule {
+	if c == nil {
+		return nil
+	}
+	return c.Exclude
+}
+
+func (c *CreateAudiencesRequestEngagement) GetInclude() []*AudienceEngagementRule {
+	if c == nil {
+		return nil
+	}
+	return c.Include
+}
+
+func (c *CreateAudiencesRequestEngagement) GetPlatform() CreateAudiencesRequestEngagementPlatform {
+	if c == nil {
+		return ""
+	}
+	return c.Platform
+}
+
+func (c *CreateAudiencesRequestEngagement) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAudiencesRequestEngagement) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetExclude sets the Exclude field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAudiencesRequestEngagement) SetExclude(exclude []*AudienceEngagementRule) {
+	c.Exclude = exclude
+	c.require(createAudiencesRequestEngagementFieldExclude)
+}
+
+// SetInclude sets the Include field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAudiencesRequestEngagement) SetInclude(include []*AudienceEngagementRule) {
+	c.Include = include
+	c.require(createAudiencesRequestEngagementFieldInclude)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAudiencesRequestEngagement) SetPlatform(platform CreateAudiencesRequestEngagementPlatform) {
+	c.Platform = platform
+	c.require(createAudiencesRequestEngagementFieldPlatform)
+}
+
+func (c *CreateAudiencesRequestEngagement) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAudiencesRequestEngagement
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAudiencesRequestEngagement(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAudiencesRequestEngagement) MarshalJSON() ([]byte, error) {
+	type embed CreateAudiencesRequestEngagement
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAudiencesRequestEngagement) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Ad platform that maintains membership.
+type CreateAudiencesRequestEngagementPlatform string
+
+const (
+	CreateAudiencesRequestEngagementPlatformMeta CreateAudiencesRequestEngagementPlatform = "meta"
+)
+
+func NewCreateAudiencesRequestEngagementPlatformFromString(s string) (CreateAudiencesRequestEngagementPlatform, error) {
+	switch s {
+	case "meta":
+		return CreateAudiencesRequestEngagementPlatformMeta, nil
+	}
+	var t CreateAudiencesRequestEngagementPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateAudiencesRequestEngagementPlatform) Ptr() *CreateAudiencesRequestEngagementPlatform {
+	return &c
+}
+
+// Custom audience source. Inferred from `engagement`, then `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
+type CreateAudiencesRequestSourceType string
+
+const (
+	CreateAudiencesRequestSourceTypeCsvUpload    CreateAudiencesRequestSourceType = "csv_upload"
+	CreateAudiencesRequestSourceTypePeopleFilter CreateAudiencesRequestSourceType = "people_filter"
+	CreateAudiencesRequestSourceTypeEngagement   CreateAudiencesRequestSourceType = "engagement"
+)
+
+func NewCreateAudiencesRequestSourceTypeFromString(s string) (CreateAudiencesRequestSourceType, error) {
+	switch s {
+	case "csv_upload":
+		return CreateAudiencesRequestSourceTypeCsvUpload, nil
+	case "people_filter":
+		return CreateAudiencesRequestSourceTypePeopleFilter, nil
+	case "engagement":
+		return CreateAudiencesRequestSourceTypeEngagement, nil
+	}
+	var t CreateAudiencesRequestSourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateAudiencesRequestSourceType) Ptr() *CreateAudiencesRequestSourceType {
+	return &c
 }
 
 type CreateAudiencesResponse struct {
@@ -1425,6 +2622,7 @@ type ListAudiencesRequestSourceType string
 const (
 	ListAudiencesRequestSourceTypeCsvUpload    ListAudiencesRequestSourceType = "csv_upload"
 	ListAudiencesRequestSourceTypePeopleFilter ListAudiencesRequestSourceType = "people_filter"
+	ListAudiencesRequestSourceTypeEngagement   ListAudiencesRequestSourceType = "engagement"
 )
 
 func NewListAudiencesRequestSourceTypeFromString(s string) (ListAudiencesRequestSourceType, error) {
@@ -1433,6 +2631,8 @@ func NewListAudiencesRequestSourceTypeFromString(s string) (ListAudiencesRequest
 		return ListAudiencesRequestSourceTypeCsvUpload, nil
 	case "people_filter":
 		return ListAudiencesRequestSourceTypePeopleFilter, nil
+	case "engagement":
+		return ListAudiencesRequestSourceTypeEngagement, nil
 	}
 	var t ListAudiencesRequestSourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
