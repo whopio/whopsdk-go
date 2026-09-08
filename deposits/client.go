@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-2"
+		apiVersionDateDefault := "2026-09-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -38,7 +38,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Retrieve the deposit methods for an account, including crypto and bank transfer.
+// Retrieve the deposit methods for an account, including crypto and bank transfer. Crypto deposits require a $10 minimum.
 //
 // Example:
 //

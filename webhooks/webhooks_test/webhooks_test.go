@@ -313,35 +313,3 @@ func TestWebhooksTestWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestWebhooksTestWithWireMock", "POST", "/webhooks/id/test", nil, 1)
 }
-
-func TestWebhooksDeliveriesWebhookWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.DeliveriesWebhookRequest{
-		WebhookID: "webhook_id",
-		First: whopsdk.Int(
-			42,
-		),
-		Last: whopsdk.Int(
-			42,
-		),
-	}
-	_, invocationErr := client.Webhooks.DeliveriesWebhook(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestWebhooksDeliveriesWebhookWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestWebhooksDeliveriesWebhookWithWireMock", "GET", "/webhooks/webhook_id/deliveries", map[string]interface{}{"first": "42", "last": "42"}, 1)
-}

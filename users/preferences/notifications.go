@@ -197,7 +197,7 @@ var (
 type SetNotificationsRequestPreferencesItemScope struct {
 	// Account to scope the preference to (member notifications), `biz_` tag.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// Delivery channel the preference applies to. Required when setting a topic override.
+	// Delivery channel the preference applies to. Omit it (or pass `null`) to apply the preference to every channel.
 	Channel *SetNotificationsRequestPreferencesItemScopeChannel `json:"channel,omitempty" url:"channel,omitempty"`
 	// Experience to scope the preference to (`exp_` tag). Requires `account_id` when a `topic_id` is also given.
 	ExperienceID *string `json:"experience_id,omitempty" url:"experience_id,omitempty"`
@@ -339,7 +339,7 @@ func (s *SetNotificationsRequestPreferencesItemScope) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// Delivery channel the preference applies to. Required when setting a topic override.
+// Delivery channel the preference applies to. Omit it (or pass `null`) to apply the preference to every channel.
 type SetNotificationsRequestPreferencesItemScopeChannel string
 
 const (

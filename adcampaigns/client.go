@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-2"
+		apiVersionDateDefault := "2026-09-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -302,7 +302,7 @@ func (c *Client) RetryPayment(
 	return response.Body, nil
 }
 
-// Resumes a paused ad campaign.
+// Resumes a paused ad campaign. Requires an ads payment method on the account.
 //
 // Example:
 //

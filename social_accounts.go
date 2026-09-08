@@ -712,17 +712,21 @@ func (s SocialAccountLeadFormFormType) Ptr() *SocialAccountLeadFormFormType {
 
 var (
 	socialAccountPostFieldCallToAction   = big.NewInt(1 << 0)
-	socialAccountPostFieldDestinationURL = big.NewInt(1 << 1)
-	socialAccountPostFieldEmbedURL       = big.NewInt(1 << 2)
-	socialAccountPostFieldID             = big.NewInt(1 << 3)
-	socialAccountPostFieldMediaURL       = big.NewInt(1 << 4)
-	socialAccountPostFieldRestrictions   = big.NewInt(1 << 5)
-	socialAccountPostFieldThumbnailURL   = big.NewInt(1 << 6)
+	socialAccountPostFieldCaption        = big.NewInt(1 << 1)
+	socialAccountPostFieldDestinationURL = big.NewInt(1 << 2)
+	socialAccountPostFieldEmbedURL       = big.NewInt(1 << 3)
+	socialAccountPostFieldID             = big.NewInt(1 << 4)
+	socialAccountPostFieldMediaURL       = big.NewInt(1 << 5)
+	socialAccountPostFieldRestrictions   = big.NewInt(1 << 6)
+	socialAccountPostFieldThumbnailURL   = big.NewInt(1 << 7)
+	socialAccountPostFieldVideoID        = big.NewInt(1 << 8)
 )
 
 type SocialAccountPost struct {
 	// The post's call-to-action button, for example shop_now (Facebook only; null for Instagram and TikTok).
 	CallToAction *SocialAccountPostCallToAction `json:"call_to_action,omitempty" url:"call_to_action,omitempty"`
+	// The text accompanying the post, when available.
+	Caption *string `json:"caption,omitempty" url:"caption,omitempty"`
 	// The URL the post's call-to-action drives to (Facebook only; null for Instagram and TikTok).
 	DestinationURL *string `json:"destination_url,omitempty" url:"destination_url,omitempty"`
 	// An iframe-embeddable URL for previewing the post inline (the platform's player or post embed). For TikTok this is the only preview, since media_url is null; for Facebook and Instagram it supplements media_url. Null when no public embed is available.
@@ -734,6 +738,8 @@ type SocialAccountPost struct {
 	Restrictions []SocialAccountPostRestrictionsItem `json:"restrictions" url:"restrictions"`
 	// Poster image for video posts (always set for TikTok, which is video-only); null for image posts, where media_url is already the image.
 	ThumbnailURL *string `json:"thumbnail_url,omitempty" url:"thumbnail_url,omitempty"`
+	// The platform video identifier for engagement audience rules. Null for non-video posts or when unavailable. Facebook video identifiers differ from post identifiers.
+	VideoID *string `json:"video_id,omitempty" url:"video_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -747,6 +753,13 @@ func (s *SocialAccountPost) GetCallToAction() *SocialAccountPostCallToAction {
 		return nil
 	}
 	return s.CallToAction
+}
+
+func (s *SocialAccountPost) GetCaption() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Caption
 }
 
 func (s *SocialAccountPost) GetDestinationURL() *string {
@@ -791,6 +804,13 @@ func (s *SocialAccountPost) GetThumbnailURL() *string {
 	return s.ThumbnailURL
 }
 
+func (s *SocialAccountPost) GetVideoID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.VideoID
+}
+
 func (s *SocialAccountPost) GetExtraProperties() map[string]interface{} {
 	if s == nil {
 		return nil
@@ -810,6 +830,13 @@ func (s *SocialAccountPost) require(field *big.Int) {
 func (s *SocialAccountPost) SetCallToAction(callToAction *SocialAccountPostCallToAction) {
 	s.CallToAction = callToAction
 	s.require(socialAccountPostFieldCallToAction)
+}
+
+// SetCaption sets the Caption field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SocialAccountPost) SetCaption(caption *string) {
+	s.Caption = caption
+	s.require(socialAccountPostFieldCaption)
 }
 
 // SetDestinationURL sets the DestinationURL field and marks it as non-optional;
@@ -852,6 +879,13 @@ func (s *SocialAccountPost) SetRestrictions(restrictions []SocialAccountPostRest
 func (s *SocialAccountPost) SetThumbnailURL(thumbnailURL *string) {
 	s.ThumbnailURL = thumbnailURL
 	s.require(socialAccountPostFieldThumbnailURL)
+}
+
+// SetVideoID sets the VideoID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SocialAccountPost) SetVideoID(videoID *string) {
+	s.VideoID = videoID
+	s.require(socialAccountPostFieldVideoID)
 }
 
 func (s *SocialAccountPost) UnmarshalJSON(data []byte) error {

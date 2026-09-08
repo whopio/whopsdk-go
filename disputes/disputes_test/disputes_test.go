@@ -203,58 +203,6 @@ func TestDisputesSubmitWithWireMock(
 	VerifyRequestCount(t, "TestDisputesSubmitWithWireMock", "POST", "/disputes/id/submit", nil, 1)
 }
 
-func TestDisputesSubmitEvidenceDisputeWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.SubmitEvidenceDisputeRequest{
-		ID: "dspt_xxxxxxxxxxxxx",
-	}
-	_, invocationErr := client.Disputes.SubmitEvidenceDispute(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestDisputesSubmitEvidenceDisputeWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestDisputesSubmitEvidenceDisputeWithWireMock", "POST", "/disputes/dspt_xxxxxxxxxxxxx/submit_evidence", nil, 1)
-}
-
-func TestDisputesUpdateEvidenceDisputeWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.UpdateEvidenceDisputeRequest{
-		ID: "dspt_xxxxxxxxxxxxx",
-	}
-	_, invocationErr := client.Disputes.UpdateEvidenceDispute(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestDisputesUpdateEvidenceDisputeWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestDisputesUpdateEvidenceDisputeWithWireMock", "POST", "/disputes/dspt_xxxxxxxxxxxxx/update_evidence", nil, 1)
-}
-
 func TestDisputesUploadEvidenceWithWireMock(
 	t *testing.T,
 ) {

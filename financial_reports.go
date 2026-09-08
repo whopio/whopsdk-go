@@ -1278,6 +1278,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemGroupingFx                    RetrieveFinancialReportsResponseRowsItemGrouping = "fx"
 	RetrieveFinancialReportsResponseRowsItemGroupingLegacy                RetrieveFinancialReportsResponseRowsItemGrouping = "legacy"
 	RetrieveFinancialReportsResponseRowsItemGroupingMisc                  RetrieveFinancialReportsResponseRowsItemGrouping = "misc"
+	RetrieveFinancialReportsResponseRowsItemGroupingOperationalCosts      RetrieveFinancialReportsResponseRowsItemGrouping = "operational_costs"
 	RetrieveFinancialReportsResponseRowsItemGroupingOther                 RetrieveFinancialReportsResponseRowsItemGrouping = "other"
 	RetrieveFinancialReportsResponseRowsItemGroupingPayments              RetrieveFinancialReportsResponseRowsItemGrouping = "payments"
 	RetrieveFinancialReportsResponseRowsItemGroupingRefunds               RetrieveFinancialReportsResponseRowsItemGrouping = "refunds"
@@ -1315,6 +1316,8 @@ func NewRetrieveFinancialReportsResponseRowsItemGroupingFromString(s string) (Re
 		return RetrieveFinancialReportsResponseRowsItemGroupingLegacy, nil
 	case "misc":
 		return RetrieveFinancialReportsResponseRowsItemGroupingMisc, nil
+	case "operational_costs":
+		return RetrieveFinancialReportsResponseRowsItemGroupingOperationalCosts, nil
 	case "other":
 		return RetrieveFinancialReportsResponseRowsItemGroupingOther, nil
 	case "payments":
@@ -1593,6 +1596,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategorySalesTaxRemittanceReversal                RetrieveFinancialReportsResponseRowsItemLineCategory = "sales_tax_remittance_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategorySalesTaxRemitted                          RetrieveFinancialReportsResponseRowsItemLineCategory = "sales_tax_remitted"
 	RetrieveFinancialReportsResponseRowsItemLineCategorySettlementRoundingVariance                RetrieveFinancialReportsResponseRowsItemLineCategory = "settlement_rounding_variance"
+	RetrieveFinancialReportsResponseRowsItemLineCategorySettlementShortfallLoss                   RetrieveFinancialReportsResponseRowsItemLineCategory = "settlement_shortfall_loss"
 	RetrieveFinancialReportsResponseRowsItemLineCategorySoftwareRentalRevshare                    RetrieveFinancialReportsResponseRowsItemLineCategory = "software_rental_revshare"
 	RetrieveFinancialReportsResponseRowsItemLineCategorySoftwareRentalTransaction                 RetrieveFinancialReportsResponseRowsItemLineCategory = "software_rental_transaction"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryStripeDomesticProcessingFee               RetrieveFinancialReportsResponseRowsItemLineCategory = "stripe_domestic_processing_fee"
@@ -2130,6 +2134,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategorySalesTaxRemitted, nil
 	case "settlement_rounding_variance":
 		return RetrieveFinancialReportsResponseRowsItemLineCategorySettlementRoundingVariance, nil
+	case "settlement_shortfall_loss":
+		return RetrieveFinancialReportsResponseRowsItemLineCategorySettlementShortfallLoss, nil
 	case "software_rental_revshare":
 		return RetrieveFinancialReportsResponseRowsItemLineCategorySoftwareRentalRevshare, nil
 	case "software_rental_transaction":

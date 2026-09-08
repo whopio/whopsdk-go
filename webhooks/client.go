@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-2"
+		apiVersionDateDefault := "2026-09-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -380,90 +380,4 @@ func (c *Client) Test(
 		return nil, err
 	}
 	return response.Body, nil
-}
-
-// Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
-//
-// Required permissions:
-//   - `developer:manage_webhook`
-//
-// Example:
-//
-//	request := &whopsdk.DeliveriesWebhookRequest{
-//	    WebhookID: "webhook_id",
-//	    First: whopsdk.Int(
-//	        42,
-//	    ),
-//	    Last: whopsdk.Int(
-//	        42,
-//	    ),
-//	}
-//	client.Webhooks.DeliveriesWebhook(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) DeliveriesWebhook(
-	ctx context.Context,
-	request *whopsdk.DeliveriesWebhookRequest,
-	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.DeliveriesWebhookResponseDataItem, *whopsdk.DeliveriesWebhookResponse], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		c.baseURL,
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/webhooks/%v/deliveries",
-		request.WebhookID,
-	)
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	headers := internal.MergeHeaders(
-		c.options.ToHeader(),
-		options.ToHeader(),
-	)
-	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
-		if pageRequest.Cursor != nil {
-			queryParams.Set("after", *pageRequest.Cursor)
-		}
-		nextURL := endpointURL
-		if len(queryParams) > 0 {
-			nextURL += "?" + queryParams.Encode()
-		}
-		return &internal.CallParams{
-			URL:             nextURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		}
-	}
-	readPageResponse := func(response *whopsdk.DeliveriesWebhookResponse) *core.PageResponse[*string, *whopsdk.DeliveriesWebhookResponseDataItem, *whopsdk.DeliveriesWebhookResponse] {
-		var zeroValue *string
-		var next *string
-		if response.PageInfo != nil {
-			next = response.PageInfo.EndCursor
-		}
-		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.DeliveriesWebhookResponseDataItem, *whopsdk.DeliveriesWebhookResponse]{
-			Results:  results,
-			Response: response,
-			Next:     next,
-			Done:     next == zeroValue || *next == "",
-		}
-	}
-	pager := internal.NewCursorPager(
-		c.caller,
-		prepareCall,
-		readPageResponse,
-	)
-	return pager.GetPage(ctx, request.After)
 }

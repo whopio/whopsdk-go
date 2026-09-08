@@ -453,6 +453,32 @@ func (r *RefundPaymentsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	resumePaymentsRequestFieldPaymentID = big.NewInt(1 << 0)
+)
+
+type ResumePaymentsRequest struct {
+	// The unique identifier of the payment.
+	PaymentID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ResumePaymentsRequest) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResumePaymentsRequest) SetPaymentID(paymentID string) {
+	r.PaymentID = paymentID
+	r.require(resumePaymentsRequestFieldPaymentID)
+}
+
+var (
 	retrievePaymentsRequestFieldID = big.NewInt(1 << 0)
 )
 
@@ -528,6 +554,41 @@ func (r *RetryPaymentsRequest) require(field *big.Int) {
 func (r *RetryPaymentsRequest) SetID(id string) {
 	r.ID = id
 	r.require(retryPaymentsRequestFieldID)
+}
+
+// The reason why a specific payment was billed
+type BillingReasons string
+
+const (
+	BillingReasonsSubscriptionCreate BillingReasons = "subscription_create"
+	BillingReasonsSubscriptionCycle  BillingReasons = "subscription_cycle"
+	BillingReasonsSubscriptionUpdate BillingReasons = "subscription_update"
+	BillingReasonsOneTime            BillingReasons = "one_time"
+	BillingReasonsManual             BillingReasons = "manual"
+	BillingReasonsSubscription       BillingReasons = "subscription"
+)
+
+func NewBillingReasonsFromString(s string) (BillingReasons, error) {
+	switch s {
+	case "subscription_create":
+		return BillingReasonsSubscriptionCreate, nil
+	case "subscription_cycle":
+		return BillingReasonsSubscriptionCycle, nil
+	case "subscription_update":
+		return BillingReasonsSubscriptionUpdate, nil
+	case "one_time":
+		return BillingReasonsOneTime, nil
+	case "manual":
+		return BillingReasonsManual, nil
+	case "subscription":
+		return BillingReasonsSubscription, nil
+	}
+	var t BillingReasons
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (b BillingReasons) Ptr() *BillingReasons {
+	return &b
 }
 
 // The friendly status of a payment. This is a derived status that provides a human-readable summary of the payment state, combining the underlying status and substatus fields.
@@ -664,28 +725,29 @@ var (
 	paymentFieldPlanID                     = big.NewInt(1 << 26)
 	paymentFieldProductID                  = big.NewInt(1 << 27)
 	paymentFieldPromoCodeID                = big.NewInt(1 << 28)
-	paymentFieldRefundable                 = big.NewInt(1 << 29)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 30)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 31)
-	paymentFieldRetryable                  = big.NewInt(1 << 32)
-	paymentFieldRiskScore                  = big.NewInt(1 << 33)
-	paymentFieldRiskSignals                = big.NewInt(1 << 34)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 35)
-	paymentFieldShipmentID                 = big.NewInt(1 << 36)
-	paymentFieldShippingAddress            = big.NewInt(1 << 37)
-	paymentFieldStatus                     = big.NewInt(1 << 38)
-	paymentFieldSubstatus                  = big.NewInt(1 << 39)
-	paymentFieldSubtotal                   = big.NewInt(1 << 40)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 41)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 42)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 43)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 44)
-	paymentFieldTotal                      = big.NewInt(1 << 45)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 46)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 47)
-	paymentFieldUser                       = big.NewInt(1 << 48)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 49)
-	paymentFieldVoidable                   = big.NewInt(1 << 50)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 29)
+	paymentFieldRefundable                 = big.NewInt(1 << 30)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 31)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 32)
+	paymentFieldRetryable                  = big.NewInt(1 << 33)
+	paymentFieldRiskScore                  = big.NewInt(1 << 34)
+	paymentFieldRiskSignals                = big.NewInt(1 << 35)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 36)
+	paymentFieldShipmentID                 = big.NewInt(1 << 37)
+	paymentFieldShippingAddress            = big.NewInt(1 << 38)
+	paymentFieldStatus                     = big.NewInt(1 << 39)
+	paymentFieldSubstatus                  = big.NewInt(1 << 40)
+	paymentFieldSubtotal                   = big.NewInt(1 << 41)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 42)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 43)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 44)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 45)
+	paymentFieldTotal                      = big.NewInt(1 << 46)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 47)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 48)
+	paymentFieldUser                       = big.NewInt(1 << 49)
+	paymentFieldVerificationChecks         = big.NewInt(1 << 50)
+	paymentFieldVoidable                   = big.NewInt(1 << 51)
 )
 
 type Payment struct {
@@ -747,6 +809,8 @@ type Payment struct {
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The promo code applied at checkout, prefixed `promo_`, or null.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
+	// Whop-hosted URL where the buyer can sign in and complete 3D Secure for a failed subscription renewal. Null when recovery is unavailable, you lack `member:basic:read`, or in list responses. Retrieve the payment for it.
+	RecoveryURL *string `json:"recovery_url,omitempty" url:"recovery_url,omitempty"`
 	// True when the payment is `paid`, not yet fully refunded, and its processor supports refunds.
 	Refundable bool `json:"refundable" url:"refundable"`
 	// How much has been refunded so far, as it settled — refunds convert at the rate in force when each one was issued, not the payment's original rate.
@@ -1000,6 +1064,13 @@ func (p *Payment) GetPromoCodeID() *string {
 		return nil
 	}
 	return p.PromoCodeID
+}
+
+func (p *Payment) GetRecoveryURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.RecoveryURL
 }
 
 func (p *Payment) GetRefundable() bool {
@@ -1371,6 +1442,13 @@ func (p *Payment) SetProductID(productID *string) {
 func (p *Payment) SetPromoCodeID(promoCodeID *string) {
 	p.PromoCodeID = promoCodeID
 	p.require(paymentFieldPromoCodeID)
+}
+
+// SetRecoveryURL sets the RecoveryURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetRecoveryURL(recoveryURL *string) {
+	p.RecoveryURL = recoveryURL
+	p.require(paymentFieldRecoveryURL)
 }
 
 // SetRefundable sets the Refundable field and marks it as non-optional;
@@ -3845,8 +3923,8 @@ type PostPaymentAuthorizedPayload struct {
 	// The API version for this webhook
 	APIVersion PostPaymentAuthorizedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *PaymentLegacy `json:"data" url:"data"`
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -3884,7 +3962,7 @@ func (p *PostPaymentAuthorizedPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostPaymentAuthorizedPayload) GetData() *PaymentLegacy {
+func (p *PostPaymentAuthorizedPayload) GetData() *Payment {
 	if p == nil {
 		return nil
 	}
@@ -3956,7 +4034,7 @@ func (p *PostPaymentAuthorizedPayload) SetAPIVersionDate(apiVersionDate *string)
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPaymentAuthorizedPayload) SetData(data *PaymentLegacy) {
+func (p *PostPaymentAuthorizedPayload) SetData(data *Payment) {
 	p.Data = data
 	p.require(postPaymentAuthorizedPayloadFieldData)
 }
@@ -4096,8 +4174,8 @@ type PostPaymentCanceledPayload struct {
 	// The API version for this webhook
 	APIVersion PostPaymentCanceledPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *PaymentLegacy `json:"data" url:"data"`
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -4135,7 +4213,7 @@ func (p *PostPaymentCanceledPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostPaymentCanceledPayload) GetData() *PaymentLegacy {
+func (p *PostPaymentCanceledPayload) GetData() *Payment {
 	if p == nil {
 		return nil
 	}
@@ -4207,7 +4285,7 @@ func (p *PostPaymentCanceledPayload) SetAPIVersionDate(apiVersionDate *string) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPaymentCanceledPayload) SetData(data *PaymentLegacy) {
+func (p *PostPaymentCanceledPayload) SetData(data *Payment) {
 	p.Data = data
 	p.require(postPaymentCanceledPayloadFieldData)
 }
@@ -4347,8 +4425,8 @@ type PostPaymentCreatedPayload struct {
 	// The API version for this webhook
 	APIVersion PostPaymentCreatedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *PaymentLegacy `json:"data" url:"data"`
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -4386,7 +4464,7 @@ func (p *PostPaymentCreatedPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostPaymentCreatedPayload) GetData() *PaymentLegacy {
+func (p *PostPaymentCreatedPayload) GetData() *Payment {
 	if p == nil {
 		return nil
 	}
@@ -4458,7 +4536,7 @@ func (p *PostPaymentCreatedPayload) SetAPIVersionDate(apiVersionDate *string) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPaymentCreatedPayload) SetData(data *PaymentLegacy) {
+func (p *PostPaymentCreatedPayload) SetData(data *Payment) {
 	p.Data = data
 	p.require(postPaymentCreatedPayloadFieldData)
 }
@@ -4598,8 +4676,8 @@ type PostPaymentFailedPayload struct {
 	// The API version for this webhook
 	APIVersion PostPaymentFailedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *PaymentLegacy `json:"data" url:"data"`
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -4637,7 +4715,7 @@ func (p *PostPaymentFailedPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostPaymentFailedPayload) GetData() *PaymentLegacy {
+func (p *PostPaymentFailedPayload) GetData() *Payment {
 	if p == nil {
 		return nil
 	}
@@ -4709,7 +4787,7 @@ func (p *PostPaymentFailedPayload) SetAPIVersionDate(apiVersionDate *string) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPaymentFailedPayload) SetData(data *PaymentLegacy) {
+func (p *PostPaymentFailedPayload) SetData(data *Payment) {
 	p.Data = data
 	p.require(postPaymentFailedPayloadFieldData)
 }
@@ -4849,8 +4927,8 @@ type PostPaymentPendingPayload struct {
 	// The API version for this webhook
 	APIVersion PostPaymentPendingPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *PaymentLegacy `json:"data" url:"data"`
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -4888,7 +4966,7 @@ func (p *PostPaymentPendingPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostPaymentPendingPayload) GetData() *PaymentLegacy {
+func (p *PostPaymentPendingPayload) GetData() *Payment {
 	if p == nil {
 		return nil
 	}
@@ -4960,7 +5038,7 @@ func (p *PostPaymentPendingPayload) SetAPIVersionDate(apiVersionDate *string) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPaymentPendingPayload) SetData(data *PaymentLegacy) {
+func (p *PostPaymentPendingPayload) SetData(data *Payment) {
 	p.Data = data
 	p.require(postPaymentPendingPayloadFieldData)
 }
@@ -5100,8 +5178,8 @@ type PostPaymentSucceededPayload struct {
 	// The API version for this webhook
 	APIVersion PostPaymentSucceededPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *PaymentLegacy `json:"data" url:"data"`
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -5139,7 +5217,7 @@ func (p *PostPaymentSucceededPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostPaymentSucceededPayload) GetData() *PaymentLegacy {
+func (p *PostPaymentSucceededPayload) GetData() *Payment {
 	if p == nil {
 		return nil
 	}
@@ -5211,7 +5289,7 @@ func (p *PostPaymentSucceededPayload) SetAPIVersionDate(apiVersionDate *string) 
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPaymentSucceededPayload) SetData(data *PaymentLegacy) {
+func (p *PostPaymentSucceededPayload) SetData(data *Payment) {
 	p.Data = data
 	p.require(postPaymentSucceededPayloadFieldData)
 }

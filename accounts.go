@@ -11,12 +11,13 @@ import (
 )
 
 var (
-	createAccountsRequestFieldAffiliateCode = big.NewInt(1 << 0)
-	createAccountsRequestFieldBlueprintID   = big.NewInt(1 << 1)
-	createAccountsRequestFieldCountry       = big.NewInt(1 << 2)
-	createAccountsRequestFieldEmail         = big.NewInt(1 << 3)
-	createAccountsRequestFieldMetadata      = big.NewInt(1 << 4)
-	createAccountsRequestFieldTitle         = big.NewInt(1 << 5)
+	createAccountsRequestFieldAffiliateCode      = big.NewInt(1 << 0)
+	createAccountsRequestFieldBlueprintID        = big.NewInt(1 << 1)
+	createAccountsRequestFieldCountry            = big.NewInt(1 << 2)
+	createAccountsRequestFieldEmail              = big.NewInt(1 << 3)
+	createAccountsRequestFieldMetadata           = big.NewInt(1 << 4)
+	createAccountsRequestFieldSendCustomerEmails = big.NewInt(1 << 5)
+	createAccountsRequestFieldTitle              = big.NewInt(1 << 6)
 )
 
 type CreateAccountsRequest struct {
@@ -30,6 +31,8 @@ type CreateAccountsRequest struct {
 	Email *string `json:"email,omitempty" url:"-"`
 	// Arbitrary key/value metadata to store on the account.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
+	// Whether Whop sends transactional emails to customers on behalf of the connected account.
+	SendCustomerEmails *bool `json:"send_customer_emails,omitempty" url:"-"`
 	// The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
 	Title *string `json:"title,omitempty" url:"-"`
 
@@ -77,6 +80,13 @@ func (c *CreateAccountsRequest) SetEmail(email *string) {
 func (c *CreateAccountsRequest) SetMetadata(metadata map[string]any) {
 	c.Metadata = metadata
 	c.require(createAccountsRequestFieldMetadata)
+}
+
+// SetSendCustomerEmails sets the SendCustomerEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetSendCustomerEmails(sendCustomerEmails *bool) {
+	c.SendCustomerEmails = sendCustomerEmails
+	c.require(createAccountsRequestFieldSendCustomerEmails)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;

@@ -113,6 +113,406 @@ func (r *ReferredUsersPartnersRequest) SetBefore(before *string) {
 }
 
 var (
+	retrieveLinkPartnersRequestFieldPartnerUsername = big.NewInt(1 << 0)
+	retrieveLinkPartnersRequestFieldRewardSlug      = big.NewInt(1 << 1)
+)
+
+type RetrieveLinkPartnersRequest struct {
+	// Username from the partner link's `a` query parameter.
+	PartnerUsername string `json:"-" url:"partner_username"`
+	// Reward slug from the partner link's `reward` query parameter.
+	RewardSlug string `json:"-" url:"reward_slug"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *RetrieveLinkPartnersRequest) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetPartnerUsername sets the PartnerUsername field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveLinkPartnersRequest) SetPartnerUsername(partnerUsername string) {
+	r.PartnerUsername = partnerUsername
+	r.require(retrieveLinkPartnersRequestFieldPartnerUsername)
+}
+
+// SetRewardSlug sets the RewardSlug field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveLinkPartnersRequest) SetRewardSlug(rewardSlug string) {
+	r.RewardSlug = rewardSlug
+	r.require(retrieveLinkPartnersRequestFieldRewardSlug)
+}
+
+var (
+	onboardingRewardFieldExpiresAt                 = big.NewInt(1 << 0)
+	onboardingRewardFieldID                        = big.NewInt(1 << 1)
+	onboardingRewardFieldMaxRedemptions            = big.NewInt(1 << 2)
+	onboardingRewardFieldPartner                   = big.NewInt(1 << 3)
+	onboardingRewardFieldQualificationAmount       = big.NewInt(1 << 4)
+	onboardingRewardFieldQualificationIncomeSource = big.NewInt(1 << 5)
+	onboardingRewardFieldQualificationMet          = big.NewInt(1 << 6)
+	onboardingRewardFieldQualificationProgress     = big.NewInt(1 << 7)
+	onboardingRewardFieldRemainingRedemptions      = big.NewInt(1 << 8)
+	onboardingRewardFieldRewardAmount              = big.NewInt(1 << 9)
+	onboardingRewardFieldRewardType                = big.NewInt(1 << 10)
+	onboardingRewardFieldRewarded                  = big.NewInt(1 << 11)
+	onboardingRewardFieldStatus                    = big.NewInt(1 << 12)
+)
+
+type OnboardingReward struct {
+	// When the reward stops accepting new claims and qualifying volume, as an ISO 8601 timestamp. Null when it does not expire.
+	ExpiresAt *string `json:"expires_at,omitempty" url:"expires_at,omitempty"`
+	// Onboarding reward ID, prefixed `onbr_`.
+	ID string `json:"id" url:"id"`
+	// How many businesses can earn this reward in total. Null when unlimited.
+	MaxRedemptions *int `json:"max_redemptions,omitempty" url:"max_redemptions,omitempty"`
+	// Partner whose link attributed this reward.
+	Partner *UserSummary `json:"partner" url:"partner"`
+	// Required qualifying volume. Null for an immediate reward.
+	QualificationAmount *Money `json:"qualification_amount,omitempty" url:"qualification_amount,omitempty"`
+	// Income source whose volume qualifies the business. Null for an immediate reward.
+	QualificationIncomeSource *OnboardingRewardQualificationIncomeSource `json:"qualification_income_source,omitempty" url:"qualification_income_source,omitempty"`
+	// Whether the attributed business met the requirement. Null before a business claims the link.
+	QualificationMet *bool `json:"qualification_met,omitempty" url:"qualification_met,omitempty"`
+	// Qualifying volume accumulated by the attributed business. Null before a business claims the link and for immediate rewards.
+	QualificationProgress *Money `json:"qualification_progress,omitempty" url:"qualification_progress,omitempty"`
+	// How many rewards are still unclaimed. For rewards with a qualification, a business claims one only when it meets the requirement, so this can reach zero while other businesses are still working toward it. Null when unlimited.
+	RemainingRedemptions *int `json:"remaining_redemptions,omitempty" url:"remaining_redemptions,omitempty"`
+	// Reward value delivered after qualification.
+	RewardAmount *Money `json:"reward_amount" url:"reward_amount"`
+	// How the reward is delivered.
+	RewardType OnboardingRewardRewardType `json:"reward_type" url:"reward_type"`
+	// Whether the reward was credited to the attributed business. Null before a business claims the link.
+	Rewarded *bool `json:"rewarded,omitempty" url:"rewarded,omitempty"`
+	// Whether the reward can still be claimed: `available`, `fully_claimed`, `expired`, or `unavailable`.
+	Status OnboardingRewardStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (o *OnboardingReward) GetExpiresAt() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ExpiresAt
+}
+
+func (o *OnboardingReward) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
+}
+
+func (o *OnboardingReward) GetMaxRedemptions() *int {
+	if o == nil {
+		return nil
+	}
+	return o.MaxRedemptions
+}
+
+func (o *OnboardingReward) GetPartner() *UserSummary {
+	if o == nil {
+		return nil
+	}
+	return o.Partner
+}
+
+func (o *OnboardingReward) GetQualificationAmount() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.QualificationAmount
+}
+
+func (o *OnboardingReward) GetQualificationIncomeSource() *OnboardingRewardQualificationIncomeSource {
+	if o == nil {
+		return nil
+	}
+	return o.QualificationIncomeSource
+}
+
+func (o *OnboardingReward) GetQualificationMet() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.QualificationMet
+}
+
+func (o *OnboardingReward) GetQualificationProgress() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.QualificationProgress
+}
+
+func (o *OnboardingReward) GetRemainingRedemptions() *int {
+	if o == nil {
+		return nil
+	}
+	return o.RemainingRedemptions
+}
+
+func (o *OnboardingReward) GetRewardAmount() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.RewardAmount
+}
+
+func (o *OnboardingReward) GetRewardType() OnboardingRewardRewardType {
+	if o == nil {
+		return ""
+	}
+	return o.RewardType
+}
+
+func (o *OnboardingReward) GetRewarded() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Rewarded
+}
+
+func (o *OnboardingReward) GetStatus() OnboardingRewardStatus {
+	if o == nil {
+		return ""
+	}
+	return o.Status
+}
+
+func (o *OnboardingReward) GetExtraProperties() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.extraProperties
+}
+
+func (o *OnboardingReward) require(field *big.Int) {
+	if o.explicitFields == nil {
+		o.explicitFields = big.NewInt(0)
+	}
+	o.explicitFields.Or(o.explicitFields, field)
+}
+
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetExpiresAt(expiresAt *string) {
+	o.ExpiresAt = expiresAt
+	o.require(onboardingRewardFieldExpiresAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetID(id string) {
+	o.ID = id
+	o.require(onboardingRewardFieldID)
+}
+
+// SetMaxRedemptions sets the MaxRedemptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetMaxRedemptions(maxRedemptions *int) {
+	o.MaxRedemptions = maxRedemptions
+	o.require(onboardingRewardFieldMaxRedemptions)
+}
+
+// SetPartner sets the Partner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetPartner(partner *UserSummary) {
+	o.Partner = partner
+	o.require(onboardingRewardFieldPartner)
+}
+
+// SetQualificationAmount sets the QualificationAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetQualificationAmount(qualificationAmount *Money) {
+	o.QualificationAmount = qualificationAmount
+	o.require(onboardingRewardFieldQualificationAmount)
+}
+
+// SetQualificationIncomeSource sets the QualificationIncomeSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetQualificationIncomeSource(qualificationIncomeSource *OnboardingRewardQualificationIncomeSource) {
+	o.QualificationIncomeSource = qualificationIncomeSource
+	o.require(onboardingRewardFieldQualificationIncomeSource)
+}
+
+// SetQualificationMet sets the QualificationMet field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetQualificationMet(qualificationMet *bool) {
+	o.QualificationMet = qualificationMet
+	o.require(onboardingRewardFieldQualificationMet)
+}
+
+// SetQualificationProgress sets the QualificationProgress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetQualificationProgress(qualificationProgress *Money) {
+	o.QualificationProgress = qualificationProgress
+	o.require(onboardingRewardFieldQualificationProgress)
+}
+
+// SetRemainingRedemptions sets the RemainingRedemptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetRemainingRedemptions(remainingRedemptions *int) {
+	o.RemainingRedemptions = remainingRedemptions
+	o.require(onboardingRewardFieldRemainingRedemptions)
+}
+
+// SetRewardAmount sets the RewardAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetRewardAmount(rewardAmount *Money) {
+	o.RewardAmount = rewardAmount
+	o.require(onboardingRewardFieldRewardAmount)
+}
+
+// SetRewardType sets the RewardType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetRewardType(rewardType OnboardingRewardRewardType) {
+	o.RewardType = rewardType
+	o.require(onboardingRewardFieldRewardType)
+}
+
+// SetRewarded sets the Rewarded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetRewarded(rewarded *bool) {
+	o.Rewarded = rewarded
+	o.require(onboardingRewardFieldRewarded)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetStatus(status OnboardingRewardStatus) {
+	o.Status = status
+	o.require(onboardingRewardFieldStatus)
+}
+
+func (o *OnboardingReward) UnmarshalJSON(data []byte) error {
+	type unmarshaler OnboardingReward
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OnboardingReward(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+	o.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OnboardingReward) MarshalJSON() ([]byte, error) {
+	type embed OnboardingReward
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*o),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, o.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (o *OnboardingReward) String() string {
+	if o == nil {
+		return "<nil>"
+	}
+	if len(o.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
+}
+
+// Income source whose volume qualifies the business. Null for an immediate reward.
+type OnboardingRewardQualificationIncomeSource string
+
+const (
+	OnboardingRewardQualificationIncomeSourceSales   OnboardingRewardQualificationIncomeSource = "sales"
+	OnboardingRewardQualificationIncomeSourceAdSpend OnboardingRewardQualificationIncomeSource = "ad_spend"
+)
+
+func NewOnboardingRewardQualificationIncomeSourceFromString(s string) (OnboardingRewardQualificationIncomeSource, error) {
+	switch s {
+	case "sales":
+		return OnboardingRewardQualificationIncomeSourceSales, nil
+	case "ad_spend":
+		return OnboardingRewardQualificationIncomeSourceAdSpend, nil
+	}
+	var t OnboardingRewardQualificationIncomeSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (o OnboardingRewardQualificationIncomeSource) Ptr() *OnboardingRewardQualificationIncomeSource {
+	return &o
+}
+
+// How the reward is delivered.
+type OnboardingRewardRewardType string
+
+const (
+	OnboardingRewardRewardTypeAdCredit      OnboardingRewardRewardType = "ad_credit"
+	OnboardingRewardRewardTypeBalanceCredit OnboardingRewardRewardType = "balance_credit"
+)
+
+func NewOnboardingRewardRewardTypeFromString(s string) (OnboardingRewardRewardType, error) {
+	switch s {
+	case "ad_credit":
+		return OnboardingRewardRewardTypeAdCredit, nil
+	case "balance_credit":
+		return OnboardingRewardRewardTypeBalanceCredit, nil
+	}
+	var t OnboardingRewardRewardType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (o OnboardingRewardRewardType) Ptr() *OnboardingRewardRewardType {
+	return &o
+}
+
+// Whether the reward can still be claimed: `available`, `fully_claimed`, `expired`, or `unavailable`.
+type OnboardingRewardStatus string
+
+const (
+	OnboardingRewardStatusAvailable    OnboardingRewardStatus = "available"
+	OnboardingRewardStatusFullyClaimed OnboardingRewardStatus = "fully_claimed"
+	OnboardingRewardStatusExpired      OnboardingRewardStatus = "expired"
+	OnboardingRewardStatusUnavailable  OnboardingRewardStatus = "unavailable"
+)
+
+func NewOnboardingRewardStatusFromString(s string) (OnboardingRewardStatus, error) {
+	switch s {
+	case "available":
+		return OnboardingRewardStatusAvailable, nil
+	case "fully_claimed":
+		return OnboardingRewardStatusFullyClaimed, nil
+	case "expired":
+		return OnboardingRewardStatusExpired, nil
+	case "unavailable":
+		return OnboardingRewardStatusUnavailable, nil
+	}
+	var t OnboardingRewardStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (o OnboardingRewardStatus) Ptr() *OnboardingRewardStatus {
+	return &o
+}
+
+var (
 	createPartnersResponseFieldReferralLink         = big.NewInt(1 << 0)
 	createPartnersResponseFieldWhopPartnerEnabledAt = big.NewInt(1 << 1)
 )

@@ -7,7 +7,6 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/internal"
 	big "math/big"
-	time "time"
 )
 
 var (
@@ -131,72 +130,6 @@ func (d *DeleteWebhooksRequest) require(field *big.Int) {
 func (d *DeleteWebhooksRequest) SetID(id string) {
 	d.ID = id
 	d.require(deleteWebhooksRequestFieldID)
-}
-
-var (
-	deliveriesWebhookRequestFieldWebhookID = big.NewInt(1 << 0)
-	deliveriesWebhookRequestFieldAfter     = big.NewInt(1 << 1)
-	deliveriesWebhookRequestFieldBefore    = big.NewInt(1 << 2)
-	deliveriesWebhookRequestFieldFirst     = big.NewInt(1 << 3)
-	deliveriesWebhookRequestFieldLast      = big.NewInt(1 << 4)
-)
-
-type DeliveriesWebhookRequest struct {
-	// The unique identifier of the webhook to list deliveries for.
-	WebhookID string `json:"-" url:"-"`
-	// Returns the elements in the list that come after the specified cursor.
-	After *string `json:"-" url:"after,omitempty"`
-	// Returns the elements in the list that come before the specified cursor.
-	Before *string `json:"-" url:"before,omitempty"`
-	// Returns the first _n_ elements from the list.
-	First *int `json:"-" url:"first,omitempty"`
-	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (d *DeliveriesWebhookRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetWebhookID sets the WebhookID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookRequest) SetWebhookID(webhookID string) {
-	d.WebhookID = webhookID
-	d.require(deliveriesWebhookRequestFieldWebhookID)
-}
-
-// SetAfter sets the After field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookRequest) SetAfter(after *string) {
-	d.After = after
-	d.require(deliveriesWebhookRequestFieldAfter)
-}
-
-// SetBefore sets the Before field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookRequest) SetBefore(before *string) {
-	d.Before = before
-	d.require(deliveriesWebhookRequestFieldBefore)
-}
-
-// SetFirst sets the First field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookRequest) SetFirst(first *int) {
-	d.First = first
-	d.require(deliveriesWebhookRequestFieldFirst)
-}
-
-// SetLast sets the Last field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookRequest) SetLast(last *int) {
-	d.Last = last
-	d.require(deliveriesWebhookRequestFieldLast)
 }
 
 var (
@@ -1282,6 +1215,8 @@ const (
 	WebhookEventsItemShipmentUpdated                       WebhookEventsItem = "shipment.updated"
 	WebhookEventsItemMemberCreated                         WebhookEventsItem = "member.created"
 	WebhookEventsItemAdCampaignPaymentFailed               WebhookEventsItem = "ad_campaign.payment_failed"
+	WebhookEventsItemAdCampaignUpdated                     WebhookEventsItem = "ad_campaign.updated"
+	WebhookEventsItemAdUpdated                             WebhookEventsItem = "ad.updated"
 	WebhookEventsItemChatMessageCreated                    WebhookEventsItem = "chat.message.created"
 	WebhookEventsItemChatReactionCreated                   WebhookEventsItem = "chat.reaction.created"
 	WebhookEventsItemPaymentCreated                        WebhookEventsItem = "payment.created"
@@ -1449,6 +1384,10 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemMemberCreated, nil
 	case "ad_campaign.payment_failed":
 		return WebhookEventsItemAdCampaignPaymentFailed, nil
+	case "ad_campaign.updated":
+		return WebhookEventsItemAdCampaignUpdated, nil
+	case "ad.updated":
+		return WebhookEventsItemAdUpdated, nil
 	case "chat.message.created":
 		return WebhookEventsItemChatMessageCreated, nil
 	case "chat.reaction.created":
@@ -1952,6 +1891,8 @@ const (
 	WebhookListItemEventsItemShipmentUpdated                       WebhookListItemEventsItem = "shipment.updated"
 	WebhookListItemEventsItemMemberCreated                         WebhookListItemEventsItem = "member.created"
 	WebhookListItemEventsItemAdCampaignPaymentFailed               WebhookListItemEventsItem = "ad_campaign.payment_failed"
+	WebhookListItemEventsItemAdCampaignUpdated                     WebhookListItemEventsItem = "ad_campaign.updated"
+	WebhookListItemEventsItemAdUpdated                             WebhookListItemEventsItem = "ad.updated"
 	WebhookListItemEventsItemChatMessageCreated                    WebhookListItemEventsItem = "chat.message.created"
 	WebhookListItemEventsItemChatReactionCreated                   WebhookListItemEventsItem = "chat.reaction.created"
 	WebhookListItemEventsItemPaymentCreated                        WebhookListItemEventsItem = "payment.created"
@@ -2119,6 +2060,10 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemMemberCreated, nil
 	case "ad_campaign.payment_failed":
 		return WebhookListItemEventsItemAdCampaignPaymentFailed, nil
+	case "ad_campaign.updated":
+		return WebhookListItemEventsItemAdCampaignUpdated, nil
+	case "ad.updated":
+		return WebhookListItemEventsItemAdUpdated, nil
 	case "chat.message.created":
 		return WebhookListItemEventsItemChatMessageCreated, nil
 	case "chat.reaction.created":
@@ -2254,6 +2199,8 @@ const (
 	WebhookTestableEventsItemShipmentUpdated                       WebhookTestableEventsItem = "shipment.updated"
 	WebhookTestableEventsItemMemberCreated                         WebhookTestableEventsItem = "member.created"
 	WebhookTestableEventsItemAdCampaignPaymentFailed               WebhookTestableEventsItem = "ad_campaign.payment_failed"
+	WebhookTestableEventsItemAdCampaignUpdated                     WebhookTestableEventsItem = "ad_campaign.updated"
+	WebhookTestableEventsItemAdUpdated                             WebhookTestableEventsItem = "ad.updated"
 	WebhookTestableEventsItemChatMessageCreated                    WebhookTestableEventsItem = "chat.message.created"
 	WebhookTestableEventsItemChatReactionCreated                   WebhookTestableEventsItem = "chat.reaction.created"
 	WebhookTestableEventsItemPaymentCreated                        WebhookTestableEventsItem = "payment.created"
@@ -2421,6 +2368,10 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemMemberCreated, nil
 	case "ad_campaign.payment_failed":
 		return WebhookTestableEventsItemAdCampaignPaymentFailed, nil
+	case "ad_campaign.updated":
+		return WebhookTestableEventsItemAdCampaignUpdated, nil
+	case "ad.updated":
+		return WebhookTestableEventsItemAdUpdated, nil
 	case "chat.message.created":
 		return WebhookTestableEventsItemChatMessageCreated, nil
 	case "chat.reaction.created":
@@ -2552,6 +2503,8 @@ const (
 	CreateWebhooksRequestEventsItemShipmentUpdated                                 CreateWebhooksRequestEventsItem = "shipment.updated"
 	CreateWebhooksRequestEventsItemMemberCreated                                   CreateWebhooksRequestEventsItem = "member.created"
 	CreateWebhooksRequestEventsItemAdCampaignPaymentFailed                         CreateWebhooksRequestEventsItem = "ad_campaign.payment_failed"
+	CreateWebhooksRequestEventsItemAdCampaignUpdated                               CreateWebhooksRequestEventsItem = "ad_campaign.updated"
+	CreateWebhooksRequestEventsItemAdUpdated                                       CreateWebhooksRequestEventsItem = "ad.updated"
 	CreateWebhooksRequestEventsItemChatMessageCreated                              CreateWebhooksRequestEventsItem = "chat.message.created"
 	CreateWebhooksRequestEventsItemChatReactionCreated                             CreateWebhooksRequestEventsItem = "chat.reaction.created"
 	CreateWebhooksRequestEventsItemPaymentCreated                                  CreateWebhooksRequestEventsItem = "payment.created"
@@ -2738,6 +2691,10 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemMemberCreated, nil
 	case "ad_campaign.payment_failed":
 		return CreateWebhooksRequestEventsItemAdCampaignPaymentFailed, nil
+	case "ad_campaign.updated":
+		return CreateWebhooksRequestEventsItemAdCampaignUpdated, nil
+	case "ad.updated":
+		return CreateWebhooksRequestEventsItemAdUpdated, nil
 	case "chat.message.created":
 		return CreateWebhooksRequestEventsItemChatMessageCreated, nil
 	case "chat.reaction.created":
@@ -2939,391 +2896,6 @@ func (d *DeleteWebhooksResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeleteWebhooksResponse) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// The connection type for WebhookLog.
-var (
-	deliveriesWebhookResponseFieldData     = big.NewInt(1 << 0)
-	deliveriesWebhookResponseFieldPageInfo = big.NewInt(1 << 1)
-)
-
-type DeliveriesWebhookResponse struct {
-	// A list of nodes.
-	Data []*DeliveriesWebhookResponseDataItem `json:"data" url:"data"`
-	// Information to aid in pagination.
-	PageInfo *DeliveriesWebhookResponsePageInfo `json:"page_info" url:"page_info"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DeliveriesWebhookResponse) GetData() []*DeliveriesWebhookResponseDataItem {
-	if d == nil {
-		return nil
-	}
-	return d.Data
-}
-
-func (d *DeliveriesWebhookResponse) GetPageInfo() *DeliveriesWebhookResponsePageInfo {
-	if d == nil {
-		return nil
-	}
-	return d.PageInfo
-}
-
-func (d *DeliveriesWebhookResponse) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DeliveriesWebhookResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookResponse) SetData(data []*DeliveriesWebhookResponseDataItem) {
-	d.Data = data
-	d.require(deliveriesWebhookResponseFieldData)
-}
-
-// SetPageInfo sets the PageInfo field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookResponse) SetPageInfo(pageInfo *DeliveriesWebhookResponsePageInfo) {
-	d.PageInfo = pageInfo
-	d.require(deliveriesWebhookResponseFieldPageInfo)
-}
-
-func (d *DeliveriesWebhookResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler DeliveriesWebhookResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DeliveriesWebhookResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DeliveriesWebhookResponse) MarshalJSON() ([]byte, error) {
-	type embed DeliveriesWebhookResponse
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DeliveriesWebhookResponse) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// A webhook log entry containing the request and response details
-var (
-	deliveriesWebhookResponseDataItemFieldRequestBody  = big.NewInt(1 << 0)
-	deliveriesWebhookResponseDataItemFieldResourceID   = big.NewInt(1 << 1)
-	deliveriesWebhookResponseDataItemFieldResponseBody = big.NewInt(1 << 2)
-	deliveriesWebhookResponseDataItemFieldResponseCode = big.NewInt(1 << 3)
-	deliveriesWebhookResponseDataItemFieldSentAt       = big.NewInt(1 << 4)
-	deliveriesWebhookResponseDataItemFieldTotalTime    = big.NewInt(1 << 5)
-)
-
-type DeliveriesWebhookResponseDataItem struct {
-	// The request body sent to the webhook endpoint
-	RequestBody map[string]any `json:"request_body" url:"request_body"`
-	// The ID of the resource that triggered the webhook
-	ResourceID string `json:"resource_id" url:"resource_id"`
-	// The response body received from the webhook endpoint
-	ResponseBody map[string]any `json:"response_body" url:"response_body"`
-	// The HTTP response code received from the webhook endpoint
-	ResponseCode int `json:"response_code" url:"response_code"`
-	// The timestamp when the webhook was sent
-	SentAt time.Time `json:"sent_at" url:"sent_at"`
-	// The total time taken to send the webhook request in seconds
-	TotalTime float64 `json:"total_time" url:"total_time"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DeliveriesWebhookResponseDataItem) GetRequestBody() map[string]any {
-	if d == nil {
-		return nil
-	}
-	return d.RequestBody
-}
-
-func (d *DeliveriesWebhookResponseDataItem) GetResourceID() string {
-	if d == nil {
-		return ""
-	}
-	return d.ResourceID
-}
-
-func (d *DeliveriesWebhookResponseDataItem) GetResponseBody() map[string]any {
-	if d == nil {
-		return nil
-	}
-	return d.ResponseBody
-}
-
-func (d *DeliveriesWebhookResponseDataItem) GetResponseCode() int {
-	if d == nil {
-		return 0
-	}
-	return d.ResponseCode
-}
-
-func (d *DeliveriesWebhookResponseDataItem) GetSentAt() time.Time {
-	if d == nil {
-		return time.Time{}
-	}
-	return d.SentAt
-}
-
-func (d *DeliveriesWebhookResponseDataItem) GetTotalTime() float64 {
-	if d == nil {
-		return 0
-	}
-	return d.TotalTime
-}
-
-func (d *DeliveriesWebhookResponseDataItem) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DeliveriesWebhookResponseDataItem) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetRequestBody sets the RequestBody field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookResponseDataItem) SetRequestBody(requestBody map[string]any) {
-	d.RequestBody = requestBody
-	d.require(deliveriesWebhookResponseDataItemFieldRequestBody)
-}
-
-// SetResourceID sets the ResourceID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookResponseDataItem) SetResourceID(resourceID string) {
-	d.ResourceID = resourceID
-	d.require(deliveriesWebhookResponseDataItemFieldResourceID)
-}
-
-// SetResponseBody sets the ResponseBody field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookResponseDataItem) SetResponseBody(responseBody map[string]any) {
-	d.ResponseBody = responseBody
-	d.require(deliveriesWebhookResponseDataItemFieldResponseBody)
-}
-
-// SetResponseCode sets the ResponseCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookResponseDataItem) SetResponseCode(responseCode int) {
-	d.ResponseCode = responseCode
-	d.require(deliveriesWebhookResponseDataItemFieldResponseCode)
-}
-
-// SetSentAt sets the SentAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookResponseDataItem) SetSentAt(sentAt time.Time) {
-	d.SentAt = sentAt
-	d.require(deliveriesWebhookResponseDataItemFieldSentAt)
-}
-
-// SetTotalTime sets the TotalTime field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookResponseDataItem) SetTotalTime(totalTime float64) {
-	d.TotalTime = totalTime
-	d.require(deliveriesWebhookResponseDataItemFieldTotalTime)
-}
-
-func (d *DeliveriesWebhookResponseDataItem) UnmarshalJSON(data []byte) error {
-	type embed DeliveriesWebhookResponseDataItem
-	var unmarshaler = struct {
-		embed
-		SentAt *internal.DateTime `json:"sent_at"`
-	}{
-		embed: embed(*d),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*d = DeliveriesWebhookResponseDataItem(unmarshaler.embed)
-	d.SentAt = unmarshaler.SentAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DeliveriesWebhookResponseDataItem) MarshalJSON() ([]byte, error) {
-	type embed DeliveriesWebhookResponseDataItem
-	var marshaler = struct {
-		embed
-		SentAt *internal.DateTime `json:"sent_at"`
-	}{
-		embed:  embed(*d),
-		SentAt: internal.NewDateTime(d.SentAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DeliveriesWebhookResponseDataItem) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// Information to aid in pagination.
-var (
-	deliveriesWebhookResponsePageInfoFieldEndCursor   = big.NewInt(1 << 0)
-	deliveriesWebhookResponsePageInfoFieldHasNextPage = big.NewInt(1 << 1)
-)
-
-type DeliveriesWebhookResponsePageInfo struct {
-	// When paginating forwards, the cursor to continue.
-	EndCursor *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
-	// When paginating forwards, are there more items?
-	HasNextPage bool `json:"has_next_page" url:"has_next_page"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DeliveriesWebhookResponsePageInfo) GetEndCursor() *string {
-	if d == nil {
-		return nil
-	}
-	return d.EndCursor
-}
-
-func (d *DeliveriesWebhookResponsePageInfo) GetHasNextPage() bool {
-	if d == nil {
-		return false
-	}
-	return d.HasNextPage
-}
-
-func (d *DeliveriesWebhookResponsePageInfo) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DeliveriesWebhookResponsePageInfo) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetEndCursor sets the EndCursor field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookResponsePageInfo) SetEndCursor(endCursor *string) {
-	d.EndCursor = endCursor
-	d.require(deliveriesWebhookResponsePageInfoFieldEndCursor)
-}
-
-// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeliveriesWebhookResponsePageInfo) SetHasNextPage(hasNextPage bool) {
-	d.HasNextPage = hasNextPage
-	d.require(deliveriesWebhookResponsePageInfoFieldHasNextPage)
-}
-
-func (d *DeliveriesWebhookResponsePageInfo) UnmarshalJSON(data []byte) error {
-	type unmarshaler DeliveriesWebhookResponsePageInfo
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DeliveriesWebhookResponsePageInfo(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DeliveriesWebhookResponsePageInfo) MarshalJSON() ([]byte, error) {
-	type embed DeliveriesWebhookResponsePageInfo
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DeliveriesWebhookResponsePageInfo) String() string {
 	if d == nil {
 		return "<nil>"
 	}
@@ -4192,6 +3764,8 @@ const (
 	UpdateWebhooksRequestEventsItemShipmentUpdated                                 UpdateWebhooksRequestEventsItem = "shipment.updated"
 	UpdateWebhooksRequestEventsItemMemberCreated                                   UpdateWebhooksRequestEventsItem = "member.created"
 	UpdateWebhooksRequestEventsItemAdCampaignPaymentFailed                         UpdateWebhooksRequestEventsItem = "ad_campaign.payment_failed"
+	UpdateWebhooksRequestEventsItemAdCampaignUpdated                               UpdateWebhooksRequestEventsItem = "ad_campaign.updated"
+	UpdateWebhooksRequestEventsItemAdUpdated                                       UpdateWebhooksRequestEventsItem = "ad.updated"
 	UpdateWebhooksRequestEventsItemChatMessageCreated                              UpdateWebhooksRequestEventsItem = "chat.message.created"
 	UpdateWebhooksRequestEventsItemChatReactionCreated                             UpdateWebhooksRequestEventsItem = "chat.reaction.created"
 	UpdateWebhooksRequestEventsItemPaymentCreated                                  UpdateWebhooksRequestEventsItem = "payment.created"
@@ -4378,6 +3952,10 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemMemberCreated, nil
 	case "ad_campaign.payment_failed":
 		return UpdateWebhooksRequestEventsItemAdCampaignPaymentFailed, nil
+	case "ad_campaign.updated":
+		return UpdateWebhooksRequestEventsItemAdCampaignUpdated, nil
+	case "ad.updated":
+		return UpdateWebhooksRequestEventsItemAdUpdated, nil
 	case "chat.message.created":
 		return UpdateWebhooksRequestEventsItemChatMessageCreated, nil
 	case "chat.reaction.created":

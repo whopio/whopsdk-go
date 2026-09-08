@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-2"
+		apiVersionDateDefault := "2026-09-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -122,7 +122,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates an ad in an ad group.
+// Creates an ad in an ad group. Any campaign status other than `draft` launches the campaign, which requires an ads payment method on the account.
 //
 // Example:
 //

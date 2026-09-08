@@ -2659,8 +2659,8 @@ type PostAdCampaignPaymentFailedPayload struct {
 	// The API version for this webhook
 	APIVersion PostAdCampaignPaymentFailedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string     `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *AdCampaign `json:"data" url:"data"`
+	APIVersionDate *string                                 `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *PostAdCampaignPaymentFailedPayloadData `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
 	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
@@ -2698,7 +2698,7 @@ func (p *PostAdCampaignPaymentFailedPayload) GetAPIVersionDate() *string {
 	return p.APIVersionDate
 }
 
-func (p *PostAdCampaignPaymentFailedPayload) GetData() *AdCampaign {
+func (p *PostAdCampaignPaymentFailedPayload) GetData() *PostAdCampaignPaymentFailedPayloadData {
 	if p == nil {
 		return nil
 	}
@@ -2770,7 +2770,7 @@ func (p *PostAdCampaignPaymentFailedPayload) SetAPIVersionDate(apiVersionDate *s
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdCampaignPaymentFailedPayload) SetData(data *AdCampaign) {
+func (p *PostAdCampaignPaymentFailedPayload) SetData(data *PostAdCampaignPaymentFailedPayloadData) {
 	p.Data = data
 	p.require(postAdCampaignPaymentFailedPayloadFieldData)
 }
@@ -2873,6 +2873,589 @@ func (p PostAdCampaignPaymentFailedPayloadAPIVersion) Ptr() *PostAdCampaignPayme
 	return &p
 }
 
+var (
+	postAdCampaignPaymentFailedPayloadDataFieldBidType             = big.NewInt(1 << 0)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmount        = big.NewInt(1 << 1)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization  = big.NewInt(1 << 2)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetType          = big.NewInt(1 << 3)
+	postAdCampaignPaymentFailedPayloadDataFieldCreatedAt           = big.NewInt(1 << 4)
+	postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus      = big.NewInt(1 << 5)
+	postAdCampaignPaymentFailedPayloadDataFieldID                  = big.NewInt(1 << 6)
+	postAdCampaignPaymentFailedPayloadDataFieldIssues              = big.NewInt(1 << 7)
+	postAdCampaignPaymentFailedPayloadDataFieldObjective           = big.NewInt(1 << 8)
+	postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal    = big.NewInt(1 << 9)
+	postAdCampaignPaymentFailedPayloadDataFieldPlatform            = big.NewInt(1 << 10)
+	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories = big.NewInt(1 << 11)
+	postAdCampaignPaymentFailedPayloadDataFieldStatus              = big.NewInt(1 << 12)
+	postAdCampaignPaymentFailedPayloadDataFieldTitle               = big.NewInt(1 << 13)
+	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt           = big.NewInt(1 << 14)
+)
+
+type PostAdCampaignPaymentFailedPayloadData struct {
+	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
+	BidType *PostAdCampaignPaymentFailedPayloadDataBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
+	// The campaign's budget, in the ad account's currency. `null` when each ad group sets its own budget instead.
+	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
+	// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`).
+	BudgetOptimization *PostAdCampaignPaymentFailedPayloadDataBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
+	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
+	BudgetType *PostAdCampaignPaymentFailedPayloadDataBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
+	// When the campaign was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+	DeliveryStatus PostAdCampaignPaymentFailedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
+	// Unique identifier for the ad campaign, prefixed `adcamp_`.
+	ID     string             `json:"id" url:"id"`
+	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
+	// The goal the campaign optimizes toward.
+	Objective *PostAdCampaignPaymentFailedPayloadDataObjective `json:"objective,omitempty" url:"objective,omitempty"`
+	// The event the campaign optimizes for when a single goal is set campaign-wide. `null` when each ad group sets its own optimization_goal.
+	OptimizationGoal *string `json:"optimization_goal,omitempty" url:"optimization_goal,omitempty"`
+	// The ad network the campaign runs on.
+	Platform            PostAdCampaignPaymentFailedPayloadDataPlatform                  `json:"platform" url:"platform"`
+	SpecialAdCategories []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
+	// The lifecycle status of the ad campaign.
+	Status PostAdCampaignPaymentFailedPayloadDataStatus `json:"status" url:"status"`
+	// Display name of the ad campaign.
+	Title string `json:"title" url:"title"`
+	// When the campaign was last updated, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetBidType() *PostAdCampaignPaymentFailedPayloadDataBidType {
+	if p == nil {
+		return nil
+	}
+	return p.BidType
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetBudgetAmount() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetAmount
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetBudgetOptimization() *PostAdCampaignPaymentFailedPayloadDataBudgetOptimization {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetOptimization
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetBudgetType() *PostAdCampaignPaymentFailedPayloadDataBudgetType {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetType
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetCreatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.CreatedAt
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetDeliveryStatus() PostAdCampaignPaymentFailedPayloadDataDeliveryStatus {
+	if p == nil {
+		return ""
+	}
+	return p.DeliveryStatus
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetIssues() []*AdPlatformIssue {
+	if p == nil {
+		return nil
+	}
+	return p.Issues
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetObjective() *PostAdCampaignPaymentFailedPayloadDataObjective {
+	if p == nil {
+		return nil
+	}
+	return p.Objective
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetOptimizationGoal() *string {
+	if p == nil {
+		return nil
+	}
+	return p.OptimizationGoal
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetPlatform() PostAdCampaignPaymentFailedPayloadDataPlatform {
+	if p == nil {
+		return ""
+	}
+	return p.Platform
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetSpecialAdCategories() []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem {
+	if p == nil {
+		return nil
+	}
+	return p.SpecialAdCategories
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetStatus() PostAdCampaignPaymentFailedPayloadDataStatus {
+	if p == nil {
+		return ""
+	}
+	return p.Status
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetTitle() string {
+	if p == nil {
+		return ""
+	}
+	return p.Title
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetUpdatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.UpdatedAt
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetBidType sets the BidType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetBidType(bidType *PostAdCampaignPaymentFailedPayloadDataBidType) {
+	p.BidType = bidType
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldBidType)
+}
+
+// SetBudgetAmount sets the BudgetAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetBudgetAmount(budgetAmount *float64) {
+	p.BudgetAmount = budgetAmount
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldBudgetAmount)
+}
+
+// SetBudgetOptimization sets the BudgetOptimization field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetBudgetOptimization(budgetOptimization *PostAdCampaignPaymentFailedPayloadDataBudgetOptimization) {
+	p.BudgetOptimization = budgetOptimization
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization)
+}
+
+// SetBudgetType sets the BudgetType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetBudgetType(budgetType *PostAdCampaignPaymentFailedPayloadDataBudgetType) {
+	p.BudgetType = budgetType
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldBudgetType)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetCreatedAt(createdAt string) {
+	p.CreatedAt = createdAt
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldCreatedAt)
+}
+
+// SetDeliveryStatus sets the DeliveryStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetDeliveryStatus(deliveryStatus PostAdCampaignPaymentFailedPayloadDataDeliveryStatus) {
+	p.DeliveryStatus = deliveryStatus
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetID(id string) {
+	p.ID = id
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldID)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetIssues(issues []*AdPlatformIssue) {
+	p.Issues = issues
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldIssues)
+}
+
+// SetObjective sets the Objective field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetObjective(objective *PostAdCampaignPaymentFailedPayloadDataObjective) {
+	p.Objective = objective
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldObjective)
+}
+
+// SetOptimizationGoal sets the OptimizationGoal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetOptimizationGoal(optimizationGoal *string) {
+	p.OptimizationGoal = optimizationGoal
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetPlatform(platform PostAdCampaignPaymentFailedPayloadDataPlatform) {
+	p.Platform = platform
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldPlatform)
+}
+
+// SetSpecialAdCategories sets the SpecialAdCategories field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetSpecialAdCategories(specialAdCategories []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem) {
+	p.SpecialAdCategories = specialAdCategories
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetStatus(status PostAdCampaignPaymentFailedPayloadDataStatus) {
+	p.Status = status
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldStatus)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetTitle(title string) {
+	p.Title = title
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldTitle)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetUpdatedAt(updatedAt string) {
+	p.UpdatedAt = updatedAt
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt)
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostAdCampaignPaymentFailedPayloadData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostAdCampaignPaymentFailedPayloadData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) MarshalJSON() ([]byte, error) {
+	type embed PostAdCampaignPaymentFailedPayloadData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
+type PostAdCampaignPaymentFailedPayloadDataBidType string
+
+const (
+	PostAdCampaignPaymentFailedPayloadDataBidTypeMinimumCost   PostAdCampaignPaymentFailedPayloadDataBidType = "minimum_cost"
+	PostAdCampaignPaymentFailedPayloadDataBidTypeAverageTarget PostAdCampaignPaymentFailedPayloadDataBidType = "average_target"
+	PostAdCampaignPaymentFailedPayloadDataBidTypeMaximumTarget PostAdCampaignPaymentFailedPayloadDataBidType = "maximum_target"
+)
+
+func NewPostAdCampaignPaymentFailedPayloadDataBidTypeFromString(s string) (PostAdCampaignPaymentFailedPayloadDataBidType, error) {
+	switch s {
+	case "minimum_cost":
+		return PostAdCampaignPaymentFailedPayloadDataBidTypeMinimumCost, nil
+	case "average_target":
+		return PostAdCampaignPaymentFailedPayloadDataBidTypeAverageTarget, nil
+	case "maximum_target":
+		return PostAdCampaignPaymentFailedPayloadDataBidTypeMaximumTarget, nil
+	}
+	var t PostAdCampaignPaymentFailedPayloadDataBidType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignPaymentFailedPayloadDataBidType) Ptr() *PostAdCampaignPaymentFailedPayloadDataBidType {
+	return &p
+}
+
+// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`).
+type PostAdCampaignPaymentFailedPayloadDataBudgetOptimization string
+
+const (
+	PostAdCampaignPaymentFailedPayloadDataBudgetOptimizationAdCampaign PostAdCampaignPaymentFailedPayloadDataBudgetOptimization = "ad_campaign"
+	PostAdCampaignPaymentFailedPayloadDataBudgetOptimizationAdGroup    PostAdCampaignPaymentFailedPayloadDataBudgetOptimization = "ad_group"
+)
+
+func NewPostAdCampaignPaymentFailedPayloadDataBudgetOptimizationFromString(s string) (PostAdCampaignPaymentFailedPayloadDataBudgetOptimization, error) {
+	switch s {
+	case "ad_campaign":
+		return PostAdCampaignPaymentFailedPayloadDataBudgetOptimizationAdCampaign, nil
+	case "ad_group":
+		return PostAdCampaignPaymentFailedPayloadDataBudgetOptimizationAdGroup, nil
+	}
+	var t PostAdCampaignPaymentFailedPayloadDataBudgetOptimization
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignPaymentFailedPayloadDataBudgetOptimization) Ptr() *PostAdCampaignPaymentFailedPayloadDataBudgetOptimization {
+	return &p
+}
+
+// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
+type PostAdCampaignPaymentFailedPayloadDataBudgetType string
+
+const (
+	PostAdCampaignPaymentFailedPayloadDataBudgetTypeDaily    PostAdCampaignPaymentFailedPayloadDataBudgetType = "daily"
+	PostAdCampaignPaymentFailedPayloadDataBudgetTypeLifetime PostAdCampaignPaymentFailedPayloadDataBudgetType = "lifetime"
+)
+
+func NewPostAdCampaignPaymentFailedPayloadDataBudgetTypeFromString(s string) (PostAdCampaignPaymentFailedPayloadDataBudgetType, error) {
+	switch s {
+	case "daily":
+		return PostAdCampaignPaymentFailedPayloadDataBudgetTypeDaily, nil
+	case "lifetime":
+		return PostAdCampaignPaymentFailedPayloadDataBudgetTypeLifetime, nil
+	}
+	var t PostAdCampaignPaymentFailedPayloadDataBudgetType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignPaymentFailedPayloadDataBudgetType) Ptr() *PostAdCampaignPaymentFailedPayloadDataBudgetType {
+	return &p
+}
+
+// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+type PostAdCampaignPaymentFailedPayloadDataDeliveryStatus string
+
+const (
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaymentFailed  PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "payment_failed"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAllAdsRejected PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "all_ads_rejected"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusDraft          PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "draft"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAdGroups     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "no_ad_groups"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAds          PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "no_ads"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaused         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "paused"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusProcessing     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "processing"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusIssues         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "issues"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusScheduled      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "scheduled"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusCompleted      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "completed"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAdGroupsOff    PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "ad_groups_off"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusActive         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "active"
+)
+
+func NewPostAdCampaignPaymentFailedPayloadDataDeliveryStatusFromString(s string) (PostAdCampaignPaymentFailedPayloadDataDeliveryStatus, error) {
+	switch s {
+	case "payment_failed":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaymentFailed, nil
+	case "all_ads_rejected":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAllAdsRejected, nil
+	case "draft":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusDraft, nil
+	case "no_ad_groups":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAdGroups, nil
+	case "no_ads":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAds, nil
+	case "paused":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaused, nil
+	case "processing":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusProcessing, nil
+	case "issues":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusIssues, nil
+	case "scheduled":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusScheduled, nil
+	case "completed":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusCompleted, nil
+	case "ad_groups_off":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAdGroupsOff, nil
+	case "active":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusActive, nil
+	}
+	var t PostAdCampaignPaymentFailedPayloadDataDeliveryStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignPaymentFailedPayloadDataDeliveryStatus) Ptr() *PostAdCampaignPaymentFailedPayloadDataDeliveryStatus {
+	return &p
+}
+
+// The goal the campaign optimizes toward.
+type PostAdCampaignPaymentFailedPayloadDataObjective string
+
+const (
+	PostAdCampaignPaymentFailedPayloadDataObjectiveAwareness  PostAdCampaignPaymentFailedPayloadDataObjective = "awareness"
+	PostAdCampaignPaymentFailedPayloadDataObjectiveTraffic    PostAdCampaignPaymentFailedPayloadDataObjective = "traffic"
+	PostAdCampaignPaymentFailedPayloadDataObjectiveEngagement PostAdCampaignPaymentFailedPayloadDataObjective = "engagement"
+	PostAdCampaignPaymentFailedPayloadDataObjectiveLeads      PostAdCampaignPaymentFailedPayloadDataObjective = "leads"
+	PostAdCampaignPaymentFailedPayloadDataObjectiveSales      PostAdCampaignPaymentFailedPayloadDataObjective = "sales"
+)
+
+func NewPostAdCampaignPaymentFailedPayloadDataObjectiveFromString(s string) (PostAdCampaignPaymentFailedPayloadDataObjective, error) {
+	switch s {
+	case "awareness":
+		return PostAdCampaignPaymentFailedPayloadDataObjectiveAwareness, nil
+	case "traffic":
+		return PostAdCampaignPaymentFailedPayloadDataObjectiveTraffic, nil
+	case "engagement":
+		return PostAdCampaignPaymentFailedPayloadDataObjectiveEngagement, nil
+	case "leads":
+		return PostAdCampaignPaymentFailedPayloadDataObjectiveLeads, nil
+	case "sales":
+		return PostAdCampaignPaymentFailedPayloadDataObjectiveSales, nil
+	}
+	var t PostAdCampaignPaymentFailedPayloadDataObjective
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignPaymentFailedPayloadDataObjective) Ptr() *PostAdCampaignPaymentFailedPayloadDataObjective {
+	return &p
+}
+
+// The ad network the campaign runs on.
+type PostAdCampaignPaymentFailedPayloadDataPlatform string
+
+const (
+	PostAdCampaignPaymentFailedPayloadDataPlatformMeta   PostAdCampaignPaymentFailedPayloadDataPlatform = "meta"
+	PostAdCampaignPaymentFailedPayloadDataPlatformTiktok PostAdCampaignPaymentFailedPayloadDataPlatform = "tiktok"
+)
+
+func NewPostAdCampaignPaymentFailedPayloadDataPlatformFromString(s string) (PostAdCampaignPaymentFailedPayloadDataPlatform, error) {
+	switch s {
+	case "meta":
+		return PostAdCampaignPaymentFailedPayloadDataPlatformMeta, nil
+	case "tiktok":
+		return PostAdCampaignPaymentFailedPayloadDataPlatformTiktok, nil
+	}
+	var t PostAdCampaignPaymentFailedPayloadDataPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignPaymentFailedPayloadDataPlatform) Ptr() *PostAdCampaignPaymentFailedPayloadDataPlatform {
+	return &p
+}
+
+// Regulated categories the campaign is declared under. Ads in these categories are subject to extra targeting restrictions. Empty when none apply.
+type PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem string
+
+const (
+	PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItemHousing           PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem = "housing"
+	PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItemEmployment        PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem = "employment"
+	PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItemFinancialProducts PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem = "financial_products"
+	PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItemPolitics          PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem = "politics"
+)
+
+func NewPostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItemFromString(s string) (PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem, error) {
+	switch s {
+	case "housing":
+		return PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItemHousing, nil
+	case "employment":
+		return PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItemEmployment, nil
+	case "financial_products":
+		return PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItemFinancialProducts, nil
+	case "politics":
+		return PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItemPolitics, nil
+	}
+	var t PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem) Ptr() *PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem {
+	return &p
+}
+
+// The lifecycle status of the ad campaign.
+type PostAdCampaignPaymentFailedPayloadDataStatus string
+
+const (
+	PostAdCampaignPaymentFailedPayloadDataStatusActive        PostAdCampaignPaymentFailedPayloadDataStatus = "active"
+	PostAdCampaignPaymentFailedPayloadDataStatusPaused        PostAdCampaignPaymentFailedPayloadDataStatus = "paused"
+	PostAdCampaignPaymentFailedPayloadDataStatusInactive      PostAdCampaignPaymentFailedPayloadDataStatus = "inactive"
+	PostAdCampaignPaymentFailedPayloadDataStatusStale         PostAdCampaignPaymentFailedPayloadDataStatus = "stale"
+	PostAdCampaignPaymentFailedPayloadDataStatusPendingRefund PostAdCampaignPaymentFailedPayloadDataStatus = "pending_refund"
+	PostAdCampaignPaymentFailedPayloadDataStatusPaymentFailed PostAdCampaignPaymentFailedPayloadDataStatus = "payment_failed"
+	PostAdCampaignPaymentFailedPayloadDataStatusDraft         PostAdCampaignPaymentFailedPayloadDataStatus = "draft"
+	PostAdCampaignPaymentFailedPayloadDataStatusInReview      PostAdCampaignPaymentFailedPayloadDataStatus = "in_review"
+	PostAdCampaignPaymentFailedPayloadDataStatusFlagged       PostAdCampaignPaymentFailedPayloadDataStatus = "flagged"
+	PostAdCampaignPaymentFailedPayloadDataStatusImporting     PostAdCampaignPaymentFailedPayloadDataStatus = "importing"
+	PostAdCampaignPaymentFailedPayloadDataStatusImported      PostAdCampaignPaymentFailedPayloadDataStatus = "imported"
+	PostAdCampaignPaymentFailedPayloadDataStatusDuplicating   PostAdCampaignPaymentFailedPayloadDataStatus = "duplicating"
+)
+
+func NewPostAdCampaignPaymentFailedPayloadDataStatusFromString(s string) (PostAdCampaignPaymentFailedPayloadDataStatus, error) {
+	switch s {
+	case "active":
+		return PostAdCampaignPaymentFailedPayloadDataStatusActive, nil
+	case "paused":
+		return PostAdCampaignPaymentFailedPayloadDataStatusPaused, nil
+	case "inactive":
+		return PostAdCampaignPaymentFailedPayloadDataStatusInactive, nil
+	case "stale":
+		return PostAdCampaignPaymentFailedPayloadDataStatusStale, nil
+	case "pending_refund":
+		return PostAdCampaignPaymentFailedPayloadDataStatusPendingRefund, nil
+	case "payment_failed":
+		return PostAdCampaignPaymentFailedPayloadDataStatusPaymentFailed, nil
+	case "draft":
+		return PostAdCampaignPaymentFailedPayloadDataStatusDraft, nil
+	case "in_review":
+		return PostAdCampaignPaymentFailedPayloadDataStatusInReview, nil
+	case "flagged":
+		return PostAdCampaignPaymentFailedPayloadDataStatusFlagged, nil
+	case "importing":
+		return PostAdCampaignPaymentFailedPayloadDataStatusImporting, nil
+	case "imported":
+		return PostAdCampaignPaymentFailedPayloadDataStatusImported, nil
+	case "duplicating":
+		return PostAdCampaignPaymentFailedPayloadDataStatusDuplicating, nil
+	}
+	var t PostAdCampaignPaymentFailedPayloadDataStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignPaymentFailedPayloadDataStatus) Ptr() *PostAdCampaignPaymentFailedPayloadDataStatus {
+	return &p
+}
+
 // The webhook event type
 type PostAdCampaignPaymentFailedPayloadType string
 
@@ -2890,6 +3473,840 @@ func NewPostAdCampaignPaymentFailedPayloadTypeFromString(s string) (PostAdCampai
 }
 
 func (p PostAdCampaignPaymentFailedPayloadType) Ptr() *PostAdCampaignPaymentFailedPayloadType {
+	return &p
+}
+
+var (
+	postAdCampaignUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postAdCampaignUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postAdCampaignUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postAdCampaignUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postAdCampaignUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postAdCampaignUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postAdCampaignUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postAdCampaignUpdatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+type PostAdCampaignUpdatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostAdCampaignUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string                           `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *PostAdCampaignUpdatedPayloadData `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostAdCampaignUpdatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdCampaignUpdatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostAdCampaignUpdatedPayload) GetAPIVersion() PostAdCampaignUpdatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostAdCampaignUpdatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostAdCampaignUpdatedPayload) GetData() *PostAdCampaignUpdatedPayloadData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostAdCampaignUpdatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdCampaignUpdatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostAdCampaignUpdatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostAdCampaignUpdatedPayload) GetType() PostAdCampaignUpdatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostAdCampaignUpdatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdCampaignUpdatedPayload) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postAdCampaignUpdatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayload) SetAPIVersion(apiVersion PostAdCampaignUpdatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postAdCampaignUpdatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postAdCampaignUpdatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayload) SetData(data *PostAdCampaignUpdatedPayloadData) {
+	p.Data = data
+	p.require(postAdCampaignUpdatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postAdCampaignUpdatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postAdCampaignUpdatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postAdCampaignUpdatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayload) SetType(type_ PostAdCampaignUpdatedPayloadType) {
+	p.Type = type_
+	p.require(postAdCampaignUpdatedPayloadFieldType)
+}
+
+func (p *PostAdCampaignUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostAdCampaignUpdatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostAdCampaignUpdatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdCampaignUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostAdCampaignUpdatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdCampaignUpdatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostAdCampaignUpdatedPayloadAPIVersion string
+
+const (
+	PostAdCampaignUpdatedPayloadAPIVersionV1 PostAdCampaignUpdatedPayloadAPIVersion = "v1"
+)
+
+func NewPostAdCampaignUpdatedPayloadAPIVersionFromString(s string) (PostAdCampaignUpdatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostAdCampaignUpdatedPayloadAPIVersionV1, nil
+	}
+	var t PostAdCampaignUpdatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadAPIVersion) Ptr() *PostAdCampaignUpdatedPayloadAPIVersion {
+	return &p
+}
+
+var (
+	postAdCampaignUpdatedPayloadDataFieldBidType             = big.NewInt(1 << 0)
+	postAdCampaignUpdatedPayloadDataFieldBudgetAmount        = big.NewInt(1 << 1)
+	postAdCampaignUpdatedPayloadDataFieldBudgetOptimization  = big.NewInt(1 << 2)
+	postAdCampaignUpdatedPayloadDataFieldBudgetType          = big.NewInt(1 << 3)
+	postAdCampaignUpdatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 4)
+	postAdCampaignUpdatedPayloadDataFieldDeliveryStatus      = big.NewInt(1 << 5)
+	postAdCampaignUpdatedPayloadDataFieldID                  = big.NewInt(1 << 6)
+	postAdCampaignUpdatedPayloadDataFieldIssues              = big.NewInt(1 << 7)
+	postAdCampaignUpdatedPayloadDataFieldObjective           = big.NewInt(1 << 8)
+	postAdCampaignUpdatedPayloadDataFieldOptimizationGoal    = big.NewInt(1 << 9)
+	postAdCampaignUpdatedPayloadDataFieldPlatform            = big.NewInt(1 << 10)
+	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories = big.NewInt(1 << 11)
+	postAdCampaignUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 12)
+	postAdCampaignUpdatedPayloadDataFieldTitle               = big.NewInt(1 << 13)
+	postAdCampaignUpdatedPayloadDataFieldUpdatedAt           = big.NewInt(1 << 14)
+)
+
+type PostAdCampaignUpdatedPayloadData struct {
+	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
+	BidType *PostAdCampaignUpdatedPayloadDataBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
+	// The campaign's budget, in the ad account's currency. `null` when each ad group sets its own budget instead.
+	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
+	// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`).
+	BudgetOptimization *PostAdCampaignUpdatedPayloadDataBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
+	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
+	BudgetType *PostAdCampaignUpdatedPayloadDataBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
+	// When the campaign was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+	DeliveryStatus PostAdCampaignUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
+	// Unique identifier for the ad campaign, prefixed `adcamp_`.
+	ID     string             `json:"id" url:"id"`
+	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
+	// The goal the campaign optimizes toward.
+	Objective *PostAdCampaignUpdatedPayloadDataObjective `json:"objective,omitempty" url:"objective,omitempty"`
+	// The event the campaign optimizes for when a single goal is set campaign-wide. `null` when each ad group sets its own optimization_goal.
+	OptimizationGoal *string `json:"optimization_goal,omitempty" url:"optimization_goal,omitempty"`
+	// The ad network the campaign runs on.
+	Platform            PostAdCampaignUpdatedPayloadDataPlatform                  `json:"platform" url:"platform"`
+	SpecialAdCategories []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
+	// The lifecycle status of the ad campaign.
+	Status PostAdCampaignUpdatedPayloadDataStatus `json:"status" url:"status"`
+	// Display name of the ad campaign.
+	Title string `json:"title" url:"title"`
+	// When the campaign was last updated, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetBidType() *PostAdCampaignUpdatedPayloadDataBidType {
+	if p == nil {
+		return nil
+	}
+	return p.BidType
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetBudgetAmount() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetAmount
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetBudgetOptimization() *PostAdCampaignUpdatedPayloadDataBudgetOptimization {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetOptimization
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetBudgetType() *PostAdCampaignUpdatedPayloadDataBudgetType {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetType
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetCreatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.CreatedAt
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetDeliveryStatus() PostAdCampaignUpdatedPayloadDataDeliveryStatus {
+	if p == nil {
+		return ""
+	}
+	return p.DeliveryStatus
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetIssues() []*AdPlatformIssue {
+	if p == nil {
+		return nil
+	}
+	return p.Issues
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetObjective() *PostAdCampaignUpdatedPayloadDataObjective {
+	if p == nil {
+		return nil
+	}
+	return p.Objective
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetOptimizationGoal() *string {
+	if p == nil {
+		return nil
+	}
+	return p.OptimizationGoal
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetPlatform() PostAdCampaignUpdatedPayloadDataPlatform {
+	if p == nil {
+		return ""
+	}
+	return p.Platform
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetSpecialAdCategories() []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem {
+	if p == nil {
+		return nil
+	}
+	return p.SpecialAdCategories
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetStatus() PostAdCampaignUpdatedPayloadDataStatus {
+	if p == nil {
+		return ""
+	}
+	return p.Status
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetTitle() string {
+	if p == nil {
+		return ""
+	}
+	return p.Title
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetUpdatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.UpdatedAt
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetBidType sets the BidType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetBidType(bidType *PostAdCampaignUpdatedPayloadDataBidType) {
+	p.BidType = bidType
+	p.require(postAdCampaignUpdatedPayloadDataFieldBidType)
+}
+
+// SetBudgetAmount sets the BudgetAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetBudgetAmount(budgetAmount *float64) {
+	p.BudgetAmount = budgetAmount
+	p.require(postAdCampaignUpdatedPayloadDataFieldBudgetAmount)
+}
+
+// SetBudgetOptimization sets the BudgetOptimization field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetBudgetOptimization(budgetOptimization *PostAdCampaignUpdatedPayloadDataBudgetOptimization) {
+	p.BudgetOptimization = budgetOptimization
+	p.require(postAdCampaignUpdatedPayloadDataFieldBudgetOptimization)
+}
+
+// SetBudgetType sets the BudgetType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetBudgetType(budgetType *PostAdCampaignUpdatedPayloadDataBudgetType) {
+	p.BudgetType = budgetType
+	p.require(postAdCampaignUpdatedPayloadDataFieldBudgetType)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetCreatedAt(createdAt string) {
+	p.CreatedAt = createdAt
+	p.require(postAdCampaignUpdatedPayloadDataFieldCreatedAt)
+}
+
+// SetDeliveryStatus sets the DeliveryStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetDeliveryStatus(deliveryStatus PostAdCampaignUpdatedPayloadDataDeliveryStatus) {
+	p.DeliveryStatus = deliveryStatus
+	p.require(postAdCampaignUpdatedPayloadDataFieldDeliveryStatus)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetID(id string) {
+	p.ID = id
+	p.require(postAdCampaignUpdatedPayloadDataFieldID)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetIssues(issues []*AdPlatformIssue) {
+	p.Issues = issues
+	p.require(postAdCampaignUpdatedPayloadDataFieldIssues)
+}
+
+// SetObjective sets the Objective field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetObjective(objective *PostAdCampaignUpdatedPayloadDataObjective) {
+	p.Objective = objective
+	p.require(postAdCampaignUpdatedPayloadDataFieldObjective)
+}
+
+// SetOptimizationGoal sets the OptimizationGoal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetOptimizationGoal(optimizationGoal *string) {
+	p.OptimizationGoal = optimizationGoal
+	p.require(postAdCampaignUpdatedPayloadDataFieldOptimizationGoal)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetPlatform(platform PostAdCampaignUpdatedPayloadDataPlatform) {
+	p.Platform = platform
+	p.require(postAdCampaignUpdatedPayloadDataFieldPlatform)
+}
+
+// SetSpecialAdCategories sets the SpecialAdCategories field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetSpecialAdCategories(specialAdCategories []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem) {
+	p.SpecialAdCategories = specialAdCategories
+	p.require(postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetStatus(status PostAdCampaignUpdatedPayloadDataStatus) {
+	p.Status = status
+	p.require(postAdCampaignUpdatedPayloadDataFieldStatus)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetTitle(title string) {
+	p.Title = title
+	p.require(postAdCampaignUpdatedPayloadDataFieldTitle)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetUpdatedAt(updatedAt string) {
+	p.UpdatedAt = updatedAt
+	p.require(postAdCampaignUpdatedPayloadDataFieldUpdatedAt)
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostAdCampaignUpdatedPayloadData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostAdCampaignUpdatedPayloadData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) MarshalJSON() ([]byte, error) {
+	type embed PostAdCampaignUpdatedPayloadData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
+type PostAdCampaignUpdatedPayloadDataBidType string
+
+const (
+	PostAdCampaignUpdatedPayloadDataBidTypeMinimumCost   PostAdCampaignUpdatedPayloadDataBidType = "minimum_cost"
+	PostAdCampaignUpdatedPayloadDataBidTypeAverageTarget PostAdCampaignUpdatedPayloadDataBidType = "average_target"
+	PostAdCampaignUpdatedPayloadDataBidTypeMaximumTarget PostAdCampaignUpdatedPayloadDataBidType = "maximum_target"
+)
+
+func NewPostAdCampaignUpdatedPayloadDataBidTypeFromString(s string) (PostAdCampaignUpdatedPayloadDataBidType, error) {
+	switch s {
+	case "minimum_cost":
+		return PostAdCampaignUpdatedPayloadDataBidTypeMinimumCost, nil
+	case "average_target":
+		return PostAdCampaignUpdatedPayloadDataBidTypeAverageTarget, nil
+	case "maximum_target":
+		return PostAdCampaignUpdatedPayloadDataBidTypeMaximumTarget, nil
+	}
+	var t PostAdCampaignUpdatedPayloadDataBidType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadDataBidType) Ptr() *PostAdCampaignUpdatedPayloadDataBidType {
+	return &p
+}
+
+// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`).
+type PostAdCampaignUpdatedPayloadDataBudgetOptimization string
+
+const (
+	PostAdCampaignUpdatedPayloadDataBudgetOptimizationAdCampaign PostAdCampaignUpdatedPayloadDataBudgetOptimization = "ad_campaign"
+	PostAdCampaignUpdatedPayloadDataBudgetOptimizationAdGroup    PostAdCampaignUpdatedPayloadDataBudgetOptimization = "ad_group"
+)
+
+func NewPostAdCampaignUpdatedPayloadDataBudgetOptimizationFromString(s string) (PostAdCampaignUpdatedPayloadDataBudgetOptimization, error) {
+	switch s {
+	case "ad_campaign":
+		return PostAdCampaignUpdatedPayloadDataBudgetOptimizationAdCampaign, nil
+	case "ad_group":
+		return PostAdCampaignUpdatedPayloadDataBudgetOptimizationAdGroup, nil
+	}
+	var t PostAdCampaignUpdatedPayloadDataBudgetOptimization
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadDataBudgetOptimization) Ptr() *PostAdCampaignUpdatedPayloadDataBudgetOptimization {
+	return &p
+}
+
+// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
+type PostAdCampaignUpdatedPayloadDataBudgetType string
+
+const (
+	PostAdCampaignUpdatedPayloadDataBudgetTypeDaily    PostAdCampaignUpdatedPayloadDataBudgetType = "daily"
+	PostAdCampaignUpdatedPayloadDataBudgetTypeLifetime PostAdCampaignUpdatedPayloadDataBudgetType = "lifetime"
+)
+
+func NewPostAdCampaignUpdatedPayloadDataBudgetTypeFromString(s string) (PostAdCampaignUpdatedPayloadDataBudgetType, error) {
+	switch s {
+	case "daily":
+		return PostAdCampaignUpdatedPayloadDataBudgetTypeDaily, nil
+	case "lifetime":
+		return PostAdCampaignUpdatedPayloadDataBudgetTypeLifetime, nil
+	}
+	var t PostAdCampaignUpdatedPayloadDataBudgetType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadDataBudgetType) Ptr() *PostAdCampaignUpdatedPayloadDataBudgetType {
+	return &p
+}
+
+// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+type PostAdCampaignUpdatedPayloadDataDeliveryStatus string
+
+const (
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaymentFailed  PostAdCampaignUpdatedPayloadDataDeliveryStatus = "payment_failed"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusAllAdsRejected PostAdCampaignUpdatedPayloadDataDeliveryStatus = "all_ads_rejected"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusDraft          PostAdCampaignUpdatedPayloadDataDeliveryStatus = "draft"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAdGroups     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "no_ad_groups"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAds          PostAdCampaignUpdatedPayloadDataDeliveryStatus = "no_ads"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaused         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusProcessing     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusIssues         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "issues"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusScheduled      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "scheduled"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusCompleted      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "completed"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusAdGroupsOff    PostAdCampaignUpdatedPayloadDataDeliveryStatus = "ad_groups_off"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusActive         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "active"
+)
+
+func NewPostAdCampaignUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdCampaignUpdatedPayloadDataDeliveryStatus, error) {
+	switch s {
+	case "payment_failed":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusPaymentFailed, nil
+	case "all_ads_rejected":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusAllAdsRejected, nil
+	case "draft":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusDraft, nil
+	case "no_ad_groups":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAdGroups, nil
+	case "no_ads":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAds, nil
+	case "paused":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusPaused, nil
+	case "processing":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusProcessing, nil
+	case "issues":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusIssues, nil
+	case "scheduled":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusScheduled, nil
+	case "completed":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusCompleted, nil
+	case "ad_groups_off":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusAdGroupsOff, nil
+	case "active":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusActive, nil
+	}
+	var t PostAdCampaignUpdatedPayloadDataDeliveryStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadDataDeliveryStatus) Ptr() *PostAdCampaignUpdatedPayloadDataDeliveryStatus {
+	return &p
+}
+
+// The goal the campaign optimizes toward.
+type PostAdCampaignUpdatedPayloadDataObjective string
+
+const (
+	PostAdCampaignUpdatedPayloadDataObjectiveAwareness  PostAdCampaignUpdatedPayloadDataObjective = "awareness"
+	PostAdCampaignUpdatedPayloadDataObjectiveTraffic    PostAdCampaignUpdatedPayloadDataObjective = "traffic"
+	PostAdCampaignUpdatedPayloadDataObjectiveEngagement PostAdCampaignUpdatedPayloadDataObjective = "engagement"
+	PostAdCampaignUpdatedPayloadDataObjectiveLeads      PostAdCampaignUpdatedPayloadDataObjective = "leads"
+	PostAdCampaignUpdatedPayloadDataObjectiveSales      PostAdCampaignUpdatedPayloadDataObjective = "sales"
+)
+
+func NewPostAdCampaignUpdatedPayloadDataObjectiveFromString(s string) (PostAdCampaignUpdatedPayloadDataObjective, error) {
+	switch s {
+	case "awareness":
+		return PostAdCampaignUpdatedPayloadDataObjectiveAwareness, nil
+	case "traffic":
+		return PostAdCampaignUpdatedPayloadDataObjectiveTraffic, nil
+	case "engagement":
+		return PostAdCampaignUpdatedPayloadDataObjectiveEngagement, nil
+	case "leads":
+		return PostAdCampaignUpdatedPayloadDataObjectiveLeads, nil
+	case "sales":
+		return PostAdCampaignUpdatedPayloadDataObjectiveSales, nil
+	}
+	var t PostAdCampaignUpdatedPayloadDataObjective
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadDataObjective) Ptr() *PostAdCampaignUpdatedPayloadDataObjective {
+	return &p
+}
+
+// The ad network the campaign runs on.
+type PostAdCampaignUpdatedPayloadDataPlatform string
+
+const (
+	PostAdCampaignUpdatedPayloadDataPlatformMeta   PostAdCampaignUpdatedPayloadDataPlatform = "meta"
+	PostAdCampaignUpdatedPayloadDataPlatformTiktok PostAdCampaignUpdatedPayloadDataPlatform = "tiktok"
+)
+
+func NewPostAdCampaignUpdatedPayloadDataPlatformFromString(s string) (PostAdCampaignUpdatedPayloadDataPlatform, error) {
+	switch s {
+	case "meta":
+		return PostAdCampaignUpdatedPayloadDataPlatformMeta, nil
+	case "tiktok":
+		return PostAdCampaignUpdatedPayloadDataPlatformTiktok, nil
+	}
+	var t PostAdCampaignUpdatedPayloadDataPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadDataPlatform) Ptr() *PostAdCampaignUpdatedPayloadDataPlatform {
+	return &p
+}
+
+// Regulated categories the campaign is declared under. Ads in these categories are subject to extra targeting restrictions. Empty when none apply.
+type PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem string
+
+const (
+	PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItemHousing           PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem = "housing"
+	PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItemEmployment        PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem = "employment"
+	PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItemFinancialProducts PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem = "financial_products"
+	PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItemPolitics          PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem = "politics"
+)
+
+func NewPostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItemFromString(s string) (PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem, error) {
+	switch s {
+	case "housing":
+		return PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItemHousing, nil
+	case "employment":
+		return PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItemEmployment, nil
+	case "financial_products":
+		return PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItemFinancialProducts, nil
+	case "politics":
+		return PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItemPolitics, nil
+	}
+	var t PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem) Ptr() *PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem {
+	return &p
+}
+
+// The lifecycle status of the ad campaign.
+type PostAdCampaignUpdatedPayloadDataStatus string
+
+const (
+	PostAdCampaignUpdatedPayloadDataStatusActive        PostAdCampaignUpdatedPayloadDataStatus = "active"
+	PostAdCampaignUpdatedPayloadDataStatusPaused        PostAdCampaignUpdatedPayloadDataStatus = "paused"
+	PostAdCampaignUpdatedPayloadDataStatusInactive      PostAdCampaignUpdatedPayloadDataStatus = "inactive"
+	PostAdCampaignUpdatedPayloadDataStatusStale         PostAdCampaignUpdatedPayloadDataStatus = "stale"
+	PostAdCampaignUpdatedPayloadDataStatusPendingRefund PostAdCampaignUpdatedPayloadDataStatus = "pending_refund"
+	PostAdCampaignUpdatedPayloadDataStatusPaymentFailed PostAdCampaignUpdatedPayloadDataStatus = "payment_failed"
+	PostAdCampaignUpdatedPayloadDataStatusDraft         PostAdCampaignUpdatedPayloadDataStatus = "draft"
+	PostAdCampaignUpdatedPayloadDataStatusInReview      PostAdCampaignUpdatedPayloadDataStatus = "in_review"
+	PostAdCampaignUpdatedPayloadDataStatusFlagged       PostAdCampaignUpdatedPayloadDataStatus = "flagged"
+	PostAdCampaignUpdatedPayloadDataStatusImporting     PostAdCampaignUpdatedPayloadDataStatus = "importing"
+	PostAdCampaignUpdatedPayloadDataStatusImported      PostAdCampaignUpdatedPayloadDataStatus = "imported"
+	PostAdCampaignUpdatedPayloadDataStatusDuplicating   PostAdCampaignUpdatedPayloadDataStatus = "duplicating"
+)
+
+func NewPostAdCampaignUpdatedPayloadDataStatusFromString(s string) (PostAdCampaignUpdatedPayloadDataStatus, error) {
+	switch s {
+	case "active":
+		return PostAdCampaignUpdatedPayloadDataStatusActive, nil
+	case "paused":
+		return PostAdCampaignUpdatedPayloadDataStatusPaused, nil
+	case "inactive":
+		return PostAdCampaignUpdatedPayloadDataStatusInactive, nil
+	case "stale":
+		return PostAdCampaignUpdatedPayloadDataStatusStale, nil
+	case "pending_refund":
+		return PostAdCampaignUpdatedPayloadDataStatusPendingRefund, nil
+	case "payment_failed":
+		return PostAdCampaignUpdatedPayloadDataStatusPaymentFailed, nil
+	case "draft":
+		return PostAdCampaignUpdatedPayloadDataStatusDraft, nil
+	case "in_review":
+		return PostAdCampaignUpdatedPayloadDataStatusInReview, nil
+	case "flagged":
+		return PostAdCampaignUpdatedPayloadDataStatusFlagged, nil
+	case "importing":
+		return PostAdCampaignUpdatedPayloadDataStatusImporting, nil
+	case "imported":
+		return PostAdCampaignUpdatedPayloadDataStatusImported, nil
+	case "duplicating":
+		return PostAdCampaignUpdatedPayloadDataStatusDuplicating, nil
+	}
+	var t PostAdCampaignUpdatedPayloadDataStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadDataStatus) Ptr() *PostAdCampaignUpdatedPayloadDataStatus {
+	return &p
+}
+
+// The webhook event type
+type PostAdCampaignUpdatedPayloadType string
+
+const (
+	PostAdCampaignUpdatedPayloadTypeAdCampaignUpdated PostAdCampaignUpdatedPayloadType = "ad_campaign.updated"
+)
+
+func NewPostAdCampaignUpdatedPayloadTypeFromString(s string) (PostAdCampaignUpdatedPayloadType, error) {
+	switch s {
+	case "ad_campaign.updated":
+		return PostAdCampaignUpdatedPayloadTypeAdCampaignUpdated, nil
+	}
+	var t PostAdCampaignUpdatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadType) Ptr() *PostAdCampaignUpdatedPayloadType {
 	return &p
 }
 

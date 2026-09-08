@@ -411,6 +411,14 @@ client.Accounts.Create(
 <dl>
 <dd>
 
+**sendCustomerEmails:** `*bool` — Whether Whop sends transactional emails to customers on behalf of the connected account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **title:** `*string` — The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
     
 </dd>
@@ -2082,7 +2090,7 @@ client.AdCampaigns.RetryPayment(
 <dl>
 <dd>
 
-Resumes a paused ad campaign.
+Resumes a paused ad campaign. Requires an ads payment method on the account.
 </dd>
 </dl>
 </dd>
@@ -3623,7 +3631,7 @@ client.Ads.List(
 <dl>
 <dd>
 
-Creates an ad in an ad group.
+Creates an ad in an ad group. Any campaign status other than `draft` launches the campaign, which requires an ads payment method on the account.
 </dd>
 </dl>
 </dd>
@@ -4830,6 +4838,14 @@ client.AiChats.List(
 <dl>
 <dd>
 
+**agentIdentifier:** `*whopsdk.AiChatAgentIdentifiers` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **onlyActiveCrons:** `*bool` — When true, returns only chats with an active cron schedule
     
 </dd>
@@ -4889,6 +4905,14 @@ client.AiChats.Create(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**agentIdentifier:** `*whopsdk.AiChatAgentIdentifiers` — The AI agent that handles the chat. Defaults to `support`.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -6478,84 +6502,6 @@ client.Apps.Create(
 </dl>
 </details>
 
-<details><summary><code>client.Apps.UpdatePermissionsApp(AppID, request) -> bool</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Updates the permission requirements for an app
-
-Required permissions:
- - `developer:update_app_authorization`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.UpdatePermissionsAppRequest{
-    AppID: "app_id",
-    RequestedPermissions: []*whopsdk.UpdatePermissionsAppRequestRequestedPermissionsItem{
-        &whopsdk.UpdatePermissionsAppRequestRequestedPermissionsItem{
-            Action: "action",
-            IsRequired: true,
-            Justification: "justification",
-        },
-    },
-}
-client.Apps.UpdatePermissionsApp(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**appID:** `string` — The ID of the app the permission requirements are being updated for
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestedPermissions:** `[]*whopsdk.UpdatePermissionsAppRequestRequestedPermissionsItem` — The permissions that the app will request off of users when a user installs the app.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 <details><summary><code>client.Apps.Retrieve(ID) -> *whopsdk.App</code></summary>
 <dl>
 <dd>
@@ -7176,7 +7122,7 @@ client.Apps.UpdatePermissions(
 <dl>
 <dd>
 
-Lists uploaded customer-list audiences for an account. Pass `audience_id` to return a specific audience.
+List custom and lookalike audiences for an account. Pass `audience_id` to return a specific audience.
 </dd>
 </dl>
 </dd>
@@ -7228,7 +7174,7 @@ client.Audiences.List(
 <dl>
 <dd>
 
-**audienceType:** `*whopsdk.ListAudiencesRequestAudienceType` — Filter by audience type: `custom` (uploaded lists) or `lookalike`.
+**audienceType:** `*whopsdk.ListAudiencesRequestAudienceType` — Filter by custom or lookalike audiences.
     
 </dd>
 </dl>
@@ -7236,7 +7182,7 @@ client.Audiences.List(
 <dl>
 <dd>
 
-**sourceType:** `*whopsdk.ListAudiencesRequestSourceType` — Filter by member source: `csv_upload` (uploaded lists) or `people_filter` (automatic audiences built from saved People filters).
+**sourceType:** `*whopsdk.ListAudiencesRequestSourceType` — Filter by uploaded customer lists, Whop People filters, or social engagement.
     
 </dd>
 </dl>
@@ -7276,7 +7222,7 @@ client.Audiences.List(
 <dl>
 <dd>
 
-Creates an audience. Default (`audience_type` omitted or `custom`): creates one audience from an uploaded customer identity CSV file (`name`, `column_mapping`, and `file_id` required) and starts processing it; responds with the audience object. With `filters`: creates an audience from saved People filters (`name` required) — membership is built from the account's People data, and `auto_refresh` decides whether it keeps tracking the filters or keeps whoever matched at creation. With `audience_type: lookalike`: creates a ladder of Meta lookalike audiences from an existing ready custom audience (`source_audience_id`, `count`, and `percentage` required) — `count` equal similarity bands slicing the top `percentage`% (3 audiences at 6% = 0–2%, 2–4%, 4–6%), each returned as its own audience in a `{ data: [...] }` envelope.
+Create an audience from a customer list, your account's Whop People data, or engagement with videos, lead forms, Instagram profiles, or Facebook pages. Create lookalike audiences to reach people similar to an existing audience. Processing runs asynchronously. Custom creation returns one audience; lookalike creation returns the requested similarity bands in `data`.
 </dd>
 </dl>
 </dd>
@@ -7293,6 +7239,22 @@ Creates an audience. Default (`audience_type` omitted or `custom`): creates one 
 ```go
 request := &whopsdk.CreateAudiencesRequest{
     AccountID: "biz_xxxxxxxxxxxxxx",
+    Engagement: &whopsdk.CreateAudiencesRequestEngagement{
+        Include: []*whopsdk.AudienceEngagementRule{
+            &whopsdk.AudienceEngagementRule{
+                FacebookPage: &whopsdk.AudienceEngagementFacebookPageRule{
+                    Event: whopsdk.AudienceEngagementFacebookPageRuleEventEngaged,
+                    RetentionDays: 30,
+                    SocialAccountID: "sacc_xxxxxxxxxxxxxx",
+                },
+            },
+        },
+        Platform: whopsdk.CreateAudiencesRequestEngagementPlatformMeta,
+    },
+    Name: whopsdk.String(
+        "Page engagers",
+    ),
+    SourceType: whopsdk.CreateAudiencesRequestSourceTypeEngagement.Ptr(),
 }
 client.Audiences.Create(
     context.TODO(),
@@ -7320,7 +7282,7 @@ client.Audiences.Create(
 <dl>
 <dd>
 
-**audienceType:** `*whopsdk.CreateAudiencesRequestAudienceType` — What to create. Defaults to `custom` (CSV upload).
+**audienceType:** `*whopsdk.CreateAudiencesRequestAudienceType` — Audience type. Defaults to `custom`.
     
 </dd>
 </dl>
@@ -7336,7 +7298,7 @@ client.Audiences.Create(
 <dl>
 <dd>
 
-**columnMapping:** `*whopsdk.CreateAudiencesRequestColumnMapping` — Custom audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
+**columnMapping:** `*whopsdk.CreateAudiencesRequestColumnMapping` — CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
     
 </dd>
 </dl>
@@ -7352,7 +7314,15 @@ client.Audiences.Create(
 <dl>
 <dd>
 
-**fileID:** `*string` — Custom audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
+**engagement:** `*whopsdk.CreateAudiencesRequestEngagement` — Rules for membership based on social engagement. Requires a connected social account with advertising access.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fileID:** `*string` — CSV audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
     
 </dd>
 </dl>
@@ -7376,7 +7346,7 @@ client.Audiences.Create(
 <dl>
 <dd>
 
-**percentage:** `*int` — Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`.
+**percentage:** `*int` — Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`. For example, 3 audiences at 6% creates 0–2%, 2–4%, and 4–6% bands.
     
 </dd>
 </dl>
@@ -7384,7 +7354,15 @@ client.Audiences.Create(
 <dl>
 <dd>
 
-**sourceAudienceID:** `*string` — Lookalikes only. The ready custom audience (`adaud_`) to build from; it needs at least 100 matched people.
+**sourceAudienceID:** `*string` — Lookalikes only. The ready custom audience (`adaud_`) to build from; uploaded and People audiences need at least 100 matched people. Meta validates engagement audience eligibility when creating the lookalike.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sourceType:** `*whopsdk.CreateAudiencesRequestSourceType` — Custom audience source. Inferred from `engagement`, then `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
     
 </dd>
 </dl>
@@ -9547,7 +9525,7 @@ client.Cards.Update(
 <dl>
 <dd>
 
-**billing:** `*whopsdk.UpdateCardsRequestBilling` — New billing address. Requires line1, city, region, postal_code, and country_code. On an invited card, passing billing alone (as the invited user) completes onboarding and starts card provisioning.
+**billing:** `*whopsdk.UpdateCardsRequestBilling` — The billing address. On an issued card this replaces the card's billing address and region is also required. On an invited card, sending it as the invited user completes onboarding and starts card provisioning.
     
 </dd>
 </dl>
@@ -9556,6 +9534,14 @@ client.Cards.Update(
 <dd>
 
 **canceled:** `*bool` — Pass `true` to permanently cancel the card. A canceled card cannot be uncanceled. Cannot be combined with other fields.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cardholder:** `*whopsdk.UpdateCardsRequestCardholder` — Details for the invited cardholder, accepted only while completing onboarding on an invited card. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not.
     
 </dd>
 </dl>
@@ -12741,7 +12727,7 @@ client.Courses.Update(
 <dl>
 <dd>
 
-Retrieve the deposit methods for an account, including crypto and bank transfer.
+Retrieve the deposit methods for an account, including crypto and bank transfer. Crypto deposits require a $10 minimum.
 </dd>
 </dl>
 </dd>
@@ -12777,7 +12763,7 @@ client.Deposits.Create(
 <dl>
 <dd>
 
-**amount:** `*float64` — Amount to prefill on hosted deposit page.
+**amount:** `*float64` — Amount to prefill on hosted deposit page. Crypto deposits require a $10 minimum.
     
 </dd>
 </dl>
@@ -13410,258 +13396,6 @@ client.Disputes.Submit(
 <dd>
 
 **id:** `string` — The dispute ID (`dspt_` tag).
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Disputes.SubmitEvidenceDispute(ID) -> *whopsdk.DisputeLegacy</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Submit a payment dispute to the payment processor for review. Once submitted, no further edits can be made.
-
-Required permissions:
- - `payment:dispute`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `company:basic:read`
- - `payment:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.SubmitEvidenceDisputeRequest{
-    ID: "dspt_xxxxxxxxxxxxx",
-}
-client.Disputes.SubmitEvidenceDispute(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the dispute to submit to the payment processor for review.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Disputes.UpdateEvidenceDispute(ID, request) -> *whopsdk.DisputeLegacy</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Update a dispute with evidence data to attempt to win the dispute.
-
-Required permissions:
- - `payment:dispute`
- - `plan:basic:read`
- - `access_pass:basic:read`
- - `company:basic:read`
- - `payment:basic:read`
- - `member:email:read`
- - `member:basic:read`
- - `member:phone:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.UpdateEvidenceDisputeRequest{
-    ID: "dspt_xxxxxxxxxxxxx",
-}
-client.Disputes.UpdateEvidenceDispute(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the dispute to update.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accessActivityLog:** `*string` — An IP access activity log showing the customer used the service.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**billingAddress:** `*string` — The billing address associated with the customer's payment method.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cancellationPolicyAttachment:** `*whopsdk.UpdateEvidenceDisputeRequestCancellationPolicyAttachment` — A file upload containing the company's cancellation policy document.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cancellationPolicyDisclosure:** `*string` — The company's cancellation policy text to submit as evidence.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**customerCommunicationAttachment:** `*whopsdk.UpdateEvidenceDisputeRequestCustomerCommunicationAttachment` — A file upload containing evidence of customer communication. Must be a JPEG, PNG, GIF, or PDF.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**customerEmailAddress:** `*string` — The email address of the customer associated with the disputed payment.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**customerName:** `*string` — The full name of the customer associated with the disputed payment.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**notes:** `*string` — Additional notes or context to submit as part of the dispute evidence.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**productDescription:** `*string` — A description of the product or service that was provided to the customer.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**refundPolicyAttachment:** `*whopsdk.UpdateEvidenceDisputeRequestRefundPolicyAttachment` — A file upload containing the company's refund policy document.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**refundPolicyDisclosure:** `*string` — The company's refund policy text to submit as evidence.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**refundRefusalExplanation:** `*string` — An explanation of why the refund request was refused.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**serviceDate:** `*string` — The date when the product or service was delivered to the customer.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**uncategorizedAttachment:** `*whopsdk.UpdateEvidenceDisputeRequestUncategorizedAttachment` — A file upload for evidence that does not fit into the other categories.
     
 </dd>
 </dl>
@@ -20439,80 +20173,6 @@ client.Memberships.Update(
 </dl>
 </details>
 
-<details><summary><code>client.Memberships.AddFreeDaysMembership(ID, request) -> *whopsdk.MembershipLegacy</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Add free days to extend a membership's current billing period, expiration date, or Stripe trial.
-
-Required permissions:
- - `member:manage`
- - `member:email:read`
- - `member:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.AddFreeDaysMembershipRequest{
-    ID: "mem_xxxxxxxxxxxxxx",
-    FreeDays: 42,
-}
-client.Memberships.AddFreeDaysMembership(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the membership.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**freeDays:** `int` — The number of free days to add (1-1095). Extends the billing period, expiration date, or Stripe trial depending on plan type.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 <details><summary><code>client.Memberships.Cancel(ID, request) -> *whopsdk.Membership</code></summary>
 <dl>
 <dd>
@@ -20786,7 +20446,7 @@ client.Memberships.Resume(
 </dl>
 </details>
 
-<details><summary><code>client.Memberships.ResyncAccessMembership(ID) -> *whopsdk.MembershipLegacy</code></summary>
+<details><summary><code>client.Memberships.ResyncAccess(ID) -> *whopsdk.Membership</code></summary>
 <dl>
 <dd>
 
@@ -20798,12 +20458,7 @@ client.Memberships.Resume(
 <dl>
 <dd>
 
-Re-run access fulfillment for a membership. Recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and cannot be resynced here. The outcome is written to the membership's logs.
-
-Required permissions:
- - `membership:resync_access`
- - `member:email:read`
- - `member:basic:read`
+Re-runs access fulfillment for a membership: recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and is not resynced. The work runs in the background and the outcome is written to the membership's logs.
 </dd>
 </dl>
 </dd>
@@ -20818,10 +20473,10 @@ Required permissions:
 <dd>
 
 ```go
-request := &whopsdk.ResyncAccessMembershipRequest{
-    ID: "mem_xxxxxxxxxxxxxx",
+request := &whopsdk.ResyncAccessMembershipsRequest{
+    ID: "id",
 }
-client.Memberships.ResyncAccessMembership(
+client.Memberships.ResyncAccess(
     context.TODO(),
     request,
 )
@@ -20839,7 +20494,7 @@ client.Memberships.ResyncAccessMembership(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the membership to resync access for.
+**id:** `string` — Membership ID (`mem_` tag).
     
 </dd>
 </dl>
@@ -20900,71 +20555,6 @@ client.Memberships.Transfer(
 <dd>
 
 **id:** `string` — Membership ID (`mem_` tag).
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Memberships.UncancelMembership(ID) -> *whopsdk.MembershipLegacy</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Reverse a pending cancellation for a membership that was scheduled to cancel at period end.
-
-Required permissions:
- - `member:manage`
- - `member:email:read`
- - `member:basic:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.UncancelMembershipRequest{
-    ID: "mem_xxxxxxxxxxxxxx",
-}
-client.Memberships.UncancelMembership(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the membership to uncancel.
     
 </dd>
 </dl>
@@ -21931,6 +21521,75 @@ client.Partners.Leaderboard(
 </dl>
 </details>
 
+<details><summary><code>client.Partners.RetrieveLink() -> *whopsdk.OnboardingReward</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Resolves the public reward terms and whether redemption capacity remains. Immediate rewards claim capacity at business creation; qualified rewards claim it when the business reaches the threshold.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveLinkPartnersRequest{
+    PartnerUsername: "partner_username",
+    RewardSlug: "reward_slug",
+}
+client.Partners.RetrieveLink(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**partnerUsername:** `string` — Username from the partner link's `a` query parameter.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**rewardSlug:** `string` — Reward slug from the partner link's `reward` query parameter.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Partners.ReferredUsers() -> *whopsdk.ReferredUsersPartnersResponse</code></summary>
 <dl>
 <dd>
@@ -22224,7 +21883,7 @@ client.PaymentMethodDomains.Create(
 <dl>
 <dd>
 
-**accountID:** `*string` — Account to register the domain for (`biz_` tag). Defaults to the caller's account.
+**accountID:** `*string` — Account to register the domain for (`biz_` tag). Required when authenticating as a user; an account API key supplies its own account.
     
 </dd>
 </dl>
@@ -23484,6 +23143,66 @@ client.Payments.Void(
 <dd>
 
 **id:** `string` — The payment to void, prefixed `pay_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Payments.Resume(PaymentID) -> *whopsdk.PaymentStatus</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts a fresh on-session attempt with the saved card for a subscription renewal that is waiting on the customer to authenticate; the bank's step then arrives in `next_action` on the following status reads. Only the payment's own customer may call it — with the payment's `client_secret` or their own session — and it is a no-op for any payment that is not a parked renewal.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ResumePaymentsRequest{
+    PaymentID: "payment_id",
+}
+client.Payments.Resume(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**paymentID:** `string` — The unique identifier of the payment.
     
 </dd>
 </dl>
@@ -25047,7 +24766,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**accountID:** `*string` — The unique identifier of the account to create this plan for. Defaults to the caller's account.
+**accountID:** `*string` — The unique identifier of the account to create this plan for. Required when authenticating as a user; an account API key supplies its own account.
     
 </dd>
 </dl>
@@ -25119,7 +24838,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**initialPrice:** `*float64` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
+**initialPrice:** `*float64` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
     
 </dd>
 </dl>
@@ -25183,7 +24902,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**renewalPrice:** `*float64` — The amount charged each billing period for recurring plans, in the plan's currency.
+**renewalPrice:** `*float64` — The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
     
 </dd>
 </dl>
@@ -25507,7 +25226,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**initialPrice:** `*float64` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
+**initialPrice:** `*float64` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
     
 </dd>
 </dl>
@@ -25563,7 +25282,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**renewalPrice:** `*float64` — The amount charged each billing period for recurring plans, in the plan's currency.
+**renewalPrice:** `*float64` — The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
     
 </dd>
 </dl>
@@ -26395,7 +26114,7 @@ client.Products.Update(
 <dl>
 <dd>
 
-Submits a product to the whop.com marketplace for review. The product moves to `pending_review`; a Whop reviewer approves it before it goes live.
+Submits a product to the whop.com marketplace for review. The product moves to `pending_review`; a Whop reviewer approves it before it goes live. Requires a logo, a headline, and at least one gallery image or video; the request fails naming whichever is missing.
 </dd>
 </dl>
 </dd>
@@ -32461,6 +32180,22 @@ client.Transfers.Create(
 <dl>
 <dd>
 
+**feedID:** `*string` — Ledger transfers only. The feed the transfer was initiated from. Given with `feed_type`, the payment receipt posts into that feed instead of a direct message.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**feedType:** `*whopsdk.CreateTransfersRequestFeedType` — Ledger transfers only. The type of the feed named by `feed_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **idempotenceKey:** `*string` — Ledger transfers and wallet sends. A unique key that makes retries safe. Retrying with the same key returns the original transfer, or attaches to the original wallet send, instead of moving money twice.
     
 </dd>
@@ -34317,107 +34052,6 @@ client.Webhooks.Test(
 <dd>
 
 **event:** `string` — The event to test the webhook for, in dot form (for example `payment.succeeded`).
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Webhooks.DeliveriesWebhook(WebhookID) -> *whopsdk.DeliveriesWebhookResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
-
-Required permissions:
- - `developer:manage_webhook`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.DeliveriesWebhookRequest{
-    WebhookID: "webhook_id",
-    First: whopsdk.Int(
-        42,
-    ),
-    Last: whopsdk.Int(
-        42,
-    ),
-}
-client.Webhooks.DeliveriesWebhook(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**webhookID:** `string` — The unique identifier of the webhook to list deliveries for.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**after:** `*string` — Returns the elements in the list that come after the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**before:** `*string` — Returns the elements in the list that come before the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**first:** `*int` — Returns the first _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**last:** `*int` — Returns the last _n_ elements from the list.
     
 </dd>
 </dl>
@@ -37178,7 +36812,7 @@ client.Users.Preferences.Update(
 
 Sets the authenticated user's notification preferences. Each preference is addressed by `scope`, not by id, so a scope read back from either list endpoint can be sent straight here.
 
-A scope naming an experience with no topic sets that experience's level, and accepts all three levels. Any other scope sets a topic override, which is binary — `all` or `nothing` — and requires a `channel`.
+A scope naming an experience with no topic sets that experience's level, and accepts all three levels. Any other scope sets a topic override, which is binary — `all` or `nothing`. A topic override with no `channel` applies to every delivery channel.
 
 `level: null` clears the preference. Preferences are stored as overrides, so clearing one means the scope inherits its default again rather than being switched off.
 

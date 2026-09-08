@@ -116,7 +116,7 @@ var (
 )
 
 type CreatePlansRequest struct {
-	// The unique identifier of the account to create this plan for. Defaults to the caller's account.
+	// The unique identifier of the account to create this plan for. Required when authenticating as a user; an account API key supplies its own account.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// Whether this plan accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled *bool `json:"adaptive_pricing_enabled,omitempty" url:"-"`
@@ -134,7 +134,7 @@ type CreatePlansRequest struct {
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"-"`
 	// An image displayed on the product page to represent this plan.
 	Image *CreatePlansRequestImage `json:"image,omitempty" url:"-"`
-	// Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
+	// Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
 	InitialPrice *float64 `json:"initial_price,omitempty" url:"-"`
 	// Private notes visible only to the account owner. Not shown to customers.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"-"`
@@ -150,7 +150,7 @@ type CreatePlansRequest struct {
 	ProductID *string `json:"product_id,omitempty" url:"-"`
 	// Sales method for this plan.
 	ReleaseMethod *string `json:"release_method,omitempty" url:"-"`
-	// The amount charged each billing period for recurring plans, in the plan's currency.
+	// The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"-"`
 	// Installment payments required before the subscription pauses.
 	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"-"`
@@ -5708,7 +5708,7 @@ type UpdatePlansRequest struct {
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"-"`
 	// An image displayed on the product page to represent this plan.
 	Image *UpdatePlansRequestImage `json:"image,omitempty" url:"-"`
-	// Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
+	// Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
 	InitialPrice *float64 `json:"initial_price,omitempty" url:"-"`
 	// Private notes visible only to the account owner. Not shown to customers.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"-"`
@@ -5722,7 +5722,7 @@ type UpdatePlansRequest struct {
 	PaymentMethodConfiguration *UpdatePlansRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
 	// Sales method for this plan.
 	ReleaseMethod *string `json:"release_method,omitempty" url:"-"`
-	// The amount charged each billing period for recurring plans, in the plan's currency.
+	// The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"-"`
 	// The maximum number of units available for purchase. Ignored when unlimited_stock is true.
 	Stock *int `json:"stock,omitempty" url:"-"`

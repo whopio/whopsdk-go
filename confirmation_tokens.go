@@ -865,12 +865,14 @@ var (
 	createConfirmationTokensRequestBillingDetailsFieldAddress = big.NewInt(1 << 0)
 	createConfirmationTokensRequestBillingDetailsFieldEmail   = big.NewInt(1 << 1)
 	createConfirmationTokensRequestBillingDetailsFieldName    = big.NewInt(1 << 2)
+	createConfirmationTokensRequestBillingDetailsFieldPhone   = big.NewInt(1 << 3)
 )
 
 type CreateConfirmationTokensRequestBillingDetails struct {
 	Address map[string]any `json:"address,omitempty" url:"address,omitempty"`
 	Email   string         `json:"email" url:"email"`
 	Name    *string        `json:"name,omitempty" url:"name,omitempty"`
+	Phone   *string        `json:"phone,omitempty" url:"phone,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -898,6 +900,13 @@ func (c *CreateConfirmationTokensRequestBillingDetails) GetName() *string {
 		return nil
 	}
 	return c.Name
+}
+
+func (c *CreateConfirmationTokensRequestBillingDetails) GetPhone() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Phone
 }
 
 func (c *CreateConfirmationTokensRequestBillingDetails) GetExtraProperties() map[string]interface{} {
@@ -933,6 +942,13 @@ func (c *CreateConfirmationTokensRequestBillingDetails) SetEmail(email string) {
 func (c *CreateConfirmationTokensRequestBillingDetails) SetName(name *string) {
 	c.Name = name
 	c.require(createConfirmationTokensRequestBillingDetailsFieldName)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateConfirmationTokensRequestBillingDetails) SetPhone(phone *string) {
+	c.Phone = phone
+	c.require(createConfirmationTokensRequestBillingDetailsFieldPhone)
 }
 
 func (c *CreateConfirmationTokensRequestBillingDetails) UnmarshalJSON(data []byte) error {
@@ -986,8 +1002,9 @@ var (
 	createConfirmationTokensRequestPaymentMethodFieldCategory      = big.NewInt(1 << 4)
 	createConfirmationTokensRequestPaymentMethodFieldGooglePay     = big.NewInt(1 << 5)
 	createConfirmationTokensRequestPaymentMethodFieldPayerDocument = big.NewInt(1 << 6)
-	createConfirmationTokensRequestPaymentMethodFieldSaved         = big.NewInt(1 << 7)
-	createConfirmationTokensRequestPaymentMethodFieldType          = big.NewInt(1 << 8)
+	createConfirmationTokensRequestPaymentMethodFieldRedirect      = big.NewInt(1 << 7)
+	createConfirmationTokensRequestPaymentMethodFieldSaved         = big.NewInt(1 << 8)
+	createConfirmationTokensRequestPaymentMethodFieldType          = big.NewInt(1 << 9)
 )
 
 type CreateConfirmationTokensRequestPaymentMethod struct {
@@ -1005,6 +1022,8 @@ type CreateConfirmationTokensRequestPaymentMethod struct {
 	GooglePay *CreateConfirmationTokensRequestPaymentMethodGooglePay `json:"google_pay,omitempty" url:"google_pay,omitempty"`
 	// The buyer's identity document when the charge currency has a payer_document_requirements entry for this method, such as ARS card, MODO, or Rapipago. This is independent of the method category.
 	PayerDocument *CreateConfirmationTokensRequestPaymentMethodPayerDocument `json:"payer_document,omitempty" url:"payer_document,omitempty"`
+	// Category `redirect` only. Empty unless the method declares redirect-specific fields.
+	Redirect *CreateConfirmationTokensRequestPaymentMethodRedirect `json:"redirect,omitempty" url:"redirect,omitempty"`
 	// Category `saved` only. Names one of the buyer's own stored payment methods. Requires a buyer credential — the wallet read is scoped to that account, so another user's id reads as not found.
 	Saved *CreateConfirmationTokensRequestPaymentMethodSaved `json:"saved,omitempty" url:"saved,omitempty"`
 	// The payment method type, for example `card` or `ideal`. Required for every category except `saved` and `balance`, where it is read from the referenced method.
@@ -1064,6 +1083,13 @@ func (c *CreateConfirmationTokensRequestPaymentMethod) GetPayerDocument() *Creat
 		return nil
 	}
 	return c.PayerDocument
+}
+
+func (c *CreateConfirmationTokensRequestPaymentMethod) GetRedirect() *CreateConfirmationTokensRequestPaymentMethodRedirect {
+	if c == nil {
+		return nil
+	}
+	return c.Redirect
 }
 
 func (c *CreateConfirmationTokensRequestPaymentMethod) GetSaved() *CreateConfirmationTokensRequestPaymentMethodSaved {
@@ -1141,6 +1167,13 @@ func (c *CreateConfirmationTokensRequestPaymentMethod) SetGooglePay(googlePay *C
 func (c *CreateConfirmationTokensRequestPaymentMethod) SetPayerDocument(payerDocument *CreateConfirmationTokensRequestPaymentMethodPayerDocument) {
 	c.PayerDocument = payerDocument
 	c.require(createConfirmationTokensRequestPaymentMethodFieldPayerDocument)
+}
+
+// SetRedirect sets the Redirect field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateConfirmationTokensRequestPaymentMethod) SetRedirect(redirect *CreateConfirmationTokensRequestPaymentMethodRedirect) {
+	c.Redirect = redirect
+	c.require(createConfirmationTokensRequestPaymentMethodFieldRedirect)
 }
 
 // SetSaved sets the Saved field and marks it as non-optional;
@@ -1889,6 +1922,72 @@ func NewCreateConfirmationTokensRequestPaymentMethodPayerDocumentTypeFromString(
 
 func (c CreateConfirmationTokensRequestPaymentMethodPayerDocumentType) Ptr() *CreateConfirmationTokensRequestPaymentMethodPayerDocumentType {
 	return &c
+}
+
+// Category `redirect` only. Empty unless the method declares redirect-specific fields.
+type CreateConfirmationTokensRequestPaymentMethodRedirect struct {
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateConfirmationTokensRequestPaymentMethodRedirect) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateConfirmationTokensRequestPaymentMethodRedirect) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+func (c *CreateConfirmationTokensRequestPaymentMethodRedirect) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateConfirmationTokensRequestPaymentMethodRedirect
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateConfirmationTokensRequestPaymentMethodRedirect(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateConfirmationTokensRequestPaymentMethodRedirect) MarshalJSON() ([]byte, error) {
+	type embed CreateConfirmationTokensRequestPaymentMethodRedirect
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateConfirmationTokensRequestPaymentMethodRedirect) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 // Category `saved` only. Names one of the buyer's own stored payment methods. Requires a buyer credential — the wallet read is scoped to that account, so another user's id reads as not found.

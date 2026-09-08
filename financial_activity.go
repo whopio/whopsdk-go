@@ -1256,6 +1256,11 @@ const (
 	LedgerActivityLineTypeWithdrawalReclassification                LedgerActivityLineType = "withdrawal_reclassification"
 	LedgerActivityLineTypeWithdrawalReversal                        LedgerActivityLineType = "withdrawal_reversal"
 	LedgerActivityLineTypeWithdrawalTopupAdjustment                 LedgerActivityLineType = "withdrawal_topup_adjustment"
+	LedgerActivityLineTypeDeposit                                   LedgerActivityLineType = "deposit"
+	LedgerActivityLineTypeWalletTransferIncoming                    LedgerActivityLineType = "wallet_transfer_incoming"
+	LedgerActivityLineTypeWalletTransferOutgoing                    LedgerActivityLineType = "wallet_transfer_outgoing"
+	LedgerActivityLineTypeSwapSource                                LedgerActivityLineType = "swap_source"
+	LedgerActivityLineTypeSwapTarget                                LedgerActivityLineType = "swap_target"
 )
 
 func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, error) {
@@ -1516,6 +1521,16 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeWithdrawalReversal, nil
 	case "withdrawal_topup_adjustment":
 		return LedgerActivityLineTypeWithdrawalTopupAdjustment, nil
+	case "deposit":
+		return LedgerActivityLineTypeDeposit, nil
+	case "wallet_transfer_incoming":
+		return LedgerActivityLineTypeWalletTransferIncoming, nil
+	case "wallet_transfer_outgoing":
+		return LedgerActivityLineTypeWalletTransferOutgoing, nil
+	case "swap_source":
+		return LedgerActivityLineTypeSwapSource, nil
+	case "swap_target":
+		return LedgerActivityLineTypeSwapTarget, nil
 	}
 	var t LedgerActivityLineType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

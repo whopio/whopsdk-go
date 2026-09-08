@@ -43,6 +43,22 @@ func TestSettersCreateTransfersRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFeedID", func(t *testing.T) {
+		obj := &CreateTransfersRequest{}
+		var fernTestValueFeedID *string
+		obj.SetFeedID(fernTestValueFeedID)
+		assert.Equal(t, fernTestValueFeedID, obj.FeedID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFeedType", func(t *testing.T) {
+		obj := &CreateTransfersRequest{}
+		var fernTestValueFeedType *CreateTransfersRequestFeedType
+		obj.SetFeedType(fernTestValueFeedType)
+		assert.Equal(t, fernTestValueFeedType, obj.FeedType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetIdempotenceKey", func(t *testing.T) {
 		obj := &CreateTransfersRequest{}
 		var fernTestValueIdempotenceKey *string
@@ -195,6 +211,68 @@ func TestSettersMarkExplicitCreateTransfersRequest(t *testing.T) {
 
 		// Act
 		obj.SetExpiresAt(fernTestValueExpiresAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFeedID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateTransfersRequest{}
+		var fernTestValueFeedID *string
+
+		// Act
+		obj.SetFeedID(fernTestValueFeedID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFeedType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateTransfersRequest{}
+		var fernTestValueFeedType *CreateTransfersRequestFeedType
+
+		// Act
+		obj.SetFeedType(fernTestValueFeedType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -20909,6 +20987,63 @@ func TestStringRetrieveTransfersResponseOriginUser(t *testing.T) {
 		var obj *RetrieveTransfersResponseOriginUser
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestEnumCreateTransfersRequestFeedType(t *testing.T) {
+	t.Run("NewFromString_dms_feed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTransfersRequestFeedTypeFromString("dms_feed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTransfersRequestFeedType("dms_feed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_chat_feed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTransfersRequestFeedTypeFromString("chat_feed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTransfersRequestFeedType("chat_feed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_forum_feed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTransfersRequestFeedTypeFromString("forum_feed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTransfersRequestFeedType("forum_feed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_livestream_feed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTransfersRequestFeedTypeFromString("livestream_feed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTransfersRequestFeedType("livestream_feed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_universal_post", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTransfersRequestFeedTypeFromString("universal_post")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTransfersRequestFeedType("universal_post"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_user", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTransfersRequestFeedTypeFromString("user")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTransfersRequestFeedType("user"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateTransfersRequestFeedTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateTransfersRequestFeedTypeFromString("dms_feed")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
 	})
 }
 

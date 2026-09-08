@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-02-2"
+		apiVersionDateDefault := "2026-09-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists uploaded customer-list audiences for an account. Pass `audience_id` to return a specific audience.
+// List custom and lookalike audiences for an account. Pass `audience_id` to return a specific audience.
 //
 // Example:
 //
@@ -113,12 +113,28 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates an audience. Default (`audience_type` omitted or `custom`): creates one audience from an uploaded customer identity CSV file (`name`, `column_mapping`, and `file_id` required) and starts processing it; responds with the audience object. With `filters`: creates an audience from saved People filters (`name` required) — membership is built from the account's People data, and `auto_refresh` decides whether it keeps tracking the filters or keeps whoever matched at creation. With `audience_type: lookalike`: creates a ladder of Meta lookalike audiences from an existing ready custom audience (`source_audience_id`, `count`, and `percentage` required) — `count` equal similarity bands slicing the top `percentage`% (3 audiences at 6% = 0–2%, 2–4%, 4–6%), each returned as its own audience in a `{ data: [...] }` envelope.
+// Create an audience from a customer list, your account's Whop People data, or engagement with videos, lead forms, Instagram profiles, or Facebook pages. Create lookalike audiences to reach people similar to an existing audience. Processing runs asynchronously. Custom creation returns one audience; lookalike creation returns the requested similarity bands in `data`.
 //
 // Example:
 //
 //	request := &whopsdk.CreateAudiencesRequest{
 //	    AccountID: "biz_xxxxxxxxxxxxxx",
+//	    Engagement: &whopsdk.CreateAudiencesRequestEngagement{
+//	        Include: []*whopsdk.AudienceEngagementRule{
+//	            &whopsdk.AudienceEngagementRule{
+//	                FacebookPage: &whopsdk.AudienceEngagementFacebookPageRule{
+//	                    Event: whopsdk.AudienceEngagementFacebookPageRuleEventEngaged,
+//	                    RetentionDays: 30,
+//	                    SocialAccountID: "sacc_xxxxxxxxxxxxxx",
+//	                },
+//	            },
+//	        },
+//	        Platform: whopsdk.CreateAudiencesRequestEngagementPlatformMeta,
+//	    },
+//	    Name: whopsdk.String(
+//	        "Page engagers",
+//	    ),
+//	    SourceType: whopsdk.CreateAudiencesRequestSourceTypeEngagement.Ptr(),
 //	}
 //	client.Audiences.Create(
 //	    context.TODO(),

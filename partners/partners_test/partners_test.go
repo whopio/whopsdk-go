@@ -123,6 +123,32 @@ func TestPartnersLeaderboardWithWireMock(
 	VerifyRequestCount(t, "TestPartnersLeaderboardWithWireMock", "GET", "/partners/leaderboard", nil, 1)
 }
 
+func TestPartnersRetrieveLinkWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+	)
+	request := &whopsdk.RetrieveLinkPartnersRequest{
+		PartnerUsername: "partner_username",
+		RewardSlug:      "reward_slug",
+	}
+	_, invocationErr := client.Partners.RetrieveLink(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPartnersRetrieveLinkWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPartnersRetrieveLinkWithWireMock", "GET", "/partners/links", map[string]interface{}{"partner_username": "partner_username", "reward_slug": "reward_slug"}, 1)
+}
+
 func TestPartnersReferredUsersWithWireMock(
 	t *testing.T,
 ) {

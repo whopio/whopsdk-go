@@ -213,6 +213,7 @@ const (
 	ListBusinessesRequestOrderReferralExpiresAt ListBusinessesRequestOrder = "referral_expires_at"
 	ListBusinessesRequestOrderPayoutPercentage  ListBusinessesRequestOrder = "payout_percentage"
 	ListBusinessesRequestOrderVolumeUsd         ListBusinessesRequestOrder = "volume_usd"
+	ListBusinessesRequestOrderVolume30DUsd      ListBusinessesRequestOrder = "volume_30d_usd"
 	ListBusinessesRequestOrderEarningsUsd       ListBusinessesRequestOrder = "earnings_usd"
 )
 
@@ -228,6 +229,8 @@ func NewListBusinessesRequestOrderFromString(s string) (ListBusinessesRequestOrd
 		return ListBusinessesRequestOrderPayoutPercentage, nil
 	case "volume_usd":
 		return ListBusinessesRequestOrderVolumeUsd, nil
+	case "volume_30d_usd":
+		return ListBusinessesRequestOrderVolume30DUsd, nil
 	case "earnings_usd":
 		return ListBusinessesRequestOrderEarningsUsd, nil
 	}
@@ -2095,7 +2098,8 @@ func (l ListBusinessesResponseDataItemStatus) Ptr() *ListBusinessesResponseDataI
 var (
 	listBusinessesResponseDataItemVolumeUsdFieldAttributed         = big.NewInt(1 << 0)
 	listBusinessesResponseDataItemVolumeUsdFieldAwaitingSettlement = big.NewInt(1 << 1)
-	listBusinessesResponseDataItemVolumeUsdFieldSettled            = big.NewInt(1 << 2)
+	listBusinessesResponseDataItemVolumeUsdFieldLast30D            = big.NewInt(1 << 2)
+	listBusinessesResponseDataItemVolumeUsdFieldSettled            = big.NewInt(1 << 3)
 )
 
 type ListBusinessesResponseDataItemVolumeUsd struct {
@@ -2103,6 +2107,8 @@ type ListBusinessesResponseDataItemVolumeUsd struct {
 	Attributed string `json:"attributed" url:"attributed"`
 	// GMV awaiting settlement (commission not yet computed), in USD.
 	AwaitingSettlement string `json:"awaiting_settlement" url:"awaiting_settlement"`
+	// Credited GMV from the trailing 30 days (awaiting_settlement + settled), in USD.
+	Last30D string `json:"last_30d" url:"last_30d"`
 	// GMV of pending + completed payments, in USD.
 	Settled string `json:"settled" url:"settled"`
 
@@ -2125,6 +2131,13 @@ func (l *ListBusinessesResponseDataItemVolumeUsd) GetAwaitingSettlement() string
 		return ""
 	}
 	return l.AwaitingSettlement
+}
+
+func (l *ListBusinessesResponseDataItemVolumeUsd) GetLast30D() string {
+	if l == nil {
+		return ""
+	}
+	return l.Last30D
 }
 
 func (l *ListBusinessesResponseDataItemVolumeUsd) GetSettled() string {
@@ -2160,6 +2173,13 @@ func (l *ListBusinessesResponseDataItemVolumeUsd) SetAttributed(attributed strin
 func (l *ListBusinessesResponseDataItemVolumeUsd) SetAwaitingSettlement(awaitingSettlement string) {
 	l.AwaitingSettlement = awaitingSettlement
 	l.require(listBusinessesResponseDataItemVolumeUsdFieldAwaitingSettlement)
+}
+
+// SetLast30D sets the Last30D field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemVolumeUsd) SetLast30D(last30D string) {
+	l.Last30D = last30D
+	l.require(listBusinessesResponseDataItemVolumeUsdFieldLast30D)
 }
 
 // SetSettled sets the Settled field and marks it as non-optional;
@@ -4102,7 +4122,8 @@ func (r RetrieveBusinessesResponseStatus) Ptr() *RetrieveBusinessesResponseStatu
 var (
 	retrieveBusinessesResponseVolumeUsdFieldAttributed         = big.NewInt(1 << 0)
 	retrieveBusinessesResponseVolumeUsdFieldAwaitingSettlement = big.NewInt(1 << 1)
-	retrieveBusinessesResponseVolumeUsdFieldSettled            = big.NewInt(1 << 2)
+	retrieveBusinessesResponseVolumeUsdFieldLast30D            = big.NewInt(1 << 2)
+	retrieveBusinessesResponseVolumeUsdFieldSettled            = big.NewInt(1 << 3)
 )
 
 type RetrieveBusinessesResponseVolumeUsd struct {
@@ -4110,6 +4131,8 @@ type RetrieveBusinessesResponseVolumeUsd struct {
 	Attributed string `json:"attributed" url:"attributed"`
 	// GMV awaiting settlement (commission not yet computed), in USD.
 	AwaitingSettlement string `json:"awaiting_settlement" url:"awaiting_settlement"`
+	// Credited GMV from the trailing 30 days (awaiting_settlement + settled), in USD.
+	Last30D string `json:"last_30d" url:"last_30d"`
 	// GMV of pending + completed payments, in USD.
 	Settled string `json:"settled" url:"settled"`
 
@@ -4132,6 +4155,13 @@ func (r *RetrieveBusinessesResponseVolumeUsd) GetAwaitingSettlement() string {
 		return ""
 	}
 	return r.AwaitingSettlement
+}
+
+func (r *RetrieveBusinessesResponseVolumeUsd) GetLast30D() string {
+	if r == nil {
+		return ""
+	}
+	return r.Last30D
 }
 
 func (r *RetrieveBusinessesResponseVolumeUsd) GetSettled() string {
@@ -4167,6 +4197,13 @@ func (r *RetrieveBusinessesResponseVolumeUsd) SetAttributed(attributed string) {
 func (r *RetrieveBusinessesResponseVolumeUsd) SetAwaitingSettlement(awaitingSettlement string) {
 	r.AwaitingSettlement = awaitingSettlement
 	r.require(retrieveBusinessesResponseVolumeUsdFieldAwaitingSettlement)
+}
+
+// SetLast30D sets the Last30D field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseVolumeUsd) SetLast30D(last30D string) {
+	r.Last30D = last30D
+	r.require(retrieveBusinessesResponseVolumeUsdFieldLast30D)
 }
 
 // SetSettled sets the Settled field and marks it as non-optional;

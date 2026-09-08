@@ -2,5 +2,5 @@
 
 // Deposits describe ways to add funds to an account balance, including hosted deposit pages, bank deposit instructions, and supported crypto wallet addresses.
 //
-// Use the Deposits API to create deposit instructions for an account.
+// Use the Deposits API to create deposit instructions for an account. Crypto deposits require a $10 minimum.
 package deposits

@@ -348,6 +348,51 @@ func (r *RawClient) Void(
 	}, nil
 }
 
+func (r *RawClient) Resume(
+	ctx context.Context,
+	request *whopsdk.ResumePaymentsRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.PaymentStatus], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/payments/%v/resume",
+		request.PaymentID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *whopsdk.PaymentStatus
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.PaymentStatus]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
 func (r *RawClient) UpdateReturnURL(
 	ctx context.Context,
 	request *whopsdk.UpdateReturnURLPaymentsRequest,
