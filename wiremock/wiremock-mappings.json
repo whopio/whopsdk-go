@@ -3267,6 +3267,69 @@
       }
     },
     {
+      "id": "0fe02ae1-1484-4e23-a2d9-5f146ff6f50e",
+      "name": "Create Cashback Rule - default",
+      "request": {
+        "urlPathTemplate": "/cashback_rule",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"description\": \"Software cashback\",\n  \"discarded_at\": \"discarded_at\",\n  \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n  \"funding_account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"id\": \"cicbr_xxxxxxxxxxxxxx\",\n  \"merchant_category_code\": \"5734\",\n  \"merchant_name\": \"ACME SOFTWARE\",\n  \"rate_bps\": 500,\n  \"scoped_account_id\": \"scoped_account_id\",\n  \"starts_at\": \"2026-01-01T12:00:00.000Z\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "0fe02ae1-1484-4e23-a2d9-5f146ff6f50e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "153d01b9-8d54-4d0a-a8c6-3cbe3a0f6935",
+      "name": "List Cashback Rules - default",
+      "request": {
+        "urlPathTemplate": "/cashback_rules",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"description\": \"Software cashback\",\n      \"discarded_at\": \"discarded_at\",\n      \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n      \"funding_account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"id\": \"cicbr_xxxxxxxxxxxxxx\",\n      \"merchant_category_code\": \"5734\",\n      \"merchant_name\": \"ACME SOFTWARE\",\n      \"rate_bps\": 500,\n      \"scoped_account_id\": \"scoped_account_id\",\n      \"starts_at\": \"2026-01-01T12:00:00.000Z\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "153d01b9-8d54-4d0a-a8c6-3cbe3a0f6935",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "d4c9b0cf-5095-4a6e-9f01-b04ed4241678",
       "name": "List chat channels - default",
       "request": {
@@ -14145,6 +14208,6 @@
     }
   ],
   "meta": {
-    "total": 392
+    "total": 394
   }
 }

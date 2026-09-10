@@ -9617,6 +9617,218 @@ client.Cards.Update(
 </dl>
 </details>
 
+## Cashback Rules
+<details><summary><code>client.CashbackRules.Create(request) -> *whopsdk.CashbackRule</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a future-dated card cashback rule funded by the authenticated platform account. Requires payout:transfer_funds. Both the raw merchant name and four-digit MCC are required. Optionally limit the rule to one direct connected account. The funding account is derived from the credential and cannot be supplied. Creation does not transfer funds. Supports Idempotency-Key for safe retries.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateCashbackRulesRequest{
+    MerchantCategoryCode: "5734",
+    MerchantName: "ACME SOFTWARE",
+    RateBps: 500,
+    StartsAt: whopsdk.MustParseDateTime(
+        "2026-01-01T12:00:00Z",
+    ),
+}
+client.CashbackRules.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**description:** `*string` — Optional description of the rule.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expiresAt:** `*time.Time` — Exclusive end, strictly later than starts_at. Omit or set null for no expiration.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchantCategoryCode:** `string` — Four-digit MCC, including leading zeros. Must match together with merchant_name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchantName:** `string` — Raw merchant name reported by the card provider, not the enriched display name. Matched with the MCC; not a substring or wildcard.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**rateBps:** `int` — Cashback rate in basis points: 500 means 5%.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scopedAccountID:** `*string` — Account ID prefixed biz_ belonging to a direct connected account. Omit or set null to designate all direct connected accounts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**startsAt:** `time.Time` — Inclusive start, strictly later than the current time, as an ISO 8601 timestamp.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.CashbackRules.List() -> *whopsdk.ListCashbackRulesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists all cashback rules funded by the authenticated platform account. Includes scheduled, expired, and discarded rules. Requires payout:transfer:read. Account-scoped credentials are required; there is no caller-supplied funding-account filter.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListCashbackRulesRequest{}
+client.CashbackRules.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of rules to return from the start of the page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return rules after this cursor.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of rules to return from the end of the page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return rules before this cursor.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListCashbackRulesRequestOrder` — Field to sort by. Defaults to created_at.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListCashbackRulesRequestDirection` — Sort direction. Defaults to desc.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## ChatChannels
 <details><summary><code>client.ChatChannels.List() -> *whopsdk.ListChatChannelsResponse</code></summary>
 <dl>
