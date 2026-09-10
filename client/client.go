@@ -21,6 +21,7 @@ import (
 	bountysubmissions "github.com/whopio/whopsdk-go/bountysubmissions"
 	cards "github.com/whopio/whopsdk-go/cards"
 	cardtransactions "github.com/whopio/whopsdk-go/cardtransactions"
+	cashbackrules "github.com/whopio/whopsdk-go/cashbackrules"
 	chatchannels "github.com/whopio/whopsdk-go/chatchannels"
 	checkoutconfigurations "github.com/whopio/whopsdk-go/checkoutconfigurations"
 	companytokentransactions "github.com/whopio/whopsdk-go/companytokentransactions"
@@ -108,6 +109,7 @@ type Whop struct {
 	BountySubmissions        *bountysubmissions.Client
 	CardTransactions         *cardtransactions.Client
 	Cards                    *cards.Client
+	CashbackRules            *cashbackrules.Client
 	ChatChannels             *chatchannels.Client
 	CheckoutConfigurations   *checkoutconfigurations.Client
 	CompanyTokenTransactions *companytokentransactions.Client
@@ -202,6 +204,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		BountySubmissions:        bountysubmissions.NewClient(options),
 		CardTransactions:         cardtransactions.NewClient(options),
 		Cards:                    cards.NewClient(options),
+		CashbackRules:            cashbackrules.NewClient(options),
 		ChatChannels:             chatchannels.NewClient(options),
 		CheckoutConfigurations:   checkoutconfigurations.NewClient(options),
 		CompanyTokenTransactions: companytokentransactions.NewClient(options),
