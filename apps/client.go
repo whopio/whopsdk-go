@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-06"
+		apiVersionDateDefault := "2026-09-09"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -138,7 +138,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves an app by ID, claimed route, or proxy domain id. Credential fields (api_key, default_api_key, secrets) render `null` unless the caller has the corresponding developer permission on the owning account.
+// Retrieves an app by ID, claimed route, active verified custom hostname, or proxy domain id. Custom hostnames return 404 for inactive assignments, suspended accounts, or deleted apps. Credential fields (api_key, default_api_key, secrets) render `null` unless the caller has the corresponding developer permission on the owning account.
 //
 // Example:
 //

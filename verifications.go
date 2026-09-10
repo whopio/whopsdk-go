@@ -266,6 +266,7 @@ var (
 	createVerificationsRequestBodyBusinessFieldPlaceOfIncorporation            = big.NewInt(1 << 9)
 	createVerificationsRequestBodyBusinessFieldShareToken                      = big.NewInt(1 << 10)
 	createVerificationsRequestBodyBusinessFieldTaxIdentificationNumber         = big.NewInt(1 << 11)
+	createVerificationsRequestBodyBusinessFieldVerificationID                  = big.NewInt(1 << 12)
 )
 
 type CreateVerificationsRequestBodyBusiness struct {
@@ -293,6 +294,8 @@ type CreateVerificationsRequestBodyBusiness struct {
 	ShareToken *string `json:"share_token,omitempty" url:"share_token,omitempty"`
 	// The government-issued ID number of the person being verified — the individual for a KYC verification, or the business representative for a KYB verification — as appropriate for their country. Examples are a Social Security Number (SSN) in the US, or a Social Insurance Number in Canada.
 	TaxIdentificationNumber *string `json:"tax_identification_number,omitempty" url:"tax_identification_number,omitempty"`
+	// ID of an `approved` verification to reuse on this account instead of verifying the person again, for example `idpf_XXXXXXXX`. The verification becomes this account's current one for its kind — replacing whichever verification of that kind the account already has, and carrying its payout account across — and the response is that same verification, unchanged. Only the signed-in Whop user who started the original verification can reuse it: API keys, OAuth tokens, and onboarding links are refused. `kind` is the only other field it accepts, and must match the reused verification. An account whose verification was denied or is still under review cannot reuse one.
+	VerificationID *string `json:"verification_id,omitempty" url:"verification_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -383,6 +386,13 @@ func (c *CreateVerificationsRequestBodyBusiness) GetTaxIdentificationNumber() *s
 		return nil
 	}
 	return c.TaxIdentificationNumber
+}
+
+func (c *CreateVerificationsRequestBodyBusiness) GetVerificationID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VerificationID
 }
 
 func (c *CreateVerificationsRequestBodyBusiness) GetExtraProperties() map[string]interface{} {
@@ -481,6 +491,13 @@ func (c *CreateVerificationsRequestBodyBusiness) SetShareToken(shareToken *strin
 func (c *CreateVerificationsRequestBodyBusiness) SetTaxIdentificationNumber(taxIdentificationNumber *string) {
 	c.TaxIdentificationNumber = taxIdentificationNumber
 	c.require(createVerificationsRequestBodyBusinessFieldTaxIdentificationNumber)
+}
+
+// SetVerificationID sets the VerificationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyBusiness) SetVerificationID(verificationID *string) {
+	c.VerificationID = verificationID
+	c.require(createVerificationsRequestBodyBusinessFieldVerificationID)
 }
 
 func (c *CreateVerificationsRequestBodyBusiness) UnmarshalJSON(data []byte) error {
@@ -713,6 +730,7 @@ var (
 	createVerificationsRequestBodyIndividualFieldPhone                           = big.NewInt(1 << 11)
 	createVerificationsRequestBodyIndividualFieldShareToken                      = big.NewInt(1 << 12)
 	createVerificationsRequestBodyIndividualFieldTaxIdentificationNumber         = big.NewInt(1 << 13)
+	createVerificationsRequestBodyIndividualFieldVerificationID                  = big.NewInt(1 << 14)
 )
 
 type CreateVerificationsRequestBodyIndividual struct {
@@ -741,6 +759,8 @@ type CreateVerificationsRequestBodyIndividual struct {
 	ShareToken *string `json:"share_token,omitempty" url:"share_token,omitempty"`
 	// The government-issued ID number of the person being verified — the individual for a KYC verification, or the business representative for a KYB verification — as appropriate for their country. Examples are a Social Security Number (SSN) in the US, or a Social Insurance Number in Canada.
 	TaxIdentificationNumber *string `json:"tax_identification_number,omitempty" url:"tax_identification_number,omitempty"`
+	// ID of an `approved` verification to reuse on this account instead of verifying the person again, for example `idpf_XXXXXXXX`. The verification becomes this account's current one for its kind — replacing whichever verification of that kind the account already has, and carrying its payout account across — and the response is that same verification, unchanged. Only the signed-in Whop user who started the original verification can reuse it: API keys, OAuth tokens, and onboarding links are refused. `kind` is the only other field it accepts, and must match the reused verification. An account whose verification was denied or is still under review cannot reuse one.
+	VerificationID *string `json:"verification_id,omitempty" url:"verification_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -845,6 +865,13 @@ func (c *CreateVerificationsRequestBodyIndividual) GetTaxIdentificationNumber() 
 		return nil
 	}
 	return c.TaxIdentificationNumber
+}
+
+func (c *CreateVerificationsRequestBodyIndividual) GetVerificationID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VerificationID
 }
 
 func (c *CreateVerificationsRequestBodyIndividual) GetExtraProperties() map[string]interface{} {
@@ -957,6 +984,13 @@ func (c *CreateVerificationsRequestBodyIndividual) SetShareToken(shareToken *str
 func (c *CreateVerificationsRequestBodyIndividual) SetTaxIdentificationNumber(taxIdentificationNumber *string) {
 	c.TaxIdentificationNumber = taxIdentificationNumber
 	c.require(createVerificationsRequestBodyIndividualFieldTaxIdentificationNumber)
+}
+
+// SetVerificationID sets the VerificationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequestBodyIndividual) SetVerificationID(verificationID *string) {
+	c.VerificationID = verificationID
+	c.require(createVerificationsRequestBodyIndividualFieldVerificationID)
 }
 
 func (c *CreateVerificationsRequestBodyIndividual) UnmarshalJSON(data []byte) error {

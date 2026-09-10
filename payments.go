@@ -37,16 +37,17 @@ func (c *CapturePaymentsRequest) SetID(id string) {
 }
 
 var (
-	createPaymentsRequestFieldAccountID         = big.NewInt(1 << 0)
-	createPaymentsRequestFieldCapture           = big.NewInt(1 << 1)
-	createPaymentsRequestFieldConfirmationToken = big.NewInt(1 << 2)
-	createPaymentsRequestFieldEmail             = big.NewInt(1 << 3)
-	createPaymentsRequestFieldMemberID          = big.NewInt(1 << 4)
-	createPaymentsRequestFieldMetadata          = big.NewInt(1 << 5)
-	createPaymentsRequestFieldPaymentMethodID   = big.NewInt(1 << 6)
-	createPaymentsRequestFieldPlanID            = big.NewInt(1 << 7)
-	createPaymentsRequestFieldPromoCodeID       = big.NewInt(1 << 8)
-	createPaymentsRequestFieldReturnURL         = big.NewInt(1 << 9)
+	createPaymentsRequestFieldAccountID           = big.NewInt(1 << 0)
+	createPaymentsRequestFieldCapture             = big.NewInt(1 << 1)
+	createPaymentsRequestFieldConfirmationToken   = big.NewInt(1 << 2)
+	createPaymentsRequestFieldEmail               = big.NewInt(1 << 3)
+	createPaymentsRequestFieldMemberID            = big.NewInt(1 << 4)
+	createPaymentsRequestFieldMetadata            = big.NewInt(1 << 5)
+	createPaymentsRequestFieldPaymentMethodID     = big.NewInt(1 << 6)
+	createPaymentsRequestFieldPlanID              = big.NewInt(1 << 7)
+	createPaymentsRequestFieldPromoCodeID         = big.NewInt(1 << 8)
+	createPaymentsRequestFieldReturnURL           = big.NewInt(1 << 9)
+	createPaymentsRequestFieldStatementDescriptor = big.NewInt(1 << 10)
 )
 
 type CreatePaymentsRequest struct {
@@ -70,6 +71,8 @@ type CreatePaymentsRequest struct {
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
+	// Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*`, be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -150,6 +153,13 @@ func (c *CreatePaymentsRequest) SetPromoCodeID(promoCodeID *string) {
 func (c *CreatePaymentsRequest) SetReturnURL(returnURL *string) {
 	c.ReturnURL = returnURL
 	c.require(createPaymentsRequestFieldReturnURL)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetStatementDescriptor(statementDescriptor *string) {
+	c.StatementDescriptor = statementDescriptor
+	c.require(createPaymentsRequestFieldStatementDescriptor)
 }
 
 func (c *CreatePaymentsRequest) UnmarshalJSON(data []byte) error {
@@ -795,7 +805,7 @@ type Payment struct {
 	NextPaymentAttemptAt *string `json:"next_payment_attempt_at,omitempty" url:"next_payment_attempt_at,omitempty"`
 	// When the money was collected, or null while it has not been.
 	PaidAt *string `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	// The instrument shaped for display: a buyer-facing name, the standard icon set, and the card's brand and last four when it was a card.
+	// The instrument shaped for display: a buyer-facing name, the standard icon set, and the card's brand, last four and issuer identification number when it was a card.
 	PaymentInstrument *PaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
 	// The stored payment method that was charged, prefixed `payt_`. Null when the method was not saved.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
@@ -851,7 +861,7 @@ type Payment struct {
 	UsdTotal *Money `json:"usd_total,omitempty" url:"usd_total,omitempty"`
 	// The buyer. Null when the payment belongs to a company buyer rather than a user.
 	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
-	// The issuer's address and security code check results, or null when the processor returned none.
+	// The Address Verification Service (AVS), cardholder name, and Card Verification Value (CVV/CVC) results, or null when the processor returned none.
 	VerificationChecks *PaymentVerificationChecks `json:"verification_checks,omitempty" url:"verification_checks,omitempty"`
 	// True when the payment is `open` on a past-due membership and its processor supports voiding — see `POST /payments/{id}/void`.
 	Voidable bool `json:"voidable" url:"voidable"`
@@ -2921,17 +2931,20 @@ func (p *PaymentProcessingDetails) String() string {
 }
 
 var (
-	paymentStatusFieldCaptureExpiresAt  = big.NewInt(1 << 0)
-	paymentStatusFieldID                = big.NewInt(1 << 1)
-	paymentStatusFieldLastPaymentError  = big.NewInt(1 << 2)
-	paymentStatusFieldNextAction        = big.NewInt(1 << 3)
-	paymentStatusFieldObject            = big.NewInt(1 << 4)
-	paymentStatusFieldProcessingDetails = big.NewInt(1 << 5)
-	paymentStatusFieldReturnURL         = big.NewInt(1 << 6)
-	paymentStatusFieldStatus            = big.NewInt(1 << 7)
+	paymentStatusFieldAccount           = big.NewInt(1 << 0)
+	paymentStatusFieldCaptureExpiresAt  = big.NewInt(1 << 1)
+	paymentStatusFieldID                = big.NewInt(1 << 2)
+	paymentStatusFieldLastPaymentError  = big.NewInt(1 << 3)
+	paymentStatusFieldNextAction        = big.NewInt(1 << 4)
+	paymentStatusFieldObject            = big.NewInt(1 << 5)
+	paymentStatusFieldProcessingDetails = big.NewInt(1 << 6)
+	paymentStatusFieldReturnURL         = big.NewInt(1 << 7)
+	paymentStatusFieldStatus            = big.NewInt(1 << 8)
 )
 
 type PaymentStatus struct {
+	// The account receiving this payment, or `null` when the payment has no associated account.
+	Account *AccountSummary `json:"account,omitempty" url:"account,omitempty"`
 	// When the card authorization must be captured, as an ISO 8601 timestamp. `null` when this payment was not authorized for later capture.
 	CaptureExpiresAt *string `json:"capture_expires_at,omitempty" url:"capture_expires_at,omitempty"`
 	// The payment this status describes, prefixed `pay_`.
@@ -2942,11 +2955,11 @@ type PaymentStatus struct {
 	NextAction *PaymentNextAction `json:"next_action,omitempty" url:"next_action,omitempty"`
 	// Always `payment_status`.
 	Object string `json:"object" url:"object"`
-	// Present while `status` is `processing` on a settlement rail, otherwise `null`.
+	// Present while `status` is `processing` on a settlement rail, otherwise `null`. A `processing` status without it has not been decided yet — keep polling.
 	ProcessingDetails *PaymentProcessingDetails `json:"processing_details,omitempty" url:"processing_details,omitempty"`
 	// Where to send the buyer once the payment reaches a resting state, or `null` to leave them where they are. Editable until they return — see the return_url operation.
 	ReturnURL *string `json:"return_url,omitempty" url:"return_url,omitempty"`
-	// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
+	// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — with `processing_details`, the money is moving; without them, the charge is still being decided and the status should be read again. `succeeded` — collected. `canceled` — voided or written off.
 	Status PaymentStatusStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2954,6 +2967,13 @@ type PaymentStatus struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *PaymentStatus) GetAccount() *AccountSummary {
+	if p == nil {
+		return nil
+	}
+	return p.Account
 }
 
 func (p *PaymentStatus) GetCaptureExpiresAt() *string {
@@ -3024,6 +3044,13 @@ func (p *PaymentStatus) require(field *big.Int) {
 		p.explicitFields = big.NewInt(0)
 	}
 	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccount sets the Account field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentStatus) SetAccount(account *AccountSummary) {
+	p.Account = account
+	p.require(paymentStatusFieldAccount)
 }
 
 // SetCaptureExpiresAt sets the CaptureExpiresAt field and marks it as non-optional;
@@ -3124,7 +3151,7 @@ func (p *PaymentStatus) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
+// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — with `processing_details`, the money is moving; without them, the charge is still being decided and the status should be read again. `succeeded` — collected. `canceled` — voided or written off.
 type PaymentStatusStatus string
 
 const (
@@ -3170,13 +3197,13 @@ var (
 )
 
 type PaymentVerificationChecks struct {
-	// Whether the billing street address the customer entered matched the issuer's records.
+	// The Address Verification Service (AVS) result for the billing street address.
 	AddressLine1 *string `json:"address_line1,omitempty" url:"address_line1,omitempty"`
 	// Whether the cardholder name matched the issuer's records.
 	CardHolderName *string `json:"card_holder_name,omitempty" url:"card_holder_name,omitempty"`
-	// Whether the CVV / CVC matched the card.
+	// The Card Verification Value (CVV/CVC) result.
 	CardSecurityCode *string `json:"card_security_code,omitempty" url:"card_security_code,omitempty"`
-	// Whether the billing postal code matched the issuer's records.
+	// The Address Verification Service (AVS) result for the billing postal code.
 	ZipCode *string `json:"zip_code,omitempty" url:"zip_code,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

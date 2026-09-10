@@ -279,14 +279,15 @@ var (
 	disputeFieldID                          = big.NewInt(1 << 11)
 	disputeFieldInquiry                     = big.NewInt(1 << 12)
 	disputeFieldIssuerComments              = big.NewInt(1 << 13)
-	disputeFieldPayment                     = big.NewInt(1 << 14)
-	disputeFieldPlanID                      = big.NewInt(1 << 15)
-	disputeFieldProductID                   = big.NewInt(1 << 16)
-	disputeFieldRapidDisputeResolution      = big.NewInt(1 << 17)
-	disputeFieldReason                      = big.NewInt(1 << 18)
-	disputeFieldReasonCode                  = big.NewInt(1 << 19)
-	disputeFieldStatus                      = big.NewInt(1 << 20)
-	disputeFieldUpdatedAt                   = big.NewInt(1 << 21)
+	disputeFieldLineItems                   = big.NewInt(1 << 14)
+	disputeFieldPayment                     = big.NewInt(1 << 15)
+	disputeFieldPlanID                      = big.NewInt(1 << 16)
+	disputeFieldProductID                   = big.NewInt(1 << 17)
+	disputeFieldRapidDisputeResolution      = big.NewInt(1 << 18)
+	disputeFieldReason                      = big.NewInt(1 << 19)
+	disputeFieldReasonCode                  = big.NewInt(1 << 20)
+	disputeFieldStatus                      = big.NewInt(1 << 21)
+	disputeFieldUpdatedAt                   = big.NewInt(1 << 22)
 )
 
 type Dispute struct {
@@ -317,6 +318,7 @@ type Dispute struct {
 	// Whether this is a pre-dispute inquiry rather than a formal chargeback. Inquiries follow the same lifecycle but move no funds unless one escalates.
 	Inquiry        bool                    `json:"inquiry" url:"inquiry"`
 	IssuerComments []*DisputeIssuerComment `json:"issuer_comments" url:"issuer_comments"`
+	LineItems      []*ReceiptLineItem      `json:"line_items" url:"line_items"`
 	// The payment being disputed.
 	Payment *DisputePayment `json:"payment,omitempty" url:"payment,omitempty"`
 	// The plan the disputed payment was made on, prefixed `plan_`.
@@ -325,9 +327,9 @@ type Dispute struct {
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// Whether Visa Rapid Dispute Resolution settled this automatically. These refund the customer without an evidence round.
 	RapidDisputeResolution bool `json:"rapid_dispute_resolution" url:"rapid_dispute_resolution"`
-	// Why the customer says they are disputing, normalized across card networks. `other` covers a code Whop has not categorized yet — read `reason_code` for the raw value.
+	// Why the customer says they are disputing, normalized across processors and card networks. `other` covers a processor reason Whop has not categorized yet.
 	Reason DisputeReason `json:"reason" url:"reason"`
-	// The raw card-network or processor reason code, such as `10.4`.
+	// The raw card-network or processor reason code, such as `10.4`. Informational only — `reason` is not derived from it.
 	ReasonCode *string `json:"reason_code,omitempty" url:"reason_code,omitempty"`
 	// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
 	Status DisputeStatus `json:"status" url:"status"`
@@ -437,6 +439,13 @@ func (d *Dispute) GetIssuerComments() []*DisputeIssuerComment {
 		return nil
 	}
 	return d.IssuerComments
+}
+
+func (d *Dispute) GetLineItems() []*ReceiptLineItem {
+	if d == nil {
+		return nil
+	}
+	return d.LineItems
 }
 
 func (d *Dispute) GetPayment() *DisputePayment {
@@ -605,6 +614,13 @@ func (d *Dispute) SetInquiry(inquiry bool) {
 func (d *Dispute) SetIssuerComments(issuerComments []*DisputeIssuerComment) {
 	d.IssuerComments = issuerComments
 	d.require(disputeFieldIssuerComments)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Dispute) SetLineItems(lineItems []*ReceiptLineItem) {
+	d.LineItems = lineItems
+	d.require(disputeFieldLineItems)
 }
 
 // SetPayment sets the Payment field and marks it as non-optional;
@@ -2132,7 +2148,7 @@ func (d *DisputePayment) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// Why the customer says they are disputing, normalized across card networks. `other` covers a code Whop has not categorized yet — read `reason_code` for the raw value.
+// Why the customer says they are disputing, normalized across processors and card networks. `other` covers a processor reason Whop has not categorized yet.
 type DisputeReason string
 
 const (

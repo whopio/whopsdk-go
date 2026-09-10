@@ -1093,8 +1093,8 @@ type ResolutionCenterCase struct {
 	// Whether Whop is involved — either reviewing the case, or waiting on the side named by `status` for something it asked for while reviewing.
 	Escalated bool `json:"escalated" url:"escalated"`
 	// Resolution center case ID, prefixed `reso_`.
-	ID        string                `json:"id" url:"id"`
-	LineItems []*ResolutionLineItem `json:"line_items" url:"line_items"`
+	ID        string             `json:"id" url:"id"`
+	LineItems []*ReceiptLineItem `json:"line_items" url:"line_items"`
 	// Who prevailed on the claim. `null` until the case closes. Read `refund` for whether any money actually moved.
 	Outcome *ResolutionCenterCaseOutcome `json:"outcome,omitempty" url:"outcome,omitempty"`
 	// The payment the case was opened against.
@@ -1184,7 +1184,7 @@ func (r *ResolutionCenterCase) GetID() string {
 	return r.ID
 }
 
-func (r *ResolutionCenterCase) GetLineItems() []*ResolutionLineItem {
+func (r *ResolutionCenterCase) GetLineItems() []*ReceiptLineItem {
 	if r == nil {
 		return nil
 	}
@@ -1333,7 +1333,7 @@ func (r *ResolutionCenterCase) SetID(id string) {
 
 // SetLineItems sets the LineItems field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ResolutionCenterCase) SetLineItems(lineItems []*ResolutionLineItem) {
+func (r *ResolutionCenterCase) SetLineItems(lineItems []*ReceiptLineItem) {
 	r.LineItems = lineItems
 	r.require(resolutionCenterCaseFieldLineItems)
 }
@@ -1871,159 +1871,6 @@ func NewResolutionEventReporterTypeFromString(s string) (ResolutionEventReporter
 
 func (r ResolutionEventReporterType) Ptr() *ResolutionEventReporterType {
 	return &r
-}
-
-var (
-	resolutionLineItemFieldID        = big.NewInt(1 << 0)
-	resolutionLineItemFieldLabel     = big.NewInt(1 << 1)
-	resolutionLineItemFieldPlanID    = big.NewInt(1 << 2)
-	resolutionLineItemFieldProductID = big.NewInt(1 << 3)
-	resolutionLineItemFieldQuantity  = big.NewInt(1 << 4)
-)
-
-type ResolutionLineItem struct {
-	// Line item ID, prefixed `li_`. Null when the payment predates item snapshots and the item is read from the payment's plan.
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// The item's name as shown at checkout — the product title, else the plan title.
-	Label *string `json:"label,omitempty" url:"label,omitempty"`
-	// The plan bought, prefixed `plan_`. Null when the plan has since been deleted.
-	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
-	// The product the plan belongs to, prefixed `prod_`. On a payment that predates item snapshots this falls back to the plan's product, so it can be set where the case's own `product_id` is null. Null for a plan with no product.
-	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
-	// How many units were bought.
-	Quantity float64 `json:"quantity" url:"quantity"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *ResolutionLineItem) GetID() *string {
-	if r == nil {
-		return nil
-	}
-	return r.ID
-}
-
-func (r *ResolutionLineItem) GetLabel() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Label
-}
-
-func (r *ResolutionLineItem) GetPlanID() *string {
-	if r == nil {
-		return nil
-	}
-	return r.PlanID
-}
-
-func (r *ResolutionLineItem) GetProductID() *string {
-	if r == nil {
-		return nil
-	}
-	return r.ProductID
-}
-
-func (r *ResolutionLineItem) GetQuantity() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.Quantity
-}
-
-func (r *ResolutionLineItem) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *ResolutionLineItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ResolutionLineItem) SetID(id *string) {
-	r.ID = id
-	r.require(resolutionLineItemFieldID)
-}
-
-// SetLabel sets the Label field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ResolutionLineItem) SetLabel(label *string) {
-	r.Label = label
-	r.require(resolutionLineItemFieldLabel)
-}
-
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ResolutionLineItem) SetPlanID(planID *string) {
-	r.PlanID = planID
-	r.require(resolutionLineItemFieldPlanID)
-}
-
-// SetProductID sets the ProductID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ResolutionLineItem) SetProductID(productID *string) {
-	r.ProductID = productID
-	r.require(resolutionLineItemFieldProductID)
-}
-
-// SetQuantity sets the Quantity field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ResolutionLineItem) SetQuantity(quantity float64) {
-	r.Quantity = quantity
-	r.require(resolutionLineItemFieldQuantity)
-}
-
-func (r *ResolutionLineItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler ResolutionLineItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = ResolutionLineItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *ResolutionLineItem) MarshalJSON() ([]byte, error) {
-	type embed ResolutionLineItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *ResolutionLineItem) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
 }
 
 var (

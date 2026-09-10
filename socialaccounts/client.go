@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-06"
+		apiVersionDateDefault := "2026-09-09"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -111,7 +111,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates or returns a Whop-managed Facebook page for an account.
+// Creates or returns a Whop-managed Facebook page or TikTok account for an account.
 //
 // Example:
 //

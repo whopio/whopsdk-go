@@ -36,6 +36,7 @@ import (
 	disputes "github.com/whopio/whopsdk-go/disputes"
 	dmchannels "github.com/whopio/whopsdk-go/dmchannels"
 	dmmembers "github.com/whopio/whopsdk-go/dmmembers"
+	domains "github.com/whopio/whopsdk-go/domains"
 	entries "github.com/whopio/whopsdk-go/entries"
 	events "github.com/whopio/whopsdk-go/events"
 	experiences "github.com/whopio/whopsdk-go/experiences"
@@ -121,6 +122,7 @@ type Whop struct {
 	Disputes                 *disputes.Client
 	DmChannels               *dmchannels.Client
 	DmMembers                *dmmembers.Client
+	Domains                  *domains.Client
 	Entries                  *entries.Client
 	Events                   *events.Client
 	Experiences              *experiences.Client
@@ -178,7 +180,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-06"
+		apiVersionDateDefault := "2026-09-09"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -214,6 +216,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Disputes:                 disputes.NewClient(options),
 		DmChannels:               dmchannels.NewClient(options),
 		DmMembers:                dmmembers.NewClient(options),
+		Domains:                  domains.NewClient(options),
 		Entries:                  entries.NewClient(options),
 		Events:                   events.NewClient(options),
 		Experiences:              experiences.NewClient(options),

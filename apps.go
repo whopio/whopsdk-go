@@ -122,7 +122,7 @@ var (
 )
 
 type DeleteAppsRequest struct {
-	// App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+	// App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -457,7 +457,7 @@ var (
 )
 
 type RetrieveAppsRequest struct {
-	// App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+	// App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -494,30 +494,31 @@ var (
 	appFieldDescription               = big.NewInt(1 << 12)
 	appFieldDiscoverPath              = big.NewInt(1 << 13)
 	appFieldDomainID                  = big.NewInt(1 << 14)
-	appFieldElementsUsed              = big.NewInt(1 << 15)
-	appFieldExperiencePath            = big.NewInt(1 << 16)
-	appFieldHostedURL                 = big.NewInt(1 << 17)
-	appFieldIcon                      = big.NewInt(1 << 18)
-	appFieldID                        = big.NewInt(1 << 19)
-	appFieldMarketplaceStatus         = big.NewInt(1 << 20)
-	appFieldName                      = big.NewInt(1 << 21)
-	appFieldOauthClientType           = big.NewInt(1 << 22)
-	appFieldOpenapiPath               = big.NewInt(1 << 23)
-	appFieldOrigin                    = big.NewInt(1 << 24)
-	appFieldPreviewToken              = big.NewInt(1 << 25)
-	appFieldPreviousHostedURLs        = big.NewInt(1 << 26)
-	appFieldProductID                 = big.NewInt(1 << 27)
-	appFieldProductionAndroidBuild    = big.NewInt(1 << 28)
-	appFieldProductionIosBuild        = big.NewInt(1 << 29)
-	appFieldProductionWebBuild        = big.NewInt(1 << 30)
-	appFieldRedirectURIs              = big.NewInt(1 << 31)
-	appFieldRequestedPermissions      = big.NewInt(1 << 32)
-	appFieldRequiredScopes            = big.NewInt(1 << 33)
-	appFieldRoute                     = big.NewInt(1 << 34)
-	appFieldSecrets                   = big.NewInt(1 << 35)
-	appFieldSkillsPath                = big.NewInt(1 << 36)
-	appFieldStatus                    = big.NewInt(1 << 37)
-	appFieldVerified                  = big.NewInt(1 << 38)
+	appFieldDomains                   = big.NewInt(1 << 15)
+	appFieldElementsUsed              = big.NewInt(1 << 16)
+	appFieldExperiencePath            = big.NewInt(1 << 17)
+	appFieldHostedURL                 = big.NewInt(1 << 18)
+	appFieldIcon                      = big.NewInt(1 << 19)
+	appFieldID                        = big.NewInt(1 << 20)
+	appFieldMarketplaceStatus         = big.NewInt(1 << 21)
+	appFieldName                      = big.NewInt(1 << 22)
+	appFieldOauthClientType           = big.NewInt(1 << 23)
+	appFieldOpenapiPath               = big.NewInt(1 << 24)
+	appFieldOrigin                    = big.NewInt(1 << 25)
+	appFieldPreviewToken              = big.NewInt(1 << 26)
+	appFieldPreviousHostedURLs        = big.NewInt(1 << 27)
+	appFieldProductID                 = big.NewInt(1 << 28)
+	appFieldProductionAndroidBuild    = big.NewInt(1 << 29)
+	appFieldProductionIosBuild        = big.NewInt(1 << 30)
+	appFieldProductionWebBuild        = big.NewInt(1 << 31)
+	appFieldRedirectURIs              = big.NewInt(1 << 32)
+	appFieldRequestedPermissions      = big.NewInt(1 << 33)
+	appFieldRequiredScopes            = big.NewInt(1 << 34)
+	appFieldRoute                     = big.NewInt(1 << 35)
+	appFieldSecrets                   = big.NewInt(1 << 36)
+	appFieldSkillsPath                = big.NewInt(1 << 37)
+	appFieldStatus                    = big.NewInt(1 << 38)
+	appFieldVerified                  = big.NewInt(1 << 39)
 )
 
 type App struct {
@@ -550,6 +551,7 @@ type App struct {
 	DiscoverPath *string `json:"discover_path,omitempty" url:"discover_path,omitempty"`
 	// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
 	DomainID     string                `json:"domain_id" url:"domain_id"`
+	Domains      []*AppDomain          `json:"domains,omitempty" url:"domains,omitempty"`
 	ElementsUsed []AppElementsUsedItem `json:"elements_used" url:"elements_used"`
 	// URL path for the member-facing hub view, or `null` when not configured.
 	ExperiencePath *string `json:"experience_path,omitempty" url:"experience_path,omitempty"`
@@ -704,6 +706,13 @@ func (a *App) GetDomainID() string {
 		return ""
 	}
 	return a.DomainID
+}
+
+func (a *App) GetDomains() []*AppDomain {
+	if a == nil {
+		return nil
+	}
+	return a.Domains
 }
 
 func (a *App) GetElementsUsed() []AppElementsUsedItem {
@@ -991,6 +1000,13 @@ func (a *App) SetDiscoverPath(discoverPath *string) {
 func (a *App) SetDomainID(domainID string) {
 	a.DomainID = domainID
 	a.require(appFieldDomainID)
+}
+
+// SetDomains sets the Domains field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetDomains(domains []*AppDomain) {
+	a.Domains = domains
+	a.require(appFieldDomains)
 }
 
 // SetElementsUsed sets the ElementsUsed field and marks it as non-optional;
@@ -2039,6 +2055,160 @@ func (a AppDeploymentStatus) Ptr() *AppDeploymentStatus {
 	return &a
 }
 
+var (
+	appDomainFieldDomain = big.NewInt(1 << 0)
+	appDomainFieldID     = big.NewInt(1 << 1)
+	appDomainFieldStatus = big.NewInt(1 << 2)
+)
+
+type AppDomain struct {
+	// Normalized hostname assigned to this app.
+	Domain string `json:"domain" url:"domain"`
+	// Domain ID, prefixed `dom_`.
+	ID string `json:"id" url:"id"`
+	// Domain lifecycle status, matching the domain resource.
+	Status AppDomainStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AppDomain) GetDomain() string {
+	if a == nil {
+		return ""
+	}
+	return a.Domain
+}
+
+func (a *AppDomain) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AppDomain) GetStatus() AppDomainStatus {
+	if a == nil {
+		return ""
+	}
+	return a.Status
+}
+
+func (a *AppDomain) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AppDomain) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetDomain sets the Domain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppDomain) SetDomain(domain string) {
+	a.Domain = domain
+	a.require(appDomainFieldDomain)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppDomain) SetID(id string) {
+	a.ID = id
+	a.require(appDomainFieldID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppDomain) SetStatus(status AppDomainStatus) {
+	a.Status = status
+	a.require(appDomainFieldStatus)
+}
+
+func (a *AppDomain) UnmarshalJSON(data []byte) error {
+	type unmarshaler AppDomain
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AppDomain(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AppDomain) MarshalJSON() ([]byte, error) {
+	type embed AppDomain
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AppDomain) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Domain lifecycle status, matching the domain resource.
+type AppDomainStatus string
+
+const (
+	AppDomainStatusPendingVerification AppDomainStatus = "pending_verification"
+	AppDomainStatusProvisioning        AppDomainStatus = "provisioning"
+	AppDomainStatusActive              AppDomainStatus = "active"
+	AppDomainStatusActionRequired      AppDomainStatus = "action_required"
+	AppDomainStatusDeleting            AppDomainStatus = "deleting"
+	AppDomainStatusRemoved             AppDomainStatus = "removed"
+)
+
+func NewAppDomainStatusFromString(s string) (AppDomainStatus, error) {
+	switch s {
+	case "pending_verification":
+		return AppDomainStatusPendingVerification, nil
+	case "provisioning":
+		return AppDomainStatusProvisioning, nil
+	case "active":
+		return AppDomainStatusActive, nil
+	case "action_required":
+		return AppDomainStatusActionRequired, nil
+	case "deleting":
+		return AppDomainStatusDeleting, nil
+	case "removed":
+		return AppDomainStatusRemoved, nil
+	}
+	var t AppDomainStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AppDomainStatus) Ptr() *AppDomainStatus {
+	return &a
+}
+
 // Whop Elements the app's production web build mounts, as `<namespace>.<element>` keys (sub-controller children take a third segment, e.g. `payments.cardFields.cardNumber`). A bare namespace means the build reaches that namespace but the individual elements could not be resolved. Empty when the build mounts none, when it has not been scanned yet, or when the app has no production web build.
 type AppElementsUsedItem string
 
@@ -2258,18 +2428,19 @@ var (
 	appListItemFieldDescription               = big.NewInt(1 << 8)
 	appListItemFieldDiscoverPath              = big.NewInt(1 << 9)
 	appListItemFieldDomainID                  = big.NewInt(1 << 10)
-	appListItemFieldExperiencePath            = big.NewInt(1 << 11)
-	appListItemFieldHostedURL                 = big.NewInt(1 << 12)
-	appListItemFieldIcon                      = big.NewInt(1 << 13)
-	appListItemFieldID                        = big.NewInt(1 << 14)
-	appListItemFieldName                      = big.NewInt(1 << 15)
-	appListItemFieldOpenapiPath               = big.NewInt(1 << 16)
-	appListItemFieldOrigin                    = big.NewInt(1 << 17)
-	appListItemFieldPreviousHostedURLs        = big.NewInt(1 << 18)
-	appListItemFieldRoute                     = big.NewInt(1 << 19)
-	appListItemFieldSkillsPath                = big.NewInt(1 << 20)
-	appListItemFieldStatus                    = big.NewInt(1 << 21)
-	appListItemFieldVerified                  = big.NewInt(1 << 22)
+	appListItemFieldDomains                   = big.NewInt(1 << 11)
+	appListItemFieldExperiencePath            = big.NewInt(1 << 12)
+	appListItemFieldHostedURL                 = big.NewInt(1 << 13)
+	appListItemFieldIcon                      = big.NewInt(1 << 14)
+	appListItemFieldID                        = big.NewInt(1 << 15)
+	appListItemFieldName                      = big.NewInt(1 << 16)
+	appListItemFieldOpenapiPath               = big.NewInt(1 << 17)
+	appListItemFieldOrigin                    = big.NewInt(1 << 18)
+	appListItemFieldPreviousHostedURLs        = big.NewInt(1 << 19)
+	appListItemFieldRoute                     = big.NewInt(1 << 20)
+	appListItemFieldSkillsPath                = big.NewInt(1 << 21)
+	appListItemFieldStatus                    = big.NewInt(1 << 22)
+	appListItemFieldVerified                  = big.NewInt(1 << 23)
 )
 
 type AppListItem struct {
@@ -2293,7 +2464,8 @@ type AppListItem struct {
 	// URL path for the discover view, or `null` when not configured.
 	DiscoverPath *string `json:"discover_path,omitempty" url:"discover_path,omitempty"`
 	// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
-	DomainID string `json:"domain_id" url:"domain_id"`
+	DomainID string       `json:"domain_id" url:"domain_id"`
+	Domains  []*AppDomain `json:"domains,omitempty" url:"domains,omitempty"`
 	// URL path for the member-facing hub view, or `null` when not configured.
 	ExperiencePath *string `json:"experience_path,omitempty" url:"experience_path,omitempty"`
 	// Full URL where the app's hosted web build is served, or `null` if no route is claimed.
@@ -2400,6 +2572,13 @@ func (a *AppListItem) GetDomainID() string {
 		return ""
 	}
 	return a.DomainID
+}
+
+func (a *AppListItem) GetDomains() []*AppDomain {
+	if a == nil {
+		return nil
+	}
+	return a.Domains
 }
 
 func (a *AppListItem) GetExperiencePath() *string {
@@ -2575,6 +2754,13 @@ func (a *AppListItem) SetDiscoverPath(discoverPath *string) {
 func (a *AppListItem) SetDomainID(domainID string) {
 	a.DomainID = domainID
 	a.require(appListItemFieldDomainID)
+}
+
+// SetDomains sets the Domains field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetDomains(domains []*AppDomain) {
+	a.Domains = domains
+	a.require(appListItemFieldDomains)
 }
 
 // SetExperiencePath sets the ExperiencePath field and marks it as non-optional;
@@ -4812,7 +4998,7 @@ var (
 )
 
 type UpdateAppsRequest struct {
-	// App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+	// App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id.
 	ID string `json:"-" url:"-"`
 	// The detailed description shown on the app store's in-depth app view page.
 	AppStoreDescription *string `json:"app_store_description,omitempty" url:"-"`
