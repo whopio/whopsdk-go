@@ -715,49 +715,51 @@ var (
 	paymentFieldClientSecret               = big.NewInt(1 << 6)
 	paymentFieldCreatedAt                  = big.NewInt(1 << 7)
 	paymentFieldCurrency                   = big.NewInt(1 << 8)
-	paymentFieldCustomerPhone              = big.NewInt(1 << 9)
-	paymentFieldDeclineCode                = big.NewInt(1 << 10)
-	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 11)
-	paymentFieldFailureMessage             = big.NewInt(1 << 12)
-	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 13)
-	paymentFieldID                         = big.NewInt(1 << 14)
-	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 15)
-	paymentFieldMemberID                   = big.NewInt(1 << 16)
-	paymentFieldMembershipID               = big.NewInt(1 << 17)
-	paymentFieldMetadata                   = big.NewInt(1 << 18)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 19)
-	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 20)
-	paymentFieldPaidAt                     = big.NewInt(1 << 21)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 22)
-	paymentFieldPaymentMethodID            = big.NewInt(1 << 23)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 24)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 25)
-	paymentFieldPlanID                     = big.NewInt(1 << 26)
-	paymentFieldProductID                  = big.NewInt(1 << 27)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 28)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 29)
-	paymentFieldRefundable                 = big.NewInt(1 << 30)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 31)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 32)
-	paymentFieldRetryable                  = big.NewInt(1 << 33)
-	paymentFieldRiskScore                  = big.NewInt(1 << 34)
-	paymentFieldRiskSignals                = big.NewInt(1 << 35)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 36)
-	paymentFieldShipmentID                 = big.NewInt(1 << 37)
-	paymentFieldShippingAddress            = big.NewInt(1 << 38)
-	paymentFieldStatus                     = big.NewInt(1 << 39)
-	paymentFieldSubstatus                  = big.NewInt(1 << 40)
-	paymentFieldSubtotal                   = big.NewInt(1 << 41)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 42)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 43)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 44)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 45)
-	paymentFieldTotal                      = big.NewInt(1 << 46)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 47)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 48)
-	paymentFieldUser                       = big.NewInt(1 << 49)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 50)
-	paymentFieldVoidable                   = big.NewInt(1 << 51)
+	paymentFieldCustomerEmail              = big.NewInt(1 << 9)
+	paymentFieldCustomerPhone              = big.NewInt(1 << 10)
+	paymentFieldDeclineCode                = big.NewInt(1 << 11)
+	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 12)
+	paymentFieldFailureMessage             = big.NewInt(1 << 13)
+	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 14)
+	paymentFieldID                         = big.NewInt(1 << 15)
+	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 16)
+	paymentFieldMemberID                   = big.NewInt(1 << 17)
+	paymentFieldMembershipID               = big.NewInt(1 << 18)
+	paymentFieldMetadata                   = big.NewInt(1 << 19)
+	paymentFieldNeedsTracking              = big.NewInt(1 << 20)
+	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 21)
+	paymentFieldPaidAt                     = big.NewInt(1 << 22)
+	paymentFieldPaymentInstrument          = big.NewInt(1 << 23)
+	paymentFieldPaymentMethodID            = big.NewInt(1 << 24)
+	paymentFieldPaymentMethodType          = big.NewInt(1 << 25)
+	paymentFieldPaymentsFailed             = big.NewInt(1 << 26)
+	paymentFieldPlanID                     = big.NewInt(1 << 27)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 28)
+	paymentFieldProductID                  = big.NewInt(1 << 29)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 30)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 31)
+	paymentFieldRefundable                 = big.NewInt(1 << 32)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 33)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 34)
+	paymentFieldRetryable                  = big.NewInt(1 << 35)
+	paymentFieldRiskScore                  = big.NewInt(1 << 36)
+	paymentFieldRiskSignals                = big.NewInt(1 << 37)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 38)
+	paymentFieldShipmentID                 = big.NewInt(1 << 39)
+	paymentFieldShippingAddress            = big.NewInt(1 << 40)
+	paymentFieldStatus                     = big.NewInt(1 << 41)
+	paymentFieldSubstatus                  = big.NewInt(1 << 42)
+	paymentFieldSubtotal                   = big.NewInt(1 << 43)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 44)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 45)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 46)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 47)
+	paymentFieldTotal                      = big.NewInt(1 << 48)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 49)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 50)
+	paymentFieldUser                       = big.NewInt(1 << 51)
+	paymentFieldVerificationChecks         = big.NewInt(1 << 52)
+	paymentFieldVoidable                   = big.NewInt(1 << 53)
 )
 
 type Payment struct {
@@ -779,6 +781,8 @@ type Payment struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// The currency the payment settles in, lowercase ISO 4217. Every money field below is stated in it unless it says otherwise.
 	Currency Currencies `json:"currency" url:"currency"`
+	// The buyer's email address. Null without `member:email:read` on the account or when the buyer has no assigned email.
+	CustomerEmail *string `json:"customer_email,omitempty" url:"customer_email,omitempty"`
 	// The phone number the buyer gave at checkout, when one was collected.
 	CustomerPhone *string `json:"customer_phone,omitempty" url:"customer_phone,omitempty"`
 	// The normalized decline reason of the most recent failed attempt, or null.
@@ -815,6 +819,8 @@ type Payment struct {
 	PaymentsFailed float64 `json:"payments_failed" url:"payments_failed"`
 	// The plan that was charged, prefixed `plan_`.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
+	// The account-facing total in the currency presented to the buyer, before conversion into the settlement currency. Excludes buyer fees.
+	PresentmentTotal *Money `json:"presentment_total,omitempty" url:"presentment_total,omitempty"`
 	// The product the plan belongs to, prefixed `prod_`. Null for a plan with no product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The promo code applied at checkout, prefixed `promo_`, or null.
@@ -934,6 +940,13 @@ func (p *Payment) GetCurrency() Currencies {
 		return ""
 	}
 	return p.Currency
+}
+
+func (p *Payment) GetCustomerEmail() *string {
+	if p == nil {
+		return nil
+	}
+	return p.CustomerEmail
 }
 
 func (p *Payment) GetCustomerPhone() *string {
@@ -1060,6 +1073,13 @@ func (p *Payment) GetPlanID() *string {
 		return nil
 	}
 	return p.PlanID
+}
+
+func (p *Payment) GetPresentmentTotal() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.PresentmentTotal
 }
 
 func (p *Payment) GetProductID() *string {
@@ -1314,6 +1334,13 @@ func (p *Payment) SetCurrency(currency Currencies) {
 	p.require(paymentFieldCurrency)
 }
 
+// SetCustomerEmail sets the CustomerEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetCustomerEmail(customerEmail *string) {
+	p.CustomerEmail = customerEmail
+	p.require(paymentFieldCustomerEmail)
+}
+
 // SetCustomerPhone sets the CustomerPhone field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Payment) SetCustomerPhone(customerPhone *string) {
@@ -1438,6 +1465,13 @@ func (p *Payment) SetPaymentsFailed(paymentsFailed float64) {
 func (p *Payment) SetPlanID(planID *string) {
 	p.PlanID = planID
 	p.require(paymentFieldPlanID)
+}
+
+// SetPresentmentTotal sets the PresentmentTotal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetPresentmentTotal(presentmentTotal *Money) {
+	p.PresentmentTotal = presentmentTotal
+	p.require(paymentFieldPresentmentTotal)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
