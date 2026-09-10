@@ -114,7 +114,6 @@ func TestPaymentsCreateWithWireMock(
 	)
 	request := &whopsdk.CreatePaymentsRequest{
 		AccountID: "biz_xxxxxxxxxxxxxx",
-		PlanID:    "plan_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Payments.Create(
 		context.TODO(),
