@@ -611,6 +611,7 @@ const (
 	FeeMarkupTypesTransferMarkup                FeeMarkupTypes = "transfer_markup"
 	FeeMarkupTypesCryptoDepositMarkup           FeeMarkupTypes = "crypto_deposit_markup"
 	FeeMarkupTypesBankDepositMarkup             FeeMarkupTypes = "bank_deposit_markup"
+	FeeMarkupTypesCryptoSwapMarkup              FeeMarkupTypes = "crypto_swap_markup"
 )
 
 func NewFeeMarkupTypesFromString(s string) (FeeMarkupTypes, error) {
@@ -631,6 +632,8 @@ func NewFeeMarkupTypesFromString(s string) (FeeMarkupTypes, error) {
 		return FeeMarkupTypesCryptoDepositMarkup, nil
 	case "bank_deposit_markup":
 		return FeeMarkupTypesBankDepositMarkup, nil
+	case "crypto_swap_markup":
+		return FeeMarkupTypesCryptoSwapMarkup, nil
 	}
 	var t FeeMarkupTypes
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
