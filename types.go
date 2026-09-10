@@ -2187,6 +2187,7 @@ type AccountRequiredActionAction string
 
 const (
 	AccountRequiredActionActionDepositFunds                    AccountRequiredActionAction = "deposit_funds"
+	AccountRequiredActionActionAcceptAirwallexTerms            AccountRequiredActionAction = "accept_airwallex_terms"
 	AccountRequiredActionActionSubmitInformationRequest        AccountRequiredActionAction = "submit_information_request"
 	AccountRequiredActionActionUpdateAutomaticWithdrawalMethod AccountRequiredActionAction = "update_automatic_withdrawal_method"
 	AccountRequiredActionActionReauthorizePayoutMethods        AccountRequiredActionAction = "reauthorize_payout_methods"
@@ -2204,6 +2205,8 @@ func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAc
 	switch s {
 	case "deposit_funds":
 		return AccountRequiredActionActionDepositFunds, nil
+	case "accept_airwallex_terms":
+		return AccountRequiredActionActionAcceptAirwallexTerms, nil
 	case "submit_information_request":
 		return AccountRequiredActionActionSubmitInformationRequest, nil
 	case "update_automatic_withdrawal_method":
