@@ -608,6 +608,7 @@ const (
 	FeeMarkupTypesNextDayBankWithdrawalMarkup   FeeMarkupTypes = "next_day_bank_withdrawal_markup"
 	FeeMarkupTypesBankWireWithdrawalMarkup      FeeMarkupTypes = "bank_wire_withdrawal_markup"
 	FeeMarkupTypesDigitalWalletWithdrawalMarkup FeeMarkupTypes = "digital_wallet_withdrawal_markup"
+	FeeMarkupTypesTransferMarkup                FeeMarkupTypes = "transfer_markup"
 	FeeMarkupTypesCryptoDepositMarkup           FeeMarkupTypes = "crypto_deposit_markup"
 	FeeMarkupTypesBankDepositMarkup             FeeMarkupTypes = "bank_deposit_markup"
 )
@@ -624,6 +625,8 @@ func NewFeeMarkupTypesFromString(s string) (FeeMarkupTypes, error) {
 		return FeeMarkupTypesBankWireWithdrawalMarkup, nil
 	case "digital_wallet_withdrawal_markup":
 		return FeeMarkupTypesDigitalWalletWithdrawalMarkup, nil
+	case "transfer_markup":
+		return FeeMarkupTypesTransferMarkup, nil
 	case "crypto_deposit_markup":
 		return FeeMarkupTypesCryptoDepositMarkup, nil
 	case "bank_deposit_markup":
