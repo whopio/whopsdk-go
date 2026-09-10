@@ -120,6 +120,7 @@ const (
 	RetrieveBreakdownRequestBucketWithdrawals               RetrieveBreakdownRequestBucket = "withdrawals"
 	RetrieveBreakdownRequestBucketWithdrawalMarkup          RetrieveBreakdownRequestBucket = "withdrawal_markup"
 	RetrieveBreakdownRequestBucketSwaps                     RetrieveBreakdownRequestBucket = "swaps"
+	RetrieveBreakdownRequestBucketCardLoads                 RetrieveBreakdownRequestBucket = "card_loads"
 )
 
 func NewRetrieveBreakdownRequestBucketFromString(s string) (RetrieveBreakdownRequestBucket, error) {
@@ -144,6 +145,8 @@ func NewRetrieveBreakdownRequestBucketFromString(s string) (RetrieveBreakdownReq
 		return RetrieveBreakdownRequestBucketWithdrawalMarkup, nil
 	case "swaps":
 		return RetrieveBreakdownRequestBucketSwaps, nil
+	case "card_loads":
+		return RetrieveBreakdownRequestBucketCardLoads, nil
 	}
 	var t RetrieveBreakdownRequestBucket
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -515,6 +518,7 @@ const (
 	RetrieveBreakdownResponseBucketWithdrawals               RetrieveBreakdownResponseBucket = "withdrawals"
 	RetrieveBreakdownResponseBucketWithdrawalMarkup          RetrieveBreakdownResponseBucket = "withdrawal_markup"
 	RetrieveBreakdownResponseBucketSwaps                     RetrieveBreakdownResponseBucket = "swaps"
+	RetrieveBreakdownResponseBucketCardLoads                 RetrieveBreakdownResponseBucket = "card_loads"
 )
 
 func NewRetrieveBreakdownResponseBucketFromString(s string) (RetrieveBreakdownResponseBucket, error) {
@@ -539,6 +543,8 @@ func NewRetrieveBreakdownResponseBucketFromString(s string) (RetrieveBreakdownRe
 		return RetrieveBreakdownResponseBucketWithdrawalMarkup, nil
 	case "swaps":
 		return RetrieveBreakdownResponseBucketSwaps, nil
+	case "card_loads":
+		return RetrieveBreakdownResponseBucketCardLoads, nil
 	}
 	var t RetrieveBreakdownResponseBucket
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
