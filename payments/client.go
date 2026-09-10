@@ -111,13 +111,12 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Charges a buyer for a plan. Pass a payment method already on file (`member_id` and `payment_method_id`), or a `confirmation_token` describing a method the buyer just supplied. Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and, for a confirmation-token payment, what the buyer must still do. `plan_id` names the plan to charge for.
+// Charges a buyer for a plan. Pass a payment method already on file (`member_id` and `payment_method_id`), or a `confirmation_token` describing a method the buyer just supplied. Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and, for a confirmation-token payment, what the buyer must still do. Pass `plan_id` for an existing plan or `plan` to find or create one inline.
 //
 // Example:
 //
 //	request := &whopsdk.CreatePaymentsRequest{
 //	    AccountID: "biz_xxxxxxxxxxxxxx",
-//	    PlanID: "plan_xxxxxxxxxxxxxx",
 //	}
 //	client.Payments.Create(
 //	    context.TODO(),
