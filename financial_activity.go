@@ -1226,6 +1226,8 @@ const (
 	LedgerActivityLineTypePlatformBalanceTransferOutgoing           LedgerActivityLineType = "platform_balance_transfer_outgoing"
 	LedgerActivityLineTypePlatformCoveredDispute                    LedgerActivityLineType = "platform_covered_dispute"
 	LedgerActivityLineTypePlatformEarning                           LedgerActivityLineType = "platform_earning"
+	LedgerActivityLineTypePlatformMarkupFee                         LedgerActivityLineType = "platform_markup_fee"
+	LedgerActivityLineTypePlatformMarkupFeePayout                   LedgerActivityLineType = "platform_markup_fee_payout"
 	LedgerActivityLineTypePromoReversal                             LedgerActivityLineType = "promo_reversal"
 	LedgerActivityLineTypeReferralBonus                             LedgerActivityLineType = "referral_bonus"
 	LedgerActivityLineTypeResolutionCenterRefund                    LedgerActivityLineType = "resolution_center_refund"
@@ -1461,6 +1463,10 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypePlatformCoveredDispute, nil
 	case "platform_earning":
 		return LedgerActivityLineTypePlatformEarning, nil
+	case "platform_markup_fee":
+		return LedgerActivityLineTypePlatformMarkupFee, nil
+	case "platform_markup_fee_payout":
+		return LedgerActivityLineTypePlatformMarkupFeePayout, nil
 	case "promo_reversal":
 		return LedgerActivityLineTypePromoReversal, nil
 	case "referral_bonus":
@@ -4432,7 +4438,7 @@ type LedgerActivitySource struct {
 	// Lowercase currency code converted from (swap sources only).
 	FromCurrency *string `json:"from_currency,omitempty" url:"from_currency,omitempty"`
 	ID           string  `json:"id" url:"id"`
-	// Memo attached to the transfer source, or null when none was provided.
+	// Memo attached to the transfer or payout source, or null when none was provided (on payout sources requires payout:withdrawal:read).
 	Notes  *string `json:"notes,omitempty" url:"notes,omitempty"`
 	Object string  `json:"object" url:"object"`
 	// Name of the entity processing the payout (payout sources only; requires payout:withdrawal:read).
@@ -5099,6 +5105,8 @@ const (
 	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_outgoing"
 	ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute                    ListFinancialActivityRequestLineTypesItem = "platform_covered_dispute"
 	ListFinancialActivityRequestLineTypesItemPlatformEarning                           ListFinancialActivityRequestLineTypesItem = "platform_earning"
+	ListFinancialActivityRequestLineTypesItemPlatformMarkupFee                         ListFinancialActivityRequestLineTypesItem = "platform_markup_fee"
+	ListFinancialActivityRequestLineTypesItemPlatformMarkupFeePayout                   ListFinancialActivityRequestLineTypesItem = "platform_markup_fee_payout"
 	ListFinancialActivityRequestLineTypesItemPromoReversal                             ListFinancialActivityRequestLineTypesItem = "promo_reversal"
 	ListFinancialActivityRequestLineTypesItemReferralBonus                             ListFinancialActivityRequestLineTypesItem = "referral_bonus"
 	ListFinancialActivityRequestLineTypesItemResolutionCenterRefund                    ListFinancialActivityRequestLineTypesItem = "resolution_center_refund"
@@ -5331,6 +5339,10 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute, nil
 	case "platform_earning":
 		return ListFinancialActivityRequestLineTypesItemPlatformEarning, nil
+	case "platform_markup_fee":
+		return ListFinancialActivityRequestLineTypesItemPlatformMarkupFee, nil
+	case "platform_markup_fee_payout":
+		return ListFinancialActivityRequestLineTypesItemPlatformMarkupFeePayout, nil
 	case "promo_reversal":
 		return ListFinancialActivityRequestLineTypesItemPromoReversal, nil
 	case "referral_bonus":

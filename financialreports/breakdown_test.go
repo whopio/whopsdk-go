@@ -1824,6 +1824,13 @@ func TestEnumRetrieveBreakdownRequestBucket(t *testing.T) {
 		assert.Equal(t, RetrieveBreakdownRequestBucket("withdrawals"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_withdrawal_markup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestBucketFromString("withdrawal_markup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestBucket("withdrawal_markup"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_swaps", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveBreakdownRequestBucketFromString("swaps")
@@ -1994,6 +2001,13 @@ func TestEnumRetrieveBreakdownResponseBucket(t *testing.T) {
 		val, err := NewRetrieveBreakdownResponseBucketFromString("withdrawals")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveBreakdownResponseBucket("withdrawals"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdrawal_markup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseBucketFromString("withdrawal_markup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseBucket("withdrawal_markup"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_swaps", func(t *testing.T) {

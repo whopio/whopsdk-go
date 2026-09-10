@@ -4109,6 +4109,13 @@ func TestEnumCreateSocialAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, CreateSocialAccountsRequestPlatform("facebook"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_tiktok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSocialAccountsRequestPlatformFromString("tiktok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSocialAccountsRequestPlatform("tiktok"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateSocialAccountsRequestPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)

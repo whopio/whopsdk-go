@@ -1570,6 +1570,14 @@ func TestSettersProduct(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAverageReviewRating", func(t *testing.T) {
+		obj := &Product{}
+		var fernTestValueAverageReviewRating float64
+		obj.SetAverageReviewRating(fernTestValueAverageReviewRating)
+		assert.Equal(t, fernTestValueAverageReviewRating, obj.AverageReviewRating)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedAt", func(t *testing.T) {
 		obj := &Product{}
 		var fernTestValueCreatedAt string
@@ -1812,6 +1820,29 @@ func TestGettersProduct(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAccount() // Should return zero value
+	})
+
+	t.Run("GetAverageReviewRating", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Product{}
+		var expected float64
+		obj.AverageReviewRating = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAverageReviewRating(), "getter should return the property value")
+	})
+
+	t.Run("GetAverageReviewRating_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Product
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAverageReviewRating() // Should return zero value
 	})
 
 	t.Run("GetCreatedAt", func(t *testing.T) {
@@ -2593,6 +2624,37 @@ func TestSettersMarkExplicitProduct(t *testing.T) {
 
 		// Act
 		obj.SetAccount(fernTestValueAccount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAverageReviewRating_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Product{}
+		var fernTestValueAverageReviewRating float64
+
+		// Act
+		obj.SetAverageReviewRating(fernTestValueAverageReviewRating)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3648,6 +3710,14 @@ func TestSettersProductListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAverageReviewRating", func(t *testing.T) {
+		obj := &ProductListItem{}
+		var fernTestValueAverageReviewRating float64
+		obj.SetAverageReviewRating(fernTestValueAverageReviewRating)
+		assert.Equal(t, fernTestValueAverageReviewRating, obj.AverageReviewRating)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedAt", func(t *testing.T) {
 		obj := &ProductListItem{}
 		var fernTestValueCreatedAt string
@@ -3810,6 +3880,29 @@ func TestGettersProductListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAccount() // Should return zero value
+	})
+
+	t.Run("GetAverageReviewRating", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ProductListItem{}
+		var expected float64
+		obj.AverageReviewRating = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAverageReviewRating(), "getter should return the property value")
+	})
+
+	t.Run("GetAverageReviewRating_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ProductListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAverageReviewRating() // Should return zero value
 	})
 
 	t.Run("GetCreatedAt", func(t *testing.T) {
@@ -4271,6 +4364,37 @@ func TestSettersMarkExplicitProductListItem(t *testing.T) {
 
 		// Act
 		obj.SetAccount(fernTestValueAccount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAverageReviewRating_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ProductListItem{}
+		var fernTestValueAverageReviewRating float64
+
+		// Act
+		obj.SetAverageReviewRating(fernTestValueAverageReviewRating)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

@@ -42,7 +42,8 @@ var (
 	retrievePreferencesResponseFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
 	retrievePreferencesResponseFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
 	retrievePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	retrievePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldCardsNotifications        = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
 )
 
 type RetrievePreferencesResponse struct {
@@ -58,6 +59,8 @@ type RetrievePreferencesResponse struct {
 	AdsTripleWhaleIntegration *RetrievePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
+	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
+	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 
@@ -108,6 +111,13 @@ func (r *RetrievePreferencesResponse) GetCardsAutoTopUp() bool {
 		return false
 	}
 	return r.CardsAutoTopUp
+}
+
+func (r *RetrievePreferencesResponse) GetCardsNotifications() bool {
+	if r == nil {
+		return false
+	}
+	return r.CardsNotifications
 }
 
 func (r *RetrievePreferencesResponse) GetDisputeFighterEnabled() bool {
@@ -171,6 +181,13 @@ func (r *RetrievePreferencesResponse) SetAdsTripleWhaleIntegration(adsTripleWhal
 func (r *RetrievePreferencesResponse) SetCardsAutoTopUp(cardsAutoTopUp bool) {
 	r.CardsAutoTopUp = cardsAutoTopUp
 	r.require(retrievePreferencesResponseFieldCardsAutoTopUp)
+}
+
+// SetCardsNotifications sets the CardsNotifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetCardsNotifications(cardsNotifications bool) {
+	r.CardsNotifications = cardsNotifications
+	r.require(retrievePreferencesResponseFieldCardsNotifications)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
@@ -1532,7 +1549,8 @@ var (
 	updatePreferencesResponseFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
 	updatePreferencesResponseFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
 	updatePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	updatePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldCardsNotifications        = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
 )
 
 type UpdatePreferencesResponse struct {
@@ -1548,6 +1566,8 @@ type UpdatePreferencesResponse struct {
 	AdsTripleWhaleIntegration *UpdatePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
+	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
+	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 
@@ -1598,6 +1618,13 @@ func (u *UpdatePreferencesResponse) GetCardsAutoTopUp() bool {
 		return false
 	}
 	return u.CardsAutoTopUp
+}
+
+func (u *UpdatePreferencesResponse) GetCardsNotifications() bool {
+	if u == nil {
+		return false
+	}
+	return u.CardsNotifications
 }
 
 func (u *UpdatePreferencesResponse) GetDisputeFighterEnabled() bool {
@@ -1661,6 +1688,13 @@ func (u *UpdatePreferencesResponse) SetAdsTripleWhaleIntegration(adsTripleWhaleI
 func (u *UpdatePreferencesResponse) SetCardsAutoTopUp(cardsAutoTopUp bool) {
 	u.CardsAutoTopUp = cardsAutoTopUp
 	u.require(updatePreferencesResponseFieldCardsAutoTopUp)
+}
+
+// SetCardsNotifications sets the CardsNotifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetCardsNotifications(cardsNotifications bool) {
+	u.CardsNotifications = cardsNotifications
+	u.require(updatePreferencesResponseFieldCardsNotifications)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
@@ -2583,7 +2617,8 @@ var (
 	updatePreferencesRequestFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
 	updatePreferencesRequestFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
 	updatePreferencesRequestFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldDisputeFighterEnabled     = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCardsNotifications        = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
 )
 
 type UpdatePreferencesRequest struct {
@@ -2599,6 +2634,8 @@ type UpdatePreferencesRequest struct {
 	AdsTripleWhaleIntegration *UpdatePreferencesRequestAdsTripleWhaleIntegration `json:"ads_triple_whale_integration,omitempty" url:"-"`
 	// Whether incoming funds are automatically moved to the account's cards balance. Requires a cards balance on the account.
 	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
+	// Whether Whop Card notifications reach this account's team. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected. Requires a cards balance on the account.
+	CardsNotifications *bool `json:"cards_notifications,omitempty" url:"-"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
 
@@ -2653,6 +2690,13 @@ func (u *UpdatePreferencesRequest) SetAdsTripleWhaleIntegration(adsTripleWhaleIn
 func (u *UpdatePreferencesRequest) SetCardsAutoTopUp(cardsAutoTopUp *bool) {
 	u.CardsAutoTopUp = cardsAutoTopUp
 	u.require(updatePreferencesRequestFieldCardsAutoTopUp)
+}
+
+// SetCardsNotifications sets the CardsNotifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetCardsNotifications(cardsNotifications *bool) {
+	u.CardsNotifications = cardsNotifications
+	u.require(updatePreferencesRequestFieldCardsNotifications)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;

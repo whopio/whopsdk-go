@@ -94,7 +94,7 @@ var (
 type CreateSocialAccountsRequest struct {
 	// The Account (biz_ identifier) to create the social account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account).
+	// The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
 	Platform CreateSocialAccountsRequestPlatform `json:"platform" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1202,17 +1202,20 @@ func (c *ConnectSocialAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account).
+// The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
 type CreateSocialAccountsRequestPlatform string
 
 const (
 	CreateSocialAccountsRequestPlatformFacebook CreateSocialAccountsRequestPlatform = "facebook"
+	CreateSocialAccountsRequestPlatformTiktok   CreateSocialAccountsRequestPlatform = "tiktok"
 )
 
 func NewCreateSocialAccountsRequestPlatformFromString(s string) (CreateSocialAccountsRequestPlatform, error) {
 	switch s {
 	case "facebook":
 		return CreateSocialAccountsRequestPlatformFacebook, nil
+	case "tiktok":
+		return CreateSocialAccountsRequestPlatformTiktok, nil
 	}
 	var t CreateSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

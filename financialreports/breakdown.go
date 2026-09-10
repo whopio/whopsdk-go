@@ -118,6 +118,7 @@ const (
 	RetrieveBreakdownRequestBucketCardSpend                 RetrieveBreakdownRequestBucket = "card_spend"
 	RetrieveBreakdownRequestBucketCardAuthorizationReleases RetrieveBreakdownRequestBucket = "card_authorization_releases"
 	RetrieveBreakdownRequestBucketWithdrawals               RetrieveBreakdownRequestBucket = "withdrawals"
+	RetrieveBreakdownRequestBucketWithdrawalMarkup          RetrieveBreakdownRequestBucket = "withdrawal_markup"
 	RetrieveBreakdownRequestBucketSwaps                     RetrieveBreakdownRequestBucket = "swaps"
 )
 
@@ -139,6 +140,8 @@ func NewRetrieveBreakdownRequestBucketFromString(s string) (RetrieveBreakdownReq
 		return RetrieveBreakdownRequestBucketCardAuthorizationReleases, nil
 	case "withdrawals":
 		return RetrieveBreakdownRequestBucketWithdrawals, nil
+	case "withdrawal_markup":
+		return RetrieveBreakdownRequestBucketWithdrawalMarkup, nil
 	case "swaps":
 		return RetrieveBreakdownRequestBucketSwaps, nil
 	}
@@ -510,6 +513,7 @@ const (
 	RetrieveBreakdownResponseBucketCardSpend                 RetrieveBreakdownResponseBucket = "card_spend"
 	RetrieveBreakdownResponseBucketCardAuthorizationReleases RetrieveBreakdownResponseBucket = "card_authorization_releases"
 	RetrieveBreakdownResponseBucketWithdrawals               RetrieveBreakdownResponseBucket = "withdrawals"
+	RetrieveBreakdownResponseBucketWithdrawalMarkup          RetrieveBreakdownResponseBucket = "withdrawal_markup"
 	RetrieveBreakdownResponseBucketSwaps                     RetrieveBreakdownResponseBucket = "swaps"
 )
 
@@ -531,6 +535,8 @@ func NewRetrieveBreakdownResponseBucketFromString(s string) (RetrieveBreakdownRe
 		return RetrieveBreakdownResponseBucketCardAuthorizationReleases, nil
 	case "withdrawals":
 		return RetrieveBreakdownResponseBucketWithdrawals, nil
+	case "withdrawal_markup":
+		return RetrieveBreakdownResponseBucketWithdrawalMarkup, nil
 	case "swaps":
 		return RetrieveBreakdownResponseBucketSwaps, nil
 	}

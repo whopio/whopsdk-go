@@ -305,6 +305,8 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferOutgoing           RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_transfer_outgoing"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformCoveredDispute                    RetrieveFinancialReportsRequestLineTypesItem = "platform_covered_dispute"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformEarning                           RetrieveFinancialReportsRequestLineTypesItem = "platform_earning"
+	RetrieveFinancialReportsRequestLineTypesItemPlatformMarkupFee                         RetrieveFinancialReportsRequestLineTypesItem = "platform_markup_fee"
+	RetrieveFinancialReportsRequestLineTypesItemPlatformMarkupFeePayout                   RetrieveFinancialReportsRequestLineTypesItem = "platform_markup_fee_payout"
 	RetrieveFinancialReportsRequestLineTypesItemPromoReversal                             RetrieveFinancialReportsRequestLineTypesItem = "promo_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemReferralBonus                             RetrieveFinancialReportsRequestLineTypesItem = "referral_bonus"
 	RetrieveFinancialReportsRequestLineTypesItemResolutionCenterRefund                    RetrieveFinancialReportsRequestLineTypesItem = "resolution_center_refund"
@@ -537,6 +539,10 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformCoveredDispute, nil
 	case "platform_earning":
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformEarning, nil
+	case "platform_markup_fee":
+		return RetrieveFinancialReportsRequestLineTypesItemPlatformMarkupFee, nil
+	case "platform_markup_fee_payout":
+		return RetrieveFinancialReportsRequestLineTypesItemPlatformMarkupFeePayout, nil
 	case "promo_reversal":
 		return RetrieveFinancialReportsRequestLineTypesItemPromoReversal, nil
 	case "referral_bonus":
@@ -1512,6 +1518,8 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarning                           RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_earning"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningSettlement                 RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_earning_settlement"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningUnreconciledClearing       RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_earning_unreconciled_clearing"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFee                         RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_markup_fee"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFeePayout                   RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_markup_fee_payout"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPromoReversal                             RetrieveFinancialReportsResponseRowsItemLineCategory = "promo_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspAcceleratedSettlementFee               RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_accelerated_settlement_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspAccountDebit                           RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_account_debit"
@@ -1966,6 +1974,10 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningSettlement, nil
 	case "platform_earning_unreconciled_clearing":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningUnreconciledClearing, nil
+	case "platform_markup_fee":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFee, nil
+	case "platform_markup_fee_payout":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFeePayout, nil
 	case "promo_reversal":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPromoReversal, nil
 	case "psp_accelerated_settlement_fee":

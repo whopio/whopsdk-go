@@ -10644,6 +10644,13 @@ func TestEnumListMethodsResponseLimitsStandardErrorCode(t *testing.T) {
 		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("supportability_check_payout_status_hold"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_card_usage_review_payout_status_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("card_usage_review_payout_status_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("card_usage_review_payout_status_hold"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_kyc_completed", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("kyc_completed")
@@ -10684,13 +10691,6 @@ func TestEnumListMethodsResponseLimitsStandardErrorCode(t *testing.T) {
 		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("block_move_money_out_set_by_parent")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("block_move_money_out_set_by_parent"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_card_usage_review_payout_status_hold", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("card_usage_review_payout_status_hold")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("card_usage_review_payout_status_hold"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_no_available_balance", func(t *testing.T) {

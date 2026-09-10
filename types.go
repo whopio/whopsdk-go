@@ -1075,7 +1075,8 @@ var (
 	accountPreferencesFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
 	accountPreferencesFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
 	accountPreferencesFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	accountPreferencesFieldDisputeFighterEnabled     = big.NewInt(1 << 6)
+	accountPreferencesFieldCardsNotifications        = big.NewInt(1 << 6)
+	accountPreferencesFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
 )
 
 type AccountPreferences struct {
@@ -1091,6 +1092,8 @@ type AccountPreferences struct {
 	AdsTripleWhaleIntegration map[string]any `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
+	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
+	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 
@@ -1141,6 +1144,13 @@ func (a *AccountPreferences) GetCardsAutoTopUp() bool {
 		return false
 	}
 	return a.CardsAutoTopUp
+}
+
+func (a *AccountPreferences) GetCardsNotifications() bool {
+	if a == nil {
+		return false
+	}
+	return a.CardsNotifications
 }
 
 func (a *AccountPreferences) GetDisputeFighterEnabled() bool {
@@ -1204,6 +1214,13 @@ func (a *AccountPreferences) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegrat
 func (a *AccountPreferences) SetCardsAutoTopUp(cardsAutoTopUp bool) {
 	a.CardsAutoTopUp = cardsAutoTopUp
 	a.require(accountPreferencesFieldCardsAutoTopUp)
+}
+
+// SetCardsNotifications sets the CardsNotifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetCardsNotifications(cardsNotifications bool) {
+	a.CardsNotifications = cardsNotifications
+	a.require(accountPreferencesFieldCardsNotifications)
 }
 
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
@@ -20545,7 +20562,7 @@ var (
 )
 
 type PaymentInstrument struct {
-	// Card payments only: the card's network and last four.
+	// Card payments only: the card's network, last four, and issuer identification number.
 	Card *PaymentInstrumentCard `json:"card,omitempty" url:"card,omitempty"`
 	// Buyer-facing instrument name — "Visa •••• 4242" when the card surfaced, else the method's own name ("Klarna").
 	DisplayName string `json:"display_name" url:"display_name"`
@@ -20690,13 +20707,16 @@ func (p *PaymentInstrument) String() string {
 }
 
 var (
-	paymentInstrumentCardFieldBrand = big.NewInt(1 << 0)
-	paymentInstrumentCardFieldLast4 = big.NewInt(1 << 1)
+	paymentInstrumentCardFieldBrand                      = big.NewInt(1 << 0)
+	paymentInstrumentCardFieldIssuerIdentificationNumber = big.NewInt(1 << 1)
+	paymentInstrumentCardFieldLast4                      = big.NewInt(1 << 2)
 )
 
 type PaymentInstrumentCard struct {
 	// The network identifier (`visa`, `amex`, …), matching `card.networks` entries and saved card payment methods.
 	Brand string `json:"brand" url:"brand"`
+	// The issuer identification number, also called the BIN: the card's leading six or eight digits, which identify the issuing bank. Null when the processor did not report it.
+	IssuerIdentificationNumber *string `json:"issuer_identification_number,omitempty" url:"issuer_identification_number,omitempty"`
 	// The card's last four digits, when captured.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 
@@ -20712,6 +20732,13 @@ func (p *PaymentInstrumentCard) GetBrand() string {
 		return ""
 	}
 	return p.Brand
+}
+
+func (p *PaymentInstrumentCard) GetIssuerIdentificationNumber() *string {
+	if p == nil {
+		return nil
+	}
+	return p.IssuerIdentificationNumber
 }
 
 func (p *PaymentInstrumentCard) GetLast4() *string {
@@ -20740,6 +20767,13 @@ func (p *PaymentInstrumentCard) require(field *big.Int) {
 func (p *PaymentInstrumentCard) SetBrand(brand string) {
 	p.Brand = brand
 	p.require(paymentInstrumentCardFieldBrand)
+}
+
+// SetIssuerIdentificationNumber sets the IssuerIdentificationNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInstrumentCard) SetIssuerIdentificationNumber(issuerIdentificationNumber *string) {
+	p.IssuerIdentificationNumber = issuerIdentificationNumber
+	p.require(paymentInstrumentCardFieldIssuerIdentificationNumber)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
@@ -33803,6 +33837,210 @@ func (p PublicBountySubmissionStatus) Ptr() *PublicBountySubmissionStatus {
 	return &p
 }
 
+var (
+	receiptLineItemFieldID           = big.NewInt(1 << 0)
+	receiptLineItemFieldLabel        = big.NewInt(1 << 1)
+	receiptLineItemFieldPlanID       = big.NewInt(1 << 2)
+	receiptLineItemFieldPlanTitle    = big.NewInt(1 << 3)
+	receiptLineItemFieldProductID    = big.NewInt(1 << 4)
+	receiptLineItemFieldProductTitle = big.NewInt(1 << 5)
+	receiptLineItemFieldQuantity     = big.NewInt(1 << 6)
+	receiptLineItemFieldSubtotal     = big.NewInt(1 << 7)
+)
+
+type ReceiptLineItem struct {
+	// Line item ID, prefixed `li_`. Null when the payment predates item snapshots and the item is read from the payment's plan.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// The item's name as shown at checkout — the product title, else the plan title.
+	Label *string `json:"label,omitempty" url:"label,omitempty"`
+	// The plan bought, prefixed `plan_`. Null when the plan has since been deleted.
+	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
+	// The plan's current title, or `null` when the plan has been deleted or has no title.
+	PlanTitle *string `json:"plan_title,omitempty" url:"plan_title,omitempty"`
+	// The product the plan belongs to, prefixed `prod_`. On a payment that predates item snapshots this falls back to the plan's product, so it can be set where the parent's own `product_id` is null. Null for a plan with no product.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// The product's current title, or `null` when the item has no product.
+	ProductTitle *string `json:"product_title,omitempty" url:"product_title,omitempty"`
+	// How many units were bought.
+	Quantity float64 `json:"quantity" url:"quantity"`
+	// The recorded amount for this item's full quantity, before discounts, tax, and fees, in its purchase currency. This is not the amount being contested. Returns `null` when no item amount was recorded.
+	Subtotal *Money `json:"subtotal,omitempty" url:"subtotal,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ReceiptLineItem) GetID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.ID
+}
+
+func (r *ReceiptLineItem) GetLabel() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Label
+}
+
+func (r *ReceiptLineItem) GetPlanID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.PlanID
+}
+
+func (r *ReceiptLineItem) GetPlanTitle() *string {
+	if r == nil {
+		return nil
+	}
+	return r.PlanTitle
+}
+
+func (r *ReceiptLineItem) GetProductID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.ProductID
+}
+
+func (r *ReceiptLineItem) GetProductTitle() *string {
+	if r == nil {
+		return nil
+	}
+	return r.ProductTitle
+}
+
+func (r *ReceiptLineItem) GetQuantity() float64 {
+	if r == nil {
+		return 0
+	}
+	return r.Quantity
+}
+
+func (r *ReceiptLineItem) GetSubtotal() *Money {
+	if r == nil {
+		return nil
+	}
+	return r.Subtotal
+}
+
+func (r *ReceiptLineItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ReceiptLineItem) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetID(id *string) {
+	r.ID = id
+	r.require(receiptLineItemFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetLabel(label *string) {
+	r.Label = label
+	r.require(receiptLineItemFieldLabel)
+}
+
+// SetPlanID sets the PlanID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetPlanID(planID *string) {
+	r.PlanID = planID
+	r.require(receiptLineItemFieldPlanID)
+}
+
+// SetPlanTitle sets the PlanTitle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetPlanTitle(planTitle *string) {
+	r.PlanTitle = planTitle
+	r.require(receiptLineItemFieldPlanTitle)
+}
+
+// SetProductID sets the ProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetProductID(productID *string) {
+	r.ProductID = productID
+	r.require(receiptLineItemFieldProductID)
+}
+
+// SetProductTitle sets the ProductTitle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetProductTitle(productTitle *string) {
+	r.ProductTitle = productTitle
+	r.require(receiptLineItemFieldProductTitle)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetQuantity(quantity float64) {
+	r.Quantity = quantity
+	r.require(receiptLineItemFieldQuantity)
+}
+
+// SetSubtotal sets the Subtotal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetSubtotal(subtotal *Money) {
+	r.Subtotal = subtotal
+	r.require(receiptLineItemFieldSubtotal)
+}
+
+func (r *ReceiptLineItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReceiptLineItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ReceiptLineItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ReceiptLineItem) MarshalJSON() ([]byte, error) {
+	type embed ReceiptLineItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ReceiptLineItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
 // The status of a receipt
 type ReceiptStatus string
 
@@ -38375,9 +38613,9 @@ type SocialAccount struct {
 	// The URL where the profile picture of the social account can be accessed.
 	ProfilePictureURL *string  `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
 	Scopes            []string `json:"scopes" url:"scopes"`
-	// The URL where the social account can be accessed on the platform. Null while a Whop-owned page is still being provisioned.
+	// The URL where the social account can be accessed on the platform. Null while a Whop-owned account is still being provisioned.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// The username of the social account on the platform. Null while a Whop-owned page is still being provisioned.
+	// The username of the social account on the platform. Null while a Whop-owned account is still being provisioned.
 	Username *string `json:"username,omitempty" url:"username,omitempty"`
 	// Whether the social account is verified on the platform.
 	Verified bool `json:"verified" url:"verified"`
@@ -41072,6 +41310,8 @@ type WebhookEvent string
 
 const (
 	WebhookEventAccountUpdated                     WebhookEvent = "account.updated"
+	WebhookEventAccountFinancingApproved           WebhookEvent = "account.financing_approved"
+	WebhookEventAccountFinancingDenied             WebhookEvent = "account.financing_denied"
 	WebhookEventInvoiceCreated                     WebhookEvent = "invoice.created"
 	WebhookEventInvoiceMarkedUncollectible         WebhookEvent = "invoice.marked_uncollectible"
 	WebhookEventInvoicePaid                        WebhookEvent = "invoice.paid"
@@ -41159,6 +41399,10 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 	switch s {
 	case "account.updated":
 		return WebhookEventAccountUpdated, nil
+	case "account.financing_approved":
+		return WebhookEventAccountFinancingApproved, nil
+	case "account.financing_denied":
+		return WebhookEventAccountFinancingDenied, nil
 	case "invoice.created":
 		return WebhookEventInvoiceCreated, nil
 	case "invoice.marked_uncollectible":

@@ -3159,13 +3159,13 @@ const (
 	ListMethodsResponseLimitsStandardErrorCodeAccountSuspended                    ListMethodsResponseLimitsStandardErrorCode = "account_suspended"
 	ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOutBecauseClawback    ListMethodsResponseLimitsStandardErrorCode = "block_move_money_out_because_clawback"
 	ListMethodsResponseLimitsStandardErrorCodeSupportabilityCheckPayoutStatusHold ListMethodsResponseLimitsStandardErrorCode = "supportability_check_payout_status_hold"
+	ListMethodsResponseLimitsStandardErrorCodeCardUsageReviewPayoutStatusHold     ListMethodsResponseLimitsStandardErrorCode = "card_usage_review_payout_status_hold"
 	ListMethodsResponseLimitsStandardErrorCodeKycCompleted                        ListMethodsResponseLimitsStandardErrorCode = "kyc_completed"
 	ListMethodsResponseLimitsStandardErrorCodeRmiClear                            ListMethodsResponseLimitsStandardErrorCode = "rmi_clear"
 	ListMethodsResponseLimitsStandardErrorCodeIdentityRfiClear                    ListMethodsResponseLimitsStandardErrorCode = "identity_rfi_clear"
 	ListMethodsResponseLimitsStandardErrorCodeEcommerceFulfillmentConnected       ListMethodsResponseLimitsStandardErrorCode = "ecommerce_fulfillment_connected"
 	ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOut                   ListMethodsResponseLimitsStandardErrorCode = "block_move_money_out"
 	ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOutSetByParent        ListMethodsResponseLimitsStandardErrorCode = "block_move_money_out_set_by_parent"
-	ListMethodsResponseLimitsStandardErrorCodeCardUsageReviewPayoutStatusHold     ListMethodsResponseLimitsStandardErrorCode = "card_usage_review_payout_status_hold"
 	ListMethodsResponseLimitsStandardErrorCodeNoAvailableBalance                  ListMethodsResponseLimitsStandardErrorCode = "no_available_balance"
 )
 
@@ -3177,6 +3177,8 @@ func NewListMethodsResponseLimitsStandardErrorCodeFromString(s string) (ListMeth
 		return ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOutBecauseClawback, nil
 	case "supportability_check_payout_status_hold":
 		return ListMethodsResponseLimitsStandardErrorCodeSupportabilityCheckPayoutStatusHold, nil
+	case "card_usage_review_payout_status_hold":
+		return ListMethodsResponseLimitsStandardErrorCodeCardUsageReviewPayoutStatusHold, nil
 	case "kyc_completed":
 		return ListMethodsResponseLimitsStandardErrorCodeKycCompleted, nil
 	case "rmi_clear":
@@ -3189,8 +3191,6 @@ func NewListMethodsResponseLimitsStandardErrorCodeFromString(s string) (ListMeth
 		return ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOut, nil
 	case "block_move_money_out_set_by_parent":
 		return ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOutSetByParent, nil
-	case "card_usage_review_payout_status_hold":
-		return ListMethodsResponseLimitsStandardErrorCodeCardUsageReviewPayoutStatusHold, nil
 	case "no_available_balance":
 		return ListMethodsResponseLimitsStandardErrorCodeNoAvailableBalance, nil
 	}

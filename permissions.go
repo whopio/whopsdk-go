@@ -295,6 +295,7 @@ const (
 	PermissionActionNotificationCreate                PermissionAction = "notification:create"
 	PermissionActionUserBalanceRead                   PermissionAction = "user:balance:read"
 	PermissionActionUserEmailRead                     PermissionAction = "user:email:read"
+	PermissionActionUserPaymentCharge                 PermissionAction = "user:payment:charge"
 	PermissionActionUserStaffRead                     PermissionAction = "user:staff:read"
 	PermissionActionOauthTokenExchange                PermissionAction = "oauth:token_exchange"
 	PermissionActionOpenid                            PermissionAction = "openid"
@@ -803,6 +804,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionUserBalanceRead, nil
 	case "user:email:read":
 		return PermissionActionUserEmailRead, nil
+	case "user:payment:charge":
+		return PermissionActionUserPaymentCharge, nil
 	case "user:staff:read":
 		return PermissionActionUserStaffRead, nil
 	case "oauth:token_exchange":

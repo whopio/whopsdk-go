@@ -503,37 +503,40 @@ func (r *RetrieveProductsRequest) SetID(id string) {
 
 var (
 	productFieldAccount                   = big.NewInt(1 << 0)
-	productFieldCreatedAt                 = big.NewInt(1 << 1)
-	productFieldCustomCta                 = big.NewInt(1 << 2)
-	productFieldCustomCtaURL              = big.NewInt(1 << 3)
-	productFieldCustomStatementDescriptor = big.NewInt(1 << 4)
-	productFieldDefaultPlan               = big.NewInt(1 << 5)
-	productFieldDescription               = big.NewInt(1 << 6)
-	productFieldExternalIdentifier        = big.NewInt(1 << 7)
-	productFieldGalleryImages             = big.NewInt(1 << 8)
-	productFieldGlobalAffiliatePercentage = big.NewInt(1 << 9)
-	productFieldGlobalAffiliateStatus     = big.NewInt(1 << 10)
-	productFieldHeadline                  = big.NewInt(1 << 11)
-	productFieldID                        = big.NewInt(1 << 12)
-	productFieldLabels                    = big.NewInt(1 << 13)
-	productFieldMarketplaceStatus         = big.NewInt(1 << 14)
-	productFieldMemberAffiliatePercentage = big.NewInt(1 << 15)
-	productFieldMemberAffiliateStatus     = big.NewInt(1 << 16)
-	productFieldMemberCount               = big.NewInt(1 << 17)
-	productFieldMetadata                  = big.NewInt(1 << 18)
-	productFieldOwnerUser                 = big.NewInt(1 << 19)
-	productFieldProductTaxCode            = big.NewInt(1 << 20)
-	productFieldPublishedReviewsCount     = big.NewInt(1 << 21)
-	productFieldRoute                     = big.NewInt(1 << 22)
-	productFieldTitle                     = big.NewInt(1 << 23)
-	productFieldUpdatedAt                 = big.NewInt(1 << 24)
-	productFieldVerified                  = big.NewInt(1 << 25)
-	productFieldVisibility                = big.NewInt(1 << 26)
+	productFieldAverageReviewRating       = big.NewInt(1 << 1)
+	productFieldCreatedAt                 = big.NewInt(1 << 2)
+	productFieldCustomCta                 = big.NewInt(1 << 3)
+	productFieldCustomCtaURL              = big.NewInt(1 << 4)
+	productFieldCustomStatementDescriptor = big.NewInt(1 << 5)
+	productFieldDefaultPlan               = big.NewInt(1 << 6)
+	productFieldDescription               = big.NewInt(1 << 7)
+	productFieldExternalIdentifier        = big.NewInt(1 << 8)
+	productFieldGalleryImages             = big.NewInt(1 << 9)
+	productFieldGlobalAffiliatePercentage = big.NewInt(1 << 10)
+	productFieldGlobalAffiliateStatus     = big.NewInt(1 << 11)
+	productFieldHeadline                  = big.NewInt(1 << 12)
+	productFieldID                        = big.NewInt(1 << 13)
+	productFieldLabels                    = big.NewInt(1 << 14)
+	productFieldMarketplaceStatus         = big.NewInt(1 << 15)
+	productFieldMemberAffiliatePercentage = big.NewInt(1 << 16)
+	productFieldMemberAffiliateStatus     = big.NewInt(1 << 17)
+	productFieldMemberCount               = big.NewInt(1 << 18)
+	productFieldMetadata                  = big.NewInt(1 << 19)
+	productFieldOwnerUser                 = big.NewInt(1 << 20)
+	productFieldProductTaxCode            = big.NewInt(1 << 21)
+	productFieldPublishedReviewsCount     = big.NewInt(1 << 22)
+	productFieldRoute                     = big.NewInt(1 << 23)
+	productFieldTitle                     = big.NewInt(1 << 24)
+	productFieldUpdatedAt                 = big.NewInt(1 << 25)
+	productFieldVerified                  = big.NewInt(1 << 26)
+	productFieldVisibility                = big.NewInt(1 << 27)
 )
 
 type Product struct {
 	// Account that sells this product.
 	Account map[string]any `json:"account,omitempty" url:"account,omitempty"`
+	// Average star rating across published reviews for this product, from `1.0` to `5.0`. Returns `0.0` when no published-review rating is available.
+	AverageReviewRating float64 `json:"average_review_rating" url:"average_review_rating"`
 	// When the product was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Call-to-action button label shown on the product purchase page.
@@ -597,6 +600,13 @@ func (p *Product) GetAccount() map[string]any {
 		return nil
 	}
 	return p.Account
+}
+
+func (p *Product) GetAverageReviewRating() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.AverageReviewRating
 }
 
 func (p *Product) GetCreatedAt() string {
@@ -800,6 +810,13 @@ func (p *Product) require(field *big.Int) {
 func (p *Product) SetAccount(account map[string]any) {
 	p.Account = account
 	p.require(productFieldAccount)
+}
+
+// SetAverageReviewRating sets the AverageReviewRating field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Product) SetAverageReviewRating(averageReviewRating float64) {
+	p.AverageReviewRating = averageReviewRating
+	p.require(productFieldAverageReviewRating)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -1226,27 +1243,30 @@ func (p ProductGlobalAffiliateStatus) Ptr() *ProductGlobalAffiliateStatus {
 
 var (
 	productListItemFieldAccount               = big.NewInt(1 << 0)
-	productListItemFieldCreatedAt             = big.NewInt(1 << 1)
-	productListItemFieldDefaultPlan           = big.NewInt(1 << 2)
-	productListItemFieldDescription           = big.NewInt(1 << 3)
-	productListItemFieldExternalIdentifier    = big.NewInt(1 << 4)
-	productListItemFieldGalleryImages         = big.NewInt(1 << 5)
-	productListItemFieldHeadline              = big.NewInt(1 << 6)
-	productListItemFieldID                    = big.NewInt(1 << 7)
-	productListItemFieldLabels                = big.NewInt(1 << 8)
-	productListItemFieldMemberCount           = big.NewInt(1 << 9)
-	productListItemFieldMetadata              = big.NewInt(1 << 10)
-	productListItemFieldPublishedReviewsCount = big.NewInt(1 << 11)
-	productListItemFieldRoute                 = big.NewInt(1 << 12)
-	productListItemFieldTitle                 = big.NewInt(1 << 13)
-	productListItemFieldUpdatedAt             = big.NewInt(1 << 14)
-	productListItemFieldVerified              = big.NewInt(1 << 15)
-	productListItemFieldVisibility            = big.NewInt(1 << 16)
+	productListItemFieldAverageReviewRating   = big.NewInt(1 << 1)
+	productListItemFieldCreatedAt             = big.NewInt(1 << 2)
+	productListItemFieldDefaultPlan           = big.NewInt(1 << 3)
+	productListItemFieldDescription           = big.NewInt(1 << 4)
+	productListItemFieldExternalIdentifier    = big.NewInt(1 << 5)
+	productListItemFieldGalleryImages         = big.NewInt(1 << 6)
+	productListItemFieldHeadline              = big.NewInt(1 << 7)
+	productListItemFieldID                    = big.NewInt(1 << 8)
+	productListItemFieldLabels                = big.NewInt(1 << 9)
+	productListItemFieldMemberCount           = big.NewInt(1 << 10)
+	productListItemFieldMetadata              = big.NewInt(1 << 11)
+	productListItemFieldPublishedReviewsCount = big.NewInt(1 << 12)
+	productListItemFieldRoute                 = big.NewInt(1 << 13)
+	productListItemFieldTitle                 = big.NewInt(1 << 14)
+	productListItemFieldUpdatedAt             = big.NewInt(1 << 15)
+	productListItemFieldVerified              = big.NewInt(1 << 16)
+	productListItemFieldVisibility            = big.NewInt(1 << 17)
 )
 
 type ProductListItem struct {
 	// Account that sells this product.
 	Account map[string]any `json:"account,omitempty" url:"account,omitempty"`
+	// Average star rating across published reviews for this product, from `1.0` to `5.0`. Returns `0.0` when no published-review rating is available.
+	AverageReviewRating float64 `json:"average_review_rating" url:"average_review_rating"`
 	// When the product was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Buyable plan to show and check out with. The configured default when that plan is buyable, otherwise the first buyable plan in product-page order. `null` when none is buyable.
@@ -1290,6 +1310,13 @@ func (p *ProductListItem) GetAccount() map[string]any {
 		return nil
 	}
 	return p.Account
+}
+
+func (p *ProductListItem) GetAverageReviewRating() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.AverageReviewRating
 }
 
 func (p *ProductListItem) GetCreatedAt() string {
@@ -1423,6 +1450,13 @@ func (p *ProductListItem) require(field *big.Int) {
 func (p *ProductListItem) SetAccount(account map[string]any) {
 	p.Account = account
 	p.require(productListItemFieldAccount)
+}
+
+// SetAverageReviewRating sets the AverageReviewRating field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductListItem) SetAverageReviewRating(averageReviewRating float64) {
+	p.AverageReviewRating = averageReviewRating
+	p.require(productListItemFieldAverageReviewRating)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
