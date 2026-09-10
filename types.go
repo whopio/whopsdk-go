@@ -933,13 +933,16 @@ func (a AccountCapabilitiesTransfer) Ptr() *AccountCapabilitiesTransfer {
 }
 
 var (
-	accountParentFieldID      = big.NewInt(1 << 0)
-	accountParentFieldLogoURL = big.NewInt(1 << 1)
-	accountParentFieldRoute   = big.NewInt(1 << 2)
-	accountParentFieldTitle   = big.NewInt(1 << 3)
+	accountParentFieldFees    = big.NewInt(1 << 0)
+	accountParentFieldID      = big.NewInt(1 << 1)
+	accountParentFieldLogoURL = big.NewInt(1 << 2)
+	accountParentFieldRoute   = big.NewInt(1 << 3)
+	accountParentFieldTitle   = big.NewInt(1 << 4)
 )
 
 type AccountParent struct {
+	// Markup rates this parent charges the connected account being read, keyed by fee type (for example `crypto_deposit_markup`), each with `percentage_fee` and `fixed_fee_usd`. Resolved with the connected account's own overrides winning over the platform default.
+	Fees map[string]*AccountParentFeesValue `json:"fees,omitempty" url:"fees,omitempty"`
 	// Account ID, prefixed `biz_`.
 	ID string `json:"id" url:"id"`
 	// Account logo image URL.
@@ -954,6 +957,13 @@ type AccountParent struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AccountParent) GetFees() map[string]*AccountParentFeesValue {
+	if a == nil {
+		return nil
+	}
+	return a.Fees
 }
 
 func (a *AccountParent) GetID() string {
@@ -996,6 +1006,13 @@ func (a *AccountParent) require(field *big.Int) {
 		a.explicitFields = big.NewInt(0)
 	}
 	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetFees sets the Fees field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountParent) SetFees(fees map[string]*AccountParentFeesValue) {
+	a.Fees = fees
+	a.require(accountParentFieldFees)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1054,6 +1071,108 @@ func (a *AccountParent) MarshalJSON() ([]byte, error) {
 }
 
 func (a *AccountParent) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	accountParentFeesValueFieldFixedFeeUsd   = big.NewInt(1 << 0)
+	accountParentFeesValueFieldPercentageFee = big.NewInt(1 << 1)
+)
+
+type AccountParentFeesValue struct {
+	// Fixed markup in US dollars per transaction.
+	FixedFeeUsd float64 `json:"fixed_fee_usd" url:"fixed_fee_usd"`
+	// Percentage of the transaction charged as markup.
+	PercentageFee float64 `json:"percentage_fee" url:"percentage_fee"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountParentFeesValue) GetFixedFeeUsd() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.FixedFeeUsd
+}
+
+func (a *AccountParentFeesValue) GetPercentageFee() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.PercentageFee
+}
+
+func (a *AccountParentFeesValue) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountParentFeesValue) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetFixedFeeUsd sets the FixedFeeUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountParentFeesValue) SetFixedFeeUsd(fixedFeeUsd float64) {
+	a.FixedFeeUsd = fixedFeeUsd
+	a.require(accountParentFeesValueFieldFixedFeeUsd)
+}
+
+// SetPercentageFee sets the PercentageFee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountParentFeesValue) SetPercentageFee(percentageFee float64) {
+	a.PercentageFee = percentageFee
+	a.require(accountParentFeesValueFieldPercentageFee)
+}
+
+func (a *AccountParentFeesValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountParentFeesValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountParentFeesValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountParentFeesValue) MarshalJSON() ([]byte, error) {
+	type embed AccountParentFeesValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountParentFeesValue) String() string {
 	if a == nil {
 		return "<nil>"
 	}
@@ -41378,6 +41497,7 @@ const (
 	WebhookEventShipmentCreated                    WebhookEvent = "shipment.created"
 	WebhookEventShipmentUpdated                    WebhookEvent = "shipment.updated"
 	WebhookEventMemberCreated                      WebhookEvent = "member.created"
+	WebhookEventMemberUpdated                      WebhookEvent = "member.updated"
 	WebhookEventAdCampaignPaymentFailed            WebhookEvent = "ad_campaign.payment_failed"
 	WebhookEventAdCampaignUpdated                  WebhookEvent = "ad_campaign.updated"
 	WebhookEventAdUpdated                          WebhookEvent = "ad.updated"
@@ -41535,6 +41655,8 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventShipmentUpdated, nil
 	case "member.created":
 		return WebhookEventMemberCreated, nil
+	case "member.updated":
+		return WebhookEventMemberUpdated, nil
 	case "ad_campaign.payment_failed":
 		return WebhookEventAdCampaignPaymentFailed, nil
 	case "ad_campaign.updated":

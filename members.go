@@ -1048,3 +1048,254 @@ func NewPostMemberCreatedPayloadTypeFromString(s string) (PostMemberCreatedPaylo
 func (p PostMemberCreatedPayloadType) Ptr() *PostMemberCreatedPayloadType {
 	return &p
 }
+
+var (
+	postMemberUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postMemberUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postMemberUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postMemberUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postMemberUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postMemberUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postMemberUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postMemberUpdatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+type PostMemberUpdatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostMemberUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Member `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostMemberUpdatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostMemberUpdatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostMemberUpdatedPayload) GetAPIVersion() PostMemberUpdatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostMemberUpdatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostMemberUpdatedPayload) GetData() *Member {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostMemberUpdatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostMemberUpdatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostMemberUpdatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostMemberUpdatedPayload) GetType() PostMemberUpdatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostMemberUpdatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostMemberUpdatedPayload) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postMemberUpdatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetAPIVersion(apiVersion PostMemberUpdatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postMemberUpdatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postMemberUpdatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetData(data *Member) {
+	p.Data = data
+	p.require(postMemberUpdatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postMemberUpdatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postMemberUpdatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postMemberUpdatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetType(type_ PostMemberUpdatedPayloadType) {
+	p.Type = type_
+	p.require(postMemberUpdatedPayloadFieldType)
+}
+
+func (p *PostMemberUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostMemberUpdatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostMemberUpdatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostMemberUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostMemberUpdatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostMemberUpdatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostMemberUpdatedPayloadAPIVersion string
+
+const (
+	PostMemberUpdatedPayloadAPIVersionV1 PostMemberUpdatedPayloadAPIVersion = "v1"
+)
+
+func NewPostMemberUpdatedPayloadAPIVersionFromString(s string) (PostMemberUpdatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostMemberUpdatedPayloadAPIVersionV1, nil
+	}
+	var t PostMemberUpdatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostMemberUpdatedPayloadAPIVersion) Ptr() *PostMemberUpdatedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostMemberUpdatedPayloadType string
+
+const (
+	PostMemberUpdatedPayloadTypeMemberUpdated PostMemberUpdatedPayloadType = "member.updated"
+)
+
+func NewPostMemberUpdatedPayloadTypeFromString(s string) (PostMemberUpdatedPayloadType, error) {
+	switch s {
+	case "member.updated":
+		return PostMemberUpdatedPayloadTypeMemberUpdated, nil
+	}
+	var t PostMemberUpdatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostMemberUpdatedPayloadType) Ptr() *PostMemberUpdatedPayloadType {
+	return &p
+}
