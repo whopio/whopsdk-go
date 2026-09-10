@@ -1546,6 +1546,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspDisputePayable                         RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_dispute_payable"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspExternalAccountConnectionFee           RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_external_account_connection_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspFixedFee                               RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_fixed_fee"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPspFxAdjustment                           RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_fx_adjustment"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspGatewayFee                             RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_gateway_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspIdentityVerificationFee                RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_identity_verification_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspInterchangeFee                         RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_interchange_fee"
@@ -2030,6 +2031,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspExternalAccountConnectionFee, nil
 	case "psp_fixed_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspFixedFee, nil
+	case "psp_fx_adjustment":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspFxAdjustment, nil
 	case "psp_gateway_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspGatewayFee, nil
 	case "psp_identity_verification_fee":
