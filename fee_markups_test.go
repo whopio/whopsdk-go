@@ -1778,6 +1778,13 @@ func TestEnumFeeMarkupTypes(t *testing.T) {
 		assert.Equal(t, FeeMarkupTypes("digital_wallet_withdrawal_markup"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_transfer_markup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFeeMarkupTypesFromString("transfer_markup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FeeMarkupTypes("transfer_markup"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_crypto_deposit_markup", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewFeeMarkupTypesFromString("crypto_deposit_markup")
