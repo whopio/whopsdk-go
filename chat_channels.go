@@ -895,7 +895,7 @@ type UpdateChatChannelsRequest struct {
 	BanURLs *bool `json:"ban_urls,omitempty" url:"-"`
 	// A list of words that are automatically blocked from messages in this chat channel. For example, ['spam', 'scam'].
 	BannedWords []string `json:"banned_words,omitempty" url:"-"`
-	// The minimum number of seconds a user must wait between sending messages in this chat channel.
+	// The minimum number of seconds a user must wait between sending messages in this chat channel. Pass null or 0 to remove the cooldown.
 	UserPostsCooldownSeconds *int `json:"user_posts_cooldown_seconds,omitempty" url:"-"`
 	// Controls which roles are allowed to send messages in this chat channel.
 	WhoCanPost *WhoCanPostTypes `json:"who_can_post,omitempty" url:"-"`

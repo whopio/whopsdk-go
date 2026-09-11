@@ -10180,7 +10180,7 @@ client.ChatChannels.Update(
 <dl>
 <dd>
 
-**userPostsCooldownSeconds:** `*int` — The minimum number of seconds a user must wait between sending messages in this chat channel.
+**userPostsCooldownSeconds:** `*int` — The minimum number of seconds a user must wait between sending messages in this chat channel. Pass null or 0 to remove the cooldown.
     
 </dd>
 </dl>
