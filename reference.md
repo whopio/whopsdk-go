@@ -35624,6 +35624,14 @@ client.Accounts.Preferences.Update(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**economicIntelligence:** `*bool` — Whether economic intelligence is enabled for the account. Requires company:update permission and an existing ledger account.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 

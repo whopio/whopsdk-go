@@ -44,6 +44,7 @@ var (
 	retrievePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 5)
 	retrievePreferencesResponseFieldCardsNotifications        = big.NewInt(1 << 6)
 	retrievePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
+	retrievePreferencesResponseFieldEconomicIntelligence      = big.NewInt(1 << 8)
 )
 
 type RetrievePreferencesResponse struct {
@@ -63,6 +64,8 @@ type RetrievePreferencesResponse struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
+	// Whether economic intelligence is enabled for the account.
+	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -125,6 +128,13 @@ func (r *RetrievePreferencesResponse) GetDisputeFighterEnabled() bool {
 		return false
 	}
 	return r.DisputeFighterEnabled
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligence() bool {
+	if r == nil {
+		return false
+	}
+	return r.EconomicIntelligence
 }
 
 func (r *RetrievePreferencesResponse) GetExtraProperties() map[string]interface{} {
@@ -195,6 +205,13 @@ func (r *RetrievePreferencesResponse) SetCardsNotifications(cardsNotifications b
 func (r *RetrievePreferencesResponse) SetDisputeFighterEnabled(disputeFighterEnabled bool) {
 	r.DisputeFighterEnabled = disputeFighterEnabled
 	r.require(retrievePreferencesResponseFieldDisputeFighterEnabled)
+}
+
+// SetEconomicIntelligence sets the EconomicIntelligence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligence(economicIntelligence bool) {
+	r.EconomicIntelligence = economicIntelligence
+	r.require(retrievePreferencesResponseFieldEconomicIntelligence)
 }
 
 func (r *RetrievePreferencesResponse) UnmarshalJSON(data []byte) error {
@@ -1551,6 +1568,7 @@ var (
 	updatePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 5)
 	updatePreferencesResponseFieldCardsNotifications        = big.NewInt(1 << 6)
 	updatePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
+	updatePreferencesResponseFieldEconomicIntelligence      = big.NewInt(1 << 8)
 )
 
 type UpdatePreferencesResponse struct {
@@ -1570,6 +1588,8 @@ type UpdatePreferencesResponse struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
+	// Whether economic intelligence is enabled for the account.
+	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1632,6 +1652,13 @@ func (u *UpdatePreferencesResponse) GetDisputeFighterEnabled() bool {
 		return false
 	}
 	return u.DisputeFighterEnabled
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligence() bool {
+	if u == nil {
+		return false
+	}
+	return u.EconomicIntelligence
 }
 
 func (u *UpdatePreferencesResponse) GetExtraProperties() map[string]interface{} {
@@ -1702,6 +1729,13 @@ func (u *UpdatePreferencesResponse) SetCardsNotifications(cardsNotifications boo
 func (u *UpdatePreferencesResponse) SetDisputeFighterEnabled(disputeFighterEnabled bool) {
 	u.DisputeFighterEnabled = disputeFighterEnabled
 	u.require(updatePreferencesResponseFieldDisputeFighterEnabled)
+}
+
+// SetEconomicIntelligence sets the EconomicIntelligence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligence(economicIntelligence bool) {
+	u.EconomicIntelligence = economicIntelligence
+	u.require(updatePreferencesResponseFieldEconomicIntelligence)
 }
 
 func (u *UpdatePreferencesResponse) UnmarshalJSON(data []byte) error {
@@ -2619,6 +2653,7 @@ var (
 	updatePreferencesRequestFieldCardsAutoTopUp            = big.NewInt(1 << 5)
 	updatePreferencesRequestFieldCardsNotifications        = big.NewInt(1 << 6)
 	updatePreferencesRequestFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldEconomicIntelligence      = big.NewInt(1 << 8)
 )
 
 type UpdatePreferencesRequest struct {
@@ -2638,6 +2673,8 @@ type UpdatePreferencesRequest struct {
 	CardsNotifications *bool `json:"cards_notifications,omitempty" url:"-"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
+	// Whether economic intelligence is enabled for the account. Requires company:update permission and an existing ledger account.
+	EconomicIntelligence *bool `json:"economic_intelligence,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2704,6 +2741,13 @@ func (u *UpdatePreferencesRequest) SetCardsNotifications(cardsNotifications *boo
 func (u *UpdatePreferencesRequest) SetDisputeFighterEnabled(disputeFighterEnabled *bool) {
 	u.DisputeFighterEnabled = disputeFighterEnabled
 	u.require(updatePreferencesRequestFieldDisputeFighterEnabled)
+}
+
+// SetEconomicIntelligence sets the EconomicIntelligence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetEconomicIntelligence(economicIntelligence *bool) {
+	u.EconomicIntelligence = economicIntelligence
+	u.require(updatePreferencesRequestFieldEconomicIntelligence)
 }
 
 func (u *UpdatePreferencesRequest) UnmarshalJSON(data []byte) error {
