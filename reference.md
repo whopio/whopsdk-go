@@ -628,7 +628,7 @@ client.Accounts.Update(
 <dl>
 <dd>
 
-**businessType:** `*whopsdk.UpdateAccountsRequestBusinessType` — High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
+**businessType:** `*string` — High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     
 </dd>
 </dl>
@@ -676,7 +676,7 @@ client.Accounts.Update(
 <dl>
 <dd>
 
-**industryGroup:** `*whopsdk.UpdateAccountsRequestIndustryGroup` — Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
+**industryGroup:** `*string` — Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
     
 </dd>
 </dl>
