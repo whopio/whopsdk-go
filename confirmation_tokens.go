@@ -519,9 +519,9 @@ var (
 )
 
 type PaymentMethodDisplay struct {
-	// Present when the category is `bank_debit`. Carries the account's last four when the linking provider surfaced it.
+	// Present when the category is `bank_debit`. Empty until the account is charged.
 	BankDebit *PaymentMethodDisplayPreview `json:"bank_debit,omitempty" url:"bank_debit,omitempty"`
-	// Present when the category is `card`. What the collection surface displayed — the token has not been charged, so this is the buyer's claim, not the vault's record.
+	// Details of the card, when the category is `card`.
 	Card *PaymentMethodDisplayPreview `json:"card,omitempty" url:"card,omitempty"`
 	// The family the type belongs to.
 	Category PaymentMethodDisplayCategory `json:"category" url:"category"`
@@ -529,11 +529,11 @@ type PaymentMethodDisplay struct {
 	DisplayName string `json:"display_name" url:"display_name"`
 	// The saved payment method this preview came from, or `null` when the buyer supplied a new one.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// Present when the category is `saved` and the stored method is a card. Unlike the other previews this is the vault's own record, not a claim from the collection surface. Absent for a balance, which has no instrument.
+	// Details of the stored card, when the category is `saved`. Absent for a balance.
 	Saved *PaymentMethodDisplayPreview `json:"saved,omitempty" url:"saved,omitempty"`
 	// The payment method type, e.g. `card`, `apple_pay`, `klarna`.
 	Type string `json:"type" url:"type"`
-	// Present when the category is `wallet`. Carries the backing card's brand and last four when the wallet surfaced them.
+	// Details of the network token the wallet supplied, when the category is `wallet`.
 	Wallet *PaymentMethodDisplayPreview `json:"wallet,omitempty" url:"wallet,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -765,11 +765,11 @@ var (
 )
 
 type PaymentMethodDisplayPreview struct {
-	// Lowercase card brand, e.g. `visa`. Absent when the method carries no brand.
+	// Lowercase card brand, such as `visa` or `mastercard`.
 	Brand *string `json:"brand,omitempty" url:"brand,omitempty"`
-	// A stable identifier for the collected card. Matches the `fingerprint` on any payment method saved from this token. Absent when the method is not a card or no fingerprint was returned.
+	// Uniquely identifies this particular card number. Matches the `fingerprint` on any payment method saved from this token, so you can recognize a card across attempts. For a wallet, this identifies the network token rather than the underlying card.
 	Fingerprint *string `json:"fingerprint,omitempty" url:"fingerprint,omitempty"`
-	// Last four digits of the instrument. Absent when the method carries none.
+	// The last four digits of the card.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
