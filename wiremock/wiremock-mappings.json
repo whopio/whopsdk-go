@@ -3280,7 +3280,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"description\": \"Software cashback\",\n  \"discarded_at\": \"discarded_at\",\n  \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n  \"funding_account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"id\": \"cicbr_xxxxxxxxxxxxxx\",\n  \"merchant_category_code\": \"5734\",\n  \"merchant_name\": \"ACME SOFTWARE\",\n  \"rate_bps\": 500,\n  \"scoped_account_id\": \"scoped_account_id\",\n  \"starts_at\": \"2026-01-01T12:00:00.000Z\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"description\": \"Cloud cashback\",\n  \"discarded_at\": \"discarded_at\",\n  \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n  \"funding_account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"id\": \"cicbr_xxxxxxxxxxxxxx\",\n  \"merchant_category_code\": \"7372\",\n  \"merchant_name\": \"ACME CLOUD\",\n  \"rate_bps\": 500,\n  \"scoped_account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"starts_at\": \"2026-01-01T12:00:00.000Z\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3311,7 +3311,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"description\": \"Software cashback\",\n      \"discarded_at\": \"discarded_at\",\n      \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n      \"funding_account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"id\": \"cicbr_xxxxxxxxxxxxxx\",\n      \"merchant_category_code\": \"5734\",\n      \"merchant_name\": \"ACME SOFTWARE\",\n      \"rate_bps\": 500,\n      \"scoped_account_id\": \"scoped_account_id\",\n      \"starts_at\": \"2026-01-01T12:00:00.000Z\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"description\": \"Cloud cashback\",\n      \"discarded_at\": \"discarded_at\",\n      \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n      \"funding_account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"id\": \"cicbr_xxxxxxxxxxxxxx\",\n      \"merchant_category_code\": \"7372\",\n      \"merchant_name\": \"ACME CLOUD\",\n      \"rate_bps\": 500,\n      \"scoped_account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"starts_at\": \"2026-01-01T12:00:00.000Z\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3328,6 +3328,42 @@
         }
       },
       "postServeActions": []
+    },
+    {
+      "id": "acacd969-2538-4036-bcd5-259ac243ab39",
+      "name": "Update Cashback Rule - default",
+      "request": {
+        "urlPathTemplate": "/cashback_rules/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"description\": \"Cloud cashback\",\n  \"discarded_at\": \"discarded_at\",\n  \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n  \"funding_account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"id\": \"cicbr_xxxxxxxxxxxxxx\",\n  \"merchant_category_code\": \"7372\",\n  \"merchant_name\": \"ACME CLOUD\",\n  \"rate_bps\": 500,\n  \"scoped_account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"starts_at\": \"2026-01-01T12:00:00.000Z\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "acacd969-2538-4036-bcd5-259ac243ab39",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
     },
     {
       "id": "d4c9b0cf-5095-4a6e-9f01-b04ed4241678",
@@ -14483,6 +14519,6 @@
     }
   ],
   "meta": {
-    "total": 402
+    "total": 403
   }
 }

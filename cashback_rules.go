@@ -741,3 +741,92 @@ func (l *ListCashbackRulesResponsePageInfo) String() string {
 	}
 	return fmt.Sprintf("%#v", l)
 }
+
+var (
+	updateCashbackRulesRequestFieldID                   = big.NewInt(1 << 0)
+	updateCashbackRulesRequestFieldDescription          = big.NewInt(1 << 1)
+	updateCashbackRulesRequestFieldExpiresAt            = big.NewInt(1 << 2)
+	updateCashbackRulesRequestFieldMerchantCategoryCode = big.NewInt(1 << 3)
+	updateCashbackRulesRequestFieldMerchantName         = big.NewInt(1 << 4)
+)
+
+type UpdateCashbackRulesRequest struct {
+	// ID of the cashback rule, prefixed cicbr_.
+	ID string `json:"-" url:"-"`
+	// Description of the rule. Set null to clear it.
+	Description *string `json:"description,omitempty" url:"-"`
+	// Exclusive end as an ISO 8601 timestamp, strictly later than the original starts_at. May be in the past to end an active rule. Set null to remove the expiration.
+	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"-"`
+	// Four-digit MCC, including leading zeros. Must match together with merchant_name.
+	MerchantCategoryCode *string `json:"merchant_category_code,omitempty" url:"-"`
+	// Raw merchant name reported by the card provider. Must contain a non-whitespace character. Matched with the MCC; not a substring or wildcard.
+	MerchantName *string `json:"merchant_name,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateCashbackRulesRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCashbackRulesRequest) SetID(id string) {
+	u.ID = id
+	u.require(updateCashbackRulesRequestFieldID)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCashbackRulesRequest) SetDescription(description *string) {
+	u.Description = description
+	u.require(updateCashbackRulesRequestFieldDescription)
+}
+
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCashbackRulesRequest) SetExpiresAt(expiresAt *time.Time) {
+	u.ExpiresAt = expiresAt
+	u.require(updateCashbackRulesRequestFieldExpiresAt)
+}
+
+// SetMerchantCategoryCode sets the MerchantCategoryCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCashbackRulesRequest) SetMerchantCategoryCode(merchantCategoryCode *string) {
+	u.MerchantCategoryCode = merchantCategoryCode
+	u.require(updateCashbackRulesRequestFieldMerchantCategoryCode)
+}
+
+// SetMerchantName sets the MerchantName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCashbackRulesRequest) SetMerchantName(merchantName *string) {
+	u.MerchantName = merchantName
+	u.require(updateCashbackRulesRequestFieldMerchantName)
+}
+
+func (u *UpdateCashbackRulesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateCashbackRulesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateCashbackRulesRequest(body)
+	return nil
+}
+
+func (u *UpdateCashbackRulesRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateCashbackRulesRequest
+	var marshaler = struct {
+		embed
+		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
+	}{
+		embed:     embed(*u),
+		ExpiresAt: internal.NewOptionalDateTime(u.ExpiresAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
