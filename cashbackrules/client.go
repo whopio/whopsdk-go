@@ -142,3 +142,30 @@ func (c *Client) List(
 	)
 	return pager.GetPage(ctx, request.After)
 }
+
+// Updates a cashback rule funded by the authenticated platform account. Requires payout:transfer_funds. Only merchant_name, merchant_category_code, description, and expires_at can change; starts_at, rate_bps, funding_account_id, and scoped_account_id are immutable. Omitted fields stay unchanged. Scheduled, active, and expired rules can be updated; discarded rules cannot. Updating a rule does not transfer funds.
+//
+// Example:
+//
+//	request := &whopsdk.UpdateCashbackRulesRequest{
+//	    ID: "id",
+//	}
+//	client.CashbackRules.Update(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Update(
+	ctx context.Context,
+	request *whopsdk.UpdateCashbackRulesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.CashbackRule, error) {
+	response, err := c.WithRawResponse.Update(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}

@@ -9829,6 +9829,98 @@ client.CashbackRules.List(
 </dl>
 </details>
 
+<details><summary><code>client.CashbackRules.Update(ID, request) -> *whopsdk.CashbackRule</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates a cashback rule funded by the authenticated platform account. Requires payout:transfer_funds. Only merchant_name, merchant_category_code, description, and expires_at can change; starts_at, rate_bps, funding_account_id, and scoped_account_id are immutable. Omitted fields stay unchanged. Scheduled, active, and expired rules can be updated; discarded rules cannot. Updating a rule does not transfer funds.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateCashbackRulesRequest{
+    ID: "id",
+}
+client.CashbackRules.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — ID of the cashback rule, prefixed cicbr_.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `*string` — Description of the rule. Set null to clear it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expiresAt:** `*time.Time` — Exclusive end as an ISO 8601 timestamp, strictly later than the original starts_at. May be in the past to end an active rule. Set null to remove the expiration.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchantCategoryCode:** `*string` — Four-digit MCC, including leading zeros. Must match together with merchant_name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchantName:** `*string` — Raw merchant name reported by the card provider. Must contain a non-whitespace character. Matched with the MCC; not a substring or wildcard.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## ChatChannels
 <details><summary><code>client.ChatChannels.List() -> *whopsdk.ListChatChannelsResponse</code></summary>
 <dl>

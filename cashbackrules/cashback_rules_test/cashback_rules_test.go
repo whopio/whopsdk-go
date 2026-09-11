@@ -131,3 +131,29 @@ func TestCashbackRulesListWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestCashbackRulesListWithWireMock", "GET", "/cashback_rules", nil, 1)
 }
+
+func TestCashbackRulesUpdateWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.UpdateCashbackRulesRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.CashbackRules.Update(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCashbackRulesUpdateWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCashbackRulesUpdateWithWireMock", "PATCH", "/cashback_rules/id", nil, 1)
+}

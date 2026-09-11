@@ -2,5 +2,5 @@
 
 // Cashback rules designate a funding platform, a merchant name and category, a rate, and an eligibility window. An optional account ID limits the rule to one of the platform's direct connected accounts.
 //
-// Use the Cashback Rules API to create future-dated rules and list every rule funded by the authenticated platform, including expired and discarded rules. Creating a rule does not transfer funds.
+// Use the Cashback Rules API to create future-dated rules, update their merchant name, MCC, description, or expiration, and list every rule funded by the authenticated platform, including expired and discarded rules. Discarded rules cannot be updated. Creating or updating a rule does not transfer funds.
 package cashbackrules

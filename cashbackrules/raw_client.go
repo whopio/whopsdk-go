@@ -75,3 +75,50 @@ func (r *RawClient) Create(
 		Body:       response,
 	}, nil
 }
+
+func (r *RawClient) Update(
+	ctx context.Context,
+	request *whopsdk.UpdateCashbackRulesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.CashbackRule], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/cashback_rules/%v",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.CashbackRule
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPatch,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.CashbackRule]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
