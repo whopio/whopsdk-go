@@ -19836,17 +19836,18 @@ var (
 	paymentBankTransferFieldBankAddress                 = big.NewInt(1 << 4)
 	paymentBankTransferFieldBankBranch                  = big.NewInt(1 << 5)
 	paymentBankTransferFieldBankCode                    = big.NewInt(1 << 6)
-	paymentBankTransferFieldBankName                    = big.NewInt(1 << 7)
-	paymentBankTransferFieldBeneficiaryDocument         = big.NewInt(1 << 8)
-	paymentBankTransferFieldBeneficiaryDocumentType     = big.NewInt(1 << 9)
-	paymentBankTransferFieldBeneficiaryName             = big.NewInt(1 << 10)
-	paymentBankTransferFieldDocumentURL                 = big.NewInt(1 << 11)
-	paymentBankTransferFieldExpiresAt                   = big.NewInt(1 << 12)
-	paymentBankTransferFieldInstructions                = big.NewInt(1 << 13)
-	paymentBankTransferFieldReference                   = big.NewInt(1 << 14)
-	paymentBankTransferFieldRoutingNumber               = big.NewInt(1 << 15)
-	paymentBankTransferFieldSecondaryAccountNumber      = big.NewInt(1 << 16)
-	paymentBankTransferFieldSecondaryAccountNumberLabel = big.NewInt(1 << 17)
+	paymentBankTransferFieldBankCodeLabel               = big.NewInt(1 << 7)
+	paymentBankTransferFieldBankName                    = big.NewInt(1 << 8)
+	paymentBankTransferFieldBeneficiaryDocument         = big.NewInt(1 << 9)
+	paymentBankTransferFieldBeneficiaryDocumentType     = big.NewInt(1 << 10)
+	paymentBankTransferFieldBeneficiaryName             = big.NewInt(1 << 11)
+	paymentBankTransferFieldDocumentURL                 = big.NewInt(1 << 12)
+	paymentBankTransferFieldExpiresAt                   = big.NewInt(1 << 13)
+	paymentBankTransferFieldInstructions                = big.NewInt(1 << 14)
+	paymentBankTransferFieldReference                   = big.NewInt(1 << 15)
+	paymentBankTransferFieldRoutingNumber               = big.NewInt(1 << 16)
+	paymentBankTransferFieldSecondaryAccountNumber      = big.NewInt(1 << 17)
+	paymentBankTransferFieldSecondaryAccountNumberLabel = big.NewInt(1 << 18)
 )
 
 type PaymentBankTransfer struct {
@@ -19862,8 +19863,10 @@ type PaymentBankTransfer struct {
 	BankAddress *string `json:"bank_address,omitempty" url:"bank_address,omitempty"`
 	// The receiving branch, where the local system routes by branch.
 	BankBranch *string `json:"bank_branch,omitempty" url:"bank_branch,omitempty"`
-	// The receiving bank's code in the local clearing system.
+	// The code that identifies the receiving bank — its code in the local clearing system, or its SWIFT/BIC on a transfer that crosses borders.
 	BankCode *string `json:"bank_code,omitempty" url:"bank_code,omitempty"`
+	// What to call `bank_code` when showing it, in the scheme's own terms — `SWIFT / BIC` on an international wire, for example.
+	BankCodeLabel *string `json:"bank_code_label,omitempty" url:"bank_code_label,omitempty"`
 	// The receiving bank's name.
 	BankName *string `json:"bank_name,omitempty" url:"bank_name,omitempty"`
 	// The account holder's tax or identity document number, where the local system needs it to send.
@@ -19941,6 +19944,13 @@ func (p *PaymentBankTransfer) GetBankCode() *string {
 		return nil
 	}
 	return p.BankCode
+}
+
+func (p *PaymentBankTransfer) GetBankCodeLabel() *string {
+	if p == nil {
+		return nil
+	}
+	return p.BankCodeLabel
 }
 
 func (p *PaymentBankTransfer) GetBankName() *string {
@@ -20081,6 +20091,13 @@ func (p *PaymentBankTransfer) SetBankBranch(bankBranch *string) {
 func (p *PaymentBankTransfer) SetBankCode(bankCode *string) {
 	p.BankCode = bankCode
 	p.require(paymentBankTransferFieldBankCode)
+}
+
+// SetBankCodeLabel sets the BankCodeLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentBankTransfer) SetBankCodeLabel(bankCodeLabel *string) {
+	p.BankCodeLabel = bankCodeLabel
+	p.require(paymentBankTransferFieldBankCodeLabel)
 }
 
 // SetBankName sets the BankName field and marks it as non-optional;
