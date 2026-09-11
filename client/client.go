@@ -38,6 +38,7 @@ import (
 	dmchannels "github.com/whopio/whopsdk-go/dmchannels"
 	dmmembers "github.com/whopio/whopsdk-go/dmmembers"
 	domains "github.com/whopio/whopsdk-go/domains"
+	economicintelligence "github.com/whopio/whopsdk-go/economicintelligence"
 	entries "github.com/whopio/whopsdk-go/entries"
 	events "github.com/whopio/whopsdk-go/events"
 	experiences "github.com/whopio/whopsdk-go/experiences"
@@ -73,7 +74,6 @@ import (
 	products "github.com/whopio/whopsdk-go/products"
 	promocodes "github.com/whopio/whopsdk-go/promocodes"
 	reactions "github.com/whopio/whopsdk-go/reactions"
-	recommendedactions "github.com/whopio/whopsdk-go/recommendedactions"
 	refunds "github.com/whopio/whopsdk-go/refunds"
 	resolutioncentercases "github.com/whopio/whopsdk-go/resolutioncentercases"
 	reviews "github.com/whopio/whopsdk-go/reviews"
@@ -126,6 +126,7 @@ type Whop struct {
 	DmChannels               *dmchannels.Client
 	DmMembers                *dmmembers.Client
 	Domains                  *domains.Client
+	EconomicIntelligence     *economicintelligence.Client
 	Entries                  *entries.Client
 	Events                   *events.Client
 	Experiences              *experiences.Client
@@ -159,7 +160,6 @@ type Whop struct {
 	Products                 *products.Client
 	PromoCodes               *promocodes.Client
 	Reactions                *reactions.Client
-	RecommendedActions       *recommendedactions.Client
 	Refunds                  *refunds.Client
 	ResolutionCenterCases    *resolutioncentercases.Client
 	Reviews                  *reviews.Client
@@ -222,6 +222,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		DmChannels:               dmchannels.NewClient(options),
 		DmMembers:                dmmembers.NewClient(options),
 		Domains:                  domains.NewClient(options),
+		EconomicIntelligence:     economicintelligence.NewClient(options),
 		Entries:                  entries.NewClient(options),
 		Events:                   events.NewClient(options),
 		Experiences:              experiences.NewClient(options),
@@ -255,7 +256,6 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Products:                 products.NewClient(options),
 		PromoCodes:               promocodes.NewClient(options),
 		Reactions:                reactions.NewClient(options),
-		RecommendedActions:       recommendedactions.NewClient(options),
 		Refunds:                  refunds.NewClient(options),
 		ResolutionCenterCases:    resolutioncentercases.NewClient(options),
 		Reviews:                  reviews.NewClient(options),

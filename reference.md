@@ -14973,6 +14973,173 @@ client.Domains.Update(
 </dl>
 </details>
 
+## Economic Intelligence
+<details><summary><code>client.EconomicIntelligence.List() -> *whopsdk.ListEconomicIntelligenceResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists every recommendation the account has been given, newest first: requests the engine is still answering, cards ready to run, cards already run, and cards a newer one replaced. `status=ready` is what the dashboard shows; an account with nothing ready gets `generation_pending` true while cards are being generated, so poll until it clears.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListEconomicIntelligenceRequest{}
+client.EconomicIntelligence.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.ListEconomicIntelligenceRequestStatus` — Only recommendations in this state. `ready` for the cards the owner can run now.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — The number of recommendations to return (default 20, max 100).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — A cursor; returns recommendations after this position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — The number of recommendations to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — A cursor; returns recommendations before this position.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.EconomicIntelligence.Run(request) -> *whopsdk.EconomicIntelligence</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Runs the engine toward what the owner wants, in their own words, such as "get more repeat buyers for my taurine supplement". The recommendation comes back right away with status `queued` and only the owner's `input` filled in; the engine moves it to `pending` while it works and then to `ready`, with the title and brief written, or to `failed`. Watch it in the list.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RunEconomicIntelligenceRequest{
+    Input: "get more repeat buyers for my taurine supplement",
+}
+client.EconomicIntelligence.Run(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**input:** `string` — What the owner wants, in their own words. Up to 1000 characters.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Entries
 <details><summary><code>client.Entries.List() -> *whopsdk.ListEntriesResponse</code></summary>
 <dl>
@@ -28607,269 +28774,6 @@ client.Reactions.Delete(
 <dd>
 
 **emoji:** `*string` — The emoji to remove, in shortcode or unicode format. For example, ':heart:' or a unicode emoji. Required when the id refers to a message or post instead of a reaction.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Recommended Actions
-<details><summary><code>client.RecommendedActions.List() -> *whopsdk.ListRecommendedActionsResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Lists the recommended action chains for an account — short sequences of actions (create a product, price it, publish it) the account should run next, gated on what it already has.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.ListRecommendedActionsRequest{}
-client.RecommendedActions.List(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**accountID:** `*string` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.RecommendedActions.Retrieve(ID) -> *whopsdk.AccountRecommendedActionChain</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Retrieves a recommended action chain by id, including chains that have already been run. Seeded chains are reconstructed from their hard-coded chain; generated chains are read from the account's stored chain, with each step's filled-in input.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.RetrieveRecommendedActionsRequest{
-    ID: "id",
-}
-client.RecommendedActions.Retrieve(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — Chain ID from the list endpoint, e.g. `rac_seed_start_selling_9f2c1a7b04`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accountID:** `*string` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.RecommendedActions.Run(ID) -> *whopsdk.RunRecommendedActionsResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Records that the caller ran a recommended action chain. Nothing is executed server-side yet — the client follows the chain's step CTAs itself; this writes the `recommended_action_chain.executed` analytics event and a `redirected` execution per step.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.RunRecommendedActionsRequest{
-    ID: "id",
-}
-client.RecommendedActions.Run(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — Chain ID from the list endpoint, e.g. `rac_seed_start_selling_9f2c1a7b04`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accountID:** `*string` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.RecommendedActions.ListExecutions(ID) -> *whopsdk.ListExecutionsRecommendedActionsResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Lists the per-step record of a recommended action chain the server ran — one entry per step in position order, each carrying its current status and, once the step completed, the API response it produced. A chain that was never run server-side returns an empty list.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.ListExecutionsRecommendedActionsRequest{
-    ID: "id",
-}
-client.RecommendedActions.ListExecutions(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — Chain ID from the list endpoint.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accountID:** `*string` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
     
 </dd>
 </dl>
