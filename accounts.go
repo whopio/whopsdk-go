@@ -705,7 +705,7 @@ type Account struct {
 	PrivacyPolicy *File `json:"privacy_policy,omitempty" url:"privacy_policy,omitempty"`
 	// Tax classification code applied by default to the account's products, with `id`, `name`, and `product_type`. `null` when no default is set.
 	ProductTaxCode map[string]any `json:"product_tax_code,omitempty" url:"product_tax_code,omitempty"`
-	// DEPRECATED: Use the `GET /recommended_actions?account_id={account_id}` endpoint instead.
+	// DEPRECATED: Use the `GET /economic_intelligence?account_id={account_id}` endpoint instead.
 	RecommendedActions []*AccountRecommendedAction `json:"recommended_actions,omitempty" url:"recommended_actions,omitempty"`
 	// Whether authorized users must enable two-factor authentication.
 	Require2Fa      bool                     `json:"require_2fa" url:"require_2fa"`

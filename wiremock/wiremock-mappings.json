@@ -5470,6 +5470,69 @@
       }
     },
     {
+      "id": "b8b8b6d3-0fd2-44ee-a618-0f14f43efbd8",
+      "name": "List Economic Intelligence - default",
+      "request": {
+        "urlPathTemplate": "/economic_intelligence",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"action_type\": \"scale_winning_ads\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"executed_at\": \"2026-01-01T12:00:00.000Z\",\n      \"execution_type\": \"whop_ai\",\n      \"expected_delta\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"expected_ledger_line\": \"ad_spend_charge\",\n      \"id\": \"reca_xxxxxxxxxxxxxx\",\n      \"inference_version\": \"whop-ai-v5\",\n      \"input\": \"more sales from ads\",\n      \"prompt\": \"Create a 20% off promo code for my members.\",\n      \"reasoning\": \"Capped 9 of 14 days.\",\n      \"status\": \"queued\",\n      \"superseded_at\": \"superseded_at\",\n      \"title\": \"Move $180 from 3 dead ad groups into BATCH#3, +1.7x return\"\n    }\n  ],\n  \"generation_pending\": false,\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "b8b8b6d3-0fd2-44ee-a618-0f14f43efbd8",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "c0e4f472-0aa5-42ac-9798-7248fb20380a",
+      "name": "Run Economic Intelligence - default",
+      "request": {
+        "urlPathTemplate": "/economic_intelligence",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action_type\": \"scale_winning_ads\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"executed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"execution_type\": \"whop_ai\",\n  \"expected_delta\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"expected_ledger_line\": \"ad_spend_charge\",\n  \"id\": \"reca_xxxxxxxxxxxxxx\",\n  \"inference_version\": \"whop-ai-v5\",\n  \"input\": \"more sales from ads\",\n  \"prompt\": \"Create a 20% off promo code for my members.\",\n  \"reasoning\": \"Capped 9 of 14 days.\",\n  \"status\": \"queued\",\n  \"superseded_at\": \"superseded_at\",\n  \"title\": \"Move $180 from 3 dead ad groups into BATCH#3, +1.7x return\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "c0e4f472-0aa5-42ac-9798-7248fb20380a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "9c9a609f-67a2-45f6-aaa3-a8117ecf7efc",
       "name": "List entries - default",
       "request": {
@@ -10639,146 +10702,6 @@
       }
     },
     {
-      "id": "e8065f40-3d2c-44b6-8767-00756d3e3d4f",
-      "name": "List Action Chains - default",
-      "request": {
-        "urlPathTemplate": "/recommended_actions",
-        "method": "GET",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"actions\": [\n        {\n          \"action\": \"create_ad_xxxxxxxxxxxxxx\",\n          \"cta\": \"https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/marketing/ads\",\n          \"cta_label\": \"Create campaign\",\n          \"description\": \"Pick a budget\",\n          \"error\": null,\n          \"execution_type\": \"redirect\",\n          \"input\": {\n            \"name\": \"Ceramic coating — Austin launch\"\n          },\n          \"output\": null,\n          \"position\": 0,\n          \"reasoning\": {\n            \"summary\": \"Create the campaign first\"\n          },\n          \"status\": null,\n          \"title\": \"Create a campaign\"\n        }\n      ],\n      \"description\": \"Get your product in front of buyers\",\n      \"id\": \"rac_chain_xxxxxxxxxxxx\",\n      \"reasoning\": {\n        \"summary\": \"No active campaigns yet\"\n      },\n      \"title\": \"Launch an ad campaign\"\n    }\n  ],\n  \"generation_pending\": false\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "e8065f40-3d2c-44b6-8767-00756d3e3d4f",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      },
-      "postServeActions": []
-    },
-    {
-      "id": "b66e92b3-53c0-4021-baf6-c9d39b99c932",
-      "name": "Retrieve Action Chain - default",
-      "request": {
-        "urlPathTemplate": "/recommended_actions/{id}",
-        "method": "GET",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"actions\": [\n    {\n      \"action\": \"create_ad_xxxxxxxxxxxxxx\",\n      \"cta\": \"https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/marketing/ads\",\n      \"cta_label\": \"Create campaign\",\n      \"description\": \"Pick a budget\",\n      \"error\": \"error\",\n      \"execution_type\": \"redirect\",\n      \"input\": {\n        \"name\": \"Ceramic coating — Austin launch\"\n      },\n      \"output\": {\n        \"key\": \"value\"\n      },\n      \"position\": 0,\n      \"reasoning\": {\n        \"summary\": \"Create the campaign first\"\n      },\n      \"status\": \"pending\",\n      \"title\": \"Create a campaign\"\n    }\n  ],\n  \"description\": \"Get your product in front of buyers\",\n  \"id\": \"rac_chain_xxxxxxxxxxxx\",\n  \"reasoning\": {\n    \"summary\": \"No active campaigns yet\"\n  },\n  \"title\": \"Launch an ad campaign\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "b66e92b3-53c0-4021-baf6-c9d39b99c932",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "1e68673a-c8a0-4ef8-9908-bcd066391dd3",
-      "name": "Execute Action Chain - default",
-      "request": {
-        "urlPathTemplate": "/recommended_actions/{id}",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"chain_id\": \"rac_chain_xxxxxxxxxxxx\",\n  \"execution\": \"redirect\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "1e68673a-c8a0-4ef8-9908-bcd066391dd3",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "b38dcc0c-1032-43ca-a940-40c189d315d6",
-      "name": "List Recommended Action Executions - default",
-      "request": {
-        "urlPathTemplate": "/recommended_actions/{id}/executions",
-        "method": "GET",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"chain_id\": \"rac_chain_xxxxxxxxxxxx\",\n  \"executions\": [\n    {\n      \"action\": \"create_product\",\n      \"completed_at\": \"2026-01-01T12:00:00.000Z\",\n      \"error\": \"error\",\n      \"id\": \"raex_xxxxxxxxxxxxxx\",\n      \"output\": {\n        \"id\": \"prod_xxxxxxxxxxxxxx\"\n      },\n      \"position\": 0,\n      \"status\": \"pending\"\n    }\n  ]\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "b38dcc0c-1032-43ca-a940-40c189d315d6",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
       "id": "fc35e70a-a5c2-4191-a1bc-7fb9f42ddae5",
       "name": "List Refunds - default",
       "request": {
@@ -14519,6 +14442,6 @@
     }
   ],
   "meta": {
-    "total": 403
+    "total": 401
   }
 }
