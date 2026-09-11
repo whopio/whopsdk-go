@@ -119,6 +119,12 @@ const (
 	RetrieveBreakdownRequestBucketCardAuthorizationReleases RetrieveBreakdownRequestBucket = "card_authorization_releases"
 	RetrieveBreakdownRequestBucketWithdrawals               RetrieveBreakdownRequestBucket = "withdrawals"
 	RetrieveBreakdownRequestBucketWithdrawalMarkup          RetrieveBreakdownRequestBucket = "withdrawal_markup"
+	RetrieveBreakdownRequestBucketPlatformMarkup            RetrieveBreakdownRequestBucket = "platform_markup"
+	RetrieveBreakdownRequestBucketClawbacks                 RetrieveBreakdownRequestBucket = "clawbacks"
+	RetrieveBreakdownRequestBucketDisputes                  RetrieveBreakdownRequestBucket = "disputes"
+	RetrieveBreakdownRequestBucketAffiliateEarnings         RetrieveBreakdownRequestBucket = "affiliate_earnings"
+	RetrieveBreakdownRequestBucketAffiliatePayouts          RetrieveBreakdownRequestBucket = "affiliate_payouts"
+	RetrieveBreakdownRequestBucketRevenueShare              RetrieveBreakdownRequestBucket = "revenue_share"
 	RetrieveBreakdownRequestBucketSwaps                     RetrieveBreakdownRequestBucket = "swaps"
 	RetrieveBreakdownRequestBucketCardLoads                 RetrieveBreakdownRequestBucket = "card_loads"
 )
@@ -143,6 +149,18 @@ func NewRetrieveBreakdownRequestBucketFromString(s string) (RetrieveBreakdownReq
 		return RetrieveBreakdownRequestBucketWithdrawals, nil
 	case "withdrawal_markup":
 		return RetrieveBreakdownRequestBucketWithdrawalMarkup, nil
+	case "platform_markup":
+		return RetrieveBreakdownRequestBucketPlatformMarkup, nil
+	case "clawbacks":
+		return RetrieveBreakdownRequestBucketClawbacks, nil
+	case "disputes":
+		return RetrieveBreakdownRequestBucketDisputes, nil
+	case "affiliate_earnings":
+		return RetrieveBreakdownRequestBucketAffiliateEarnings, nil
+	case "affiliate_payouts":
+		return RetrieveBreakdownRequestBucketAffiliatePayouts, nil
+	case "revenue_share":
+		return RetrieveBreakdownRequestBucketRevenueShare, nil
 	case "swaps":
 		return RetrieveBreakdownRequestBucketSwaps, nil
 	case "card_loads":
@@ -517,6 +535,12 @@ const (
 	RetrieveBreakdownResponseBucketCardAuthorizationReleases RetrieveBreakdownResponseBucket = "card_authorization_releases"
 	RetrieveBreakdownResponseBucketWithdrawals               RetrieveBreakdownResponseBucket = "withdrawals"
 	RetrieveBreakdownResponseBucketWithdrawalMarkup          RetrieveBreakdownResponseBucket = "withdrawal_markup"
+	RetrieveBreakdownResponseBucketPlatformMarkup            RetrieveBreakdownResponseBucket = "platform_markup"
+	RetrieveBreakdownResponseBucketClawbacks                 RetrieveBreakdownResponseBucket = "clawbacks"
+	RetrieveBreakdownResponseBucketDisputes                  RetrieveBreakdownResponseBucket = "disputes"
+	RetrieveBreakdownResponseBucketAffiliateEarnings         RetrieveBreakdownResponseBucket = "affiliate_earnings"
+	RetrieveBreakdownResponseBucketAffiliatePayouts          RetrieveBreakdownResponseBucket = "affiliate_payouts"
+	RetrieveBreakdownResponseBucketRevenueShare              RetrieveBreakdownResponseBucket = "revenue_share"
 	RetrieveBreakdownResponseBucketSwaps                     RetrieveBreakdownResponseBucket = "swaps"
 	RetrieveBreakdownResponseBucketCardLoads                 RetrieveBreakdownResponseBucket = "card_loads"
 )
@@ -541,6 +565,18 @@ func NewRetrieveBreakdownResponseBucketFromString(s string) (RetrieveBreakdownRe
 		return RetrieveBreakdownResponseBucketWithdrawals, nil
 	case "withdrawal_markup":
 		return RetrieveBreakdownResponseBucketWithdrawalMarkup, nil
+	case "platform_markup":
+		return RetrieveBreakdownResponseBucketPlatformMarkup, nil
+	case "clawbacks":
+		return RetrieveBreakdownResponseBucketClawbacks, nil
+	case "disputes":
+		return RetrieveBreakdownResponseBucketDisputes, nil
+	case "affiliate_earnings":
+		return RetrieveBreakdownResponseBucketAffiliateEarnings, nil
+	case "affiliate_payouts":
+		return RetrieveBreakdownResponseBucketAffiliatePayouts, nil
+	case "revenue_share":
+		return RetrieveBreakdownResponseBucketRevenueShare, nil
 	case "swaps":
 		return RetrieveBreakdownResponseBucketSwaps, nil
 	case "card_loads":
