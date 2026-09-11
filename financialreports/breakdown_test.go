@@ -1831,6 +1831,48 @@ func TestEnumRetrieveBreakdownRequestBucket(t *testing.T) {
 		assert.Equal(t, RetrieveBreakdownRequestBucket("withdrawal_markup"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_platform_markup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestBucketFromString("platform_markup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestBucket("platform_markup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_clawbacks", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestBucketFromString("clawbacks")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestBucket("clawbacks"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_disputes", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestBucketFromString("disputes")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestBucket("disputes"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_affiliate_earnings", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestBucketFromString("affiliate_earnings")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestBucket("affiliate_earnings"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_affiliate_payouts", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestBucketFromString("affiliate_payouts")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestBucket("affiliate_payouts"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_revenue_share", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownRequestBucketFromString("revenue_share")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownRequestBucket("revenue_share"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_swaps", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveBreakdownRequestBucketFromString("swaps")
@@ -2015,6 +2057,48 @@ func TestEnumRetrieveBreakdownResponseBucket(t *testing.T) {
 		val, err := NewRetrieveBreakdownResponseBucketFromString("withdrawal_markup")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveBreakdownResponseBucket("withdrawal_markup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_markup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseBucketFromString("platform_markup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseBucket("platform_markup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_clawbacks", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseBucketFromString("clawbacks")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseBucket("clawbacks"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_disputes", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseBucketFromString("disputes")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseBucket("disputes"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_affiliate_earnings", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseBucketFromString("affiliate_earnings")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseBucket("affiliate_earnings"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_affiliate_payouts", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseBucketFromString("affiliate_payouts")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseBucket("affiliate_payouts"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_revenue_share", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveBreakdownResponseBucketFromString("revenue_share")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveBreakdownResponseBucket("revenue_share"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_swaps", func(t *testing.T) {

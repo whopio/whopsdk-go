@@ -1749,7 +1749,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"action\": \"access_pass:basic:export\",\n      \"allowed_on_api_key\": true,\n      \"allowed_on_app\": true,\n      \"allowed_on_user\": false,\n      \"category\": \"Products\",\n      \"description\": \"Download the account's product list as a CSV.\",\n      \"granted_to_system_roles\": [\n        \"owner\"\n      ],\n      \"name\": \"Export products\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"action\": \"ai_prompt:create\",\n      \"allowed_on_api_key\": true,\n      \"allowed_on_app\": false,\n      \"allowed_on_user\": true,\n      \"category\": \"category\",\n      \"description\": \"\",\n      \"granted_to_system_roles\": [\n        \"owner\"\n      ],\n      \"name\": \"ai_prompt:create\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -6014,6 +6014,281 @@
       }
     },
     {
+      "id": "d24cffc6-8e6d-4c68-aad9-e77f7f43b3c7",
+      "name": "List Experiments - default",
+      "request": {
+        "urlPathTemplate": "/experiments",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"internal\",\n      \"assignment_seed\": \"verb_end_exp1768435200\",\n      \"bucket_by\": \"user\",\n      \"configuration_revision\": 2,\n      \"control\": {},\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"created_by\": \"user_xxxxxxxxxxxxxx\",\n      \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n      \"feature_flag_only\": false,\n      \"findings\": \"Treatment lifted conversion 8%\",\n      \"flag_key\": \"verb_end_exp\",\n      \"hypothesis\": \"Users will convert more\",\n      \"id\": \"expt_xxxxxxxxxxxxxx\",\n      \"name\": \"Verb End\",\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"started_at\": \"2026-01-01T12:00:00.000Z\",\n      \"status\": \"draft\",\n      \"targeting_rules\": [\n        {\n          \"conditions\": []\n        }\n      ],\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"variants\": [\n        {\n          \"name\": \"treatment\",\n          \"weight\": 50\n        }\n      ],\n      \"winning_arm\": \"treatment\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "d24cffc6-8e6d-4c68-aad9-e77f7f43b3c7",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "382a117c-eee3-4d3a-96af-50072f09e110",
+      "name": "Create Experiment - default",
+      "request": {
+        "urlPathTemplate": "/experiments",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"account_id\": \"internal\",\n  \"assignment_seed\": \"verb_end_exp1768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 2,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"feature_flag_only\": false,\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"verb_end_exp\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"name\": \"Verb End\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"targeting_rules\": [\n    {\n      \"conditions\": [],\n      \"type\": \"include\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "382a117c-eee3-4d3a-96af-50072f09e110",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "eab2cff4-9df9-4de9-82f8-6cd7f03f2041",
+      "name": "Evaluate Experiments - default",
+      "request": {
+        "urlPathTemplate": "/experiments/exposures",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"configuration_revision\": 1,\n  \"enabled\": true,\n  \"experiment_id\": \"experiment_id\",\n  \"flag_key\": \"checkout_redesign\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"variant\": \"treatment\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "eab2cff4-9df9-4de9-82f8-6cd7f03f2041",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "5f7469b0-cfce-4158-abcf-8051e6d4f6f9",
+      "name": "Retrieve Experiment - default",
+      "request": {
+        "urlPathTemplate": "/experiments/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"internal\",\n  \"assignment_seed\": \"verb_end_exp1768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 2,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"feature_flag_only\": false,\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"verb_end_exp\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"name\": \"Verb End\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"targeting_rules\": [\n    {\n      \"conditions\": [],\n      \"type\": \"include\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5f7469b0-cfce-4158-abcf-8051e6d4f6f9",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "e2c1621c-6684-4edc-b662-8fb4264c051e",
+      "name": "Update Experiment - default",
+      "request": {
+        "urlPathTemplate": "/experiments/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"internal\",\n  \"assignment_seed\": \"verb_end_exp1768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 2,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"feature_flag_only\": false,\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"verb_end_exp\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"name\": \"Verb End\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"targeting_rules\": [\n    {\n      \"conditions\": [],\n      \"type\": \"include\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e2c1621c-6684-4edc-b662-8fb4264c051e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "082f0495-c277-4f35-b804-4340fe619338",
+      "name": "Activate Experiment - default",
+      "request": {
+        "urlPathTemplate": "/experiments/{id}/activate",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"internal\",\n  \"assignment_seed\": \"verb_end_exp1768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 2,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"feature_flag_only\": false,\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"verb_end_exp\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"name\": \"Verb End\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"targeting_rules\": [\n    {\n      \"conditions\": [],\n      \"type\": \"include\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "082f0495-c277-4f35-b804-4340fe619338",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "3e13a38e-cdfe-442d-923a-686a8c55432a",
+      "name": "End Experiment - default",
+      "request": {
+        "urlPathTemplate": "/experiments/{id}/end",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"internal\",\n  \"assignment_seed\": \"verb_end_exp1768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 2,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"feature_flag_only\": false,\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"verb_end_exp\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"name\": \"Verb End\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"targeting_rules\": [\n    {\n      \"conditions\": [],\n      \"type\": \"include\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "3e13a38e-cdfe-442d-923a-686a8c55432a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "605f4a53-ba6d-4d3c-ac52-c8d6fd75069b",
+      "name": "Pause Experiment - default",
+      "request": {
+        "urlPathTemplate": "/experiments/{id}/pause",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"internal\",\n  \"assignment_seed\": \"verb_end_exp1768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 2,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"feature_flag_only\": false,\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"verb_end_exp\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"name\": \"Verb End\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"targeting_rules\": [\n    {\n      \"conditions\": [],\n      \"type\": \"include\"\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "605f4a53-ba6d-4d3c-ac52-c8d6fd75069b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "b288dee4-94bc-46ac-bcab-11fa597862ad",
       "name": "List Exports - default",
       "request": {
@@ -9446,7 +9721,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"action\": \"ai_prompt:create\",\n      \"granted\": false\n    }\n  ]\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"action\": \"experiment:manage\",\n      \"granted\": false\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12780,7 +13055,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-01-01\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-09-09-1\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12812,7 +13087,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-01-01\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-09-09-1\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12848,7 +13123,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-01-01\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-09-09-1\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12920,7 +13195,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-01-01\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-09-09-1\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14208,6 +14483,6 @@
     }
   ],
   "meta": {
-    "total": 394
+    "total": 402
   }
 }

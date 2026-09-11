@@ -49,6 +49,8 @@ func (l *ListPermissionsRequest) SetActions(actions *string) {
 type PermissionAction string
 
 const (
+	PermissionActionExperimentManage                  PermissionAction = "experiment:manage"
+	PermissionActionExperimentRead                    PermissionAction = "experiment:read"
 	PermissionActionAiPromptCreate                    PermissionAction = "ai_prompt:create"
 	PermissionActionAccessPassBasicExport             PermissionAction = "access_pass:basic:export"
 	PermissionActionAccessPassBasicRead               PermissionAction = "access_pass:basic:read"
@@ -312,6 +314,10 @@ const (
 
 func NewPermissionActionFromString(s string) (PermissionAction, error) {
 	switch s {
+	case "experiment:manage":
+		return PermissionActionExperimentManage, nil
+	case "experiment:read":
+		return PermissionActionExperimentRead, nil
 	case "ai_prompt:create":
 		return PermissionActionAiPromptCreate, nil
 	case "access_pass:basic:export":

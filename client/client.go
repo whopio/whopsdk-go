@@ -41,6 +41,7 @@ import (
 	entries "github.com/whopio/whopsdk-go/entries"
 	events "github.com/whopio/whopsdk-go/events"
 	experiences "github.com/whopio/whopsdk-go/experiences"
+	experiments "github.com/whopio/whopsdk-go/experiments"
 	exports "github.com/whopio/whopsdk-go/exports"
 	feemarkups "github.com/whopio/whopsdk-go/feemarkups"
 	files "github.com/whopio/whopsdk-go/files"
@@ -128,6 +129,7 @@ type Whop struct {
 	Entries                  *entries.Client
 	Events                   *events.Client
 	Experiences              *experiences.Client
+	Experiments              *experiments.Client
 	Exports                  *exports.Client
 	FeeMarkups               *feemarkups.Client
 	Files                    *files.Client
@@ -182,7 +184,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-09"
+		apiVersionDateDefault := "2026-09-09-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -223,6 +225,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Entries:                  entries.NewClient(options),
 		Events:                   events.NewClient(options),
 		Experiences:              experiences.NewClient(options),
+		Experiments:              experiments.NewClient(options),
 		Exports:                  exports.NewClient(options),
 		FeeMarkups:               feemarkups.NewClient(options),
 		Files:                    files.NewClient(options),
