@@ -1196,6 +1196,7 @@ var (
 	accountPreferencesFieldCardsAutoTopUp            = big.NewInt(1 << 5)
 	accountPreferencesFieldCardsNotifications        = big.NewInt(1 << 6)
 	accountPreferencesFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
+	accountPreferencesFieldEconomicIntelligence      = big.NewInt(1 << 8)
 )
 
 type AccountPreferences struct {
@@ -1215,6 +1216,8 @@ type AccountPreferences struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
+	// Whether economic intelligence is enabled for the account.
+	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1277,6 +1280,13 @@ func (a *AccountPreferences) GetDisputeFighterEnabled() bool {
 		return false
 	}
 	return a.DisputeFighterEnabled
+}
+
+func (a *AccountPreferences) GetEconomicIntelligence() bool {
+	if a == nil {
+		return false
+	}
+	return a.EconomicIntelligence
 }
 
 func (a *AccountPreferences) GetExtraProperties() map[string]interface{} {
@@ -1347,6 +1357,13 @@ func (a *AccountPreferences) SetCardsNotifications(cardsNotifications bool) {
 func (a *AccountPreferences) SetDisputeFighterEnabled(disputeFighterEnabled bool) {
 	a.DisputeFighterEnabled = disputeFighterEnabled
 	a.require(accountPreferencesFieldDisputeFighterEnabled)
+}
+
+// SetEconomicIntelligence sets the EconomicIntelligence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetEconomicIntelligence(economicIntelligence bool) {
+	a.EconomicIntelligence = economicIntelligence
+	a.require(accountPreferencesFieldEconomicIntelligence)
 }
 
 func (a *AccountPreferences) UnmarshalJSON(data []byte) error {
