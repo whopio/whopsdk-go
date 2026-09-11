@@ -593,53 +593,54 @@ var (
 	accountFieldCountry                             = big.NewInt(1 << 10)
 	accountFieldCreatedAt                           = big.NewInt(1 << 11)
 	accountFieldDescription                         = big.NewInt(1 << 12)
-	accountFieldEmail                               = big.NewInt(1 << 13)
-	accountFieldEula                                = big.NewInt(1 << 14)
-	accountFieldHomePreferences                     = big.NewInt(1 << 15)
-	accountFieldID                                  = big.NewInt(1 << 16)
-	accountFieldIndustryGroup                       = big.NewInt(1 << 17)
-	accountFieldIndustryType                        = big.NewInt(1 << 18)
-	accountFieldInvoicePrefix                       = big.NewInt(1 << 19)
-	accountFieldLogoURL                             = big.NewInt(1 << 20)
-	accountFieldMetadata                            = big.NewInt(1 << 21)
-	accountFieldOnboardingType                      = big.NewInt(1 << 22)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 23)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 24)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 25)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 26)
-	accountFieldOwner                               = big.NewInt(1 << 27)
-	accountFieldParentAccount                       = big.NewInt(1 << 28)
-	accountFieldPaymentControls                     = big.NewInt(1 << 29)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 30)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 31)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 32)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 33)
-	accountFieldRequiredActions                     = big.NewInt(1 << 34)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 35)
-	accountFieldRoute                               = big.NewInt(1 << 36)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 37)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 38)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 39)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 40)
-	accountFieldSocialLinks                         = big.NewInt(1 << 41)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 42)
-	accountFieldStatus                              = big.NewInt(1 << 43)
-	accountFieldStatusReason                        = big.NewInt(1 << 44)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 45)
-	accountFieldTargetAudience                      = big.NewInt(1 << 46)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 47)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 48)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 49)
-	accountFieldTaxType                             = big.NewInt(1 << 50)
-	accountFieldTermsOfService                      = big.NewInt(1 << 51)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 52)
-	accountFieldTitle                               = big.NewInt(1 << 53)
-	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 54)
-	accountFieldTotalUsd                            = big.NewInt(1 << 55)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 56)
-	accountFieldVerification                        = big.NewInt(1 << 57)
-	accountFieldVolumeUsd                           = big.NewInt(1 << 58)
-	accountFieldWallet                              = big.NewInt(1 << 59)
+	accountFieldEconomicIntelligence                = big.NewInt(1 << 13)
+	accountFieldEmail                               = big.NewInt(1 << 14)
+	accountFieldEula                                = big.NewInt(1 << 15)
+	accountFieldHomePreferences                     = big.NewInt(1 << 16)
+	accountFieldID                                  = big.NewInt(1 << 17)
+	accountFieldIndustryGroup                       = big.NewInt(1 << 18)
+	accountFieldIndustryType                        = big.NewInt(1 << 19)
+	accountFieldInvoicePrefix                       = big.NewInt(1 << 20)
+	accountFieldLogoURL                             = big.NewInt(1 << 21)
+	accountFieldMetadata                            = big.NewInt(1 << 22)
+	accountFieldOnboardingType                      = big.NewInt(1 << 23)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 24)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 25)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 26)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 27)
+	accountFieldOwner                               = big.NewInt(1 << 28)
+	accountFieldParentAccount                       = big.NewInt(1 << 29)
+	accountFieldPaymentControls                     = big.NewInt(1 << 30)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 31)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 32)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 33)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 34)
+	accountFieldRequiredActions                     = big.NewInt(1 << 35)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 36)
+	accountFieldRoute                               = big.NewInt(1 << 37)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 38)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 39)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 40)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 41)
+	accountFieldSocialLinks                         = big.NewInt(1 << 42)
+	accountFieldStablecoinRails                     = big.NewInt(1 << 43)
+	accountFieldStatus                              = big.NewInt(1 << 44)
+	accountFieldStatusReason                        = big.NewInt(1 << 45)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 46)
+	accountFieldTargetAudience                      = big.NewInt(1 << 47)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 48)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 49)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 50)
+	accountFieldTaxType                             = big.NewInt(1 << 51)
+	accountFieldTermsOfService                      = big.NewInt(1 << 52)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 53)
+	accountFieldTitle                               = big.NewInt(1 << 54)
+	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 55)
+	accountFieldTotalUsd                            = big.NewInt(1 << 56)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 57)
+	accountFieldVerification                        = big.NewInt(1 << 58)
+	accountFieldVolumeUsd                           = big.NewInt(1 << 59)
+	accountFieldWallet                              = big.NewInt(1 << 60)
 )
 
 type Account struct {
@@ -668,6 +669,8 @@ type Account struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Account promotional description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Whether economic intelligence is enabled for the account.
+	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
 	// Account owner email address.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// The account's end-user license agreement document, or `null` if they have not published one.
@@ -854,6 +857,13 @@ func (a *Account) GetDescription() *string {
 		return nil
 	}
 	return a.Description
+}
+
+func (a *Account) GetEconomicIntelligence() bool {
+	if a == nil {
+		return false
+	}
+	return a.EconomicIntelligence
 }
 
 func (a *Account) GetEmail() *string {
@@ -1288,6 +1298,13 @@ func (a *Account) SetCreatedAt(createdAt string) {
 func (a *Account) SetDescription(description *string) {
 	a.Description = description
 	a.require(accountFieldDescription)
+}
+
+// SetEconomicIntelligence sets the EconomicIntelligence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetEconomicIntelligence(economicIntelligence bool) {
+	a.EconomicIntelligence = economicIntelligence
+	a.require(accountFieldEconomicIntelligence)
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
