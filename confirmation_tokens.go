@@ -759,13 +759,16 @@ func (p PaymentMethodDisplayCategory) Ptr() *PaymentMethodDisplayCategory {
 }
 
 var (
-	paymentMethodDisplayPreviewFieldBrand = big.NewInt(1 << 0)
-	paymentMethodDisplayPreviewFieldLast4 = big.NewInt(1 << 1)
+	paymentMethodDisplayPreviewFieldBrand       = big.NewInt(1 << 0)
+	paymentMethodDisplayPreviewFieldFingerprint = big.NewInt(1 << 1)
+	paymentMethodDisplayPreviewFieldLast4       = big.NewInt(1 << 2)
 )
 
 type PaymentMethodDisplayPreview struct {
 	// Lowercase card brand, e.g. `visa`. Absent when the method carries no brand.
 	Brand *string `json:"brand,omitempty" url:"brand,omitempty"`
+	// A stable identifier for the collected card. Matches the `fingerprint` on any payment method saved from this token. Absent when the method is not a card or no fingerprint was returned.
+	Fingerprint *string `json:"fingerprint,omitempty" url:"fingerprint,omitempty"`
 	// Last four digits of the instrument. Absent when the method carries none.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
 
@@ -781,6 +784,13 @@ func (p *PaymentMethodDisplayPreview) GetBrand() *string {
 		return nil
 	}
 	return p.Brand
+}
+
+func (p *PaymentMethodDisplayPreview) GetFingerprint() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Fingerprint
 }
 
 func (p *PaymentMethodDisplayPreview) GetLast4() *string {
@@ -809,6 +819,13 @@ func (p *PaymentMethodDisplayPreview) require(field *big.Int) {
 func (p *PaymentMethodDisplayPreview) SetBrand(brand *string) {
 	p.Brand = brand
 	p.require(paymentMethodDisplayPreviewFieldBrand)
+}
+
+// SetFingerprint sets the Fingerprint field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentMethodDisplayPreview) SetFingerprint(fingerprint *string) {
+	p.Fingerprint = fingerprint
+	p.require(paymentMethodDisplayPreviewFieldFingerprint)
 }
 
 // SetLast4 sets the Last4 field and marks it as non-optional;
