@@ -3163,6 +3163,7 @@ const (
 	ListMethodsResponseLimitsStandardErrorCodeKycCompleted                        ListMethodsResponseLimitsStandardErrorCode = "kyc_completed"
 	ListMethodsResponseLimitsStandardErrorCodeRmiClear                            ListMethodsResponseLimitsStandardErrorCode = "rmi_clear"
 	ListMethodsResponseLimitsStandardErrorCodeIdentityRfiClear                    ListMethodsResponseLimitsStandardErrorCode = "identity_rfi_clear"
+	ListMethodsResponseLimitsStandardErrorCodeGuardianIDClear                     ListMethodsResponseLimitsStandardErrorCode = "guardian_id_clear"
 	ListMethodsResponseLimitsStandardErrorCodeEcommerceFulfillmentConnected       ListMethodsResponseLimitsStandardErrorCode = "ecommerce_fulfillment_connected"
 	ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOut                   ListMethodsResponseLimitsStandardErrorCode = "block_move_money_out"
 	ListMethodsResponseLimitsStandardErrorCodeBlockMoveMoneyOutSetByParent        ListMethodsResponseLimitsStandardErrorCode = "block_move_money_out_set_by_parent"
@@ -3185,6 +3186,8 @@ func NewListMethodsResponseLimitsStandardErrorCodeFromString(s string) (ListMeth
 		return ListMethodsResponseLimitsStandardErrorCodeRmiClear, nil
 	case "identity_rfi_clear":
 		return ListMethodsResponseLimitsStandardErrorCodeIdentityRfiClear, nil
+	case "guardian_id_clear":
+		return ListMethodsResponseLimitsStandardErrorCodeGuardianIDClear, nil
 	case "ecommerce_fulfillment_connected":
 		return ListMethodsResponseLimitsStandardErrorCodeEcommerceFulfillmentConnected, nil
 	case "block_move_money_out":
