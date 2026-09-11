@@ -555,16 +555,13 @@ func (l ListEconomicIntelligenceRequestStatus) Ptr() *ListEconomicIntelligenceRe
 }
 
 var (
-	listEconomicIntelligenceResponseFieldData              = big.NewInt(1 << 0)
-	listEconomicIntelligenceResponseFieldGenerationPending = big.NewInt(1 << 1)
-	listEconomicIntelligenceResponseFieldPageInfo          = big.NewInt(1 << 2)
+	listEconomicIntelligenceResponseFieldData     = big.NewInt(1 << 0)
+	listEconomicIntelligenceResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
 type ListEconomicIntelligenceResponse struct {
-	Data []*EconomicIntelligence `json:"data" url:"data"`
-	// Whether a generation is running because the account has no ready recommendations.
-	GenerationPending bool                                      `json:"generation_pending" url:"generation_pending"`
-	PageInfo          *ListEconomicIntelligenceResponsePageInfo `json:"page_info" url:"page_info"`
+	Data     []*EconomicIntelligence                   `json:"data" url:"data"`
+	PageInfo *ListEconomicIntelligenceResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -578,13 +575,6 @@ func (l *ListEconomicIntelligenceResponse) GetData() []*EconomicIntelligence {
 		return nil
 	}
 	return l.Data
-}
-
-func (l *ListEconomicIntelligenceResponse) GetGenerationPending() bool {
-	if l == nil {
-		return false
-	}
-	return l.GenerationPending
 }
 
 func (l *ListEconomicIntelligenceResponse) GetPageInfo() *ListEconomicIntelligenceResponsePageInfo {
@@ -613,13 +603,6 @@ func (l *ListEconomicIntelligenceResponse) require(field *big.Int) {
 func (l *ListEconomicIntelligenceResponse) SetData(data []*EconomicIntelligence) {
 	l.Data = data
 	l.require(listEconomicIntelligenceResponseFieldData)
-}
-
-// SetGenerationPending sets the GenerationPending field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEconomicIntelligenceResponse) SetGenerationPending(generationPending bool) {
-	l.GenerationPending = generationPending
-	l.require(listEconomicIntelligenceResponseFieldGenerationPending)
 }
 
 // SetPageInfo sets the PageInfo field and marks it as non-optional;
