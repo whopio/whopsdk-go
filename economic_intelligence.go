@@ -143,21 +143,18 @@ func (r *RunEconomicIntelligenceRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	economicIntelligenceFieldAccountID          = big.NewInt(1 << 0)
-	economicIntelligenceFieldActionType         = big.NewInt(1 << 1)
-	economicIntelligenceFieldCreatedAt          = big.NewInt(1 << 2)
-	economicIntelligenceFieldExecutedAt         = big.NewInt(1 << 3)
-	economicIntelligenceFieldExecutionType      = big.NewInt(1 << 4)
-	economicIntelligenceFieldExpectedDelta      = big.NewInt(1 << 5)
-	economicIntelligenceFieldExpectedLedgerLine = big.NewInt(1 << 6)
-	economicIntelligenceFieldID                 = big.NewInt(1 << 7)
-	economicIntelligenceFieldInferenceVersion   = big.NewInt(1 << 8)
-	economicIntelligenceFieldInput              = big.NewInt(1 << 9)
-	economicIntelligenceFieldPrompt             = big.NewInt(1 << 10)
-	economicIntelligenceFieldReasoning          = big.NewInt(1 << 11)
-	economicIntelligenceFieldStatus             = big.NewInt(1 << 12)
-	economicIntelligenceFieldSupersededAt       = big.NewInt(1 << 13)
-	economicIntelligenceFieldTitle              = big.NewInt(1 << 14)
+	economicIntelligenceFieldAccountID     = big.NewInt(1 << 0)
+	economicIntelligenceFieldActionType    = big.NewInt(1 << 1)
+	economicIntelligenceFieldCreatedAt     = big.NewInt(1 << 2)
+	economicIntelligenceFieldExecutedAt    = big.NewInt(1 << 3)
+	economicIntelligenceFieldExecutionType = big.NewInt(1 << 4)
+	economicIntelligenceFieldID            = big.NewInt(1 << 5)
+	economicIntelligenceFieldInput         = big.NewInt(1 << 6)
+	economicIntelligenceFieldPrompt        = big.NewInt(1 << 7)
+	economicIntelligenceFieldReasoning     = big.NewInt(1 << 8)
+	economicIntelligenceFieldStatus        = big.NewInt(1 << 9)
+	economicIntelligenceFieldSupersededAt  = big.NewInt(1 << 10)
+	economicIntelligenceFieldTitle         = big.NewInt(1 << 11)
 )
 
 type EconomicIntelligence struct {
@@ -171,14 +168,8 @@ type EconomicIntelligence struct {
 	ExecutedAt *string `json:"executed_at,omitempty" url:"executed_at,omitempty"`
 	// How the card runs. `whop_ai` means `prompt` is sent to Whop AI, which carries out every step.
 	ExecutionType EconomicIntelligenceExecutionType `json:"execution_type" url:"execution_type"`
-	// Expected change in that ledger line over the evaluation window, in USD, negative when the action reduces it, or `null`
-	ExpectedDelta *Money `json:"expected_delta,omitempty" url:"expected_delta,omitempty"`
-	// The ledger line the action is expected to move, or `null` when the card carries no expectation
-	ExpectedLedgerLine *string `json:"expected_ledger_line,omitempty" url:"expected_ledger_line,omitempty"`
 	// Economic intelligence ID, prefixed `reca_`
 	ID string `json:"id" url:"id"`
-	// The engine that generated the card, e.g. `whop-ai-v5`
-	InferenceVersion string `json:"inference_version" url:"inference_version"`
 	// What the owner asked for, in their own words, when this recommendation was requested, or `null` when the engine chose the action on its own
 	Input *string `json:"input,omitempty" url:"input,omitempty"`
 	// The step-by-step brief Whop AI executes when the card is run, or `null`
@@ -234,32 +225,11 @@ func (e *EconomicIntelligence) GetExecutionType() EconomicIntelligenceExecutionT
 	return e.ExecutionType
 }
 
-func (e *EconomicIntelligence) GetExpectedDelta() *Money {
-	if e == nil {
-		return nil
-	}
-	return e.ExpectedDelta
-}
-
-func (e *EconomicIntelligence) GetExpectedLedgerLine() *string {
-	if e == nil {
-		return nil
-	}
-	return e.ExpectedLedgerLine
-}
-
 func (e *EconomicIntelligence) GetID() string {
 	if e == nil {
 		return ""
 	}
 	return e.ID
-}
-
-func (e *EconomicIntelligence) GetInferenceVersion() string {
-	if e == nil {
-		return ""
-	}
-	return e.InferenceVersion
 }
 
 func (e *EconomicIntelligence) GetInput() *string {
@@ -353,32 +323,11 @@ func (e *EconomicIntelligence) SetExecutionType(executionType EconomicIntelligen
 	e.require(economicIntelligenceFieldExecutionType)
 }
 
-// SetExpectedDelta sets the ExpectedDelta field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetExpectedDelta(expectedDelta *Money) {
-	e.ExpectedDelta = expectedDelta
-	e.require(economicIntelligenceFieldExpectedDelta)
-}
-
-// SetExpectedLedgerLine sets the ExpectedLedgerLine field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetExpectedLedgerLine(expectedLedgerLine *string) {
-	e.ExpectedLedgerLine = expectedLedgerLine
-	e.require(economicIntelligenceFieldExpectedLedgerLine)
-}
-
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EconomicIntelligence) SetID(id string) {
 	e.ID = id
 	e.require(economicIntelligenceFieldID)
-}
-
-// SetInferenceVersion sets the InferenceVersion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetInferenceVersion(inferenceVersion string) {
-	e.InferenceVersion = inferenceVersion
-	e.require(economicIntelligenceFieldInferenceVersion)
 }
 
 // SetInput sets the Input field and marks it as non-optional;
