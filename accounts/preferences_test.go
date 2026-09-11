@@ -2884,6 +2884,14 @@ func TestSettersUpdatePreferencesRequestAdsTripleWhaleIntegration(t *testing.T) 
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetShopDomain", func(t *testing.T) {
+		obj := &UpdatePreferencesRequestAdsTripleWhaleIntegration{}
+		var fernTestValueShopDomain *string
+		obj.SetShopDomain(fernTestValueShopDomain)
+		assert.Equal(t, fernTestValueShopDomain, obj.ShopDomain)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersUpdatePreferencesRequestAdsTripleWhaleIntegration(t *testing.T) {
@@ -2920,6 +2928,39 @@ func TestGettersUpdatePreferencesRequestAdsTripleWhaleIntegration(t *testing.T) 
 		_ = obj.GetAPIKey() // Should return zero value
 	})
 
+	t.Run("GetShopDomain", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequestAdsTripleWhaleIntegration{}
+		var expected *string
+		obj.ShopDomain = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetShopDomain(), "getter should return the property value")
+	})
+
+	t.Run("GetShopDomain_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequestAdsTripleWhaleIntegration{}
+		obj.ShopDomain = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetShopDomain(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetShopDomain_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesRequestAdsTripleWhaleIntegration
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetShopDomain() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitUpdatePreferencesRequestAdsTripleWhaleIntegration(t *testing.T) {
@@ -2931,6 +2972,37 @@ func TestSettersMarkExplicitUpdatePreferencesRequestAdsTripleWhaleIntegration(t 
 
 		// Act
 		obj.SetAPIKey(fernTestValueAPIKey)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetShopDomain_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequestAdsTripleWhaleIntegration{}
+		var fernTestValueShopDomain *string
+
+		// Act
+		obj.SetShopDomain(fernTestValueShopDomain)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6588,11 +6660,11 @@ func TestEnumRetrievePreferencesResponseAdsTripleWhaleIntegrationStatus(t *testi
 		assert.Equal(t, RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus("not_connected"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_requires_shopify_store", func(t *testing.T) {
+	t.Run("NewFromString_requires_shop_domain", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewRetrievePreferencesResponseAdsTripleWhaleIntegrationStatusFromString("requires_shopify_store")
+		val, err := NewRetrievePreferencesResponseAdsTripleWhaleIntegrationStatusFromString("requires_shop_domain")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus("requires_shopify_store"), val, "enum value should match expected wire value")
+		assert.Equal(t, RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus("requires_shop_domain"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -6776,11 +6848,11 @@ func TestEnumUpdatePreferencesResponseAdsTripleWhaleIntegrationStatus(t *testing
 		assert.Equal(t, UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus("not_connected"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_requires_shopify_store", func(t *testing.T) {
+	t.Run("NewFromString_requires_shop_domain", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdatePreferencesResponseAdsTripleWhaleIntegrationStatusFromString("requires_shopify_store")
+		val, err := NewUpdatePreferencesResponseAdsTripleWhaleIntegrationStatusFromString("requires_shop_domain")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus("requires_shopify_store"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus("requires_shop_domain"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
