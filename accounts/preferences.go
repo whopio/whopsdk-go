@@ -56,7 +56,7 @@ type RetrievePreferencesResponse struct {
 	AdsReportingCurrency string `json:"ads_reporting_currency" url:"ads_reporting_currency"`
 	// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Defaults to `America/New_York` until explicitly overridden.
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
-	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel.
+	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, a custom checkout, or no connected store — by setting `shop_domain` explicitly; Shopify merchants may instead rely on a connected store's domain. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 	AdsTripleWhaleIntegration *RetrievePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
@@ -974,7 +974,7 @@ func (r RetrievePreferencesResponseAdsPaymentMethodsPrimaryType) Ptr() *Retrieve
 	return &r
 }
 
-// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel.
+// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, a custom checkout, or no connected store — by setting `shop_domain` explicitly; Shopify merchants may instead rely on a connected store's domain. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 var (
 	retrievePreferencesResponseAdsTripleWhaleIntegrationFieldMaskedAPIKey = big.NewInt(1 << 0)
 	retrievePreferencesResponseAdsTripleWhaleIntegrationFieldShopDomain   = big.NewInt(1 << 1)
@@ -984,9 +984,9 @@ var (
 type RetrievePreferencesResponseAdsTripleWhaleIntegration struct {
 	// The leading characters of the stored Data-In API key, followed by asterisks. The full key is never returned. `null` when no key is stored.
 	MaskedAPIKey *string `json:"masked_api_key,omitempty" url:"masked_api_key,omitempty"`
-	// The connected Shopify store domain spend is reported for, such as `acme.myshopify.com`. `null` when no store is connected.
+	// The shop domain spend is reported for, such as `acme.myshopify.com` or a custom domain for a non-Shopify store. This is the explicit `shop_domain` if one was set, otherwise a connected Shopify store's domain. `null` when neither is present.
 	ShopDomain *string `json:"shop_domain,omitempty" url:"shop_domain,omitempty"`
-	// Where the integration stands. `requires_shopify_store` means no Shopify store is connected — Triple Whale keys records by Shopify shop, so no spend is reported until one is.
+	// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` explicitly, or connect a Shopify store, before spend can be reported.
 	Status RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1094,13 +1094,13 @@ func (r *RetrievePreferencesResponseAdsTripleWhaleIntegration) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Where the integration stands. `requires_shopify_store` means no Shopify store is connected — Triple Whale keys records by Shopify shop, so no spend is reported until one is.
+// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` explicitly, or connect a Shopify store, before spend can be reported.
 type RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus string
 
 const (
-	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusConnected            RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "connected"
-	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected         RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "not_connected"
-	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopifyStore RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "requires_shopify_store"
+	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusConnected          RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "connected"
+	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected       RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "not_connected"
+	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopDomain RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "requires_shop_domain"
 )
 
 func NewRetrievePreferencesResponseAdsTripleWhaleIntegrationStatusFromString(s string) (RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus, error) {
@@ -1109,8 +1109,8 @@ func NewRetrievePreferencesResponseAdsTripleWhaleIntegrationStatusFromString(s s
 		return RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusConnected, nil
 	case "not_connected":
 		return RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected, nil
-	case "requires_shopify_store":
-		return RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopifyStore, nil
+	case "requires_shop_domain":
+		return RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopDomain, nil
 	}
 	var t RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1473,14 +1473,17 @@ func (u UpdatePreferencesRequestAdsPaymentMethodsPrimaryType) Ptr() *UpdatePrefe
 	return &u
 }
 
-// Connects or disconnects the Triple Whale integration. Requires a connected Shopify store, since Triple Whale keys spend records by Shopify shop.
+// Connects or disconnects the Triple Whale integration. Requires the `ad_campaign:create` scope. Connecting requires a shop domain to report spend against — either an explicit `shop_domain` (required for any merchant without a connected Shopify store, e.g. WooCommerce, a custom checkout, or a white-label platform's merchant) or a Shopify store connected on the Fulfillment page.
 var (
-	updatePreferencesRequestAdsTripleWhaleIntegrationFieldAPIKey = big.NewInt(1 << 0)
+	updatePreferencesRequestAdsTripleWhaleIntegrationFieldAPIKey     = big.NewInt(1 << 0)
+	updatePreferencesRequestAdsTripleWhaleIntegrationFieldShopDomain = big.NewInt(1 << 1)
 )
 
 type UpdatePreferencesRequestAdsTripleWhaleIntegration struct {
-	// A Triple Whale Data-In API key with the `Data-In Write: Ads` scope, validated against Triple Whale before it is stored. Pass `null` to disconnect. Connecting for the first time backfills the account's existing ad spend.
+	// A Triple Whale Data-In API key with the `Ads: Write` scope, validated against Triple Whale before it is stored. Pass `null` to disconnect. Connecting for the first time backfills the account's existing ad spend.
 	APIKey *string `json:"api_key,omitempty" url:"api_key,omitempty"`
+	// The exact shop domain configured in Triple Whale's Settings → Store (for Shopify this is the `.myshopify.com` domain; for a custom sales platform it's whatever domain Triple Whale assigned when the shop was set up there). Validated against Triple Whale — the API key must have access to it — before it is stored. Omit to fall back to a connected Shopify store's domain; there is no way to clear a stored value, only to overwrite it with a new domain.
+	ShopDomain *string `json:"shop_domain,omitempty" url:"shop_domain,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1494,6 +1497,13 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) GetAPIKey() *string 
 		return nil
 	}
 	return u.APIKey
+}
+
+func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) GetShopDomain() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ShopDomain
 }
 
 func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) GetExtraProperties() map[string]interface{} {
@@ -1515,6 +1525,13 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) require(field *big.I
 func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) SetAPIKey(apiKey *string) {
 	u.APIKey = apiKey
 	u.require(updatePreferencesRequestAdsTripleWhaleIntegrationFieldAPIKey)
+}
+
+// SetShopDomain sets the ShopDomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) SetShopDomain(shopDomain *string) {
+	u.ShopDomain = shopDomain
+	u.require(updatePreferencesRequestAdsTripleWhaleIntegrationFieldShopDomain)
 }
 
 func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) UnmarshalJSON(data []byte) error {
@@ -1580,7 +1597,7 @@ type UpdatePreferencesResponse struct {
 	AdsReportingCurrency string `json:"ads_reporting_currency" url:"ads_reporting_currency"`
 	// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Defaults to `America/New_York` until explicitly overridden.
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
-	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel.
+	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, a custom checkout, or no connected store — by setting `shop_domain` explicitly; Shopify merchants may instead rely on a connected store's domain. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 	AdsTripleWhaleIntegration *UpdatePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
@@ -2498,7 +2515,7 @@ func (u UpdatePreferencesResponseAdsPaymentMethodsPrimaryType) Ptr() *UpdatePref
 	return &u
 }
 
-// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel.
+// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, a custom checkout, or no connected store — by setting `shop_domain` explicitly; Shopify merchants may instead rely on a connected store's domain. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 var (
 	updatePreferencesResponseAdsTripleWhaleIntegrationFieldMaskedAPIKey = big.NewInt(1 << 0)
 	updatePreferencesResponseAdsTripleWhaleIntegrationFieldShopDomain   = big.NewInt(1 << 1)
@@ -2508,9 +2525,9 @@ var (
 type UpdatePreferencesResponseAdsTripleWhaleIntegration struct {
 	// The leading characters of the stored Data-In API key, followed by asterisks. The full key is never returned. `null` when no key is stored.
 	MaskedAPIKey *string `json:"masked_api_key,omitempty" url:"masked_api_key,omitempty"`
-	// The connected Shopify store domain spend is reported for, such as `acme.myshopify.com`. `null` when no store is connected.
+	// The shop domain spend is reported for, such as `acme.myshopify.com` or a custom domain for a non-Shopify store. This is the explicit `shop_domain` if one was set, otherwise a connected Shopify store's domain. `null` when neither is present.
 	ShopDomain *string `json:"shop_domain,omitempty" url:"shop_domain,omitempty"`
-	// Where the integration stands. `requires_shopify_store` means no Shopify store is connected — Triple Whale keys records by Shopify shop, so no spend is reported until one is.
+	// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` explicitly, or connect a Shopify store, before spend can be reported.
 	Status UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2618,13 +2635,13 @@ func (u *UpdatePreferencesResponseAdsTripleWhaleIntegration) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Where the integration stands. `requires_shopify_store` means no Shopify store is connected — Triple Whale keys records by Shopify shop, so no spend is reported until one is.
+// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` explicitly, or connect a Shopify store, before spend can be reported.
 type UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus string
 
 const (
-	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusConnected            UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "connected"
-	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected         UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "not_connected"
-	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopifyStore UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "requires_shopify_store"
+	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusConnected          UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "connected"
+	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected       UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "not_connected"
+	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopDomain UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "requires_shop_domain"
 )
 
 func NewUpdatePreferencesResponseAdsTripleWhaleIntegrationStatusFromString(s string) (UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus, error) {
@@ -2633,8 +2650,8 @@ func NewUpdatePreferencesResponseAdsTripleWhaleIntegrationStatusFromString(s str
 		return UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusConnected, nil
 	case "not_connected":
 		return UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected, nil
-	case "requires_shopify_store":
-		return UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopifyStore, nil
+	case "requires_shop_domain":
+		return UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopDomain, nil
 	}
 	var t UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2665,7 +2682,7 @@ type UpdatePreferencesRequest struct {
 	AdsReportingCurrency *string `json:"ads_reporting_currency,omitempty" url:"-"`
 	// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Cannot be cleared once set — pass a new value to change it.
 	AdsSchedulingTimezone *string `json:"ads_scheduling_timezone,omitempty" url:"-"`
-	// Connects or disconnects the Triple Whale integration. Requires a connected Shopify store, since Triple Whale keys spend records by Shopify shop.
+	// Connects or disconnects the Triple Whale integration. Requires the `ad_campaign:create` scope. Connecting requires a shop domain to report spend against — either an explicit `shop_domain` (required for any merchant without a connected Shopify store, e.g. WooCommerce, a custom checkout, or a white-label platform's merchant) or a Shopify store connected on the Fulfillment page.
 	AdsTripleWhaleIntegration *UpdatePreferencesRequestAdsTripleWhaleIntegration `json:"ads_triple_whale_integration,omitempty" url:"-"`
 	// Whether incoming funds are automatically moved to the account's cards balance. Requires a cards balance on the account.
 	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
