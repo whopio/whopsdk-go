@@ -36796,6 +36796,14 @@ client.Partners.Businesses.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**businessPrefixQuery:** `*string` — Case-insensitive business-name prefix, or an exact `biz_` account ID. Surrounding whitespace is ignored; blank values apply no filter.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 

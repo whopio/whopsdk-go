@@ -12,19 +12,20 @@ import (
 )
 
 var (
-	listBusinessesRequestFieldStatus           = big.NewInt(1 << 0)
-	listBusinessesRequestFieldHasEarnings      = big.NewInt(1 << 1)
-	listBusinessesRequestFieldFirst            = big.NewInt(1 << 2)
-	listBusinessesRequestFieldAfter            = big.NewInt(1 << 3)
-	listBusinessesRequestFieldLast             = big.NewInt(1 << 4)
-	listBusinessesRequestFieldBefore           = big.NewInt(1 << 5)
-	listBusinessesRequestFieldOrder            = big.NewInt(1 << 6)
-	listBusinessesRequestFieldDirection        = big.NewInt(1 << 7)
-	listBusinessesRequestFieldCreatedBefore    = big.NewInt(1 << 8)
-	listBusinessesRequestFieldCreatedAfter     = big.NewInt(1 << 9)
-	listBusinessesRequestFieldReferredUserID   = big.NewInt(1 << 10)
-	listBusinessesRequestFieldReferredUsername = big.NewInt(1 << 11)
-	listBusinessesRequestFieldTier             = big.NewInt(1 << 12)
+	listBusinessesRequestFieldStatus              = big.NewInt(1 << 0)
+	listBusinessesRequestFieldHasEarnings         = big.NewInt(1 << 1)
+	listBusinessesRequestFieldFirst               = big.NewInt(1 << 2)
+	listBusinessesRequestFieldAfter               = big.NewInt(1 << 3)
+	listBusinessesRequestFieldLast                = big.NewInt(1 << 4)
+	listBusinessesRequestFieldBefore              = big.NewInt(1 << 5)
+	listBusinessesRequestFieldOrder               = big.NewInt(1 << 6)
+	listBusinessesRequestFieldDirection           = big.NewInt(1 << 7)
+	listBusinessesRequestFieldCreatedBefore       = big.NewInt(1 << 8)
+	listBusinessesRequestFieldCreatedAfter        = big.NewInt(1 << 9)
+	listBusinessesRequestFieldReferredUserID      = big.NewInt(1 << 10)
+	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 11)
+	listBusinessesRequestFieldTier                = big.NewInt(1 << 12)
+	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 13)
 )
 
 type ListBusinessesRequest struct {
@@ -54,6 +55,8 @@ type ListBusinessesRequest struct {
 	ReferredUsername *string `json:"-" url:"referred_username,omitempty"`
 	// Filter to referrals from a single tier: first, second, or blueprint.
 	Tier *ListBusinessesRequestTier `json:"-" url:"tier,omitempty"`
+	// Case-insensitive business-name prefix, or an exact `biz_` account ID. Surrounding whitespace is ignored; blank values apply no filter.
+	BusinessPrefixQuery *string `json:"-" url:"business_prefix_query,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -155,6 +158,13 @@ func (l *ListBusinessesRequest) SetReferredUsername(referredUsername *string) {
 func (l *ListBusinessesRequest) SetTier(tier *ListBusinessesRequestTier) {
 	l.Tier = tier
 	l.require(listBusinessesRequestFieldTier)
+}
+
+// SetBusinessPrefixQuery sets the BusinessPrefixQuery field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesRequest) SetBusinessPrefixQuery(businessPrefixQuery *string) {
+	l.BusinessPrefixQuery = businessPrefixQuery
+	l.require(listBusinessesRequestFieldBusinessPrefixQuery)
 }
 
 var (
