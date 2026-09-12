@@ -29,6 +29,11 @@ var ErrorCodes internal.ErrorCodes = internal.ErrorCodes{
 			APIError: apiError,
 		}
 	},
+	409: func(apiError *core.APIError) error {
+		return &whopsdk.ConflictError{
+			APIError: apiError,
+		}
+	},
 	503: func(apiError *core.APIError) error {
 		return &whopsdk.ServiceUnavailableError{
 			APIError: apiError,
