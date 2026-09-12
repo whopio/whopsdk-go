@@ -27397,6 +27397,14 @@ client.Products.Create(
 <dl>
 <dd>
 
+**galleryImages:** `[]*whopsdk.CreateProductsRequestGalleryImagesItem` — Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **globalAffiliatePercentage:** `*float64` — The commission rate affiliates earn.
     
 </dd>
@@ -27690,6 +27698,14 @@ client.Products.Update(
 <dd>
 
 **description:** `*string` — A written description displayed on the product page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**galleryImages:** `[]*whopsdk.UpdateProductsRequestGalleryImagesItem` — Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
     
 </dd>
 </dl>
