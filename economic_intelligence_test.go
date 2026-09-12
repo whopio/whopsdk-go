@@ -366,14 +366,6 @@ func TestSettersEconomicIntelligence(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetExecutionType", func(t *testing.T) {
-		obj := &EconomicIntelligence{}
-		var fernTestValueExecutionType EconomicIntelligenceExecutionType
-		obj.SetExecutionType(fernTestValueExecutionType)
-		assert.Equal(t, fernTestValueExecutionType, obj.ExecutionType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetID", func(t *testing.T) {
 		obj := &EconomicIntelligence{}
 		var fernTestValueID string
@@ -543,29 +535,6 @@ func TestGettersEconomicIntelligence(t *testing.T) {
 			}
 		}()
 		_ = obj.GetExecutedAt() // Should return zero value
-	})
-
-	t.Run("GetExecutionType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &EconomicIntelligence{}
-		var expected EconomicIntelligenceExecutionType
-		obj.ExecutionType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetExecutionType(), "getter should return the property value")
-	})
-
-	t.Run("GetExecutionType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *EconomicIntelligence
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetExecutionType() // Should return zero value
 	})
 
 	t.Run("GetID", func(t *testing.T) {
@@ -883,37 +852,6 @@ func TestSettersMarkExplicitEconomicIntelligence(t *testing.T) {
 
 		// Act
 		obj.SetExecutedAt(fernTestValueExecutedAt)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetExecutionType_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &EconomicIntelligence{}
-		var fernTestValueExecutionType EconomicIntelligenceExecutionType
-
-		// Act
-		obj.SetExecutionType(fernTestValueExecutionType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1730,28 +1668,6 @@ func TestStringListEconomicIntelligenceResponsePageInfo(t *testing.T) {
 		var obj *ListEconomicIntelligenceResponsePageInfo
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
-	})
-}
-
-func TestEnumEconomicIntelligenceExecutionType(t *testing.T) {
-	t.Run("NewFromString_whop_ai", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewEconomicIntelligenceExecutionTypeFromString("whop_ai")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, EconomicIntelligenceExecutionType("whop_ai"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewEconomicIntelligenceExecutionTypeFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewEconomicIntelligenceExecutionTypeFromString("whop_ai")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
 	})
 }
 

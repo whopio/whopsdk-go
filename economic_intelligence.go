@@ -143,18 +143,17 @@ func (r *RunEconomicIntelligenceRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	economicIntelligenceFieldAccountID     = big.NewInt(1 << 0)
-	economicIntelligenceFieldActionType    = big.NewInt(1 << 1)
-	economicIntelligenceFieldCreatedAt     = big.NewInt(1 << 2)
-	economicIntelligenceFieldExecutedAt    = big.NewInt(1 << 3)
-	economicIntelligenceFieldExecutionType = big.NewInt(1 << 4)
-	economicIntelligenceFieldID            = big.NewInt(1 << 5)
-	economicIntelligenceFieldInput         = big.NewInt(1 << 6)
-	economicIntelligenceFieldPrompt        = big.NewInt(1 << 7)
-	economicIntelligenceFieldReasoning     = big.NewInt(1 << 8)
-	economicIntelligenceFieldStatus        = big.NewInt(1 << 9)
-	economicIntelligenceFieldSupersededAt  = big.NewInt(1 << 10)
-	economicIntelligenceFieldTitle         = big.NewInt(1 << 11)
+	economicIntelligenceFieldAccountID    = big.NewInt(1 << 0)
+	economicIntelligenceFieldActionType   = big.NewInt(1 << 1)
+	economicIntelligenceFieldCreatedAt    = big.NewInt(1 << 2)
+	economicIntelligenceFieldExecutedAt   = big.NewInt(1 << 3)
+	economicIntelligenceFieldID           = big.NewInt(1 << 4)
+	economicIntelligenceFieldInput        = big.NewInt(1 << 5)
+	economicIntelligenceFieldPrompt       = big.NewInt(1 << 6)
+	economicIntelligenceFieldReasoning    = big.NewInt(1 << 7)
+	economicIntelligenceFieldStatus       = big.NewInt(1 << 8)
+	economicIntelligenceFieldSupersededAt = big.NewInt(1 << 9)
+	economicIntelligenceFieldTitle        = big.NewInt(1 << 10)
 )
 
 type EconomicIntelligence struct {
@@ -166,8 +165,6 @@ type EconomicIntelligence struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// When the card was run, as an ISO 8601 timestamp, or `null`
 	ExecutedAt *string `json:"executed_at,omitempty" url:"executed_at,omitempty"`
-	// How the card runs. `whop_ai` means `prompt` is sent to Whop AI, which carries out every step.
-	ExecutionType EconomicIntelligenceExecutionType `json:"execution_type" url:"execution_type"`
 	// Economic intelligence ID, prefixed `reca_`
 	ID string `json:"id" url:"id"`
 	// What the owner asked for, in their own words, when this recommendation was requested, or `null` when the engine chose the action on its own
@@ -216,13 +213,6 @@ func (e *EconomicIntelligence) GetExecutedAt() *string {
 		return nil
 	}
 	return e.ExecutedAt
-}
-
-func (e *EconomicIntelligence) GetExecutionType() EconomicIntelligenceExecutionType {
-	if e == nil {
-		return ""
-	}
-	return e.ExecutionType
 }
 
 func (e *EconomicIntelligence) GetID() string {
@@ -316,13 +306,6 @@ func (e *EconomicIntelligence) SetExecutedAt(executedAt *string) {
 	e.require(economicIntelligenceFieldExecutedAt)
 }
 
-// SetExecutionType sets the ExecutionType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetExecutionType(executionType EconomicIntelligenceExecutionType) {
-	e.ExecutionType = executionType
-	e.require(economicIntelligenceFieldExecutionType)
-}
-
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EconomicIntelligence) SetID(id string) {
@@ -412,26 +395,6 @@ func (e *EconomicIntelligence) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
-}
-
-// How the card runs. `whop_ai` means `prompt` is sent to Whop AI, which carries out every step.
-type EconomicIntelligenceExecutionType string
-
-const (
-	EconomicIntelligenceExecutionTypeWhopAi EconomicIntelligenceExecutionType = "whop_ai"
-)
-
-func NewEconomicIntelligenceExecutionTypeFromString(s string) (EconomicIntelligenceExecutionType, error) {
-	switch s {
-	case "whop_ai":
-		return EconomicIntelligenceExecutionTypeWhopAi, nil
-	}
-	var t EconomicIntelligenceExecutionType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (e EconomicIntelligenceExecutionType) Ptr() *EconomicIntelligenceExecutionType {
-	return &e
 }
 
 // `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it; `failed` when the engine had nothing to recommend for the request
