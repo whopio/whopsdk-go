@@ -835,7 +835,7 @@ type Payment struct {
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The promo code applied at checkout, prefixed `promo_`, or null.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
-	// Whop-hosted URL where the buyer can sign in and complete 3D Secure for a failed subscription renewal. Null when recovery is unavailable, you lack `member:basic:read`, or in list responses. Retrieve the payment for it.
+	// Whop-hosted URL where the buyer can sign in and complete 3D Secure for an off-session charge the bank challenged — a subscription renewal or a saved-card payment. Null when recovery is unavailable, you lack `member:basic:read`, or in list responses. Retrieve the payment for it.
 	RecoveryURL *string `json:"recovery_url,omitempty" url:"recovery_url,omitempty"`
 	// True when the payment is `paid`, not yet fully refunded, and its processor supports refunds.
 	Refundable bool `json:"refundable" url:"refundable"`

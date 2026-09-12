@@ -20868,7 +20868,7 @@ type PaymentLegacy struct {
 	Product *PaymentLegacyProduct `json:"product,omitempty" url:"product,omitempty"`
 	// The promo code used for this payment.
 	PromoCode *PaymentLegacyPromoCode `json:"promo_code,omitempty" url:"promo_code,omitempty"`
-	// Whop-hosted URL where the buyer can sign in and complete 3D Secure for a failed subscription renewal. `null` when recovery is unavailable or you lack `member:basic:read`.
+	// Whop-hosted URL where the buyer can sign in and complete 3D Secure for an off-session charge the bank challenged — a subscription renewal or a saved-card payment. `null` when recovery is unavailable or you lack `member:basic:read`.
 	RecoveryURL *string `json:"recovery_url,omitempty" url:"recovery_url,omitempty"`
 	// True only for payments that are `paid`, have not been fully refunded, and were processed by a payment processor that allows refunds.
 	Refundable bool `json:"refundable" url:"refundable"`
