@@ -1189,19 +1189,21 @@ func (a *AccountParentFeesValue) String() string {
 
 var (
 	accountPreferencesFieldAdsAgreement              = big.NewInt(1 << 0)
-	accountPreferencesFieldAdsPaymentMethods         = big.NewInt(1 << 1)
-	accountPreferencesFieldAdsReportingCurrency      = big.NewInt(1 << 2)
-	accountPreferencesFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
-	accountPreferencesFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
-	accountPreferencesFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	accountPreferencesFieldCardsNotifications        = big.NewInt(1 << 6)
-	accountPreferencesFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
-	accountPreferencesFieldEconomicIntelligence      = big.NewInt(1 << 8)
+	accountPreferencesFieldAdsCertifications         = big.NewInt(1 << 1)
+	accountPreferencesFieldAdsPaymentMethods         = big.NewInt(1 << 2)
+	accountPreferencesFieldAdsReportingCurrency      = big.NewInt(1 << 3)
+	accountPreferencesFieldAdsSchedulingTimezone     = big.NewInt(1 << 4)
+	accountPreferencesFieldAdsTripleWhaleIntegration = big.NewInt(1 << 5)
+	accountPreferencesFieldCardsAutoTopUp            = big.NewInt(1 << 6)
+	accountPreferencesFieldCardsNotifications        = big.NewInt(1 << 7)
+	accountPreferencesFieldDisputeFighterEnabled     = big.NewInt(1 << 8)
+	accountPreferencesFieldEconomicIntelligence      = big.NewInt(1 << 9)
 )
 
 type AccountPreferences struct {
 	// The account's Whop Ads services and payment authorization agreement. `status` is `not_required`, `pending_signature` (a signature has been requested and campaign launch is blocked until it is provided), or `signed`. While pending, read the fields to answer from `GET /verifications/{id}` and sign by submitting them via `PATCH /verifications/{id}`.
-	AdsAgreement map[string]any `json:"ads_agreement" url:"ads_agreement"`
+	AdsAgreement      map[string]any   `json:"ads_agreement" url:"ads_agreement"`
+	AdsCertifications []map[string]any `json:"ads_certifications" url:"ads_certifications"`
 	// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when it fails. Each entry has a `type` of `platform_balance` (id `ldgr_`) or `card` (id `payt_`), plus display fields so the configured source renders even for a viewer who doesn't own it. `backup` is `null` when only one method is configured. `null` until ads billing has been configured.
 	AdsPaymentMethods map[string]any `json:"ads_payment_methods,omitempty" url:"ads_payment_methods,omitempty"`
 	// Lowercase ISO currency code, such as `usd` or `eur`, used to display ad spend and stats. Defaults to `usd`.
@@ -1231,6 +1233,13 @@ func (a *AccountPreferences) GetAdsAgreement() map[string]any {
 		return nil
 	}
 	return a.AdsAgreement
+}
+
+func (a *AccountPreferences) GetAdsCertifications() []map[string]any {
+	if a == nil {
+		return nil
+	}
+	return a.AdsCertifications
 }
 
 func (a *AccountPreferences) GetAdsPaymentMethods() map[string]any {
@@ -1308,6 +1317,13 @@ func (a *AccountPreferences) require(field *big.Int) {
 func (a *AccountPreferences) SetAdsAgreement(adsAgreement map[string]any) {
 	a.AdsAgreement = adsAgreement
 	a.require(accountPreferencesFieldAdsAgreement)
+}
+
+// SetAdsCertifications sets the AdsCertifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetAdsCertifications(adsCertifications []map[string]any) {
+	a.AdsCertifications = adsCertifications
+	a.require(accountPreferencesFieldAdsCertifications)
 }
 
 // SetAdsPaymentMethods sets the AdsPaymentMethods field and marks it as non-optional;

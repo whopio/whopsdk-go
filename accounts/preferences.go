@@ -37,19 +37,22 @@ func (r *RetrievePreferencesRequest) SetAccountID(accountID string) {
 
 var (
 	retrievePreferencesResponseFieldAdsAgreement              = big.NewInt(1 << 0)
-	retrievePreferencesResponseFieldAdsPaymentMethods         = big.NewInt(1 << 1)
-	retrievePreferencesResponseFieldAdsReportingCurrency      = big.NewInt(1 << 2)
-	retrievePreferencesResponseFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
-	retrievePreferencesResponseFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
-	retrievePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	retrievePreferencesResponseFieldCardsNotifications        = big.NewInt(1 << 6)
-	retrievePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
-	retrievePreferencesResponseFieldEconomicIntelligence      = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldAdsCertifications         = big.NewInt(1 << 1)
+	retrievePreferencesResponseFieldAdsPaymentMethods         = big.NewInt(1 << 2)
+	retrievePreferencesResponseFieldAdsReportingCurrency      = big.NewInt(1 << 3)
+	retrievePreferencesResponseFieldAdsSchedulingTimezone     = big.NewInt(1 << 4)
+	retrievePreferencesResponseFieldAdsTripleWhaleIntegration = big.NewInt(1 << 5)
+	retrievePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldCardsNotifications        = big.NewInt(1 << 7)
+	retrievePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldEconomicIntelligence      = big.NewInt(1 << 9)
 )
 
 type RetrievePreferencesResponse struct {
 	// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 	AdsAgreement *RetrievePreferencesResponseAdsAgreement `json:"ads_agreement" url:"ads_agreement"`
+	// The account's advertising certifications, one entry per certification type Whop offers. Start an application by setting a type's `status` to `pending_information` via `PATCH`, then answer the fields it requests via `GET`/`PATCH /verifications/{id}`.
+	AdsCertifications []*RetrievePreferencesResponseAdsCertificationsItem `json:"ads_certifications" url:"ads_certifications"`
 	// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
 	AdsPaymentMethods *RetrievePreferencesResponseAdsPaymentMethods `json:"ads_payment_methods,omitempty" url:"ads_payment_methods,omitempty"`
 	// Lowercase ISO currency code, such as `usd` or `eur`, used to display ad spend and stats. Defaults to `usd`.
@@ -79,6 +82,13 @@ func (r *RetrievePreferencesResponse) GetAdsAgreement() *RetrievePreferencesResp
 		return nil
 	}
 	return r.AdsAgreement
+}
+
+func (r *RetrievePreferencesResponse) GetAdsCertifications() []*RetrievePreferencesResponseAdsCertificationsItem {
+	if r == nil {
+		return nil
+	}
+	return r.AdsCertifications
 }
 
 func (r *RetrievePreferencesResponse) GetAdsPaymentMethods() *RetrievePreferencesResponseAdsPaymentMethods {
@@ -156,6 +166,13 @@ func (r *RetrievePreferencesResponse) require(field *big.Int) {
 func (r *RetrievePreferencesResponse) SetAdsAgreement(adsAgreement *RetrievePreferencesResponseAdsAgreement) {
 	r.AdsAgreement = adsAgreement
 	r.require(retrievePreferencesResponseFieldAdsAgreement)
+}
+
+// SetAdsCertifications sets the AdsCertifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetAdsCertifications(adsCertifications []*RetrievePreferencesResponseAdsCertificationsItem) {
+	r.AdsCertifications = adsCertifications
+	r.require(retrievePreferencesResponseFieldAdsCertifications)
 }
 
 // SetAdsPaymentMethods sets the AdsPaymentMethods field and marks it as non-optional;
@@ -416,6 +433,305 @@ func NewRetrievePreferencesResponseAdsAgreementStatusFromString(s string) (Retri
 }
 
 func (r RetrievePreferencesResponseAdsAgreementStatus) Ptr() *RetrievePreferencesResponseAdsAgreementStatus {
+	return &r
+}
+
+var (
+	retrievePreferencesResponseAdsCertificationsItemFieldApprovedCountries = big.NewInt(1 << 0)
+	retrievePreferencesResponseAdsCertificationsItemFieldBusinessName      = big.NewInt(1 << 1)
+	retrievePreferencesResponseAdsCertificationsItemFieldBusinessType      = big.NewInt(1 << 2)
+	retrievePreferencesResponseAdsCertificationsItemFieldCertificationType = big.NewInt(1 << 3)
+	retrievePreferencesResponseAdsCertificationsItemFieldCountries         = big.NewInt(1 << 4)
+	retrievePreferencesResponseAdsCertificationsItemFieldDenialReason      = big.NewInt(1 << 5)
+	retrievePreferencesResponseAdsCertificationsItemFieldRequestID         = big.NewInt(1 << 6)
+	retrievePreferencesResponseAdsCertificationsItemFieldStatus            = big.NewInt(1 << 7)
+	retrievePreferencesResponseAdsCertificationsItemFieldURL               = big.NewInt(1 << 8)
+)
+
+type RetrievePreferencesResponseAdsCertificationsItem struct {
+	// Countries every approved application of this type covers, as ISO 3166-1 alpha-2 codes. Ads targeting only these countries are exempt from the category's restrictions.
+	ApprovedCountries []string `json:"approved_countries" url:"approved_countries"`
+	// The business name on the latest application.
+	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
+	// The kind of business on the latest application. `null` until the account applies.
+	BusinessType *RetrievePreferencesResponseAdsCertificationsItemBusinessType `json:"business_type,omitempty" url:"business_type,omitempty"`
+	// The certification this entry describes.
+	CertificationType RetrievePreferencesResponseAdsCertificationsItemCertificationType `json:"certification_type" url:"certification_type"`
+	// Countries the latest application covers, as ISO 3166-1 alpha-2 codes.
+	Countries []string `json:"countries" url:"countries"`
+	// Why the latest application was denied. `null` unless `status` is `denied`.
+	DenialReason *string `json:"denial_reason,omitempty" url:"denial_reason,omitempty"`
+	// The latest application's request ID, prefixed `inrq_`. `null` until the account applies.
+	RequestID *string `json:"request_id,omitempty" url:"request_id,omitempty"`
+	// `not_started` until the account applies; `pending_information` while an application waits for answers; `in_review` once submitted; then `approved` or `denied`.
+	Status RetrievePreferencesResponseAdsCertificationsItemStatus `json:"status" url:"status"`
+	// The website on the latest application.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetApprovedCountries() []string {
+	if r == nil {
+		return nil
+	}
+	return r.ApprovedCountries
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetBusinessName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.BusinessName
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetBusinessType() *RetrievePreferencesResponseAdsCertificationsItemBusinessType {
+	if r == nil {
+		return nil
+	}
+	return r.BusinessType
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetCertificationType() RetrievePreferencesResponseAdsCertificationsItemCertificationType {
+	if r == nil {
+		return ""
+	}
+	return r.CertificationType
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetCountries() []string {
+	if r == nil {
+		return nil
+	}
+	return r.Countries
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetDenialReason() *string {
+	if r == nil {
+		return nil
+	}
+	return r.DenialReason
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetRequestID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.RequestID
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetStatus() RetrievePreferencesResponseAdsCertificationsItemStatus {
+	if r == nil {
+		return ""
+	}
+	return r.Status
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.URL
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetApprovedCountries sets the ApprovedCountries field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetApprovedCountries(approvedCountries []string) {
+	r.ApprovedCountries = approvedCountries
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldApprovedCountries)
+}
+
+// SetBusinessName sets the BusinessName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetBusinessName(businessName *string) {
+	r.BusinessName = businessName
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldBusinessName)
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetBusinessType(businessType *RetrievePreferencesResponseAdsCertificationsItemBusinessType) {
+	r.BusinessType = businessType
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldBusinessType)
+}
+
+// SetCertificationType sets the CertificationType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetCertificationType(certificationType RetrievePreferencesResponseAdsCertificationsItemCertificationType) {
+	r.CertificationType = certificationType
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldCertificationType)
+}
+
+// SetCountries sets the Countries field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetCountries(countries []string) {
+	r.Countries = countries
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldCountries)
+}
+
+// SetDenialReason sets the DenialReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetDenialReason(denialReason *string) {
+	r.DenialReason = denialReason
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldDenialReason)
+}
+
+// SetRequestID sets the RequestID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetRequestID(requestID *string) {
+	r.RequestID = requestID
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldRequestID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetStatus(status RetrievePreferencesResponseAdsCertificationsItemStatus) {
+	r.Status = status
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldStatus)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetURL(url *string) {
+	r.URL = url
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldURL)
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrievePreferencesResponseAdsCertificationsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrievePreferencesResponseAdsCertificationsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) MarshalJSON() ([]byte, error) {
+	type embed RetrievePreferencesResponseAdsCertificationsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// The kind of business on the latest application. `null` until the account applies.
+type RetrievePreferencesResponseAdsCertificationsItemBusinessType string
+
+const (
+	RetrievePreferencesResponseAdsCertificationsItemBusinessTypeOnlinePharmacy             RetrievePreferencesResponseAdsCertificationsItemBusinessType = "online_pharmacy"
+	RetrievePreferencesResponseAdsCertificationsItemBusinessTypePharmaceuticalManufacturer RetrievePreferencesResponseAdsCertificationsItemBusinessType = "pharmaceutical_manufacturer"
+	RetrievePreferencesResponseAdsCertificationsItemBusinessTypeTelehealthProvider         RetrievePreferencesResponseAdsCertificationsItemBusinessType = "telehealth_provider"
+)
+
+func NewRetrievePreferencesResponseAdsCertificationsItemBusinessTypeFromString(s string) (RetrievePreferencesResponseAdsCertificationsItemBusinessType, error) {
+	switch s {
+	case "online_pharmacy":
+		return RetrievePreferencesResponseAdsCertificationsItemBusinessTypeOnlinePharmacy, nil
+	case "pharmaceutical_manufacturer":
+		return RetrievePreferencesResponseAdsCertificationsItemBusinessTypePharmaceuticalManufacturer, nil
+	case "telehealth_provider":
+		return RetrievePreferencesResponseAdsCertificationsItemBusinessTypeTelehealthProvider, nil
+	}
+	var t RetrievePreferencesResponseAdsCertificationsItemBusinessType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseAdsCertificationsItemBusinessType) Ptr() *RetrievePreferencesResponseAdsCertificationsItemBusinessType {
+	return &r
+}
+
+// The certification this entry describes.
+type RetrievePreferencesResponseAdsCertificationsItemCertificationType string
+
+const (
+	RetrievePreferencesResponseAdsCertificationsItemCertificationTypePrescriptionDrugAds RetrievePreferencesResponseAdsCertificationsItemCertificationType = "prescription_drug_ads"
+)
+
+func NewRetrievePreferencesResponseAdsCertificationsItemCertificationTypeFromString(s string) (RetrievePreferencesResponseAdsCertificationsItemCertificationType, error) {
+	switch s {
+	case "prescription_drug_ads":
+		return RetrievePreferencesResponseAdsCertificationsItemCertificationTypePrescriptionDrugAds, nil
+	}
+	var t RetrievePreferencesResponseAdsCertificationsItemCertificationType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseAdsCertificationsItemCertificationType) Ptr() *RetrievePreferencesResponseAdsCertificationsItemCertificationType {
+	return &r
+}
+
+// `not_started` until the account applies; `pending_information` while an application waits for answers; `in_review` once submitted; then `approved` or `denied`.
+type RetrievePreferencesResponseAdsCertificationsItemStatus string
+
+const (
+	RetrievePreferencesResponseAdsCertificationsItemStatusNotStarted         RetrievePreferencesResponseAdsCertificationsItemStatus = "not_started"
+	RetrievePreferencesResponseAdsCertificationsItemStatusPendingInformation RetrievePreferencesResponseAdsCertificationsItemStatus = "pending_information"
+	RetrievePreferencesResponseAdsCertificationsItemStatusInReview           RetrievePreferencesResponseAdsCertificationsItemStatus = "in_review"
+	RetrievePreferencesResponseAdsCertificationsItemStatusApproved           RetrievePreferencesResponseAdsCertificationsItemStatus = "approved"
+	RetrievePreferencesResponseAdsCertificationsItemStatusDenied             RetrievePreferencesResponseAdsCertificationsItemStatus = "denied"
+)
+
+func NewRetrievePreferencesResponseAdsCertificationsItemStatusFromString(s string) (RetrievePreferencesResponseAdsCertificationsItemStatus, error) {
+	switch s {
+	case "not_started":
+		return RetrievePreferencesResponseAdsCertificationsItemStatusNotStarted, nil
+	case "pending_information":
+		return RetrievePreferencesResponseAdsCertificationsItemStatusPendingInformation, nil
+	case "in_review":
+		return RetrievePreferencesResponseAdsCertificationsItemStatusInReview, nil
+	case "approved":
+		return RetrievePreferencesResponseAdsCertificationsItemStatusApproved, nil
+	case "denied":
+		return RetrievePreferencesResponseAdsCertificationsItemStatusDenied, nil
+	}
+	var t RetrievePreferencesResponseAdsCertificationsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseAdsCertificationsItemStatus) Ptr() *RetrievePreferencesResponseAdsCertificationsItemStatus {
 	return &r
 }
 
@@ -1120,6 +1436,111 @@ func (r RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus) Ptr() *Retri
 	return &r
 }
 
+var (
+	updatePreferencesRequestAdsCertificationsValueFieldStatus = big.NewInt(1 << 0)
+)
+
+type UpdatePreferencesRequestAdsCertificationsValue struct {
+	// Must be `pending_information`.
+	Status UpdatePreferencesRequestAdsCertificationsValueStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) GetStatus() UpdatePreferencesRequestAdsCertificationsValueStatus {
+	if u == nil {
+		return ""
+	}
+	return u.Status
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAdsCertificationsValue) SetStatus(status UpdatePreferencesRequestAdsCertificationsValueStatus) {
+	u.Status = status
+	u.require(updatePreferencesRequestAdsCertificationsValueFieldStatus)
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesRequestAdsCertificationsValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesRequestAdsCertificationsValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesRequestAdsCertificationsValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Must be `pending_information`.
+type UpdatePreferencesRequestAdsCertificationsValueStatus string
+
+const (
+	UpdatePreferencesRequestAdsCertificationsValueStatusPendingInformation UpdatePreferencesRequestAdsCertificationsValueStatus = "pending_information"
+)
+
+func NewUpdatePreferencesRequestAdsCertificationsValueStatusFromString(s string) (UpdatePreferencesRequestAdsCertificationsValueStatus, error) {
+	switch s {
+	case "pending_information":
+		return UpdatePreferencesRequestAdsCertificationsValueStatusPendingInformation, nil
+	}
+	var t UpdatePreferencesRequestAdsCertificationsValueStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestAdsCertificationsValueStatus) Ptr() *UpdatePreferencesRequestAdsCertificationsValueStatus {
+	return &u
+}
+
 // How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails.
 var (
 	updatePreferencesRequestAdsPaymentMethodsFieldBackup  = big.NewInt(1 << 0)
@@ -1578,19 +1999,22 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) String() string {
 
 var (
 	updatePreferencesResponseFieldAdsAgreement              = big.NewInt(1 << 0)
-	updatePreferencesResponseFieldAdsPaymentMethods         = big.NewInt(1 << 1)
-	updatePreferencesResponseFieldAdsReportingCurrency      = big.NewInt(1 << 2)
-	updatePreferencesResponseFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
-	updatePreferencesResponseFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
-	updatePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	updatePreferencesResponseFieldCardsNotifications        = big.NewInt(1 << 6)
-	updatePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
-	updatePreferencesResponseFieldEconomicIntelligence      = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldAdsCertifications         = big.NewInt(1 << 1)
+	updatePreferencesResponseFieldAdsPaymentMethods         = big.NewInt(1 << 2)
+	updatePreferencesResponseFieldAdsReportingCurrency      = big.NewInt(1 << 3)
+	updatePreferencesResponseFieldAdsSchedulingTimezone     = big.NewInt(1 << 4)
+	updatePreferencesResponseFieldAdsTripleWhaleIntegration = big.NewInt(1 << 5)
+	updatePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldCardsNotifications        = big.NewInt(1 << 7)
+	updatePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldEconomicIntelligence      = big.NewInt(1 << 9)
 )
 
 type UpdatePreferencesResponse struct {
 	// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 	AdsAgreement *UpdatePreferencesResponseAdsAgreement `json:"ads_agreement" url:"ads_agreement"`
+	// The account's advertising certifications, one entry per certification type Whop offers. Start an application by setting a type's `status` to `pending_information` via `PATCH`, then answer the fields it requests via `GET`/`PATCH /verifications/{id}`.
+	AdsCertifications []*UpdatePreferencesResponseAdsCertificationsItem `json:"ads_certifications" url:"ads_certifications"`
 	// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
 	AdsPaymentMethods *UpdatePreferencesResponseAdsPaymentMethods `json:"ads_payment_methods,omitempty" url:"ads_payment_methods,omitempty"`
 	// Lowercase ISO currency code, such as `usd` or `eur`, used to display ad spend and stats. Defaults to `usd`.
@@ -1620,6 +2044,13 @@ func (u *UpdatePreferencesResponse) GetAdsAgreement() *UpdatePreferencesResponse
 		return nil
 	}
 	return u.AdsAgreement
+}
+
+func (u *UpdatePreferencesResponse) GetAdsCertifications() []*UpdatePreferencesResponseAdsCertificationsItem {
+	if u == nil {
+		return nil
+	}
+	return u.AdsCertifications
 }
 
 func (u *UpdatePreferencesResponse) GetAdsPaymentMethods() *UpdatePreferencesResponseAdsPaymentMethods {
@@ -1697,6 +2128,13 @@ func (u *UpdatePreferencesResponse) require(field *big.Int) {
 func (u *UpdatePreferencesResponse) SetAdsAgreement(adsAgreement *UpdatePreferencesResponseAdsAgreement) {
 	u.AdsAgreement = adsAgreement
 	u.require(updatePreferencesResponseFieldAdsAgreement)
+}
+
+// SetAdsCertifications sets the AdsCertifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetAdsCertifications(adsCertifications []*UpdatePreferencesResponseAdsCertificationsItem) {
+	u.AdsCertifications = adsCertifications
+	u.require(updatePreferencesResponseFieldAdsCertifications)
 }
 
 // SetAdsPaymentMethods sets the AdsPaymentMethods field and marks it as non-optional;
@@ -1957,6 +2395,305 @@ func NewUpdatePreferencesResponseAdsAgreementStatusFromString(s string) (UpdateP
 }
 
 func (u UpdatePreferencesResponseAdsAgreementStatus) Ptr() *UpdatePreferencesResponseAdsAgreementStatus {
+	return &u
+}
+
+var (
+	updatePreferencesResponseAdsCertificationsItemFieldApprovedCountries = big.NewInt(1 << 0)
+	updatePreferencesResponseAdsCertificationsItemFieldBusinessName      = big.NewInt(1 << 1)
+	updatePreferencesResponseAdsCertificationsItemFieldBusinessType      = big.NewInt(1 << 2)
+	updatePreferencesResponseAdsCertificationsItemFieldCertificationType = big.NewInt(1 << 3)
+	updatePreferencesResponseAdsCertificationsItemFieldCountries         = big.NewInt(1 << 4)
+	updatePreferencesResponseAdsCertificationsItemFieldDenialReason      = big.NewInt(1 << 5)
+	updatePreferencesResponseAdsCertificationsItemFieldRequestID         = big.NewInt(1 << 6)
+	updatePreferencesResponseAdsCertificationsItemFieldStatus            = big.NewInt(1 << 7)
+	updatePreferencesResponseAdsCertificationsItemFieldURL               = big.NewInt(1 << 8)
+)
+
+type UpdatePreferencesResponseAdsCertificationsItem struct {
+	// Countries every approved application of this type covers, as ISO 3166-1 alpha-2 codes. Ads targeting only these countries are exempt from the category's restrictions.
+	ApprovedCountries []string `json:"approved_countries" url:"approved_countries"`
+	// The business name on the latest application.
+	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
+	// The kind of business on the latest application. `null` until the account applies.
+	BusinessType *UpdatePreferencesResponseAdsCertificationsItemBusinessType `json:"business_type,omitempty" url:"business_type,omitempty"`
+	// The certification this entry describes.
+	CertificationType UpdatePreferencesResponseAdsCertificationsItemCertificationType `json:"certification_type" url:"certification_type"`
+	// Countries the latest application covers, as ISO 3166-1 alpha-2 codes.
+	Countries []string `json:"countries" url:"countries"`
+	// Why the latest application was denied. `null` unless `status` is `denied`.
+	DenialReason *string `json:"denial_reason,omitempty" url:"denial_reason,omitempty"`
+	// The latest application's request ID, prefixed `inrq_`. `null` until the account applies.
+	RequestID *string `json:"request_id,omitempty" url:"request_id,omitempty"`
+	// `not_started` until the account applies; `pending_information` while an application waits for answers; `in_review` once submitted; then `approved` or `denied`.
+	Status UpdatePreferencesResponseAdsCertificationsItemStatus `json:"status" url:"status"`
+	// The website on the latest application.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetApprovedCountries() []string {
+	if u == nil {
+		return nil
+	}
+	return u.ApprovedCountries
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetBusinessName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.BusinessName
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetBusinessType() *UpdatePreferencesResponseAdsCertificationsItemBusinessType {
+	if u == nil {
+		return nil
+	}
+	return u.BusinessType
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetCertificationType() UpdatePreferencesResponseAdsCertificationsItemCertificationType {
+	if u == nil {
+		return ""
+	}
+	return u.CertificationType
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetCountries() []string {
+	if u == nil {
+		return nil
+	}
+	return u.Countries
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetDenialReason() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DenialReason
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetRequestID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.RequestID
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetStatus() UpdatePreferencesResponseAdsCertificationsItemStatus {
+	if u == nil {
+		return ""
+	}
+	return u.Status
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetURL() *string {
+	if u == nil {
+		return nil
+	}
+	return u.URL
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetApprovedCountries sets the ApprovedCountries field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetApprovedCountries(approvedCountries []string) {
+	u.ApprovedCountries = approvedCountries
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldApprovedCountries)
+}
+
+// SetBusinessName sets the BusinessName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetBusinessName(businessName *string) {
+	u.BusinessName = businessName
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldBusinessName)
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetBusinessType(businessType *UpdatePreferencesResponseAdsCertificationsItemBusinessType) {
+	u.BusinessType = businessType
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldBusinessType)
+}
+
+// SetCertificationType sets the CertificationType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetCertificationType(certificationType UpdatePreferencesResponseAdsCertificationsItemCertificationType) {
+	u.CertificationType = certificationType
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldCertificationType)
+}
+
+// SetCountries sets the Countries field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetCountries(countries []string) {
+	u.Countries = countries
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldCountries)
+}
+
+// SetDenialReason sets the DenialReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetDenialReason(denialReason *string) {
+	u.DenialReason = denialReason
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldDenialReason)
+}
+
+// SetRequestID sets the RequestID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetRequestID(requestID *string) {
+	u.RequestID = requestID
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldRequestID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetStatus(status UpdatePreferencesResponseAdsCertificationsItemStatus) {
+	u.Status = status
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldStatus)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetURL(url *string) {
+	u.URL = url
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldURL)
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesResponseAdsCertificationsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesResponseAdsCertificationsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesResponseAdsCertificationsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The kind of business on the latest application. `null` until the account applies.
+type UpdatePreferencesResponseAdsCertificationsItemBusinessType string
+
+const (
+	UpdatePreferencesResponseAdsCertificationsItemBusinessTypeOnlinePharmacy             UpdatePreferencesResponseAdsCertificationsItemBusinessType = "online_pharmacy"
+	UpdatePreferencesResponseAdsCertificationsItemBusinessTypePharmaceuticalManufacturer UpdatePreferencesResponseAdsCertificationsItemBusinessType = "pharmaceutical_manufacturer"
+	UpdatePreferencesResponseAdsCertificationsItemBusinessTypeTelehealthProvider         UpdatePreferencesResponseAdsCertificationsItemBusinessType = "telehealth_provider"
+)
+
+func NewUpdatePreferencesResponseAdsCertificationsItemBusinessTypeFromString(s string) (UpdatePreferencesResponseAdsCertificationsItemBusinessType, error) {
+	switch s {
+	case "online_pharmacy":
+		return UpdatePreferencesResponseAdsCertificationsItemBusinessTypeOnlinePharmacy, nil
+	case "pharmaceutical_manufacturer":
+		return UpdatePreferencesResponseAdsCertificationsItemBusinessTypePharmaceuticalManufacturer, nil
+	case "telehealth_provider":
+		return UpdatePreferencesResponseAdsCertificationsItemBusinessTypeTelehealthProvider, nil
+	}
+	var t UpdatePreferencesResponseAdsCertificationsItemBusinessType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseAdsCertificationsItemBusinessType) Ptr() *UpdatePreferencesResponseAdsCertificationsItemBusinessType {
+	return &u
+}
+
+// The certification this entry describes.
+type UpdatePreferencesResponseAdsCertificationsItemCertificationType string
+
+const (
+	UpdatePreferencesResponseAdsCertificationsItemCertificationTypePrescriptionDrugAds UpdatePreferencesResponseAdsCertificationsItemCertificationType = "prescription_drug_ads"
+)
+
+func NewUpdatePreferencesResponseAdsCertificationsItemCertificationTypeFromString(s string) (UpdatePreferencesResponseAdsCertificationsItemCertificationType, error) {
+	switch s {
+	case "prescription_drug_ads":
+		return UpdatePreferencesResponseAdsCertificationsItemCertificationTypePrescriptionDrugAds, nil
+	}
+	var t UpdatePreferencesResponseAdsCertificationsItemCertificationType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseAdsCertificationsItemCertificationType) Ptr() *UpdatePreferencesResponseAdsCertificationsItemCertificationType {
+	return &u
+}
+
+// `not_started` until the account applies; `pending_information` while an application waits for answers; `in_review` once submitted; then `approved` or `denied`.
+type UpdatePreferencesResponseAdsCertificationsItemStatus string
+
+const (
+	UpdatePreferencesResponseAdsCertificationsItemStatusNotStarted         UpdatePreferencesResponseAdsCertificationsItemStatus = "not_started"
+	UpdatePreferencesResponseAdsCertificationsItemStatusPendingInformation UpdatePreferencesResponseAdsCertificationsItemStatus = "pending_information"
+	UpdatePreferencesResponseAdsCertificationsItemStatusInReview           UpdatePreferencesResponseAdsCertificationsItemStatus = "in_review"
+	UpdatePreferencesResponseAdsCertificationsItemStatusApproved           UpdatePreferencesResponseAdsCertificationsItemStatus = "approved"
+	UpdatePreferencesResponseAdsCertificationsItemStatusDenied             UpdatePreferencesResponseAdsCertificationsItemStatus = "denied"
+)
+
+func NewUpdatePreferencesResponseAdsCertificationsItemStatusFromString(s string) (UpdatePreferencesResponseAdsCertificationsItemStatus, error) {
+	switch s {
+	case "not_started":
+		return UpdatePreferencesResponseAdsCertificationsItemStatusNotStarted, nil
+	case "pending_information":
+		return UpdatePreferencesResponseAdsCertificationsItemStatusPendingInformation, nil
+	case "in_review":
+		return UpdatePreferencesResponseAdsCertificationsItemStatusInReview, nil
+	case "approved":
+		return UpdatePreferencesResponseAdsCertificationsItemStatusApproved, nil
+	case "denied":
+		return UpdatePreferencesResponseAdsCertificationsItemStatusDenied, nil
+	}
+	var t UpdatePreferencesResponseAdsCertificationsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseAdsCertificationsItemStatus) Ptr() *UpdatePreferencesResponseAdsCertificationsItemStatus {
 	return &u
 }
 
@@ -2663,19 +3400,22 @@ func (u UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus) Ptr() *UpdateP
 
 var (
 	updatePreferencesRequestFieldAccountID                 = big.NewInt(1 << 0)
-	updatePreferencesRequestFieldAdsPaymentMethods         = big.NewInt(1 << 1)
-	updatePreferencesRequestFieldAdsReportingCurrency      = big.NewInt(1 << 2)
-	updatePreferencesRequestFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
-	updatePreferencesRequestFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
-	updatePreferencesRequestFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldCardsNotifications        = big.NewInt(1 << 6)
-	updatePreferencesRequestFieldDisputeFighterEnabled     = big.NewInt(1 << 7)
-	updatePreferencesRequestFieldEconomicIntelligence      = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldAdsCertifications         = big.NewInt(1 << 1)
+	updatePreferencesRequestFieldAdsPaymentMethods         = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldAdsReportingCurrency      = big.NewInt(1 << 3)
+	updatePreferencesRequestFieldAdsSchedulingTimezone     = big.NewInt(1 << 4)
+	updatePreferencesRequestFieldAdsTripleWhaleIntegration = big.NewInt(1 << 5)
+	updatePreferencesRequestFieldCardsAutoTopUp            = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCardsNotifications        = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldDisputeFighterEnabled     = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldEconomicIntelligence      = big.NewInt(1 << 9)
 )
 
 type UpdatePreferencesRequest struct {
 	// Account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"-"`
+	// Opens an advertising certification application. Keyed by certification type (`prescription_drug_ads`); set the entry's `status` to `pending_information` to start, then answer the requested fields via `PATCH /verifications/{id}`. Only one application per type can be open at a time; every other status is set by Whop's review.
+	AdsCertifications map[string]*UpdatePreferencesRequestAdsCertificationsValue `json:"ads_certifications,omitempty" url:"-"`
 	// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails.
 	AdsPaymentMethods *UpdatePreferencesRequestAdsPaymentMethods `json:"ads_payment_methods,omitempty" url:"-"`
 	// Lowercase ISO currency code, such as `usd` or `eur`, used to display ad spend and stats. Defaults to `usd`.
@@ -2709,6 +3449,13 @@ func (u *UpdatePreferencesRequest) require(field *big.Int) {
 func (u *UpdatePreferencesRequest) SetAccountID(accountID string) {
 	u.AccountID = accountID
 	u.require(updatePreferencesRequestFieldAccountID)
+}
+
+// SetAdsCertifications sets the AdsCertifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetAdsCertifications(adsCertifications map[string]*UpdatePreferencesRequestAdsCertificationsValue) {
+	u.AdsCertifications = adsCertifications
+	u.require(updatePreferencesRequestFieldAdsCertifications)
 }
 
 // SetAdsPaymentMethods sets the AdsPaymentMethods field and marks it as non-optional;

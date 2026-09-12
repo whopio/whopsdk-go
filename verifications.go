@@ -5679,6 +5679,7 @@ var (
 	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldID        = big.NewInt(1 << 3)
 	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValue     = big.NewInt(1 << 4)
 	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValueType = big.NewInt(1 << 5)
+	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValues    = big.NewInt(1 << 6)
 )
 
 type UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem struct {
@@ -5694,6 +5695,8 @@ type UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem struc
 	Value *string `json:"value,omitempty" url:"value,omitempty"`
 	// Whether `value` is raw input or a vault token.
 	ValueType *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemValueType `json:"value_type,omitempty" url:"value_type,omitempty"`
+	// Every chosen option for a `select` item that accepts more than one answer, such as the countries an advertising certification covers. Use `value` for every other item.
+	Values []string `json:"values,omitempty" url:"values,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5742,6 +5745,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) 
 		return nil
 	}
 	return u.ValueType
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) GetValues() []string {
+	if u == nil {
+		return nil
+	}
+	return u.Values
 }
 
 func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) GetExtraProperties() map[string]interface{} {
@@ -5798,6 +5808,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) 
 func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) SetValueType(valueType *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemValueType) {
 	u.ValueType = valueType
 	u.require(updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValueType)
+}
+
+// SetValues sets the Values field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) SetValues(values []string) {
+	u.Values = values
+	u.require(updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValues)
 }
 
 func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) UnmarshalJSON(data []byte) error {
@@ -6637,6 +6654,7 @@ var (
 	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldID        = big.NewInt(1 << 3)
 	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValue     = big.NewInt(1 << 4)
 	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValueType = big.NewInt(1 << 5)
+	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValues    = big.NewInt(1 << 6)
 )
 
 type UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem struct {
@@ -6652,6 +6670,8 @@ type UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem struc
 	Value *string `json:"value,omitempty" url:"value,omitempty"`
 	// Whether `value` is raw input or a vault token.
 	ValueType *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemValueType `json:"value_type,omitempty" url:"value_type,omitempty"`
+	// Every chosen option for a `select` item that accepts more than one answer, such as the countries an advertising certification covers. Use `value` for every other item.
+	Values []string `json:"values,omitempty" url:"values,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6700,6 +6720,13 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) 
 		return nil
 	}
 	return u.ValueType
+}
+
+func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) GetValues() []string {
+	if u == nil {
+		return nil
+	}
+	return u.Values
 }
 
 func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) GetExtraProperties() map[string]interface{} {
@@ -6756,6 +6783,13 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) 
 func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) SetValueType(valueType *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemValueType) {
 	u.ValueType = valueType
 	u.require(updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValueType)
+}
+
+// SetValues sets the Values field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) SetValues(values []string) {
+	u.Values = values
+	u.require(updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValues)
 }
 
 func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) UnmarshalJSON(data []byte) error {
