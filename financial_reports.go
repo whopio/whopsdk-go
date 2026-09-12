@@ -206,6 +206,7 @@ func (r RetrieveFinancialReportsRequestGroupBy) Ptr() *RetrieveFinancialReportsR
 type RetrieveFinancialReportsRequestLineTypesItem string
 
 const (
+	RetrieveFinancialReportsRequestLineTypesItemAccountSettlement                         RetrieveFinancialReportsRequestLineTypesItem = "account_settlement"
 	RetrieveFinancialReportsRequestLineTypesItemAdBudgetRelease                           RetrieveFinancialReportsRequestLineTypesItem = "ad_budget_release"
 	RetrieveFinancialReportsRequestLineTypesItemAdCampaignBudget                          RetrieveFinancialReportsRequestLineTypesItem = "ad_campaign_budget"
 	RetrieveFinancialReportsRequestLineTypesItemAdPublisherPayout                         RetrieveFinancialReportsRequestLineTypesItem = "ad_publisher_payout"
@@ -341,6 +342,8 @@ const (
 
 func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (RetrieveFinancialReportsRequestLineTypesItem, error) {
 	switch s {
+	case "account_settlement":
+		return RetrieveFinancialReportsRequestLineTypesItemAccountSettlement, nil
 	case "ad_budget_release":
 		return RetrieveFinancialReportsRequestLineTypesItemAdBudgetRelease, nil
 	case "ad_campaign_budget":

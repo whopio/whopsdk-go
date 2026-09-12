@@ -2185,6 +2185,13 @@ func TestEnumRetrieveFinancialReportsRequestGroupBy(t *testing.T) {
 }
 
 func TestEnumRetrieveFinancialReportsRequestLineTypesItem(t *testing.T) {
+	t.Run("NewFromString_account_settlement", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("account_settlement")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("account_settlement"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_ad_budget_release", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("ad_budget_release")
@@ -3108,7 +3115,7 @@ func TestEnumRetrieveFinancialReportsRequestLineTypesItem(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("ad_budget_release")
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("account_settlement")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

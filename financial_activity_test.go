@@ -12400,6 +12400,13 @@ func TestStringListFinancialActivityResponsePageInfo(t *testing.T) {
 }
 
 func TestEnumLedgerActivityLineType(t *testing.T) {
+	t.Run("NewFromString_account_settlement", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("account_settlement")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("account_settlement"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_ad_budget_release", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("ad_budget_release")
@@ -13351,7 +13358,7 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewLedgerActivityLineTypeFromString("ad_budget_release")
+		val, err := NewLedgerActivityLineTypeFromString("account_settlement")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -13681,6 +13688,13 @@ func TestEnumListFinancialActivityRequestDirection(t *testing.T) {
 }
 
 func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
+	t.Run("NewFromString_account_settlement", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("account_settlement")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("account_settlement"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_ad_budget_release", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListFinancialActivityRequestLineTypesItemFromString("ad_budget_release")
@@ -14604,7 +14618,7 @@ func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewListFinancialActivityRequestLineTypesItemFromString("ad_budget_release")
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("account_settlement")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

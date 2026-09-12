@@ -1170,6 +1170,7 @@ const (
 	WebhookEventsItemLedgerAccountFundsAvailable           WebhookEventsItem = "ledger_account.funds_available"
 	WebhookEventsItemSwapCompleted                         WebhookEventsItem = "swap.completed"
 	WebhookEventsItemDepositSucceeded                      WebhookEventsItem = "deposit.succeeded"
+	WebhookEventsItemFinancialActivityFundsAvailable       WebhookEventsItem = "financial_activity.funds_available"
 	WebhookEventsItemTransferCreated                       WebhookEventsItem = "transfer.created"
 	WebhookEventsItemTransferCompleted                     WebhookEventsItem = "transfer.completed"
 	WebhookEventsItemTransferFailed                        WebhookEventsItem = "transfer.failed"
@@ -1297,6 +1298,8 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemSwapCompleted, nil
 	case "deposit.succeeded":
 		return WebhookEventsItemDepositSucceeded, nil
+	case "financial_activity.funds_available":
+		return WebhookEventsItemFinancialActivityFundsAvailable, nil
 	case "transfer.created":
 		return WebhookEventsItemTransferCreated, nil
 	case "transfer.completed":
@@ -1855,6 +1858,7 @@ const (
 	WebhookListItemEventsItemLedgerAccountFundsAvailable           WebhookListItemEventsItem = "ledger_account.funds_available"
 	WebhookListItemEventsItemSwapCompleted                         WebhookListItemEventsItem = "swap.completed"
 	WebhookListItemEventsItemDepositSucceeded                      WebhookListItemEventsItem = "deposit.succeeded"
+	WebhookListItemEventsItemFinancialActivityFundsAvailable       WebhookListItemEventsItem = "financial_activity.funds_available"
 	WebhookListItemEventsItemTransferCreated                       WebhookListItemEventsItem = "transfer.created"
 	WebhookListItemEventsItemTransferCompleted                     WebhookListItemEventsItem = "transfer.completed"
 	WebhookListItemEventsItemTransferFailed                        WebhookListItemEventsItem = "transfer.failed"
@@ -1982,6 +1986,8 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemSwapCompleted, nil
 	case "deposit.succeeded":
 		return WebhookListItemEventsItemDepositSucceeded, nil
+	case "financial_activity.funds_available":
+		return WebhookListItemEventsItemFinancialActivityFundsAvailable, nil
 	case "transfer.created":
 		return WebhookListItemEventsItemTransferCreated, nil
 	case "transfer.completed":
@@ -2172,6 +2178,7 @@ const (
 	WebhookTestableEventsItemLedgerAccountFundsAvailable           WebhookTestableEventsItem = "ledger_account.funds_available"
 	WebhookTestableEventsItemSwapCompleted                         WebhookTestableEventsItem = "swap.completed"
 	WebhookTestableEventsItemDepositSucceeded                      WebhookTestableEventsItem = "deposit.succeeded"
+	WebhookTestableEventsItemFinancialActivityFundsAvailable       WebhookTestableEventsItem = "financial_activity.funds_available"
 	WebhookTestableEventsItemTransferCreated                       WebhookTestableEventsItem = "transfer.created"
 	WebhookTestableEventsItemTransferCompleted                     WebhookTestableEventsItem = "transfer.completed"
 	WebhookTestableEventsItemTransferFailed                        WebhookTestableEventsItem = "transfer.failed"
@@ -2299,6 +2306,8 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemSwapCompleted, nil
 	case "deposit.succeeded":
 		return WebhookTestableEventsItemDepositSucceeded, nil
+	case "financial_activity.funds_available":
+		return WebhookTestableEventsItemFinancialActivityFundsAvailable, nil
 	case "transfer.created":
 		return WebhookTestableEventsItemTransferCreated, nil
 	case "transfer.completed":
@@ -2488,6 +2497,7 @@ const (
 	CreateWebhooksRequestEventsItemLedgerAccountFundsAvailable                     CreateWebhooksRequestEventsItem = "ledger_account.funds_available"
 	CreateWebhooksRequestEventsItemSwapCompleted                                   CreateWebhooksRequestEventsItem = "swap.completed"
 	CreateWebhooksRequestEventsItemDepositSucceeded                                CreateWebhooksRequestEventsItem = "deposit.succeeded"
+	CreateWebhooksRequestEventsItemFinancialActivityFundsAvailable                 CreateWebhooksRequestEventsItem = "financial_activity.funds_available"
 	CreateWebhooksRequestEventsItemTransferCreated                                 CreateWebhooksRequestEventsItem = "transfer.created"
 	CreateWebhooksRequestEventsItemTransferCompleted                               CreateWebhooksRequestEventsItem = "transfer.completed"
 	CreateWebhooksRequestEventsItemTransferFailed                                  CreateWebhooksRequestEventsItem = "transfer.failed"
@@ -2637,6 +2647,8 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemSwapCompleted, nil
 	case "deposit.succeeded":
 		return CreateWebhooksRequestEventsItemDepositSucceeded, nil
+	case "financial_activity.funds_available":
+		return CreateWebhooksRequestEventsItemFinancialActivityFundsAvailable, nil
 	case "transfer.created":
 		return CreateWebhooksRequestEventsItemTransferCreated, nil
 	case "transfer.completed":
@@ -3758,6 +3770,7 @@ const (
 	UpdateWebhooksRequestEventsItemLedgerAccountFundsAvailable                     UpdateWebhooksRequestEventsItem = "ledger_account.funds_available"
 	UpdateWebhooksRequestEventsItemSwapCompleted                                   UpdateWebhooksRequestEventsItem = "swap.completed"
 	UpdateWebhooksRequestEventsItemDepositSucceeded                                UpdateWebhooksRequestEventsItem = "deposit.succeeded"
+	UpdateWebhooksRequestEventsItemFinancialActivityFundsAvailable                 UpdateWebhooksRequestEventsItem = "financial_activity.funds_available"
 	UpdateWebhooksRequestEventsItemTransferCreated                                 UpdateWebhooksRequestEventsItem = "transfer.created"
 	UpdateWebhooksRequestEventsItemTransferCompleted                               UpdateWebhooksRequestEventsItem = "transfer.completed"
 	UpdateWebhooksRequestEventsItemTransferFailed                                  UpdateWebhooksRequestEventsItem = "transfer.failed"
@@ -3907,6 +3920,8 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemSwapCompleted, nil
 	case "deposit.succeeded":
 		return UpdateWebhooksRequestEventsItemDepositSucceeded, nil
+	case "financial_activity.funds_available":
+		return UpdateWebhooksRequestEventsItemFinancialActivityFundsAvailable, nil
 	case "transfer.created":
 		return UpdateWebhooksRequestEventsItemTransferCreated, nil
 	case "transfer.completed":
