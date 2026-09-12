@@ -17,19 +17,20 @@ var (
 	createProductsRequestFieldCustomCtaURL              = big.NewInt(1 << 3)
 	createProductsRequestFieldCustomStatementDescriptor = big.NewInt(1 << 4)
 	createProductsRequestFieldDescription               = big.NewInt(1 << 5)
-	createProductsRequestFieldGlobalAffiliatePercentage = big.NewInt(1 << 6)
-	createProductsRequestFieldGlobalAffiliateStatus     = big.NewInt(1 << 7)
-	createProductsRequestFieldHeadline                  = big.NewInt(1 << 8)
-	createProductsRequestFieldLabels                    = big.NewInt(1 << 9)
-	createProductsRequestFieldMemberAffiliatePercentage = big.NewInt(1 << 10)
-	createProductsRequestFieldMemberAffiliateStatus     = big.NewInt(1 << 11)
-	createProductsRequestFieldMetadata                  = big.NewInt(1 << 12)
-	createProductsRequestFieldProductTaxCodeID          = big.NewInt(1 << 13)
-	createProductsRequestFieldRedirectPurchaseURL       = big.NewInt(1 << 14)
-	createProductsRequestFieldRoute                     = big.NewInt(1 << 15)
-	createProductsRequestFieldSendWelcomeMessage        = big.NewInt(1 << 16)
-	createProductsRequestFieldTitle                     = big.NewInt(1 << 17)
-	createProductsRequestFieldVisibility                = big.NewInt(1 << 18)
+	createProductsRequestFieldGalleryImages             = big.NewInt(1 << 6)
+	createProductsRequestFieldGlobalAffiliatePercentage = big.NewInt(1 << 7)
+	createProductsRequestFieldGlobalAffiliateStatus     = big.NewInt(1 << 8)
+	createProductsRequestFieldHeadline                  = big.NewInt(1 << 9)
+	createProductsRequestFieldLabels                    = big.NewInt(1 << 10)
+	createProductsRequestFieldMemberAffiliatePercentage = big.NewInt(1 << 11)
+	createProductsRequestFieldMemberAffiliateStatus     = big.NewInt(1 << 12)
+	createProductsRequestFieldMetadata                  = big.NewInt(1 << 13)
+	createProductsRequestFieldProductTaxCodeID          = big.NewInt(1 << 14)
+	createProductsRequestFieldRedirectPurchaseURL       = big.NewInt(1 << 15)
+	createProductsRequestFieldRoute                     = big.NewInt(1 << 16)
+	createProductsRequestFieldSendWelcomeMessage        = big.NewInt(1 << 17)
+	createProductsRequestFieldTitle                     = big.NewInt(1 << 18)
+	createProductsRequestFieldVisibility                = big.NewInt(1 << 19)
 )
 
 type CreateProductsRequest struct {
@@ -45,6 +46,8 @@ type CreateProductsRequest struct {
 	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"-"`
 	// A written description displayed on the product page.
 	Description *string `json:"description,omitempty" url:"-"`
+	// Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
+	GalleryImages []*CreateProductsRequestGalleryImagesItem `json:"gallery_images,omitempty" url:"-"`
 	// The commission rate affiliates earn.
 	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"-"`
 	// The enrollment status in the global affiliate program.
@@ -123,6 +126,13 @@ func (c *CreateProductsRequest) SetCustomStatementDescriptor(customStatementDesc
 func (c *CreateProductsRequest) SetDescription(description *string) {
 	c.Description = description
 	c.require(createProductsRequestFieldDescription)
+}
+
+// SetGalleryImages sets the GalleryImages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateProductsRequest) SetGalleryImages(galleryImages []*CreateProductsRequestGalleryImagesItem) {
+	c.GalleryImages = galleryImages
+	c.require(createProductsRequestFieldGalleryImages)
 }
 
 // SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
@@ -1991,6 +2001,108 @@ func (c CreateProductsRequestCustomCta) Ptr() *CreateProductsRequestCustomCta {
 	return &c
 }
 
+var (
+	createProductsRequestGalleryImagesItemFieldDirectUploadID = big.NewInt(1 << 0)
+	createProductsRequestGalleryImagesItemFieldID             = big.NewInt(1 << 1)
+)
+
+type CreateProductsRequestGalleryImagesItem struct {
+	// The signed ID of a completed direct upload, as an alternative to id.
+	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
+	// The tag of an already-uploaded attachment.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateProductsRequestGalleryImagesItem) GetDirectUploadID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DirectUploadID
+}
+
+func (c *CreateProductsRequestGalleryImagesItem) GetID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ID
+}
+
+func (c *CreateProductsRequestGalleryImagesItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateProductsRequestGalleryImagesItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateProductsRequestGalleryImagesItem) SetDirectUploadID(directUploadID *string) {
+	c.DirectUploadID = directUploadID
+	c.require(createProductsRequestGalleryImagesItemFieldDirectUploadID)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateProductsRequestGalleryImagesItem) SetID(id *string) {
+	c.ID = id
+	c.require(createProductsRequestGalleryImagesItemFieldID)
+}
+
+func (c *CreateProductsRequestGalleryImagesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateProductsRequestGalleryImagesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateProductsRequestGalleryImagesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateProductsRequestGalleryImagesItem) MarshalJSON() ([]byte, error) {
+	type embed CreateProductsRequestGalleryImagesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateProductsRequestGalleryImagesItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 // The enrollment status in the global affiliate program.
 type CreateProductsRequestGlobalAffiliateStatus string
 
@@ -3774,6 +3886,108 @@ func (u *UpdateProductsRequestBannerImage) String() string {
 }
 
 var (
+	updateProductsRequestGalleryImagesItemFieldDirectUploadID = big.NewInt(1 << 0)
+	updateProductsRequestGalleryImagesItemFieldID             = big.NewInt(1 << 1)
+)
+
+type UpdateProductsRequestGalleryImagesItem struct {
+	// The signed ID of a completed direct upload, as an alternative to id.
+	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
+	// The tag of an already-uploaded attachment.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateProductsRequestGalleryImagesItem) GetDirectUploadID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DirectUploadID
+}
+
+func (u *UpdateProductsRequestGalleryImagesItem) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateProductsRequestGalleryImagesItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateProductsRequestGalleryImagesItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateProductsRequestGalleryImagesItem) SetDirectUploadID(directUploadID *string) {
+	u.DirectUploadID = directUploadID
+	u.require(updateProductsRequestGalleryImagesItemFieldDirectUploadID)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateProductsRequestGalleryImagesItem) SetID(id *string) {
+	u.ID = id
+	u.require(updateProductsRequestGalleryImagesItemFieldID)
+}
+
+func (u *UpdateProductsRequestGalleryImagesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateProductsRequestGalleryImagesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateProductsRequestGalleryImagesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateProductsRequestGalleryImagesItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateProductsRequestGalleryImagesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateProductsRequestGalleryImagesItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	unpublishProductsRequestFieldID = big.NewInt(1 << 0)
 )
 
@@ -3803,13 +4017,14 @@ var (
 	updateProductsRequestFieldID                 = big.NewInt(1 << 0)
 	updateProductsRequestFieldBannerImage        = big.NewInt(1 << 1)
 	updateProductsRequestFieldDescription        = big.NewInt(1 << 2)
-	updateProductsRequestFieldHeadline           = big.NewInt(1 << 3)
-	updateProductsRequestFieldLabels             = big.NewInt(1 << 4)
-	updateProductsRequestFieldMetadata           = big.NewInt(1 << 5)
-	updateProductsRequestFieldProductTaxCodeID   = big.NewInt(1 << 6)
-	updateProductsRequestFieldSendWelcomeMessage = big.NewInt(1 << 7)
-	updateProductsRequestFieldTitle              = big.NewInt(1 << 8)
-	updateProductsRequestFieldVisibility         = big.NewInt(1 << 9)
+	updateProductsRequestFieldGalleryImages      = big.NewInt(1 << 3)
+	updateProductsRequestFieldHeadline           = big.NewInt(1 << 4)
+	updateProductsRequestFieldLabels             = big.NewInt(1 << 5)
+	updateProductsRequestFieldMetadata           = big.NewInt(1 << 6)
+	updateProductsRequestFieldProductTaxCodeID   = big.NewInt(1 << 7)
+	updateProductsRequestFieldSendWelcomeMessage = big.NewInt(1 << 8)
+	updateProductsRequestFieldTitle              = big.NewInt(1 << 9)
+	updateProductsRequestFieldVisibility         = big.NewInt(1 << 10)
 )
 
 type UpdateProductsRequest struct {
@@ -3819,6 +4034,8 @@ type UpdateProductsRequest struct {
 	BannerImage *UpdateProductsRequestBannerImage `json:"banner_image,omitempty" url:"-"`
 	// A written description displayed on the product page.
 	Description *string `json:"description,omitempty" url:"-"`
+	// Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
+	GalleryImages []*UpdateProductsRequestGalleryImagesItem `json:"gallery_images,omitempty" url:"-"`
 	// A short marketing headline for the product page.
 	Headline *string `json:"headline,omitempty" url:"-"`
 	// Labels used to group products into collections. Replaces the existing labels. Send an empty array to clear them.
@@ -3864,6 +4081,13 @@ func (u *UpdateProductsRequest) SetBannerImage(bannerImage *UpdateProductsReques
 func (u *UpdateProductsRequest) SetDescription(description *string) {
 	u.Description = description
 	u.require(updateProductsRequestFieldDescription)
+}
+
+// SetGalleryImages sets the GalleryImages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateProductsRequest) SetGalleryImages(galleryImages []*UpdateProductsRequestGalleryImagesItem) {
+	u.GalleryImages = galleryImages
+	u.require(updateProductsRequestFieldGalleryImages)
 }
 
 // SetHeadline sets the Headline field and marks it as non-optional;
