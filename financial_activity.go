@@ -242,7 +242,7 @@ type LedgerActivity struct {
 	ProductName *string `json:"product_name,omitempty" url:"product_name,omitempty"`
 	// Resource associated with this ledger activity.
 	Resource *LedgerActivityResource `json:"resource,omitempty" url:"resource,omitempty"`
-	// Source of this ledger activity.
+	// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
 	Source *LedgerActivitySource `json:"source,omitempty" url:"source,omitempty"`
 	// Dollar value of this movement as a decimal string, signed like `amount`. Converted from the posted amount at the rate that was live when the line posted — the same pricing the wallet balance chart and the financial reports use — so a crypto row carries its dollar value too. `null` for a currency Whop holds no exchange rate for.
 	UsdAmount *string `json:"usd_amount,omitempty" url:"usd_amount,omitempty"`
@@ -4392,7 +4392,7 @@ func (l LedgerActivityResourceTwoObject) Ptr() *LedgerActivityResourceTwoObject 
 	return &l
 }
 
-// Source of this ledger activity.
+// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
 var (
 	ledgerActivitySourceFieldAmountFloat         = big.NewInt(1 << 0)
 	ledgerActivitySourceFieldCardBrand           = big.NewInt(1 << 1)
@@ -4400,24 +4400,25 @@ var (
 	ledgerActivitySourceFieldClaimURL            = big.NewInt(1 << 3)
 	ledgerActivitySourceFieldCreatedAt           = big.NewInt(1 << 4)
 	ledgerActivitySourceFieldEstimatedArrival    = big.NewInt(1 << 5)
-	ledgerActivitySourceFieldFromAmount          = big.NewInt(1 << 6)
-	ledgerActivitySourceFieldFromCurrency        = big.NewInt(1 << 7)
-	ledgerActivitySourceFieldID                  = big.NewInt(1 << 8)
-	ledgerActivitySourceFieldNotes               = big.NewInt(1 << 9)
-	ledgerActivitySourceFieldObject              = big.NewInt(1 << 10)
-	ledgerActivitySourceFieldPayerName           = big.NewInt(1 << 11)
-	ledgerActivitySourceFieldPaymentAmount       = big.NewInt(1 << 12)
-	ledgerActivitySourceFieldPaymentMethodType   = big.NewInt(1 << 13)
-	ledgerActivitySourceFieldPaymentProcessor    = big.NewInt(1 << 14)
-	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 15)
-	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 16)
-	ledgerActivitySourceFieldReason              = big.NewInt(1 << 17)
-	ledgerActivitySourceFieldRiskReviewHold      = big.NewInt(1 << 18)
-	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 19)
-	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 20)
-	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 21)
-	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 22)
-	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 23)
+	ledgerActivitySourceFieldFeeKind             = big.NewInt(1 << 6)
+	ledgerActivitySourceFieldFromAmount          = big.NewInt(1 << 7)
+	ledgerActivitySourceFieldFromCurrency        = big.NewInt(1 << 8)
+	ledgerActivitySourceFieldID                  = big.NewInt(1 << 9)
+	ledgerActivitySourceFieldNotes               = big.NewInt(1 << 10)
+	ledgerActivitySourceFieldObject              = big.NewInt(1 << 11)
+	ledgerActivitySourceFieldPayerName           = big.NewInt(1 << 12)
+	ledgerActivitySourceFieldPaymentAmount       = big.NewInt(1 << 13)
+	ledgerActivitySourceFieldPaymentMethodType   = big.NewInt(1 << 14)
+	ledgerActivitySourceFieldPaymentProcessor    = big.NewInt(1 << 15)
+	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 16)
+	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 17)
+	ledgerActivitySourceFieldReason              = big.NewInt(1 << 18)
+	ledgerActivitySourceFieldRiskReviewHold      = big.NewInt(1 << 19)
+	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 20)
+	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 21)
+	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 22)
+	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 23)
+	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 24)
 )
 
 type LedgerActivitySource struct {
@@ -4433,6 +4434,8 @@ type LedgerActivitySource struct {
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
 	// Estimated arrival as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
 	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
+	// Action that generated a platform markup fee: deposit, swap, transfer, card_spend, or payout. Present for platform_markup_fee and platform_markup_fee_payout, including when include_resource is false. Null when the originating action is unavailable; omitted on other source types.
+	FeeKind *LedgerActivitySourceFeeKind `json:"fee_kind,omitempty" url:"fee_kind,omitempty"`
 	// Amount converted out of from_currency as a decimal string (swap sources only).
 	FromAmount *string `json:"from_amount,omitempty" url:"from_amount,omitempty"`
 	// Lowercase currency code converted from (swap sources only).
@@ -4516,6 +4519,13 @@ func (l *LedgerActivitySource) GetEstimatedArrival() *time.Time {
 		return nil
 	}
 	return l.EstimatedArrival
+}
+
+func (l *LedgerActivitySource) GetFeeKind() *LedgerActivitySourceFeeKind {
+	if l == nil {
+		return nil
+	}
+	return l.FeeKind
 }
 
 func (l *LedgerActivitySource) GetFromAmount() *string {
@@ -4700,6 +4710,13 @@ func (l *LedgerActivitySource) SetEstimatedArrival(estimatedArrival *time.Time) 
 	l.require(ledgerActivitySourceFieldEstimatedArrival)
 }
 
+// SetFeeKind sets the FeeKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetFeeKind(feeKind *LedgerActivitySourceFeeKind) {
+	l.FeeKind = feeKind
+	l.require(ledgerActivitySourceFieldFeeKind)
+}
+
 // SetFromAmount sets the FromAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *LedgerActivitySource) SetFromAmount(fromAmount *string) {
@@ -4878,6 +4895,38 @@ func (l *LedgerActivitySource) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// Action that generated a platform markup fee: deposit, swap, transfer, card_spend, or payout. Present for platform_markup_fee and platform_markup_fee_payout, including when include_resource is false. Null when the originating action is unavailable; omitted on other source types.
+type LedgerActivitySourceFeeKind string
+
+const (
+	LedgerActivitySourceFeeKindPayout    LedgerActivitySourceFeeKind = "payout"
+	LedgerActivitySourceFeeKindTransfer  LedgerActivitySourceFeeKind = "transfer"
+	LedgerActivitySourceFeeKindDeposit   LedgerActivitySourceFeeKind = "deposit"
+	LedgerActivitySourceFeeKindSwap      LedgerActivitySourceFeeKind = "swap"
+	LedgerActivitySourceFeeKindCardSpend LedgerActivitySourceFeeKind = "card_spend"
+)
+
+func NewLedgerActivitySourceFeeKindFromString(s string) (LedgerActivitySourceFeeKind, error) {
+	switch s {
+	case "payout":
+		return LedgerActivitySourceFeeKindPayout, nil
+	case "transfer":
+		return LedgerActivitySourceFeeKindTransfer, nil
+	case "deposit":
+		return LedgerActivitySourceFeeKindDeposit, nil
+	case "swap":
+		return LedgerActivitySourceFeeKindSwap, nil
+	case "card_spend":
+		return LedgerActivitySourceFeeKindCardSpend, nil
+	}
+	var t LedgerActivitySourceFeeKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LedgerActivitySourceFeeKind) Ptr() *LedgerActivitySourceFeeKind {
+	return &l
 }
 
 // Payout destination display info (payout sources only).
