@@ -1128,6 +1128,7 @@ func (l *LedgerActivityCurrency) String() string {
 type LedgerActivityLineType string
 
 const (
+	LedgerActivityLineTypeAccountSettlement                         LedgerActivityLineType = "account_settlement"
 	LedgerActivityLineTypeAdBudgetRelease                           LedgerActivityLineType = "ad_budget_release"
 	LedgerActivityLineTypeAdCampaignBudget                          LedgerActivityLineType = "ad_campaign_budget"
 	LedgerActivityLineTypeAdPublisherPayout                         LedgerActivityLineType = "ad_publisher_payout"
@@ -1267,6 +1268,8 @@ const (
 
 func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, error) {
 	switch s {
+	case "account_settlement":
+		return LedgerActivityLineTypeAccountSettlement, nil
 	case "ad_budget_release":
 		return LedgerActivityLineTypeAdBudgetRelease, nil
 	case "ad_campaign_budget":
@@ -5055,6 +5058,7 @@ func (l ListFinancialActivityRequestDirection) Ptr() *ListFinancialActivityReque
 type ListFinancialActivityRequestLineTypesItem string
 
 const (
+	ListFinancialActivityRequestLineTypesItemAccountSettlement                         ListFinancialActivityRequestLineTypesItem = "account_settlement"
 	ListFinancialActivityRequestLineTypesItemAdBudgetRelease                           ListFinancialActivityRequestLineTypesItem = "ad_budget_release"
 	ListFinancialActivityRequestLineTypesItemAdCampaignBudget                          ListFinancialActivityRequestLineTypesItem = "ad_campaign_budget"
 	ListFinancialActivityRequestLineTypesItemAdPublisherPayout                         ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout"
@@ -5190,6 +5194,8 @@ const (
 
 func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinancialActivityRequestLineTypesItem, error) {
 	switch s {
+	case "account_settlement":
+		return ListFinancialActivityRequestLineTypesItemAccountSettlement, nil
 	case "ad_budget_release":
 		return ListFinancialActivityRequestLineTypesItemAdBudgetRelease, nil
 	case "ad_campaign_budget":

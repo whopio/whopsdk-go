@@ -20892,7 +20892,7 @@ type PaymentLegacy struct {
 	SettlementCurrency Currencies `json:"settlement_currency" url:"settlement_currency"`
 	// Deprecated. Always returns null.
 	SettlementExchangeRate *float64 `json:"settlement_exchange_rate,omitempty" url:"settlement_exchange_rate,omitempty"`
-	// When this payment's funds post to the company's available balance, at midnight UTC. Known at payment time and never changes. The `ledger_account.funds_available` webhook carries the same `settlement_time_at` when that batch posts — match them to know these funds are now withdrawable.
+	// When this payment's funds post to the company's available balance, at midnight UTC. Known at payment time and never changes. The `financial_activity.funds_available` webhook's `posted_at` carries the same value when the settlement that clears it posts — match them to know these funds are now withdrawable.
 	SettlementTimeAt *time.Time `json:"settlement_time_at,omitempty" url:"settlement_time_at,omitempty"`
 	// The shipment attached to this payment.
 	Shipment *PaymentLegacyShipment `json:"shipment,omitempty" url:"shipment,omitempty"`
@@ -41149,6 +41149,7 @@ const (
 	WebhookEventLedgerAccountFundsAvailable        WebhookEvent = "ledger_account.funds_available"
 	WebhookEventSwapCompleted                      WebhookEvent = "swap.completed"
 	WebhookEventDepositSucceeded                   WebhookEvent = "deposit.succeeded"
+	WebhookEventFinancialActivityFundsAvailable    WebhookEvent = "financial_activity.funds_available"
 	WebhookEventTransferCreated                    WebhookEvent = "transfer.created"
 	WebhookEventTransferCompleted                  WebhookEvent = "transfer.completed"
 	WebhookEventTransferFailed                     WebhookEvent = "transfer.failed"
@@ -41261,6 +41262,8 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventSwapCompleted, nil
 	case "deposit.succeeded":
 		return WebhookEventDepositSucceeded, nil
+	case "financial_activity.funds_available":
+		return WebhookEventFinancialActivityFundsAvailable, nil
 	case "transfer.created":
 		return WebhookEventTransferCreated, nil
 	case "transfer.completed":
