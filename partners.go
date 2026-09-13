@@ -153,15 +153,16 @@ var (
 	onboardingRewardFieldID                        = big.NewInt(1 << 1)
 	onboardingRewardFieldMaxRedemptions            = big.NewInt(1 << 2)
 	onboardingRewardFieldPartner                   = big.NewInt(1 << 3)
-	onboardingRewardFieldQualificationAmount       = big.NewInt(1 << 4)
-	onboardingRewardFieldQualificationIncomeSource = big.NewInt(1 << 5)
-	onboardingRewardFieldQualificationMet          = big.NewInt(1 << 6)
-	onboardingRewardFieldQualificationProgress     = big.NewInt(1 << 7)
-	onboardingRewardFieldRemainingRedemptions      = big.NewInt(1 << 8)
-	onboardingRewardFieldRewardAmount              = big.NewInt(1 << 9)
-	onboardingRewardFieldRewardType                = big.NewInt(1 << 10)
-	onboardingRewardFieldRewarded                  = big.NewInt(1 << 11)
-	onboardingRewardFieldStatus                    = big.NewInt(1 << 12)
+	onboardingRewardFieldPartnerRewardAmount       = big.NewInt(1 << 4)
+	onboardingRewardFieldQualificationAmount       = big.NewInt(1 << 5)
+	onboardingRewardFieldQualificationIncomeSource = big.NewInt(1 << 6)
+	onboardingRewardFieldQualificationMet          = big.NewInt(1 << 7)
+	onboardingRewardFieldQualificationProgress     = big.NewInt(1 << 8)
+	onboardingRewardFieldRemainingRedemptions      = big.NewInt(1 << 9)
+	onboardingRewardFieldRewardAmount              = big.NewInt(1 << 10)
+	onboardingRewardFieldRewardType                = big.NewInt(1 << 11)
+	onboardingRewardFieldRewarded                  = big.NewInt(1 << 12)
+	onboardingRewardFieldStatus                    = big.NewInt(1 << 13)
 )
 
 type OnboardingReward struct {
@@ -173,6 +174,8 @@ type OnboardingReward struct {
 	MaxRedemptions *int `json:"max_redemptions,omitempty" url:"max_redemptions,omitempty"`
 	// Partner whose link attributed this reward.
 	Partner *UserSummary `json:"partner" url:"partner"`
+	// What the partner earns when a referred business qualifies for this reward. Null when the reward pays the business only.
+	PartnerRewardAmount *Money `json:"partner_reward_amount,omitempty" url:"partner_reward_amount,omitempty"`
 	// Required qualifying volume. Null for an immediate reward.
 	QualificationAmount *Money `json:"qualification_amount,omitempty" url:"qualification_amount,omitempty"`
 	// Income source whose volume qualifies the business. Null for an immediate reward.
@@ -225,6 +228,13 @@ func (o *OnboardingReward) GetPartner() *UserSummary {
 		return nil
 	}
 	return o.Partner
+}
+
+func (o *OnboardingReward) GetPartnerRewardAmount() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.PartnerRewardAmount
 }
 
 func (o *OnboardingReward) GetQualificationAmount() *Money {
@@ -330,6 +340,13 @@ func (o *OnboardingReward) SetMaxRedemptions(maxRedemptions *int) {
 func (o *OnboardingReward) SetPartner(partner *UserSummary) {
 	o.Partner = partner
 	o.require(onboardingRewardFieldPartner)
+}
+
+// SetPartnerRewardAmount sets the PartnerRewardAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OnboardingReward) SetPartnerRewardAmount(partnerRewardAmount *Money) {
+	o.PartnerRewardAmount = partnerRewardAmount
+	o.require(onboardingRewardFieldPartnerRewardAmount)
 }
 
 // SetQualificationAmount sets the QualificationAmount field and marks it as non-optional;
