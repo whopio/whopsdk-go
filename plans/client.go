@@ -184,7 +184,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Permanently delete a plan from a product. Existing memberships on this plan will not be affected.
+// Delete a plan from a product. It stops selling immediately; existing memberships on this plan will not be affected.
 //
 // Example:
 //
