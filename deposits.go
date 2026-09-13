@@ -802,6 +802,7 @@ type CreateDepositsResponseMethodsCryptoItemName string
 const (
 	CreateDepositsResponseMethodsCryptoItemNameEthereum      CreateDepositsResponseMethodsCryptoItemName = "Ethereum"
 	CreateDepositsResponseMethodsCryptoItemNameSolana        CreateDepositsResponseMethodsCryptoItemName = "Solana"
+	CreateDepositsResponseMethodsCryptoItemNameBitcoin       CreateDepositsResponseMethodsCryptoItemName = "Bitcoin"
 	CreateDepositsResponseMethodsCryptoItemNameBase          CreateDepositsResponseMethodsCryptoItemName = "Base"
 	CreateDepositsResponseMethodsCryptoItemNameBnbSmartChain CreateDepositsResponseMethodsCryptoItemName = "BNB Smart Chain"
 	CreateDepositsResponseMethodsCryptoItemNameHyperliquid   CreateDepositsResponseMethodsCryptoItemName = "Hyperliquid"
@@ -818,6 +819,8 @@ func NewCreateDepositsResponseMethodsCryptoItemNameFromString(s string) (CreateD
 		return CreateDepositsResponseMethodsCryptoItemNameEthereum, nil
 	case "Solana":
 		return CreateDepositsResponseMethodsCryptoItemNameSolana, nil
+	case "Bitcoin":
+		return CreateDepositsResponseMethodsCryptoItemNameBitcoin, nil
 	case "Base":
 		return CreateDepositsResponseMethodsCryptoItemNameBase, nil
 	case "BNB Smart Chain":
@@ -951,6 +954,7 @@ type CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName string
 const (
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameArb   CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "ARB"
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameBnb   CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "BNB"
+	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameBtc   CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "BTC"
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameEth   CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "ETH"
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameEurc  CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "EURC"
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameHype  CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "HYPE"
@@ -976,6 +980,8 @@ func NewCreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameFromSt
 		return CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameArb, nil
 	case "BNB":
 		return CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameBnb, nil
+	case "BTC":
+		return CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameBtc, nil
 	case "ETH":
 		return CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameEth, nil
 	case "EURC":
