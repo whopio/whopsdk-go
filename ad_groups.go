@@ -967,7 +967,7 @@ type AdGroup struct {
 	BidType *AdGroupBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
 	// This ad group's budget, in the ad account's currency. `null` when the budget is set on the campaign instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
-	// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`).
+	// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
 	BudgetType *AdGroupBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
 	// Clicks divided by impressions, between 0 and 1.
 	ClickThroughRate float64 `json:"click_through_rate" url:"click_through_rate"`
@@ -2573,7 +2573,7 @@ func (a AdGroupBidType) Ptr() *AdGroupBidType {
 	return &a
 }
 
-// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`).
+// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
 type AdGroupBudgetType string
 
 const (
