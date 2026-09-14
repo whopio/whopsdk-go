@@ -30297,7 +30297,6 @@ const (
 	PaymentMethodTypesBancontact             PaymentMethodTypes = "bancontact"
 	PaymentMethodTypesBankWire               PaymentMethodTypes = "bank_wire"
 	PaymentMethodTypesBillie                 PaymentMethodTypes = "billie"
-	PaymentMethodTypesBizum                  PaymentMethodTypes = "bizum"
 	PaymentMethodTypesBlik                   PaymentMethodTypes = "blik"
 	PaymentMethodTypesBoleto                 PaymentMethodTypes = "boleto"
 	PaymentMethodTypesBreB                   PaymentMethodTypes = "bre_b"
@@ -30444,8 +30443,6 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesBankWire, nil
 	case "billie":
 		return PaymentMethodTypesBillie, nil
-	case "bizum":
-		return PaymentMethodTypesBizum, nil
 	case "blik":
 		return PaymentMethodTypesBlik, nil
 	case "boleto":
