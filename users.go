@@ -113,16 +113,19 @@ func (l *ListUsersRequest) SetBefore(before *string) {
 
 var (
 	meUsersRequestFieldAccountID             = big.NewInt(1 << 0)
-	meUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 1)
-	meUsersRequestFieldFrom                  = big.NewInt(1 << 2)
-	meUsersRequestFieldTo                    = big.NewInt(1 << 3)
-	meUsersRequestFieldInterval              = big.NewInt(1 << 4)
-	meUsersRequestFieldTimeZone              = big.NewInt(1 << 5)
+	meUsersRequestFieldIncludeBalance        = big.NewInt(1 << 1)
+	meUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 2)
+	meUsersRequestFieldFrom                  = big.NewInt(1 << 3)
+	meUsersRequestFieldTo                    = big.NewInt(1 << 4)
+	meUsersRequestFieldInterval              = big.NewInt(1 << 5)
+	meUsersRequestFieldTimeZone              = big.NewInt(1 << 6)
 )
 
 type MeUsersRequest struct {
 	// When set, returns your account-specific profile overrides for this account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Compute live wallet and owned-account balances (default true). Set false for identity-only reads. Ignored for callers without balance-read scope.
+	IncludeBalance *bool `json:"-" url:"include_balance,omitempty"`
 	// Also compute your balance history (opt-in; runs a heavier query). Ignored for callers without balance-read scope.
 	IncludeBalanceHistory *bool `json:"-" url:"include_balance_history,omitempty"`
 	// Balance-history window start, ISO 8601 date or datetime. Defaults to 30 days ago. Only used with `include_balance_history`.
@@ -150,6 +153,13 @@ func (m *MeUsersRequest) require(field *big.Int) {
 func (m *MeUsersRequest) SetAccountID(accountID *string) {
 	m.AccountID = accountID
 	m.require(meUsersRequestFieldAccountID)
+}
+
+// SetIncludeBalance sets the IncludeBalance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MeUsersRequest) SetIncludeBalance(includeBalance *bool) {
+	m.IncludeBalance = includeBalance
+	m.require(meUsersRequestFieldIncludeBalance)
 }
 
 // SetIncludeBalanceHistory sets the IncludeBalanceHistory field and marks it as non-optional;
@@ -216,11 +226,12 @@ func (r *RecommendActionsUsersRequest) SetID(id string) {
 var (
 	retrieveUsersRequestFieldID                    = big.NewInt(1 << 0)
 	retrieveUsersRequestFieldAccountID             = big.NewInt(1 << 1)
-	retrieveUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 2)
-	retrieveUsersRequestFieldFrom                  = big.NewInt(1 << 3)
-	retrieveUsersRequestFieldTo                    = big.NewInt(1 << 4)
-	retrieveUsersRequestFieldInterval              = big.NewInt(1 << 5)
-	retrieveUsersRequestFieldTimeZone              = big.NewInt(1 << 6)
+	retrieveUsersRequestFieldIncludeBalance        = big.NewInt(1 << 2)
+	retrieveUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 3)
+	retrieveUsersRequestFieldFrom                  = big.NewInt(1 << 4)
+	retrieveUsersRequestFieldTo                    = big.NewInt(1 << 5)
+	retrieveUsersRequestFieldInterval              = big.NewInt(1 << 6)
+	retrieveUsersRequestFieldTimeZone              = big.NewInt(1 << 7)
 )
 
 type RetrieveUsersRequest struct {
@@ -228,6 +239,8 @@ type RetrieveUsersRequest struct {
 	ID string `json:"-" url:"-"`
 	// When set, returns the user's account-specific profile overrides for this account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Compute live wallet and owned-account balances on the self view (default true). Set false for identity-only reads. Ignored when the id is not `me` or the caller lacks balance-read scope.
+	IncludeBalance *bool `json:"-" url:"include_balance,omitempty"`
 	// Also compute your balance history (opt-in; runs a heavier query). Only applies when the id is `me`; ignored for callers without balance-read scope.
 	IncludeBalanceHistory *bool `json:"-" url:"include_balance_history,omitempty"`
 	// Balance-history window start, ISO 8601 date or datetime. Defaults to 30 days ago. Only used with `include_balance_history`.
@@ -262,6 +275,13 @@ func (r *RetrieveUsersRequest) SetID(id string) {
 func (r *RetrieveUsersRequest) SetAccountID(accountID *string) {
 	r.AccountID = accountID
 	r.require(retrieveUsersRequestFieldAccountID)
+}
+
+// SetIncludeBalance sets the IncludeBalance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveUsersRequest) SetIncludeBalance(includeBalance *bool) {
+	r.IncludeBalance = includeBalance
+	r.require(retrieveUsersRequestFieldIncludeBalance)
 }
 
 // SetIncludeBalanceHistory sets the IncludeBalanceHistory field and marks it as non-optional;
@@ -318,7 +338,7 @@ var (
 )
 
 type User struct {
-	// The user's balance: personal cash + crypto + in-flight treasury deposits, plus account balances for accounts they own. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise.
+	// The user's balance: personal cash + crypto + in-flight treasury deposits, plus account balances for accounts they own. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, or when `include_balance=false`.
 	Balance *UserBalance `json:"balance,omitempty" url:"balance,omitempty"`
 	// The user's cumulative wallet balance over time (USD `{ t, v }` points plus last/min/max), for the balance chart. Opt in with `include_balance_history=true` when retrieving yourself with the reserved id `me`; populated only for callers with balance-read scope and `null` otherwise. A user with no wallet activity returns an empty series.
 	BalanceHistory *UserBalanceHistory `json:"balance_history,omitempty" url:"balance_history,omitempty"`
