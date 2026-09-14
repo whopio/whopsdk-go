@@ -423,6 +423,14 @@ client.Accounts.Create(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**website:** `*string` — The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -885,6 +893,14 @@ client.Accounts.Update(
 <dd>
 
 **useLogoAsOpengraphImageFallback:** `*bool` — Whether the account uses its logo as the fallback Open Graph image.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**website:** `*string` — The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry. Pass `null` to clear the website; existing social links are left unchanged.
     
 </dd>
 </dl>
