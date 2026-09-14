@@ -12589,6 +12589,20 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("card_unload_transfer"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_cashback", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("cashback")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("cashback"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cashback_funding", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("cashback_funding")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("cashback_funding"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_company_referral", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("company_referral")
@@ -13875,6 +13889,20 @@ func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
 		val, err := NewListFinancialActivityRequestLineTypesItemFromString("card_unload_transfer")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("card_unload_transfer"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cashback", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("cashback")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("cashback"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cashback_funding", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("cashback_funding")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("cashback_funding"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_company_referral", func(t *testing.T) {
