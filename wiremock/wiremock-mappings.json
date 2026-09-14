@@ -5502,8 +5502,8 @@
       "postServeActions": []
     },
     {
-      "id": "c0e4f472-0aa5-42ac-9798-7248fb20380a",
-      "name": "Run Economic Intelligence - default",
+      "id": "a58a8b23-5d58-4296-963d-f386331dfdb1",
+      "name": "Create Recommendations - default",
       "request": {
         "urlPathTemplate": "/economic_intelligence",
         "method": "POST",
@@ -5520,7 +5520,43 @@
           "Content-Type": "application/json"
         }
       },
-      "uuid": "c0e4f472-0aa5-42ac-9798-7248fb20380a",
+      "uuid": "a58a8b23-5d58-4296-963d-f386331dfdb1",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "56d7d399-c228-4d45-9e08-111f4a06eb6a",
+      "name": "Update Recommendation - default",
+      "request": {
+        "urlPathTemplate": "/economic_intelligence/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action_type\": \"improve_landing_page\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"executed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"reca_xxxxxxxxxxxxxx\",\n  \"input\": \"Grow revenue\",\n  \"prompt\": \"Create a 20% off promo code for my members.\",\n  \"reasoning\": \"Revenue fell by 20%.\",\n  \"status\": \"queued\",\n  \"superseded_at\": \"2026-01-01T12:00:00.000Z\",\n  \"title\": \"Move $180 from 3 dead ad groups into BATCH#3, +1.7x return\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "56d7d399-c228-4d45-9e08-111f4a06eb6a",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -14442,6 +14478,6 @@
     }
   ],
   "meta": {
-    "total": 401
+    "total": 402
   }
 }

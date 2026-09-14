@@ -15072,7 +15072,7 @@ client.EconomicIntelligence.List(
 </dl>
 </details>
 
-<details><summary><code>client.EconomicIntelligence.Run(request) -> *whopsdk.EconomicIntelligence</code></summary>
+<details><summary><code>client.EconomicIntelligence.Create(request) -> *whopsdk.EconomicIntelligence</code></summary>
 <dl>
 <dd>
 
@@ -15099,10 +15099,10 @@ Harnesses Economic Intelligence to generate recommended actions that lead the bu
 <dd>
 
 ```go
-request := &whopsdk.RunEconomicIntelligenceRequest{
-    Input: "get more repeat buyers for my taurine supplement",
+request := &whopsdk.CreateEconomicIntelligenceRequest{
+    Input: "I sell $79 customized gym straps. The number of purchases per day fell from 84 to 66 since June and my ads cost per signup doubled to $38. Half the leads never open the checkout. I want to win back churned visitors and lift conversion without cutting the price, and I can spend up to $500 this month on it.",
 }
-client.EconomicIntelligence.Run(
+client.EconomicIntelligence.Create(
     context.TODO(),
     request,
 )
@@ -15129,6 +15129,83 @@ client.EconomicIntelligence.Run(
 <dd>
 
 **input:** `string` — What the owner wants, in their own words. Up to 1000 characters.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.EconomicIntelligence.Update(ID, request) -> *whopsdk.EconomicIntelligence</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retires a `ready` recommendation the owner no longer wants by setting its status to `superseded`. It leaves the ready list and stays in the account's history.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateEconomicIntelligenceRequest{
+    ID: "id",
+    Status: whopsdk.UpdateEconomicIntelligenceRequestStatusSuperseded,
+}
+client.EconomicIntelligence.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Recommendation ID, prefixed `reca_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.UpdateEconomicIntelligenceRequestStatus` — The status to move the recommendation to. Only `superseded` is accepted.
     
 </dd>
 </dl>
