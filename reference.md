@@ -33945,6 +33945,14 @@ client.Users.Me(
 <dl>
 <dd>
 
+**includeBalance:** `*bool` — Compute live wallet and owned-account balances (default true). Set false for identity-only reads. Ignored for callers without balance-read scope.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **includeBalanceHistory:** `*bool` — Also compute your balance history (opt-in; runs a heavier query). Ignored for callers without balance-read scope.
     
 </dd>
@@ -34144,6 +34152,14 @@ client.Users.Retrieve(
 <dd>
 
 **accountID:** `*string` — When set, returns the user's account-specific profile overrides for this account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeBalance:** `*bool` — Compute live wallet and owned-account balances on the self view (default true). Set false for identity-only reads. Ignored when the id is not `me` or the caller lacks balance-read scope.
     
 </dd>
 </dl>
