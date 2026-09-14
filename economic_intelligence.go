@@ -10,6 +10,63 @@ import (
 )
 
 var (
+	createEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 0)
+	createEconomicIntelligenceRequestFieldInput     = big.NewInt(1 << 1)
+)
+
+type CreateEconomicIntelligenceRequest struct {
+	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
+	// What the owner wants, in their own words. Up to 1000 characters.
+	Input string `json:"input" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateEconomicIntelligenceRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateEconomicIntelligenceRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createEconomicIntelligenceRequestFieldAccountID)
+}
+
+// SetInput sets the Input field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateEconomicIntelligenceRequest) SetInput(input string) {
+	c.Input = input
+	c.require(createEconomicIntelligenceRequestFieldInput)
+}
+
+func (c *CreateEconomicIntelligenceRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateEconomicIntelligenceRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateEconomicIntelligenceRequest(body)
+	return nil
+}
+
+func (c *CreateEconomicIntelligenceRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateEconomicIntelligenceRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	listEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 0)
 	listEconomicIntelligenceRequestFieldStatus    = big.NewInt(1 << 1)
 	listEconomicIntelligenceRequestFieldFirst     = big.NewInt(1 << 2)
@@ -83,63 +140,6 @@ func (l *ListEconomicIntelligenceRequest) SetLast(last *int) {
 func (l *ListEconomicIntelligenceRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listEconomicIntelligenceRequestFieldBefore)
-}
-
-var (
-	runEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 0)
-	runEconomicIntelligenceRequestFieldInput     = big.NewInt(1 << 1)
-)
-
-type RunEconomicIntelligenceRequest struct {
-	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
-	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// What the owner wants, in their own words. Up to 1000 characters.
-	Input string `json:"input" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (r *RunEconomicIntelligenceRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RunEconomicIntelligenceRequest) SetAccountID(accountID *string) {
-	r.AccountID = accountID
-	r.require(runEconomicIntelligenceRequestFieldAccountID)
-}
-
-// SetInput sets the Input field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RunEconomicIntelligenceRequest) SetInput(input string) {
-	r.Input = input
-	r.require(runEconomicIntelligenceRequestFieldInput)
-}
-
-func (r *RunEconomicIntelligenceRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler RunEconomicIntelligenceRequest
-	var body unmarshaler
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*r = RunEconomicIntelligenceRequest(body)
-	return nil
-}
-
-func (r *RunEconomicIntelligenceRequest) MarshalJSON() ([]byte, error) {
-	type embed RunEconomicIntelligenceRequest
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
 }
 
 var (
@@ -696,4 +696,91 @@ func (l *ListEconomicIntelligenceResponsePageInfo) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// The status to move the recommendation to. Only `superseded` is accepted.
+type UpdateEconomicIntelligenceRequestStatus string
+
+const (
+	UpdateEconomicIntelligenceRequestStatusSuperseded UpdateEconomicIntelligenceRequestStatus = "superseded"
+)
+
+func NewUpdateEconomicIntelligenceRequestStatusFromString(s string) (UpdateEconomicIntelligenceRequestStatus, error) {
+	switch s {
+	case "superseded":
+		return UpdateEconomicIntelligenceRequestStatusSuperseded, nil
+	}
+	var t UpdateEconomicIntelligenceRequestStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateEconomicIntelligenceRequestStatus) Ptr() *UpdateEconomicIntelligenceRequestStatus {
+	return &u
+}
+
+var (
+	updateEconomicIntelligenceRequestFieldID        = big.NewInt(1 << 0)
+	updateEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 1)
+	updateEconomicIntelligenceRequestFieldStatus    = big.NewInt(1 << 2)
+)
+
+type UpdateEconomicIntelligenceRequest struct {
+	// Recommendation ID, prefixed `reca_`.
+	ID string `json:"-" url:"-"`
+	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// The status to move the recommendation to. Only `superseded` is accepted.
+	Status UpdateEconomicIntelligenceRequestStatus `json:"status" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateEconomicIntelligenceRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateEconomicIntelligenceRequest) SetID(id string) {
+	u.ID = id
+	u.require(updateEconomicIntelligenceRequestFieldID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateEconomicIntelligenceRequest) SetAccountID(accountID *string) {
+	u.AccountID = accountID
+	u.require(updateEconomicIntelligenceRequestFieldAccountID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateEconomicIntelligenceRequest) SetStatus(status UpdateEconomicIntelligenceRequestStatus) {
+	u.Status = status
+	u.require(updateEconomicIntelligenceRequestFieldStatus)
+}
+
+func (u *UpdateEconomicIntelligenceRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateEconomicIntelligenceRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateEconomicIntelligenceRequest(body)
+	return nil
+}
+
+func (u *UpdateEconomicIntelligenceRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateEconomicIntelligenceRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }

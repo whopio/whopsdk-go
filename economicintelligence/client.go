@@ -115,19 +115,47 @@ func (c *Client) List(
 //
 // Example:
 //
-//	request := &whopsdk.RunEconomicIntelligenceRequest{
-//	    Input: "get more repeat buyers for my taurine supplement",
+//	request := &whopsdk.CreateEconomicIntelligenceRequest{
+//	    Input: "I sell $79 customized gym straps. The number of purchases per day fell from 84 to 66 since June and my ads cost per signup doubled to $38. Half the leads never open the checkout. I want to win back churned visitors and lift conversion without cutting the price, and I can spend up to $500 this month on it.",
 //	}
-//	client.EconomicIntelligence.Run(
+//	client.EconomicIntelligence.Create(
 //	    context.TODO(),
 //	    request,
 //	)
-func (c *Client) Run(
+func (c *Client) Create(
 	ctx context.Context,
-	request *whopsdk.RunEconomicIntelligenceRequest,
+	request *whopsdk.CreateEconomicIntelligenceRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.EconomicIntelligence, error) {
-	response, err := c.WithRawResponse.Run(
+	response, err := c.WithRawResponse.Create(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Retires a `ready` recommendation the owner no longer wants by setting its status to `superseded`. It leaves the ready list and stays in the account's history.
+//
+// Example:
+//
+//	request := &whopsdk.UpdateEconomicIntelligenceRequest{
+//	    ID: "id",
+//	    Status: whopsdk.UpdateEconomicIntelligenceRequestStatusSuperseded,
+//	}
+//	client.EconomicIntelligence.Update(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Update(
+	ctx context.Context,
+	request *whopsdk.UpdateEconomicIntelligenceRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.EconomicIntelligence, error) {
+	response, err := c.WithRawResponse.Update(
 		ctx,
 		request,
 		opts...,
