@@ -1155,6 +1155,8 @@ const (
 	LedgerActivityLineTypeCardSpendRefund                           LedgerActivityLineType = "card_spend_refund"
 	LedgerActivityLineTypeCardUnloadDeposit                         LedgerActivityLineType = "card_unload_deposit"
 	LedgerActivityLineTypeCardUnloadTransfer                        LedgerActivityLineType = "card_unload_transfer"
+	LedgerActivityLineTypeCashback                                  LedgerActivityLineType = "cashback"
+	LedgerActivityLineTypeCashbackFunding                           LedgerActivityLineType = "cashback_funding"
 	LedgerActivityLineTypeCompanyReferral                           LedgerActivityLineType = "company_referral"
 	LedgerActivityLineTypeConnectedAccountNegativeBalance           LedgerActivityLineType = "connected_account_negative_balance"
 	LedgerActivityLineTypeCrossBorderPercentageFee                  LedgerActivityLineType = "cross_border_percentage_fee"
@@ -1322,6 +1324,10 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeCardUnloadDeposit, nil
 	case "card_unload_transfer":
 		return LedgerActivityLineTypeCardUnloadTransfer, nil
+	case "cashback":
+		return LedgerActivityLineTypeCashback, nil
+	case "cashback_funding":
+		return LedgerActivityLineTypeCashbackFunding, nil
 	case "company_referral":
 		return LedgerActivityLineTypeCompanyReferral, nil
 	case "connected_account_negative_balance":
@@ -5085,6 +5091,8 @@ const (
 	ListFinancialActivityRequestLineTypesItemCardSpendRefund                           ListFinancialActivityRequestLineTypesItem = "card_spend_refund"
 	ListFinancialActivityRequestLineTypesItemCardUnloadDeposit                         ListFinancialActivityRequestLineTypesItem = "card_unload_deposit"
 	ListFinancialActivityRequestLineTypesItemCardUnloadTransfer                        ListFinancialActivityRequestLineTypesItem = "card_unload_transfer"
+	ListFinancialActivityRequestLineTypesItemCashback                                  ListFinancialActivityRequestLineTypesItem = "cashback"
+	ListFinancialActivityRequestLineTypesItemCashbackFunding                           ListFinancialActivityRequestLineTypesItem = "cashback_funding"
 	ListFinancialActivityRequestLineTypesItemCompanyReferral                           ListFinancialActivityRequestLineTypesItem = "company_referral"
 	ListFinancialActivityRequestLineTypesItemConnectedAccountNegativeBalance           ListFinancialActivityRequestLineTypesItem = "connected_account_negative_balance"
 	ListFinancialActivityRequestLineTypesItemCrossBorderPercentageFee                  ListFinancialActivityRequestLineTypesItem = "cross_border_percentage_fee"
@@ -5248,6 +5256,10 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemCardUnloadDeposit, nil
 	case "card_unload_transfer":
 		return ListFinancialActivityRequestLineTypesItemCardUnloadTransfer, nil
+	case "cashback":
+		return ListFinancialActivityRequestLineTypesItemCashback, nil
+	case "cashback_funding":
+		return ListFinancialActivityRequestLineTypesItemCashbackFunding, nil
 	case "company_referral":
 		return ListFinancialActivityRequestLineTypesItemCompanyReferral, nil
 	case "connected_account_negative_balance":

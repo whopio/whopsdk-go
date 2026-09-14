@@ -233,6 +233,8 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemCardSpendRefund                           RetrieveFinancialReportsRequestLineTypesItem = "card_spend_refund"
 	RetrieveFinancialReportsRequestLineTypesItemCardUnloadDeposit                         RetrieveFinancialReportsRequestLineTypesItem = "card_unload_deposit"
 	RetrieveFinancialReportsRequestLineTypesItemCardUnloadTransfer                        RetrieveFinancialReportsRequestLineTypesItem = "card_unload_transfer"
+	RetrieveFinancialReportsRequestLineTypesItemCashback                                  RetrieveFinancialReportsRequestLineTypesItem = "cashback"
+	RetrieveFinancialReportsRequestLineTypesItemCashbackFunding                           RetrieveFinancialReportsRequestLineTypesItem = "cashback_funding"
 	RetrieveFinancialReportsRequestLineTypesItemCompanyReferral                           RetrieveFinancialReportsRequestLineTypesItem = "company_referral"
 	RetrieveFinancialReportsRequestLineTypesItemConnectedAccountNegativeBalance           RetrieveFinancialReportsRequestLineTypesItem = "connected_account_negative_balance"
 	RetrieveFinancialReportsRequestLineTypesItemCrossBorderPercentageFee                  RetrieveFinancialReportsRequestLineTypesItem = "cross_border_percentage_fee"
@@ -396,6 +398,10 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemCardUnloadDeposit, nil
 	case "card_unload_transfer":
 		return RetrieveFinancialReportsRequestLineTypesItemCardUnloadTransfer, nil
+	case "cashback":
+		return RetrieveFinancialReportsRequestLineTypesItemCashback, nil
+	case "cashback_funding":
+		return RetrieveFinancialReportsRequestLineTypesItemCashbackFunding, nil
 	case "company_referral":
 		return RetrieveFinancialReportsRequestLineTypesItemCompanyReferral, nil
 	case "connected_account_negative_balance":
@@ -1408,6 +1414,9 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryCardSpendRefundOffset                     RetrieveFinancialReportsResponseRowsItemLineCategory = "card_spend_refund_offset"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryCardUnloadDeposit                         RetrieveFinancialReportsResponseRowsItemLineCategory = "card_unload_deposit"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryCardUnloadTransfer                        RetrieveFinancialReportsResponseRowsItemLineCategory = "card_unload_transfer"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryCashback                                  RetrieveFinancialReportsResponseRowsItemLineCategory = "cashback"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryCashbackExpense                           RetrieveFinancialReportsResponseRowsItemLineCategory = "cashback_expense"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryCashbackFunding                           RetrieveFinancialReportsResponseRowsItemLineCategory = "cashback_funding"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryClawbackFee                               RetrieveFinancialReportsResponseRowsItemLineCategory = "clawback_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryClawbackReceivable                        RetrieveFinancialReportsResponseRowsItemLineCategory = "clawback_receivable"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryClawbackReceivableReversal                RetrieveFinancialReportsResponseRowsItemLineCategory = "clawback_receivable_reversal"
@@ -1752,6 +1761,12 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryCardUnloadDeposit, nil
 	case "card_unload_transfer":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryCardUnloadTransfer, nil
+	case "cashback":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryCashback, nil
+	case "cashback_expense":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryCashbackExpense, nil
+	case "cashback_funding":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryCashbackFunding, nil
 	case "clawback_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryClawbackFee, nil
 	case "clawback_receivable":
