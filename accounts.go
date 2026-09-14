@@ -18,6 +18,7 @@ var (
 	createAccountsRequestFieldMetadata           = big.NewInt(1 << 4)
 	createAccountsRequestFieldSendCustomerEmails = big.NewInt(1 << 5)
 	createAccountsRequestFieldTitle              = big.NewInt(1 << 6)
+	createAccountsRequestFieldWebsite            = big.NewInt(1 << 7)
 )
 
 type CreateAccountsRequest struct {
@@ -35,6 +36,8 @@ type CreateAccountsRequest struct {
 	SendCustomerEmails *bool `json:"send_customer_emails,omitempty" url:"-"`
 	// The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
 	Title *string `json:"title,omitempty" url:"-"`
+	// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry.
+	Website *string `json:"website,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -94,6 +97,13 @@ func (c *CreateAccountsRequest) SetSendCustomerEmails(sendCustomerEmails *bool) 
 func (c *CreateAccountsRequest) SetTitle(title *string) {
 	c.Title = title
 	c.require(createAccountsRequestFieldTitle)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetWebsite(website *string) {
+	c.Website = website
+	c.require(createAccountsRequestFieldWebsite)
 }
 
 func (c *CreateAccountsRequest) UnmarshalJSON(data []byte) error {
@@ -641,6 +651,7 @@ var (
 	accountFieldVerification                        = big.NewInt(1 << 58)
 	accountFieldVolumeUsd                           = big.NewInt(1 << 59)
 	accountFieldWallet                              = big.NewInt(1 << 60)
+	accountFieldWebsite                             = big.NewInt(1 << 61)
 )
 
 type Account struct {
@@ -760,6 +771,8 @@ type Account struct {
 	VolumeUsd *float64 `json:"volume_usd,omitempty" url:"volume_usd,omitempty"`
 	// Account primary crypto wallet, or `null` if none has been provisioned.
 	Wallet *AccountWallet `json:"wallet,omitempty" url:"wallet,omitempty"`
+	// The account's business website URL, or `null` if none has been provided. Setting it also adds a `website` entry to `social_links`.
+	Website *string `json:"website,omitempty" url:"website,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1193,6 +1206,13 @@ func (a *Account) GetWallet() *AccountWallet {
 		return nil
 	}
 	return a.Wallet
+}
+
+func (a *Account) GetWebsite() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Website
 }
 
 func (a *Account) GetExtraProperties() map[string]interface{} {
@@ -1634,6 +1654,13 @@ func (a *Account) SetVolumeUsd(volumeUsd *float64) {
 func (a *Account) SetWallet(wallet *AccountWallet) {
 	a.Wallet = wallet
 	a.require(accountFieldWallet)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetWebsite(website *string) {
+	a.Website = website
+	a.require(accountFieldWebsite)
 }
 
 func (a *Account) UnmarshalJSON(data []byte) error {
@@ -8413,6 +8440,7 @@ var (
 	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 36)
 	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 37)
 	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 38)
+	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 39)
 )
 
 type UpdateAccountsRequest struct {
@@ -8494,6 +8522,8 @@ type UpdateAccountsRequest struct {
 	Title *string `json:"title,omitempty" url:"-"`
 	// Whether the account uses its logo as the fallback Open Graph image.
 	UseLogoAsOpengraphImageFallback *bool `json:"use_logo_as_opengraph_image_fallback,omitempty" url:"-"`
+	// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry. Pass `null` to clear the website; existing social links are left unchanged.
+	Website *string `json:"website,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8777,6 +8807,13 @@ func (u *UpdateAccountsRequest) SetTitle(title *string) {
 func (u *UpdateAccountsRequest) SetUseLogoAsOpengraphImageFallback(useLogoAsOpengraphImageFallback *bool) {
 	u.UseLogoAsOpengraphImageFallback = useLogoAsOpengraphImageFallback
 	u.require(updateAccountsRequestFieldUseLogoAsOpengraphImageFallback)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetWebsite(website *string) {
+	u.Website = website
+	u.require(updateAccountsRequestFieldWebsite)
 }
 
 func (u *UpdateAccountsRequest) UnmarshalJSON(data []byte) error {
