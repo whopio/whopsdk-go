@@ -1333,6 +1333,7 @@ const (
 	PermissionGrantedToSystemRolesItemModerator    PermissionGrantedToSystemRolesItem = "moderator"
 	PermissionGrantedToSystemRolesItemSalesManager PermissionGrantedToSystemRolesItem = "sales_manager"
 	PermissionGrantedToSystemRolesItemAdvertiser   PermissionGrantedToSystemRolesItem = "advertiser"
+	PermissionGrantedToSystemRolesItemPartner      PermissionGrantedToSystemRolesItem = "partner"
 )
 
 func NewPermissionGrantedToSystemRolesItemFromString(s string) (PermissionGrantedToSystemRolesItem, error) {
@@ -1347,6 +1348,8 @@ func NewPermissionGrantedToSystemRolesItemFromString(s string) (PermissionGrante
 		return PermissionGrantedToSystemRolesItemSalesManager, nil
 	case "advertiser":
 		return PermissionGrantedToSystemRolesItemAdvertiser, nil
+	case "partner":
+		return PermissionGrantedToSystemRolesItemPartner, nil
 	}
 	var t PermissionGrantedToSystemRolesItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

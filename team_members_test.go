@@ -2372,6 +2372,13 @@ func TestEnumCreateTeamMembersRequestRole(t *testing.T) {
 		assert.Equal(t, CreateTeamMembersRequestRole("admin"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTeamMembersRequestRoleFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTeamMembersRequestRole("partner"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_sales_manager", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateTeamMembersRequestRoleFromString("sales_manager")
@@ -2478,6 +2485,13 @@ func TestEnumListTeamMembersRequestRole(t *testing.T) {
 		val, err := NewListTeamMembersRequestRoleFromString("admin")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListTeamMembersRequestRole("admin"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListTeamMembersRequestRoleFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListTeamMembersRequestRole("partner"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_sales_manager", func(t *testing.T) {
@@ -2594,6 +2608,13 @@ func TestEnumTeamMemberRole(t *testing.T) {
 		assert.Equal(t, TeamMemberRole("admin"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTeamMemberRoleFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TeamMemberRole("partner"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_sales_manager", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewTeamMemberRoleFromString("sales_manager")
@@ -2706,6 +2727,13 @@ func TestEnumUpdateTeamMembersRequestRole(t *testing.T) {
 		val, err := NewUpdateTeamMembersRequestRoleFromString("admin")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateTeamMembersRequestRole("admin"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateTeamMembersRequestRoleFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateTeamMembersRequestRole("partner"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_sales_manager", func(t *testing.T) {

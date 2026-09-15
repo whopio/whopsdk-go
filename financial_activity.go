@@ -4437,7 +4437,7 @@ type LedgerActivitySource struct {
 	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
 	// Chain the deposit landed on, for example plasma (onchain_transaction sources only).
 	Chain *string `json:"chain,omitempty" url:"chain,omitempty"`
-	// Public claim URL for the airdrop link (airdrop_link sources only).
+	// The airdrop's claim URL. Null unless the caller can manage claim links on the funding company or withdraw from the funding personal balance.
 	ClaimURL *string `json:"claim_url,omitempty" url:"claim_url,omitempty"`
 	// Payout creation time as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
