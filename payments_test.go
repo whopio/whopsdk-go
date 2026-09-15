@@ -15546,6 +15546,13 @@ func TestEnumFriendlyReceiptStatus(t *testing.T) {
 		assert.Equal(t, FriendlyReceiptStatus("failed"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_blocked", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFriendlyReceiptStatusFromString("blocked")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FriendlyReceiptStatus("blocked"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_past_due", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewFriendlyReceiptStatusFromString("past_due")
