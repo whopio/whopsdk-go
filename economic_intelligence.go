@@ -698,15 +698,18 @@ func (l *ListEconomicIntelligenceResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The status to move the recommendation to. Only `superseded` is accepted.
+// Use `executed` after approval to start the action, or `superseded` to reject it.
 type UpdateEconomicIntelligenceRequestStatus string
 
 const (
+	UpdateEconomicIntelligenceRequestStatusExecuted   UpdateEconomicIntelligenceRequestStatus = "executed"
 	UpdateEconomicIntelligenceRequestStatusSuperseded UpdateEconomicIntelligenceRequestStatus = "superseded"
 )
 
 func NewUpdateEconomicIntelligenceRequestStatusFromString(s string) (UpdateEconomicIntelligenceRequestStatus, error) {
 	switch s {
+	case "executed":
+		return UpdateEconomicIntelligenceRequestStatusExecuted, nil
 	case "superseded":
 		return UpdateEconomicIntelligenceRequestStatusSuperseded, nil
 	}
@@ -721,7 +724,8 @@ func (u UpdateEconomicIntelligenceRequestStatus) Ptr() *UpdateEconomicIntelligen
 var (
 	updateEconomicIntelligenceRequestFieldID        = big.NewInt(1 << 0)
 	updateEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 1)
-	updateEconomicIntelligenceRequestFieldStatus    = big.NewInt(1 << 2)
+	updateEconomicIntelligenceRequestFieldReason    = big.NewInt(1 << 2)
+	updateEconomicIntelligenceRequestFieldStatus    = big.NewInt(1 << 3)
 )
 
 type UpdateEconomicIntelligenceRequest struct {
@@ -729,7 +733,9 @@ type UpdateEconomicIntelligenceRequest struct {
 	ID string `json:"-" url:"-"`
 	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// The status to move the recommendation to. Only `superseded` is accepted.
+	// Why the recommendation was rejected. Used as feedback when replenishing recommendations.
+	Reason *string `json:"reason,omitempty" url:"-"`
+	// Use `executed` after approval to start the action, or `superseded` to reject it.
 	Status UpdateEconomicIntelligenceRequestStatus `json:"status" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -755,6 +761,13 @@ func (u *UpdateEconomicIntelligenceRequest) SetID(id string) {
 func (u *UpdateEconomicIntelligenceRequest) SetAccountID(accountID *string) {
 	u.AccountID = accountID
 	u.require(updateEconomicIntelligenceRequestFieldAccountID)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateEconomicIntelligenceRequest) SetReason(reason *string) {
+	u.Reason = reason
+	u.require(updateEconomicIntelligenceRequestFieldReason)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;

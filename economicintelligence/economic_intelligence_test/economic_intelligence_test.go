@@ -140,7 +140,7 @@ func TestEconomicIntelligenceUpdateWithWireMock(
 	)
 	request := &whopsdk.UpdateEconomicIntelligenceRequest{
 		ID:     "id",
-		Status: whopsdk.UpdateEconomicIntelligenceRequestStatusSuperseded,
+		Status: whopsdk.UpdateEconomicIntelligenceRequestStatusExecuted,
 	}
 	_, invocationErr := client.EconomicIntelligence.Update(
 		context.TODO(),
