@@ -755,7 +755,7 @@ type Account struct {
 	TaxType *AccountTaxType `json:"tax_type,omitempty" url:"tax_type,omitempty"`
 	// The account's terms of service document, or `null` if they have not published one.
 	TermsOfService *File `json:"terms_of_service,omitempty" url:"terms_of_service,omitempty"`
-	// Account-level 3D Secure behavior. `mandate_challenge` requires cardholder verification on supported card payments; `null` uses the standard checkout flow.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
 	ThreeDsLevel *AccountThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Account display name.
 	Title string `json:"title" url:"title"`
@@ -4372,17 +4372,23 @@ func (a AccountTaxType) Ptr() *AccountTaxType {
 	return &a
 }
 
-// Account-level 3D Secure behavior. `mandate_challenge` requires cardholder verification on supported card payments; `null` uses the standard checkout flow.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
 type AccountThreeDsLevel string
 
 const (
-	AccountThreeDsLevelMandateChallenge AccountThreeDsLevel = "mandate_challenge"
+	AccountThreeDsLevelMandateChallenge       AccountThreeDsLevel = "mandate_challenge"
+	AccountThreeDsLevelMandateIfRequired      AccountThreeDsLevel = "mandate_if_required"
+	AccountThreeDsLevelFrictionlessIfRequired AccountThreeDsLevel = "frictionless_if_required"
 )
 
 func NewAccountThreeDsLevelFromString(s string) (AccountThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return AccountThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return AccountThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return AccountThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t AccountThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -8380,17 +8386,23 @@ func (u UpdateAccountsRequestTaxType) Ptr() *UpdateAccountsRequestTaxType {
 	return &u
 }
 
-// Account-level 3D Secure behavior. Set `mandate_challenge` to require cardholder verification on supported card payments, or `null` to use the standard checkout flow.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
 type UpdateAccountsRequestThreeDsLevel string
 
 const (
-	UpdateAccountsRequestThreeDsLevelMandateChallenge UpdateAccountsRequestThreeDsLevel = "mandate_challenge"
+	UpdateAccountsRequestThreeDsLevelMandateChallenge       UpdateAccountsRequestThreeDsLevel = "mandate_challenge"
+	UpdateAccountsRequestThreeDsLevelMandateIfRequired      UpdateAccountsRequestThreeDsLevel = "mandate_if_required"
+	UpdateAccountsRequestThreeDsLevelFrictionlessIfRequired UpdateAccountsRequestThreeDsLevel = "frictionless_if_required"
 )
 
 func NewUpdateAccountsRequestThreeDsLevelFromString(s string) (UpdateAccountsRequestThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return UpdateAccountsRequestThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return UpdateAccountsRequestThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return UpdateAccountsRequestThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t UpdateAccountsRequestThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -8516,7 +8528,7 @@ type UpdateAccountsRequest struct {
 	TaxRemittedBy *UpdateAccountsRequestTaxRemittedBy `json:"tax_remitted_by,omitempty" url:"-"`
 	// Determines whether tax is included in the listed price or added at checkout.
 	TaxType *UpdateAccountsRequestTaxType `json:"tax_type,omitempty" url:"-"`
-	// Account-level 3D Secure behavior. Set `mandate_challenge` to require cardholder verification on supported card payments, or `null` to use the standard checkout flow.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
 	ThreeDsLevel *UpdateAccountsRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
 	// The display name of the account.
 	Title *string `json:"title,omitempty" url:"-"`

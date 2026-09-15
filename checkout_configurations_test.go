@@ -10882,11 +10882,18 @@ func TestEnumCreateCheckoutConfigurationsRequestPlanThreeDsLevel(t *testing.T) {
 		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestPlanThreeDsLevelFromString("frictionless")
+		val, err := NewCreateCheckoutConfigurationsRequestPlanThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestPlanThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestPlanThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -10954,11 +10961,18 @@ func TestEnumCreateCheckoutConfigurationsRequestThreeDsLevel(t *testing.T) {
 		assert.Equal(t, CreateCheckoutConfigurationsRequestThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsRequestThreeDsLevelFromString("frictionless")
+		val, err := NewCreateCheckoutConfigurationsRequestThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsRequestThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsRequestThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsRequestThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -11070,11 +11084,18 @@ func TestEnumCreateCheckoutConfigurationsResponsePlanThreeDsLevel(t *testing.T) 
 		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponsePlanThreeDsLevelFromString("frictionless")
+		val, err := NewCreateCheckoutConfigurationsResponsePlanThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponsePlanThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponsePlanThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -11142,11 +11163,18 @@ func TestEnumCreateCheckoutConfigurationsResponseThreeDsLevel(t *testing.T) {
 		assert.Equal(t, CreateCheckoutConfigurationsResponseThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreateCheckoutConfigurationsResponseThreeDsLevelFromString("frictionless")
+		val, err := NewCreateCheckoutConfigurationsResponseThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateCheckoutConfigurationsResponseThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCheckoutConfigurationsResponseThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCheckoutConfigurationsResponseThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -11309,11 +11337,18 @@ func TestEnumListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel(t *testi
 		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFromString("frictionless")
+		val, err := NewListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -11381,11 +11416,18 @@ func TestEnumListCheckoutConfigurationsResponseDataItemThreeDsLevel(t *testing.T
 		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewListCheckoutConfigurationsResponseDataItemThreeDsLevelFromString("frictionless")
+		val, err := NewListCheckoutConfigurationsResponseDataItemThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCheckoutConfigurationsResponseDataItemThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCheckoutConfigurationsResponseDataItemThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -11497,11 +11539,18 @@ func TestEnumRetrieveCheckoutConfigurationsResponsePlanThreeDsLevel(t *testing.T
 		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFromString("frictionless")
+		val, err := NewRetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -11569,11 +11618,18 @@ func TestEnumRetrieveCheckoutConfigurationsResponseThreeDsLevel(t *testing.T) {
 		assert.Equal(t, RetrieveCheckoutConfigurationsResponseThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewRetrieveCheckoutConfigurationsResponseThreeDsLevelFromString("frictionless")
+		val, err := NewRetrieveCheckoutConfigurationsResponseThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveCheckoutConfigurationsResponseThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCheckoutConfigurationsResponseThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCheckoutConfigurationsResponseThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

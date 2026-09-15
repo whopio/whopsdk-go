@@ -41,7 +41,7 @@ type CreateCheckoutConfigurationsRequest struct {
 	PlanID *string `json:"plan_id,omitempty" url:"-"`
 	// URL customers are sent to after checkout.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"-"`
-	// 3D Secure behavior for this checkout.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
 	ThreeDsLevel *CreateCheckoutConfigurationsRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -492,7 +492,7 @@ type CreateCheckoutConfigurationsRequestPlan struct {
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// Units available for purchase.
 	Stock *int `json:"stock,omitempty" url:"stock,omitempty"`
-	// 3D Secure behavior for the inline plan, or `null` to use the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 	ThreeDsLevel *CreateCheckoutConfigurationsRequestPlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Plan display name shown to customers.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
@@ -1012,20 +1012,23 @@ func (c CreateCheckoutConfigurationsRequestPlanReleaseMethod) Ptr() *CreateCheck
 	return &c
 }
 
-// 3D Secure behavior for the inline plan, or `null` to use the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 type CreateCheckoutConfigurationsRequestPlanThreeDsLevel string
 
 const (
-	CreateCheckoutConfigurationsRequestPlanThreeDsLevelMandateChallenge CreateCheckoutConfigurationsRequestPlanThreeDsLevel = "mandate_challenge"
-	CreateCheckoutConfigurationsRequestPlanThreeDsLevelFrictionless     CreateCheckoutConfigurationsRequestPlanThreeDsLevel = "frictionless"
+	CreateCheckoutConfigurationsRequestPlanThreeDsLevelMandateChallenge       CreateCheckoutConfigurationsRequestPlanThreeDsLevel = "mandate_challenge"
+	CreateCheckoutConfigurationsRequestPlanThreeDsLevelMandateIfRequired      CreateCheckoutConfigurationsRequestPlanThreeDsLevel = "mandate_if_required"
+	CreateCheckoutConfigurationsRequestPlanThreeDsLevelFrictionlessIfRequired CreateCheckoutConfigurationsRequestPlanThreeDsLevel = "frictionless_if_required"
 )
 
 func NewCreateCheckoutConfigurationsRequestPlanThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsRequestPlanThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return CreateCheckoutConfigurationsRequestPlanThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return CreateCheckoutConfigurationsRequestPlanThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return CreateCheckoutConfigurationsRequestPlanThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreateCheckoutConfigurationsRequestPlanThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t CreateCheckoutConfigurationsRequestPlanThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1064,20 +1067,23 @@ func (c CreateCheckoutConfigurationsRequestPlanVisibility) Ptr() *CreateCheckout
 	return &c
 }
 
-// 3D Secure behavior for this checkout.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
 type CreateCheckoutConfigurationsRequestThreeDsLevel string
 
 const (
-	CreateCheckoutConfigurationsRequestThreeDsLevelMandateChallenge CreateCheckoutConfigurationsRequestThreeDsLevel = "mandate_challenge"
-	CreateCheckoutConfigurationsRequestThreeDsLevelFrictionless     CreateCheckoutConfigurationsRequestThreeDsLevel = "frictionless"
+	CreateCheckoutConfigurationsRequestThreeDsLevelMandateChallenge       CreateCheckoutConfigurationsRequestThreeDsLevel = "mandate_challenge"
+	CreateCheckoutConfigurationsRequestThreeDsLevelMandateIfRequired      CreateCheckoutConfigurationsRequestThreeDsLevel = "mandate_if_required"
+	CreateCheckoutConfigurationsRequestThreeDsLevelFrictionlessIfRequired CreateCheckoutConfigurationsRequestThreeDsLevel = "frictionless_if_required"
 )
 
 func NewCreateCheckoutConfigurationsRequestThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsRequestThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return CreateCheckoutConfigurationsRequestThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return CreateCheckoutConfigurationsRequestThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return CreateCheckoutConfigurationsRequestThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreateCheckoutConfigurationsRequestThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t CreateCheckoutConfigurationsRequestThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1129,7 +1135,7 @@ type CreateCheckoutConfigurationsResponse struct {
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// URL customers are sent to after checkout, or `null` when no redirect is configured.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
-	// 3D Secure behavior for this checkout, or `null` to use the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
 	ThreeDsLevel *CreateCheckoutConfigurationsResponseThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// When the checkout configuration was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -1691,7 +1697,7 @@ type CreateCheckoutConfigurationsResponsePlan struct {
 	ReleaseMethod CreateCheckoutConfigurationsResponsePlanReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged each billing period.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
-	// 3D Secure behavior for this plan, or `null` to use the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 	ThreeDsLevel *CreateCheckoutConfigurationsResponsePlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
@@ -1975,20 +1981,23 @@ func (c CreateCheckoutConfigurationsResponsePlanReleaseMethod) Ptr() *CreateChec
 	return &c
 }
 
-// 3D Secure behavior for this plan, or `null` to use the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 type CreateCheckoutConfigurationsResponsePlanThreeDsLevel string
 
 const (
-	CreateCheckoutConfigurationsResponsePlanThreeDsLevelMandateChallenge CreateCheckoutConfigurationsResponsePlanThreeDsLevel = "mandate_challenge"
-	CreateCheckoutConfigurationsResponsePlanThreeDsLevelFrictionless     CreateCheckoutConfigurationsResponsePlanThreeDsLevel = "frictionless"
+	CreateCheckoutConfigurationsResponsePlanThreeDsLevelMandateChallenge       CreateCheckoutConfigurationsResponsePlanThreeDsLevel = "mandate_challenge"
+	CreateCheckoutConfigurationsResponsePlanThreeDsLevelMandateIfRequired      CreateCheckoutConfigurationsResponsePlanThreeDsLevel = "mandate_if_required"
+	CreateCheckoutConfigurationsResponsePlanThreeDsLevelFrictionlessIfRequired CreateCheckoutConfigurationsResponsePlanThreeDsLevel = "frictionless_if_required"
 )
 
 func NewCreateCheckoutConfigurationsResponsePlanThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsResponsePlanThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return CreateCheckoutConfigurationsResponsePlanThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return CreateCheckoutConfigurationsResponsePlanThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return CreateCheckoutConfigurationsResponsePlanThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreateCheckoutConfigurationsResponsePlanThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t CreateCheckoutConfigurationsResponsePlanThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2027,20 +2036,23 @@ func (c CreateCheckoutConfigurationsResponsePlanVisibility) Ptr() *CreateCheckou
 	return &c
 }
 
-// 3D Secure behavior for this checkout, or `null` to use the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
 type CreateCheckoutConfigurationsResponseThreeDsLevel string
 
 const (
-	CreateCheckoutConfigurationsResponseThreeDsLevelMandateChallenge CreateCheckoutConfigurationsResponseThreeDsLevel = "mandate_challenge"
-	CreateCheckoutConfigurationsResponseThreeDsLevelFrictionless     CreateCheckoutConfigurationsResponseThreeDsLevel = "frictionless"
+	CreateCheckoutConfigurationsResponseThreeDsLevelMandateChallenge       CreateCheckoutConfigurationsResponseThreeDsLevel = "mandate_challenge"
+	CreateCheckoutConfigurationsResponseThreeDsLevelMandateIfRequired      CreateCheckoutConfigurationsResponseThreeDsLevel = "mandate_if_required"
+	CreateCheckoutConfigurationsResponseThreeDsLevelFrictionlessIfRequired CreateCheckoutConfigurationsResponseThreeDsLevel = "frictionless_if_required"
 )
 
 func NewCreateCheckoutConfigurationsResponseThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsResponseThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return CreateCheckoutConfigurationsResponseThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return CreateCheckoutConfigurationsResponseThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return CreateCheckoutConfigurationsResponseThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreateCheckoutConfigurationsResponseThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t CreateCheckoutConfigurationsResponseThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2335,7 +2347,7 @@ type ListCheckoutConfigurationsResponseDataItem struct {
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// URL customers are sent to after checkout, or `null` when no redirect is configured.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
-	// 3D Secure behavior for this checkout, or `null` to use the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
 	ThreeDsLevel *ListCheckoutConfigurationsResponseDataItemThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// When the checkout configuration was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -2897,7 +2909,7 @@ type ListCheckoutConfigurationsResponseDataItemPlan struct {
 	ReleaseMethod ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged each billing period.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
-	// 3D Secure behavior for this plan, or `null` to use the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 	ThreeDsLevel *ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
@@ -3181,20 +3193,23 @@ func (l ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod) Ptr() *List
 	return &l
 }
 
-// 3D Secure behavior for this plan, or `null` to use the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 type ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel string
 
 const (
-	ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelMandateChallenge ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel = "mandate_challenge"
-	ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFrictionless     ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel = "frictionless"
+	ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelMandateChallenge       ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel = "mandate_challenge"
+	ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelMandateIfRequired      ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel = "mandate_if_required"
+	ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFrictionlessIfRequired ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel = "frictionless_if_required"
 )
 
 func NewListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFromString(s string) (ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3233,20 +3248,23 @@ func (l ListCheckoutConfigurationsResponseDataItemPlanVisibility) Ptr() *ListChe
 	return &l
 }
 
-// 3D Secure behavior for this checkout, or `null` to use the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
 type ListCheckoutConfigurationsResponseDataItemThreeDsLevel string
 
 const (
-	ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateChallenge ListCheckoutConfigurationsResponseDataItemThreeDsLevel = "mandate_challenge"
-	ListCheckoutConfigurationsResponseDataItemThreeDsLevelFrictionless     ListCheckoutConfigurationsResponseDataItemThreeDsLevel = "frictionless"
+	ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateChallenge       ListCheckoutConfigurationsResponseDataItemThreeDsLevel = "mandate_challenge"
+	ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateIfRequired      ListCheckoutConfigurationsResponseDataItemThreeDsLevel = "mandate_if_required"
+	ListCheckoutConfigurationsResponseDataItemThreeDsLevelFrictionlessIfRequired ListCheckoutConfigurationsResponseDataItemThreeDsLevel = "frictionless_if_required"
 )
 
 func NewListCheckoutConfigurationsResponseDataItemThreeDsLevelFromString(s string) (ListCheckoutConfigurationsResponseDataItemThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return ListCheckoutConfigurationsResponseDataItemThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return ListCheckoutConfigurationsResponseDataItemThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t ListCheckoutConfigurationsResponseDataItemThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3430,7 +3448,7 @@ type RetrieveCheckoutConfigurationsResponse struct {
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// URL customers are sent to after checkout, or `null` when no redirect is configured.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
-	// 3D Secure behavior for this checkout, or `null` to use the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
 	ThreeDsLevel *RetrieveCheckoutConfigurationsResponseThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// When the checkout configuration was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -3992,7 +4010,7 @@ type RetrieveCheckoutConfigurationsResponsePlan struct {
 	ReleaseMethod RetrieveCheckoutConfigurationsResponsePlanReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged each billing period.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
-	// 3D Secure behavior for this plan, or `null` to use the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 	ThreeDsLevel *RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
@@ -4276,20 +4294,23 @@ func (r RetrieveCheckoutConfigurationsResponsePlanReleaseMethod) Ptr() *Retrieve
 	return &r
 }
 
-// 3D Secure behavior for this plan, or `null` to use the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 type RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel string
 
 const (
-	RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelMandateChallenge RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel = "mandate_challenge"
-	RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFrictionless     RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel = "frictionless"
+	RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelMandateChallenge       RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel = "mandate_challenge"
+	RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelMandateIfRequired      RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel = "mandate_if_required"
+	RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFrictionlessIfRequired RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel = "frictionless_if_required"
 )
 
 func NewRetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFromString(s string) (RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4328,20 +4349,23 @@ func (r RetrieveCheckoutConfigurationsResponsePlanVisibility) Ptr() *RetrieveChe
 	return &r
 }
 
-// 3D Secure behavior for this checkout, or `null` to use the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
 type RetrieveCheckoutConfigurationsResponseThreeDsLevel string
 
 const (
-	RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateChallenge RetrieveCheckoutConfigurationsResponseThreeDsLevel = "mandate_challenge"
-	RetrieveCheckoutConfigurationsResponseThreeDsLevelFrictionless     RetrieveCheckoutConfigurationsResponseThreeDsLevel = "frictionless"
+	RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateChallenge       RetrieveCheckoutConfigurationsResponseThreeDsLevel = "mandate_challenge"
+	RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateIfRequired      RetrieveCheckoutConfigurationsResponseThreeDsLevel = "mandate_if_required"
+	RetrieveCheckoutConfigurationsResponseThreeDsLevelFrictionlessIfRequired RetrieveCheckoutConfigurationsResponseThreeDsLevel = "frictionless_if_required"
 )
 
 func NewRetrieveCheckoutConfigurationsResponseThreeDsLevelFromString(s string) (RetrieveCheckoutConfigurationsResponseThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return RetrieveCheckoutConfigurationsResponseThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return RetrieveCheckoutConfigurationsResponseThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t RetrieveCheckoutConfigurationsResponseThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

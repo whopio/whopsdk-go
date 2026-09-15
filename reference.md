@@ -876,7 +876,7 @@ client.Accounts.Update(
 <dl>
 <dd>
 
-**threeDsLevel:** `*whopsdk.UpdateAccountsRequestThreeDsLevel` — Account-level 3D Secure behavior. Set `mandate_challenge` to require cardholder verification on supported card payments, or `null` to use the standard checkout flow.
+**threeDsLevel:** `*whopsdk.UpdateAccountsRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
     
 </dd>
 </dl>
@@ -10466,7 +10466,7 @@ client.CheckoutConfigurations.Create(
 <dl>
 <dd>
 
-**threeDsLevel:** `*whopsdk.CreateCheckoutConfigurationsRequestThreeDsLevel` — 3D Secure behavior for this checkout.
+**threeDsLevel:** `*whopsdk.CreateCheckoutConfigurationsRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
     
 </dd>
 </dl>
@@ -26683,7 +26683,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**threeDsLevel:** `*whopsdk.CreatePlansRequestThreeDsLevel` — 3D Secure behavior for this plan. Send `null` to inherit the account default.
+**threeDsLevel:** `*whopsdk.CreatePlansRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
     
 </dd>
 </dl>
@@ -27071,7 +27071,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**threeDsLevel:** `*whopsdk.UpdatePlansRequestThreeDsLevel` — 3D Secure behavior for this plan. Send `null` to inherit the account default.
+**threeDsLevel:** `*whopsdk.UpdatePlansRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
     
 </dd>
 </dl>
