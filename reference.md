@@ -32796,7 +32796,7 @@ client.TeamMembers.Create(
 <dl>
 <dd>
 
-**role:** `*whopsdk.CreateTeamMembersRequestRole` — The system role to grant.
+**role:** `*whopsdk.CreateTeamMembersRequestRole` — The system role to grant. Partners must pass all certification quizzes.
     
 </dd>
 </dl>
@@ -32993,7 +32993,7 @@ client.TeamMembers.Update(
 <dl>
 <dd>
 
-**role:** `*whopsdk.UpdateTeamMembersRequestRole` — The system role to grant.
+**role:** `*whopsdk.UpdateTeamMembersRequestRole` — The system role to grant. Partners must pass all certification quizzes.
     
 </dd>
 </dl>

@@ -21,7 +21,7 @@ type CreateTeamMembersRequest struct {
 	AccountID string `json:"account_id" url:"-"`
 	// Email address to invite. Mutually exclusive with `user_id`. If the email already belongs to a Whop account it is treated the same as passing that account's `user_id`; otherwise a pending invite is created for the email.
 	Email *string `json:"email,omitempty" url:"-"`
-	// The system role to grant.
+	// The system role to grant. Partners must pass all certification quizzes.
 	Role CreateTeamMembersRequestRole `json:"role" url:"-"`
 	// The user to add to the team, prefixed `user_`. Mutually exclusive with `email`.
 	UserID *string `json:"user_id,omitempty" url:"-"`
@@ -620,6 +620,7 @@ type TeamMemberRole string
 const (
 	TeamMemberRoleOwner        TeamMemberRole = "owner"
 	TeamMemberRoleAdmin        TeamMemberRole = "admin"
+	TeamMemberRolePartner      TeamMemberRole = "partner"
 	TeamMemberRoleSalesManager TeamMemberRole = "sales_manager"
 	TeamMemberRoleModerator    TeamMemberRole = "moderator"
 	TeamMemberRoleAdvertiser   TeamMemberRole = "advertiser"
@@ -636,6 +637,8 @@ func NewTeamMemberRoleFromString(s string) (TeamMemberRole, error) {
 		return TeamMemberRoleOwner, nil
 	case "admin":
 		return TeamMemberRoleAdmin, nil
+	case "partner":
+		return TeamMemberRolePartner, nil
 	case "sales_manager":
 		return TeamMemberRoleSalesManager, nil
 	case "moderator":
@@ -684,12 +687,13 @@ func (t TeamMemberStatus) Ptr() *TeamMemberStatus {
 	return &t
 }
 
-// The system role to grant.
+// The system role to grant. Partners must pass all certification quizzes.
 type CreateTeamMembersRequestRole string
 
 const (
 	CreateTeamMembersRequestRoleOwner        CreateTeamMembersRequestRole = "owner"
 	CreateTeamMembersRequestRoleAdmin        CreateTeamMembersRequestRole = "admin"
+	CreateTeamMembersRequestRolePartner      CreateTeamMembersRequestRole = "partner"
 	CreateTeamMembersRequestRoleSalesManager CreateTeamMembersRequestRole = "sales_manager"
 	CreateTeamMembersRequestRoleModerator    CreateTeamMembersRequestRole = "moderator"
 	CreateTeamMembersRequestRoleAdvertiser   CreateTeamMembersRequestRole = "advertiser"
@@ -702,6 +706,8 @@ func NewCreateTeamMembersRequestRoleFromString(s string) (CreateTeamMembersReque
 		return CreateTeamMembersRequestRoleOwner, nil
 	case "admin":
 		return CreateTeamMembersRequestRoleAdmin, nil
+	case "partner":
+		return CreateTeamMembersRequestRolePartner, nil
 	case "sales_manager":
 		return CreateTeamMembersRequestRoleSalesManager, nil
 	case "moderator":
@@ -849,6 +855,7 @@ type ListTeamMembersRequestRole string
 const (
 	ListTeamMembersRequestRoleOwner        ListTeamMembersRequestRole = "owner"
 	ListTeamMembersRequestRoleAdmin        ListTeamMembersRequestRole = "admin"
+	ListTeamMembersRequestRolePartner      ListTeamMembersRequestRole = "partner"
 	ListTeamMembersRequestRoleSalesManager ListTeamMembersRequestRole = "sales_manager"
 	ListTeamMembersRequestRoleModerator    ListTeamMembersRequestRole = "moderator"
 	ListTeamMembersRequestRoleAdvertiser   ListTeamMembersRequestRole = "advertiser"
@@ -865,6 +872,8 @@ func NewListTeamMembersRequestRoleFromString(s string) (ListTeamMembersRequestRo
 		return ListTeamMembersRequestRoleOwner, nil
 	case "admin":
 		return ListTeamMembersRequestRoleAdmin, nil
+	case "partner":
+		return ListTeamMembersRequestRolePartner, nil
 	case "sales_manager":
 		return ListTeamMembersRequestRoleSalesManager, nil
 	case "moderator":
@@ -1144,12 +1153,13 @@ func (l *ListTeamMembersResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The system role to grant.
+// The system role to grant. Partners must pass all certification quizzes.
 type UpdateTeamMembersRequestRole string
 
 const (
 	UpdateTeamMembersRequestRoleOwner        UpdateTeamMembersRequestRole = "owner"
 	UpdateTeamMembersRequestRoleAdmin        UpdateTeamMembersRequestRole = "admin"
+	UpdateTeamMembersRequestRolePartner      UpdateTeamMembersRequestRole = "partner"
 	UpdateTeamMembersRequestRoleSalesManager UpdateTeamMembersRequestRole = "sales_manager"
 	UpdateTeamMembersRequestRoleModerator    UpdateTeamMembersRequestRole = "moderator"
 	UpdateTeamMembersRequestRoleAdvertiser   UpdateTeamMembersRequestRole = "advertiser"
@@ -1162,6 +1172,8 @@ func NewUpdateTeamMembersRequestRoleFromString(s string) (UpdateTeamMembersReque
 		return UpdateTeamMembersRequestRoleOwner, nil
 	case "admin":
 		return UpdateTeamMembersRequestRoleAdmin, nil
+	case "partner":
+		return UpdateTeamMembersRequestRolePartner, nil
 	case "sales_manager":
 		return UpdateTeamMembersRequestRoleSalesManager, nil
 	case "moderator":
@@ -1187,7 +1199,7 @@ var (
 type UpdateTeamMembersRequest struct {
 	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
 	ID string `json:"-" url:"-"`
-	// The system role to grant.
+	// The system role to grant. Partners must pass all certification quizzes.
 	Role UpdateTeamMembersRequestRole `json:"role" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

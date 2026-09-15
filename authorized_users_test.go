@@ -3144,6 +3144,13 @@ func TestEnumAuthorizedUserRoles(t *testing.T) {
 		assert.Equal(t, AuthorizedUserRoles("admin"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAuthorizedUserRolesFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AuthorizedUserRoles("partner"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_sales_manager", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAuthorizedUserRolesFromString("sales_manager")
@@ -3227,6 +3234,13 @@ func TestEnumGrantableAuthorizedUserRoles(t *testing.T) {
 		val, err := NewGrantableAuthorizedUserRolesFromString("admin")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, GrantableAuthorizedUserRoles("admin"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGrantableAuthorizedUserRolesFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GrantableAuthorizedUserRoles("partner"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_sales_manager", func(t *testing.T) {

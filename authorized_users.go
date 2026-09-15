@@ -887,6 +887,7 @@ type AuthorizedUserRoles string
 const (
 	AuthorizedUserRolesOwner        AuthorizedUserRoles = "owner"
 	AuthorizedUserRolesAdmin        AuthorizedUserRoles = "admin"
+	AuthorizedUserRolesPartner      AuthorizedUserRoles = "partner"
 	AuthorizedUserRolesSalesManager AuthorizedUserRoles = "sales_manager"
 	AuthorizedUserRolesModerator    AuthorizedUserRoles = "moderator"
 	AuthorizedUserRolesAdvertiser   AuthorizedUserRoles = "advertiser"
@@ -903,6 +904,8 @@ func NewAuthorizedUserRolesFromString(s string) (AuthorizedUserRoles, error) {
 		return AuthorizedUserRolesOwner, nil
 	case "admin":
 		return AuthorizedUserRolesAdmin, nil
+	case "partner":
+		return AuthorizedUserRolesPartner, nil
 	case "sales_manager":
 		return AuthorizedUserRolesSalesManager, nil
 	case "moderator":
@@ -1071,6 +1074,7 @@ type GrantableAuthorizedUserRoles string
 const (
 	GrantableAuthorizedUserRolesOwner        GrantableAuthorizedUserRoles = "owner"
 	GrantableAuthorizedUserRolesAdmin        GrantableAuthorizedUserRoles = "admin"
+	GrantableAuthorizedUserRolesPartner      GrantableAuthorizedUserRoles = "partner"
 	GrantableAuthorizedUserRolesSalesManager GrantableAuthorizedUserRoles = "sales_manager"
 	GrantableAuthorizedUserRolesModerator    GrantableAuthorizedUserRoles = "moderator"
 	GrantableAuthorizedUserRolesAdvertiser   GrantableAuthorizedUserRoles = "advertiser"
@@ -1082,6 +1086,8 @@ func NewGrantableAuthorizedUserRolesFromString(s string) (GrantableAuthorizedUse
 		return GrantableAuthorizedUserRolesOwner, nil
 	case "admin":
 		return GrantableAuthorizedUserRolesAdmin, nil
+	case "partner":
+		return GrantableAuthorizedUserRolesPartner, nil
 	case "sales_manager":
 		return GrantableAuthorizedUserRolesSalesManager, nil
 	case "moderator":
