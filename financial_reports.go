@@ -1628,6 +1628,10 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTopup                                     RetrieveFinancialReportsResponseRowsItemLineCategory = "topup"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTopupFee                                  RetrieveFinancialReportsResponseRowsItemLineCategory = "topup_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTopupReversal                             RetrieveFinancialReportsResponseRowsItemLineCategory = "topup_reversal"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountDeposit                     RetrieveFinancialReportsResponseRowsItemLineCategory = "trading_account_deposit"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountDepositOffset               RetrieveFinancialReportsResponseRowsItemLineCategory = "trading_account_deposit_offset"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountWithdrawal                  RetrieveFinancialReportsResponseRowsItemLineCategory = "trading_account_withdrawal"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountWithdrawalOffset            RetrieveFinancialReportsResponseRowsItemLineCategory = "trading_account_withdrawal_offset"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTreasuryFee                               RetrieveFinancialReportsResponseRowsItemLineCategory = "treasury_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTreasuryPayin                             RetrieveFinancialReportsResponseRowsItemLineCategory = "treasury_payin"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTreasuryPayinReceivable                   RetrieveFinancialReportsResponseRowsItemLineCategory = "treasury_payin_receivable"
@@ -2189,6 +2193,14 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryTopupFee, nil
 	case "topup_reversal":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryTopupReversal, nil
+	case "trading_account_deposit":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountDeposit, nil
+	case "trading_account_deposit_offset":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountDepositOffset, nil
+	case "trading_account_withdrawal":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountWithdrawal, nil
+	case "trading_account_withdrawal_offset":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountWithdrawalOffset, nil
 	case "treasury_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryTreasuryFee, nil
 	case "treasury_payin":
