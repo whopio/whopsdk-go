@@ -113,87 +113,46 @@ func (r *ReferredUsersPartnersRequest) SetBefore(before *string) {
 }
 
 var (
-	retrieveLinkPartnersRequestFieldPartnerUsername = big.NewInt(1 << 0)
-	retrieveLinkPartnersRequestFieldRewardSlug      = big.NewInt(1 << 1)
+	retrievePartnersRequestFieldID = big.NewInt(1 << 0)
 )
 
-type RetrieveLinkPartnersRequest struct {
-	// Username from the partner link's `a` query parameter.
-	PartnerUsername string `json:"-" url:"partner_username"`
-	// Reward slug from the partner link's `reward` query parameter.
-	RewardSlug string `json:"-" url:"reward_slug"`
+type RetrievePartnersRequest struct {
+	// The authenticated partner's user ID, prefixed user_, or me. Other users' profiles are not accessible.
+	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
-func (r *RetrieveLinkPartnersRequest) require(field *big.Int) {
+func (r *RetrievePartnersRequest) require(field *big.Int) {
 	if r.explicitFields == nil {
 		r.explicitFields = big.NewInt(0)
 	}
 	r.explicitFields.Or(r.explicitFields, field)
 }
 
-// SetPartnerUsername sets the PartnerUsername field and marks it as non-optional;
+// SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveLinkPartnersRequest) SetPartnerUsername(partnerUsername string) {
-	r.PartnerUsername = partnerUsername
-	r.require(retrieveLinkPartnersRequestFieldPartnerUsername)
-}
-
-// SetRewardSlug sets the RewardSlug field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveLinkPartnersRequest) SetRewardSlug(rewardSlug string) {
-	r.RewardSlug = rewardSlug
-	r.require(retrieveLinkPartnersRequestFieldRewardSlug)
+func (r *RetrievePartnersRequest) SetID(id string) {
+	r.ID = id
+	r.require(retrievePartnersRequestFieldID)
 }
 
 var (
-	onboardingRewardFieldExpiresAt                 = big.NewInt(1 << 0)
-	onboardingRewardFieldID                        = big.NewInt(1 << 1)
-	onboardingRewardFieldMaxRedemptions            = big.NewInt(1 << 2)
-	onboardingRewardFieldPartner                   = big.NewInt(1 << 3)
-	onboardingRewardFieldPartnerRewardAmount       = big.NewInt(1 << 4)
-	onboardingRewardFieldQualificationAmount       = big.NewInt(1 << 5)
-	onboardingRewardFieldQualificationIncomeSource = big.NewInt(1 << 6)
-	onboardingRewardFieldQualificationMet          = big.NewInt(1 << 7)
-	onboardingRewardFieldQualificationProgress     = big.NewInt(1 << 8)
-	onboardingRewardFieldRemainingRedemptions      = big.NewInt(1 << 9)
-	onboardingRewardFieldRewardAmount              = big.NewInt(1 << 10)
-	onboardingRewardFieldRewardType                = big.NewInt(1 << 11)
-	onboardingRewardFieldRewarded                  = big.NewInt(1 << 12)
-	onboardingRewardFieldStatus                    = big.NewInt(1 << 13)
+	partnerFieldJoinedAt                = big.NewInt(1 << 0)
+	partnerFieldPayoutRates             = big.NewInt(1 << 1)
+	partnerFieldReferredBusinessesCount = big.NewInt(1 << 2)
+	partnerFieldUser                    = big.NewInt(1 << 3)
 )
 
-type OnboardingReward struct {
-	// When the reward stops accepting new claims and qualifying volume, as an ISO 8601 timestamp. Null when it does not expire.
-	ExpiresAt *string `json:"expires_at,omitempty" url:"expires_at,omitempty"`
-	// Onboarding reward ID, prefixed `onbr_`.
-	ID string `json:"id" url:"id"`
-	// How many businesses can earn this reward in total. Null when unlimited.
-	MaxRedemptions *int `json:"max_redemptions,omitempty" url:"max_redemptions,omitempty"`
-	// Partner whose link attributed this reward.
-	Partner *UserSummary `json:"partner" url:"partner"`
-	// What the partner earns when a referred business qualifies for this reward. Null when the reward pays the business only.
-	PartnerRewardAmount *Money `json:"partner_reward_amount,omitempty" url:"partner_reward_amount,omitempty"`
-	// Required qualifying volume. Null for an immediate reward.
-	QualificationAmount *Money `json:"qualification_amount,omitempty" url:"qualification_amount,omitempty"`
-	// Income source whose volume qualifies the business. Null for an immediate reward.
-	QualificationIncomeSource *OnboardingRewardQualificationIncomeSource `json:"qualification_income_source,omitempty" url:"qualification_income_source,omitempty"`
-	// Whether the attributed business met the requirement. Null before a business claims the link.
-	QualificationMet *bool `json:"qualification_met,omitempty" url:"qualification_met,omitempty"`
-	// Qualifying volume accumulated by the attributed business. Null before a business claims the link and for immediate rewards.
-	QualificationProgress *Money `json:"qualification_progress,omitempty" url:"qualification_progress,omitempty"`
-	// How many rewards are still unclaimed. For rewards with a qualification, a business claims one only when it meets the requirement, so this can reach zero while other businesses are still working toward it. Null when unlimited.
-	RemainingRedemptions *int `json:"remaining_redemptions,omitempty" url:"remaining_redemptions,omitempty"`
-	// Reward value delivered after qualification.
-	RewardAmount *Money `json:"reward_amount" url:"reward_amount"`
-	// How the reward is delivered.
-	RewardType OnboardingRewardRewardType `json:"reward_type" url:"reward_type"`
-	// Whether the reward was credited to the attributed business. Null before a business claims the link.
-	Rewarded *bool `json:"rewarded,omitempty" url:"rewarded,omitempty"`
-	// Whether the reward can still be claimed: `available`, `fully_claimed`, `expired`, or `unavailable`.
-	Status OnboardingRewardStatus `json:"status" url:"status"`
+type Partner struct {
+	// When the user joined the partner program, as an ISO 8601 timestamp. Null when they have not joined.
+	JoinedAt    *string              `json:"joined_at,omitempty" url:"joined_at,omitempty"`
+	PayoutRates []*PartnerPayoutTier `json:"payout_rates" url:"payout_rates"`
+	// Number of active first-tier business referrals attributed to the partner, excluding deleted businesses.
+	ReferredBusinessesCount int `json:"referred_businesses_count" url:"referred_businesses_count"`
+	// The authenticated partner's public profile.
+	User *UserSummary `json:"user" url:"user"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -202,331 +161,513 @@ type OnboardingReward struct {
 	rawJSON         json.RawMessage
 }
 
-func (o *OnboardingReward) GetExpiresAt() *string {
-	if o == nil {
+func (p *Partner) GetJoinedAt() *string {
+	if p == nil {
 		return nil
 	}
-	return o.ExpiresAt
+	return p.JoinedAt
 }
 
-func (o *OnboardingReward) GetID() string {
-	if o == nil {
-		return ""
-	}
-	return o.ID
-}
-
-func (o *OnboardingReward) GetMaxRedemptions() *int {
-	if o == nil {
+func (p *Partner) GetPayoutRates() []*PartnerPayoutTier {
+	if p == nil {
 		return nil
 	}
-	return o.MaxRedemptions
+	return p.PayoutRates
 }
 
-func (o *OnboardingReward) GetPartner() *UserSummary {
-	if o == nil {
+func (p *Partner) GetReferredBusinessesCount() int {
+	if p == nil {
+		return 0
+	}
+	return p.ReferredBusinessesCount
+}
+
+func (p *Partner) GetUser() *UserSummary {
+	if p == nil {
 		return nil
 	}
-	return o.Partner
+	return p.User
 }
 
-func (o *OnboardingReward) GetPartnerRewardAmount() *Money {
-	if o == nil {
+func (p *Partner) GetExtraProperties() map[string]interface{} {
+	if p == nil {
 		return nil
 	}
-	return o.PartnerRewardAmount
+	return p.extraProperties
 }
 
-func (o *OnboardingReward) GetQualificationAmount() *Money {
-	if o == nil {
-		return nil
+func (p *Partner) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
 	}
-	return o.QualificationAmount
+	p.explicitFields.Or(p.explicitFields, field)
 }
 
-func (o *OnboardingReward) GetQualificationIncomeSource() *OnboardingRewardQualificationIncomeSource {
-	if o == nil {
-		return nil
-	}
-	return o.QualificationIncomeSource
-}
-
-func (o *OnboardingReward) GetQualificationMet() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.QualificationMet
-}
-
-func (o *OnboardingReward) GetQualificationProgress() *Money {
-	if o == nil {
-		return nil
-	}
-	return o.QualificationProgress
-}
-
-func (o *OnboardingReward) GetRemainingRedemptions() *int {
-	if o == nil {
-		return nil
-	}
-	return o.RemainingRedemptions
-}
-
-func (o *OnboardingReward) GetRewardAmount() *Money {
-	if o == nil {
-		return nil
-	}
-	return o.RewardAmount
-}
-
-func (o *OnboardingReward) GetRewardType() OnboardingRewardRewardType {
-	if o == nil {
-		return ""
-	}
-	return o.RewardType
-}
-
-func (o *OnboardingReward) GetRewarded() *bool {
-	if o == nil {
-		return nil
-	}
-	return o.Rewarded
-}
-
-func (o *OnboardingReward) GetStatus() OnboardingRewardStatus {
-	if o == nil {
-		return ""
-	}
-	return o.Status
-}
-
-func (o *OnboardingReward) GetExtraProperties() map[string]interface{} {
-	if o == nil {
-		return nil
-	}
-	return o.extraProperties
-}
-
-func (o *OnboardingReward) require(field *big.Int) {
-	if o.explicitFields == nil {
-		o.explicitFields = big.NewInt(0)
-	}
-	o.explicitFields.Or(o.explicitFields, field)
-}
-
-// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// SetJoinedAt sets the JoinedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetExpiresAt(expiresAt *string) {
-	o.ExpiresAt = expiresAt
-	o.require(onboardingRewardFieldExpiresAt)
+func (p *Partner) SetJoinedAt(joinedAt *string) {
+	p.JoinedAt = joinedAt
+	p.require(partnerFieldJoinedAt)
 }
 
-// SetID sets the ID field and marks it as non-optional;
+// SetPayoutRates sets the PayoutRates field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetID(id string) {
-	o.ID = id
-	o.require(onboardingRewardFieldID)
+func (p *Partner) SetPayoutRates(payoutRates []*PartnerPayoutTier) {
+	p.PayoutRates = payoutRates
+	p.require(partnerFieldPayoutRates)
 }
 
-// SetMaxRedemptions sets the MaxRedemptions field and marks it as non-optional;
+// SetReferredBusinessesCount sets the ReferredBusinessesCount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetMaxRedemptions(maxRedemptions *int) {
-	o.MaxRedemptions = maxRedemptions
-	o.require(onboardingRewardFieldMaxRedemptions)
+func (p *Partner) SetReferredBusinessesCount(referredBusinessesCount int) {
+	p.ReferredBusinessesCount = referredBusinessesCount
+	p.require(partnerFieldReferredBusinessesCount)
 }
 
-// SetPartner sets the Partner field and marks it as non-optional;
+// SetUser sets the User field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetPartner(partner *UserSummary) {
-	o.Partner = partner
-	o.require(onboardingRewardFieldPartner)
+func (p *Partner) SetUser(user *UserSummary) {
+	p.User = user
+	p.require(partnerFieldUser)
 }
 
-// SetPartnerRewardAmount sets the PartnerRewardAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetPartnerRewardAmount(partnerRewardAmount *Money) {
-	o.PartnerRewardAmount = partnerRewardAmount
-	o.require(onboardingRewardFieldPartnerRewardAmount)
-}
-
-// SetQualificationAmount sets the QualificationAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetQualificationAmount(qualificationAmount *Money) {
-	o.QualificationAmount = qualificationAmount
-	o.require(onboardingRewardFieldQualificationAmount)
-}
-
-// SetQualificationIncomeSource sets the QualificationIncomeSource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetQualificationIncomeSource(qualificationIncomeSource *OnboardingRewardQualificationIncomeSource) {
-	o.QualificationIncomeSource = qualificationIncomeSource
-	o.require(onboardingRewardFieldQualificationIncomeSource)
-}
-
-// SetQualificationMet sets the QualificationMet field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetQualificationMet(qualificationMet *bool) {
-	o.QualificationMet = qualificationMet
-	o.require(onboardingRewardFieldQualificationMet)
-}
-
-// SetQualificationProgress sets the QualificationProgress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetQualificationProgress(qualificationProgress *Money) {
-	o.QualificationProgress = qualificationProgress
-	o.require(onboardingRewardFieldQualificationProgress)
-}
-
-// SetRemainingRedemptions sets the RemainingRedemptions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetRemainingRedemptions(remainingRedemptions *int) {
-	o.RemainingRedemptions = remainingRedemptions
-	o.require(onboardingRewardFieldRemainingRedemptions)
-}
-
-// SetRewardAmount sets the RewardAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetRewardAmount(rewardAmount *Money) {
-	o.RewardAmount = rewardAmount
-	o.require(onboardingRewardFieldRewardAmount)
-}
-
-// SetRewardType sets the RewardType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetRewardType(rewardType OnboardingRewardRewardType) {
-	o.RewardType = rewardType
-	o.require(onboardingRewardFieldRewardType)
-}
-
-// SetRewarded sets the Rewarded field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetRewarded(rewarded *bool) {
-	o.Rewarded = rewarded
-	o.require(onboardingRewardFieldRewarded)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OnboardingReward) SetStatus(status OnboardingRewardStatus) {
-	o.Status = status
-	o.require(onboardingRewardFieldStatus)
-}
-
-func (o *OnboardingReward) UnmarshalJSON(data []byte) error {
-	type unmarshaler OnboardingReward
+func (p *Partner) UnmarshalJSON(data []byte) error {
+	type unmarshaler Partner
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*o = OnboardingReward(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *o)
+	*p = Partner(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
-	o.extraProperties = extraProperties
-	o.rawJSON = json.RawMessage(data)
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (o *OnboardingReward) MarshalJSON() ([]byte, error) {
-	type embed OnboardingReward
+func (p *Partner) MarshalJSON() ([]byte, error) {
+	type embed Partner
 	var marshaler = struct {
 		embed
 	}{
-		embed: embed(*o),
+		embed: embed(*p),
 	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, o.explicitFields)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (o *OnboardingReward) String() string {
-	if o == nil {
+func (p *Partner) String() string {
+	if p == nil {
 		return "<nil>"
 	}
-	if len(o.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := internal.StringifyJSON(o); err == nil {
+	if value, err := internal.StringifyJSON(p); err == nil {
 		return value
 	}
-	return fmt.Sprintf("%#v", o)
+	return fmt.Sprintf("%#v", p)
 }
 
-// Income source whose volume qualifies the business. Null for an immediate reward.
-type OnboardingRewardQualificationIncomeSource string
-
-const (
-	OnboardingRewardQualificationIncomeSourceSales   OnboardingRewardQualificationIncomeSource = "sales"
-	OnboardingRewardQualificationIncomeSourceAdSpend OnboardingRewardQualificationIncomeSource = "ad_spend"
+var (
+	partnerPayoutDurationFieldUnit  = big.NewInt(1 << 0)
+	partnerPayoutDurationFieldValue = big.NewInt(1 << 1)
 )
 
-func NewOnboardingRewardQualificationIncomeSourceFromString(s string) (OnboardingRewardQualificationIncomeSource, error) {
+type PartnerPayoutDuration struct {
+	// Unit of the earning window. Month means a calendar month; day means a day.
+	Unit PartnerPayoutDurationUnit `json:"unit" url:"unit"`
+	// Number of units in the earning window.
+	Value int `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerPayoutDuration) GetUnit() PartnerPayoutDurationUnit {
+	if p == nil {
+		return ""
+	}
+	return p.Unit
+}
+
+func (p *PartnerPayoutDuration) GetValue() int {
+	if p == nil {
+		return 0
+	}
+	return p.Value
+}
+
+func (p *PartnerPayoutDuration) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerPayoutDuration) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetUnit sets the Unit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerPayoutDuration) SetUnit(unit PartnerPayoutDurationUnit) {
+	p.Unit = unit
+	p.require(partnerPayoutDurationFieldUnit)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerPayoutDuration) SetValue(value int) {
+	p.Value = value
+	p.require(partnerPayoutDurationFieldValue)
+}
+
+func (p *PartnerPayoutDuration) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerPayoutDuration
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerPayoutDuration(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerPayoutDuration) MarshalJSON() ([]byte, error) {
+	type embed PartnerPayoutDuration
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerPayoutDuration) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Unit of the earning window. Month means a calendar month; day means a day.
+type PartnerPayoutDurationUnit string
+
+const (
+	PartnerPayoutDurationUnitDay   PartnerPayoutDurationUnit = "day"
+	PartnerPayoutDurationUnitMonth PartnerPayoutDurationUnit = "month"
+)
+
+func NewPartnerPayoutDurationUnitFromString(s string) (PartnerPayoutDurationUnit, error) {
+	switch s {
+	case "day":
+		return PartnerPayoutDurationUnitDay, nil
+	case "month":
+		return PartnerPayoutDurationUnitMonth, nil
+	}
+	var t PartnerPayoutDurationUnit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PartnerPayoutDurationUnit) Ptr() *PartnerPayoutDurationUnit {
+	return &p
+}
+
+var (
+	partnerPayoutRateFieldIncomeSource = big.NewInt(1 << 0)
+	partnerPayoutRateFieldPercentage   = big.NewInt(1 << 1)
+)
+
+type PartnerPayoutRate struct {
+	// Income source that generates this percentage payout.
+	IncomeSource PartnerPayoutRateIncomeSource `json:"income_source" url:"income_source"`
+	// Partner's default percentage for this tier and income source. For example, 30 means 30%.
+	Percentage float64 `json:"percentage" url:"percentage"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerPayoutRate) GetIncomeSource() PartnerPayoutRateIncomeSource {
+	if p == nil {
+		return ""
+	}
+	return p.IncomeSource
+}
+
+func (p *PartnerPayoutRate) GetPercentage() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.Percentage
+}
+
+func (p *PartnerPayoutRate) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerPayoutRate) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetIncomeSource sets the IncomeSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerPayoutRate) SetIncomeSource(incomeSource PartnerPayoutRateIncomeSource) {
+	p.IncomeSource = incomeSource
+	p.require(partnerPayoutRateFieldIncomeSource)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerPayoutRate) SetPercentage(percentage float64) {
+	p.Percentage = percentage
+	p.require(partnerPayoutRateFieldPercentage)
+}
+
+func (p *PartnerPayoutRate) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerPayoutRate
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerPayoutRate(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerPayoutRate) MarshalJSON() ([]byte, error) {
+	type embed PartnerPayoutRate
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerPayoutRate) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Income source that generates this percentage payout.
+type PartnerPayoutRateIncomeSource string
+
+const (
+	PartnerPayoutRateIncomeSourceSales           PartnerPayoutRateIncomeSource = "sales"
+	PartnerPayoutRateIncomeSourceTransfer        PartnerPayoutRateIncomeSource = "transfer"
+	PartnerPayoutRateIncomeSourceCardInterchange PartnerPayoutRateIncomeSource = "card_interchange"
+	PartnerPayoutRateIncomeSourceAdSpend         PartnerPayoutRateIncomeSource = "ad_spend"
+)
+
+func NewPartnerPayoutRateIncomeSourceFromString(s string) (PartnerPayoutRateIncomeSource, error) {
 	switch s {
 	case "sales":
-		return OnboardingRewardQualificationIncomeSourceSales, nil
+		return PartnerPayoutRateIncomeSourceSales, nil
+	case "transfer":
+		return PartnerPayoutRateIncomeSourceTransfer, nil
+	case "card_interchange":
+		return PartnerPayoutRateIncomeSourceCardInterchange, nil
 	case "ad_spend":
-		return OnboardingRewardQualificationIncomeSourceAdSpend, nil
+		return PartnerPayoutRateIncomeSourceAdSpend, nil
 	}
-	var t OnboardingRewardQualificationIncomeSource
+	var t PartnerPayoutRateIncomeSource
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (o OnboardingRewardQualificationIncomeSource) Ptr() *OnboardingRewardQualificationIncomeSource {
-	return &o
+func (p PartnerPayoutRateIncomeSource) Ptr() *PartnerPayoutRateIncomeSource {
+	return &p
 }
 
-// How the reward is delivered.
-type OnboardingRewardRewardType string
-
-const (
-	OnboardingRewardRewardTypeAdCredit      OnboardingRewardRewardType = "ad_credit"
-	OnboardingRewardRewardTypeBalanceCredit OnboardingRewardRewardType = "balance_credit"
+var (
+	partnerPayoutTierFieldDuration = big.NewInt(1 << 0)
+	partnerPayoutTierFieldRates    = big.NewInt(1 << 1)
+	partnerPayoutTierFieldTier     = big.NewInt(1 << 2)
 )
 
-func NewOnboardingRewardRewardTypeFromString(s string) (OnboardingRewardRewardType, error) {
-	switch s {
-	case "ad_credit":
-		return OnboardingRewardRewardTypeAdCredit, nil
-	case "balance_credit":
-		return OnboardingRewardRewardTypeBalanceCredit, nil
+type PartnerPayoutTier struct {
+	// Default period during which a new referred business can generate commissions, measured from its attribution start. This is not a payout delay. Individual business terms can differ.
+	Duration *PartnerPayoutDuration `json:"duration" url:"duration"`
+	Rates    []*PartnerPayoutRate   `json:"rates" url:"rates"`
+	// Referral tier: first for a directly referred business, or second for a business brought by a referred partner.
+	Tier PartnerPayoutTierTier `json:"tier" url:"tier"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerPayoutTier) GetDuration() *PartnerPayoutDuration {
+	if p == nil {
+		return nil
 	}
-	var t OnboardingRewardRewardType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
+	return p.Duration
 }
 
-func (o OnboardingRewardRewardType) Ptr() *OnboardingRewardRewardType {
-	return &o
+func (p *PartnerPayoutTier) GetRates() []*PartnerPayoutRate {
+	if p == nil {
+		return nil
+	}
+	return p.Rates
 }
 
-// Whether the reward can still be claimed: `available`, `fully_claimed`, `expired`, or `unavailable`.
-type OnboardingRewardStatus string
+func (p *PartnerPayoutTier) GetTier() PartnerPayoutTierTier {
+	if p == nil {
+		return ""
+	}
+	return p.Tier
+}
+
+func (p *PartnerPayoutTier) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerPayoutTier) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetDuration sets the Duration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerPayoutTier) SetDuration(duration *PartnerPayoutDuration) {
+	p.Duration = duration
+	p.require(partnerPayoutTierFieldDuration)
+}
+
+// SetRates sets the Rates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerPayoutTier) SetRates(rates []*PartnerPayoutRate) {
+	p.Rates = rates
+	p.require(partnerPayoutTierFieldRates)
+}
+
+// SetTier sets the Tier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerPayoutTier) SetTier(tier PartnerPayoutTierTier) {
+	p.Tier = tier
+	p.require(partnerPayoutTierFieldTier)
+}
+
+func (p *PartnerPayoutTier) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerPayoutTier
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerPayoutTier(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerPayoutTier) MarshalJSON() ([]byte, error) {
+	type embed PartnerPayoutTier
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerPayoutTier) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Referral tier: first for a directly referred business, or second for a business brought by a referred partner.
+type PartnerPayoutTierTier string
 
 const (
-	OnboardingRewardStatusAvailable    OnboardingRewardStatus = "available"
-	OnboardingRewardStatusFullyClaimed OnboardingRewardStatus = "fully_claimed"
-	OnboardingRewardStatusExpired      OnboardingRewardStatus = "expired"
-	OnboardingRewardStatusUnavailable  OnboardingRewardStatus = "unavailable"
+	PartnerPayoutTierTierFirst  PartnerPayoutTierTier = "first"
+	PartnerPayoutTierTierSecond PartnerPayoutTierTier = "second"
 )
 
-func NewOnboardingRewardStatusFromString(s string) (OnboardingRewardStatus, error) {
+func NewPartnerPayoutTierTierFromString(s string) (PartnerPayoutTierTier, error) {
 	switch s {
-	case "available":
-		return OnboardingRewardStatusAvailable, nil
-	case "fully_claimed":
-		return OnboardingRewardStatusFullyClaimed, nil
-	case "expired":
-		return OnboardingRewardStatusExpired, nil
-	case "unavailable":
-		return OnboardingRewardStatusUnavailable, nil
+	case "first":
+		return PartnerPayoutTierTierFirst, nil
+	case "second":
+		return PartnerPayoutTierTierSecond, nil
 	}
-	var t OnboardingRewardStatus
+	var t PartnerPayoutTierTier
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (o OnboardingRewardStatus) Ptr() *OnboardingRewardStatus {
-	return &o
+func (p PartnerPayoutTierTier) Ptr() *PartnerPayoutTierTier {
+	return &p
 }
 
 var (

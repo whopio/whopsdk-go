@@ -8708,41 +8708,6 @@
       "postServeActions": []
     },
     {
-      "id": "f5b7a08b-48f4-4a4c-a347-ce2a5a37a97d",
-      "name": "Retrieve a partner reward link - default",
-      "request": {
-        "urlPathTemplate": "/partners/links",
-        "method": "GET",
-        "queryParameters": {
-          "partner_username": {
-            "equalTo": "partner_username"
-          },
-          "reward_slug": {
-            "equalTo": "reward_slug"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"expires_at\": \"expires_at\",\n  \"id\": \"onbr_xxxxxxxxxxxxxx\",\n  \"max_redemptions\": 1,\n  \"partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"partner_reward_amount\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"qualification_amount\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"qualification_income_source\": \"sales\",\n  \"qualification_met\": true,\n  \"qualification_progress\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"remaining_redemptions\": 0,\n  \"reward_amount\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"reward_type\": \"ad_credit\",\n  \"rewarded\": true,\n  \"status\": \"available\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "f5b7a08b-48f4-4a4c-a347-ce2a5a37a97d",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      },
-      "postServeActions": []
-    },
-    {
       "id": "fa172513-892d-41a0-a736-62095083cbea",
       "name": "List the users the caller referred - default",
       "request": {
@@ -8773,6 +8738,42 @@
         }
       },
       "postServeActions": []
+    },
+    {
+      "id": "bd234b1f-87b3-41fa-ba8e-61d3ff0e7d96",
+      "name": "Retrieve a partner - default",
+      "request": {
+        "urlPathTemplate": "/partners/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "me"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n  \"payout_rates\": [\n    {\n      \"duration\": {\n        \"unit\": \"day\",\n        \"value\": 600\n      },\n      \"rates\": [\n        {\n          \"income_source\": \"sales\",\n          \"percentage\": 10\n        }\n      ],\n      \"tier\": \"first\"\n    }\n  ],\n  \"referred_businesses_count\": 1,\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "bd234b1f-87b3-41fa-ba8e-61d3ff0e7d96",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
     },
     {
       "id": "3d5fe963-d5dd-4b7f-bfb0-de76bb1360e0",
@@ -13782,6 +13783,38 @@
       }
     },
     {
+      "id": "4bfcb70c-3fd3-450a-9ff2-dddb3caae33b",
+      "name": "List partner links - default",
+      "request": {
+        "urlPathTemplate": "/partners/links",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"base_referral_url\": \"https://whop.com/network/\",\n  \"data\": [\n    {\n      \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"onbr_xxxxxxxxxxxxxx\",\n      \"max_redemptions\": 1,\n      \"name\": \"reward-1\",\n      \"partner_reward_amount\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"qualification_amount\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"qualification_income_source\": \"sales\",\n      \"redemptions\": 0,\n      \"referral_url\": \"https://whop.com/start/\",\n      \"referred_business_reward_amount\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"reward_type\": \"ad_credit\",\n      \"status\": \"available\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "4bfcb70c-3fd3-450a-9ff2-dddb3caae33b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "5daeab44-8d64-44f7-bc89-64dcd4bcb27f",
       "name": "List referred business earnings - default",
       "request": {
@@ -14337,6 +14370,6 @@
     }
   ],
   "meta": {
-    "total": 399
+    "total": 400
   }
 }

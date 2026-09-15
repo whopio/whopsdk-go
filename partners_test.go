@@ -295,676 +295,22 @@ func TestSettersMarkExplicitReferredUsersPartnersRequest(t *testing.T) {
 
 }
 
-func TestSettersRetrieveLinkPartnersRequest(t *testing.T) {
-	t.Run("SetPartnerUsername", func(t *testing.T) {
-		obj := &RetrieveLinkPartnersRequest{}
-		var fernTestValuePartnerUsername string
-		obj.SetPartnerUsername(fernTestValuePartnerUsername)
-		assert.Equal(t, fernTestValuePartnerUsername, obj.PartnerUsername)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetRewardSlug", func(t *testing.T) {
-		obj := &RetrieveLinkPartnersRequest{}
-		var fernTestValueRewardSlug string
-		obj.SetRewardSlug(fernTestValueRewardSlug)
-		assert.Equal(t, fernTestValueRewardSlug, obj.RewardSlug)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-}
-
-func TestSettersMarkExplicitRetrieveLinkPartnersRequest(t *testing.T) {
-	t.Run("SetPartnerUsername_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &RetrieveLinkPartnersRequest{}
-		var fernTestValuePartnerUsername string
-
-		// Act
-		obj.SetPartnerUsername(fernTestValuePartnerUsername)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetRewardSlug_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &RetrieveLinkPartnersRequest{}
-		var fernTestValueRewardSlug string
-
-		// Act
-		obj.SetRewardSlug(fernTestValueRewardSlug)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-}
-
-func TestSettersOnboardingReward(t *testing.T) {
-	t.Run("SetExpiresAt", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueExpiresAt *string
-		obj.SetExpiresAt(fernTestValueExpiresAt)
-		assert.Equal(t, fernTestValueExpiresAt, obj.ExpiresAt)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
+func TestSettersRetrievePartnersRequest(t *testing.T) {
 	t.Run("SetID", func(t *testing.T) {
-		obj := &OnboardingReward{}
+		obj := &RetrievePartnersRequest{}
 		var fernTestValueID string
 		obj.SetID(fernTestValueID)
 		assert.Equal(t, fernTestValueID, obj.ID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetMaxRedemptions", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueMaxRedemptions *int
-		obj.SetMaxRedemptions(fernTestValueMaxRedemptions)
-		assert.Equal(t, fernTestValueMaxRedemptions, obj.MaxRedemptions)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetPartner", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValuePartner *UserSummary
-		obj.SetPartner(fernTestValuePartner)
-		assert.Equal(t, fernTestValuePartner, obj.Partner)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetPartnerRewardAmount", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValuePartnerRewardAmount *Money
-		obj.SetPartnerRewardAmount(fernTestValuePartnerRewardAmount)
-		assert.Equal(t, fernTestValuePartnerRewardAmount, obj.PartnerRewardAmount)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetQualificationAmount", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueQualificationAmount *Money
-		obj.SetQualificationAmount(fernTestValueQualificationAmount)
-		assert.Equal(t, fernTestValueQualificationAmount, obj.QualificationAmount)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetQualificationIncomeSource", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueQualificationIncomeSource *OnboardingRewardQualificationIncomeSource
-		obj.SetQualificationIncomeSource(fernTestValueQualificationIncomeSource)
-		assert.Equal(t, fernTestValueQualificationIncomeSource, obj.QualificationIncomeSource)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetQualificationMet", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueQualificationMet *bool
-		obj.SetQualificationMet(fernTestValueQualificationMet)
-		assert.Equal(t, fernTestValueQualificationMet, obj.QualificationMet)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetQualificationProgress", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueQualificationProgress *Money
-		obj.SetQualificationProgress(fernTestValueQualificationProgress)
-		assert.Equal(t, fernTestValueQualificationProgress, obj.QualificationProgress)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetRemainingRedemptions", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueRemainingRedemptions *int
-		obj.SetRemainingRedemptions(fernTestValueRemainingRedemptions)
-		assert.Equal(t, fernTestValueRemainingRedemptions, obj.RemainingRedemptions)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetRewardAmount", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueRewardAmount *Money
-		obj.SetRewardAmount(fernTestValueRewardAmount)
-		assert.Equal(t, fernTestValueRewardAmount, obj.RewardAmount)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetRewardType", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueRewardType OnboardingRewardRewardType
-		obj.SetRewardType(fernTestValueRewardType)
-		assert.Equal(t, fernTestValueRewardType, obj.RewardType)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetRewarded", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueRewarded *bool
-		obj.SetRewarded(fernTestValueRewarded)
-		assert.Equal(t, fernTestValueRewarded, obj.Rewarded)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetStatus", func(t *testing.T) {
-		obj := &OnboardingReward{}
-		var fernTestValueStatus OnboardingRewardStatus
-		obj.SetStatus(fernTestValueStatus)
-		assert.Equal(t, fernTestValueStatus, obj.Status)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 }
 
-func TestGettersOnboardingReward(t *testing.T) {
-	t.Run("GetExpiresAt", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *string
-		obj.ExpiresAt = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetExpiresAt(), "getter should return the property value")
-	})
-
-	t.Run("GetExpiresAt_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.ExpiresAt = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetExpiresAt(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetExpiresAt_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetExpiresAt() // Should return zero value
-	})
-
-	t.Run("GetID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected string
-		obj.ID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
-	})
-
-	t.Run("GetID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetID() // Should return zero value
-	})
-
-	t.Run("GetMaxRedemptions", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *int
-		obj.MaxRedemptions = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetMaxRedemptions(), "getter should return the property value")
-	})
-
-	t.Run("GetMaxRedemptions_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.MaxRedemptions = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetMaxRedemptions(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetMaxRedemptions_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetMaxRedemptions() // Should return zero value
-	})
-
-	t.Run("GetPartner", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *UserSummary
-		obj.Partner = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPartner(), "getter should return the property value")
-	})
-
-	t.Run("GetPartner_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.Partner = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPartner(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPartner_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPartner() // Should return zero value
-	})
-
-	t.Run("GetPartnerRewardAmount", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *Money
-		obj.PartnerRewardAmount = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPartnerRewardAmount(), "getter should return the property value")
-	})
-
-	t.Run("GetPartnerRewardAmount_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.PartnerRewardAmount = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPartnerRewardAmount(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPartnerRewardAmount_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPartnerRewardAmount() // Should return zero value
-	})
-
-	t.Run("GetQualificationAmount", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *Money
-		obj.QualificationAmount = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetQualificationAmount(), "getter should return the property value")
-	})
-
-	t.Run("GetQualificationAmount_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.QualificationAmount = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetQualificationAmount(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetQualificationAmount_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetQualificationAmount() // Should return zero value
-	})
-
-	t.Run("GetQualificationIncomeSource", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *OnboardingRewardQualificationIncomeSource
-		obj.QualificationIncomeSource = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetQualificationIncomeSource(), "getter should return the property value")
-	})
-
-	t.Run("GetQualificationIncomeSource_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.QualificationIncomeSource = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetQualificationIncomeSource(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetQualificationIncomeSource_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetQualificationIncomeSource() // Should return zero value
-	})
-
-	t.Run("GetQualificationMet", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *bool
-		obj.QualificationMet = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetQualificationMet(), "getter should return the property value")
-	})
-
-	t.Run("GetQualificationMet_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.QualificationMet = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetQualificationMet(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetQualificationMet_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetQualificationMet() // Should return zero value
-	})
-
-	t.Run("GetQualificationProgress", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *Money
-		obj.QualificationProgress = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetQualificationProgress(), "getter should return the property value")
-	})
-
-	t.Run("GetQualificationProgress_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.QualificationProgress = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetQualificationProgress(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetQualificationProgress_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetQualificationProgress() // Should return zero value
-	})
-
-	t.Run("GetRemainingRedemptions", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *int
-		obj.RemainingRedemptions = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetRemainingRedemptions(), "getter should return the property value")
-	})
-
-	t.Run("GetRemainingRedemptions_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.RemainingRedemptions = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetRemainingRedemptions(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetRemainingRedemptions_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetRemainingRedemptions() // Should return zero value
-	})
-
-	t.Run("GetRewardAmount", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *Money
-		obj.RewardAmount = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetRewardAmount(), "getter should return the property value")
-	})
-
-	t.Run("GetRewardAmount_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.RewardAmount = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetRewardAmount(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetRewardAmount_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetRewardAmount() // Should return zero value
-	})
-
-	t.Run("GetRewardType", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected OnboardingRewardRewardType
-		obj.RewardType = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetRewardType(), "getter should return the property value")
-	})
-
-	t.Run("GetRewardType_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetRewardType() // Should return zero value
-	})
-
-	t.Run("GetRewarded", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected *bool
-		obj.Rewarded = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetRewarded(), "getter should return the property value")
-	})
-
-	t.Run("GetRewarded_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		obj.Rewarded = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetRewarded(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetRewarded_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetRewarded() // Should return zero value
-	})
-
-	t.Run("GetStatus", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var expected OnboardingRewardStatus
-		obj.Status = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
-	})
-
-	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OnboardingReward
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetStatus() // Should return zero value
-	})
-
-}
-
-func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
-	t.Run("SetExpiresAt_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueExpiresAt *string
-
-		// Act
-		obj.SetExpiresAt(fernTestValueExpiresAt)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
+func TestSettersMarkExplicitRetrievePartnersRequest(t *testing.T) {
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
+		obj := &RetrievePartnersRequest{}
 		var fernTestValueID string
 
 		// Act
@@ -992,14 +338,177 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetMaxRedemptions_MarksExplicit", func(t *testing.T) {
+}
+
+func TestSettersPartner(t *testing.T) {
+	t.Run("SetJoinedAt", func(t *testing.T) {
+		obj := &Partner{}
+		var fernTestValueJoinedAt *string
+		obj.SetJoinedAt(fernTestValueJoinedAt)
+		assert.Equal(t, fernTestValueJoinedAt, obj.JoinedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPayoutRates", func(t *testing.T) {
+		obj := &Partner{}
+		var fernTestValuePayoutRates []*PartnerPayoutTier
+		obj.SetPayoutRates(fernTestValuePayoutRates)
+		assert.Equal(t, fernTestValuePayoutRates, obj.PayoutRates)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetReferredBusinessesCount", func(t *testing.T) {
+		obj := &Partner{}
+		var fernTestValueReferredBusinessesCount int
+		obj.SetReferredBusinessesCount(fernTestValueReferredBusinessesCount)
+		assert.Equal(t, fernTestValueReferredBusinessesCount, obj.ReferredBusinessesCount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUser", func(t *testing.T) {
+		obj := &Partner{}
+		var fernTestValueUser *UserSummary
+		obj.SetUser(fernTestValueUser)
+		assert.Equal(t, fernTestValueUser, obj.User)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersPartner(t *testing.T) {
+	t.Run("GetJoinedAt", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueMaxRedemptions *int
+		obj := &Partner{}
+		var expected *string
+		obj.JoinedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetJoinedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetJoinedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Partner{}
+		obj.JoinedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetJoinedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetJoinedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Partner
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetJoinedAt() // Should return zero value
+	})
+
+	t.Run("GetPayoutRates", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Partner{}
+		var expected []*PartnerPayoutTier
+		obj.PayoutRates = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPayoutRates(), "getter should return the property value")
+	})
+
+	t.Run("GetPayoutRates_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Partner{}
+		obj.PayoutRates = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPayoutRates(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPayoutRates_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Partner
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPayoutRates() // Should return zero value
+	})
+
+	t.Run("GetReferredBusinessesCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Partner{}
+		var expected int
+		obj.ReferredBusinessesCount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReferredBusinessesCount(), "getter should return the property value")
+	})
+
+	t.Run("GetReferredBusinessesCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Partner
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReferredBusinessesCount() // Should return zero value
+	})
+
+	t.Run("GetUser", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Partner{}
+		var expected *UserSummary
+		obj.User = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUser(), "getter should return the property value")
+	})
+
+	t.Run("GetUser_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Partner{}
+		obj.User = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUser(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUser_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Partner
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUser() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitPartner(t *testing.T) {
+	t.Run("SetJoinedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Partner{}
+		var fernTestValueJoinedAt *string
 
 		// Act
-		obj.SetMaxRedemptions(fernTestValueMaxRedemptions)
+		obj.SetJoinedAt(fernTestValueJoinedAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1023,14 +532,14 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPartner_MarksExplicit", func(t *testing.T) {
+	t.Run("SetPayoutRates_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValuePartner *UserSummary
+		obj := &Partner{}
+		var fernTestValuePayoutRates []*PartnerPayoutTier
 
 		// Act
-		obj.SetPartner(fernTestValuePartner)
+		obj.SetPayoutRates(fernTestValuePayoutRates)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1054,14 +563,14 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPartnerRewardAmount_MarksExplicit", func(t *testing.T) {
+	t.Run("SetReferredBusinessesCount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValuePartnerRewardAmount *Money
+		obj := &Partner{}
+		var fernTestValueReferredBusinessesCount int
 
 		// Act
-		obj.SetPartnerRewardAmount(fernTestValuePartnerRewardAmount)
+		obj.SetReferredBusinessesCount(fernTestValueReferredBusinessesCount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1085,14 +594,14 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetQualificationAmount_MarksExplicit", func(t *testing.T) {
+	t.Run("SetUser_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueQualificationAmount *Money
+		obj := &Partner{}
+		var fernTestValueUser *UserSummary
 
 		// Act
-		obj.SetQualificationAmount(fernTestValueQualificationAmount)
+		obj.SetUser(fernTestValueUser)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1116,14 +625,85 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetQualificationIncomeSource_MarksExplicit", func(t *testing.T) {
+}
+
+func TestSettersPartnerPayoutDuration(t *testing.T) {
+	t.Run("SetUnit", func(t *testing.T) {
+		obj := &PartnerPayoutDuration{}
+		var fernTestValueUnit PartnerPayoutDurationUnit
+		obj.SetUnit(fernTestValueUnit)
+		assert.Equal(t, fernTestValueUnit, obj.Unit)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetValue", func(t *testing.T) {
+		obj := &PartnerPayoutDuration{}
+		var fernTestValueValue int
+		obj.SetValue(fernTestValueValue)
+		assert.Equal(t, fernTestValueValue, obj.Value)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersPartnerPayoutDuration(t *testing.T) {
+	t.Run("GetUnit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueQualificationIncomeSource *OnboardingRewardQualificationIncomeSource
+		obj := &PartnerPayoutDuration{}
+		var expected PartnerPayoutDurationUnit
+		obj.Unit = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUnit(), "getter should return the property value")
+	})
+
+	t.Run("GetUnit_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutDuration
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUnit() // Should return zero value
+	})
+
+	t.Run("GetValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutDuration{}
+		var expected int
+		obj.Value = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetValue(), "getter should return the property value")
+	})
+
+	t.Run("GetValue_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutDuration
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetValue() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitPartnerPayoutDuration(t *testing.T) {
+	t.Run("SetUnit_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutDuration{}
+		var fernTestValueUnit PartnerPayoutDurationUnit
 
 		// Act
-		obj.SetQualificationIncomeSource(fernTestValueQualificationIncomeSource)
+		obj.SetUnit(fernTestValueUnit)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1147,14 +727,14 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetQualificationMet_MarksExplicit", func(t *testing.T) {
+	t.Run("SetValue_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueQualificationMet *bool
+		obj := &PartnerPayoutDuration{}
+		var fernTestValueValue int
 
 		// Act
-		obj.SetQualificationMet(fernTestValueQualificationMet)
+		obj.SetValue(fernTestValueValue)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1178,14 +758,85 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetQualificationProgress_MarksExplicit", func(t *testing.T) {
+}
+
+func TestSettersPartnerPayoutRate(t *testing.T) {
+	t.Run("SetIncomeSource", func(t *testing.T) {
+		obj := &PartnerPayoutRate{}
+		var fernTestValueIncomeSource PartnerPayoutRateIncomeSource
+		obj.SetIncomeSource(fernTestValueIncomeSource)
+		assert.Equal(t, fernTestValueIncomeSource, obj.IncomeSource)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPercentage", func(t *testing.T) {
+		obj := &PartnerPayoutRate{}
+		var fernTestValuePercentage float64
+		obj.SetPercentage(fernTestValuePercentage)
+		assert.Equal(t, fernTestValuePercentage, obj.Percentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersPartnerPayoutRate(t *testing.T) {
+	t.Run("GetIncomeSource", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueQualificationProgress *Money
+		obj := &PartnerPayoutRate{}
+		var expected PartnerPayoutRateIncomeSource
+		obj.IncomeSource = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIncomeSource(), "getter should return the property value")
+	})
+
+	t.Run("GetIncomeSource_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutRate
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIncomeSource() // Should return zero value
+	})
+
+	t.Run("GetPercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutRate{}
+		var expected float64
+		obj.Percentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetPercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutRate
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPercentage() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitPartnerPayoutRate(t *testing.T) {
+	t.Run("SetIncomeSource_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutRate{}
+		var fernTestValueIncomeSource PartnerPayoutRateIncomeSource
 
 		// Act
-		obj.SetQualificationProgress(fernTestValueQualificationProgress)
+		obj.SetIncomeSource(fernTestValueIncomeSource)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1209,14 +860,14 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetRemainingRedemptions_MarksExplicit", func(t *testing.T) {
+	t.Run("SetPercentage_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueRemainingRedemptions *int
+		obj := &PartnerPayoutRate{}
+		var fernTestValuePercentage float64
 
 		// Act
-		obj.SetRemainingRedemptions(fernTestValueRemainingRedemptions)
+		obj.SetPercentage(fernTestValuePercentage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1240,14 +891,136 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetRewardAmount_MarksExplicit", func(t *testing.T) {
+}
+
+func TestSettersPartnerPayoutTier(t *testing.T) {
+	t.Run("SetDuration", func(t *testing.T) {
+		obj := &PartnerPayoutTier{}
+		var fernTestValueDuration *PartnerPayoutDuration
+		obj.SetDuration(fernTestValueDuration)
+		assert.Equal(t, fernTestValueDuration, obj.Duration)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRates", func(t *testing.T) {
+		obj := &PartnerPayoutTier{}
+		var fernTestValueRates []*PartnerPayoutRate
+		obj.SetRates(fernTestValueRates)
+		assert.Equal(t, fernTestValueRates, obj.Rates)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTier", func(t *testing.T) {
+		obj := &PartnerPayoutTier{}
+		var fernTestValueTier PartnerPayoutTierTier
+		obj.SetTier(fernTestValueTier)
+		assert.Equal(t, fernTestValueTier, obj.Tier)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersPartnerPayoutTier(t *testing.T) {
+	t.Run("GetDuration", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueRewardAmount *Money
+		obj := &PartnerPayoutTier{}
+		var expected *PartnerPayoutDuration
+		obj.Duration = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDuration(), "getter should return the property value")
+	})
+
+	t.Run("GetDuration_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutTier{}
+		obj.Duration = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDuration(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDuration_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutTier
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDuration() // Should return zero value
+	})
+
+	t.Run("GetRates", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutTier{}
+		var expected []*PartnerPayoutRate
+		obj.Rates = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRates(), "getter should return the property value")
+	})
+
+	t.Run("GetRates_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutTier{}
+		obj.Rates = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRates(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRates_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutTier
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRates() // Should return zero value
+	})
+
+	t.Run("GetTier", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutTier{}
+		var expected PartnerPayoutTierTier
+		obj.Tier = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTier(), "getter should return the property value")
+	})
+
+	t.Run("GetTier_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutTier
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTier() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitPartnerPayoutTier(t *testing.T) {
+	t.Run("SetDuration_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutTier{}
+		var fernTestValueDuration *PartnerPayoutDuration
 
 		// Act
-		obj.SetRewardAmount(fernTestValueRewardAmount)
+		obj.SetDuration(fernTestValueDuration)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1271,14 +1044,14 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetRewardType_MarksExplicit", func(t *testing.T) {
+	t.Run("SetRates_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueRewardType OnboardingRewardRewardType
+		obj := &PartnerPayoutTier{}
+		var fernTestValueRates []*PartnerPayoutRate
 
 		// Act
-		obj.SetRewardType(fernTestValueRewardType)
+		obj.SetRates(fernTestValueRates)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1302,45 +1075,14 @@ func TestSettersMarkExplicitOnboardingReward(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetRewarded_MarksExplicit", func(t *testing.T) {
+	t.Run("SetTier_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueRewarded *bool
+		obj := &PartnerPayoutTier{}
+		var fernTestValueTier PartnerPayoutTierTier
 
 		// Act
-		obj.SetRewarded(fernTestValueRewarded)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OnboardingReward{}
-		var fernTestValueStatus OnboardingRewardStatus
-
-		// Act
-		obj.SetStatus(fernTestValueStatus)
+		obj.SetTier(fernTestValueTier)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4807,11 +4549,11 @@ func TestJSONMarshalingLeaderboardPartnersResponseMeUserProfilePicture(t *testin
 	})
 }
 
-func TestJSONMarshalingOnboardingReward(t *testing.T) {
+func TestJSONMarshalingPartner(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &OnboardingReward{}
+		obj := &Partner{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -4820,21 +4562,120 @@ func TestJSONMarshalingOnboardingReward(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled OnboardingReward
+		var unmarshaled Partner
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj OnboardingReward
+		var obj Partner
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj OnboardingReward
+		var obj Partner
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingPartnerPayoutDuration(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutDuration{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled PartnerPayoutDuration
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj PartnerPayoutDuration
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj PartnerPayoutDuration
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingPartnerPayoutRate(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutRate{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled PartnerPayoutRate
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj PartnerPayoutRate
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj PartnerPayoutRate
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingPartnerPayoutTier(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerPayoutTier{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled PartnerPayoutTier
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj PartnerPayoutTier
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj PartnerPayoutTier
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -5133,17 +4974,65 @@ func TestStringLeaderboardPartnersResponseMeUserProfilePicture(t *testing.T) {
 	})
 }
 
-func TestStringOnboardingReward(t *testing.T) {
+func TestStringPartner(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &OnboardingReward{}
+		obj := &Partner{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *OnboardingReward
+		var obj *Partner
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringPartnerPayoutDuration(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &PartnerPayoutDuration{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutDuration
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringPartnerPayoutRate(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &PartnerPayoutRate{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutRate
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringPartnerPayoutTier(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &PartnerPayoutTier{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutTier
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -5279,28 +5168,71 @@ func TestEnumLeaderboardPartnersRequestPeriod(t *testing.T) {
 	})
 }
 
-func TestEnumOnboardingRewardQualificationIncomeSource(t *testing.T) {
+func TestEnumPartnerPayoutDurationUnit(t *testing.T) {
+	t.Run("NewFromString_day", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPartnerPayoutDurationUnitFromString("day")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PartnerPayoutDurationUnit("day"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_month", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPartnerPayoutDurationUnitFromString("month")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PartnerPayoutDurationUnit("month"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPartnerPayoutDurationUnitFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPartnerPayoutDurationUnitFromString("day")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPartnerPayoutRateIncomeSource(t *testing.T) {
 	t.Run("NewFromString_sales", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewOnboardingRewardQualificationIncomeSourceFromString("sales")
+		val, err := NewPartnerPayoutRateIncomeSourceFromString("sales")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, OnboardingRewardQualificationIncomeSource("sales"), val, "enum value should match expected wire value")
+		assert.Equal(t, PartnerPayoutRateIncomeSource("sales"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_transfer", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPartnerPayoutRateIncomeSourceFromString("transfer")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PartnerPayoutRateIncomeSource("transfer"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_interchange", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPartnerPayoutRateIncomeSourceFromString("card_interchange")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PartnerPayoutRateIncomeSource("card_interchange"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_ad_spend", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewOnboardingRewardQualificationIncomeSourceFromString("ad_spend")
+		val, err := NewPartnerPayoutRateIncomeSourceFromString("ad_spend")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, OnboardingRewardQualificationIncomeSource("ad_spend"), val, "enum value should match expected wire value")
+		assert.Equal(t, PartnerPayoutRateIncomeSource("ad_spend"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewOnboardingRewardQualificationIncomeSourceFromString("invalid_value_that_does_not_exist")
+		_, err := NewPartnerPayoutRateIncomeSourceFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewOnboardingRewardQualificationIncomeSourceFromString("sales")
+		val, err := NewPartnerPayoutRateIncomeSourceFromString("sales")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -5308,71 +5240,28 @@ func TestEnumOnboardingRewardQualificationIncomeSource(t *testing.T) {
 	})
 }
 
-func TestEnumOnboardingRewardRewardType(t *testing.T) {
-	t.Run("NewFromString_ad_credit", func(t *testing.T) {
+func TestEnumPartnerPayoutTierTier(t *testing.T) {
+	t.Run("NewFromString_first", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewOnboardingRewardRewardTypeFromString("ad_credit")
+		val, err := NewPartnerPayoutTierTierFromString("first")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, OnboardingRewardRewardType("ad_credit"), val, "enum value should match expected wire value")
+		assert.Equal(t, PartnerPayoutTierTier("first"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_balance_credit", func(t *testing.T) {
+	t.Run("NewFromString_second", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewOnboardingRewardRewardTypeFromString("balance_credit")
+		val, err := NewPartnerPayoutTierTierFromString("second")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, OnboardingRewardRewardType("balance_credit"), val, "enum value should match expected wire value")
+		assert.Equal(t, PartnerPayoutTierTier("second"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewOnboardingRewardRewardTypeFromString("invalid_value_that_does_not_exist")
+		_, err := NewPartnerPayoutTierTierFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewOnboardingRewardRewardTypeFromString("ad_credit")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumOnboardingRewardStatus(t *testing.T) {
-	t.Run("NewFromString_available", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewOnboardingRewardStatusFromString("available")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, OnboardingRewardStatus("available"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_fully_claimed", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewOnboardingRewardStatusFromString("fully_claimed")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, OnboardingRewardStatus("fully_claimed"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_expired", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewOnboardingRewardStatusFromString("expired")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, OnboardingRewardStatus("expired"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_unavailable", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewOnboardingRewardStatusFromString("unavailable")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, OnboardingRewardStatus("unavailable"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewOnboardingRewardStatusFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewOnboardingRewardStatusFromString("available")
+		val, err := NewPartnerPayoutTierTierFromString("first")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -5564,10 +5453,10 @@ func TestExtraPropertiesLeaderboardPartnersResponseMeUserProfilePicture(t *testi
 	})
 }
 
-func TestExtraPropertiesOnboardingReward(t *testing.T) {
+func TestExtraPropertiesPartner(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &OnboardingReward{}
+		obj := &Partner{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -5581,7 +5470,76 @@ func TestExtraPropertiesOnboardingReward(t *testing.T) {
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *OnboardingReward
+		var obj *Partner
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesPartnerPayoutDuration(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &PartnerPayoutDuration{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutDuration
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesPartnerPayoutRate(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &PartnerPayoutRate{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutRate
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesPartnerPayoutTier(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &PartnerPayoutTier{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerPayoutTier
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

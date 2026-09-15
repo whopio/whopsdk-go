@@ -122,30 +122,26 @@ func (r *RawClient) Leaderboard(
 	}, nil
 }
 
-func (r *RawClient) RetrieveLink(
+func (r *RawClient) Retrieve(
 	ctx context.Context,
-	request *whopsdk.RetrieveLinkPartnersRequest,
+	request *whopsdk.RetrievePartnersRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.OnboardingReward], error) {
+) (*core.Response[*whopsdk.Partner], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
 		r.baseURL,
 		"https://api.whop.com/api/v1",
 	)
-	endpointURL := baseURL + "/partners/links"
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	if len(queryParams) > 0 {
-		endpointURL += "?" + queryParams.Encode()
-	}
+	endpointURL := internal.EncodeURL(
+		baseURL+"/partners/%v",
+		request.ID,
+	)
 	headers := internal.MergeHeaders(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *whopsdk.OnboardingReward
+	var response *whopsdk.Partner
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -164,7 +160,7 @@ func (r *RawClient) RetrieveLink(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.OnboardingReward]{
+	return &core.Response[*whopsdk.Partner]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
