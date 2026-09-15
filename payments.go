@@ -619,6 +619,7 @@ const (
 	FriendlyReceiptStatusRequiresCapture             FriendlyReceiptStatus = "requires_capture"
 	FriendlyReceiptStatusPending                     FriendlyReceiptStatus = "pending"
 	FriendlyReceiptStatusFailed                      FriendlyReceiptStatus = "failed"
+	FriendlyReceiptStatusBlocked                     FriendlyReceiptStatus = "blocked"
 	FriendlyReceiptStatusPastDue                     FriendlyReceiptStatus = "past_due"
 	FriendlyReceiptStatusCanceled                    FriendlyReceiptStatus = "canceled"
 	FriendlyReceiptStatusPriceTooLow                 FriendlyReceiptStatus = "price_too_low"
@@ -656,6 +657,8 @@ func NewFriendlyReceiptStatusFromString(s string) (FriendlyReceiptStatus, error)
 		return FriendlyReceiptStatusPending, nil
 	case "failed":
 		return FriendlyReceiptStatusFailed, nil
+	case "blocked":
+		return FriendlyReceiptStatusBlocked, nil
 	case "past_due":
 		return FriendlyReceiptStatusPastDue, nil
 	case "canceled":
