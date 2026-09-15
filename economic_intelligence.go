@@ -173,7 +173,7 @@ type EconomicIntelligence struct {
 	Prompt *string `json:"prompt,omitempty" url:"prompt,omitempty"`
 	// The signal and number the recommendation rests on, or `null`
 	Reasoning *string `json:"reasoning,omitempty" url:"reasoning,omitempty"`
-	// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it; `failed` when the engine had nothing to recommend for the request
+	// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it
 	Status EconomicIntelligenceStatus `json:"status" url:"status"`
 	// When a newer card replaced this one, as an ISO 8601 timestamp, or `null`
 	SupersededAt *string `json:"superseded_at,omitempty" url:"superseded_at,omitempty"`
@@ -397,7 +397,7 @@ func (e *EconomicIntelligence) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it; `failed` when the engine had nothing to recommend for the request
+// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it
 type EconomicIntelligenceStatus string
 
 const (
@@ -406,7 +406,6 @@ const (
 	EconomicIntelligenceStatusReady      EconomicIntelligenceStatus = "ready"
 	EconomicIntelligenceStatusExecuted   EconomicIntelligenceStatus = "executed"
 	EconomicIntelligenceStatusSuperseded EconomicIntelligenceStatus = "superseded"
-	EconomicIntelligenceStatusFailed     EconomicIntelligenceStatus = "failed"
 )
 
 func NewEconomicIntelligenceStatusFromString(s string) (EconomicIntelligenceStatus, error) {
@@ -421,8 +420,6 @@ func NewEconomicIntelligenceStatusFromString(s string) (EconomicIntelligenceStat
 		return EconomicIntelligenceStatusExecuted, nil
 	case "superseded":
 		return EconomicIntelligenceStatusSuperseded, nil
-	case "failed":
-		return EconomicIntelligenceStatusFailed, nil
 	}
 	var t EconomicIntelligenceStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -440,7 +437,6 @@ const (
 	ListEconomicIntelligenceRequestStatusReady      ListEconomicIntelligenceRequestStatus = "ready"
 	ListEconomicIntelligenceRequestStatusExecuted   ListEconomicIntelligenceRequestStatus = "executed"
 	ListEconomicIntelligenceRequestStatusSuperseded ListEconomicIntelligenceRequestStatus = "superseded"
-	ListEconomicIntelligenceRequestStatusFailed     ListEconomicIntelligenceRequestStatus = "failed"
 )
 
 func NewListEconomicIntelligenceRequestStatusFromString(s string) (ListEconomicIntelligenceRequestStatus, error) {
@@ -455,8 +451,6 @@ func NewListEconomicIntelligenceRequestStatusFromString(s string) (ListEconomicI
 		return ListEconomicIntelligenceRequestStatusExecuted, nil
 	case "superseded":
 		return ListEconomicIntelligenceRequestStatusSuperseded, nil
-	case "failed":
-		return ListEconomicIntelligenceRequestStatusFailed, nil
 	}
 	var t ListEconomicIntelligenceRequestStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
