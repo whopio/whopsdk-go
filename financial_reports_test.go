@@ -5347,6 +5347,34 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemLineCategory(t *testing.T) 
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("topup_reversal"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_trading_account_deposit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("trading_account_deposit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("trading_account_deposit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_trading_account_deposit_offset", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("trading_account_deposit_offset")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("trading_account_deposit_offset"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_trading_account_withdrawal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("trading_account_withdrawal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("trading_account_withdrawal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_trading_account_withdrawal_offset", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("trading_account_withdrawal_offset")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("trading_account_withdrawal_offset"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_treasury_fee", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("treasury_fee")
