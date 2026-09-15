@@ -156,7 +156,7 @@ type CreatePlansRequest struct {
 	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"-"`
 	// The maximum number of units available for purchase. Ignored when unlimited_stock is true.
 	Stock *int `json:"stock,omitempty" url:"-"`
-	// 3D Secure behavior for this plan. Send `null` to inherit the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
 	ThreeDsLevel *CreatePlansRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
 	// The display name of the plan shown to customers on the product page.
 	Title *string `json:"title,omitempty" url:"-"`
@@ -800,7 +800,7 @@ type Plan struct {
 	StrikeThroughRenewalPrice *float64 `json:"strike_through_renewal_price,omitempty" url:"strike_through_renewal_price,omitempty"`
 	// How tax is handled for this plan, including whether tax is included in the price, added at checkout, or not configured.
 	TaxType PlanTaxType `json:"tax_type" url:"tax_type"`
-	// 3D Secure behavior for this plan; `null` inherits the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 	ThreeDsLevel *PlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Plan display name shown to customers. Maximum 30 characters. `null` if no title has been set.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
@@ -2012,7 +2012,7 @@ type PlanListItem struct {
 	StrikeThroughInitialPrice *float64 `json:"strike_through_initial_price,omitempty" url:"strike_through_initial_price,omitempty"`
 	// Original renewal price shown with a strikethrough, in the plan's currency. `null` when no strikethrough is set.
 	StrikeThroughRenewalPrice *float64 `json:"strike_through_renewal_price,omitempty" url:"strike_through_renewal_price,omitempty"`
-	// 3D Secure behavior for this plan; `null` inherits the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 	ThreeDsLevel *PlanListItemThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Plan display name shown to customers. Maximum 30 characters. `null` if no title has been set.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
@@ -2638,20 +2638,23 @@ func (p PlanListItemReleaseMethod) Ptr() *PlanListItemReleaseMethod {
 	return &p
 }
 
-// 3D Secure behavior for this plan; `null` inherits the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 type PlanListItemThreeDsLevel string
 
 const (
-	PlanListItemThreeDsLevelMandateChallenge PlanListItemThreeDsLevel = "mandate_challenge"
-	PlanListItemThreeDsLevelFrictionless     PlanListItemThreeDsLevel = "frictionless"
+	PlanListItemThreeDsLevelMandateChallenge       PlanListItemThreeDsLevel = "mandate_challenge"
+	PlanListItemThreeDsLevelMandateIfRequired      PlanListItemThreeDsLevel = "mandate_if_required"
+	PlanListItemThreeDsLevelFrictionlessIfRequired PlanListItemThreeDsLevel = "frictionless_if_required"
 )
 
 func NewPlanListItemThreeDsLevelFromString(s string) (PlanListItemThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return PlanListItemThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return PlanListItemThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return PlanListItemThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return PlanListItemThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t PlanListItemThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2762,20 +2765,23 @@ func (p PlanTaxType) Ptr() *PlanTaxType {
 	return &p
 }
 
-// 3D Secure behavior for this plan; `null` inherits the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 type PlanThreeDsLevel string
 
 const (
-	PlanThreeDsLevelMandateChallenge PlanThreeDsLevel = "mandate_challenge"
-	PlanThreeDsLevelFrictionless     PlanThreeDsLevel = "frictionless"
+	PlanThreeDsLevelMandateChallenge       PlanThreeDsLevel = "mandate_challenge"
+	PlanThreeDsLevelMandateIfRequired      PlanThreeDsLevel = "mandate_if_required"
+	PlanThreeDsLevelFrictionlessIfRequired PlanThreeDsLevel = "frictionless_if_required"
 )
 
 func NewPlanThreeDsLevelFromString(s string) (PlanThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return PlanThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return PlanThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return PlanThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return PlanThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t PlanThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4061,20 +4067,23 @@ func (c *CreatePlansRequestPaymentMethodConfiguration) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// 3D Secure behavior for this plan. Send `null` to inherit the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
 type CreatePlansRequestThreeDsLevel string
 
 const (
-	CreatePlansRequestThreeDsLevelMandateChallenge CreatePlansRequestThreeDsLevel = "mandate_challenge"
-	CreatePlansRequestThreeDsLevelFrictionless     CreatePlansRequestThreeDsLevel = "frictionless"
+	CreatePlansRequestThreeDsLevelMandateChallenge       CreatePlansRequestThreeDsLevel = "mandate_challenge"
+	CreatePlansRequestThreeDsLevelMandateIfRequired      CreatePlansRequestThreeDsLevel = "mandate_if_required"
+	CreatePlansRequestThreeDsLevelFrictionlessIfRequired CreatePlansRequestThreeDsLevel = "frictionless_if_required"
 )
 
 func NewCreatePlansRequestThreeDsLevelFromString(s string) (CreatePlansRequestThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return CreatePlansRequestThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return CreatePlansRequestThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return CreatePlansRequestThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreatePlansRequestThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t CreatePlansRequestThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -5632,20 +5641,23 @@ func (u *UpdatePlansRequestPaymentMethodConfiguration) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// 3D Secure behavior for this plan. Send `null` to inherit the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
 type UpdatePlansRequestThreeDsLevel string
 
 const (
-	UpdatePlansRequestThreeDsLevelMandateChallenge UpdatePlansRequestThreeDsLevel = "mandate_challenge"
-	UpdatePlansRequestThreeDsLevelFrictionless     UpdatePlansRequestThreeDsLevel = "frictionless"
+	UpdatePlansRequestThreeDsLevelMandateChallenge       UpdatePlansRequestThreeDsLevel = "mandate_challenge"
+	UpdatePlansRequestThreeDsLevelMandateIfRequired      UpdatePlansRequestThreeDsLevel = "mandate_if_required"
+	UpdatePlansRequestThreeDsLevelFrictionlessIfRequired UpdatePlansRequestThreeDsLevel = "frictionless_if_required"
 )
 
 func NewUpdatePlansRequestThreeDsLevelFromString(s string) (UpdatePlansRequestThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return UpdatePlansRequestThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return UpdatePlansRequestThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return UpdatePlansRequestThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return UpdatePlansRequestThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t UpdatePlansRequestThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -5730,7 +5742,7 @@ type UpdatePlansRequest struct {
 	StrikeThroughInitialPrice *float64 `json:"strike_through_initial_price,omitempty" url:"-"`
 	// A comparison price displayed with a strikethrough for the renewal price.
 	StrikeThroughRenewalPrice *float64 `json:"strike_through_renewal_price,omitempty" url:"-"`
-	// 3D Secure behavior for this plan. Send `null` to inherit the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
 	ThreeDsLevel *UpdatePlansRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
 	// The display name of the plan shown to customers on the product page.
 	Title *string `json:"title,omitempty" url:"-"`

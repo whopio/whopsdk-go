@@ -15243,11 +15243,18 @@ func TestEnumCreatePlansRequestThreeDsLevel(t *testing.T) {
 		assert.Equal(t, CreatePlansRequestThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreatePlansRequestThreeDsLevelFromString("frictionless")
+		val, err := NewCreatePlansRequestThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreatePlansRequestThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreatePlansRequestThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePlansRequestThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePlansRequestThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -16076,11 +16083,18 @@ func TestEnumPlanListItemThreeDsLevel(t *testing.T) {
 		assert.Equal(t, PlanListItemThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPlanListItemThreeDsLevelFromString("frictionless")
+		val, err := NewPlanListItemThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PlanListItemThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, PlanListItemThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPlanListItemThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PlanListItemThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -16242,11 +16256,18 @@ func TestEnumPlanThreeDsLevel(t *testing.T) {
 		assert.Equal(t, PlanThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPlanThreeDsLevelFromString("frictionless")
+		val, err := NewPlanThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PlanThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, PlanThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPlanThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PlanThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -16468,11 +16489,18 @@ func TestEnumUpdatePlansRequestThreeDsLevel(t *testing.T) {
 		assert.Equal(t, UpdatePlansRequestThreeDsLevel("mandate_challenge"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_frictionless", func(t *testing.T) {
+	t.Run("NewFromString_mandate_if_required", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewUpdatePlansRequestThreeDsLevelFromString("frictionless")
+		val, err := NewUpdatePlansRequestThreeDsLevelFromString("mandate_if_required")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, UpdatePlansRequestThreeDsLevel("frictionless"), val, "enum value should match expected wire value")
+		assert.Equal(t, UpdatePlansRequestThreeDsLevel("mandate_if_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_frictionless_if_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePlansRequestThreeDsLevelFromString("frictionless_if_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePlansRequestThreeDsLevel("frictionless_if_required"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
