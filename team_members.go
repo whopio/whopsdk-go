@@ -144,13 +144,13 @@ type ListTeamMembersRequest struct {
 	Order *ListTeamMembersRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction. Defaults to `desc`.
 	Direction *ListTeamMembersRequestDirection `json:"-" url:"direction,omitempty"`
-	// Number of members to return. Defaults to 20; maximum 100.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor for the next page of members.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// Number of members to return from the end of the window.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to paginate backwards from.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

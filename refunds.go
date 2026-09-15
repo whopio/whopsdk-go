@@ -39,13 +39,13 @@ type ListRefundsRequest struct {
 	Order *ListRefundsRequestOrder `json:"-" url:"order,omitempty"`
 	// The sort direction.
 	Direction *ListRefundsRequestDirection `json:"-" url:"direction,omitempty"`
-	// The number of refunds to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns refunds after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of refunds to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns refunds before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

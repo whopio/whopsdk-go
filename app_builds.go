@@ -140,13 +140,13 @@ type ListAppBuildsRequest struct {
 	CreatedBefore *ListAppBuildsRequestCreatedBefore `json:"-" url:"created_before,omitempty"`
 	// Only return builds created after this ISO 8601 timestamp.
 	CreatedAfter *ListAppBuildsRequestCreatedAfter `json:"-" url:"created_after,omitempty"`
-	// The number of builds to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns builds after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of builds to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns builds before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

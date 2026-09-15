@@ -267,9 +267,9 @@ type ListAudiencesRequest struct {
 	AudienceType *ListAudiencesRequestAudienceType `json:"-" url:"audience_type,omitempty"`
 	// Filter by uploaded customer lists, Whop People filters, or social engagement.
 	SourceType *ListAudiencesRequestSourceType `json:"-" url:"source_type,omitempty"`
-	// Number of audiences to return. Defaults to 20; maximum 100.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor for the next page of audiences.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

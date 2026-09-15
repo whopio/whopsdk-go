@@ -217,7 +217,7 @@ client.Accounts.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of accounts to return (default 10, max 50).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -225,7 +225,7 @@ client.Accounts.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns accounts after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -233,7 +233,7 @@ client.Accounts.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of accounts to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -241,7 +241,7 @@ client.Accounts.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns accounts before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -1428,7 +1428,7 @@ client.AdCampaigns.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of campaigns to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -1436,7 +1436,7 @@ client.AdCampaigns.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -1444,7 +1444,7 @@ client.AdCampaigns.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of campaigns to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -1452,7 +1452,7 @@ client.AdCampaigns.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -2311,7 +2311,7 @@ client.AdGroups.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of ad groups to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -2319,7 +2319,7 @@ client.AdGroups.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -2327,7 +2327,7 @@ client.AdGroups.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of ad groups to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -2335,7 +2335,7 @@ client.AdGroups.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -3599,7 +3599,7 @@ client.Ads.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of ads to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -3607,7 +3607,7 @@ client.Ads.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -3615,7 +3615,7 @@ client.Ads.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of ads to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -3623,7 +3623,7 @@ client.Ads.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -5277,7 +5277,7 @@ client.APIKeys.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of API keys to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -5285,7 +5285,7 @@ client.APIKeys.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns API keys after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -5293,7 +5293,7 @@ client.APIKeys.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of API keys to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -5301,7 +5301,7 @@ client.APIKeys.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns API keys before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -5880,7 +5880,7 @@ client.APILogs.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of logs to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -5888,7 +5888,7 @@ client.APILogs.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -5989,7 +5989,7 @@ client.AppBuilds.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of builds to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -5997,7 +5997,7 @@ client.AppBuilds.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns builds after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -6005,7 +6005,7 @@ client.AppBuilds.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of builds to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -6013,7 +6013,7 @@ client.AppBuilds.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns builds before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -6374,7 +6374,7 @@ client.Apps.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of apps to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -6382,7 +6382,7 @@ client.Apps.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns apps after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -6390,7 +6390,7 @@ client.Apps.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of apps to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -6398,7 +6398,7 @@ client.Apps.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns apps before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -7022,7 +7022,7 @@ client.Apps.Logs(
 <dl>
 <dd>
 
-**first:** `*int` — The number of log lines to return (max 500).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -7030,7 +7030,7 @@ client.Apps.Logs(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor for fetching logs after a previous page.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -7038,7 +7038,7 @@ client.Apps.Logs(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor for fetching logs before a later page.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -7206,7 +7206,7 @@ client.Audiences.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of audiences to return. Defaults to 20; maximum 100.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -7214,7 +7214,7 @@ client.Audiences.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor for the next page of audiences.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -8116,7 +8116,7 @@ client.Bounties.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of bounties to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -8124,7 +8124,7 @@ client.Bounties.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to paginate forwards from.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -8132,7 +8132,7 @@ client.Bounties.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of bounties to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -8140,7 +8140,7 @@ client.Bounties.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to paginate backwards from.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -8673,7 +8673,7 @@ client.BountySubmissions.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of submissions to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -8681,7 +8681,7 @@ client.BountySubmissions.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to paginate forwards from.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -8689,7 +8689,7 @@ client.BountySubmissions.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of submissions to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -8697,7 +8697,7 @@ client.BountySubmissions.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to paginate backwards from.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -9124,7 +9124,7 @@ client.CardTransactions.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of card transactions to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -9132,7 +9132,7 @@ client.CardTransactions.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns card transactions after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -9140,7 +9140,7 @@ client.CardTransactions.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of card transactions to return, counting back from the end.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -9148,7 +9148,7 @@ client.CardTransactions.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns card transactions before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -9793,7 +9793,7 @@ client.CashbackRules.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of rules to return from the start of the page.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -9801,7 +9801,7 @@ client.CashbackRules.List(
 <dl>
 <dd>
 
-**after:** `*string` — Return rules after this cursor.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -9809,7 +9809,7 @@ client.CashbackRules.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of rules to return from the end of the page.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -9817,7 +9817,7 @@ client.CashbackRules.List(
 <dl>
 <dd>
 
-**before:** `*string` — Return rules before this cursor.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -10321,7 +10321,7 @@ client.CheckoutConfigurations.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of checkout configurations to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -10329,7 +10329,7 @@ client.CheckoutConfigurations.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor for the next page of results.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -13174,7 +13174,7 @@ client.DisputeAlerts.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of alerts to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -13182,7 +13182,7 @@ client.DisputeAlerts.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns alerts after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -13190,7 +13190,7 @@ client.DisputeAlerts.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of alerts to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -13198,7 +13198,7 @@ client.DisputeAlerts.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns alerts before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -13357,7 +13357,7 @@ client.Disputes.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of disputes to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -13365,7 +13365,7 @@ client.Disputes.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns disputes after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -13373,7 +13373,7 @@ client.Disputes.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of disputes to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -13381,7 +13381,7 @@ client.Disputes.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns disputes before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -14664,7 +14664,7 @@ client.Domains.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of domains from the start of the page.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -14672,7 +14672,7 @@ client.Domains.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor for the next page.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -14680,7 +14680,7 @@ client.Domains.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of domains from the end of the page.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -14688,7 +14688,7 @@ client.Domains.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor for the previous page.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -15002,7 +15002,7 @@ client.Domains.Update(
 <dl>
 <dd>
 
-Lists recommended actions and in-progress requests for the account, newest first. Unsuccessful generation requests are omitted. Filter with `status=ready` for current actions. For callers with company:update permission, listing automatically queues generation when no actions are ready or in progress, with a ten-minute cooldown after an unsuccessful request from the current pipeline version.
+Lists an account's recommendations and generation requests, newest first.
 </dd>
 </dl>
 </dd>
@@ -15044,7 +15044,7 @@ client.EconomicIntelligence.List(
 <dl>
 <dd>
 
-**status:** `*whopsdk.ListEconomicIntelligenceRequestStatus` — Only recommendations in this state. `ready` for the cards the owner can run now.
+**status:** `*whopsdk.ListEconomicIntelligenceRequestStatus` — Filter recommendations by their current status.
     
 </dd>
 </dl>
@@ -15052,7 +15052,7 @@ client.EconomicIntelligence.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of recommendations to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -15060,7 +15060,7 @@ client.EconomicIntelligence.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns recommendations after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -15068,7 +15068,7 @@ client.EconomicIntelligence.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of recommendations to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -15076,7 +15076,7 @@ client.EconomicIntelligence.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns recommendations before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -15100,7 +15100,7 @@ client.EconomicIntelligence.List(
 <dl>
 <dd>
 
-Harnesses Economic Intelligence to generate recommended actions that lead the business down the most optimal path to the next dollar. Returns a `queued` recommendation right away. Poll the list endpoint until it is `ready` or disappears.
+Generates a recommendation based on your input. Returns immediately; poll the list endpoint until its `status` is `ready`.
 </dd>
 </dl>
 </dd>
@@ -15168,7 +15168,7 @@ client.EconomicIntelligence.Create(
 <dl>
 <dd>
 
-Records approval with `executed`, or retires an unwanted recommendation with `superseded`. Both replenish the ready inventory. Supplying a rejection reason also allows retiring an executed recommendation.
+Approves or rejects a recommendation and requests replacements.
 </dd>
 </dl>
 </dd>
@@ -15229,7 +15229,7 @@ client.EconomicIntelligence.Update(
 <dl>
 <dd>
 
-**status:** `*whopsdk.UpdateEconomicIntelligenceRequestStatus` — Use `executed` after approval to start the action, or `superseded` to reject it.
+**status:** `*whopsdk.UpdateEconomicIntelligenceRequestStatus` — Use `executed` to record approval, or `superseded` to reject the recommendation.
     
 </dd>
 </dl>
@@ -15681,7 +15681,7 @@ client.Events.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of events to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -15689,7 +15689,7 @@ client.Events.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor for fetching events after a previous page.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -15697,7 +15697,7 @@ client.Events.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor for fetching events before a later page.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -16076,7 +16076,7 @@ client.Events.Pulse(
 <dl>
 <dd>
 
-**first:** `*int` — The number of events to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -16084,7 +16084,7 @@ client.Events.Pulse(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor for fetching events after a previous page.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -16092,7 +16092,7 @@ client.Events.Pulse(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor for fetching events before a later page.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -16954,7 +16954,7 @@ client.Experiments.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of experiments to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -16962,7 +16962,7 @@ client.Experiments.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns experiments after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -16970,7 +16970,7 @@ client.Experiments.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of experiments to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -16978,7 +16978,7 @@ client.Experiments.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns experiments before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -18255,7 +18255,7 @@ client.Files.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of files to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -18263,7 +18263,7 @@ client.Files.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns files after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -18271,7 +18271,7 @@ client.Files.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of files to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -18279,7 +18279,7 @@ client.Files.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns files before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -21474,7 +21474,7 @@ client.Members.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of members to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -21482,7 +21482,7 @@ client.Members.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to paginate forwards from.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -21490,7 +21490,7 @@ client.Members.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of members to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -21498,7 +21498,7 @@ client.Members.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to paginate backwards from.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -21689,7 +21689,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of memberships to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -21697,7 +21697,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to paginate forwards from.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -21705,7 +21705,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of memberships to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -21713,7 +21713,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to paginate backwards from.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -22771,7 +22771,7 @@ client.Messages.Update(
 <dl>
 <dd>
 
-Lists the authenticated user's notifications, newest first. Requires a user credential — an account API key has no notification feed. Without filters the feed spans every experience the user belongs to plus the teams they are a member of.
+Lists the authenticated user's notifications, newest first. Requires a user credential — an account API key has no notification feed. Without filters the feed spans every experience the user belongs to plus the teams they are a member of. The `after` cursor is a notification `id` from a previous response; subsequent pages contain older notifications.
 </dd>
 </dl>
 </dd>
@@ -22837,7 +22837,7 @@ client.Notifications.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of notifications to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -22845,7 +22845,7 @@ client.Notifications.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor (a notification `id` from a previous page); returns notifications older than it.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -23334,7 +23334,7 @@ client.Partners.ReferredUsers(
 <dl>
 <dd>
 
-**first:** `*int` — Number of referred users to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -23342,7 +23342,7 @@ client.Partners.ReferredUsers(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -23350,7 +23350,7 @@ client.Partners.ReferredUsers(
 <dl>
 <dd>
 
-**last:** `*int` — Number of referred users to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -23358,7 +23358,7 @@ client.Partners.ReferredUsers(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -23541,7 +23541,7 @@ client.PaymentMethodDomains.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of domains to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -23549,7 +23549,7 @@ client.PaymentMethodDomains.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to paginate forwards from.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -23557,7 +23557,7 @@ client.PaymentMethodDomains.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of domains to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -23565,7 +23565,7 @@ client.PaymentMethodDomains.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to paginate backwards from.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -24359,7 +24359,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of payments to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -24367,7 +24367,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns payments after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -24375,7 +24375,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of payments to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -24383,7 +24383,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns payments before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -25440,7 +25440,7 @@ client.Payouts.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of payouts to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -25448,7 +25448,7 @@ client.Payouts.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -25456,7 +25456,7 @@ client.Payouts.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of payouts to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -25464,7 +25464,7 @@ client.Payouts.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -26120,7 +26120,7 @@ client.People.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of people to return (default 100, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -26128,7 +26128,7 @@ client.People.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor for fetching people after a previous page.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -26136,7 +26136,7 @@ client.People.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor for fetching people before a later page.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -26441,7 +26441,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of plans to return (default and max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -26449,7 +26449,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns plans after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -26457,7 +26457,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of plans to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -26465,7 +26465,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns plans before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -27351,7 +27351,7 @@ client.Products.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of products to return (default and max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -27359,7 +27359,7 @@ client.Products.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns products after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -27367,7 +27367,7 @@ client.Products.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of products to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -27375,7 +27375,7 @@ client.Products.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns products before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -28118,7 +28118,7 @@ client.PromoCodes.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of promo codes to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -28126,7 +28126,7 @@ client.PromoCodes.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to paginate forwards from.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -28134,7 +28134,7 @@ client.PromoCodes.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of promo codes to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -28142,7 +28142,7 @@ client.PromoCodes.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to paginate backwards from.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -29006,7 +29006,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of refunds to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -29014,7 +29014,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns refunds after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -29022,7 +29022,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of refunds to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -29030,7 +29030,7 @@ client.Refunds.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns refunds before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -29165,7 +29165,7 @@ client.ResolutionCenterCases.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of cases to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -29173,7 +29173,7 @@ client.ResolutionCenterCases.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns cases after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -29181,7 +29181,7 @@ client.ResolutionCenterCases.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of cases to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -29189,7 +29189,7 @@ client.ResolutionCenterCases.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns cases before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -29811,7 +29811,7 @@ client.ResolutionCenterCases.Events(
 <dl>
 <dd>
 
-**first:** `*int` — The number of events to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -29819,7 +29819,7 @@ client.ResolutionCenterCases.Events(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns events after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -29827,7 +29827,7 @@ client.ResolutionCenterCases.Events(
 <dl>
 <dd>
 
-**last:** `*int` — The number of events to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -29835,7 +29835,7 @@ client.ResolutionCenterCases.Events(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns events before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -30776,7 +30776,7 @@ client.Shipments.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of shipments to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -30784,7 +30784,7 @@ client.Shipments.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns shipments after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -30792,7 +30792,7 @@ client.Shipments.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of shipments to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -30800,7 +30800,7 @@ client.Shipments.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns shipments before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -31105,7 +31105,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of social accounts to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -31113,7 +31113,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -31121,7 +31121,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of social accounts to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -31129,7 +31129,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -31528,7 +31528,7 @@ client.SocialAccounts.Posts(
 <dl>
 <dd>
 
-**first:** `*int` — The number of posts to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -31536,7 +31536,7 @@ client.SocialAccounts.Posts(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -32704,7 +32704,7 @@ client.TeamMembers.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of members to return. Defaults to 20; maximum 100.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -32712,7 +32712,7 @@ client.TeamMembers.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor for the next page of members.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -32720,7 +32720,7 @@ client.TeamMembers.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of members to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -32728,7 +32728,7 @@ client.TeamMembers.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to paginate backwards from.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -33200,7 +33200,7 @@ client.Transfers.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of transfers to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -33208,7 +33208,7 @@ client.Transfers.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -33216,7 +33216,7 @@ client.Transfers.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of transfers to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -33224,7 +33224,7 @@ client.Transfers.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -33441,7 +33441,7 @@ client.Transfers.ListRecipients(
 <dl>
 <dd>
 
-**query:** `*string` — Search anyone on Whop by name or username, plus your own accounts by name or ID. An exact business ID (`biz_`) returns that business first. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches.
+**query:** `*string` — Search anyone on Whop by name or username, plus your own accounts by name or ID. An exact business ID (`biz_`) returns that business first. Omit it to get the team around the balance, the people you follow, and your own accounts. The list is the same whether the balance belongs to a company or to you. Searching from a `biz_` origin additionally requires the member:basic:read scope. A credential scoped to a single company is the exception to the search itself: it only ever sees that company's own people. Complete email addresses return no matches. Search results are limited to 20 recipients.
     
 </dd>
 </dl>
@@ -33449,7 +33449,7 @@ client.Transfers.ListRecipients(
 <dl>
 <dd>
 
-**first:** `*int` — Number of recipients per page. Search queries preserve the dashboard's 20-result maximum.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -33457,7 +33457,7 @@ client.Transfers.ListRecipients(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -33584,7 +33584,7 @@ client.Users.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of users to return (max 50).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -33592,7 +33592,7 @@ client.Users.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns users after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -33600,7 +33600,7 @@ client.Users.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of users to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -33608,7 +33608,7 @@ client.Users.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns users before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -34537,7 +34537,7 @@ client.Webhooks.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of webhooks to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -34545,7 +34545,7 @@ client.Webhooks.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns webhooks after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -34553,7 +34553,7 @@ client.Webhooks.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of webhooks to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -34561,7 +34561,7 @@ client.Webhooks.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns webhooks before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -34949,7 +34949,7 @@ client.Webhooks.ListDeliveries(
 <dl>
 <dd>
 
-**first:** `*int` — The number of deliveries to return (default 50, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -34957,7 +34957,7 @@ client.Webhooks.ListDeliveries(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns deliveries after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36003,7 +36003,7 @@ client.Bounties.Submissions.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of submissions to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -36011,7 +36011,7 @@ client.Bounties.Submissions.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to paginate forwards from.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36019,7 +36019,7 @@ client.Bounties.Submissions.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of submissions to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -36027,7 +36027,7 @@ client.Bounties.Submissions.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to paginate backwards from.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -36291,7 +36291,7 @@ client.Members.Logs.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of log entries to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -36299,7 +36299,7 @@ client.Members.Logs.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to paginate forwards from.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36307,7 +36307,7 @@ client.Members.Logs.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of log entries to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -36315,7 +36315,7 @@ client.Members.Logs.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to paginate backwards from.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -36382,7 +36382,7 @@ client.Notifications.Topics.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of topics to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -36390,7 +36390,7 @@ client.Notifications.Topics.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns topics after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36465,7 +36465,7 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of partner businesses to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -36473,7 +36473,7 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36481,7 +36481,7 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of partner businesses to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -36489,7 +36489,7 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -36680,7 +36680,7 @@ client.Partners.Links.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of promotion links to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -36688,7 +36688,7 @@ client.Partners.Links.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36696,7 +36696,7 @@ client.Partners.Links.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of promotion links to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -36704,7 +36704,7 @@ client.Partners.Links.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -36789,7 +36789,7 @@ client.Partners.Businesses.Earnings.List(
 <dl>
 <dd>
 
-**first:** `*int` 
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -36797,7 +36797,7 @@ client.Partners.Businesses.Earnings.List(
 <dl>
 <dd>
 
-**after:** `*string` 
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36805,7 +36805,7 @@ client.Partners.Businesses.Earnings.List(
 <dl>
 <dd>
 
-**last:** `*int` 
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -36813,7 +36813,7 @@ client.Partners.Businesses.Earnings.List(
 <dl>
 <dd>
 
-**before:** `*string` 
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -36952,7 +36952,7 @@ client.Payouts.Methods.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of payout methods to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -36960,7 +36960,7 @@ client.Payouts.Methods.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -36968,7 +36968,7 @@ client.Payouts.Methods.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of payout methods to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -36976,7 +36976,7 @@ client.Payouts.Methods.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -37335,7 +37335,7 @@ client.Payouts.SupportedMethods.List(
 <dl>
 <dd>
 
-**first:** `*int` — Number of supported payout methods to return from the start of the window.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -37343,7 +37343,7 @@ client.Payouts.SupportedMethods.List(
 <dl>
 <dd>
 
-**after:** `*string` — Cursor to fetch the page after (from page_info.end_cursor).
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -37351,7 +37351,7 @@ client.Payouts.SupportedMethods.List(
 <dl>
 <dd>
 
-**last:** `*int` — Number of supported payout methods to return from the end of the window.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -37359,7 +37359,7 @@ client.Payouts.SupportedMethods.List(
 <dl>
 <dd>
 
-**before:** `*string` — Cursor to fetch the page before (from page_info.start_cursor).
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -37426,7 +37426,7 @@ client.Users.OauthGrants.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of grants to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -37434,7 +37434,7 @@ client.Users.OauthGrants.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns grants after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -37442,7 +37442,7 @@ client.Users.OauthGrants.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of grants to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -37450,7 +37450,7 @@ client.Users.OauthGrants.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns grants before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -37663,7 +37663,7 @@ client.Users.Passkeys.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of passkeys to return (default 20, max 100).
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -37671,7 +37671,7 @@ client.Users.Passkeys.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns passkeys after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -37679,7 +37679,7 @@ client.Users.Passkeys.List(
 <dl>
 <dd>
 
-**last:** `*int` — The number of passkeys to return from the end of the range.
+**last:** `*int` — Number of results to return from the end of the range.
     
 </dd>
 </dl>
@@ -37687,7 +37687,7 @@ client.Users.Passkeys.List(
 <dl>
 <dd>
 
-**before:** `*string` — A cursor; returns passkeys before this position.
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -38191,7 +38191,7 @@ client.Users.Preferences.Notifications.Experiences.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of preferences to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -38199,7 +38199,7 @@ client.Users.Preferences.Notifications.Experiences.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns preferences after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>
@@ -38298,7 +38298,7 @@ client.Users.Preferences.Notifications.Topics.List(
 <dl>
 <dd>
 
-**first:** `*int` — The number of preferences to return.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -38306,7 +38306,7 @@ client.Users.Preferences.Notifications.Topics.List(
 <dl>
 <dd>
 
-**after:** `*string` — A cursor; returns preferences after this position.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>

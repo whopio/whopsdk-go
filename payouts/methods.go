@@ -169,13 +169,13 @@ type ListMethodsRequest struct {
 	Currency *string `json:"-" url:"currency,omitempty"`
 	// When true, the response also carries limits — the live per-speed payout caps the account's payout requests are validated against, in the requested currency. Requires the payout:withdrawal:read scope.
 	IncludeLimits *bool `json:"-" url:"include_limits,omitempty"`
-	// Number of payout methods to return from the start of the window.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// Number of payout methods to return from the end of the window.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to fetch the page before (from page_info.start_cursor).
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

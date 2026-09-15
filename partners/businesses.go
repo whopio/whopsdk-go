@@ -33,13 +33,13 @@ type ListBusinessesRequest struct {
 	Status *ListBusinessesRequestStatus `json:"-" url:"status,omitempty"`
 	// When true, only businesses with pending or completed earnings paid to the caller.
 	HasEarnings *bool `json:"-" url:"has_earnings,omitempty"`
-	// Number of partner businesses to return from the start of the window.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// Number of partner businesses to return from the end of the window.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to fetch the page before (from page_info.start_cursor).
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort partner businesses by.
 	Order *ListBusinessesRequestOrder `json:"-" url:"order,omitempty"`

@@ -42,9 +42,9 @@ type ListAPILogsRequest struct {
 	MinDurationMs *int `json:"-" url:"min_duration_ms,omitempty"`
 	// Only return requests that took at most this many milliseconds.
 	MaxDurationMs *int `json:"-" url:"max_duration_ms,omitempty"`
-	// Number of logs to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

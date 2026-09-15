@@ -331,13 +331,13 @@ var (
 )
 
 type ListAccountsRequest struct {
-	// The number of accounts to return (default 10, max 50).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns accounts after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of accounts to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns accounts before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort accounts by. `volume` requires `stats:read` on the parent account.
 	Order *ListAccountsRequestOrder `json:"-" url:"order,omitempty"`

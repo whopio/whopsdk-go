@@ -282,11 +282,11 @@ type ListEventsRequest struct {
 	From *time.Time `json:"-" url:"from,omitempty"`
 	// End of the time range as an ISO 8601 timestamp. Required when identifier is omitted; otherwise defaults to now.
 	To *time.Time `json:"-" url:"to,omitempty"`
-	// The number of events to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor for fetching events after a previous page.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// A cursor for fetching events before a later page.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The order events are returned in by time. Defaults to desc (most recent first); asc reads a journey forwards from where it starts. after and before always page forwards and backwards through that order.
 	Direction *ListEventsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -467,11 +467,11 @@ var (
 type PulseEventsRequest struct {
 	// Filter to one or more types, comma separated — for example `purchase,card_spend`. These are the item's `type`, not its `event_name`: several types share the `ledger_line.created` event name. Omit for every type in the feed. Values outside the feed's own set are rejected.
 	Event *string `json:"-" url:"event,omitempty"`
-	// The number of events to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor for fetching events after a previous page.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// A cursor for fetching events before a later page.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

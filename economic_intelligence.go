@@ -78,15 +78,15 @@ var (
 type ListEconomicIntelligenceRequest struct {
 	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// Only recommendations in this state. `ready` for the cards the owner can run now.
+	// Filter recommendations by their current status.
 	Status *ListEconomicIntelligenceRequestStatus `json:"-" url:"status,omitempty"`
-	// The number of recommendations to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns recommendations after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of recommendations to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns recommendations before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -157,27 +157,27 @@ var (
 )
 
 type EconomicIntelligence struct {
-	// The account this recommendation is for, prefixed `biz_`
+	// ID of the account this recommendation is for, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
-	// The playbook action this card recommends, or `null` for an untyped card; new values may be added, so handle unknown types gracefully
+	// Type of action recommended, or `null` when no type is assigned. New values may be added; handle unknown types gracefully.
 	ActionType *string `json:"action_type,omitempty" url:"action_type,omitempty"`
 	// When the recommendation was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// When the card was run, as an ISO 8601 timestamp, or `null`
+	// When the recommendation was approved, as an ISO 8601 timestamp, or `null` if it has not been approved.
 	ExecutedAt *string `json:"executed_at,omitempty" url:"executed_at,omitempty"`
-	// Economic intelligence ID, prefixed `reca_`
+	// Recommendation ID, prefixed `reca_`.
 	ID string `json:"id" url:"id"`
-	// What the owner asked for, in their own words, when this recommendation was requested, or `null` when the engine chose the action on its own
+	// What you requested, in your own words, or `null` for recommendations generated without your input.
 	Input *string `json:"input,omitempty" url:"input,omitempty"`
-	// The step-by-step brief Whop AI executes when the card is run, or `null`
+	// Step-by-step instructions for Whop AI, or `null` when no instructions are available.
 	Prompt *string `json:"prompt,omitempty" url:"prompt,omitempty"`
-	// The signal and number the recommendation rests on, or `null`
+	// Evidence and metrics supporting the recommendation, or `null` when no reasoning was provided.
 	Reasoning *string `json:"reasoning,omitempty" url:"reasoning,omitempty"`
-	// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it
+	// `queued` when awaiting generation; `pending` while generating; `ready` when available for approval; `executed` when approved; `superseded` when rejected or replaced.
 	Status EconomicIntelligenceStatus `json:"status" url:"status"`
-	// When a newer card replaced this one, as an ISO 8601 timestamp, or `null`
+	// When the recommendation was rejected or replaced, as an ISO 8601 timestamp, or `null` if neither has occurred.
 	SupersededAt *string `json:"superseded_at,omitempty" url:"superseded_at,omitempty"`
-	// The recommendation as the owner sees it: one command with the payoff, or `null` until the engine has written the card
+	// Recommended action and its expected benefit, or `null` until generated.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -397,7 +397,7 @@ func (e *EconomicIntelligence) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// `queued` once requested and not yet picked up; `pending` while the engine is generating; `ready` when the card is written and the owner can run it; `executed` once it was run; `superseded` when a newer card of the same action type replaced it
+// `queued` when awaiting generation; `pending` while generating; `ready` when available for approval; `executed` when approved; `superseded` when rejected or replaced.
 type EconomicIntelligenceStatus string
 
 const (
@@ -692,7 +692,7 @@ func (l *ListEconomicIntelligenceResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Use `executed` after approval to start the action, or `superseded` to reject it.
+// Use `executed` to record approval, or `superseded` to reject the recommendation.
 type UpdateEconomicIntelligenceRequestStatus string
 
 const (
@@ -729,7 +729,7 @@ type UpdateEconomicIntelligenceRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Why the recommendation was rejected. Used as feedback when replenishing recommendations.
 	Reason *string `json:"reason,omitempty" url:"-"`
-	// Use `executed` after approval to start the action, or `superseded` to reject it.
+	// Use `executed` to record approval, or `superseded` to reject the recommendation.
 	Status UpdateEconomicIntelligenceRequestStatus `json:"status" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

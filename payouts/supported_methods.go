@@ -39,13 +39,13 @@ type ListSupportedMethodsRequest struct {
 	SupportedPayoutMethodID *string `json:"-" url:"supported_payout_method_id,omitempty"`
 	// Currency the supported payout method would deliver payouts in. Only meaningful with supported_payout_method_id; required fields vary by destination currency.
 	DestinationCurrency *string `json:"-" url:"destination_currency,omitempty"`
-	// Number of supported payout methods to return from the start of the window.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// Number of supported payout methods to return from the end of the window.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to fetch the page before (from page_info.start_cursor).
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
