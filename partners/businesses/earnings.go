@@ -31,10 +31,14 @@ type ListEarningsRequest struct {
 	Status *ListEarningsRequestStatus `json:"-" url:"status,omitempty"`
 	// Filter to earnings from these income sources. Repeat the parameter for each one (income_source=sales&income_source=ad_spend).
 	IncomeSource []*ListEarningsRequestIncomeSourceItem `json:"-" url:"income_source,omitempty"`
-	First        *int                                   `json:"-" url:"first,omitempty"`
-	After        *string                                `json:"-" url:"after,omitempty"`
-	Last         *int                                   `json:"-" url:"last,omitempty"`
-	Before       *string                                `json:"-" url:"before,omitempty"`
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+	// Number of results to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort earnings by.
 	Order *ListEarningsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.

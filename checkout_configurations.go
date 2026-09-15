@@ -196,9 +196,9 @@ type ListCheckoutConfigurationsRequest struct {
 	Order *ListCheckoutConfigurationsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction. Defaults to `desc`.
 	Direction *ListCheckoutConfigurationsRequestDirection `json:"-" url:"direction,omitempty"`
-	// Number of checkout configurations to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor for the next page of results.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

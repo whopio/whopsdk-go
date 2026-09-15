@@ -165,13 +165,13 @@ type ListAPIKeysRequest struct {
 	CreatedBefore *ListAPIKeysRequestCreatedBefore `json:"-" url:"created_before,omitempty"`
 	// Only return API keys created after this ISO 8601 timestamp.
 	CreatedAfter *ListAPIKeysRequestCreatedAfter `json:"-" url:"created_after,omitempty"`
-	// The number of API keys to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns API keys after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of API keys to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns API keys before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort API keys by.
 	Order *ListAPIKeysRequestOrder `json:"-" url:"order,omitempty"`

@@ -250,13 +250,13 @@ type ListSocialAccountsRequest struct {
 	Verified *bool `json:"-" url:"verified,omitempty"`
 	// Only return social accounts that have these scopes.
 	Scopes []*ListSocialAccountsRequestScopesItem `json:"-" url:"scopes,omitempty"`
-	// The number of social accounts to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of social accounts to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to fetch the page before (from page_info.start_cursor).
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort social accounts by.
 	Order *ListSocialAccountsRequestOrder `json:"-" url:"order,omitempty"`
@@ -366,9 +366,9 @@ type PostsSocialAccountsRequest struct {
 	AccountID string `json:"-" url:"account_id"`
 	// Return only the single post with this platform id, instead of the full list.
 	PostID *string `json:"-" url:"post_id,omitempty"`
-	// The number of posts to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

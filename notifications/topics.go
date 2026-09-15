@@ -19,9 +19,9 @@ var (
 type ListTopicsRequest struct {
 	// Only return topics of this scope: `user` (member notifications) or `account_team` (team notifications).
 	TopicType *ListTopicsRequestTopicType `json:"-" url:"topic_type,omitempty"`
-	// The number of topics to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns topics after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

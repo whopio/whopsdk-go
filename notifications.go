@@ -180,9 +180,9 @@ type ListNotificationsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only return notifications that mention the user directly.
 	Mentions *bool `json:"-" url:"mentions,omitempty"`
-	// The number of notifications to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor (a notification `id` from a previous page); returns notifications older than it.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
