@@ -11,11 +11,13 @@ import (
 	internal "github.com/whopio/whopsdk-go/internal"
 	option "github.com/whopio/whopsdk-go/option"
 	client "github.com/whopio/whopsdk-go/partners/businesses/client"
+	links "github.com/whopio/whopsdk-go/partners/links"
 )
 
 type Client struct {
 	WithRawResponse *RawClient
 	Businesses      *client.Client
+	Links           *links.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -29,6 +31,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 	return &Client{
 		Businesses:      client.NewClient(options),
+		Links:           links.NewClient(options),
 		WithRawResponse: NewRawClient(options),
 		options:         options,
 		baseURL:         options.BaseURL,
@@ -78,34 +81,6 @@ func (c *Client) Leaderboard(
 	opts ...option.RequestOption,
 ) (*whopsdk.LeaderboardPartnersResponse, error) {
 	response, err := c.WithRawResponse.Leaderboard(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Resolves the public reward terms and whether redemption capacity remains. Immediate rewards claim capacity at business creation; qualified rewards claim it when the business reaches the threshold.
-//
-// Example:
-//
-//	request := &whopsdk.RetrieveLinkPartnersRequest{
-//	    PartnerUsername: "partner_username",
-//	    RewardSlug: "reward_slug",
-//	}
-//	client.Partners.RetrieveLink(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) RetrieveLink(
-	ctx context.Context,
-	request *whopsdk.RetrieveLinkPartnersRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.OnboardingReward, error) {
-	response, err := c.WithRawResponse.RetrieveLink(
 		ctx,
 		request,
 		opts...,
@@ -186,4 +161,31 @@ func (c *Client) ReferredUsers(
 		readPageResponse,
 	)
 	return pager.GetPage(ctx, request.After)
+}
+
+// Retrieves the authenticated user's public profile, enrollment date, active direct business referral count, and default payout rates. Use me or the authenticated user's own user ID; other users are not accessible. Users who have not enrolled have a null joined_at. Retrieve referral URLs and promotion links from GET /partners/links.
+//
+// Example:
+//
+//	request := &whopsdk.RetrievePartnersRequest{
+//	    ID: "me",
+//	}
+//	client.Partners.Retrieve(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Retrieve(
+	ctx context.Context,
+	request *whopsdk.RetrievePartnersRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Partner, error) {
+	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
 }

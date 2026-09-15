@@ -294,6 +294,7 @@ var (
 	exposuresExperimentsRequestFieldFlagKey         = big.NewInt(1 << 2)
 	exposuresExperimentsRequestFieldAccountID       = big.NewInt(1 << 3)
 	exposuresExperimentsRequestFieldProperties      = big.NewInt(1 << 4)
+	exposuresExperimentsRequestFieldLogExposure     = big.NewInt(1 << 5)
 )
 
 type ExposuresExperimentsRequest struct {
@@ -307,6 +308,8 @@ type ExposuresExperimentsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[plan]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
 	Properties *string `json:"-" url:"properties,omitempty"`
+	// Set false to evaluate without recording an exposure. Omitted records it.
+	LogExposure *bool `json:"-" url:"log_exposure,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -352,6 +355,13 @@ func (e *ExposuresExperimentsRequest) SetAccountID(accountID *string) {
 func (e *ExposuresExperimentsRequest) SetProperties(properties *string) {
 	e.Properties = properties
 	e.require(exposuresExperimentsRequestFieldProperties)
+}
+
+// SetLogExposure sets the LogExposure field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExposuresExperimentsRequest) SetLogExposure(logExposure *bool) {
+	e.LogExposure = logExposure
+	e.require(exposuresExperimentsRequestFieldLogExposure)
 }
 
 var (
