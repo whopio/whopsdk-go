@@ -128,7 +128,7 @@ type ChatChannel struct {
 	BanMedia bool `json:"ban_media" url:"ban_media"`
 	// Whether URL links are blocked from being posted in this chat.
 	BanURLs bool `json:"ban_urls" url:"ban_urls"`
-	// A list of words that are automatically filtered from messages in this chat.
+	// A list of words that are automatically filtered from messages in this chat. Empty unless the caller has permission to moderate this chat.
 	BannedWords []string `json:"banned_words" url:"banned_words"`
 	// The experience this chat feed is attached to.
 	Experience *ChatChannelExperience `json:"experience" url:"experience"`
@@ -436,7 +436,7 @@ type ChatChannelListItem struct {
 	BanMedia bool `json:"ban_media" url:"ban_media"`
 	// Whether URL links are blocked from being posted in this chat.
 	BanURLs bool `json:"ban_urls" url:"ban_urls"`
-	// A list of words that are automatically filtered from messages in this chat.
+	// A list of words that are automatically filtered from messages in this chat. Empty unless the caller has permission to moderate this chat.
 	BannedWords []string `json:"banned_words" url:"banned_words"`
 	// The experience this chat feed is attached to.
 	Experience *ChatChannelListItemExperience `json:"experience" url:"experience"`
