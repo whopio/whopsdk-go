@@ -76,7 +76,7 @@ var (
 )
 
 type ListEconomicIntelligenceRequest struct {
-	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
+	// Account ID, prefixed `biz_`. Defaults to the API key's own account; omit for personal onboarding.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Filter recommendations by their current status.
 	Status *ListEconomicIntelligenceRequestStatus `json:"-" url:"status,omitempty"`
@@ -145,27 +145,30 @@ func (l *ListEconomicIntelligenceRequest) SetBefore(before *string) {
 var (
 	economicIntelligenceFieldAccountID    = big.NewInt(1 << 0)
 	economicIntelligenceFieldActionType   = big.NewInt(1 << 1)
-	economicIntelligenceFieldCreatedAt    = big.NewInt(1 << 2)
-	economicIntelligenceFieldExecutedAt   = big.NewInt(1 << 3)
-	economicIntelligenceFieldID           = big.NewInt(1 << 4)
-	economicIntelligenceFieldInput        = big.NewInt(1 << 5)
-	economicIntelligenceFieldPrompt       = big.NewInt(1 << 6)
-	economicIntelligenceFieldReasoning    = big.NewInt(1 << 7)
-	economicIntelligenceFieldStatus       = big.NewInt(1 << 8)
-	economicIntelligenceFieldSupersededAt = big.NewInt(1 << 9)
-	economicIntelligenceFieldTitle        = big.NewInt(1 << 10)
+	economicIntelligenceFieldAiChatID     = big.NewInt(1 << 2)
+	economicIntelligenceFieldCreatedAt    = big.NewInt(1 << 3)
+	economicIntelligenceFieldExecutedAt   = big.NewInt(1 << 4)
+	economicIntelligenceFieldID           = big.NewInt(1 << 5)
+	economicIntelligenceFieldInput        = big.NewInt(1 << 6)
+	economicIntelligenceFieldPrompt       = big.NewInt(1 << 7)
+	economicIntelligenceFieldReasoning    = big.NewInt(1 << 8)
+	economicIntelligenceFieldStatus       = big.NewInt(1 << 9)
+	economicIntelligenceFieldSupersededAt = big.NewInt(1 << 10)
+	economicIntelligenceFieldTitle        = big.NewInt(1 << 11)
 )
 
 type EconomicIntelligence struct {
-	// ID of the account this recommendation is for, prefixed `biz_`.
-	AccountID string `json:"account_id" url:"account_id"`
+	// ID of the account this recommendation is for, prefixed `biz_`, or null for personal onboarding.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// Type of action recommended, or `null` when no type is assigned. New values may be added; handle unknown types gracefully.
 	ActionType *string `json:"action_type,omitempty" url:"action_type,omitempty"`
-	// When the recommendation was created, as an ISO 8601 timestamp.
-	CreatedAt string `json:"created_at" url:"created_at"`
+	// The chat to resume after its initial message is accepted, or null before a chat is ready.
+	AiChatID *string `json:"ai_chat_id,omitempty" url:"ai_chat_id,omitempty"`
+	// When the recommendation was created, as an ISO 8601 timestamp, or null for an unsaved recommendation.
+	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
 	// When the recommendation was approved, as an ISO 8601 timestamp, or `null` if it has not been approved.
 	ExecutedAt *string `json:"executed_at,omitempty" url:"executed_at,omitempty"`
-	// Recommendation ID, prefixed `reca_`.
+	// Recommendation ID, prefixed `reca_`, or `create_business` for an unsaved setup recommendation. Authenticate and list again before executing an unsaved recommendation.
 	ID string `json:"id" url:"id"`
 	// What you requested, in your own words, or `null` for recommendations generated without your input.
 	Input *string `json:"input,omitempty" url:"input,omitempty"`
@@ -187,9 +190,9 @@ type EconomicIntelligence struct {
 	rawJSON         json.RawMessage
 }
 
-func (e *EconomicIntelligence) GetAccountID() string {
+func (e *EconomicIntelligence) GetAccountID() *string {
 	if e == nil {
-		return ""
+		return nil
 	}
 	return e.AccountID
 }
@@ -201,9 +204,16 @@ func (e *EconomicIntelligence) GetActionType() *string {
 	return e.ActionType
 }
 
-func (e *EconomicIntelligence) GetCreatedAt() string {
+func (e *EconomicIntelligence) GetAiChatID() *string {
 	if e == nil {
-		return ""
+		return nil
+	}
+	return e.AiChatID
+}
+
+func (e *EconomicIntelligence) GetCreatedAt() *string {
+	if e == nil {
+		return nil
 	}
 	return e.CreatedAt
 }
@@ -280,7 +290,7 @@ func (e *EconomicIntelligence) require(field *big.Int) {
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetAccountID(accountID string) {
+func (e *EconomicIntelligence) SetAccountID(accountID *string) {
 	e.AccountID = accountID
 	e.require(economicIntelligenceFieldAccountID)
 }
@@ -292,9 +302,16 @@ func (e *EconomicIntelligence) SetActionType(actionType *string) {
 	e.require(economicIntelligenceFieldActionType)
 }
 
+// SetAiChatID sets the AiChatID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetAiChatID(aiChatID *string) {
+	e.AiChatID = aiChatID
+	e.require(economicIntelligenceFieldAiChatID)
+}
+
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetCreatedAt(createdAt string) {
+func (e *EconomicIntelligence) SetCreatedAt(createdAt *string) {
 	e.CreatedAt = createdAt
 	e.require(economicIntelligenceFieldCreatedAt)
 }
