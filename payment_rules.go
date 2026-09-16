@@ -761,18 +761,24 @@ type PaymentRuleConditionField string
 
 const (
 	PaymentRuleConditionFieldRiskScore     PaymentRuleConditionField = "risk_score"
+	PaymentRuleConditionFieldAmountInUsd   PaymentRuleConditionField = "amount_in_usd"
 	PaymentRuleConditionFieldCardCountry   PaymentRuleConditionField = "card_country"
 	PaymentRuleConditionFieldCustomerEmail PaymentRuleConditionField = "customer_email"
+	PaymentRuleConditionFieldIPAddress     PaymentRuleConditionField = "ip_address"
 )
 
 func NewPaymentRuleConditionFieldFromString(s string) (PaymentRuleConditionField, error) {
 	switch s {
 	case "risk_score":
 		return PaymentRuleConditionFieldRiskScore, nil
+	case "amount_in_usd":
+		return PaymentRuleConditionFieldAmountInUsd, nil
 	case "card_country":
 		return PaymentRuleConditionFieldCardCountry, nil
 	case "customer_email":
 		return PaymentRuleConditionFieldCustomerEmail, nil
+	case "ip_address":
+		return PaymentRuleConditionFieldIPAddress, nil
 	}
 	var t PaymentRuleConditionField
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -797,6 +803,7 @@ const (
 	PaymentRuleConditionOperatorContains   PaymentRuleConditionOperator = "contains"
 	PaymentRuleConditionOperatorStartsWith PaymentRuleConditionOperator = "starts_with"
 	PaymentRuleConditionOperatorEndsWith   PaymentRuleConditionOperator = "ends_with"
+	PaymentRuleConditionOperatorInCidr     PaymentRuleConditionOperator = "in_cidr"
 )
 
 func NewPaymentRuleConditionOperatorFromString(s string) (PaymentRuleConditionOperator, error) {
@@ -823,6 +830,8 @@ func NewPaymentRuleConditionOperatorFromString(s string) (PaymentRuleConditionOp
 		return PaymentRuleConditionOperatorStartsWith, nil
 	case "ends_with":
 		return PaymentRuleConditionOperatorEndsWith, nil
+	case "in_cidr":
+		return PaymentRuleConditionOperatorInCidr, nil
 	}
 	var t PaymentRuleConditionOperator
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1173,18 +1182,24 @@ type PaymentRuleFieldField string
 
 const (
 	PaymentRuleFieldFieldRiskScore     PaymentRuleFieldField = "risk_score"
+	PaymentRuleFieldFieldAmountInUsd   PaymentRuleFieldField = "amount_in_usd"
 	PaymentRuleFieldFieldCardCountry   PaymentRuleFieldField = "card_country"
 	PaymentRuleFieldFieldCustomerEmail PaymentRuleFieldField = "customer_email"
+	PaymentRuleFieldFieldIPAddress     PaymentRuleFieldField = "ip_address"
 )
 
 func NewPaymentRuleFieldFieldFromString(s string) (PaymentRuleFieldField, error) {
 	switch s {
 	case "risk_score":
 		return PaymentRuleFieldFieldRiskScore, nil
+	case "amount_in_usd":
+		return PaymentRuleFieldFieldAmountInUsd, nil
 	case "card_country":
 		return PaymentRuleFieldFieldCardCountry, nil
 	case "customer_email":
 		return PaymentRuleFieldFieldCustomerEmail, nil
+	case "ip_address":
+		return PaymentRuleFieldFieldIPAddress, nil
 	}
 	var t PaymentRuleFieldField
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1209,6 +1224,7 @@ const (
 	PaymentRuleFieldOperatorsItemContains   PaymentRuleFieldOperatorsItem = "contains"
 	PaymentRuleFieldOperatorsItemStartsWith PaymentRuleFieldOperatorsItem = "starts_with"
 	PaymentRuleFieldOperatorsItemEndsWith   PaymentRuleFieldOperatorsItem = "ends_with"
+	PaymentRuleFieldOperatorsItemInCidr     PaymentRuleFieldOperatorsItem = "in_cidr"
 )
 
 func NewPaymentRuleFieldOperatorsItemFromString(s string) (PaymentRuleFieldOperatorsItem, error) {
@@ -1235,6 +1251,8 @@ func NewPaymentRuleFieldOperatorsItemFromString(s string) (PaymentRuleFieldOpera
 		return PaymentRuleFieldOperatorsItemStartsWith, nil
 	case "ends_with":
 		return PaymentRuleFieldOperatorsItemEndsWith, nil
+	case "in_cidr":
+		return PaymentRuleFieldOperatorsItemInCidr, nil
 	}
 	var t PaymentRuleFieldOperatorsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1351,6 +1369,7 @@ type PaymentRuleFieldType string
 
 const (
 	PaymentRuleFieldTypeInteger PaymentRuleFieldType = "integer"
+	PaymentRuleFieldTypeNumber  PaymentRuleFieldType = "number"
 	PaymentRuleFieldTypeString  PaymentRuleFieldType = "string"
 )
 
@@ -1358,6 +1377,8 @@ func NewPaymentRuleFieldTypeFromString(s string) (PaymentRuleFieldType, error) {
 	switch s {
 	case "integer":
 		return PaymentRuleFieldTypeInteger, nil
+	case "number":
+		return PaymentRuleFieldTypeNumber, nil
 	case "string":
 		return PaymentRuleFieldTypeString, nil
 	}
@@ -1629,18 +1650,24 @@ type CreatePaymentRulesRequestConditionsAllItemField string
 
 const (
 	CreatePaymentRulesRequestConditionsAllItemFieldRiskScore     CreatePaymentRulesRequestConditionsAllItemField = "risk_score"
+	CreatePaymentRulesRequestConditionsAllItemFieldAmountInUsd   CreatePaymentRulesRequestConditionsAllItemField = "amount_in_usd"
 	CreatePaymentRulesRequestConditionsAllItemFieldCardCountry   CreatePaymentRulesRequestConditionsAllItemField = "card_country"
 	CreatePaymentRulesRequestConditionsAllItemFieldCustomerEmail CreatePaymentRulesRequestConditionsAllItemField = "customer_email"
+	CreatePaymentRulesRequestConditionsAllItemFieldIPAddress     CreatePaymentRulesRequestConditionsAllItemField = "ip_address"
 )
 
 func NewCreatePaymentRulesRequestConditionsAllItemFieldFromString(s string) (CreatePaymentRulesRequestConditionsAllItemField, error) {
 	switch s {
 	case "risk_score":
 		return CreatePaymentRulesRequestConditionsAllItemFieldRiskScore, nil
+	case "amount_in_usd":
+		return CreatePaymentRulesRequestConditionsAllItemFieldAmountInUsd, nil
 	case "card_country":
 		return CreatePaymentRulesRequestConditionsAllItemFieldCardCountry, nil
 	case "customer_email":
 		return CreatePaymentRulesRequestConditionsAllItemFieldCustomerEmail, nil
+	case "ip_address":
+		return CreatePaymentRulesRequestConditionsAllItemFieldIPAddress, nil
 	}
 	var t CreatePaymentRulesRequestConditionsAllItemField
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1665,6 +1692,7 @@ const (
 	CreatePaymentRulesRequestConditionsAllItemOperatorContains   CreatePaymentRulesRequestConditionsAllItemOperator = "contains"
 	CreatePaymentRulesRequestConditionsAllItemOperatorStartsWith CreatePaymentRulesRequestConditionsAllItemOperator = "starts_with"
 	CreatePaymentRulesRequestConditionsAllItemOperatorEndsWith   CreatePaymentRulesRequestConditionsAllItemOperator = "ends_with"
+	CreatePaymentRulesRequestConditionsAllItemOperatorInCidr     CreatePaymentRulesRequestConditionsAllItemOperator = "in_cidr"
 )
 
 func NewCreatePaymentRulesRequestConditionsAllItemOperatorFromString(s string) (CreatePaymentRulesRequestConditionsAllItemOperator, error) {
@@ -1691,6 +1719,8 @@ func NewCreatePaymentRulesRequestConditionsAllItemOperatorFromString(s string) (
 		return CreatePaymentRulesRequestConditionsAllItemOperatorStartsWith, nil
 	case "ends_with":
 		return CreatePaymentRulesRequestConditionsAllItemOperatorEndsWith, nil
+	case "in_cidr":
+		return CreatePaymentRulesRequestConditionsAllItemOperatorInCidr, nil
 	}
 	var t CreatePaymentRulesRequestConditionsAllItemOperator
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2489,18 +2519,24 @@ type ReplacePaymentRulesRequestConditionsAllItemField string
 
 const (
 	ReplacePaymentRulesRequestConditionsAllItemFieldRiskScore     ReplacePaymentRulesRequestConditionsAllItemField = "risk_score"
+	ReplacePaymentRulesRequestConditionsAllItemFieldAmountInUsd   ReplacePaymentRulesRequestConditionsAllItemField = "amount_in_usd"
 	ReplacePaymentRulesRequestConditionsAllItemFieldCardCountry   ReplacePaymentRulesRequestConditionsAllItemField = "card_country"
 	ReplacePaymentRulesRequestConditionsAllItemFieldCustomerEmail ReplacePaymentRulesRequestConditionsAllItemField = "customer_email"
+	ReplacePaymentRulesRequestConditionsAllItemFieldIPAddress     ReplacePaymentRulesRequestConditionsAllItemField = "ip_address"
 )
 
 func NewReplacePaymentRulesRequestConditionsAllItemFieldFromString(s string) (ReplacePaymentRulesRequestConditionsAllItemField, error) {
 	switch s {
 	case "risk_score":
 		return ReplacePaymentRulesRequestConditionsAllItemFieldRiskScore, nil
+	case "amount_in_usd":
+		return ReplacePaymentRulesRequestConditionsAllItemFieldAmountInUsd, nil
 	case "card_country":
 		return ReplacePaymentRulesRequestConditionsAllItemFieldCardCountry, nil
 	case "customer_email":
 		return ReplacePaymentRulesRequestConditionsAllItemFieldCustomerEmail, nil
+	case "ip_address":
+		return ReplacePaymentRulesRequestConditionsAllItemFieldIPAddress, nil
 	}
 	var t ReplacePaymentRulesRequestConditionsAllItemField
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2525,6 +2561,7 @@ const (
 	ReplacePaymentRulesRequestConditionsAllItemOperatorContains   ReplacePaymentRulesRequestConditionsAllItemOperator = "contains"
 	ReplacePaymentRulesRequestConditionsAllItemOperatorStartsWith ReplacePaymentRulesRequestConditionsAllItemOperator = "starts_with"
 	ReplacePaymentRulesRequestConditionsAllItemOperatorEndsWith   ReplacePaymentRulesRequestConditionsAllItemOperator = "ends_with"
+	ReplacePaymentRulesRequestConditionsAllItemOperatorInCidr     ReplacePaymentRulesRequestConditionsAllItemOperator = "in_cidr"
 )
 
 func NewReplacePaymentRulesRequestConditionsAllItemOperatorFromString(s string) (ReplacePaymentRulesRequestConditionsAllItemOperator, error) {
@@ -2551,6 +2588,8 @@ func NewReplacePaymentRulesRequestConditionsAllItemOperatorFromString(s string) 
 		return ReplacePaymentRulesRequestConditionsAllItemOperatorStartsWith, nil
 	case "ends_with":
 		return ReplacePaymentRulesRequestConditionsAllItemOperatorEndsWith, nil
+	case "in_cidr":
+		return ReplacePaymentRulesRequestConditionsAllItemOperatorInCidr, nil
 	}
 	var t ReplacePaymentRulesRequestConditionsAllItemOperator
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
