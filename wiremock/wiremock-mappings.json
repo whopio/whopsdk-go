@@ -9087,6 +9087,317 @@
       }
     },
     {
+      "id": "b0f5b654-34bd-41ec-9719-b1951cdad98b",
+      "name": "List payment rules - default",
+      "request": {
+        "urlPathTemplate": "/payment_rules",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"action\": \"allow\",\n      \"conditions\": {\n        \"all\": [\n          {\n            \"field\": \"risk_score\",\n            \"operator\": \"eq\",\n            \"value\": 1\n          }\n        ]\n      },\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"deleted_at\": \"deleted_at\",\n      \"id\": \"prule_xxxxxxxxxxxxxx\",\n      \"metadata\": {\n        \"key\": \"value\"\n      },\n      \"name\": \"Block high risk\",\n      \"status\": \"active\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "b0f5b654-34bd-41ec-9719-b1951cdad98b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "1e0a09c1-396d-4225-9bb7-48e7c0f926fe",
+      "name": "Create a payment rule - default",
+      "request": {
+        "urlPathTemplate": "/payment_rules",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "1e0a09c1-396d-4225-9bb7-48e7c0f926fe",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "d06d6270-a707-40d3-b300-53d0a2a16d9d",
+      "name": "List fields - default",
+      "request": {
+        "urlPathTemplate": "/payment_rules/fields",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"field\": \"risk_score\",\n      \"maximum\": 100,\n      \"minimum\": 0,\n      \"operators\": [\n        \"eq\"\n      ],\n      \"options\": [\n        {\n          \"label\": \"Abkhazia\",\n          \"value\": \"AB\"\n        }\n      ],\n      \"type\": \"integer\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "d06d6270-a707-40d3-b300-53d0a2a16d9d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "62446e7a-01a9-4548-965f-d3e700b460d9",
+      "name": "Retrieve a payment rule - default",
+      "request": {
+        "urlPathTemplate": "/payment_rules/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "62446e7a-01a9-4548-965f-d3e700b460d9",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "5df8a53a-e4f3-4130-9a05-e96e42bd5fc6",
+      "name": "Delete a payment rule - default",
+      "request": {
+        "urlPathTemplate": "/payment_rules/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "\"\"",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5df8a53a-e4f3-4130-9a05-e96e42bd5fc6",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "e25bf82b-4d57-47d8-aede-22bdf6d33e04",
+      "name": "Update a payment rule - default",
+      "request": {
+        "urlPathTemplate": "/payment_rules/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e25bf82b-4d57-47d8-aede-22bdf6d33e04",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "991217cc-8167-4a93-ba83-6dbb0ac4c108",
+      "name": "Activate a payment rule - default",
+      "request": {
+        "urlPathTemplate": "/payment_rules/{id}/activate",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "991217cc-8167-4a93-ba83-6dbb0ac4c108",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "b864d894-e880-44b4-a4b6-5ae6054416ff",
+      "name": "Deactivate a payment rule - default",
+      "request": {
+        "urlPathTemplate": "/payment_rules/{id}/deactivate",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "b864d894-e880-44b4-a4b6-5ae6054416ff",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "89b305c9-144e-4872-b7f5-b5e353209986",
+      "name": "Replace a payment rule - default",
+      "request": {
+        "urlPathTemplate": "/payment_rules/{id}/replace",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action\": \"allow\",\n  \"conditions\": {\n    \"all\": [\n      {\n        \"field\": \"risk_score\",\n        \"operator\": \"eq\",\n        \"value\": 1\n      }\n    ]\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"deleted_at\": \"deleted_at\",\n  \"id\": \"prule_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Block high risk\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "89b305c9-144e-4872-b7f5-b5e353209986",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "1e3a60bc-2913-4320-8698-166aa7121be7",
       "name": "List Payments - default",
       "request": {
@@ -14370,6 +14681,6 @@
     }
   ],
   "meta": {
-    "total": 400
+    "total": 409
   }
 }

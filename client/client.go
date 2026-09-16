@@ -64,6 +64,7 @@ import (
 	partnersclient "github.com/whopio/whopsdk-go/partners/client"
 	paymentmethoddomains "github.com/whopio/whopsdk-go/paymentmethoddomains"
 	paymentmethods "github.com/whopio/whopsdk-go/paymentmethods"
+	paymentrules "github.com/whopio/whopsdk-go/paymentrules"
 	payments "github.com/whopio/whopsdk-go/payments"
 	payoutaccounts "github.com/whopio/whopsdk-go/payoutaccounts"
 	payoutmethods "github.com/whopio/whopsdk-go/payoutmethods"
@@ -150,6 +151,7 @@ type Whop struct {
 	Partners                 *partnersclient.Client
 	PaymentMethodDomains     *paymentmethoddomains.Client
 	PaymentMethods           *paymentmethods.Client
+	PaymentRules             *paymentrules.Client
 	Payments                 *payments.Client
 	PayoutAccounts           *payoutaccounts.Client
 	PayoutMethods            *payoutmethods.Client
@@ -246,6 +248,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Partners:                 partnersclient.NewClient(options),
 		PaymentMethodDomains:     paymentmethoddomains.NewClient(options),
 		PaymentMethods:           paymentmethods.NewClient(options),
+		PaymentRules:             paymentrules.NewClient(options),
 		Payments:                 payments.NewClient(options),
 		PayoutAccounts:           payoutaccounts.NewClient(options),
 		PayoutMethods:            payoutmethods.NewClient(options),
