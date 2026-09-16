@@ -1986,16 +1986,30 @@ func (c CreateVerificationsResponseKind) Ptr() *CreateVerificationsResponseKind 
 }
 
 var (
-	createVerificationsResponseRequestedInformationItemFieldErrors      = big.NewInt(1 << 0)
-	createVerificationsResponseRequestedInformationItemFieldID          = big.NewInt(1 << 1)
-	createVerificationsResponseRequestedInformationItemFieldLabel       = big.NewInt(1 << 2)
-	createVerificationsResponseRequestedInformationItemFieldOptional    = big.NewInt(1 << 3)
-	createVerificationsResponseRequestedInformationItemFieldOptions     = big.NewInt(1 << 4)
-	createVerificationsResponseRequestedInformationItemFieldRequirement = big.NewInt(1 << 5)
-	createVerificationsResponseRequestedInformationItemFieldType        = big.NewInt(1 << 6)
+	createVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 0)
+	createVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 1)
+	createVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 2)
+	createVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 3)
+	createVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 4)
+	createVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 5)
+	createVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 6)
+	createVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 7)
+	createVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 8)
+	createVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 9)
+	createVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 10)
+	createVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 11)
+	createVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 12)
+	createVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 13)
+	createVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 14)
 )
 
 type CreateVerificationsResponseRequestedInformationItem struct {
+	// Follow-up prompt shown with this requirement.
+	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
+	// Whether the follow-up response is required when visible.
+	DetailsRequired *bool `json:"details_required,omitempty" url:"details_required,omitempty"`
+	// Selected option values that make the follow-up prompt visible.
+	DetailsVisibleFor []string `json:"details_visible_for,omitempty" url:"details_visible_for,omitempty"`
 	// Present after a rejected submission.
 	Errors []*CreateVerificationsResponseRequestedInformationItemErrorsItem `json:"errors,omitempty" url:"errors,omitempty"`
 	// Requested information item ID, prefixed `inrqi_`.
@@ -2008,7 +2022,17 @@ type CreateVerificationsResponseRequestedInformationItem struct {
 	Options []string `json:"options,omitempty" url:"options,omitempty"`
 	// What is needed: a document name such as `bank_statement`, or a field key such as `ssn` or `identity_document`. Handle unrecognized values by `type`.
 	Requirement string `json:"requirement" url:"requirement"`
-	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), or `address` (send `address`).
+	// Optional native input format for a text response.
+	ResponseType *CreateVerificationsResponseRequestedInformationItemResponseType `json:"response_type,omitempty" url:"response_type,omitempty"`
+	// Whether a question with `options` accepts one value or multiple values.
+	SelectionMode *CreateVerificationsResponseRequestedInformationItemSelectionMode `json:"selection_mode,omitempty" url:"selection_mode,omitempty"`
+	// Whether a written explanation may replace required supporting files.
+	SupportingFilesExplanationAllowed *bool `json:"supporting_files_explanation_allowed,omitempty" url:"supporting_files_explanation_allowed,omitempty"`
+	// Whether this requirement also needs supporting files.
+	SupportingFilesRequired *bool `json:"supporting_files_required,omitempty" url:"supporting_files_required,omitempty"`
+	// Selected option values that make the supporting-file input visible.
+	SupportingFilesVisibleFor []string `json:"supporting_files_visible_for,omitempty" url:"supporting_files_visible_for,omitempty"`
+	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), or `address` (send `address`).
 	Type string `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2016,6 +2040,27 @@ type CreateVerificationsResponseRequestedInformationItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsResponseRequestedInformationItem) GetDetailsLabel() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DetailsLabel
+}
+
+func (c *CreateVerificationsResponseRequestedInformationItem) GetDetailsRequired() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.DetailsRequired
+}
+
+func (c *CreateVerificationsResponseRequestedInformationItem) GetDetailsVisibleFor() []string {
+	if c == nil {
+		return nil
+	}
+	return c.DetailsVisibleFor
 }
 
 func (c *CreateVerificationsResponseRequestedInformationItem) GetErrors() []*CreateVerificationsResponseRequestedInformationItemErrorsItem {
@@ -2060,6 +2105,41 @@ func (c *CreateVerificationsResponseRequestedInformationItem) GetRequirement() s
 	return c.Requirement
 }
 
+func (c *CreateVerificationsResponseRequestedInformationItem) GetResponseType() *CreateVerificationsResponseRequestedInformationItemResponseType {
+	if c == nil {
+		return nil
+	}
+	return c.ResponseType
+}
+
+func (c *CreateVerificationsResponseRequestedInformationItem) GetSelectionMode() *CreateVerificationsResponseRequestedInformationItemSelectionMode {
+	if c == nil {
+		return nil
+	}
+	return c.SelectionMode
+}
+
+func (c *CreateVerificationsResponseRequestedInformationItem) GetSupportingFilesExplanationAllowed() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.SupportingFilesExplanationAllowed
+}
+
+func (c *CreateVerificationsResponseRequestedInformationItem) GetSupportingFilesRequired() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.SupportingFilesRequired
+}
+
+func (c *CreateVerificationsResponseRequestedInformationItem) GetSupportingFilesVisibleFor() []string {
+	if c == nil {
+		return nil
+	}
+	return c.SupportingFilesVisibleFor
+}
+
 func (c *CreateVerificationsResponseRequestedInformationItem) GetType() string {
 	if c == nil {
 		return ""
@@ -2079,6 +2159,27 @@ func (c *CreateVerificationsResponseRequestedInformationItem) require(field *big
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetDetailsLabel(detailsLabel *string) {
+	c.DetailsLabel = detailsLabel
+	c.require(createVerificationsResponseRequestedInformationItemFieldDetailsLabel)
+}
+
+// SetDetailsRequired sets the DetailsRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetDetailsRequired(detailsRequired *bool) {
+	c.DetailsRequired = detailsRequired
+	c.require(createVerificationsResponseRequestedInformationItemFieldDetailsRequired)
+}
+
+// SetDetailsVisibleFor sets the DetailsVisibleFor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetDetailsVisibleFor(detailsVisibleFor []string) {
+	c.DetailsVisibleFor = detailsVisibleFor
+	c.require(createVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor)
 }
 
 // SetErrors sets the Errors field and marks it as non-optional;
@@ -2121,6 +2222,41 @@ func (c *CreateVerificationsResponseRequestedInformationItem) SetOptions(options
 func (c *CreateVerificationsResponseRequestedInformationItem) SetRequirement(requirement string) {
 	c.Requirement = requirement
 	c.require(createVerificationsResponseRequestedInformationItemFieldRequirement)
+}
+
+// SetResponseType sets the ResponseType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetResponseType(responseType *CreateVerificationsResponseRequestedInformationItemResponseType) {
+	c.ResponseType = responseType
+	c.require(createVerificationsResponseRequestedInformationItemFieldResponseType)
+}
+
+// SetSelectionMode sets the SelectionMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetSelectionMode(selectionMode *CreateVerificationsResponseRequestedInformationItemSelectionMode) {
+	c.SelectionMode = selectionMode
+	c.require(createVerificationsResponseRequestedInformationItemFieldSelectionMode)
+}
+
+// SetSupportingFilesExplanationAllowed sets the SupportingFilesExplanationAllowed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetSupportingFilesExplanationAllowed(supportingFilesExplanationAllowed *bool) {
+	c.SupportingFilesExplanationAllowed = supportingFilesExplanationAllowed
+	c.require(createVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed)
+}
+
+// SetSupportingFilesRequired sets the SupportingFilesRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetSupportingFilesRequired(supportingFilesRequired *bool) {
+	c.SupportingFilesRequired = supportingFilesRequired
+	c.require(createVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired)
+}
+
+// SetSupportingFilesVisibleFor sets the SupportingFilesVisibleFor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetSupportingFilesVisibleFor(supportingFilesVisibleFor []string) {
+	c.SupportingFilesVisibleFor = supportingFilesVisibleFor
+	c.require(createVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -2272,6 +2408,64 @@ func (c *CreateVerificationsResponseRequestedInformationItemErrorsItem) String()
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// Optional native input format for a text response.
+type CreateVerificationsResponseRequestedInformationItemResponseType string
+
+const (
+	CreateVerificationsResponseRequestedInformationItemResponseTypeYesNo   CreateVerificationsResponseRequestedInformationItemResponseType = "yes_no"
+	CreateVerificationsResponseRequestedInformationItemResponseTypeYesNoNa CreateVerificationsResponseRequestedInformationItemResponseType = "yes_no_na"
+	CreateVerificationsResponseRequestedInformationItemResponseTypeDate    CreateVerificationsResponseRequestedInformationItemResponseType = "date"
+	CreateVerificationsResponseRequestedInformationItemResponseTypeURL     CreateVerificationsResponseRequestedInformationItemResponseType = "url"
+	CreateVerificationsResponseRequestedInformationItemResponseTypeNumber  CreateVerificationsResponseRequestedInformationItemResponseType = "number"
+	CreateVerificationsResponseRequestedInformationItemResponseTypeTel     CreateVerificationsResponseRequestedInformationItemResponseType = "tel"
+)
+
+func NewCreateVerificationsResponseRequestedInformationItemResponseTypeFromString(s string) (CreateVerificationsResponseRequestedInformationItemResponseType, error) {
+	switch s {
+	case "yes_no":
+		return CreateVerificationsResponseRequestedInformationItemResponseTypeYesNo, nil
+	case "yes_no_na":
+		return CreateVerificationsResponseRequestedInformationItemResponseTypeYesNoNa, nil
+	case "date":
+		return CreateVerificationsResponseRequestedInformationItemResponseTypeDate, nil
+	case "url":
+		return CreateVerificationsResponseRequestedInformationItemResponseTypeURL, nil
+	case "number":
+		return CreateVerificationsResponseRequestedInformationItemResponseTypeNumber, nil
+	case "tel":
+		return CreateVerificationsResponseRequestedInformationItemResponseTypeTel, nil
+	}
+	var t CreateVerificationsResponseRequestedInformationItemResponseType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsResponseRequestedInformationItemResponseType) Ptr() *CreateVerificationsResponseRequestedInformationItemResponseType {
+	return &c
+}
+
+// Whether a question with `options` accepts one value or multiple values.
+type CreateVerificationsResponseRequestedInformationItemSelectionMode string
+
+const (
+	CreateVerificationsResponseRequestedInformationItemSelectionModeSingle   CreateVerificationsResponseRequestedInformationItemSelectionMode = "single"
+	CreateVerificationsResponseRequestedInformationItemSelectionModeMultiple CreateVerificationsResponseRequestedInformationItemSelectionMode = "multiple"
+)
+
+func NewCreateVerificationsResponseRequestedInformationItemSelectionModeFromString(s string) (CreateVerificationsResponseRequestedInformationItemSelectionMode, error) {
+	switch s {
+	case "single":
+		return CreateVerificationsResponseRequestedInformationItemSelectionModeSingle, nil
+	case "multiple":
+		return CreateVerificationsResponseRequestedInformationItemSelectionModeMultiple, nil
+	}
+	var t CreateVerificationsResponseRequestedInformationItemSelectionMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsResponseRequestedInformationItemSelectionMode) Ptr() *CreateVerificationsResponseRequestedInformationItemSelectionMode {
+	return &c
 }
 
 var (
@@ -3129,16 +3323,30 @@ func (l ListVerificationsResponseDataItemKind) Ptr() *ListVerificationsResponseD
 }
 
 var (
-	listVerificationsResponseDataItemRequestedInformationItemFieldErrors      = big.NewInt(1 << 0)
-	listVerificationsResponseDataItemRequestedInformationItemFieldID          = big.NewInt(1 << 1)
-	listVerificationsResponseDataItemRequestedInformationItemFieldLabel       = big.NewInt(1 << 2)
-	listVerificationsResponseDataItemRequestedInformationItemFieldOptional    = big.NewInt(1 << 3)
-	listVerificationsResponseDataItemRequestedInformationItemFieldOptions     = big.NewInt(1 << 4)
-	listVerificationsResponseDataItemRequestedInformationItemFieldRequirement = big.NewInt(1 << 5)
-	listVerificationsResponseDataItemRequestedInformationItemFieldType        = big.NewInt(1 << 6)
+	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 0)
+	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 1)
+	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 2)
+	listVerificationsResponseDataItemRequestedInformationItemFieldErrors                            = big.NewInt(1 << 3)
+	listVerificationsResponseDataItemRequestedInformationItemFieldID                                = big.NewInt(1 << 4)
+	listVerificationsResponseDataItemRequestedInformationItemFieldLabel                             = big.NewInt(1 << 5)
+	listVerificationsResponseDataItemRequestedInformationItemFieldOptional                          = big.NewInt(1 << 6)
+	listVerificationsResponseDataItemRequestedInformationItemFieldOptions                           = big.NewInt(1 << 7)
+	listVerificationsResponseDataItemRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 8)
+	listVerificationsResponseDataItemRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 9)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 10)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 11)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 12)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 13)
+	listVerificationsResponseDataItemRequestedInformationItemFieldType                              = big.NewInt(1 << 14)
 )
 
 type ListVerificationsResponseDataItemRequestedInformationItem struct {
+	// Follow-up prompt shown with this requirement.
+	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
+	// Whether the follow-up response is required when visible.
+	DetailsRequired *bool `json:"details_required,omitempty" url:"details_required,omitempty"`
+	// Selected option values that make the follow-up prompt visible.
+	DetailsVisibleFor []string `json:"details_visible_for,omitempty" url:"details_visible_for,omitempty"`
 	// Present after a rejected submission.
 	Errors []*ListVerificationsResponseDataItemRequestedInformationItemErrorsItem `json:"errors,omitempty" url:"errors,omitempty"`
 	// Requested information item ID, prefixed `inrqi_`.
@@ -3151,7 +3359,17 @@ type ListVerificationsResponseDataItemRequestedInformationItem struct {
 	Options []string `json:"options,omitempty" url:"options,omitempty"`
 	// What is needed: a document name such as `bank_statement`, or a field key such as `ssn` or `identity_document`. Handle unrecognized values by `type`.
 	Requirement string `json:"requirement" url:"requirement"`
-	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), or `address` (send `address`).
+	// Optional native input format for a text response.
+	ResponseType *ListVerificationsResponseDataItemRequestedInformationItemResponseType `json:"response_type,omitempty" url:"response_type,omitempty"`
+	// Whether a question with `options` accepts one value or multiple values.
+	SelectionMode *ListVerificationsResponseDataItemRequestedInformationItemSelectionMode `json:"selection_mode,omitempty" url:"selection_mode,omitempty"`
+	// Whether a written explanation may replace required supporting files.
+	SupportingFilesExplanationAllowed *bool `json:"supporting_files_explanation_allowed,omitempty" url:"supporting_files_explanation_allowed,omitempty"`
+	// Whether this requirement also needs supporting files.
+	SupportingFilesRequired *bool `json:"supporting_files_required,omitempty" url:"supporting_files_required,omitempty"`
+	// Selected option values that make the supporting-file input visible.
+	SupportingFilesVisibleFor []string `json:"supporting_files_visible_for,omitempty" url:"supporting_files_visible_for,omitempty"`
+	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), or `address` (send `address`).
 	Type string `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3159,6 +3377,27 @@ type ListVerificationsResponseDataItemRequestedInformationItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetDetailsLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.DetailsLabel
+}
+
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetDetailsRequired() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.DetailsRequired
+}
+
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetDetailsVisibleFor() []string {
+	if l == nil {
+		return nil
+	}
+	return l.DetailsVisibleFor
 }
 
 func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetErrors() []*ListVerificationsResponseDataItemRequestedInformationItemErrorsItem {
@@ -3203,6 +3442,41 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetRequireme
 	return l.Requirement
 }
 
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetResponseType() *ListVerificationsResponseDataItemRequestedInformationItemResponseType {
+	if l == nil {
+		return nil
+	}
+	return l.ResponseType
+}
+
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetSelectionMode() *ListVerificationsResponseDataItemRequestedInformationItemSelectionMode {
+	if l == nil {
+		return nil
+	}
+	return l.SelectionMode
+}
+
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetSupportingFilesExplanationAllowed() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.SupportingFilesExplanationAllowed
+}
+
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetSupportingFilesRequired() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.SupportingFilesRequired
+}
+
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetSupportingFilesVisibleFor() []string {
+	if l == nil {
+		return nil
+	}
+	return l.SupportingFilesVisibleFor
+}
+
 func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetType() string {
 	if l == nil {
 		return ""
@@ -3222,6 +3496,27 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItem) require(fiel
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetDetailsLabel(detailsLabel *string) {
+	l.DetailsLabel = detailsLabel
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldDetailsLabel)
+}
+
+// SetDetailsRequired sets the DetailsRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetDetailsRequired(detailsRequired *bool) {
+	l.DetailsRequired = detailsRequired
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldDetailsRequired)
+}
+
+// SetDetailsVisibleFor sets the DetailsVisibleFor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetDetailsVisibleFor(detailsVisibleFor []string) {
+	l.DetailsVisibleFor = detailsVisibleFor
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldDetailsVisibleFor)
 }
 
 // SetErrors sets the Errors field and marks it as non-optional;
@@ -3264,6 +3559,41 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetOptions(o
 func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetRequirement(requirement string) {
 	l.Requirement = requirement
 	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldRequirement)
+}
+
+// SetResponseType sets the ResponseType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetResponseType(responseType *ListVerificationsResponseDataItemRequestedInformationItemResponseType) {
+	l.ResponseType = responseType
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldResponseType)
+}
+
+// SetSelectionMode sets the SelectionMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetSelectionMode(selectionMode *ListVerificationsResponseDataItemRequestedInformationItemSelectionMode) {
+	l.SelectionMode = selectionMode
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldSelectionMode)
+}
+
+// SetSupportingFilesExplanationAllowed sets the SupportingFilesExplanationAllowed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetSupportingFilesExplanationAllowed(supportingFilesExplanationAllowed *bool) {
+	l.SupportingFilesExplanationAllowed = supportingFilesExplanationAllowed
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesExplanationAllowed)
+}
+
+// SetSupportingFilesRequired sets the SupportingFilesRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetSupportingFilesRequired(supportingFilesRequired *bool) {
+	l.SupportingFilesRequired = supportingFilesRequired
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesRequired)
+}
+
+// SetSupportingFilesVisibleFor sets the SupportingFilesVisibleFor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetSupportingFilesVisibleFor(supportingFilesVisibleFor []string) {
+	l.SupportingFilesVisibleFor = supportingFilesVisibleFor
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesVisibleFor)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -3415,6 +3745,64 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItemErrorsItem) St
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// Optional native input format for a text response.
+type ListVerificationsResponseDataItemRequestedInformationItemResponseType string
+
+const (
+	ListVerificationsResponseDataItemRequestedInformationItemResponseTypeYesNo   ListVerificationsResponseDataItemRequestedInformationItemResponseType = "yes_no"
+	ListVerificationsResponseDataItemRequestedInformationItemResponseTypeYesNoNa ListVerificationsResponseDataItemRequestedInformationItemResponseType = "yes_no_na"
+	ListVerificationsResponseDataItemRequestedInformationItemResponseTypeDate    ListVerificationsResponseDataItemRequestedInformationItemResponseType = "date"
+	ListVerificationsResponseDataItemRequestedInformationItemResponseTypeURL     ListVerificationsResponseDataItemRequestedInformationItemResponseType = "url"
+	ListVerificationsResponseDataItemRequestedInformationItemResponseTypeNumber  ListVerificationsResponseDataItemRequestedInformationItemResponseType = "number"
+	ListVerificationsResponseDataItemRequestedInformationItemResponseTypeTel     ListVerificationsResponseDataItemRequestedInformationItemResponseType = "tel"
+)
+
+func NewListVerificationsResponseDataItemRequestedInformationItemResponseTypeFromString(s string) (ListVerificationsResponseDataItemRequestedInformationItemResponseType, error) {
+	switch s {
+	case "yes_no":
+		return ListVerificationsResponseDataItemRequestedInformationItemResponseTypeYesNo, nil
+	case "yes_no_na":
+		return ListVerificationsResponseDataItemRequestedInformationItemResponseTypeYesNoNa, nil
+	case "date":
+		return ListVerificationsResponseDataItemRequestedInformationItemResponseTypeDate, nil
+	case "url":
+		return ListVerificationsResponseDataItemRequestedInformationItemResponseTypeURL, nil
+	case "number":
+		return ListVerificationsResponseDataItemRequestedInformationItemResponseTypeNumber, nil
+	case "tel":
+		return ListVerificationsResponseDataItemRequestedInformationItemResponseTypeTel, nil
+	}
+	var t ListVerificationsResponseDataItemRequestedInformationItemResponseType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListVerificationsResponseDataItemRequestedInformationItemResponseType) Ptr() *ListVerificationsResponseDataItemRequestedInformationItemResponseType {
+	return &l
+}
+
+// Whether a question with `options` accepts one value or multiple values.
+type ListVerificationsResponseDataItemRequestedInformationItemSelectionMode string
+
+const (
+	ListVerificationsResponseDataItemRequestedInformationItemSelectionModeSingle   ListVerificationsResponseDataItemRequestedInformationItemSelectionMode = "single"
+	ListVerificationsResponseDataItemRequestedInformationItemSelectionModeMultiple ListVerificationsResponseDataItemRequestedInformationItemSelectionMode = "multiple"
+)
+
+func NewListVerificationsResponseDataItemRequestedInformationItemSelectionModeFromString(s string) (ListVerificationsResponseDataItemRequestedInformationItemSelectionMode, error) {
+	switch s {
+	case "single":
+		return ListVerificationsResponseDataItemRequestedInformationItemSelectionModeSingle, nil
+	case "multiple":
+		return ListVerificationsResponseDataItemRequestedInformationItemSelectionModeMultiple, nil
+	}
+	var t ListVerificationsResponseDataItemRequestedInformationItemSelectionMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListVerificationsResponseDataItemRequestedInformationItemSelectionMode) Ptr() *ListVerificationsResponseDataItemRequestedInformationItemSelectionMode {
+	return &l
 }
 
 var (
@@ -4731,16 +5119,30 @@ func (r RetrieveVerificationsResponseKind) Ptr() *RetrieveVerificationsResponseK
 }
 
 var (
-	retrieveVerificationsResponseRequestedInformationItemFieldErrors      = big.NewInt(1 << 0)
-	retrieveVerificationsResponseRequestedInformationItemFieldID          = big.NewInt(1 << 1)
-	retrieveVerificationsResponseRequestedInformationItemFieldLabel       = big.NewInt(1 << 2)
-	retrieveVerificationsResponseRequestedInformationItemFieldOptional    = big.NewInt(1 << 3)
-	retrieveVerificationsResponseRequestedInformationItemFieldOptions     = big.NewInt(1 << 4)
-	retrieveVerificationsResponseRequestedInformationItemFieldRequirement = big.NewInt(1 << 5)
-	retrieveVerificationsResponseRequestedInformationItemFieldType        = big.NewInt(1 << 6)
+	retrieveVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 0)
+	retrieveVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 1)
+	retrieveVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 2)
+	retrieveVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 3)
+	retrieveVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 4)
+	retrieveVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 5)
+	retrieveVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 6)
+	retrieveVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 7)
+	retrieveVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 8)
+	retrieveVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 9)
+	retrieveVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 10)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 11)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 12)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 13)
+	retrieveVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 14)
 )
 
 type RetrieveVerificationsResponseRequestedInformationItem struct {
+	// Follow-up prompt shown with this requirement.
+	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
+	// Whether the follow-up response is required when visible.
+	DetailsRequired *bool `json:"details_required,omitempty" url:"details_required,omitempty"`
+	// Selected option values that make the follow-up prompt visible.
+	DetailsVisibleFor []string `json:"details_visible_for,omitempty" url:"details_visible_for,omitempty"`
 	// Present after a rejected submission.
 	Errors []*RetrieveVerificationsResponseRequestedInformationItemErrorsItem `json:"errors,omitempty" url:"errors,omitempty"`
 	// Requested information item ID, prefixed `inrqi_`.
@@ -4753,7 +5155,17 @@ type RetrieveVerificationsResponseRequestedInformationItem struct {
 	Options []string `json:"options,omitempty" url:"options,omitempty"`
 	// What is needed: a document name such as `bank_statement`, or a field key such as `ssn` or `identity_document`. Handle unrecognized values by `type`.
 	Requirement string `json:"requirement" url:"requirement"`
-	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), or `address` (send `address`).
+	// Optional native input format for a text response.
+	ResponseType *RetrieveVerificationsResponseRequestedInformationItemResponseType `json:"response_type,omitempty" url:"response_type,omitempty"`
+	// Whether a question with `options` accepts one value or multiple values.
+	SelectionMode *RetrieveVerificationsResponseRequestedInformationItemSelectionMode `json:"selection_mode,omitempty" url:"selection_mode,omitempty"`
+	// Whether a written explanation may replace required supporting files.
+	SupportingFilesExplanationAllowed *bool `json:"supporting_files_explanation_allowed,omitempty" url:"supporting_files_explanation_allowed,omitempty"`
+	// Whether this requirement also needs supporting files.
+	SupportingFilesRequired *bool `json:"supporting_files_required,omitempty" url:"supporting_files_required,omitempty"`
+	// Selected option values that make the supporting-file input visible.
+	SupportingFilesVisibleFor []string `json:"supporting_files_visible_for,omitempty" url:"supporting_files_visible_for,omitempty"`
+	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), or `address` (send `address`).
 	Type string `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4761,6 +5173,27 @@ type RetrieveVerificationsResponseRequestedInformationItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetDetailsLabel() *string {
+	if r == nil {
+		return nil
+	}
+	return r.DetailsLabel
+}
+
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetDetailsRequired() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.DetailsRequired
+}
+
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetDetailsVisibleFor() []string {
+	if r == nil {
+		return nil
+	}
+	return r.DetailsVisibleFor
 }
 
 func (r *RetrieveVerificationsResponseRequestedInformationItem) GetErrors() []*RetrieveVerificationsResponseRequestedInformationItemErrorsItem {
@@ -4805,6 +5238,41 @@ func (r *RetrieveVerificationsResponseRequestedInformationItem) GetRequirement()
 	return r.Requirement
 }
 
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetResponseType() *RetrieveVerificationsResponseRequestedInformationItemResponseType {
+	if r == nil {
+		return nil
+	}
+	return r.ResponseType
+}
+
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetSelectionMode() *RetrieveVerificationsResponseRequestedInformationItemSelectionMode {
+	if r == nil {
+		return nil
+	}
+	return r.SelectionMode
+}
+
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetSupportingFilesExplanationAllowed() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.SupportingFilesExplanationAllowed
+}
+
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetSupportingFilesRequired() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.SupportingFilesRequired
+}
+
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetSupportingFilesVisibleFor() []string {
+	if r == nil {
+		return nil
+	}
+	return r.SupportingFilesVisibleFor
+}
+
 func (r *RetrieveVerificationsResponseRequestedInformationItem) GetType() string {
 	if r == nil {
 		return ""
@@ -4824,6 +5292,27 @@ func (r *RetrieveVerificationsResponseRequestedInformationItem) require(field *b
 		r.explicitFields = big.NewInt(0)
 	}
 	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetDetailsLabel(detailsLabel *string) {
+	r.DetailsLabel = detailsLabel
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldDetailsLabel)
+}
+
+// SetDetailsRequired sets the DetailsRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetDetailsRequired(detailsRequired *bool) {
+	r.DetailsRequired = detailsRequired
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldDetailsRequired)
+}
+
+// SetDetailsVisibleFor sets the DetailsVisibleFor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetDetailsVisibleFor(detailsVisibleFor []string) {
+	r.DetailsVisibleFor = detailsVisibleFor
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor)
 }
 
 // SetErrors sets the Errors field and marks it as non-optional;
@@ -4866,6 +5355,41 @@ func (r *RetrieveVerificationsResponseRequestedInformationItem) SetOptions(optio
 func (r *RetrieveVerificationsResponseRequestedInformationItem) SetRequirement(requirement string) {
 	r.Requirement = requirement
 	r.require(retrieveVerificationsResponseRequestedInformationItemFieldRequirement)
+}
+
+// SetResponseType sets the ResponseType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetResponseType(responseType *RetrieveVerificationsResponseRequestedInformationItemResponseType) {
+	r.ResponseType = responseType
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldResponseType)
+}
+
+// SetSelectionMode sets the SelectionMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetSelectionMode(selectionMode *RetrieveVerificationsResponseRequestedInformationItemSelectionMode) {
+	r.SelectionMode = selectionMode
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldSelectionMode)
+}
+
+// SetSupportingFilesExplanationAllowed sets the SupportingFilesExplanationAllowed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetSupportingFilesExplanationAllowed(supportingFilesExplanationAllowed *bool) {
+	r.SupportingFilesExplanationAllowed = supportingFilesExplanationAllowed
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed)
+}
+
+// SetSupportingFilesRequired sets the SupportingFilesRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetSupportingFilesRequired(supportingFilesRequired *bool) {
+	r.SupportingFilesRequired = supportingFilesRequired
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired)
+}
+
+// SetSupportingFilesVisibleFor sets the SupportingFilesVisibleFor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetSupportingFilesVisibleFor(supportingFilesVisibleFor []string) {
+	r.SupportingFilesVisibleFor = supportingFilesVisibleFor
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -5017,6 +5541,64 @@ func (r *RetrieveVerificationsResponseRequestedInformationItemErrorsItem) String
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+// Optional native input format for a text response.
+type RetrieveVerificationsResponseRequestedInformationItemResponseType string
+
+const (
+	RetrieveVerificationsResponseRequestedInformationItemResponseTypeYesNo   RetrieveVerificationsResponseRequestedInformationItemResponseType = "yes_no"
+	RetrieveVerificationsResponseRequestedInformationItemResponseTypeYesNoNa RetrieveVerificationsResponseRequestedInformationItemResponseType = "yes_no_na"
+	RetrieveVerificationsResponseRequestedInformationItemResponseTypeDate    RetrieveVerificationsResponseRequestedInformationItemResponseType = "date"
+	RetrieveVerificationsResponseRequestedInformationItemResponseTypeURL     RetrieveVerificationsResponseRequestedInformationItemResponseType = "url"
+	RetrieveVerificationsResponseRequestedInformationItemResponseTypeNumber  RetrieveVerificationsResponseRequestedInformationItemResponseType = "number"
+	RetrieveVerificationsResponseRequestedInformationItemResponseTypeTel     RetrieveVerificationsResponseRequestedInformationItemResponseType = "tel"
+)
+
+func NewRetrieveVerificationsResponseRequestedInformationItemResponseTypeFromString(s string) (RetrieveVerificationsResponseRequestedInformationItemResponseType, error) {
+	switch s {
+	case "yes_no":
+		return RetrieveVerificationsResponseRequestedInformationItemResponseTypeYesNo, nil
+	case "yes_no_na":
+		return RetrieveVerificationsResponseRequestedInformationItemResponseTypeYesNoNa, nil
+	case "date":
+		return RetrieveVerificationsResponseRequestedInformationItemResponseTypeDate, nil
+	case "url":
+		return RetrieveVerificationsResponseRequestedInformationItemResponseTypeURL, nil
+	case "number":
+		return RetrieveVerificationsResponseRequestedInformationItemResponseTypeNumber, nil
+	case "tel":
+		return RetrieveVerificationsResponseRequestedInformationItemResponseTypeTel, nil
+	}
+	var t RetrieveVerificationsResponseRequestedInformationItemResponseType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveVerificationsResponseRequestedInformationItemResponseType) Ptr() *RetrieveVerificationsResponseRequestedInformationItemResponseType {
+	return &r
+}
+
+// Whether a question with `options` accepts one value or multiple values.
+type RetrieveVerificationsResponseRequestedInformationItemSelectionMode string
+
+const (
+	RetrieveVerificationsResponseRequestedInformationItemSelectionModeSingle   RetrieveVerificationsResponseRequestedInformationItemSelectionMode = "single"
+	RetrieveVerificationsResponseRequestedInformationItemSelectionModeMultiple RetrieveVerificationsResponseRequestedInformationItemSelectionMode = "multiple"
+)
+
+func NewRetrieveVerificationsResponseRequestedInformationItemSelectionModeFromString(s string) (RetrieveVerificationsResponseRequestedInformationItemSelectionMode, error) {
+	switch s {
+	case "single":
+		return RetrieveVerificationsResponseRequestedInformationItemSelectionModeSingle, nil
+	case "multiple":
+		return RetrieveVerificationsResponseRequestedInformationItemSelectionModeMultiple, nil
+	}
+	var t RetrieveVerificationsResponseRequestedInformationItemSelectionMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveVerificationsResponseRequestedInformationItemSelectionMode) Ptr() *RetrieveVerificationsResponseRequestedInformationItemSelectionMode {
+	return &r
 }
 
 var (
@@ -5687,11 +6269,11 @@ type UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem struc
 	Address *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddress `json:"address,omitempty" url:"address,omitempty"`
 	// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Documents *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocuments `json:"documents,omitempty" url:"documents,omitempty"`
-	// Answer for a `files` item — one document, as a list of its pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
+	// Answer for a `files` item, or optional supporting documents for `text_with_files` — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Files []string `json:"files,omitempty" url:"files,omitempty"`
 	// Item ID from `requested_information`.
 	ID string `json:"id" url:"id"`
-	// Answer for `text`, `date`, `phone`, and `select` items, and the chosen document type for a `file` item that lists `options`.
+	// Answer for `text`, `text_with_files`, `date`, `phone`, and `select` items, and the chosen document type for a `file` item that lists `options`.
 	Value *string `json:"value,omitempty" url:"value,omitempty"`
 	// Whether `value` is raw input or a vault token.
 	ValueType *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemValueType `json:"value_type,omitempty" url:"value_type,omitempty"`
@@ -6662,11 +7244,11 @@ type UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem struc
 	Address *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddress `json:"address,omitempty" url:"address,omitempty"`
 	// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Documents *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocuments `json:"documents,omitempty" url:"documents,omitempty"`
-	// Answer for a `files` item — one document, as a list of its pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
+	// Answer for a `files` item, or optional supporting documents for `text_with_files` — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Files []string `json:"files,omitempty" url:"files,omitempty"`
 	// Item ID from `requested_information`.
 	ID string `json:"id" url:"id"`
-	// Answer for `text`, `date`, `phone`, and `select` items, and the chosen document type for a `file` item that lists `options`.
+	// Answer for `text`, `text_with_files`, `date`, `phone`, and `select` items, and the chosen document type for a `file` item that lists `options`.
 	Value *string `json:"value,omitempty" url:"value,omitempty"`
 	// Whether `value` is raw input or a vault token.
 	ValueType *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemValueType `json:"value_type,omitempty" url:"value_type,omitempty"`
@@ -7762,16 +8344,30 @@ func (u UpdateVerificationsResponseKind) Ptr() *UpdateVerificationsResponseKind 
 }
 
 var (
-	updateVerificationsResponseRequestedInformationItemFieldErrors      = big.NewInt(1 << 0)
-	updateVerificationsResponseRequestedInformationItemFieldID          = big.NewInt(1 << 1)
-	updateVerificationsResponseRequestedInformationItemFieldLabel       = big.NewInt(1 << 2)
-	updateVerificationsResponseRequestedInformationItemFieldOptional    = big.NewInt(1 << 3)
-	updateVerificationsResponseRequestedInformationItemFieldOptions     = big.NewInt(1 << 4)
-	updateVerificationsResponseRequestedInformationItemFieldRequirement = big.NewInt(1 << 5)
-	updateVerificationsResponseRequestedInformationItemFieldType        = big.NewInt(1 << 6)
+	updateVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 0)
+	updateVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 1)
+	updateVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 2)
+	updateVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 3)
+	updateVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 4)
+	updateVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 5)
+	updateVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 6)
+	updateVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 7)
+	updateVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 8)
+	updateVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 9)
+	updateVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 10)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 11)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 12)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 13)
+	updateVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 14)
 )
 
 type UpdateVerificationsResponseRequestedInformationItem struct {
+	// Follow-up prompt shown with this requirement.
+	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
+	// Whether the follow-up response is required when visible.
+	DetailsRequired *bool `json:"details_required,omitempty" url:"details_required,omitempty"`
+	// Selected option values that make the follow-up prompt visible.
+	DetailsVisibleFor []string `json:"details_visible_for,omitempty" url:"details_visible_for,omitempty"`
 	// Present after a rejected submission.
 	Errors []*UpdateVerificationsResponseRequestedInformationItemErrorsItem `json:"errors,omitempty" url:"errors,omitempty"`
 	// Requested information item ID, prefixed `inrqi_`.
@@ -7784,7 +8380,17 @@ type UpdateVerificationsResponseRequestedInformationItem struct {
 	Options []string `json:"options,omitempty" url:"options,omitempty"`
 	// What is needed: a document name such as `bank_statement`, or a field key such as `ssn` or `identity_document`. Handle unrecognized values by `type`.
 	Requirement string `json:"requirement" url:"requirement"`
-	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), or `address` (send `address`).
+	// Optional native input format for a text response.
+	ResponseType *UpdateVerificationsResponseRequestedInformationItemResponseType `json:"response_type,omitempty" url:"response_type,omitempty"`
+	// Whether a question with `options` accepts one value or multiple values.
+	SelectionMode *UpdateVerificationsResponseRequestedInformationItemSelectionMode `json:"selection_mode,omitempty" url:"selection_mode,omitempty"`
+	// Whether a written explanation may replace required supporting files.
+	SupportingFilesExplanationAllowed *bool `json:"supporting_files_explanation_allowed,omitempty" url:"supporting_files_explanation_allowed,omitempty"`
+	// Whether this requirement also needs supporting files.
+	SupportingFilesRequired *bool `json:"supporting_files_required,omitempty" url:"supporting_files_required,omitempty"`
+	// Selected option values that make the supporting-file input visible.
+	SupportingFilesVisibleFor []string `json:"supporting_files_visible_for,omitempty" url:"supporting_files_visible_for,omitempty"`
+	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), or `address` (send `address`).
 	Type string `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -7792,6 +8398,27 @@ type UpdateVerificationsResponseRequestedInformationItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetDetailsLabel() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DetailsLabel
+}
+
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetDetailsRequired() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.DetailsRequired
+}
+
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetDetailsVisibleFor() []string {
+	if u == nil {
+		return nil
+	}
+	return u.DetailsVisibleFor
 }
 
 func (u *UpdateVerificationsResponseRequestedInformationItem) GetErrors() []*UpdateVerificationsResponseRequestedInformationItemErrorsItem {
@@ -7836,6 +8463,41 @@ func (u *UpdateVerificationsResponseRequestedInformationItem) GetRequirement() s
 	return u.Requirement
 }
 
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetResponseType() *UpdateVerificationsResponseRequestedInformationItemResponseType {
+	if u == nil {
+		return nil
+	}
+	return u.ResponseType
+}
+
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetSelectionMode() *UpdateVerificationsResponseRequestedInformationItemSelectionMode {
+	if u == nil {
+		return nil
+	}
+	return u.SelectionMode
+}
+
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetSupportingFilesExplanationAllowed() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.SupportingFilesExplanationAllowed
+}
+
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetSupportingFilesRequired() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.SupportingFilesRequired
+}
+
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetSupportingFilesVisibleFor() []string {
+	if u == nil {
+		return nil
+	}
+	return u.SupportingFilesVisibleFor
+}
+
 func (u *UpdateVerificationsResponseRequestedInformationItem) GetType() string {
 	if u == nil {
 		return ""
@@ -7855,6 +8517,27 @@ func (u *UpdateVerificationsResponseRequestedInformationItem) require(field *big
 		u.explicitFields = big.NewInt(0)
 	}
 	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetDetailsLabel(detailsLabel *string) {
+	u.DetailsLabel = detailsLabel
+	u.require(updateVerificationsResponseRequestedInformationItemFieldDetailsLabel)
+}
+
+// SetDetailsRequired sets the DetailsRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetDetailsRequired(detailsRequired *bool) {
+	u.DetailsRequired = detailsRequired
+	u.require(updateVerificationsResponseRequestedInformationItemFieldDetailsRequired)
+}
+
+// SetDetailsVisibleFor sets the DetailsVisibleFor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetDetailsVisibleFor(detailsVisibleFor []string) {
+	u.DetailsVisibleFor = detailsVisibleFor
+	u.require(updateVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor)
 }
 
 // SetErrors sets the Errors field and marks it as non-optional;
@@ -7897,6 +8580,41 @@ func (u *UpdateVerificationsResponseRequestedInformationItem) SetOptions(options
 func (u *UpdateVerificationsResponseRequestedInformationItem) SetRequirement(requirement string) {
 	u.Requirement = requirement
 	u.require(updateVerificationsResponseRequestedInformationItemFieldRequirement)
+}
+
+// SetResponseType sets the ResponseType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetResponseType(responseType *UpdateVerificationsResponseRequestedInformationItemResponseType) {
+	u.ResponseType = responseType
+	u.require(updateVerificationsResponseRequestedInformationItemFieldResponseType)
+}
+
+// SetSelectionMode sets the SelectionMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetSelectionMode(selectionMode *UpdateVerificationsResponseRequestedInformationItemSelectionMode) {
+	u.SelectionMode = selectionMode
+	u.require(updateVerificationsResponseRequestedInformationItemFieldSelectionMode)
+}
+
+// SetSupportingFilesExplanationAllowed sets the SupportingFilesExplanationAllowed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetSupportingFilesExplanationAllowed(supportingFilesExplanationAllowed *bool) {
+	u.SupportingFilesExplanationAllowed = supportingFilesExplanationAllowed
+	u.require(updateVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed)
+}
+
+// SetSupportingFilesRequired sets the SupportingFilesRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetSupportingFilesRequired(supportingFilesRequired *bool) {
+	u.SupportingFilesRequired = supportingFilesRequired
+	u.require(updateVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired)
+}
+
+// SetSupportingFilesVisibleFor sets the SupportingFilesVisibleFor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetSupportingFilesVisibleFor(supportingFilesVisibleFor []string) {
+	u.SupportingFilesVisibleFor = supportingFilesVisibleFor
+	u.require(updateVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -8048,6 +8766,64 @@ func (u *UpdateVerificationsResponseRequestedInformationItemErrorsItem) String()
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+// Optional native input format for a text response.
+type UpdateVerificationsResponseRequestedInformationItemResponseType string
+
+const (
+	UpdateVerificationsResponseRequestedInformationItemResponseTypeYesNo   UpdateVerificationsResponseRequestedInformationItemResponseType = "yes_no"
+	UpdateVerificationsResponseRequestedInformationItemResponseTypeYesNoNa UpdateVerificationsResponseRequestedInformationItemResponseType = "yes_no_na"
+	UpdateVerificationsResponseRequestedInformationItemResponseTypeDate    UpdateVerificationsResponseRequestedInformationItemResponseType = "date"
+	UpdateVerificationsResponseRequestedInformationItemResponseTypeURL     UpdateVerificationsResponseRequestedInformationItemResponseType = "url"
+	UpdateVerificationsResponseRequestedInformationItemResponseTypeNumber  UpdateVerificationsResponseRequestedInformationItemResponseType = "number"
+	UpdateVerificationsResponseRequestedInformationItemResponseTypeTel     UpdateVerificationsResponseRequestedInformationItemResponseType = "tel"
+)
+
+func NewUpdateVerificationsResponseRequestedInformationItemResponseTypeFromString(s string) (UpdateVerificationsResponseRequestedInformationItemResponseType, error) {
+	switch s {
+	case "yes_no":
+		return UpdateVerificationsResponseRequestedInformationItemResponseTypeYesNo, nil
+	case "yes_no_na":
+		return UpdateVerificationsResponseRequestedInformationItemResponseTypeYesNoNa, nil
+	case "date":
+		return UpdateVerificationsResponseRequestedInformationItemResponseTypeDate, nil
+	case "url":
+		return UpdateVerificationsResponseRequestedInformationItemResponseTypeURL, nil
+	case "number":
+		return UpdateVerificationsResponseRequestedInformationItemResponseTypeNumber, nil
+	case "tel":
+		return UpdateVerificationsResponseRequestedInformationItemResponseTypeTel, nil
+	}
+	var t UpdateVerificationsResponseRequestedInformationItemResponseType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsResponseRequestedInformationItemResponseType) Ptr() *UpdateVerificationsResponseRequestedInformationItemResponseType {
+	return &u
+}
+
+// Whether a question with `options` accepts one value or multiple values.
+type UpdateVerificationsResponseRequestedInformationItemSelectionMode string
+
+const (
+	UpdateVerificationsResponseRequestedInformationItemSelectionModeSingle   UpdateVerificationsResponseRequestedInformationItemSelectionMode = "single"
+	UpdateVerificationsResponseRequestedInformationItemSelectionModeMultiple UpdateVerificationsResponseRequestedInformationItemSelectionMode = "multiple"
+)
+
+func NewUpdateVerificationsResponseRequestedInformationItemSelectionModeFromString(s string) (UpdateVerificationsResponseRequestedInformationItemSelectionMode, error) {
+	switch s {
+	case "single":
+		return UpdateVerificationsResponseRequestedInformationItemSelectionModeSingle, nil
+	case "multiple":
+		return UpdateVerificationsResponseRequestedInformationItemSelectionModeMultiple, nil
+	}
+	var t UpdateVerificationsResponseRequestedInformationItemSelectionMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsResponseRequestedInformationItemSelectionMode) Ptr() *UpdateVerificationsResponseRequestedInformationItemSelectionMode {
+	return &u
 }
 
 var (
