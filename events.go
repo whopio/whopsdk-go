@@ -4156,14 +4156,17 @@ var (
 	listEventsResponseDataItemRelatedPaymentFieldCardBrand = big.NewInt(1 << 0)
 	listEventsResponseDataItemRelatedPaymentFieldCardLast4 = big.NewInt(1 << 1)
 	listEventsResponseDataItemRelatedPaymentFieldID        = big.NewInt(1 << 2)
-	listEventsResponseDataItemRelatedPaymentFieldProvider  = big.NewInt(1 << 3)
+	listEventsResponseDataItemRelatedPaymentFieldLineItems = big.NewInt(1 << 3)
+	listEventsResponseDataItemRelatedPaymentFieldProvider  = big.NewInt(1 << 4)
 )
 
 type ListEventsResponseDataItemRelatedPayment struct {
 	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
 	CardLast4 *string `json:"card_last4,omitempty" url:"card_last4,omitempty"`
 	ID        *string `json:"id,omitempty" url:"id,omitempty"`
-	Provider  *string `json:"provider,omitempty" url:"provider,omitempty"`
+	// Everything this payment charged for, in purchase order, including quantities. Older payments fall back to their original plan.
+	LineItems []*ReceiptLineItem `json:"line_items,omitempty" url:"line_items,omitempty"`
+	Provider  *string            `json:"provider,omitempty" url:"provider,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4191,6 +4194,13 @@ func (l *ListEventsResponseDataItemRelatedPayment) GetID() *string {
 		return nil
 	}
 	return l.ID
+}
+
+func (l *ListEventsResponseDataItemRelatedPayment) GetLineItems() []*ReceiptLineItem {
+	if l == nil {
+		return nil
+	}
+	return l.LineItems
 }
 
 func (l *ListEventsResponseDataItemRelatedPayment) GetProvider() *string {
@@ -4233,6 +4243,13 @@ func (l *ListEventsResponseDataItemRelatedPayment) SetCardLast4(cardLast4 *strin
 func (l *ListEventsResponseDataItemRelatedPayment) SetID(id *string) {
 	l.ID = id
 	l.require(listEventsResponseDataItemRelatedPaymentFieldID)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEventsResponseDataItemRelatedPayment) SetLineItems(lineItems []*ReceiptLineItem) {
+	l.LineItems = lineItems
+	l.require(listEventsResponseDataItemRelatedPaymentFieldLineItems)
 }
 
 // SetProvider sets the Provider field and marks it as non-optional;
