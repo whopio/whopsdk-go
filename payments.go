@@ -6413,6 +6413,257 @@ func (p PostPaymentPendingPayloadType) Ptr() *PostPaymentPendingPayloadType {
 }
 
 var (
+	postPaymentRequiresActionPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postPaymentRequiresActionPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postPaymentRequiresActionPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postPaymentRequiresActionPayloadFieldData               = big.NewInt(1 << 3)
+	postPaymentRequiresActionPayloadFieldID                 = big.NewInt(1 << 4)
+	postPaymentRequiresActionPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postPaymentRequiresActionPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postPaymentRequiresActionPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+type PostPaymentRequiresActionPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostPaymentRequiresActionPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostPaymentRequiresActionPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPaymentRequiresActionPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostPaymentRequiresActionPayload) GetAPIVersion() PostPaymentRequiresActionPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostPaymentRequiresActionPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostPaymentRequiresActionPayload) GetData() *Payment {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostPaymentRequiresActionPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostPaymentRequiresActionPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostPaymentRequiresActionPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostPaymentRequiresActionPayload) GetType() PostPaymentRequiresActionPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostPaymentRequiresActionPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPaymentRequiresActionPayload) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postPaymentRequiresActionPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetAPIVersion(apiVersion PostPaymentRequiresActionPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postPaymentRequiresActionPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postPaymentRequiresActionPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetData(data *Payment) {
+	p.Data = data
+	p.require(postPaymentRequiresActionPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetID(id string) {
+	p.ID = id
+	p.require(postPaymentRequiresActionPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postPaymentRequiresActionPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postPaymentRequiresActionPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetType(type_ PostPaymentRequiresActionPayloadType) {
+	p.Type = type_
+	p.require(postPaymentRequiresActionPayloadFieldType)
+}
+
+func (p *PostPaymentRequiresActionPayload) UnmarshalJSON(data []byte) error {
+	type embed PostPaymentRequiresActionPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostPaymentRequiresActionPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPaymentRequiresActionPayload) MarshalJSON() ([]byte, error) {
+	type embed PostPaymentRequiresActionPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPaymentRequiresActionPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostPaymentRequiresActionPayloadAPIVersion string
+
+const (
+	PostPaymentRequiresActionPayloadAPIVersionV1 PostPaymentRequiresActionPayloadAPIVersion = "v1"
+)
+
+func NewPostPaymentRequiresActionPayloadAPIVersionFromString(s string) (PostPaymentRequiresActionPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostPaymentRequiresActionPayloadAPIVersionV1, nil
+	}
+	var t PostPaymentRequiresActionPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentRequiresActionPayloadAPIVersion) Ptr() *PostPaymentRequiresActionPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostPaymentRequiresActionPayloadType string
+
+const (
+	PostPaymentRequiresActionPayloadTypePaymentRequiresAction PostPaymentRequiresActionPayloadType = "payment.requires_action"
+)
+
+func NewPostPaymentRequiresActionPayloadTypeFromString(s string) (PostPaymentRequiresActionPayloadType, error) {
+	switch s {
+	case "payment.requires_action":
+		return PostPaymentRequiresActionPayloadTypePaymentRequiresAction, nil
+	}
+	var t PostPaymentRequiresActionPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentRequiresActionPayloadType) Ptr() *PostPaymentRequiresActionPayloadType {
+	return &p
+}
+
+var (
 	postPaymentSucceededPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postPaymentSucceededPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postPaymentSucceededPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)

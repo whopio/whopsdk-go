@@ -41554,6 +41554,7 @@ const (
 	WebhookEventPayoutAccountStatusUpdated         WebhookEvent = "payout_account.status_updated"
 	WebhookEventPaymentAuthorized                  WebhookEvent = "payment.authorized"
 	WebhookEventPaymentCanceled                    WebhookEvent = "payment.canceled"
+	WebhookEventPaymentRequiresAction              WebhookEvent = "payment.requires_action"
 	WebhookEventResolutionCenterCaseCreated        WebhookEvent = "resolution_center_case.created"
 	WebhookEventResolutionCenterCaseUpdated        WebhookEvent = "resolution_center_case.updated"
 	WebhookEventResolutionCenterCaseDecided        WebhookEvent = "resolution_center_case.decided"
@@ -41700,6 +41701,8 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventPaymentAuthorized, nil
 	case "payment.canceled":
 		return WebhookEventPaymentCanceled, nil
+	case "payment.requires_action":
+		return WebhookEventPaymentRequiresAction, nil
 	case "resolution_center_case.created":
 		return WebhookEventResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
