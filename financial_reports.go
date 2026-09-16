@@ -1580,6 +1580,8 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspPayoutSettlementReversal               RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_payout_settlement_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspPoolClearing                           RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_pool_clearing"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspPoolDisputeSettlement                  RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_pool_dispute_settlement"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPspPoolRefundClearing                     RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_pool_refund_clearing"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPspPoolRefundSettlement                   RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_pool_refund_settlement"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspPoolSettlement                         RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_pool_settlement"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspProcessingFee                          RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_processing_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspReceivablePooled                       RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_receivable_pooled"
@@ -2097,6 +2099,10 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspPoolClearing, nil
 	case "psp_pool_dispute_settlement":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspPoolDisputeSettlement, nil
+	case "psp_pool_refund_clearing":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspPoolRefundClearing, nil
+	case "psp_pool_refund_settlement":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspPoolRefundSettlement, nil
 	case "psp_pool_settlement":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspPoolSettlement, nil
 	case "psp_processing_fee":
