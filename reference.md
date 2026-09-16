@@ -25067,7 +25067,15 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**capture:** `*bool` — Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint.
+**autoCaptureAfterMinutes:** `*int` — Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**capture:** `*bool` — Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
     
 </dd>
 </dl>
