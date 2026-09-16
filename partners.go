@@ -143,6 +143,7 @@ var (
 	partnerFieldPayoutRates             = big.NewInt(1 << 1)
 	partnerFieldReferredBusinessesCount = big.NewInt(1 << 2)
 	partnerFieldUser                    = big.NewInt(1 << 3)
+	partnerFieldWhopPartnerVerifiedAt   = big.NewInt(1 << 4)
 )
 
 type Partner struct {
@@ -153,6 +154,8 @@ type Partner struct {
 	ReferredBusinessesCount int `json:"referred_businesses_count" url:"referred_businesses_count"`
 	// The authenticated partner's public profile.
 	User *UserSummary `json:"user" url:"user"`
+	// When the user became a verified Whop Partner, as an ISO 8601 timestamp. `null` if not verified.
+	WhopPartnerVerifiedAt *string `json:"whop_partner_verified_at,omitempty" url:"whop_partner_verified_at,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -187,6 +190,13 @@ func (p *Partner) GetUser() *UserSummary {
 		return nil
 	}
 	return p.User
+}
+
+func (p *Partner) GetWhopPartnerVerifiedAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.WhopPartnerVerifiedAt
 }
 
 func (p *Partner) GetExtraProperties() map[string]interface{} {
@@ -229,6 +239,13 @@ func (p *Partner) SetReferredBusinessesCount(referredBusinessesCount int) {
 func (p *Partner) SetUser(user *UserSummary) {
 	p.User = user
 	p.require(partnerFieldUser)
+}
+
+// SetWhopPartnerVerifiedAt sets the WhopPartnerVerifiedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Partner) SetWhopPartnerVerifiedAt(whopPartnerVerifiedAt *string) {
+	p.WhopPartnerVerifiedAt = whopPartnerVerifiedAt
+	p.require(partnerFieldWhopPartnerVerifiedAt)
 }
 
 func (p *Partner) UnmarshalJSON(data []byte) error {
