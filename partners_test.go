@@ -373,6 +373,14 @@ func TestSettersPartner(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetWhopPartnerVerifiedAt", func(t *testing.T) {
+		obj := &Partner{}
+		var fernTestValueWhopPartnerVerifiedAt *string
+		obj.SetWhopPartnerVerifiedAt(fernTestValueWhopPartnerVerifiedAt)
+		assert.Equal(t, fernTestValueWhopPartnerVerifiedAt, obj.WhopPartnerVerifiedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersPartner(t *testing.T) {
@@ -498,6 +506,39 @@ func TestGettersPartner(t *testing.T) {
 		_ = obj.GetUser() // Should return zero value
 	})
 
+	t.Run("GetWhopPartnerVerifiedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Partner{}
+		var expected *string
+		obj.WhopPartnerVerifiedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWhopPartnerVerifiedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetWhopPartnerVerifiedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Partner{}
+		obj.WhopPartnerVerifiedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWhopPartnerVerifiedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWhopPartnerVerifiedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Partner
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWhopPartnerVerifiedAt() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitPartner(t *testing.T) {
@@ -602,6 +643,37 @@ func TestSettersMarkExplicitPartner(t *testing.T) {
 
 		// Act
 		obj.SetUser(fernTestValueUser)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWhopPartnerVerifiedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Partner{}
+		var fernTestValueWhopPartnerVerifiedAt *string
+
+		// Act
+		obj.SetWhopPartnerVerifiedAt(fernTestValueWhopPartnerVerifiedAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
