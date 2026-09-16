@@ -139,11 +139,12 @@ func (r *RetrievePartnersRequest) SetID(id string) {
 }
 
 var (
-	partnerFieldJoinedAt                = big.NewInt(1 << 0)
-	partnerFieldPayoutRates             = big.NewInt(1 << 1)
-	partnerFieldReferredBusinessesCount = big.NewInt(1 << 2)
-	partnerFieldUser                    = big.NewInt(1 << 3)
-	partnerFieldWhopPartnerVerifiedAt   = big.NewInt(1 << 4)
+	partnerFieldJoinedAt                   = big.NewInt(1 << 0)
+	partnerFieldPayoutRates                = big.NewInt(1 << 1)
+	partnerFieldReferredBusinessesCount    = big.NewInt(1 << 2)
+	partnerFieldUser                       = big.NewInt(1 << 3)
+	partnerFieldVerificationWaitlistJoined = big.NewInt(1 << 4)
+	partnerFieldWhopPartnerVerifiedAt      = big.NewInt(1 << 5)
 )
 
 type Partner struct {
@@ -154,6 +155,8 @@ type Partner struct {
 	ReferredBusinessesCount int `json:"referred_businesses_count" url:"referred_businesses_count"`
 	// The authenticated partner's public profile.
 	User *UserSummary `json:"user" url:"user"`
+	// Whether the user has a pending or approved personal entry on the Verified Partner waitlist.
+	VerificationWaitlistJoined bool `json:"verification_waitlist_joined" url:"verification_waitlist_joined"`
 	// When the user became a verified Whop Partner, as an ISO 8601 timestamp. `null` if not verified.
 	WhopPartnerVerifiedAt *string `json:"whop_partner_verified_at,omitempty" url:"whop_partner_verified_at,omitempty"`
 
@@ -190,6 +193,13 @@ func (p *Partner) GetUser() *UserSummary {
 		return nil
 	}
 	return p.User
+}
+
+func (p *Partner) GetVerificationWaitlistJoined() bool {
+	if p == nil {
+		return false
+	}
+	return p.VerificationWaitlistJoined
 }
 
 func (p *Partner) GetWhopPartnerVerifiedAt() *string {
@@ -239,6 +249,13 @@ func (p *Partner) SetReferredBusinessesCount(referredBusinessesCount int) {
 func (p *Partner) SetUser(user *UserSummary) {
 	p.User = user
 	p.require(partnerFieldUser)
+}
+
+// SetVerificationWaitlistJoined sets the VerificationWaitlistJoined field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Partner) SetVerificationWaitlistJoined(verificationWaitlistJoined bool) {
+	p.VerificationWaitlistJoined = verificationWaitlistJoined
+	p.require(partnerFieldVerificationWaitlistJoined)
 }
 
 // SetWhopPartnerVerifiedAt sets the WhopPartnerVerifiedAt field and marks it as non-optional;

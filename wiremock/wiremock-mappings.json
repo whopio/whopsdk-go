@@ -8758,7 +8758,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n  \"payout_rates\": [\n    {\n      \"duration\": {\n        \"unit\": \"day\",\n        \"value\": 600\n      },\n      \"rates\": [\n        {\n          \"income_source\": \"sales\",\n          \"percentage\": 10\n        }\n      ],\n      \"tier\": \"first\"\n    }\n  ],\n  \"referred_businesses_count\": 1,\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"whop_partner_verified_at\": \"whop_partner_verified_at\"\n}",
+        "body": "{\n  \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n  \"payout_rates\": [\n    {\n      \"duration\": {\n        \"unit\": \"day\",\n        \"value\": 600\n      },\n      \"rates\": [\n        {\n          \"income_source\": \"sales\",\n          \"percentage\": 10\n        }\n      ],\n      \"tier\": \"first\"\n    }\n  ],\n  \"referred_businesses_count\": 1,\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"verification_waitlist_joined\": false,\n  \"whop_partner_verified_at\": \"whop_partner_verified_at\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
