@@ -199,6 +199,7 @@ func (r RetrieveBreakdownRequestDirection) Ptr() *RetrieveBreakdownRequestDirect
 type RetrieveBreakdownRequestGroupBy string
 
 const (
+	RetrieveBreakdownRequestGroupByHour  RetrieveBreakdownRequestGroupBy = "hour"
 	RetrieveBreakdownRequestGroupByDay   RetrieveBreakdownRequestGroupBy = "day"
 	RetrieveBreakdownRequestGroupByWeek  RetrieveBreakdownRequestGroupBy = "week"
 	RetrieveBreakdownRequestGroupByMonth RetrieveBreakdownRequestGroupBy = "month"
@@ -206,6 +207,8 @@ const (
 
 func NewRetrieveBreakdownRequestGroupByFromString(s string) (RetrieveBreakdownRequestGroupBy, error) {
 	switch s {
+	case "hour":
+		return RetrieveBreakdownRequestGroupByHour, nil
 	case "day":
 		return RetrieveBreakdownRequestGroupByDay, nil
 	case "week":

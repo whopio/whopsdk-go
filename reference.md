@@ -18795,7 +18795,7 @@ client.FinancialReports.Retrieve(
 <dl>
 <dd>
 
-**groupBy:** `*whopsdk.RetrieveFinancialReportsRequestGroupBy` — Grouping granularity for report rows.
+**groupBy:** `*whopsdk.RetrieveFinancialReportsRequestGroupBy` — Grouping granularity for report rows. Hourly grouping is supported for account-level balance activity reports only; hourly periods are timestamps in the requested timezone.
     
 </dd>
 </dl>
