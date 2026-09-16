@@ -39,7 +39,7 @@ type RetrieveFinancialReportsRequest struct {
 	From *time.Time `json:"-" url:"from,omitempty"`
 	// Exclusive end of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
 	To *time.Time `json:"-" url:"to,omitempty"`
-	// Grouping granularity for report rows.
+	// Grouping granularity for report rows. Hourly grouping is supported for account-level balance activity reports only; hourly periods are timestamps in the requested timezone.
 	GroupBy *RetrieveFinancialReportsRequestGroupBy `json:"-" url:"group_by,omitempty"`
 	// IANA timezone (for example `America/New_York`) used to bucket report periods. Defaults to UTC. `from` and `to` remain exact instants.
 	Timezone *string `json:"-" url:"timezone,omitempty"`
@@ -181,6 +181,7 @@ func (r RetrieveFinancialReportsRequestDirection) Ptr() *RetrieveFinancialReport
 type RetrieveFinancialReportsRequestGroupBy string
 
 const (
+	RetrieveFinancialReportsRequestGroupByHour  RetrieveFinancialReportsRequestGroupBy = "hour"
 	RetrieveFinancialReportsRequestGroupByDay   RetrieveFinancialReportsRequestGroupBy = "day"
 	RetrieveFinancialReportsRequestGroupByWeek  RetrieveFinancialReportsRequestGroupBy = "week"
 	RetrieveFinancialReportsRequestGroupByMonth RetrieveFinancialReportsRequestGroupBy = "month"
@@ -188,6 +189,8 @@ const (
 
 func NewRetrieveFinancialReportsRequestGroupByFromString(s string) (RetrieveFinancialReportsRequestGroupBy, error) {
 	switch s {
+	case "hour":
+		return RetrieveFinancialReportsRequestGroupByHour, nil
 	case "day":
 		return RetrieveFinancialReportsRequestGroupByDay, nil
 	case "week":

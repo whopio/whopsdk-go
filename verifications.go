@@ -1986,24 +1986,28 @@ func (c CreateVerificationsResponseKind) Ptr() *CreateVerificationsResponseKind 
 }
 
 var (
-	createVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 0)
-	createVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 1)
-	createVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 2)
-	createVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 3)
-	createVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 4)
-	createVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 5)
-	createVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 6)
-	createVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 7)
-	createVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 8)
-	createVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 9)
-	createVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 10)
-	createVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 11)
-	createVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 12)
-	createVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 13)
-	createVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 14)
+	createVerificationsResponseRequestedInformationItemFieldActionURL                         = big.NewInt(1 << 0)
+	createVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 1)
+	createVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 2)
+	createVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 3)
+	createVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 4)
+	createVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 5)
+	createVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 6)
+	createVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 7)
+	createVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 8)
+	createVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 9)
+	createVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 10)
+	createVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 11)
+	createVerificationsResponseRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 12)
+	createVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 13)
+	createVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 14)
+	createVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 15)
+	createVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 16)
 )
 
 type CreateVerificationsResponseRequestedInformationItem struct {
+	// URL for a related action, such as completing liveness verification or viewing a payment. Absent when no action is available.
+	ActionURL *string `json:"action_url,omitempty" url:"action_url,omitempty"`
 	// Follow-up prompt shown with this requirement.
 	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
 	// Whether the follow-up response is required when visible.
@@ -2026,13 +2030,15 @@ type CreateVerificationsResponseRequestedInformationItem struct {
 	ResponseType *CreateVerificationsResponseRequestedInformationItemResponseType `json:"response_type,omitempty" url:"response_type,omitempty"`
 	// Whether a question with `options` accepts one value or multiple values.
 	SelectionMode *CreateVerificationsResponseRequestedInformationItemSelectionMode `json:"selection_mode,omitempty" url:"selection_mode,omitempty"`
+	// Documents supplied with the requirement for context.
+	SupportingDocuments []*File `json:"supporting_documents,omitempty" url:"supporting_documents,omitempty"`
 	// Whether a written explanation may replace required supporting files.
 	SupportingFilesExplanationAllowed *bool `json:"supporting_files_explanation_allowed,omitempty" url:"supporting_files_explanation_allowed,omitempty"`
 	// Whether this requirement also needs supporting files.
 	SupportingFilesRequired *bool `json:"supporting_files_required,omitempty" url:"supporting_files_required,omitempty"`
 	// Selected option values that make the supporting-file input visible.
 	SupportingFilesVisibleFor []string `json:"supporting_files_visible_for,omitempty" url:"supporting_files_visible_for,omitempty"`
-	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), or `address` (send `address`).
+	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), `address` (send `address`), or `liveness` (open `action_url`, then send `value` as `true` after completion).
 	Type string `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2040,6 +2046,13 @@ type CreateVerificationsResponseRequestedInformationItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsResponseRequestedInformationItem) GetActionURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ActionURL
 }
 
 func (c *CreateVerificationsResponseRequestedInformationItem) GetDetailsLabel() *string {
@@ -2119,6 +2132,13 @@ func (c *CreateVerificationsResponseRequestedInformationItem) GetSelectionMode()
 	return c.SelectionMode
 }
 
+func (c *CreateVerificationsResponseRequestedInformationItem) GetSupportingDocuments() []*File {
+	if c == nil {
+		return nil
+	}
+	return c.SupportingDocuments
+}
+
 func (c *CreateVerificationsResponseRequestedInformationItem) GetSupportingFilesExplanationAllowed() *bool {
 	if c == nil {
 		return nil
@@ -2159,6 +2179,13 @@ func (c *CreateVerificationsResponseRequestedInformationItem) require(field *big
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetActionURL sets the ActionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetActionURL(actionURL *string) {
+	c.ActionURL = actionURL
+	c.require(createVerificationsResponseRequestedInformationItemFieldActionURL)
 }
 
 // SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
@@ -2236,6 +2263,13 @@ func (c *CreateVerificationsResponseRequestedInformationItem) SetResponseType(re
 func (c *CreateVerificationsResponseRequestedInformationItem) SetSelectionMode(selectionMode *CreateVerificationsResponseRequestedInformationItemSelectionMode) {
 	c.SelectionMode = selectionMode
 	c.require(createVerificationsResponseRequestedInformationItemFieldSelectionMode)
+}
+
+// SetSupportingDocuments sets the SupportingDocuments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseRequestedInformationItem) SetSupportingDocuments(supportingDocuments []*File) {
+	c.SupportingDocuments = supportingDocuments
+	c.require(createVerificationsResponseRequestedInformationItemFieldSupportingDocuments)
 }
 
 // SetSupportingFilesExplanationAllowed sets the SupportingFilesExplanationAllowed field and marks it as non-optional;
@@ -3323,24 +3357,28 @@ func (l ListVerificationsResponseDataItemKind) Ptr() *ListVerificationsResponseD
 }
 
 var (
-	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 0)
-	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 1)
-	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 2)
-	listVerificationsResponseDataItemRequestedInformationItemFieldErrors                            = big.NewInt(1 << 3)
-	listVerificationsResponseDataItemRequestedInformationItemFieldID                                = big.NewInt(1 << 4)
-	listVerificationsResponseDataItemRequestedInformationItemFieldLabel                             = big.NewInt(1 << 5)
-	listVerificationsResponseDataItemRequestedInformationItemFieldOptional                          = big.NewInt(1 << 6)
-	listVerificationsResponseDataItemRequestedInformationItemFieldOptions                           = big.NewInt(1 << 7)
-	listVerificationsResponseDataItemRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 8)
-	listVerificationsResponseDataItemRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 9)
-	listVerificationsResponseDataItemRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 10)
-	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 11)
-	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 12)
-	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 13)
-	listVerificationsResponseDataItemRequestedInformationItemFieldType                              = big.NewInt(1 << 14)
+	listVerificationsResponseDataItemRequestedInformationItemFieldActionURL                         = big.NewInt(1 << 0)
+	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 1)
+	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 2)
+	listVerificationsResponseDataItemRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 3)
+	listVerificationsResponseDataItemRequestedInformationItemFieldErrors                            = big.NewInt(1 << 4)
+	listVerificationsResponseDataItemRequestedInformationItemFieldID                                = big.NewInt(1 << 5)
+	listVerificationsResponseDataItemRequestedInformationItemFieldLabel                             = big.NewInt(1 << 6)
+	listVerificationsResponseDataItemRequestedInformationItemFieldOptional                          = big.NewInt(1 << 7)
+	listVerificationsResponseDataItemRequestedInformationItemFieldOptions                           = big.NewInt(1 << 8)
+	listVerificationsResponseDataItemRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 9)
+	listVerificationsResponseDataItemRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 10)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 11)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 12)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 13)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 14)
+	listVerificationsResponseDataItemRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 15)
+	listVerificationsResponseDataItemRequestedInformationItemFieldType                              = big.NewInt(1 << 16)
 )
 
 type ListVerificationsResponseDataItemRequestedInformationItem struct {
+	// URL for a related action, such as completing liveness verification or viewing a payment. Absent when no action is available.
+	ActionURL *string `json:"action_url,omitempty" url:"action_url,omitempty"`
 	// Follow-up prompt shown with this requirement.
 	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
 	// Whether the follow-up response is required when visible.
@@ -3363,13 +3401,15 @@ type ListVerificationsResponseDataItemRequestedInformationItem struct {
 	ResponseType *ListVerificationsResponseDataItemRequestedInformationItemResponseType `json:"response_type,omitempty" url:"response_type,omitempty"`
 	// Whether a question with `options` accepts one value or multiple values.
 	SelectionMode *ListVerificationsResponseDataItemRequestedInformationItemSelectionMode `json:"selection_mode,omitempty" url:"selection_mode,omitempty"`
+	// Documents supplied with the requirement for context.
+	SupportingDocuments []*File `json:"supporting_documents,omitempty" url:"supporting_documents,omitempty"`
 	// Whether a written explanation may replace required supporting files.
 	SupportingFilesExplanationAllowed *bool `json:"supporting_files_explanation_allowed,omitempty" url:"supporting_files_explanation_allowed,omitempty"`
 	// Whether this requirement also needs supporting files.
 	SupportingFilesRequired *bool `json:"supporting_files_required,omitempty" url:"supporting_files_required,omitempty"`
 	// Selected option values that make the supporting-file input visible.
 	SupportingFilesVisibleFor []string `json:"supporting_files_visible_for,omitempty" url:"supporting_files_visible_for,omitempty"`
-	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), or `address` (send `address`).
+	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), `address` (send `address`), or `liveness` (open `action_url`, then send `value` as `true` after completion).
 	Type string `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3377,6 +3417,13 @@ type ListVerificationsResponseDataItemRequestedInformationItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetActionURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ActionURL
 }
 
 func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetDetailsLabel() *string {
@@ -3456,6 +3503,13 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetSelection
 	return l.SelectionMode
 }
 
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetSupportingDocuments() []*File {
+	if l == nil {
+		return nil
+	}
+	return l.SupportingDocuments
+}
+
 func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetSupportingFilesExplanationAllowed() *bool {
 	if l == nil {
 		return nil
@@ -3496,6 +3550,13 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItem) require(fiel
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetActionURL sets the ActionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetActionURL(actionURL *string) {
+	l.ActionURL = actionURL
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldActionURL)
 }
 
 // SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
@@ -3573,6 +3634,13 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetResponseT
 func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetSelectionMode(selectionMode *ListVerificationsResponseDataItemRequestedInformationItemSelectionMode) {
 	l.SelectionMode = selectionMode
 	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldSelectionMode)
+}
+
+// SetSupportingDocuments sets the SupportingDocuments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemRequestedInformationItem) SetSupportingDocuments(supportingDocuments []*File) {
+	l.SupportingDocuments = supportingDocuments
+	l.require(listVerificationsResponseDataItemRequestedInformationItemFieldSupportingDocuments)
 }
 
 // SetSupportingFilesExplanationAllowed sets the SupportingFilesExplanationAllowed field and marks it as non-optional;
@@ -5119,24 +5187,28 @@ func (r RetrieveVerificationsResponseKind) Ptr() *RetrieveVerificationsResponseK
 }
 
 var (
-	retrieveVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 0)
-	retrieveVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 1)
-	retrieveVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 2)
-	retrieveVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 3)
-	retrieveVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 4)
-	retrieveVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 5)
-	retrieveVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 6)
-	retrieveVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 7)
-	retrieveVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 8)
-	retrieveVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 9)
-	retrieveVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 10)
-	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 11)
-	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 12)
-	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 13)
-	retrieveVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 14)
+	retrieveVerificationsResponseRequestedInformationItemFieldActionURL                         = big.NewInt(1 << 0)
+	retrieveVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 1)
+	retrieveVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 2)
+	retrieveVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 3)
+	retrieveVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 4)
+	retrieveVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 5)
+	retrieveVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 6)
+	retrieveVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 7)
+	retrieveVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 8)
+	retrieveVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 9)
+	retrieveVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 10)
+	retrieveVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 11)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 12)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 13)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 14)
+	retrieveVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 15)
+	retrieveVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 16)
 )
 
 type RetrieveVerificationsResponseRequestedInformationItem struct {
+	// URL for a related action, such as completing liveness verification or viewing a payment. Absent when no action is available.
+	ActionURL *string `json:"action_url,omitempty" url:"action_url,omitempty"`
 	// Follow-up prompt shown with this requirement.
 	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
 	// Whether the follow-up response is required when visible.
@@ -5159,13 +5231,15 @@ type RetrieveVerificationsResponseRequestedInformationItem struct {
 	ResponseType *RetrieveVerificationsResponseRequestedInformationItemResponseType `json:"response_type,omitempty" url:"response_type,omitempty"`
 	// Whether a question with `options` accepts one value or multiple values.
 	SelectionMode *RetrieveVerificationsResponseRequestedInformationItemSelectionMode `json:"selection_mode,omitempty" url:"selection_mode,omitempty"`
+	// Documents supplied with the requirement for context.
+	SupportingDocuments []*File `json:"supporting_documents,omitempty" url:"supporting_documents,omitempty"`
 	// Whether a written explanation may replace required supporting files.
 	SupportingFilesExplanationAllowed *bool `json:"supporting_files_explanation_allowed,omitempty" url:"supporting_files_explanation_allowed,omitempty"`
 	// Whether this requirement also needs supporting files.
 	SupportingFilesRequired *bool `json:"supporting_files_required,omitempty" url:"supporting_files_required,omitempty"`
 	// Selected option values that make the supporting-file input visible.
 	SupportingFilesVisibleFor []string `json:"supporting_files_visible_for,omitempty" url:"supporting_files_visible_for,omitempty"`
-	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), or `address` (send `address`).
+	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), `address` (send `address`), or `liveness` (open `action_url`, then send `value` as `true` after completion).
 	Type string `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5173,6 +5247,13 @@ type RetrieveVerificationsResponseRequestedInformationItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetActionURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.ActionURL
 }
 
 func (r *RetrieveVerificationsResponseRequestedInformationItem) GetDetailsLabel() *string {
@@ -5252,6 +5333,13 @@ func (r *RetrieveVerificationsResponseRequestedInformationItem) GetSelectionMode
 	return r.SelectionMode
 }
 
+func (r *RetrieveVerificationsResponseRequestedInformationItem) GetSupportingDocuments() []*File {
+	if r == nil {
+		return nil
+	}
+	return r.SupportingDocuments
+}
+
 func (r *RetrieveVerificationsResponseRequestedInformationItem) GetSupportingFilesExplanationAllowed() *bool {
 	if r == nil {
 		return nil
@@ -5292,6 +5380,13 @@ func (r *RetrieveVerificationsResponseRequestedInformationItem) require(field *b
 		r.explicitFields = big.NewInt(0)
 	}
 	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetActionURL sets the ActionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetActionURL(actionURL *string) {
+	r.ActionURL = actionURL
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldActionURL)
 }
 
 // SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
@@ -5369,6 +5464,13 @@ func (r *RetrieveVerificationsResponseRequestedInformationItem) SetResponseType(
 func (r *RetrieveVerificationsResponseRequestedInformationItem) SetSelectionMode(selectionMode *RetrieveVerificationsResponseRequestedInformationItemSelectionMode) {
 	r.SelectionMode = selectionMode
 	r.require(retrieveVerificationsResponseRequestedInformationItemFieldSelectionMode)
+}
+
+// SetSupportingDocuments sets the SupportingDocuments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseRequestedInformationItem) SetSupportingDocuments(supportingDocuments []*File) {
+	r.SupportingDocuments = supportingDocuments
+	r.require(retrieveVerificationsResponseRequestedInformationItemFieldSupportingDocuments)
 }
 
 // SetSupportingFilesExplanationAllowed sets the SupportingFilesExplanationAllowed field and marks it as non-optional;
@@ -6255,24 +6357,30 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressBusinessAddress) String() 
 }
 
 var (
-	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldAddress   = big.NewInt(1 << 0)
-	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldDocuments = big.NewInt(1 << 1)
-	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldFiles     = big.NewInt(1 << 2)
-	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldID        = big.NewInt(1 << 3)
-	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValue     = big.NewInt(1 << 4)
-	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValueType = big.NewInt(1 << 5)
-	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValues    = big.NewInt(1 << 6)
+	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldAddress        = big.NewInt(1 << 0)
+	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldDocumentNumber = big.NewInt(1 << 1)
+	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldDocuments      = big.NewInt(1 << 2)
+	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldFiles          = big.NewInt(1 << 3)
+	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldID             = big.NewInt(1 << 4)
+	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldIssuingCountry = big.NewInt(1 << 5)
+	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValue          = big.NewInt(1 << 6)
+	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValueType      = big.NewInt(1 << 7)
+	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldValues         = big.NewInt(1 << 8)
 )
 
 type UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem struct {
 	// Answer for `address` items.
 	Address *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddress `json:"address,omitempty" url:"address,omitempty"`
+	// Identity number for an `id_document` answer.
+	DocumentNumber *string `json:"document_number,omitempty" url:"document_number,omitempty"`
 	// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Documents *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocuments `json:"documents,omitempty" url:"documents,omitempty"`
 	// Answer for a `files` item, or optional supporting documents for `text_with_files` — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Files []string `json:"files,omitempty" url:"files,omitempty"`
 	// Item ID from `requested_information`.
 	ID string `json:"id" url:"id"`
+	// Two-letter ISO 3166-1 issuing country for an `id_document` answer.
+	IssuingCountry *string `json:"issuing_country,omitempty" url:"issuing_country,omitempty"`
 	// Answer for `text`, `text_with_files`, `date`, `phone`, and `select` items, and the chosen document type for a `file` item that lists `options`.
 	Value *string `json:"value,omitempty" url:"value,omitempty"`
 	// Whether `value` is raw input or a vault token.
@@ -6294,6 +6402,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) 
 	return u.Address
 }
 
+func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) GetDocumentNumber() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DocumentNumber
+}
+
 func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) GetDocuments() *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocuments {
 	if u == nil {
 		return nil
@@ -6313,6 +6428,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) 
 		return ""
 	}
 	return u.ID
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) GetIssuingCountry() *string {
+	if u == nil {
+		return nil
+	}
+	return u.IssuingCountry
 }
 
 func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) GetValue() *string {
@@ -6357,6 +6479,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) 
 	u.require(updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldAddress)
 }
 
+// SetDocumentNumber sets the DocumentNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) SetDocumentNumber(documentNumber *string) {
+	u.DocumentNumber = documentNumber
+	u.require(updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldDocumentNumber)
+}
+
 // SetDocuments sets the Documents field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) SetDocuments(documents *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocuments) {
@@ -6376,6 +6505,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) 
 func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) SetID(id string) {
 	u.ID = id
 	u.require(updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldID)
+}
+
+// SetIssuingCountry sets the IssuingCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) SetIssuingCountry(issuingCountry *string) {
+	u.IssuingCountry = issuingCountry
+	u.require(updateVerificationsRequestBodyBusinessAddressRequestedInformationItemFieldIssuingCountry)
 }
 
 // SetValue sets the Value field and marks it as non-optional;
@@ -7230,24 +7366,30 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressPersonalAddress) String() 
 }
 
 var (
-	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldAddress   = big.NewInt(1 << 0)
-	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldDocuments = big.NewInt(1 << 1)
-	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldFiles     = big.NewInt(1 << 2)
-	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldID        = big.NewInt(1 << 3)
-	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValue     = big.NewInt(1 << 4)
-	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValueType = big.NewInt(1 << 5)
-	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValues    = big.NewInt(1 << 6)
+	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldAddress        = big.NewInt(1 << 0)
+	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldDocumentNumber = big.NewInt(1 << 1)
+	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldDocuments      = big.NewInt(1 << 2)
+	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldFiles          = big.NewInt(1 << 3)
+	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldID             = big.NewInt(1 << 4)
+	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldIssuingCountry = big.NewInt(1 << 5)
+	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValue          = big.NewInt(1 << 6)
+	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValueType      = big.NewInt(1 << 7)
+	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldValues         = big.NewInt(1 << 8)
 )
 
 type UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem struct {
 	// Answer for `address` items.
 	Address *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddress `json:"address,omitempty" url:"address,omitempty"`
+	// Identity number for an `id_document` answer.
+	DocumentNumber *string `json:"document_number,omitempty" url:"document_number,omitempty"`
 	// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Documents *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocuments `json:"documents,omitempty" url:"documents,omitempty"`
 	// Answer for a `files` item, or optional supporting documents for `text_with_files` — a list of pages, first page first. Each entry is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 	Files []string `json:"files,omitempty" url:"files,omitempty"`
 	// Item ID from `requested_information`.
 	ID string `json:"id" url:"id"`
+	// Two-letter ISO 3166-1 issuing country for an `id_document` answer.
+	IssuingCountry *string `json:"issuing_country,omitempty" url:"issuing_country,omitempty"`
 	// Answer for `text`, `text_with_files`, `date`, `phone`, and `select` items, and the chosen document type for a `file` item that lists `options`.
 	Value *string `json:"value,omitempty" url:"value,omitempty"`
 	// Whether `value` is raw input or a vault token.
@@ -7269,6 +7411,13 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) 
 	return u.Address
 }
 
+func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) GetDocumentNumber() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DocumentNumber
+}
+
 func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) GetDocuments() *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocuments {
 	if u == nil {
 		return nil
@@ -7288,6 +7437,13 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) 
 		return ""
 	}
 	return u.ID
+}
+
+func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) GetIssuingCountry() *string {
+	if u == nil {
+		return nil
+	}
+	return u.IssuingCountry
 }
 
 func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) GetValue() *string {
@@ -7332,6 +7488,13 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) 
 	u.require(updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldAddress)
 }
 
+// SetDocumentNumber sets the DocumentNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) SetDocumentNumber(documentNumber *string) {
+	u.DocumentNumber = documentNumber
+	u.require(updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldDocumentNumber)
+}
+
 // SetDocuments sets the Documents field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) SetDocuments(documents *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocuments) {
@@ -7351,6 +7514,13 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) 
 func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) SetID(id string) {
 	u.ID = id
 	u.require(updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldID)
+}
+
+// SetIssuingCountry sets the IssuingCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) SetIssuingCountry(issuingCountry *string) {
+	u.IssuingCountry = issuingCountry
+	u.require(updateVerificationsRequestBodyPersonalAddressRequestedInformationItemFieldIssuingCountry)
 }
 
 // SetValue sets the Value field and marks it as non-optional;
@@ -8344,24 +8514,28 @@ func (u UpdateVerificationsResponseKind) Ptr() *UpdateVerificationsResponseKind 
 }
 
 var (
-	updateVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 0)
-	updateVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 1)
-	updateVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 2)
-	updateVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 3)
-	updateVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 4)
-	updateVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 5)
-	updateVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 6)
-	updateVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 7)
-	updateVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 8)
-	updateVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 9)
-	updateVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 10)
-	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 11)
-	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 12)
-	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 13)
-	updateVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 14)
+	updateVerificationsResponseRequestedInformationItemFieldActionURL                         = big.NewInt(1 << 0)
+	updateVerificationsResponseRequestedInformationItemFieldDetailsLabel                      = big.NewInt(1 << 1)
+	updateVerificationsResponseRequestedInformationItemFieldDetailsRequired                   = big.NewInt(1 << 2)
+	updateVerificationsResponseRequestedInformationItemFieldDetailsVisibleFor                 = big.NewInt(1 << 3)
+	updateVerificationsResponseRequestedInformationItemFieldErrors                            = big.NewInt(1 << 4)
+	updateVerificationsResponseRequestedInformationItemFieldID                                = big.NewInt(1 << 5)
+	updateVerificationsResponseRequestedInformationItemFieldLabel                             = big.NewInt(1 << 6)
+	updateVerificationsResponseRequestedInformationItemFieldOptional                          = big.NewInt(1 << 7)
+	updateVerificationsResponseRequestedInformationItemFieldOptions                           = big.NewInt(1 << 8)
+	updateVerificationsResponseRequestedInformationItemFieldRequirement                       = big.NewInt(1 << 9)
+	updateVerificationsResponseRequestedInformationItemFieldResponseType                      = big.NewInt(1 << 10)
+	updateVerificationsResponseRequestedInformationItemFieldSelectionMode                     = big.NewInt(1 << 11)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingDocuments               = big.NewInt(1 << 12)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesExplanationAllowed = big.NewInt(1 << 13)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesRequired           = big.NewInt(1 << 14)
+	updateVerificationsResponseRequestedInformationItemFieldSupportingFilesVisibleFor         = big.NewInt(1 << 15)
+	updateVerificationsResponseRequestedInformationItemFieldType                              = big.NewInt(1 << 16)
 )
 
 type UpdateVerificationsResponseRequestedInformationItem struct {
+	// URL for a related action, such as completing liveness verification or viewing a payment. Absent when no action is available.
+	ActionURL *string `json:"action_url,omitempty" url:"action_url,omitempty"`
 	// Follow-up prompt shown with this requirement.
 	DetailsLabel *string `json:"details_label,omitempty" url:"details_label,omitempty"`
 	// Whether the follow-up response is required when visible.
@@ -8384,13 +8558,15 @@ type UpdateVerificationsResponseRequestedInformationItem struct {
 	ResponseType *UpdateVerificationsResponseRequestedInformationItemResponseType `json:"response_type,omitempty" url:"response_type,omitempty"`
 	// Whether a question with `options` accepts one value or multiple values.
 	SelectionMode *UpdateVerificationsResponseRequestedInformationItemSelectionMode `json:"selection_mode,omitempty" url:"selection_mode,omitempty"`
+	// Documents supplied with the requirement for context.
+	SupportingDocuments []*File `json:"supporting_documents,omitempty" url:"supporting_documents,omitempty"`
 	// Whether a written explanation may replace required supporting files.
 	SupportingFilesExplanationAllowed *bool `json:"supporting_files_explanation_allowed,omitempty" url:"supporting_files_explanation_allowed,omitempty"`
 	// Whether this requirement also needs supporting files.
 	SupportingFilesRequired *bool `json:"supporting_files_required,omitempty" url:"supporting_files_required,omitempty"`
 	// Selected option values that make the supporting-file input visible.
 	SupportingFilesVisibleFor []string `json:"supporting_files_visible_for,omitempty" url:"supporting_files_visible_for,omitempty"`
-	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), or `address` (send `address`).
+	// What to send as the answer, so you never have to infer it: `files` (a document, as a list of its pages), `id_document` (send `documents` with the slot keys for the ID you are uploading), `text`, `date`, `phone` or `select` (send `value`), `text_with_files` (send `value` and optional `files`), `address` (send `address`), or `liveness` (open `action_url`, then send `value` as `true` after completion).
 	Type string `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -8398,6 +8574,13 @@ type UpdateVerificationsResponseRequestedInformationItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetActionURL() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ActionURL
 }
 
 func (u *UpdateVerificationsResponseRequestedInformationItem) GetDetailsLabel() *string {
@@ -8477,6 +8660,13 @@ func (u *UpdateVerificationsResponseRequestedInformationItem) GetSelectionMode()
 	return u.SelectionMode
 }
 
+func (u *UpdateVerificationsResponseRequestedInformationItem) GetSupportingDocuments() []*File {
+	if u == nil {
+		return nil
+	}
+	return u.SupportingDocuments
+}
+
 func (u *UpdateVerificationsResponseRequestedInformationItem) GetSupportingFilesExplanationAllowed() *bool {
 	if u == nil {
 		return nil
@@ -8517,6 +8707,13 @@ func (u *UpdateVerificationsResponseRequestedInformationItem) require(field *big
 		u.explicitFields = big.NewInt(0)
 	}
 	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetActionURL sets the ActionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetActionURL(actionURL *string) {
+	u.ActionURL = actionURL
+	u.require(updateVerificationsResponseRequestedInformationItemFieldActionURL)
 }
 
 // SetDetailsLabel sets the DetailsLabel field and marks it as non-optional;
@@ -8594,6 +8791,13 @@ func (u *UpdateVerificationsResponseRequestedInformationItem) SetResponseType(re
 func (u *UpdateVerificationsResponseRequestedInformationItem) SetSelectionMode(selectionMode *UpdateVerificationsResponseRequestedInformationItemSelectionMode) {
 	u.SelectionMode = selectionMode
 	u.require(updateVerificationsResponseRequestedInformationItemFieldSelectionMode)
+}
+
+// SetSupportingDocuments sets the SupportingDocuments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseRequestedInformationItem) SetSupportingDocuments(supportingDocuments []*File) {
+	u.SupportingDocuments = supportingDocuments
+	u.require(updateVerificationsResponseRequestedInformationItemFieldSupportingDocuments)
 }
 
 // SetSupportingFilesExplanationAllowed sets the SupportingFilesExplanationAllowed field and marks it as non-optional;

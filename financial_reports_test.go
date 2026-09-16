@@ -2149,6 +2149,13 @@ func TestEnumRetrieveFinancialReportsRequestDirection(t *testing.T) {
 }
 
 func TestEnumRetrieveFinancialReportsRequestGroupBy(t *testing.T) {
+	t.Run("NewFromString_hour", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestGroupByFromString("hour")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestGroupBy("hour"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_day", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsRequestGroupByFromString("day")
@@ -2176,7 +2183,7 @@ func TestEnumRetrieveFinancialReportsRequestGroupBy(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewRetrieveFinancialReportsRequestGroupByFromString("day")
+		val, err := NewRetrieveFinancialReportsRequestGroupByFromString("hour")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
