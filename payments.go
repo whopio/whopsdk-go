@@ -37,24 +37,27 @@ func (c *CapturePaymentsRequest) SetID(id string) {
 }
 
 var (
-	createPaymentsRequestFieldAccountID           = big.NewInt(1 << 0)
-	createPaymentsRequestFieldCapture             = big.NewInt(1 << 1)
-	createPaymentsRequestFieldConfirmationToken   = big.NewInt(1 << 2)
-	createPaymentsRequestFieldEmail               = big.NewInt(1 << 3)
-	createPaymentsRequestFieldMemberID            = big.NewInt(1 << 4)
-	createPaymentsRequestFieldMetadata            = big.NewInt(1 << 5)
-	createPaymentsRequestFieldPaymentMethodID     = big.NewInt(1 << 6)
-	createPaymentsRequestFieldPlan                = big.NewInt(1 << 7)
-	createPaymentsRequestFieldPlanID              = big.NewInt(1 << 8)
-	createPaymentsRequestFieldPromoCodeID         = big.NewInt(1 << 9)
-	createPaymentsRequestFieldReturnURL           = big.NewInt(1 << 10)
-	createPaymentsRequestFieldStatementDescriptor = big.NewInt(1 << 11)
+	createPaymentsRequestFieldAccountID               = big.NewInt(1 << 0)
+	createPaymentsRequestFieldAutoCaptureAfterMinutes = big.NewInt(1 << 1)
+	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 2)
+	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 3)
+	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 4)
+	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 5)
+	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 6)
+	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 7)
+	createPaymentsRequestFieldPlan                    = big.NewInt(1 << 8)
+	createPaymentsRequestFieldPlanID                  = big.NewInt(1 << 9)
+	createPaymentsRequestFieldPromoCodeID             = big.NewInt(1 << 10)
+	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 11)
+	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 12)
 )
 
 type CreatePaymentsRequest struct {
 	// The account to charge for, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
-	// Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint.
+	// Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
+	AutoCaptureAfterMinutes *int `json:"auto_capture_after_minutes,omitempty" url:"-"`
+	// Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
 	Capture *bool `json:"capture,omitempty" url:"-"`
 	// A confirmation token describing a payment method the buyer just supplied. Provide this instead of `member_id` and `payment_method_id`; the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete — poll the payment's status for what to do next.
 	ConfirmationToken *string `json:"confirmation_token,omitempty" url:"-"`
@@ -93,6 +96,13 @@ func (c *CreatePaymentsRequest) require(field *big.Int) {
 func (c *CreatePaymentsRequest) SetAccountID(accountID string) {
 	c.AccountID = accountID
 	c.require(createPaymentsRequestFieldAccountID)
+}
+
+// SetAutoCaptureAfterMinutes sets the AutoCaptureAfterMinutes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetAutoCaptureAfterMinutes(autoCaptureAfterMinutes *int) {
+	c.AutoCaptureAfterMinutes = autoCaptureAfterMinutes
+	c.require(createPaymentsRequestFieldAutoCaptureAfterMinutes)
 }
 
 // SetCapture sets the Capture field and marks it as non-optional;
@@ -3141,19 +3151,22 @@ func (p PaymentRuleMatchAction) Ptr() *PaymentRuleMatchAction {
 
 var (
 	paymentStatusFieldAccount           = big.NewInt(1 << 0)
-	paymentStatusFieldCaptureExpiresAt  = big.NewInt(1 << 1)
-	paymentStatusFieldID                = big.NewInt(1 << 2)
-	paymentStatusFieldLastPaymentError  = big.NewInt(1 << 3)
-	paymentStatusFieldNextAction        = big.NewInt(1 << 4)
-	paymentStatusFieldObject            = big.NewInt(1 << 5)
-	paymentStatusFieldProcessingDetails = big.NewInt(1 << 6)
-	paymentStatusFieldReturnURL         = big.NewInt(1 << 7)
-	paymentStatusFieldStatus            = big.NewInt(1 << 8)
+	paymentStatusFieldAutoCaptureAt     = big.NewInt(1 << 1)
+	paymentStatusFieldCaptureExpiresAt  = big.NewInt(1 << 2)
+	paymentStatusFieldID                = big.NewInt(1 << 3)
+	paymentStatusFieldLastPaymentError  = big.NewInt(1 << 4)
+	paymentStatusFieldNextAction        = big.NewInt(1 << 5)
+	paymentStatusFieldObject            = big.NewInt(1 << 6)
+	paymentStatusFieldProcessingDetails = big.NewInt(1 << 7)
+	paymentStatusFieldReturnURL         = big.NewInt(1 << 8)
+	paymentStatusFieldStatus            = big.NewInt(1 << 9)
 )
 
 type PaymentStatus struct {
 	// The account receiving this payment, or `null` when the payment has no associated account.
 	Account *AccountSummary `json:"account,omitempty" url:"account,omitempty"`
+	// When Whop will capture this authorization automatically, as an ISO 8601 timestamp. `null` when no automatic capture was requested.
+	AutoCaptureAt *string `json:"auto_capture_at,omitempty" url:"auto_capture_at,omitempty"`
 	// When the card authorization must be captured, as an ISO 8601 timestamp. `null` when this payment was not authorized for later capture.
 	CaptureExpiresAt *string `json:"capture_expires_at,omitempty" url:"capture_expires_at,omitempty"`
 	// The payment this status describes, prefixed `pay_`.
@@ -3183,6 +3196,13 @@ func (p *PaymentStatus) GetAccount() *AccountSummary {
 		return nil
 	}
 	return p.Account
+}
+
+func (p *PaymentStatus) GetAutoCaptureAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AutoCaptureAt
 }
 
 func (p *PaymentStatus) GetCaptureExpiresAt() *string {
@@ -3260,6 +3280,13 @@ func (p *PaymentStatus) require(field *big.Int) {
 func (p *PaymentStatus) SetAccount(account *AccountSummary) {
 	p.Account = account
 	p.require(paymentStatusFieldAccount)
+}
+
+// SetAutoCaptureAt sets the AutoCaptureAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentStatus) SetAutoCaptureAt(autoCaptureAt *string) {
+	p.AutoCaptureAt = autoCaptureAt
+	p.require(paymentStatusFieldAutoCaptureAt)
 }
 
 // SetCaptureExpiresAt sets the CaptureExpiresAt field and marks it as non-optional;
