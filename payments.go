@@ -745,34 +745,35 @@ var (
 	paymentFieldPaymentInstrument          = big.NewInt(1 << 23)
 	paymentFieldPaymentMethodID            = big.NewInt(1 << 24)
 	paymentFieldPaymentMethodType          = big.NewInt(1 << 25)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 26)
-	paymentFieldPlanID                     = big.NewInt(1 << 27)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 28)
-	paymentFieldProductID                  = big.NewInt(1 << 29)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 30)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 31)
-	paymentFieldRefundable                 = big.NewInt(1 << 32)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 33)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 34)
-	paymentFieldRetryable                  = big.NewInt(1 << 35)
-	paymentFieldRiskScore                  = big.NewInt(1 << 36)
-	paymentFieldRiskSignals                = big.NewInt(1 << 37)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 38)
-	paymentFieldShipmentID                 = big.NewInt(1 << 39)
-	paymentFieldShippingAddress            = big.NewInt(1 << 40)
-	paymentFieldStatus                     = big.NewInt(1 << 41)
-	paymentFieldSubstatus                  = big.NewInt(1 << 42)
-	paymentFieldSubtotal                   = big.NewInt(1 << 43)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 44)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 45)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 46)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 47)
-	paymentFieldTotal                      = big.NewInt(1 << 48)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 49)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 50)
-	paymentFieldUser                       = big.NewInt(1 << 51)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 52)
-	paymentFieldVoidable                   = big.NewInt(1 << 53)
+	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 26)
+	paymentFieldPaymentsFailed             = big.NewInt(1 << 27)
+	paymentFieldPlanID                     = big.NewInt(1 << 28)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 29)
+	paymentFieldProductID                  = big.NewInt(1 << 30)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 31)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 32)
+	paymentFieldRefundable                 = big.NewInt(1 << 33)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 34)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 35)
+	paymentFieldRetryable                  = big.NewInt(1 << 36)
+	paymentFieldRiskScore                  = big.NewInt(1 << 37)
+	paymentFieldRiskSignals                = big.NewInt(1 << 38)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 39)
+	paymentFieldShipmentID                 = big.NewInt(1 << 40)
+	paymentFieldShippingAddress            = big.NewInt(1 << 41)
+	paymentFieldStatus                     = big.NewInt(1 << 42)
+	paymentFieldSubstatus                  = big.NewInt(1 << 43)
+	paymentFieldSubtotal                   = big.NewInt(1 << 44)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 45)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 46)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 47)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 48)
+	paymentFieldTotal                      = big.NewInt(1 << 49)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 50)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 51)
+	paymentFieldUser                       = big.NewInt(1 << 52)
+	paymentFieldVerificationChecks         = big.NewInt(1 << 53)
+	paymentFieldVoidable                   = big.NewInt(1 << 54)
 )
 
 type Payment struct {
@@ -827,7 +828,8 @@ type Payment struct {
 	// The stored payment method that was charged, prefixed `payt_`. Null when the method was not saved.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
 	// The kind of instrument used, for example `card`, `apple_pay`, `klarna`, or `us_bank_account`.
-	PaymentMethodType *PaymentMethodTypes `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
+	PaymentMethodType  *PaymentMethodTypes `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
+	PaymentRuleMatches []*PaymentRuleMatch `json:"payment_rule_matches" url:"payment_rule_matches"`
 	// How many charge attempts have failed on this payment.
 	PaymentsFailed float64 `json:"payments_failed" url:"payments_failed"`
 	// The plan that was charged, prefixed `plan_`.
@@ -1073,6 +1075,13 @@ func (p *Payment) GetPaymentMethodType() *PaymentMethodTypes {
 		return nil
 	}
 	return p.PaymentMethodType
+}
+
+func (p *Payment) GetPaymentRuleMatches() []*PaymentRuleMatch {
+	if p == nil {
+		return nil
+	}
+	return p.PaymentRuleMatches
 }
 
 func (p *Payment) GetPaymentsFailed() float64 {
@@ -1465,6 +1474,13 @@ func (p *Payment) SetPaymentMethodID(paymentMethodID *string) {
 func (p *Payment) SetPaymentMethodType(paymentMethodType *PaymentMethodTypes) {
 	p.PaymentMethodType = paymentMethodType
 	p.require(paymentFieldPaymentMethodType)
+}
+
+// SetPaymentRuleMatches sets the PaymentRuleMatches field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetPaymentRuleMatches(paymentRuleMatches []*PaymentRuleMatch) {
+	p.PaymentRuleMatches = paymentRuleMatches
+	p.require(paymentFieldPaymentRuleMatches)
 }
 
 // SetPaymentsFailed sets the PaymentsFailed field and marks it as non-optional;
@@ -2976,6 +2992,151 @@ func (p *PaymentProcessingDetails) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	paymentRuleMatchFieldAction = big.NewInt(1 << 0)
+	paymentRuleMatchFieldID     = big.NewInt(1 << 1)
+	paymentRuleMatchFieldName   = big.NewInt(1 << 2)
+)
+
+type PaymentRuleMatch struct {
+	// What the rule asked for.
+	Action PaymentRuleMatchAction `json:"action" url:"action"`
+	// Payment rule ID, prefixed `prule_`.
+	ID string `json:"id" url:"id"`
+	// The rule's name when it matched. Renaming the rule afterwards does not rewrite this.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentRuleMatch) GetAction() PaymentRuleMatchAction {
+	if p == nil {
+		return ""
+	}
+	return p.Action
+}
+
+func (p *PaymentRuleMatch) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PaymentRuleMatch) GetName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Name
+}
+
+func (p *PaymentRuleMatch) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentRuleMatch) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAction sets the Action field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentRuleMatch) SetAction(action PaymentRuleMatchAction) {
+	p.Action = action
+	p.require(paymentRuleMatchFieldAction)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentRuleMatch) SetID(id string) {
+	p.ID = id
+	p.require(paymentRuleMatchFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentRuleMatch) SetName(name *string) {
+	p.Name = name
+	p.require(paymentRuleMatchFieldName)
+}
+
+func (p *PaymentRuleMatch) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentRuleMatch
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentRuleMatch(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentRuleMatch) MarshalJSON() ([]byte, error) {
+	type embed PaymentRuleMatch
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentRuleMatch) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// What the rule asked for.
+type PaymentRuleMatchAction string
+
+const (
+	PaymentRuleMatchActionAllow      PaymentRuleMatchAction = "allow"
+	PaymentRuleMatchActionBlock      PaymentRuleMatchAction = "block"
+	PaymentRuleMatchActionEnforce3Ds PaymentRuleMatchAction = "enforce_3ds"
+)
+
+func NewPaymentRuleMatchActionFromString(s string) (PaymentRuleMatchAction, error) {
+	switch s {
+	case "allow":
+		return PaymentRuleMatchActionAllow, nil
+	case "block":
+		return PaymentRuleMatchActionBlock, nil
+	case "enforce_3ds":
+		return PaymentRuleMatchActionEnforce3Ds, nil
+	}
+	var t PaymentRuleMatchAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentRuleMatchAction) Ptr() *PaymentRuleMatchAction {
+	return &p
 }
 
 var (
