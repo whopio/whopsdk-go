@@ -336,7 +336,7 @@ func TestSettersMarkExplicitListEconomicIntelligenceRequest(t *testing.T) {
 func TestSettersEconomicIntelligence(t *testing.T) {
 	t.Run("SetAccountID", func(t *testing.T) {
 		obj := &EconomicIntelligence{}
-		var fernTestValueAccountID string
+		var fernTestValueAccountID *string
 		obj.SetAccountID(fernTestValueAccountID)
 		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
 		assert.NotNil(t, obj.explicitFields)
@@ -350,9 +350,17 @@ func TestSettersEconomicIntelligence(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAiChatID", func(t *testing.T) {
+		obj := &EconomicIntelligence{}
+		var fernTestValueAiChatID *string
+		obj.SetAiChatID(fernTestValueAiChatID)
+		assert.Equal(t, fernTestValueAiChatID, obj.AiChatID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedAt", func(t *testing.T) {
 		obj := &EconomicIntelligence{}
-		var fernTestValueCreatedAt string
+		var fernTestValueCreatedAt *string
 		obj.SetCreatedAt(fernTestValueCreatedAt)
 		assert.Equal(t, fernTestValueCreatedAt, obj.CreatedAt)
 		assert.NotNil(t, obj.explicitFields)
@@ -429,11 +437,21 @@ func TestGettersEconomicIntelligence(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &EconomicIntelligence{}
-		var expected string
+		var expected *string
 		obj.AccountID = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		obj.AccountID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAccountID(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
@@ -481,15 +499,58 @@ func TestGettersEconomicIntelligence(t *testing.T) {
 		_ = obj.GetActionType() // Should return zero value
 	})
 
+	t.Run("GetAiChatID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		var expected *string
+		obj.AiChatID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAiChatID(), "getter should return the property value")
+	})
+
+	t.Run("GetAiChatID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		obj.AiChatID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAiChatID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAiChatID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EconomicIntelligence
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAiChatID() // Should return zero value
+	})
+
 	t.Run("GetCreatedAt", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &EconomicIntelligence{}
-		var expected string
+		var expected *string
 		obj.CreatedAt = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetCreatedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetCreatedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		obj.CreatedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCreatedAt(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetCreatedAt_NilReceiver", func(t *testing.T) {
@@ -755,7 +816,7 @@ func TestSettersMarkExplicitEconomicIntelligence(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &EconomicIntelligence{}
-		var fernTestValueAccountID string
+		var fernTestValueAccountID *string
 
 		// Act
 		obj.SetAccountID(fernTestValueAccountID)
@@ -813,11 +874,42 @@ func TestSettersMarkExplicitEconomicIntelligence(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetAiChatID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		var fernTestValueAiChatID *string
+
+		// Act
+		obj.SetAiChatID(fernTestValueAiChatID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCreatedAt_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &EconomicIntelligence{}
-		var fernTestValueCreatedAt string
+		var fernTestValueCreatedAt *string
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
