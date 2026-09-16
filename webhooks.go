@@ -1203,6 +1203,7 @@ const (
 	WebhookEventsItemPayoutAccountStatusUpdated            WebhookEventsItem = "payout_account.status_updated"
 	WebhookEventsItemPaymentAuthorized                     WebhookEventsItem = "payment.authorized"
 	WebhookEventsItemPaymentCanceled                       WebhookEventsItem = "payment.canceled"
+	WebhookEventsItemPaymentRequiresAction                 WebhookEventsItem = "payment.requires_action"
 	WebhookEventsItemResolutionCenterCaseCreated           WebhookEventsItem = "resolution_center_case.created"
 	WebhookEventsItemResolutionCenterCaseUpdated           WebhookEventsItem = "resolution_center_case.updated"
 	WebhookEventsItemResolutionCenterCaseDecided           WebhookEventsItem = "resolution_center_case.decided"
@@ -1364,6 +1365,8 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemPaymentAuthorized, nil
 	case "payment.canceled":
 		return WebhookEventsItemPaymentCanceled, nil
+	case "payment.requires_action":
+		return WebhookEventsItemPaymentRequiresAction, nil
 	case "resolution_center_case.created":
 		return WebhookEventsItemResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
@@ -1891,6 +1894,7 @@ const (
 	WebhookListItemEventsItemPayoutAccountStatusUpdated            WebhookListItemEventsItem = "payout_account.status_updated"
 	WebhookListItemEventsItemPaymentAuthorized                     WebhookListItemEventsItem = "payment.authorized"
 	WebhookListItemEventsItemPaymentCanceled                       WebhookListItemEventsItem = "payment.canceled"
+	WebhookListItemEventsItemPaymentRequiresAction                 WebhookListItemEventsItem = "payment.requires_action"
 	WebhookListItemEventsItemResolutionCenterCaseCreated           WebhookListItemEventsItem = "resolution_center_case.created"
 	WebhookListItemEventsItemResolutionCenterCaseUpdated           WebhookListItemEventsItem = "resolution_center_case.updated"
 	WebhookListItemEventsItemResolutionCenterCaseDecided           WebhookListItemEventsItem = "resolution_center_case.decided"
@@ -2052,6 +2056,8 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemPaymentAuthorized, nil
 	case "payment.canceled":
 		return WebhookListItemEventsItemPaymentCanceled, nil
+	case "payment.requires_action":
+		return WebhookListItemEventsItemPaymentRequiresAction, nil
 	case "resolution_center_case.created":
 		return WebhookListItemEventsItemResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
@@ -2211,6 +2217,7 @@ const (
 	WebhookTestableEventsItemPayoutAccountStatusUpdated            WebhookTestableEventsItem = "payout_account.status_updated"
 	WebhookTestableEventsItemPaymentAuthorized                     WebhookTestableEventsItem = "payment.authorized"
 	WebhookTestableEventsItemPaymentCanceled                       WebhookTestableEventsItem = "payment.canceled"
+	WebhookTestableEventsItemPaymentRequiresAction                 WebhookTestableEventsItem = "payment.requires_action"
 	WebhookTestableEventsItemResolutionCenterCaseCreated           WebhookTestableEventsItem = "resolution_center_case.created"
 	WebhookTestableEventsItemResolutionCenterCaseUpdated           WebhookTestableEventsItem = "resolution_center_case.updated"
 	WebhookTestableEventsItemResolutionCenterCaseDecided           WebhookTestableEventsItem = "resolution_center_case.decided"
@@ -2372,6 +2379,8 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemPaymentAuthorized, nil
 	case "payment.canceled":
 		return WebhookTestableEventsItemPaymentCanceled, nil
+	case "payment.requires_action":
+		return WebhookTestableEventsItemPaymentRequiresAction, nil
 	case "resolution_center_case.created":
 		return WebhookTestableEventsItemResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
@@ -2527,6 +2536,7 @@ const (
 	CreateWebhooksRequestEventsItemPayoutAccountStatusUpdated                      CreateWebhooksRequestEventsItem = "payout_account.status_updated"
 	CreateWebhooksRequestEventsItemPaymentAuthorized                               CreateWebhooksRequestEventsItem = "payment.authorized"
 	CreateWebhooksRequestEventsItemPaymentCanceled                                 CreateWebhooksRequestEventsItem = "payment.canceled"
+	CreateWebhooksRequestEventsItemPaymentRequiresAction                           CreateWebhooksRequestEventsItem = "payment.requires_action"
 	CreateWebhooksRequestEventsItemResolutionCenterCaseCreated                     CreateWebhooksRequestEventsItem = "resolution_center_case.created"
 	CreateWebhooksRequestEventsItemResolutionCenterCaseUpdated                     CreateWebhooksRequestEventsItem = "resolution_center_case.updated"
 	CreateWebhooksRequestEventsItemResolutionCenterCaseDecided                     CreateWebhooksRequestEventsItem = "resolution_center_case.decided"
@@ -2707,6 +2717,8 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemPaymentAuthorized, nil
 	case "payment.canceled":
 		return CreateWebhooksRequestEventsItemPaymentCanceled, nil
+	case "payment.requires_action":
+		return CreateWebhooksRequestEventsItemPaymentRequiresAction, nil
 	case "resolution_center_case.created":
 		return CreateWebhooksRequestEventsItemResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
@@ -3800,6 +3812,7 @@ const (
 	UpdateWebhooksRequestEventsItemPayoutAccountStatusUpdated                      UpdateWebhooksRequestEventsItem = "payout_account.status_updated"
 	UpdateWebhooksRequestEventsItemPaymentAuthorized                               UpdateWebhooksRequestEventsItem = "payment.authorized"
 	UpdateWebhooksRequestEventsItemPaymentCanceled                                 UpdateWebhooksRequestEventsItem = "payment.canceled"
+	UpdateWebhooksRequestEventsItemPaymentRequiresAction                           UpdateWebhooksRequestEventsItem = "payment.requires_action"
 	UpdateWebhooksRequestEventsItemResolutionCenterCaseCreated                     UpdateWebhooksRequestEventsItem = "resolution_center_case.created"
 	UpdateWebhooksRequestEventsItemResolutionCenterCaseUpdated                     UpdateWebhooksRequestEventsItem = "resolution_center_case.updated"
 	UpdateWebhooksRequestEventsItemResolutionCenterCaseDecided                     UpdateWebhooksRequestEventsItem = "resolution_center_case.decided"
@@ -3980,6 +3993,8 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemPaymentAuthorized, nil
 	case "payment.canceled":
 		return UpdateWebhooksRequestEventsItemPaymentCanceled, nil
+	case "payment.requires_action":
+		return UpdateWebhooksRequestEventsItemPaymentRequiresAction, nil
 	case "resolution_center_case.created":
 		return UpdateWebhooksRequestEventsItemResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
