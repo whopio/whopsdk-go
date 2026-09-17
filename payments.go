@@ -42,14 +42,15 @@ var (
 	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 2)
 	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 3)
 	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 4)
-	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 5)
-	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 6)
-	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 7)
-	createPaymentsRequestFieldPlan                    = big.NewInt(1 << 8)
-	createPaymentsRequestFieldPlanID                  = big.NewInt(1 << 9)
-	createPaymentsRequestFieldPromoCodeID             = big.NewInt(1 << 10)
-	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 11)
-	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 12)
+	createPaymentsRequestFieldLineItems               = big.NewInt(1 << 5)
+	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 6)
+	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 7)
+	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 8)
+	createPaymentsRequestFieldPlan                    = big.NewInt(1 << 9)
+	createPaymentsRequestFieldPlanID                  = big.NewInt(1 << 10)
+	createPaymentsRequestFieldPromoCodeID             = big.NewInt(1 << 11)
+	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 12)
+	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 13)
 )
 
 type CreatePaymentsRequest struct {
@@ -63,15 +64,17 @@ type CreatePaymentsRequest struct {
 	ConfirmationToken *string `json:"confirmation_token,omitempty" url:"-"`
 	// Overrides the buyer email carried on the confirmation token, resolving or creating the user the payment belongs to. Ignored unless `confirmation_token` is provided, and when the token was created by a signed-in buyer.
 	Email *string `json:"email,omitempty" url:"-"`
+	// What the buyer is purchasing. One entry charges that plan; several entries form a cart, which requires every plan to be a compatible plan from this account in the same currency.
+	LineItems []*CreatePaymentsRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Custom metadata to attach to the payment.
 	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
 	// The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
-	// Find or create a plan for this payment. Mutually exclusive with `plan_id`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+	// Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
 	Plan *CreatePaymentsRequestPlan `json:"plan,omitempty" url:"-"`
-	// The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan`.
+	// The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
 	PlanID *string `json:"plan_id,omitempty" url:"-"`
 	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
@@ -124,6 +127,13 @@ func (c *CreatePaymentsRequest) SetConfirmationToken(confirmationToken *string) 
 func (c *CreatePaymentsRequest) SetEmail(email *string) {
 	c.Email = email
 	c.require(createPaymentsRequestFieldEmail)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetLineItems(lineItems []*CreatePaymentsRequestLineItemsItem) {
+	c.LineItems = lineItems
+	c.require(createPaymentsRequestFieldLineItems)
 }
 
 // SetMemberID sets the MemberID field and marks it as non-optional;
@@ -3593,7 +3603,109 @@ func (r ReceiptTaxBehaviors) Ptr() *ReceiptTaxBehaviors {
 	return &r
 }
 
-// Find or create a plan for this payment. Mutually exclusive with `plan_id`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+var (
+	createPaymentsRequestLineItemsItemFieldPlanID   = big.NewInt(1 << 0)
+	createPaymentsRequestLineItemsItemFieldQuantity = big.NewInt(1 << 1)
+)
+
+type CreatePaymentsRequestLineItemsItem struct {
+	// An existing plan to charge for, prefixed `plan_`. Each plan may appear once — use `quantity` for multiple units.
+	PlanID string `json:"plan_id" url:"plan_id"`
+	// How many units of the plan to purchase. Defaults to 1; more than 1 requires the plan to allow multiple quantities.
+	Quantity *int `json:"quantity,omitempty" url:"quantity,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) GetPlanID() string {
+	if c == nil {
+		return ""
+	}
+	return c.PlanID
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) GetQuantity() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Quantity
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetPlanID sets the PlanID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItem) SetPlanID(planID string) {
+	c.PlanID = planID
+	c.require(createPaymentsRequestLineItemsItemFieldPlanID)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItem) SetQuantity(quantity *int) {
+	c.Quantity = quantity
+	c.require(createPaymentsRequestLineItemsItemFieldQuantity)
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestLineItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePaymentsRequestLineItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestLineItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePaymentsRequestLineItemsItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
 var (
 	createPaymentsRequestPlanFieldApplicationFeeAmount = big.NewInt(1 << 0)
 	createPaymentsRequestPlanFieldBillingPeriod        = big.NewInt(1 << 1)
