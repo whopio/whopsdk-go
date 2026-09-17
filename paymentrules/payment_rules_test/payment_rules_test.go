@@ -118,14 +118,14 @@ func TestPaymentRulesCreateWithWireMock(
 			All: []*whopsdk.CreatePaymentRulesRequestConditionsAllItem{
 				&whopsdk.CreatePaymentRulesRequestConditionsAllItem{
 					Field:    whopsdk.CreatePaymentRulesRequestConditionsAllItemFieldRiskScore,
-					Operator: whopsdk.CreatePaymentRulesRequestConditionsAllItemOperatorEq,
+					Operator: whopsdk.CreatePaymentRulesRequestConditionsAllItemOperatorGte,
 					Value: &whopsdk.PaymentRuleConditionValue{
-						Integer: 1,
+						Integer: 70,
 					},
 				},
 			},
 		},
-		Name: "Block high risk",
+		Name: "Review risky cards",
 	}
 	_, invocationErr := client.PaymentRules.Create(
 		context.TODO(),
@@ -309,9 +309,9 @@ func TestPaymentRulesReplaceWithWireMock(
 			All: []*whopsdk.ReplacePaymentRulesRequestConditionsAllItem{
 				&whopsdk.ReplacePaymentRulesRequestConditionsAllItem{
 					Field:    whopsdk.ReplacePaymentRulesRequestConditionsAllItemFieldRiskScore,
-					Operator: whopsdk.ReplacePaymentRulesRequestConditionsAllItemOperatorEq,
+					Operator: whopsdk.ReplacePaymentRulesRequestConditionsAllItemOperatorGte,
 					Value: &whopsdk.PaymentRuleConditionValue{
-						Integer: 1,
+						Integer: 70,
 					},
 				},
 			},

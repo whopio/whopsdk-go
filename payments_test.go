@@ -18490,6 +18490,13 @@ func TestEnumPaymentRuleMatchAction(t *testing.T) {
 		assert.Equal(t, PaymentRuleMatchAction("block"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_review", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleMatchActionFromString("review")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleMatchAction("review"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_enforce_3ds", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPaymentRuleMatchActionFromString("enforce_3ds")
