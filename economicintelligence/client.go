@@ -138,13 +138,12 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Approves or rejects a recommendation and requests replacements.
+// Updates a recommendation status, records feedback, or both. Send `sentiment` to rate it. Include `status: superseded` to retire it and request replacements; a rating alone leaves its status unchanged.
 //
 // Example:
 //
 //	request := &whopsdk.UpdateEconomicIntelligenceRequest{
 //	    ID: "id",
-//	    Status: whopsdk.UpdateEconomicIntelligenceRequestStatusExecuted,
 //	}
 //	client.EconomicIntelligence.Update(
 //	    context.TODO(),

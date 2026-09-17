@@ -152,10 +152,12 @@ var (
 	economicIntelligenceFieldInput        = big.NewInt(1 << 6)
 	economicIntelligenceFieldPrompt       = big.NewInt(1 << 7)
 	economicIntelligenceFieldReasoning    = big.NewInt(1 << 8)
-	economicIntelligenceFieldStatus       = big.NewInt(1 << 9)
-	economicIntelligenceFieldSupersededAt = big.NewInt(1 << 10)
-	economicIntelligenceFieldTargetURL    = big.NewInt(1 << 11)
-	economicIntelligenceFieldTitle        = big.NewInt(1 << 12)
+	economicIntelligenceFieldSentiment    = big.NewInt(1 << 9)
+	economicIntelligenceFieldStatus       = big.NewInt(1 << 10)
+	economicIntelligenceFieldSupersededAt = big.NewInt(1 << 11)
+	economicIntelligenceFieldTargetURL    = big.NewInt(1 << 12)
+	economicIntelligenceFieldTitle        = big.NewInt(1 << 13)
+	economicIntelligenceFieldUserFeedback = big.NewInt(1 << 14)
 )
 
 type EconomicIntelligence struct {
@@ -177,6 +179,8 @@ type EconomicIntelligence struct {
 	Prompt *string `json:"prompt,omitempty" url:"prompt,omitempty"`
 	// Evidence and metrics supporting the recommendation, or `null` when no reasoning was provided.
 	Reasoning *string `json:"reasoning,omitempty" url:"reasoning,omitempty"`
+	// How the user rated this recommendation, or `null` if they have not rated it
+	Sentiment *EconomicIntelligenceSentiment `json:"sentiment,omitempty" url:"sentiment,omitempty"`
 	// `queued` when awaiting generation; `pending` while generating; `ready` when available for approval; `executed` when approved; `superseded` when rejected or replaced.
 	Status EconomicIntelligenceStatus `json:"status" url:"status"`
 	// When the recommendation was rejected or replaced, as an ISO 8601 timestamp, or `null` if neither has occurred.
@@ -185,6 +189,8 @@ type EconomicIntelligence struct {
 	TargetURL *string `json:"target_url,omitempty" url:"target_url,omitempty"`
 	// Recommended action and its expected benefit, or `null` until generated.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// The user's written feedback, or `null` if they have not provided any.
+	UserFeedback *string `json:"user_feedback,omitempty" url:"user_feedback,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -256,6 +262,13 @@ func (e *EconomicIntelligence) GetReasoning() *string {
 	return e.Reasoning
 }
 
+func (e *EconomicIntelligence) GetSentiment() *EconomicIntelligenceSentiment {
+	if e == nil {
+		return nil
+	}
+	return e.Sentiment
+}
+
 func (e *EconomicIntelligence) GetStatus() EconomicIntelligenceStatus {
 	if e == nil {
 		return ""
@@ -282,6 +295,13 @@ func (e *EconomicIntelligence) GetTitle() *string {
 		return nil
 	}
 	return e.Title
+}
+
+func (e *EconomicIntelligence) GetUserFeedback() *string {
+	if e == nil {
+		return nil
+	}
+	return e.UserFeedback
 }
 
 func (e *EconomicIntelligence) GetExtraProperties() map[string]interface{} {
@@ -361,6 +381,13 @@ func (e *EconomicIntelligence) SetReasoning(reasoning *string) {
 	e.require(economicIntelligenceFieldReasoning)
 }
 
+// SetSentiment sets the Sentiment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetSentiment(sentiment *EconomicIntelligenceSentiment) {
+	e.Sentiment = sentiment
+	e.require(economicIntelligenceFieldSentiment)
+}
+
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EconomicIntelligence) SetStatus(status EconomicIntelligenceStatus) {
@@ -387,6 +414,13 @@ func (e *EconomicIntelligence) SetTargetURL(targetURL *string) {
 func (e *EconomicIntelligence) SetTitle(title *string) {
 	e.Title = title
 	e.require(economicIntelligenceFieldTitle)
+}
+
+// SetUserFeedback sets the UserFeedback field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetUserFeedback(userFeedback *string) {
+	e.UserFeedback = userFeedback
+	e.require(economicIntelligenceFieldUserFeedback)
 }
 
 func (e *EconomicIntelligence) UnmarshalJSON(data []byte) error {
@@ -429,6 +463,29 @@ func (e *EconomicIntelligence) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+// How the user rated this recommendation, or `null` if they have not rated it
+type EconomicIntelligenceSentiment string
+
+const (
+	EconomicIntelligenceSentimentPositive EconomicIntelligenceSentiment = "positive"
+	EconomicIntelligenceSentimentNegative EconomicIntelligenceSentiment = "negative"
+)
+
+func NewEconomicIntelligenceSentimentFromString(s string) (EconomicIntelligenceSentiment, error) {
+	switch s {
+	case "positive":
+		return EconomicIntelligenceSentimentPositive, nil
+	case "negative":
+		return EconomicIntelligenceSentimentNegative, nil
+	}
+	var t EconomicIntelligenceSentiment
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EconomicIntelligenceSentiment) Ptr() *EconomicIntelligenceSentiment {
+	return &e
 }
 
 // `queued` when awaiting generation; `pending` while generating; `ready` when available for approval; `executed` when approved; `superseded` when rejected or replaced.
@@ -726,6 +783,29 @@ func (l *ListEconomicIntelligenceResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+// A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
+type UpdateEconomicIntelligenceRequestSentiment string
+
+const (
+	UpdateEconomicIntelligenceRequestSentimentPositive UpdateEconomicIntelligenceRequestSentiment = "positive"
+	UpdateEconomicIntelligenceRequestSentimentNegative UpdateEconomicIntelligenceRequestSentiment = "negative"
+)
+
+func NewUpdateEconomicIntelligenceRequestSentimentFromString(s string) (UpdateEconomicIntelligenceRequestSentiment, error) {
+	switch s {
+	case "positive":
+		return UpdateEconomicIntelligenceRequestSentimentPositive, nil
+	case "negative":
+		return UpdateEconomicIntelligenceRequestSentimentNegative, nil
+	}
+	var t UpdateEconomicIntelligenceRequestSentiment
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateEconomicIntelligenceRequestSentiment) Ptr() *UpdateEconomicIntelligenceRequestSentiment {
+	return &u
+}
+
 // Use `executed` to record approval, or `superseded` to reject the recommendation.
 type UpdateEconomicIntelligenceRequestStatus string
 
@@ -750,10 +830,11 @@ func (u UpdateEconomicIntelligenceRequestStatus) Ptr() *UpdateEconomicIntelligen
 }
 
 var (
-	updateEconomicIntelligenceRequestFieldID        = big.NewInt(1 << 0)
-	updateEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 1)
-	updateEconomicIntelligenceRequestFieldReason    = big.NewInt(1 << 2)
-	updateEconomicIntelligenceRequestFieldStatus    = big.NewInt(1 << 3)
+	updateEconomicIntelligenceRequestFieldID           = big.NewInt(1 << 0)
+	updateEconomicIntelligenceRequestFieldAccountID    = big.NewInt(1 << 1)
+	updateEconomicIntelligenceRequestFieldSentiment    = big.NewInt(1 << 2)
+	updateEconomicIntelligenceRequestFieldStatus       = big.NewInt(1 << 3)
+	updateEconomicIntelligenceRequestFieldUserFeedback = big.NewInt(1 << 4)
 )
 
 type UpdateEconomicIntelligenceRequest struct {
@@ -761,10 +842,12 @@ type UpdateEconomicIntelligenceRequest struct {
 	ID string `json:"-" url:"-"`
 	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// Why the recommendation was rejected. Used as feedback when replenishing recommendations.
-	Reason *string `json:"reason,omitempty" url:"-"`
+	// A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
+	Sentiment *UpdateEconomicIntelligenceRequestSentiment `json:"sentiment,omitempty" url:"-"`
 	// Use `executed` to record approval, or `superseded` to reject the recommendation.
-	Status UpdateEconomicIntelligenceRequestStatus `json:"status" url:"-"`
+	Status *UpdateEconomicIntelligenceRequestStatus `json:"status,omitempty" url:"-"`
+	// An optional explanation of the rating or rejection. Negative feedback informs replacement recommendations.
+	UserFeedback *string `json:"user_feedback,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -791,18 +874,25 @@ func (u *UpdateEconomicIntelligenceRequest) SetAccountID(accountID *string) {
 	u.require(updateEconomicIntelligenceRequestFieldAccountID)
 }
 
-// SetReason sets the Reason field and marks it as non-optional;
+// SetSentiment sets the Sentiment field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEconomicIntelligenceRequest) SetReason(reason *string) {
-	u.Reason = reason
-	u.require(updateEconomicIntelligenceRequestFieldReason)
+func (u *UpdateEconomicIntelligenceRequest) SetSentiment(sentiment *UpdateEconomicIntelligenceRequestSentiment) {
+	u.Sentiment = sentiment
+	u.require(updateEconomicIntelligenceRequestFieldSentiment)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEconomicIntelligenceRequest) SetStatus(status UpdateEconomicIntelligenceRequestStatus) {
+func (u *UpdateEconomicIntelligenceRequest) SetStatus(status *UpdateEconomicIntelligenceRequestStatus) {
 	u.Status = status
 	u.require(updateEconomicIntelligenceRequestFieldStatus)
+}
+
+// SetUserFeedback sets the UserFeedback field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateEconomicIntelligenceRequest) SetUserFeedback(userFeedback *string) {
+	u.UserFeedback = userFeedback
+	u.require(updateEconomicIntelligenceRequestFieldUserFeedback)
 }
 
 func (u *UpdateEconomicIntelligenceRequest) UnmarshalJSON(data []byte) error {

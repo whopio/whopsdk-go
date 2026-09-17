@@ -15168,7 +15168,7 @@ client.EconomicIntelligence.Create(
 <dl>
 <dd>
 
-Approves or rejects a recommendation and requests replacements.
+Updates a recommendation status, records feedback, or both. Send `sentiment` to rate it. Include `status: superseded` to retire it and request replacements; a rating alone leaves its status unchanged.
 </dd>
 </dl>
 </dd>
@@ -15185,7 +15185,6 @@ Approves or rejects a recommendation and requests replacements.
 ```go
 request := &whopsdk.UpdateEconomicIntelligenceRequest{
     ID: "id",
-    Status: whopsdk.UpdateEconomicIntelligenceRequestStatusExecuted,
 }
 client.EconomicIntelligence.Update(
     context.TODO(),
@@ -15221,7 +15220,7 @@ client.EconomicIntelligence.Update(
 <dl>
 <dd>
 
-**reason:** `*string` — Why the recommendation was rejected. Used as feedback when replenishing recommendations.
+**sentiment:** `*whopsdk.UpdateEconomicIntelligenceRequestSentiment` — A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
     
 </dd>
 </dl>
@@ -15230,6 +15229,14 @@ client.EconomicIntelligence.Update(
 <dd>
 
 **status:** `*whopsdk.UpdateEconomicIntelligenceRequestStatus` — Use `executed` to record approval, or `superseded` to reject the recommendation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userFeedback:** `*string` — An optional explanation of the rating or rejection. Negative feedback informs replacement recommendations.
     
 </dd>
 </dl>
