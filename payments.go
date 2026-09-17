@@ -756,44 +756,45 @@ var (
 	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 14)
 	paymentFieldID                         = big.NewInt(1 << 15)
 	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 16)
-	paymentFieldMemberID                   = big.NewInt(1 << 17)
-	paymentFieldMembershipID               = big.NewInt(1 << 18)
-	paymentFieldMetadata                   = big.NewInt(1 << 19)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 20)
-	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 21)
-	paymentFieldPaidAt                     = big.NewInt(1 << 22)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 23)
-	paymentFieldPaymentMethodID            = big.NewInt(1 << 24)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 25)
-	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 26)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 27)
-	paymentFieldPlanID                     = big.NewInt(1 << 28)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 29)
-	paymentFieldProductID                  = big.NewInt(1 << 30)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 31)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 32)
-	paymentFieldRefundable                 = big.NewInt(1 << 33)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 34)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 35)
-	paymentFieldRetryable                  = big.NewInt(1 << 36)
-	paymentFieldRiskScore                  = big.NewInt(1 << 37)
-	paymentFieldRiskSignals                = big.NewInt(1 << 38)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 39)
-	paymentFieldShipmentID                 = big.NewInt(1 << 40)
-	paymentFieldShippingAddress            = big.NewInt(1 << 41)
-	paymentFieldStatus                     = big.NewInt(1 << 42)
-	paymentFieldSubstatus                  = big.NewInt(1 << 43)
-	paymentFieldSubtotal                   = big.NewInt(1 << 44)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 45)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 46)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 47)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 48)
-	paymentFieldTotal                      = big.NewInt(1 << 49)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 50)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 51)
-	paymentFieldUser                       = big.NewInt(1 << 52)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 53)
-	paymentFieldVoidable                   = big.NewInt(1 << 54)
+	paymentFieldLineItems                  = big.NewInt(1 << 17)
+	paymentFieldMemberID                   = big.NewInt(1 << 18)
+	paymentFieldMembershipID               = big.NewInt(1 << 19)
+	paymentFieldMetadata                   = big.NewInt(1 << 20)
+	paymentFieldNeedsTracking              = big.NewInt(1 << 21)
+	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 22)
+	paymentFieldPaidAt                     = big.NewInt(1 << 23)
+	paymentFieldPaymentInstrument          = big.NewInt(1 << 24)
+	paymentFieldPaymentMethodID            = big.NewInt(1 << 25)
+	paymentFieldPaymentMethodType          = big.NewInt(1 << 26)
+	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 27)
+	paymentFieldPaymentsFailed             = big.NewInt(1 << 28)
+	paymentFieldPlanID                     = big.NewInt(1 << 29)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 30)
+	paymentFieldProductID                  = big.NewInt(1 << 31)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 32)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 33)
+	paymentFieldRefundable                 = big.NewInt(1 << 34)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 35)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 36)
+	paymentFieldRetryable                  = big.NewInt(1 << 37)
+	paymentFieldRiskScore                  = big.NewInt(1 << 38)
+	paymentFieldRiskSignals                = big.NewInt(1 << 39)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 40)
+	paymentFieldShipmentID                 = big.NewInt(1 << 41)
+	paymentFieldShippingAddress            = big.NewInt(1 << 42)
+	paymentFieldStatus                     = big.NewInt(1 << 43)
+	paymentFieldSubstatus                  = big.NewInt(1 << 44)
+	paymentFieldSubtotal                   = big.NewInt(1 << 45)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 46)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 47)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 48)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 49)
+	paymentFieldTotal                      = big.NewInt(1 << 50)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 51)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 52)
+	paymentFieldUser                       = big.NewInt(1 << 53)
+	paymentFieldVerificationChecks         = big.NewInt(1 << 54)
+	paymentFieldVoidable                   = big.NewInt(1 << 55)
 )
 
 type Payment struct {
@@ -830,7 +831,8 @@ type Payment struct {
 	// Payment ID, prefixed `pay_`.
 	ID string `json:"id" url:"id"`
 	// When the most recent charge attempt ran, or null.
-	LastPaymentAttemptAt *string `json:"last_payment_attempt_at,omitempty" url:"last_payment_attempt_at,omitempty"`
+	LastPaymentAttemptAt *string            `json:"last_payment_attempt_at,omitempty" url:"last_payment_attempt_at,omitempty"`
+	LineItems            []*ReceiptLineItem `json:"line_items" url:"line_items"`
 	// The buyer's member record on the account, prefixed `mber_`. Null without the member:basic:read permission.
 	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 	// The membership this payment is billed against, prefixed `mem_`. Null for one-off purchases or without the member:basic:read permission.
@@ -1032,6 +1034,13 @@ func (p *Payment) GetLastPaymentAttemptAt() *string {
 		return nil
 	}
 	return p.LastPaymentAttemptAt
+}
+
+func (p *Payment) GetLineItems() []*ReceiptLineItem {
+	if p == nil {
+		return nil
+	}
+	return p.LineItems
 }
 
 func (p *Payment) GetMemberID() *string {
@@ -1431,6 +1440,13 @@ func (p *Payment) SetID(id string) {
 func (p *Payment) SetLastPaymentAttemptAt(lastPaymentAttemptAt *string) {
 	p.LastPaymentAttemptAt = lastPaymentAttemptAt
 	p.require(paymentFieldLastPaymentAttemptAt)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetLineItems(lineItems []*ReceiptLineItem) {
+	p.LineItems = lineItems
+	p.require(paymentFieldLineItems)
 }
 
 // SetMemberID sets the MemberID field and marks it as non-optional;
