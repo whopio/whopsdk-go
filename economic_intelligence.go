@@ -154,7 +154,8 @@ var (
 	economicIntelligenceFieldReasoning    = big.NewInt(1 << 8)
 	economicIntelligenceFieldStatus       = big.NewInt(1 << 9)
 	economicIntelligenceFieldSupersededAt = big.NewInt(1 << 10)
-	economicIntelligenceFieldTitle        = big.NewInt(1 << 11)
+	economicIntelligenceFieldTargetURL    = big.NewInt(1 << 11)
+	economicIntelligenceFieldTitle        = big.NewInt(1 << 12)
 )
 
 type EconomicIntelligence struct {
@@ -180,6 +181,8 @@ type EconomicIntelligence struct {
 	Status EconomicIntelligenceStatus `json:"status" url:"status"`
 	// When the recommendation was rejected or replaced, as an ISO 8601 timestamp, or `null` if neither has occurred.
 	SupersededAt *string `json:"superseded_at,omitempty" url:"superseded_at,omitempty"`
+	// Website URL selected for pixel setup, or `null` when no website was captured for this recommendation.
+	TargetURL *string `json:"target_url,omitempty" url:"target_url,omitempty"`
 	// Recommended action and its expected benefit, or `null` until generated.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 
@@ -265,6 +268,13 @@ func (e *EconomicIntelligence) GetSupersededAt() *string {
 		return nil
 	}
 	return e.SupersededAt
+}
+
+func (e *EconomicIntelligence) GetTargetURL() *string {
+	if e == nil {
+		return nil
+	}
+	return e.TargetURL
 }
 
 func (e *EconomicIntelligence) GetTitle() *string {
@@ -363,6 +373,13 @@ func (e *EconomicIntelligence) SetStatus(status EconomicIntelligenceStatus) {
 func (e *EconomicIntelligence) SetSupersededAt(supersededAt *string) {
 	e.SupersededAt = supersededAt
 	e.require(economicIntelligenceFieldSupersededAt)
+}
+
+// SetTargetURL sets the TargetURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetTargetURL(targetURL *string) {
+	e.TargetURL = targetURL
+	e.require(economicIntelligenceFieldTargetURL)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
