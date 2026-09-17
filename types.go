@@ -933,6 +933,1481 @@ func (a AccountCapabilitiesTransfer) Ptr() *AccountCapabilitiesTransfer {
 }
 
 var (
+	accountFeeFieldAdjustable         = big.NewInt(1 << 0)
+	accountFeeFieldCategory           = big.NewInt(1 << 1)
+	accountFeeFieldDefault            = big.NewInt(1 << 2)
+	accountFeeFieldEndsAt             = big.NewInt(1 << 3)
+	accountFeeFieldFixed              = big.NewInt(1 << 4)
+	accountFeeFieldMinimum            = big.NewInt(1 << 5)
+	accountFeeFieldPercentage         = big.NewInt(1 << 6)
+	accountFeeFieldRegion             = big.NewInt(1 << 7)
+	accountFeeFieldRegions            = big.NewInt(1 << 8)
+	accountFeeFieldSource             = big.NewInt(1 << 9)
+	accountFeeFieldUnadjustableReason = big.NewInt(1 << 10)
+)
+
+type AccountFee struct {
+	// Whether the caller may change this fee through `PATCH`. Depends on who is asking.
+	Adjustable bool `json:"adjustable" url:"adjustable"`
+	// Which group of the fee schedule this fee belongs to, for grouping in a UI.
+	Category AccountFeeCategory `json:"category" url:"category"`
+	// The platform rate with no custom deal: what applies if the custom rate is cleared.
+	Default *AccountFeeRate `json:"default" url:"default"`
+	// When a custom or inherited rate expires and the fee returns to `default`, as an ISO 8601 timestamp. `null` when the default applies or the rate does not expire.
+	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
+	// The amount charged per event in effect. `null` when the fee has no fixed component.
+	Fixed *Money `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The lowest rate the caller may set, present only when `adjustable`.
+	Minimum *AccountFeeRate `json:"minimum,omitempty" url:"minimum,omitempty"`
+	// The percentage of the transaction in effect, where `2` means 2%. `null` when the fee has no percentage component.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+	// The acquirer region `percentage` and `fixed` describe, for a fee that varies by where the money is processed. `null` for a fee that does not vary by region.
+	Region *AccountFeeRegion `json:"region,omitempty" url:"region,omitempty"`
+	// The rate in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
+	Regions map[string]*AccountFeeRate `json:"regions" url:"regions"`
+	// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
+	Source AccountFeeSource `json:"source" url:"source"`
+	// Why the caller may not change this fee, or `null` when `adjustable`. `not_permitted` when the caller has no say over it.
+	UnadjustableReason *AccountFeeUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountFee) GetAdjustable() bool {
+	if a == nil {
+		return false
+	}
+	return a.Adjustable
+}
+
+func (a *AccountFee) GetCategory() AccountFeeCategory {
+	if a == nil {
+		return ""
+	}
+	return a.Category
+}
+
+func (a *AccountFee) GetDefault() *AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Default
+}
+
+func (a *AccountFee) GetEndsAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.EndsAt
+}
+
+func (a *AccountFee) GetFixed() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.Fixed
+}
+
+func (a *AccountFee) GetMinimum() *AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Minimum
+}
+
+func (a *AccountFee) GetPercentage() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.Percentage
+}
+
+func (a *AccountFee) GetRegion() *AccountFeeRegion {
+	if a == nil {
+		return nil
+	}
+	return a.Region
+}
+
+func (a *AccountFee) GetRegions() map[string]*AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Regions
+}
+
+func (a *AccountFee) GetSource() AccountFeeSource {
+	if a == nil {
+		return ""
+	}
+	return a.Source
+}
+
+func (a *AccountFee) GetUnadjustableReason() *AccountFeeUnadjustableReason {
+	if a == nil {
+		return nil
+	}
+	return a.UnadjustableReason
+}
+
+func (a *AccountFee) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountFee) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetAdjustable sets the Adjustable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetAdjustable(adjustable bool) {
+	a.Adjustable = adjustable
+	a.require(accountFeeFieldAdjustable)
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetCategory(category AccountFeeCategory) {
+	a.Category = category
+	a.require(accountFeeFieldCategory)
+}
+
+// SetDefault sets the Default field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetDefault(default_ *AccountFeeRate) {
+	a.Default = default_
+	a.require(accountFeeFieldDefault)
+}
+
+// SetEndsAt sets the EndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetEndsAt(endsAt *string) {
+	a.EndsAt = endsAt
+	a.require(accountFeeFieldEndsAt)
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetFixed(fixed *Money) {
+	a.Fixed = fixed
+	a.require(accountFeeFieldFixed)
+}
+
+// SetMinimum sets the Minimum field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetMinimum(minimum *AccountFeeRate) {
+	a.Minimum = minimum
+	a.require(accountFeeFieldMinimum)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetPercentage(percentage *float64) {
+	a.Percentage = percentage
+	a.require(accountFeeFieldPercentage)
+}
+
+// SetRegion sets the Region field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetRegion(region *AccountFeeRegion) {
+	a.Region = region
+	a.require(accountFeeFieldRegion)
+}
+
+// SetRegions sets the Regions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetRegions(regions map[string]*AccountFeeRate) {
+	a.Regions = regions
+	a.require(accountFeeFieldRegions)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetSource(source AccountFeeSource) {
+	a.Source = source
+	a.require(accountFeeFieldSource)
+}
+
+// SetUnadjustableReason sets the UnadjustableReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetUnadjustableReason(unadjustableReason *AccountFeeUnadjustableReason) {
+	a.UnadjustableReason = unadjustableReason
+	a.require(accountFeeFieldUnadjustableReason)
+}
+
+func (a *AccountFee) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountFee
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountFee(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountFee) MarshalJSON() ([]byte, error) {
+	type embed AccountFee
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountFee) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Which group of the fee schedule this fee belongs to, for grouping in a UI.
+type AccountFeeCategory string
+
+const (
+	AccountFeeCategoryPayments     AccountFeeCategory = "payments"
+	AccountFeeCategoryDisputes     AccountFeeCategory = "disputes"
+	AccountFeeCategoryOptimization AccountFeeCategory = "optimization"
+	AccountFeeCategoryPayouts      AccountFeeCategory = "payouts"
+	AccountFeeCategoryOther        AccountFeeCategory = "other"
+)
+
+func NewAccountFeeCategoryFromString(s string) (AccountFeeCategory, error) {
+	switch s {
+	case "payments":
+		return AccountFeeCategoryPayments, nil
+	case "disputes":
+		return AccountFeeCategoryDisputes, nil
+	case "optimization":
+		return AccountFeeCategoryOptimization, nil
+	case "payouts":
+		return AccountFeeCategoryPayouts, nil
+	case "other":
+		return AccountFeeCategoryOther, nil
+	}
+	var t AccountFeeCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountFeeCategory) Ptr() *AccountFeeCategory {
+	return &a
+}
+
+var (
+	accountFeeMarkupFieldAdjustable         = big.NewInt(1 << 0)
+	accountFeeMarkupFieldDefault            = big.NewInt(1 << 1)
+	accountFeeMarkupFieldFixed              = big.NewInt(1 << 2)
+	accountFeeMarkupFieldMaximum            = big.NewInt(1 << 3)
+	accountFeeMarkupFieldPercentage         = big.NewInt(1 << 4)
+	accountFeeMarkupFieldSource             = big.NewInt(1 << 5)
+	accountFeeMarkupFieldUnadjustableReason = big.NewInt(1 << 6)
+)
+
+type AccountFeeMarkup struct {
+	// Whether the caller may change this markup through `PATCH`. True for the platform's team holding the `company:update_child_fees` scope.
+	Adjustable bool `json:"adjustable" url:"adjustable"`
+	// What applies if this row is cleared: the platform's default for all its connected accounts, or zero.
+	Default *AccountFeeRate `json:"default" url:"default"`
+	// The amount the platform adds per event. Zero when no markup is set.
+	Fixed *Money `json:"fixed" url:"fixed"`
+	// The highest markup the platform may set.
+	Maximum *AccountFeeRate `json:"maximum" url:"maximum"`
+	// The percentage of the transaction the platform adds, where `2` means 2%. `0` when no markup is set.
+	Percentage float64 `json:"percentage" url:"percentage"`
+	// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero.
+	Source AccountFeeMarkupSource `json:"source" url:"source"`
+	// Why the caller may not change this markup, or `null` when `adjustable`.
+	UnadjustableReason *AccountFeeMarkupUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountFeeMarkup) GetAdjustable() bool {
+	if a == nil {
+		return false
+	}
+	return a.Adjustable
+}
+
+func (a *AccountFeeMarkup) GetDefault() *AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Default
+}
+
+func (a *AccountFeeMarkup) GetFixed() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.Fixed
+}
+
+func (a *AccountFeeMarkup) GetMaximum() *AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Maximum
+}
+
+func (a *AccountFeeMarkup) GetPercentage() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.Percentage
+}
+
+func (a *AccountFeeMarkup) GetSource() AccountFeeMarkupSource {
+	if a == nil {
+		return ""
+	}
+	return a.Source
+}
+
+func (a *AccountFeeMarkup) GetUnadjustableReason() *AccountFeeMarkupUnadjustableReason {
+	if a == nil {
+		return nil
+	}
+	return a.UnadjustableReason
+}
+
+func (a *AccountFeeMarkup) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountFeeMarkup) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetAdjustable sets the Adjustable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkup) SetAdjustable(adjustable bool) {
+	a.Adjustable = adjustable
+	a.require(accountFeeMarkupFieldAdjustable)
+}
+
+// SetDefault sets the Default field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkup) SetDefault(default_ *AccountFeeRate) {
+	a.Default = default_
+	a.require(accountFeeMarkupFieldDefault)
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkup) SetFixed(fixed *Money) {
+	a.Fixed = fixed
+	a.require(accountFeeMarkupFieldFixed)
+}
+
+// SetMaximum sets the Maximum field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkup) SetMaximum(maximum *AccountFeeRate) {
+	a.Maximum = maximum
+	a.require(accountFeeMarkupFieldMaximum)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkup) SetPercentage(percentage float64) {
+	a.Percentage = percentage
+	a.require(accountFeeMarkupFieldPercentage)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkup) SetSource(source AccountFeeMarkupSource) {
+	a.Source = source
+	a.require(accountFeeMarkupFieldSource)
+}
+
+// SetUnadjustableReason sets the UnadjustableReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkup) SetUnadjustableReason(unadjustableReason *AccountFeeMarkupUnadjustableReason) {
+	a.UnadjustableReason = unadjustableReason
+	a.require(accountFeeMarkupFieldUnadjustableReason)
+}
+
+func (a *AccountFeeMarkup) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountFeeMarkup
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountFeeMarkup(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountFeeMarkup) MarshalJSON() ([]byte, error) {
+	type embed AccountFeeMarkup
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountFeeMarkup) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero.
+type AccountFeeMarkupSource string
+
+const (
+	AccountFeeMarkupSourceDefault AccountFeeMarkupSource = "default"
+	AccountFeeMarkupSourceCustom  AccountFeeMarkupSource = "custom"
+)
+
+func NewAccountFeeMarkupSourceFromString(s string) (AccountFeeMarkupSource, error) {
+	switch s {
+	case "default":
+		return AccountFeeMarkupSourceDefault, nil
+	case "custom":
+		return AccountFeeMarkupSourceCustom, nil
+	}
+	var t AccountFeeMarkupSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountFeeMarkupSource) Ptr() *AccountFeeMarkupSource {
+	return &a
+}
+
+// Why the caller may not change this markup, or `null` when `adjustable`.
+type AccountFeeMarkupUnadjustableReason string
+
+const (
+	AccountFeeMarkupUnadjustableReasonNotPermitted AccountFeeMarkupUnadjustableReason = "not_permitted"
+)
+
+func NewAccountFeeMarkupUnadjustableReasonFromString(s string) (AccountFeeMarkupUnadjustableReason, error) {
+	switch s {
+	case "not_permitted":
+		return AccountFeeMarkupUnadjustableReasonNotPermitted, nil
+	}
+	var t AccountFeeMarkupUnadjustableReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountFeeMarkupUnadjustableReason) Ptr() *AccountFeeMarkupUnadjustableReason {
+	return &a
+}
+
+var (
+	accountFeeMarkupsFieldCryptoSwaps = big.NewInt(1 << 0)
+	accountFeeMarkupsFieldDeposits    = big.NewInt(1 << 1)
+	accountFeeMarkupsFieldPayments    = big.NewInt(1 << 2)
+	accountFeeMarkupsFieldPayouts     = big.NewInt(1 << 3)
+	accountFeeMarkupsFieldTransfers   = big.NewInt(1 << 4)
+)
+
+type AccountFeeMarkups struct {
+	// The markup on cryptocurrency token swaps.
+	CryptoSwaps *AccountFeeMarkup `json:"crypto_swaps" url:"crypto_swaps"`
+	// Markups on deposits into the account's balance, keyed by rail: `bank` and `crypto`.
+	Deposits map[string]*AccountFeeMarkup `json:"deposits" url:"deposits"`
+	// The markup on payments the connected account collects without a checkout application fee.
+	Payments *AccountFeeMarkup `json:"payments" url:"payments"`
+	// Markups on withdrawals, keyed by payout method: `bank_wire`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`.
+	Payouts map[string]*AccountFeeMarkup `json:"payouts" url:"payouts"`
+	// The markup on transfers between Whop balances.
+	Transfers *AccountFeeMarkup `json:"transfers" url:"transfers"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountFeeMarkups) GetCryptoSwaps() *AccountFeeMarkup {
+	if a == nil {
+		return nil
+	}
+	return a.CryptoSwaps
+}
+
+func (a *AccountFeeMarkups) GetDeposits() map[string]*AccountFeeMarkup {
+	if a == nil {
+		return nil
+	}
+	return a.Deposits
+}
+
+func (a *AccountFeeMarkups) GetPayments() *AccountFeeMarkup {
+	if a == nil {
+		return nil
+	}
+	return a.Payments
+}
+
+func (a *AccountFeeMarkups) GetPayouts() map[string]*AccountFeeMarkup {
+	if a == nil {
+		return nil
+	}
+	return a.Payouts
+}
+
+func (a *AccountFeeMarkups) GetTransfers() *AccountFeeMarkup {
+	if a == nil {
+		return nil
+	}
+	return a.Transfers
+}
+
+func (a *AccountFeeMarkups) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountFeeMarkups) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetCryptoSwaps sets the CryptoSwaps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkups) SetCryptoSwaps(cryptoSwaps *AccountFeeMarkup) {
+	a.CryptoSwaps = cryptoSwaps
+	a.require(accountFeeMarkupsFieldCryptoSwaps)
+}
+
+// SetDeposits sets the Deposits field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkups) SetDeposits(deposits map[string]*AccountFeeMarkup) {
+	a.Deposits = deposits
+	a.require(accountFeeMarkupsFieldDeposits)
+}
+
+// SetPayments sets the Payments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkups) SetPayments(payments *AccountFeeMarkup) {
+	a.Payments = payments
+	a.require(accountFeeMarkupsFieldPayments)
+}
+
+// SetPayouts sets the Payouts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkups) SetPayouts(payouts map[string]*AccountFeeMarkup) {
+	a.Payouts = payouts
+	a.require(accountFeeMarkupsFieldPayouts)
+}
+
+// SetTransfers sets the Transfers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkups) SetTransfers(transfers *AccountFeeMarkup) {
+	a.Transfers = transfers
+	a.require(accountFeeMarkupsFieldTransfers)
+}
+
+func (a *AccountFeeMarkups) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountFeeMarkups
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountFeeMarkups(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountFeeMarkups) MarshalJSON() ([]byte, error) {
+	type embed AccountFeeMarkups
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountFeeMarkups) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	accountFeeRateFieldFixed      = big.NewInt(1 << 0)
+	accountFeeRateFieldPercentage = big.NewInt(1 << 1)
+)
+
+type AccountFeeRate struct {
+	// The amount charged per event. `null` when the fee has no fixed component.
+	Fixed *Money `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The percentage of the transaction, where `2` means 2%. `null` when the fee has no percentage component.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountFeeRate) GetFixed() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.Fixed
+}
+
+func (a *AccountFeeRate) GetPercentage() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.Percentage
+}
+
+func (a *AccountFeeRate) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountFeeRate) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeRate) SetFixed(fixed *Money) {
+	a.Fixed = fixed
+	a.require(accountFeeRateFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeRate) SetPercentage(percentage *float64) {
+	a.Percentage = percentage
+	a.require(accountFeeRateFieldPercentage)
+}
+
+func (a *AccountFeeRate) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountFeeRate
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountFeeRate(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountFeeRate) MarshalJSON() ([]byte, error) {
+	type embed AccountFeeRate
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountFeeRate) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// The acquirer region `percentage` and `fixed` describe, for a fee that varies by where the money is processed. `null` for a fee that does not vary by region.
+type AccountFeeRegion string
+
+const (
+	AccountFeeRegionUsa AccountFeeRegion = "usa"
+	AccountFeeRegionEu  AccountFeeRegion = "eu"
+	AccountFeeRegionCa  AccountFeeRegion = "ca"
+	AccountFeeRegionUk  AccountFeeRegion = "uk"
+	AccountFeeRegionAu  AccountFeeRegion = "au"
+	AccountFeeRegionCo  AccountFeeRegion = "co"
+	AccountFeeRegionMx  AccountFeeRegion = "mx"
+	AccountFeeRegionKe  AccountFeeRegion = "ke"
+	AccountFeeRegionCl  AccountFeeRegion = "cl"
+	AccountFeeRegionPe  AccountFeeRegion = "pe"
+	AccountFeeRegionAr  AccountFeeRegion = "ar"
+	AccountFeeRegionCr  AccountFeeRegion = "cr"
+	AccountFeeRegionGt  AccountFeeRegion = "gt"
+	AccountFeeRegionUy  AccountFeeRegion = "uy"
+	AccountFeeRegionPh  AccountFeeRegion = "ph"
+)
+
+func NewAccountFeeRegionFromString(s string) (AccountFeeRegion, error) {
+	switch s {
+	case "usa":
+		return AccountFeeRegionUsa, nil
+	case "eu":
+		return AccountFeeRegionEu, nil
+	case "ca":
+		return AccountFeeRegionCa, nil
+	case "uk":
+		return AccountFeeRegionUk, nil
+	case "au":
+		return AccountFeeRegionAu, nil
+	case "co":
+		return AccountFeeRegionCo, nil
+	case "mx":
+		return AccountFeeRegionMx, nil
+	case "ke":
+		return AccountFeeRegionKe, nil
+	case "cl":
+		return AccountFeeRegionCl, nil
+	case "pe":
+		return AccountFeeRegionPe, nil
+	case "ar":
+		return AccountFeeRegionAr, nil
+	case "cr":
+		return AccountFeeRegionCr, nil
+	case "gt":
+		return AccountFeeRegionGt, nil
+	case "uy":
+		return AccountFeeRegionUy, nil
+	case "ph":
+		return AccountFeeRegionPh, nil
+	}
+	var t AccountFeeRegion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountFeeRegion) Ptr() *AccountFeeRegion {
+	return &a
+}
+
+// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
+type AccountFeeSource string
+
+const (
+	AccountFeeSourceDefault   AccountFeeSource = "default"
+	AccountFeeSourceCustom    AccountFeeSource = "custom"
+	AccountFeeSourceInherited AccountFeeSource = "inherited"
+)
+
+func NewAccountFeeSourceFromString(s string) (AccountFeeSource, error) {
+	switch s {
+	case "default":
+		return AccountFeeSourceDefault, nil
+	case "custom":
+		return AccountFeeSourceCustom, nil
+	case "inherited":
+		return AccountFeeSourceInherited, nil
+	}
+	var t AccountFeeSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountFeeSource) Ptr() *AccountFeeSource {
+	return &a
+}
+
+// Why the caller may not change this fee, or `null` when `adjustable`. `not_permitted` when the caller has no say over it.
+type AccountFeeUnadjustableReason string
+
+const (
+	AccountFeeUnadjustableReasonNotPermitted AccountFeeUnadjustableReason = "not_permitted"
+)
+
+func NewAccountFeeUnadjustableReasonFromString(s string) (AccountFeeUnadjustableReason, error) {
+	switch s {
+	case "not_permitted":
+		return AccountFeeUnadjustableReasonNotPermitted, nil
+	}
+	var t AccountFeeUnadjustableReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountFeeUnadjustableReason) Ptr() *AccountFeeUnadjustableReason {
+	return &a
+}
+
+var (
+	accountFeesFieldAccountID            = big.NewInt(1 << 0)
+	accountFeesFieldAds                  = big.NewInt(1 << 1)
+	accountFeesFieldBankDeposit          = big.NewInt(1 << 2)
+	accountFeesFieldBilling              = big.NewInt(1 << 3)
+	accountFeesFieldBuyer                = big.NewInt(1 << 4)
+	accountFeesFieldCardProcessing       = big.NewInt(1 << 5)
+	accountFeesFieldChildMarkups         = big.NewInt(1 << 6)
+	accountFeesFieldCrossBorder          = big.NewInt(1 << 7)
+	accountFeesFieldDispute              = big.NewInt(1 << 8)
+	accountFeesFieldDisputeAlert         = big.NewInt(1 << 9)
+	accountFeesFieldDisputeAlertCdrn     = big.NewInt(1 << 10)
+	accountFeesFieldDisputeAlertEthoca   = big.NewInt(1 << 11)
+	accountFeesFieldDisputeAlertRdr      = big.NewInt(1 << 12)
+	accountFeesFieldDisputeRepresentment = big.NewInt(1 << 13)
+	accountFeesFieldForeignExchange      = big.NewInt(1 << 14)
+	accountFeesFieldFraudScreening       = big.NewInt(1 << 15)
+	accountFeesFieldHighRisk             = big.NewInt(1 << 16)
+	accountFeesFieldMarketplace          = big.NewInt(1 << 17)
+	accountFeesFieldMarkups              = big.NewInt(1 << 18)
+	accountFeesFieldOrchestration        = big.NewInt(1 << 19)
+	accountFeesFieldParentAccountID      = big.NewInt(1 << 20)
+	accountFeesFieldPaymentMethods       = big.NewInt(1 << 21)
+	accountFeesFieldPayouts              = big.NewInt(1 << 22)
+	accountFeesFieldPendingAutoTopup     = big.NewInt(1 << 23)
+	accountFeesFieldPlatformProcessing   = big.NewInt(1 << 24)
+	accountFeesFieldPoolPayout           = big.NewInt(1 << 25)
+	accountFeesFieldRevshare             = big.NewInt(1 << 26)
+	accountFeesFieldTaxCalculation       = big.NewInt(1 << 27)
+	accountFeesFieldTaxService           = big.NewInt(1 << 28)
+	accountFeesFieldThreeDs              = big.NewInt(1 << 29)
+	accountFeesFieldTransfers            = big.NewInt(1 << 30)
+)
+
+type AccountFees struct {
+	// The account these fees are charged to, prefixed `biz_`.
+	AccountID string `json:"account_id" url:"account_id"`
+	// Charged on Whop Ads spend.
+	Ads *AccountFee `json:"ads" url:"ads"`
+	// Charged on bank deposits into the account's balance.
+	BankDeposit *AccountFee `json:"bank_deposit" url:"bank_deposit"`
+	// Charged on recurring billing.
+	Billing *AccountFee `json:"billing" url:"billing"`
+	// Charged to the buyer at checkout, on top of the price.
+	Buyer *AccountFee `json:"buyer" url:"buyer"`
+	// Card payments. `percentage` and `fixed` are the rate in the headline `region`; every other acquirer region is under `regions`.
+	CardProcessing *AccountFee `json:"card_processing" url:"card_processing"`
+	// The default markups this account charges the accounts connected to it. `null` unless the account is a platform.
+	ChildMarkups *AccountFeeMarkups `json:"child_markups,omitempty" url:"child_markups,omitempty"`
+	// Added to a payment whose card was issued outside the region where the payment was processed.
+	CrossBorder *AccountFee `json:"cross_border" url:"cross_border"`
+	// Charged when a payment is disputed.
+	Dispute *AccountFee `json:"dispute" url:"dispute"`
+	// Charged when an early dispute alert lets Whop refund a payment before it becomes a dispute.
+	DisputeAlert *AccountFee `json:"dispute_alert" url:"dispute_alert"`
+	// The early dispute alert fee when the alert comes through Verifi CDRN.
+	DisputeAlertCdrn *AccountFee `json:"dispute_alert_cdrn" url:"dispute_alert_cdrn"`
+	// The early dispute alert fee when the alert comes through Ethoca.
+	DisputeAlertEthoca *AccountFee `json:"dispute_alert_ethoca" url:"dispute_alert_ethoca"`
+	// The early dispute alert fee when the alert comes through Verifi RDR.
+	DisputeAlertRdr *AccountFee `json:"dispute_alert_rdr" url:"dispute_alert_rdr"`
+	// Charged on the amount recovered when Whop fights a dispute and wins.
+	DisputeRepresentment *AccountFee `json:"dispute_representment" url:"dispute_representment"`
+	// Added to a payment settled in a currency other than the one it was charged in.
+	ForeignExchange *AccountFee `json:"foreign_exchange" url:"foreign_exchange"`
+	// Charged when a payment is screened for fraud.
+	FraudScreening *AccountFee `json:"fraud_screening" url:"fraud_screening"`
+	// Added to every payment while the account is classed as high risk.
+	HighRisk *AccountFee `json:"high_risk" url:"high_risk"`
+	// Charged on payments attributed to the Whop marketplace.
+	Marketplace *AccountFee `json:"marketplace" url:"marketplace"`
+	// What the platform this account is connected to adds on top of Whop's fees, collected by that platform. `null` unless the account has a parent.
+	Markups *AccountFeeMarkups `json:"markups,omitempty" url:"markups,omitempty"`
+	// Charged on payments routed through Whop's payment orchestration.
+	Orchestration *AccountFee `json:"orchestration" url:"orchestration"`
+	// The platform this account is connected to, whose markups appear under `markups`. `null` for a standalone account.
+	ParentAccountID *string `json:"parent_account_id,omitempty" url:"parent_account_id,omitempty"`
+	// Processing fees for every non-card payment method the platform prices, keyed by payment method type such as `us_bank_account` or `klarna`.
+	PaymentMethods map[string]*AccountFee `json:"payment_methods" url:"payment_methods"`
+	// Fees on withdrawals, keyed by payout method: `bank_wire`, `same_day_bank`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`.
+	Payouts map[string]*AccountFee `json:"payouts" url:"payouts"`
+	// Charged on a Whop Ads auto top-up that is funded from pending balance.
+	PendingAutoTopup *AccountFee `json:"pending_auto_topup" url:"pending_auto_topup"`
+	// Whop's share of every payment, on top of card processing.
+	PlatformProcessing *AccountFee `json:"platform_processing" url:"platform_processing"`
+	// Charged on payouts from a shared pool balance.
+	PoolPayout *AccountFee `json:"pool_payout" url:"pool_payout"`
+	// Charged on revenue shared with the account.
+	Revshare *AccountFee `json:"revshare" url:"revshare"`
+	// Charged when tax is calculated on a payment.
+	TaxCalculation *AccountFee `json:"tax_calculation" url:"tax_calculation"`
+	// Charged when Whop collects and remits tax on the account's behalf.
+	TaxService *AccountFee `json:"tax_service" url:"tax_service"`
+	// Charged when a payment is authenticated with 3-D Secure.
+	ThreeDs *AccountFee `json:"three_ds" url:"three_ds"`
+	// Charged on transfers from the account's balance to another Whop balance.
+	Transfers *AccountFee `json:"transfers" url:"transfers"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountFees) GetAccountID() string {
+	if a == nil {
+		return ""
+	}
+	return a.AccountID
+}
+
+func (a *AccountFees) GetAds() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.Ads
+}
+
+func (a *AccountFees) GetBankDeposit() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.BankDeposit
+}
+
+func (a *AccountFees) GetBilling() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.Billing
+}
+
+func (a *AccountFees) GetBuyer() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.Buyer
+}
+
+func (a *AccountFees) GetCardProcessing() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.CardProcessing
+}
+
+func (a *AccountFees) GetChildMarkups() *AccountFeeMarkups {
+	if a == nil {
+		return nil
+	}
+	return a.ChildMarkups
+}
+
+func (a *AccountFees) GetCrossBorder() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.CrossBorder
+}
+
+func (a *AccountFees) GetDispute() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.Dispute
+}
+
+func (a *AccountFees) GetDisputeAlert() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.DisputeAlert
+}
+
+func (a *AccountFees) GetDisputeAlertCdrn() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.DisputeAlertCdrn
+}
+
+func (a *AccountFees) GetDisputeAlertEthoca() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.DisputeAlertEthoca
+}
+
+func (a *AccountFees) GetDisputeAlertRdr() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.DisputeAlertRdr
+}
+
+func (a *AccountFees) GetDisputeRepresentment() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.DisputeRepresentment
+}
+
+func (a *AccountFees) GetForeignExchange() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.ForeignExchange
+}
+
+func (a *AccountFees) GetFraudScreening() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.FraudScreening
+}
+
+func (a *AccountFees) GetHighRisk() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.HighRisk
+}
+
+func (a *AccountFees) GetMarketplace() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.Marketplace
+}
+
+func (a *AccountFees) GetMarkups() *AccountFeeMarkups {
+	if a == nil {
+		return nil
+	}
+	return a.Markups
+}
+
+func (a *AccountFees) GetOrchestration() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.Orchestration
+}
+
+func (a *AccountFees) GetParentAccountID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ParentAccountID
+}
+
+func (a *AccountFees) GetPaymentMethods() map[string]*AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.PaymentMethods
+}
+
+func (a *AccountFees) GetPayouts() map[string]*AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.Payouts
+}
+
+func (a *AccountFees) GetPendingAutoTopup() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.PendingAutoTopup
+}
+
+func (a *AccountFees) GetPlatformProcessing() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.PlatformProcessing
+}
+
+func (a *AccountFees) GetPoolPayout() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.PoolPayout
+}
+
+func (a *AccountFees) GetRevshare() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.Revshare
+}
+
+func (a *AccountFees) GetTaxCalculation() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.TaxCalculation
+}
+
+func (a *AccountFees) GetTaxService() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.TaxService
+}
+
+func (a *AccountFees) GetThreeDs() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.ThreeDs
+}
+
+func (a *AccountFees) GetTransfers() *AccountFee {
+	if a == nil {
+		return nil
+	}
+	return a.Transfers
+}
+
+func (a *AccountFees) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountFees) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetAccountID(accountID string) {
+	a.AccountID = accountID
+	a.require(accountFeesFieldAccountID)
+}
+
+// SetAds sets the Ads field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetAds(ads *AccountFee) {
+	a.Ads = ads
+	a.require(accountFeesFieldAds)
+}
+
+// SetBankDeposit sets the BankDeposit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetBankDeposit(bankDeposit *AccountFee) {
+	a.BankDeposit = bankDeposit
+	a.require(accountFeesFieldBankDeposit)
+}
+
+// SetBilling sets the Billing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetBilling(billing *AccountFee) {
+	a.Billing = billing
+	a.require(accountFeesFieldBilling)
+}
+
+// SetBuyer sets the Buyer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetBuyer(buyer *AccountFee) {
+	a.Buyer = buyer
+	a.require(accountFeesFieldBuyer)
+}
+
+// SetCardProcessing sets the CardProcessing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetCardProcessing(cardProcessing *AccountFee) {
+	a.CardProcessing = cardProcessing
+	a.require(accountFeesFieldCardProcessing)
+}
+
+// SetChildMarkups sets the ChildMarkups field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetChildMarkups(childMarkups *AccountFeeMarkups) {
+	a.ChildMarkups = childMarkups
+	a.require(accountFeesFieldChildMarkups)
+}
+
+// SetCrossBorder sets the CrossBorder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetCrossBorder(crossBorder *AccountFee) {
+	a.CrossBorder = crossBorder
+	a.require(accountFeesFieldCrossBorder)
+}
+
+// SetDispute sets the Dispute field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetDispute(dispute *AccountFee) {
+	a.Dispute = dispute
+	a.require(accountFeesFieldDispute)
+}
+
+// SetDisputeAlert sets the DisputeAlert field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetDisputeAlert(disputeAlert *AccountFee) {
+	a.DisputeAlert = disputeAlert
+	a.require(accountFeesFieldDisputeAlert)
+}
+
+// SetDisputeAlertCdrn sets the DisputeAlertCdrn field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetDisputeAlertCdrn(disputeAlertCdrn *AccountFee) {
+	a.DisputeAlertCdrn = disputeAlertCdrn
+	a.require(accountFeesFieldDisputeAlertCdrn)
+}
+
+// SetDisputeAlertEthoca sets the DisputeAlertEthoca field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetDisputeAlertEthoca(disputeAlertEthoca *AccountFee) {
+	a.DisputeAlertEthoca = disputeAlertEthoca
+	a.require(accountFeesFieldDisputeAlertEthoca)
+}
+
+// SetDisputeAlertRdr sets the DisputeAlertRdr field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetDisputeAlertRdr(disputeAlertRdr *AccountFee) {
+	a.DisputeAlertRdr = disputeAlertRdr
+	a.require(accountFeesFieldDisputeAlertRdr)
+}
+
+// SetDisputeRepresentment sets the DisputeRepresentment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetDisputeRepresentment(disputeRepresentment *AccountFee) {
+	a.DisputeRepresentment = disputeRepresentment
+	a.require(accountFeesFieldDisputeRepresentment)
+}
+
+// SetForeignExchange sets the ForeignExchange field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetForeignExchange(foreignExchange *AccountFee) {
+	a.ForeignExchange = foreignExchange
+	a.require(accountFeesFieldForeignExchange)
+}
+
+// SetFraudScreening sets the FraudScreening field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetFraudScreening(fraudScreening *AccountFee) {
+	a.FraudScreening = fraudScreening
+	a.require(accountFeesFieldFraudScreening)
+}
+
+// SetHighRisk sets the HighRisk field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetHighRisk(highRisk *AccountFee) {
+	a.HighRisk = highRisk
+	a.require(accountFeesFieldHighRisk)
+}
+
+// SetMarketplace sets the Marketplace field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetMarketplace(marketplace *AccountFee) {
+	a.Marketplace = marketplace
+	a.require(accountFeesFieldMarketplace)
+}
+
+// SetMarkups sets the Markups field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetMarkups(markups *AccountFeeMarkups) {
+	a.Markups = markups
+	a.require(accountFeesFieldMarkups)
+}
+
+// SetOrchestration sets the Orchestration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetOrchestration(orchestration *AccountFee) {
+	a.Orchestration = orchestration
+	a.require(accountFeesFieldOrchestration)
+}
+
+// SetParentAccountID sets the ParentAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetParentAccountID(parentAccountID *string) {
+	a.ParentAccountID = parentAccountID
+	a.require(accountFeesFieldParentAccountID)
+}
+
+// SetPaymentMethods sets the PaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetPaymentMethods(paymentMethods map[string]*AccountFee) {
+	a.PaymentMethods = paymentMethods
+	a.require(accountFeesFieldPaymentMethods)
+}
+
+// SetPayouts sets the Payouts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetPayouts(payouts map[string]*AccountFee) {
+	a.Payouts = payouts
+	a.require(accountFeesFieldPayouts)
+}
+
+// SetPendingAutoTopup sets the PendingAutoTopup field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetPendingAutoTopup(pendingAutoTopup *AccountFee) {
+	a.PendingAutoTopup = pendingAutoTopup
+	a.require(accountFeesFieldPendingAutoTopup)
+}
+
+// SetPlatformProcessing sets the PlatformProcessing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetPlatformProcessing(platformProcessing *AccountFee) {
+	a.PlatformProcessing = platformProcessing
+	a.require(accountFeesFieldPlatformProcessing)
+}
+
+// SetPoolPayout sets the PoolPayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetPoolPayout(poolPayout *AccountFee) {
+	a.PoolPayout = poolPayout
+	a.require(accountFeesFieldPoolPayout)
+}
+
+// SetRevshare sets the Revshare field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetRevshare(revshare *AccountFee) {
+	a.Revshare = revshare
+	a.require(accountFeesFieldRevshare)
+}
+
+// SetTaxCalculation sets the TaxCalculation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetTaxCalculation(taxCalculation *AccountFee) {
+	a.TaxCalculation = taxCalculation
+	a.require(accountFeesFieldTaxCalculation)
+}
+
+// SetTaxService sets the TaxService field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetTaxService(taxService *AccountFee) {
+	a.TaxService = taxService
+	a.require(accountFeesFieldTaxService)
+}
+
+// SetThreeDs sets the ThreeDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetThreeDs(threeDs *AccountFee) {
+	a.ThreeDs = threeDs
+	a.require(accountFeesFieldThreeDs)
+}
+
+// SetTransfers sets the Transfers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetTransfers(transfers *AccountFee) {
+	a.Transfers = transfers
+	a.require(accountFeesFieldTransfers)
+}
+
+func (a *AccountFees) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountFees
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountFees(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountFees) MarshalJSON() ([]byte, error) {
+	type embed AccountFees
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountFees) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
 	accountParentFieldFees    = big.NewInt(1 << 0)
 	accountParentFieldID      = big.NewInt(1 << 1)
 	accountParentFieldLogoURL = big.NewInt(1 << 2)
