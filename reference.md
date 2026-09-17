@@ -35855,6 +35855,367 @@ client.Webhooks.Test(
 </dl>
 </details>
 
+## Accounts Fees
+<details><summary><code>client.Accounts.Fees.Retrieve(AccountID) -> *whopsdk.AccountFees</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves every fee the account is charged, as a document keyed by fee: Whop's fees, resolved the way they are charged, and any markups the platform the account is connected to adds on top. The account's own team, the Whop Verified Partner who referred it, and the platform it is connected to all read the same document; `adjustable` on each fee says what the caller may change through `PATCH`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &accounts.RetrieveFeesRequest{
+    AccountID: "account_id",
+}
+client.Accounts.Fees.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — Account ID, prefixed `biz_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.Fees.Update(AccountID, request) -> *whopsdk.AccountFees</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes fees on the account. The body mirrors the document: send only the keys to change, and each is replaced while the rest stay as they are. A platform sets `markups` on an account connected to it, or `child_markups` on itself for every connected account. A Whop Verified Partner edits the fee schedule of a business they referred, with `notes`, from a first-party Whop session. Every change is validated against the document before anything is written, and a rejected request names the key. Returns the full document.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &accounts.UpdateFeesRequest{
+    AccountID: "account_id",
+}
+client.Accounts.Fees.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — Account ID, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ads:** `*accounts.UpdateFeesRequestAds` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bankDeposit:** `*accounts.UpdateFeesRequestBankDeposit` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billing:** `*accounts.UpdateFeesRequestBilling` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**buyer:** `*accounts.UpdateFeesRequestBuyer` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cardProcessing:** `*accounts.UpdateFeesRequestCardProcessing` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**childMarkups:** `*accounts.UpdateFeesRequestChildMarkups` — This platform's default markups for every account connected to it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**crossBorder:** `*accounts.UpdateFeesRequestCrossBorder` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dispute:** `*accounts.UpdateFeesRequestDispute` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeAlert:** `*accounts.UpdateFeesRequestDisputeAlert` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeAlertCdrn:** `*accounts.UpdateFeesRequestDisputeAlertCdrn` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeAlertEthoca:** `*accounts.UpdateFeesRequestDisputeAlertEthoca` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeAlertRdr:** `*accounts.UpdateFeesRequestDisputeAlertRdr` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**disputeRepresentment:** `*accounts.UpdateFeesRequestDisputeRepresentment` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**foreignExchange:** `*accounts.UpdateFeesRequestForeignExchange` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fraudScreening:** `*accounts.UpdateFeesRequestFraudScreening` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**highRisk:** `*accounts.UpdateFeesRequestHighRisk` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**marketplace:** `*accounts.UpdateFeesRequestMarketplace` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**markups:** `*accounts.UpdateFeesRequestMarkups` — Markups on this connected account, set by the platform it is connected to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**notes:** `*string` — Why the fees are changing, recorded with the change. Required when a Whop Verified Partner edits the fee schedule; ignored for markups.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**orchestration:** `*accounts.UpdateFeesRequestOrchestration` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethods:** `map[string]*accounts.UpdateFeesRequestPaymentMethodsValue` — Changes to non-card payment method fees, keyed by payment method type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**payouts:** `map[string]*accounts.UpdateFeesRequestPayoutsValue` — Changes to withdrawal fees, keyed by payout method.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pendingAutoTopup:** `*accounts.UpdateFeesRequestPendingAutoTopup` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platformProcessing:** `*accounts.UpdateFeesRequestPlatformProcessing` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**poolPayout:** `*accounts.UpdateFeesRequestPoolPayout` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**revshare:** `*accounts.UpdateFeesRequestRevshare` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**taxCalculation:** `*accounts.UpdateFeesRequestTaxCalculation` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**taxService:** `*accounts.UpdateFeesRequestTaxService` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**threeDs:** `*accounts.UpdateFeesRequestThreeDs` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transfers:** `*accounts.UpdateFeesRequestTransfers` — The fields of a fee the caller may change. Only the keys sent are replaced.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Accounts Preferences
 <details><summary><code>client.Accounts.Preferences.Retrieve(AccountID) -> *accounts.RetrievePreferencesResponse</code></summary>
 <dl>
