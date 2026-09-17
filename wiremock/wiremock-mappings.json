@@ -5483,7 +5483,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"action_type\": \"cut_losing_ad_spend\",\n      \"ai_chat_id\": \"ai_chat_id\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"executed_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"reca_xxxxxxxxxxxxxx\",\n      \"input\": \"Grow revenue\",\n      \"prompt\": \"Create a 20% off promo code for my members.\",\n      \"reasoning\": \"Revenue fell by 20%.\",\n      \"status\": \"queued\",\n      \"superseded_at\": \"2026-01-01T12:00:00.000Z\",\n      \"title\": \"Move $180 from 3 dead ad groups into BATCH#3, +1.7x return\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"action_type\": \"cut_losing_ad_spend\",\n      \"ai_chat_id\": \"ai_chat_id\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"executed_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"reca_xxxxxxxxxxxxxx\",\n      \"input\": \"Grow revenue\",\n      \"prompt\": \"Create a 20% off promo code for my members.\",\n      \"reasoning\": \"Revenue fell by 20%.\",\n      \"status\": \"queued\",\n      \"superseded_at\": \"2026-01-01T12:00:00.000Z\",\n      \"target_url\": \"https://example.com/join\",\n      \"title\": \"Move $180 from 3 dead ad groups into BATCH#3, +1.7x return\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -5515,7 +5515,7 @@
       },
       "response": {
         "status": 202,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action_type\": \"cut_losing_ad_spend\",\n  \"ai_chat_id\": \"ai_chat_id\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"executed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"reca_xxxxxxxxxxxxxx\",\n  \"input\": \"Grow revenue\",\n  \"prompt\": \"Create a 20% off promo code for my members.\",\n  \"reasoning\": \"Revenue fell by 20%.\",\n  \"status\": \"queued\",\n  \"superseded_at\": \"2026-01-01T12:00:00.000Z\",\n  \"title\": \"Move $180 from 3 dead ad groups into BATCH#3, +1.7x return\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action_type\": \"cut_losing_ad_spend\",\n  \"ai_chat_id\": \"ai_chat_id\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"executed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"reca_xxxxxxxxxxxxxx\",\n  \"input\": \"Grow revenue\",\n  \"prompt\": \"Create a 20% off promo code for my members.\",\n  \"reasoning\": \"Revenue fell by 20%.\",\n  \"status\": \"queued\",\n  \"superseded_at\": \"2026-01-01T12:00:00.000Z\",\n  \"target_url\": \"https://example.com/join\",\n  \"title\": \"Move $180 from 3 dead ad groups into BATCH#3, +1.7x return\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -5551,7 +5551,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action_type\": \"cut_losing_ad_spend\",\n  \"ai_chat_id\": \"ai_chat_id\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"executed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"reca_xxxxxxxxxxxxxx\",\n  \"input\": \"Grow revenue\",\n  \"prompt\": \"Create a 20% off promo code for my members.\",\n  \"reasoning\": \"Revenue fell by 20%.\",\n  \"status\": \"queued\",\n  \"superseded_at\": \"2026-01-01T12:00:00.000Z\",\n  \"title\": \"Move $180 from 3 dead ad groups into BATCH#3, +1.7x return\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action_type\": \"cut_losing_ad_spend\",\n  \"ai_chat_id\": \"ai_chat_id\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"executed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"reca_xxxxxxxxxxxxxx\",\n  \"input\": \"Grow revenue\",\n  \"prompt\": \"Create a 20% off promo code for my members.\",\n  \"reasoning\": \"Revenue fell by 20%.\",\n  \"status\": \"queued\",\n  \"superseded_at\": \"2026-01-01T12:00:00.000Z\",\n  \"target_url\": \"https://example.com/join\",\n  \"title\": \"Move $180 from 3 dead ad groups into BATCH#3, +1.7x return\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -5829,7 +5829,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"firing_data_ok\": true,\n  \"host_events\": [\n    \"lead\"\n  ],\n  \"installed\": true,\n  \"last_fired_days\": {\n    \"lead\": 2\n  },\n  \"last_seen_days\": 2,\n  \"native_tracking\": false,\n  \"page_events\": [\n    \"lead\"\n  ],\n  \"reachable\": true,\n  \"url\": \"https://shinetime.example/checkout/complete\"\n}",
+        "body": "{\n  \"firing_data_ok\": true,\n  \"host_events\": [\n    \"lead\"\n  ],\n  \"installed\": false,\n  \"last_fired_days\": {\n    \"lead\": 2\n  },\n  \"last_seen_days\": 2,\n  \"native_tracking\": false,\n  \"page_events\": [\n    \"lead\"\n  ],\n  \"reachable\": true,\n  \"url\": \"https://shinetime.example/\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }

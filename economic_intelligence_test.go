@@ -422,6 +422,14 @@ func TestSettersEconomicIntelligence(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetTargetURL", func(t *testing.T) {
+		obj := &EconomicIntelligence{}
+		var fernTestValueTargetURL *string
+		obj.SetTargetURL(fernTestValueTargetURL)
+		assert.Equal(t, fernTestValueTargetURL, obj.TargetURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTitle", func(t *testing.T) {
 		obj := &EconomicIntelligence{}
 		var fernTestValueTitle *string
@@ -774,6 +782,39 @@ func TestGettersEconomicIntelligence(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSupersededAt() // Should return zero value
+	})
+
+	t.Run("GetTargetURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		var expected *string
+		obj.TargetURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTargetURL(), "getter should return the property value")
+	})
+
+	t.Run("GetTargetURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		obj.TargetURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTargetURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTargetURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EconomicIntelligence
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTargetURL() // Should return zero value
 	})
 
 	t.Run("GetTitle", func(t *testing.T) {
@@ -1130,6 +1171,37 @@ func TestSettersMarkExplicitEconomicIntelligence(t *testing.T) {
 
 		// Act
 		obj.SetSupersededAt(fernTestValueSupersededAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTargetURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		var fernTestValueTargetURL *string
+
+		// Act
+		obj.SetTargetURL(fernTestValueTargetURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
