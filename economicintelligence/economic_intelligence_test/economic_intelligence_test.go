@@ -139,8 +139,7 @@ func TestEconomicIntelligenceUpdateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.UpdateEconomicIntelligenceRequest{
-		ID:     "id",
-		Status: whopsdk.UpdateEconomicIntelligenceRequestStatusExecuted,
+		ID: "id",
 	}
 	_, invocationErr := client.EconomicIntelligence.Update(
 		context.TODO(),
