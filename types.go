@@ -34137,7 +34137,7 @@ type ReceiptLineItem struct {
 	ProductTitle *string `json:"product_title,omitempty" url:"product_title,omitempty"`
 	// How many units were bought.
 	Quantity float64 `json:"quantity" url:"quantity"`
-	// The recorded amount for this item's full quantity, before discounts, tax, and fees, in its purchase currency. This is not the amount being contested. Returns `null` when no item amount was recorded.
+	// The recorded amount for this item's full quantity, before discounts, tax, and fees, in its purchase currency. Returns `null` when no item amount was recorded.
 	Subtotal *Money `json:"subtotal,omitempty" url:"subtotal,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
