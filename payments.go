@@ -3129,6 +3129,7 @@ type PaymentRuleMatchAction string
 const (
 	PaymentRuleMatchActionAllow      PaymentRuleMatchAction = "allow"
 	PaymentRuleMatchActionBlock      PaymentRuleMatchAction = "block"
+	PaymentRuleMatchActionReview     PaymentRuleMatchAction = "review"
 	PaymentRuleMatchActionEnforce3Ds PaymentRuleMatchAction = "enforce_3ds"
 )
 
@@ -3138,6 +3139,8 @@ func NewPaymentRuleMatchActionFromString(s string) (PaymentRuleMatchAction, erro
 		return PaymentRuleMatchActionAllow, nil
 	case "block":
 		return PaymentRuleMatchActionBlock, nil
+	case "review":
+		return PaymentRuleMatchActionReview, nil
 	case "enforce_3ds":
 		return PaymentRuleMatchActionEnforce3Ds, nil
 	}
