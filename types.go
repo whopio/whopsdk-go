@@ -39310,6 +39310,7 @@ const (
 	SpecificFeeOriginsStripePayoutFee                  SpecificFeeOrigins = "stripe_payout_fee"
 	SpecificFeeOriginsDisputeFee                       SpecificFeeOrigins = "dispute_fee"
 	SpecificFeeOriginsDisputeAlertFee                  SpecificFeeOrigins = "dispute_alert_fee"
+	SpecificFeeOriginsDisputeRepresentmentFee          SpecificFeeOrigins = "dispute_representment_fee"
 	SpecificFeeOriginsAppleProcessingFee               SpecificFeeOrigins = "apple_processing_fee"
 	SpecificFeeOriginsBuyerFee                         SpecificFeeOrigins = "buyer_fee"
 	SpecificFeeOriginsSezzleProcessingFee              SpecificFeeOrigins = "sezzle_processing_fee"
@@ -39363,6 +39364,8 @@ func NewSpecificFeeOriginsFromString(s string) (SpecificFeeOrigins, error) {
 		return SpecificFeeOriginsDisputeFee, nil
 	case "dispute_alert_fee":
 		return SpecificFeeOriginsDisputeAlertFee, nil
+	case "dispute_representment_fee":
+		return SpecificFeeOriginsDisputeRepresentmentFee, nil
 	case "apple_processing_fee":
 		return SpecificFeeOriginsAppleProcessingFee, nil
 	case "buyer_fee":

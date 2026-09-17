@@ -103988,6 +103988,13 @@ func TestEnumSpecificFeeOrigins(t *testing.T) {
 		assert.Equal(t, SpecificFeeOrigins("dispute_alert_fee"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_dispute_representment_fee", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSpecificFeeOriginsFromString("dispute_representment_fee")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SpecificFeeOrigins("dispute_representment_fee"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_apple_processing_fee", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewSpecificFeeOriginsFromString("apple_processing_fee")
