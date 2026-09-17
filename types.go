@@ -43035,7 +43035,6 @@ const (
 	WebhookEventPayoutAccountStatusUpdated         WebhookEvent = "payout_account.status_updated"
 	WebhookEventPaymentAuthorized                  WebhookEvent = "payment.authorized"
 	WebhookEventPaymentCanceled                    WebhookEvent = "payment.canceled"
-	WebhookEventPaymentRequiresAction              WebhookEvent = "payment.requires_action"
 	WebhookEventResolutionCenterCaseCreated        WebhookEvent = "resolution_center_case.created"
 	WebhookEventResolutionCenterCaseUpdated        WebhookEvent = "resolution_center_case.updated"
 	WebhookEventResolutionCenterCaseDecided        WebhookEvent = "resolution_center_case.decided"
@@ -43060,6 +43059,7 @@ const (
 	WebhookEventPaymentSucceeded                   WebhookEvent = "payment.succeeded"
 	WebhookEventPaymentFailed                      WebhookEvent = "payment.failed"
 	WebhookEventPaymentPending                     WebhookEvent = "payment.pending"
+	WebhookEventPaymentRequiresAction              WebhookEvent = "payment.requires_action"
 	WebhookEventDisputeCreated                     WebhookEvent = "dispute.created"
 	WebhookEventDisputeUpdated                     WebhookEvent = "dispute.updated"
 	WebhookEventRefundCreated                      WebhookEvent = "refund.created"
@@ -43182,8 +43182,6 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventPaymentAuthorized, nil
 	case "payment.canceled":
 		return WebhookEventPaymentCanceled, nil
-	case "payment.requires_action":
-		return WebhookEventPaymentRequiresAction, nil
 	case "resolution_center_case.created":
 		return WebhookEventResolutionCenterCaseCreated, nil
 	case "resolution_center_case.updated":
@@ -43232,6 +43230,8 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventPaymentFailed, nil
 	case "payment.pending":
 		return WebhookEventPaymentPending, nil
+	case "payment.requires_action":
+		return WebhookEventPaymentRequiresAction, nil
 	case "dispute.created":
 		return WebhookEventDisputeCreated, nil
 	case "dispute.updated":

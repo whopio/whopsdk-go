@@ -109543,13 +109543,6 @@ func TestEnumWebhookEvent(t *testing.T) {
 		assert.Equal(t, WebhookEvent("payment.canceled"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_payment_requires_action", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewWebhookEventFromString("payment.requires_action")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, WebhookEvent("payment.requires_action"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_resolution_center_case_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewWebhookEventFromString("resolution_center_case.created")
@@ -109716,6 +109709,13 @@ func TestEnumWebhookEvent(t *testing.T) {
 		val, err := NewWebhookEventFromString("payment.pending")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, WebhookEvent("payment.pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_requires_action", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookEventFromString("payment.requires_action")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookEvent("payment.requires_action"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_dispute_created", func(t *testing.T) {
