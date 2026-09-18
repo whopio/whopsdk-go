@@ -620,38 +620,39 @@ var (
 	accountFieldOtherIndustryDescription            = big.NewInt(1 << 27)
 	accountFieldOwner                               = big.NewInt(1 << 28)
 	accountFieldParentAccount                       = big.NewInt(1 << 29)
-	accountFieldPaymentControls                     = big.NewInt(1 << 30)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 31)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 32)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 33)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 34)
-	accountFieldRequiredActions                     = big.NewInt(1 << 35)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 36)
-	accountFieldRoute                               = big.NewInt(1 << 37)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 38)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 39)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 40)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 41)
-	accountFieldSocialLinks                         = big.NewInt(1 << 42)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 43)
-	accountFieldStatus                              = big.NewInt(1 << 44)
-	accountFieldStatusReason                        = big.NewInt(1 << 45)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 46)
-	accountFieldTargetAudience                      = big.NewInt(1 << 47)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 48)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 49)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 50)
-	accountFieldTaxType                             = big.NewInt(1 << 51)
-	accountFieldTermsOfService                      = big.NewInt(1 << 52)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 53)
-	accountFieldTitle                               = big.NewInt(1 << 54)
-	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 55)
-	accountFieldTotalUsd                            = big.NewInt(1 << 56)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 57)
-	accountFieldVerification                        = big.NewInt(1 << 58)
-	accountFieldVolumeUsd                           = big.NewInt(1 << 59)
-	accountFieldWallet                              = big.NewInt(1 << 60)
-	accountFieldWebsite                             = big.NewInt(1 << 61)
+	accountFieldPartner                             = big.NewInt(1 << 30)
+	accountFieldPaymentControls                     = big.NewInt(1 << 31)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 32)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 33)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 34)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 35)
+	accountFieldRequiredActions                     = big.NewInt(1 << 36)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 37)
+	accountFieldRoute                               = big.NewInt(1 << 38)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 39)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 40)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 41)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 42)
+	accountFieldSocialLinks                         = big.NewInt(1 << 43)
+	accountFieldStablecoinRails                     = big.NewInt(1 << 44)
+	accountFieldStatus                              = big.NewInt(1 << 45)
+	accountFieldStatusReason                        = big.NewInt(1 << 46)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 47)
+	accountFieldTargetAudience                      = big.NewInt(1 << 48)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 49)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 50)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 51)
+	accountFieldTaxType                             = big.NewInt(1 << 52)
+	accountFieldTermsOfService                      = big.NewInt(1 << 53)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 54)
+	accountFieldTitle                               = big.NewInt(1 << 55)
+	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 56)
+	accountFieldTotalUsd                            = big.NewInt(1 << 57)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 58)
+	accountFieldVerification                        = big.NewInt(1 << 59)
+	accountFieldVolumeUsd                           = big.NewInt(1 << 60)
+	accountFieldWallet                              = big.NewInt(1 << 61)
+	accountFieldWebsite                             = big.NewInt(1 << 62)
 )
 
 type Account struct {
@@ -713,6 +714,8 @@ type Account struct {
 	Owner *UserSummary `json:"owner" url:"owner"`
 	// Parent account for connected accounts, or `null` for standalone accounts.
 	ParentAccount *AccountParent `json:"parent_account,omitempty" url:"parent_account,omitempty"`
+	// The account's active first-tier partner. Present on retrieve responses; null when no active first-tier partner is attributed to the account. Omitted from other responses.
+	Partner *AccountPartner `json:"partner,omitempty" url:"partner,omitempty"`
 	// Payment health controls currently applied to the account. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
 	PaymentControls *AccountPaymentControls `json:"payment_controls,omitempty" url:"payment_controls,omitempty"`
 	// The account's privacy policy document, or `null` if they have not published one.
@@ -989,6 +992,13 @@ func (a *Account) GetParentAccount() *AccountParent {
 		return nil
 	}
 	return a.ParentAccount
+}
+
+func (a *Account) GetPartner() *AccountPartner {
+	if a == nil {
+		return nil
+	}
+	return a.Partner
 }
 
 func (a *Account) GetPaymentControls() *AccountPaymentControls {
@@ -1437,6 +1447,13 @@ func (a *Account) SetOwner(owner *UserSummary) {
 func (a *Account) SetParentAccount(parentAccount *AccountParent) {
 	a.ParentAccount = parentAccount
 	a.require(accountFieldParentAccount)
+}
+
+// SetPartner sets the Partner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetPartner(partner *AccountPartner) {
+	a.Partner = partner
+	a.require(accountFieldPartner)
 }
 
 // SetPaymentControls sets the PaymentControls field and marks it as non-optional;
@@ -2819,6 +2836,159 @@ func NewAccountOpengraphImageVariantFromString(s string) (AccountOpengraphImageV
 
 func (a AccountOpengraphImageVariant) Ptr() *AccountOpengraphImageVariant {
 	return &a
+}
+
+var (
+	accountPartnerFieldEmail          = big.NewInt(1 << 0)
+	accountPartnerFieldID             = big.NewInt(1 << 1)
+	accountPartnerFieldName           = big.NewInt(1 << 2)
+	accountPartnerFieldProfilePicture = big.NewInt(1 << 3)
+	accountPartnerFieldUsername       = big.NewInt(1 << 4)
+)
+
+type AccountPartner struct {
+	// Email address for contacting the partner. Null when the partner has not added their own email address.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// User ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// Display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
+	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
+	// Public username.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountPartner) GetEmail() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Email
+}
+
+func (a *AccountPartner) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AccountPartner) GetName() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Name
+}
+
+func (a *AccountPartner) GetProfilePicture() *UserProfilePicture {
+	if a == nil {
+		return nil
+	}
+	return a.ProfilePicture
+}
+
+func (a *AccountPartner) GetUsername() string {
+	if a == nil {
+		return ""
+	}
+	return a.Username
+}
+
+func (a *AccountPartner) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountPartner) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetEmail(email *string) {
+	a.Email = email
+	a.require(accountPartnerFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetID(id string) {
+	a.ID = id
+	a.require(accountPartnerFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetName(name *string) {
+	a.Name = name
+	a.require(accountPartnerFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetProfilePicture(profilePicture *UserProfilePicture) {
+	a.ProfilePicture = profilePicture
+	a.require(accountPartnerFieldProfilePicture)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetUsername(username string) {
+	a.Username = username
+	a.require(accountPartnerFieldUsername)
+}
+
+func (a *AccountPartner) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountPartner
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountPartner(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountPartner) MarshalJSON() ([]byte, error) {
+	type embed AccountPartner
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountPartner) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
 }
 
 var (
