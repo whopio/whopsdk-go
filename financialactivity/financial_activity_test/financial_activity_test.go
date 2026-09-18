@@ -98,5 +98,5 @@ func TestFinancialActivityListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestFinancialActivityListWithWireMock", "GET", "/financial-activity", nil, 1)
+	VerifyRequestCount(t, "TestFinancialActivityListWithWireMock", "GET", "/financial_activity", nil, 1)
 }

@@ -43,7 +43,7 @@ func (r *RawClient) List(
 		r.baseURL,
 		"https://api.whop.com/api/v1",
 	)
-	endpointURL := baseURL + "/financial-activity"
+	endpointURL := baseURL + "/financial_activity"
 	queryParams, err := internal.QueryValues(request)
 	if err != nil {
 		return nil, err
