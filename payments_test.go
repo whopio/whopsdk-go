@@ -18104,6 +18104,13 @@ func TestEnumPaymentFeeOrigin(t *testing.T) {
 		assert.Equal(t, PaymentFeeOrigin("high_risk_merchant_fee"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_economic_intelligence_percentage_fee", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentFeeOriginFromString("economic_intelligence_percentage_fee")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentFeeOrigin("economic_intelligence_percentage_fee"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewPaymentFeeOriginFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)

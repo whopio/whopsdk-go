@@ -2410,39 +2410,40 @@ func (p *PaymentFee) String() string {
 type PaymentFeeOrigin string
 
 const (
-	PaymentFeeOriginStripeDomesticProcessingFee      PaymentFeeOrigin = "stripe_domestic_processing_fee"
-	PaymentFeeOriginStripeInternationalProcessingFee PaymentFeeOrigin = "stripe_international_processing_fee"
-	PaymentFeeOriginStripeFixedProcessingFee         PaymentFeeOrigin = "stripe_fixed_processing_fee"
-	PaymentFeeOriginStripeBillingFee                 PaymentFeeOrigin = "stripe_billing_fee"
-	PaymentFeeOriginStripeRadarFee                   PaymentFeeOrigin = "stripe_radar_fee"
-	PaymentFeeOriginSalesTaxRemittance               PaymentFeeOrigin = "sales_tax_remittance"
-	PaymentFeeOriginSalesTaxRemittanceReversal       PaymentFeeOrigin = "sales_tax_remittance_reversal"
-	PaymentFeeOriginStripeSalesTaxFee                PaymentFeeOrigin = "stripe_sales_tax_fee"
-	PaymentFeeOriginWhopProcessingFee                PaymentFeeOrigin = "whop_processing_fee"
-	PaymentFeeOriginMarketplaceAffiliateFee          PaymentFeeOrigin = "marketplace_affiliate_fee"
-	PaymentFeeOriginAffiliateFee                     PaymentFeeOrigin = "affiliate_fee"
-	PaymentFeeOriginCryptoFee                        PaymentFeeOrigin = "crypto_fee"
-	PaymentFeeOriginStripeStandardProcessingFee      PaymentFeeOrigin = "stripe_standard_processing_fee"
-	PaymentFeeOriginPaypalFee                        PaymentFeeOrigin = "paypal_fee"
-	PaymentFeeOriginStripePayoutFee                  PaymentFeeOrigin = "stripe_payout_fee"
-	PaymentFeeOriginDisputeFee                       PaymentFeeOrigin = "dispute_fee"
-	PaymentFeeOriginDisputeAlertFee                  PaymentFeeOrigin = "dispute_alert_fee"
-	PaymentFeeOriginDisputeRepresentmentFee          PaymentFeeOrigin = "dispute_representment_fee"
-	PaymentFeeOriginAppleProcessingFee               PaymentFeeOrigin = "apple_processing_fee"
-	PaymentFeeOriginBuyerFee                         PaymentFeeOrigin = "buyer_fee"
-	PaymentFeeOriginSezzleProcessingFee              PaymentFeeOrigin = "sezzle_processing_fee"
-	PaymentFeeOriginSplititProcessingFee             PaymentFeeOrigin = "splitit_processing_fee"
-	PaymentFeeOriginPlatformBalanceProcessingFee     PaymentFeeOrigin = "platform_balance_processing_fee"
-	PaymentFeeOriginPaymentProcessingPercentageFee   PaymentFeeOrigin = "payment_processing_percentage_fee"
-	PaymentFeeOriginPaymentProcessingFixedFee        PaymentFeeOrigin = "payment_processing_fixed_fee"
-	PaymentFeeOriginCrossBorderPercentageFee         PaymentFeeOrigin = "cross_border_percentage_fee"
-	PaymentFeeOriginFxPercentageFee                  PaymentFeeOrigin = "fx_percentage_fee"
-	PaymentFeeOriginOrchestrationPercentageFee       PaymentFeeOrigin = "orchestration_percentage_fee"
-	PaymentFeeOriginThreeDsFixedFee                  PaymentFeeOrigin = "three_ds_fixed_fee"
-	PaymentFeeOriginBillingPercentageFee             PaymentFeeOrigin = "billing_percentage_fee"
-	PaymentFeeOriginRevsharePercentageFee            PaymentFeeOrigin = "revshare_percentage_fee"
-	PaymentFeeOriginApplicationFee                   PaymentFeeOrigin = "application_fee"
-	PaymentFeeOriginHighRiskMerchantFee              PaymentFeeOrigin = "high_risk_merchant_fee"
+	PaymentFeeOriginStripeDomesticProcessingFee       PaymentFeeOrigin = "stripe_domestic_processing_fee"
+	PaymentFeeOriginStripeInternationalProcessingFee  PaymentFeeOrigin = "stripe_international_processing_fee"
+	PaymentFeeOriginStripeFixedProcessingFee          PaymentFeeOrigin = "stripe_fixed_processing_fee"
+	PaymentFeeOriginStripeBillingFee                  PaymentFeeOrigin = "stripe_billing_fee"
+	PaymentFeeOriginStripeRadarFee                    PaymentFeeOrigin = "stripe_radar_fee"
+	PaymentFeeOriginSalesTaxRemittance                PaymentFeeOrigin = "sales_tax_remittance"
+	PaymentFeeOriginSalesTaxRemittanceReversal        PaymentFeeOrigin = "sales_tax_remittance_reversal"
+	PaymentFeeOriginStripeSalesTaxFee                 PaymentFeeOrigin = "stripe_sales_tax_fee"
+	PaymentFeeOriginWhopProcessingFee                 PaymentFeeOrigin = "whop_processing_fee"
+	PaymentFeeOriginMarketplaceAffiliateFee           PaymentFeeOrigin = "marketplace_affiliate_fee"
+	PaymentFeeOriginAffiliateFee                      PaymentFeeOrigin = "affiliate_fee"
+	PaymentFeeOriginCryptoFee                         PaymentFeeOrigin = "crypto_fee"
+	PaymentFeeOriginStripeStandardProcessingFee       PaymentFeeOrigin = "stripe_standard_processing_fee"
+	PaymentFeeOriginPaypalFee                         PaymentFeeOrigin = "paypal_fee"
+	PaymentFeeOriginStripePayoutFee                   PaymentFeeOrigin = "stripe_payout_fee"
+	PaymentFeeOriginDisputeFee                        PaymentFeeOrigin = "dispute_fee"
+	PaymentFeeOriginDisputeAlertFee                   PaymentFeeOrigin = "dispute_alert_fee"
+	PaymentFeeOriginDisputeRepresentmentFee           PaymentFeeOrigin = "dispute_representment_fee"
+	PaymentFeeOriginAppleProcessingFee                PaymentFeeOrigin = "apple_processing_fee"
+	PaymentFeeOriginBuyerFee                          PaymentFeeOrigin = "buyer_fee"
+	PaymentFeeOriginSezzleProcessingFee               PaymentFeeOrigin = "sezzle_processing_fee"
+	PaymentFeeOriginSplititProcessingFee              PaymentFeeOrigin = "splitit_processing_fee"
+	PaymentFeeOriginPlatformBalanceProcessingFee      PaymentFeeOrigin = "platform_balance_processing_fee"
+	PaymentFeeOriginPaymentProcessingPercentageFee    PaymentFeeOrigin = "payment_processing_percentage_fee"
+	PaymentFeeOriginPaymentProcessingFixedFee         PaymentFeeOrigin = "payment_processing_fixed_fee"
+	PaymentFeeOriginCrossBorderPercentageFee          PaymentFeeOrigin = "cross_border_percentage_fee"
+	PaymentFeeOriginFxPercentageFee                   PaymentFeeOrigin = "fx_percentage_fee"
+	PaymentFeeOriginOrchestrationPercentageFee        PaymentFeeOrigin = "orchestration_percentage_fee"
+	PaymentFeeOriginThreeDsFixedFee                   PaymentFeeOrigin = "three_ds_fixed_fee"
+	PaymentFeeOriginBillingPercentageFee              PaymentFeeOrigin = "billing_percentage_fee"
+	PaymentFeeOriginRevsharePercentageFee             PaymentFeeOrigin = "revshare_percentage_fee"
+	PaymentFeeOriginApplicationFee                    PaymentFeeOrigin = "application_fee"
+	PaymentFeeOriginHighRiskMerchantFee               PaymentFeeOrigin = "high_risk_merchant_fee"
+	PaymentFeeOriginEconomicIntelligencePercentageFee PaymentFeeOrigin = "economic_intelligence_percentage_fee"
 )
 
 func NewPaymentFeeOriginFromString(s string) (PaymentFeeOrigin, error) {
@@ -2513,6 +2514,8 @@ func NewPaymentFeeOriginFromString(s string) (PaymentFeeOrigin, error) {
 		return PaymentFeeOriginApplicationFee, nil
 	case "high_risk_merchant_fee":
 		return PaymentFeeOriginHighRiskMerchantFee, nil
+	case "economic_intelligence_percentage_fee":
+		return PaymentFeeOriginEconomicIntelligencePercentageFee, nil
 	}
 	var t PaymentFeeOrigin
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

@@ -246,6 +246,7 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemDisputeAlertFee                           RetrieveFinancialReportsRequestLineTypesItem = "dispute_alert_fee"
 	RetrieveFinancialReportsRequestLineTypesItemDisputeHoldAdjustment                     RetrieveFinancialReportsRequestLineTypesItem = "dispute_hold_adjustment"
 	RetrieveFinancialReportsRequestLineTypesItemDisputeRepresentmentFee                   RetrieveFinancialReportsRequestLineTypesItem = "dispute_representment_fee"
+	RetrieveFinancialReportsRequestLineTypesItemEconomicIntelligencePercentageFee         RetrieveFinancialReportsRequestLineTypesItem = "economic_intelligence_percentage_fee"
 	RetrieveFinancialReportsRequestLineTypesItemExternalCardLoadDeposit                   RetrieveFinancialReportsRequestLineTypesItem = "external_card_load_deposit"
 	RetrieveFinancialReportsRequestLineTypesItemFees                                      RetrieveFinancialReportsRequestLineTypesItem = "fees"
 	RetrieveFinancialReportsRequestLineTypesItemFraudPreventionFee                        RetrieveFinancialReportsRequestLineTypesItem = "fraud_prevention_fee"
@@ -421,6 +422,8 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemDisputeHoldAdjustment, nil
 	case "dispute_representment_fee":
 		return RetrieveFinancialReportsRequestLineTypesItemDisputeRepresentmentFee, nil
+	case "economic_intelligence_percentage_fee":
+		return RetrieveFinancialReportsRequestLineTypesItemEconomicIntelligencePercentageFee, nil
 	case "external_card_load_deposit":
 		return RetrieveFinancialReportsRequestLineTypesItemExternalCardLoadDeposit, nil
 	case "fees":
@@ -1444,6 +1447,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryDisputeSettlementReversal                 RetrieveFinancialReportsResponseRowsItemLineCategory = "dispute_settlement_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryDisputeUnreconciledClearing               RetrieveFinancialReportsResponseRowsItemLineCategory = "dispute_unreconciled_clearing"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryDisputeUnreconciledReversal               RetrieveFinancialReportsResponseRowsItemLineCategory = "dispute_unreconciled_reversal"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryEconomicIntelligencePercentageFee         RetrieveFinancialReportsResponseRowsItemLineCategory = "economic_intelligence_percentage_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryExternalAccountConnectionFee              RetrieveFinancialReportsResponseRowsItemLineCategory = "external_account_connection_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryExternalCardLoadDeposit                   RetrieveFinancialReportsResponseRowsItemLineCategory = "external_card_load_deposit"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryExternalCardLoadOffset                    RetrieveFinancialReportsResponseRowsItemLineCategory = "external_card_load_offset"
@@ -1824,6 +1828,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryDisputeUnreconciledClearing, nil
 	case "dispute_unreconciled_reversal":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryDisputeUnreconciledReversal, nil
+	case "economic_intelligence_percentage_fee":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryEconomicIntelligencePercentageFee, nil
 	case "external_account_connection_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryExternalAccountConnectionFee, nil
 	case "external_card_load_deposit":
