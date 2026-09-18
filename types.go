@@ -938,13 +938,14 @@ var (
 	accountFeeFieldDefault            = big.NewInt(1 << 2)
 	accountFeeFieldEndsAt             = big.NewInt(1 << 3)
 	accountFeeFieldFixed              = big.NewInt(1 << 4)
-	accountFeeFieldMinimum            = big.NewInt(1 << 5)
-	accountFeeFieldPercentage         = big.NewInt(1 << 6)
-	accountFeeFieldRegion             = big.NewInt(1 << 7)
-	accountFeeFieldRegions            = big.NewInt(1 << 8)
-	accountFeeFieldReset              = big.NewInt(1 << 9)
-	accountFeeFieldSource             = big.NewInt(1 << 10)
-	accountFeeFieldUnadjustableReason = big.NewInt(1 << 11)
+	accountFeeFieldMaximum            = big.NewInt(1 << 5)
+	accountFeeFieldMinimum            = big.NewInt(1 << 6)
+	accountFeeFieldPercentage         = big.NewInt(1 << 7)
+	accountFeeFieldRegion             = big.NewInt(1 << 8)
+	accountFeeFieldRegions            = big.NewInt(1 << 9)
+	accountFeeFieldReset              = big.NewInt(1 << 10)
+	accountFeeFieldSource             = big.NewInt(1 << 11)
+	accountFeeFieldUnadjustableReason = big.NewInt(1 << 12)
 )
 
 type AccountFee struct {
@@ -958,13 +959,15 @@ type AccountFee struct {
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// The amount charged per event in effect. `null` when the fee has no fixed component.
 	Fixed *Money `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The highest rate the caller may set. `null` when the fee is not adjustable or the caller is not capped.
+	Maximum *AccountFeeRate `json:"maximum,omitempty" url:"maximum,omitempty"`
 	// The lowest rate the caller may set, present only when `adjustable`.
 	Minimum *AccountFeeRate `json:"minimum,omitempty" url:"minimum,omitempty"`
 	// The percentage of the transaction in effect, where `2` means 2%. `null` when the fee has no percentage component.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
 	// The acquirer region `percentage` and `fixed` describe, for a fee that varies by where the money is processed. `null` for a fee that does not vary by region.
 	Region *AccountFeeRegion `json:"region,omitempty" url:"region,omitempty"`
-	// The rate, source, default, reset rate, and editable minimum in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
+	// The rate, source, default, reset rate, and editable limits in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
 	Regions map[string]*AccountFeeRegionalRate `json:"regions" url:"regions"`
 	// The rate that takes effect when this account's custom rate is cleared, including inherited pricing.
 	Reset *AccountFeeRate `json:"reset" url:"reset"`
@@ -1013,6 +1016,13 @@ func (a *AccountFee) GetFixed() *Money {
 		return nil
 	}
 	return a.Fixed
+}
+
+func (a *AccountFee) GetMaximum() *AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Maximum
 }
 
 func (a *AccountFee) GetMinimum() *AccountFeeRate {
@@ -1111,6 +1121,13 @@ func (a *AccountFee) SetEndsAt(endsAt *string) {
 func (a *AccountFee) SetFixed(fixed *Money) {
 	a.Fixed = fixed
 	a.require(accountFeeFieldFixed)
+}
+
+// SetMaximum sets the Maximum field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetMaximum(maximum *AccountFeeRate) {
+	a.Maximum = maximum
+	a.require(accountFeeFieldMaximum)
 }
 
 // SetMinimum sets the Minimum field and marks it as non-optional;
@@ -1789,10 +1806,11 @@ func (a AccountFeeRegion) Ptr() *AccountFeeRegion {
 var (
 	accountFeeRegionalRateFieldDefault    = big.NewInt(1 << 0)
 	accountFeeRegionalRateFieldFixed      = big.NewInt(1 << 1)
-	accountFeeRegionalRateFieldMinimum    = big.NewInt(1 << 2)
-	accountFeeRegionalRateFieldPercentage = big.NewInt(1 << 3)
-	accountFeeRegionalRateFieldReset      = big.NewInt(1 << 4)
-	accountFeeRegionalRateFieldSource     = big.NewInt(1 << 5)
+	accountFeeRegionalRateFieldMaximum    = big.NewInt(1 << 2)
+	accountFeeRegionalRateFieldMinimum    = big.NewInt(1 << 3)
+	accountFeeRegionalRateFieldPercentage = big.NewInt(1 << 4)
+	accountFeeRegionalRateFieldReset      = big.NewInt(1 << 5)
+	accountFeeRegionalRateFieldSource     = big.NewInt(1 << 6)
 )
 
 type AccountFeeRegionalRate struct {
@@ -1800,6 +1818,8 @@ type AccountFeeRegionalRate struct {
 	Default *AccountFeeRate `json:"default" url:"default"`
 	// The amount charged per event in effect. `null` when the fee has no fixed component.
 	Fixed *Money `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The highest regional rate the caller may set. `null` when the fee is not adjustable or the caller is not capped.
+	Maximum *AccountFeeRate `json:"maximum,omitempty" url:"maximum,omitempty"`
 	// The lowest regional rate the caller may set, present only when the fee is adjustable.
 	Minimum *AccountFeeRate `json:"minimum,omitempty" url:"minimum,omitempty"`
 	// The percentage of the transaction in effect, where `2` means 2%. `null` when the fee has no percentage component.
@@ -1828,6 +1848,13 @@ func (a *AccountFeeRegionalRate) GetFixed() *Money {
 		return nil
 	}
 	return a.Fixed
+}
+
+func (a *AccountFeeRegionalRate) GetMaximum() *AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Maximum
 }
 
 func (a *AccountFeeRegionalRate) GetMinimum() *AccountFeeRate {
@@ -1884,6 +1911,13 @@ func (a *AccountFeeRegionalRate) SetDefault(default_ *AccountFeeRate) {
 func (a *AccountFeeRegionalRate) SetFixed(fixed *Money) {
 	a.Fixed = fixed
 	a.require(accountFeeRegionalRateFieldFixed)
+}
+
+// SetMaximum sets the Maximum field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeRegionalRate) SetMaximum(maximum *AccountFeeRate) {
+	a.Maximum = maximum
+	a.require(accountFeeRegionalRateFieldMaximum)
 }
 
 // SetMinimum sets the Minimum field and marks it as non-optional;
