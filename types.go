@@ -1814,43 +1814,40 @@ func (a AccountFeeUnadjustableReason) Ptr() *AccountFeeUnadjustableReason {
 
 var (
 	accountFeesFieldAccountID            = big.NewInt(1 << 0)
-	accountFeesFieldAds                  = big.NewInt(1 << 1)
-	accountFeesFieldBankDeposit          = big.NewInt(1 << 2)
-	accountFeesFieldBilling              = big.NewInt(1 << 3)
-	accountFeesFieldBuyer                = big.NewInt(1 << 4)
-	accountFeesFieldCardProcessing       = big.NewInt(1 << 5)
-	accountFeesFieldChildMarkups         = big.NewInt(1 << 6)
-	accountFeesFieldCrossBorder          = big.NewInt(1 << 7)
-	accountFeesFieldDispute              = big.NewInt(1 << 8)
-	accountFeesFieldDisputeAlert         = big.NewInt(1 << 9)
-	accountFeesFieldDisputeAlertCdrn     = big.NewInt(1 << 10)
-	accountFeesFieldDisputeAlertEthoca   = big.NewInt(1 << 11)
-	accountFeesFieldDisputeAlertRdr      = big.NewInt(1 << 12)
-	accountFeesFieldDisputeRepresentment = big.NewInt(1 << 13)
-	accountFeesFieldForeignExchange      = big.NewInt(1 << 14)
-	accountFeesFieldFraudScreening       = big.NewInt(1 << 15)
-	accountFeesFieldHighRisk             = big.NewInt(1 << 16)
-	accountFeesFieldMarketplace          = big.NewInt(1 << 17)
-	accountFeesFieldMarkups              = big.NewInt(1 << 18)
-	accountFeesFieldOrchestration        = big.NewInt(1 << 19)
-	accountFeesFieldParentAccountID      = big.NewInt(1 << 20)
-	accountFeesFieldPaymentMethods       = big.NewInt(1 << 21)
-	accountFeesFieldPayouts              = big.NewInt(1 << 22)
-	accountFeesFieldPendingAutoTopup     = big.NewInt(1 << 23)
-	accountFeesFieldPlatformProcessing   = big.NewInt(1 << 24)
-	accountFeesFieldPoolPayout           = big.NewInt(1 << 25)
-	accountFeesFieldRevshare             = big.NewInt(1 << 26)
-	accountFeesFieldTaxCalculation       = big.NewInt(1 << 27)
-	accountFeesFieldTaxService           = big.NewInt(1 << 28)
-	accountFeesFieldThreeDs              = big.NewInt(1 << 29)
-	accountFeesFieldTransfers            = big.NewInt(1 << 30)
+	accountFeesFieldBankDeposit          = big.NewInt(1 << 1)
+	accountFeesFieldBilling              = big.NewInt(1 << 2)
+	accountFeesFieldBuyer                = big.NewInt(1 << 3)
+	accountFeesFieldCardProcessing       = big.NewInt(1 << 4)
+	accountFeesFieldChildMarkups         = big.NewInt(1 << 5)
+	accountFeesFieldCrossBorder          = big.NewInt(1 << 6)
+	accountFeesFieldDispute              = big.NewInt(1 << 7)
+	accountFeesFieldDisputeAlert         = big.NewInt(1 << 8)
+	accountFeesFieldDisputeAlertCdrn     = big.NewInt(1 << 9)
+	accountFeesFieldDisputeAlertEthoca   = big.NewInt(1 << 10)
+	accountFeesFieldDisputeAlertRdr      = big.NewInt(1 << 11)
+	accountFeesFieldDisputeRepresentment = big.NewInt(1 << 12)
+	accountFeesFieldForeignExchange      = big.NewInt(1 << 13)
+	accountFeesFieldFraudScreening       = big.NewInt(1 << 14)
+	accountFeesFieldHighRisk             = big.NewInt(1 << 15)
+	accountFeesFieldMarketplace          = big.NewInt(1 << 16)
+	accountFeesFieldMarkups              = big.NewInt(1 << 17)
+	accountFeesFieldOrchestration        = big.NewInt(1 << 18)
+	accountFeesFieldParentAccountID      = big.NewInt(1 << 19)
+	accountFeesFieldPaymentMethods       = big.NewInt(1 << 20)
+	accountFeesFieldPayouts              = big.NewInt(1 << 21)
+	accountFeesFieldPendingAutoTopup     = big.NewInt(1 << 22)
+	accountFeesFieldPlatformProcessing   = big.NewInt(1 << 23)
+	accountFeesFieldPoolPayout           = big.NewInt(1 << 24)
+	accountFeesFieldRevshare             = big.NewInt(1 << 25)
+	accountFeesFieldTaxCalculation       = big.NewInt(1 << 26)
+	accountFeesFieldTaxService           = big.NewInt(1 << 27)
+	accountFeesFieldThreeDs              = big.NewInt(1 << 28)
+	accountFeesFieldTransfers            = big.NewInt(1 << 29)
 )
 
 type AccountFees struct {
 	// The account these fees are charged to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
-	// Charged on Whop Ads spend.
-	Ads *AccountFee `json:"ads" url:"ads"`
 	// Charged on bank deposits into the account's balance.
 	BankDeposit *AccountFee `json:"bank_deposit" url:"bank_deposit"`
 	// Charged on recurring billing.
@@ -1922,13 +1919,6 @@ func (a *AccountFees) GetAccountID() string {
 		return ""
 	}
 	return a.AccountID
-}
-
-func (a *AccountFees) GetAds() *AccountFee {
-	if a == nil {
-		return nil
-	}
-	return a.Ads
 }
 
 func (a *AccountFees) GetBankDeposit() *AccountFee {
@@ -2153,13 +2143,6 @@ func (a *AccountFees) require(field *big.Int) {
 func (a *AccountFees) SetAccountID(accountID string) {
 	a.AccountID = accountID
 	a.require(accountFeesFieldAccountID)
-}
-
-// SetAds sets the Ads field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountFees) SetAds(ads *AccountFee) {
-	a.Ads = ads
-	a.require(accountFeesFieldAds)
 }
 
 // SetBankDeposit sets the BankDeposit field and marks it as non-optional;

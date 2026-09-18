@@ -37,228 +37,6 @@ func (r *RetrieveFeesRequest) SetAccountID(accountID string) {
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
-	updateFeesRequestAdsFieldFixed      = big.NewInt(1 << 0)
-	updateFeesRequestAdsFieldPercentage = big.NewInt(1 << 1)
-	updateFeesRequestAdsFieldRegions    = big.NewInt(1 << 2)
-)
-
-type UpdateFeesRequestAds struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
-	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
-	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
-	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
-	// Changes for the other regions the fee varies by, keyed by region. Only accepted on a fee whose `regions` is non-empty.
-	Regions map[string]*UpdateFeesRequestAdsRegionsValue `json:"regions,omitempty" url:"regions,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateFeesRequestAds) GetFixed() *float64 {
-	if u == nil {
-		return nil
-	}
-	return u.Fixed
-}
-
-func (u *UpdateFeesRequestAds) GetPercentage() *float64 {
-	if u == nil {
-		return nil
-	}
-	return u.Percentage
-}
-
-func (u *UpdateFeesRequestAds) GetRegions() map[string]*UpdateFeesRequestAdsRegionsValue {
-	if u == nil {
-		return nil
-	}
-	return u.Regions
-}
-
-func (u *UpdateFeesRequestAds) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateFeesRequestAds) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetFixed sets the Fixed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateFeesRequestAds) SetFixed(fixed *float64) {
-	u.Fixed = fixed
-	u.require(updateFeesRequestAdsFieldFixed)
-}
-
-// SetPercentage sets the Percentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateFeesRequestAds) SetPercentage(percentage *float64) {
-	u.Percentage = percentage
-	u.require(updateFeesRequestAdsFieldPercentage)
-}
-
-// SetRegions sets the Regions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateFeesRequestAds) SetRegions(regions map[string]*UpdateFeesRequestAdsRegionsValue) {
-	u.Regions = regions
-	u.require(updateFeesRequestAdsFieldRegions)
-}
-
-func (u *UpdateFeesRequestAds) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateFeesRequestAds
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateFeesRequestAds(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateFeesRequestAds) MarshalJSON() ([]byte, error) {
-	type embed UpdateFeesRequestAds
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateFeesRequestAds) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-var (
-	updateFeesRequestAdsRegionsValueFieldFixed      = big.NewInt(1 << 0)
-	updateFeesRequestAdsRegionsValueFieldPercentage = big.NewInt(1 << 1)
-)
-
-type UpdateFeesRequestAdsRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
-	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
-	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
-	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateFeesRequestAdsRegionsValue) GetFixed() *float64 {
-	if u == nil {
-		return nil
-	}
-	return u.Fixed
-}
-
-func (u *UpdateFeesRequestAdsRegionsValue) GetPercentage() *float64 {
-	if u == nil {
-		return nil
-	}
-	return u.Percentage
-}
-
-func (u *UpdateFeesRequestAdsRegionsValue) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateFeesRequestAdsRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetFixed sets the Fixed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateFeesRequestAdsRegionsValue) SetFixed(fixed *float64) {
-	u.Fixed = fixed
-	u.require(updateFeesRequestAdsRegionsValueFieldFixed)
-}
-
-// SetPercentage sets the Percentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateFeesRequestAdsRegionsValue) SetPercentage(percentage *float64) {
-	u.Percentage = percentage
-	u.require(updateFeesRequestAdsRegionsValueFieldPercentage)
-}
-
-func (u *UpdateFeesRequestAdsRegionsValue) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateFeesRequestAdsRegionsValue
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateFeesRequestAdsRegionsValue(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateFeesRequestAdsRegionsValue) MarshalJSON() ([]byte, error) {
-	type embed UpdateFeesRequestAdsRegionsValue
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateFeesRequestAdsRegionsValue) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-// The fields of a fee the caller may change. Only the keys sent are replaced.
-var (
 	updateFeesRequestBankDepositFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestBankDepositFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestBankDepositFieldRegions    = big.NewInt(1 << 2)
@@ -7369,43 +7147,40 @@ func (u *UpdateFeesRequestTransfersRegionsValue) String() string {
 
 var (
 	updateFeesRequestFieldAccountID            = big.NewInt(1 << 0)
-	updateFeesRequestFieldAds                  = big.NewInt(1 << 1)
-	updateFeesRequestFieldBankDeposit          = big.NewInt(1 << 2)
-	updateFeesRequestFieldBilling              = big.NewInt(1 << 3)
-	updateFeesRequestFieldBuyer                = big.NewInt(1 << 4)
-	updateFeesRequestFieldCardProcessing       = big.NewInt(1 << 5)
-	updateFeesRequestFieldChildMarkups         = big.NewInt(1 << 6)
-	updateFeesRequestFieldCrossBorder          = big.NewInt(1 << 7)
-	updateFeesRequestFieldDispute              = big.NewInt(1 << 8)
-	updateFeesRequestFieldDisputeAlert         = big.NewInt(1 << 9)
-	updateFeesRequestFieldDisputeAlertCdrn     = big.NewInt(1 << 10)
-	updateFeesRequestFieldDisputeAlertEthoca   = big.NewInt(1 << 11)
-	updateFeesRequestFieldDisputeAlertRdr      = big.NewInt(1 << 12)
-	updateFeesRequestFieldDisputeRepresentment = big.NewInt(1 << 13)
-	updateFeesRequestFieldForeignExchange      = big.NewInt(1 << 14)
-	updateFeesRequestFieldFraudScreening       = big.NewInt(1 << 15)
-	updateFeesRequestFieldHighRisk             = big.NewInt(1 << 16)
-	updateFeesRequestFieldMarketplace          = big.NewInt(1 << 17)
-	updateFeesRequestFieldMarkups              = big.NewInt(1 << 18)
-	updateFeesRequestFieldNotes                = big.NewInt(1 << 19)
-	updateFeesRequestFieldOrchestration        = big.NewInt(1 << 20)
-	updateFeesRequestFieldPaymentMethods       = big.NewInt(1 << 21)
-	updateFeesRequestFieldPayouts              = big.NewInt(1 << 22)
-	updateFeesRequestFieldPendingAutoTopup     = big.NewInt(1 << 23)
-	updateFeesRequestFieldPlatformProcessing   = big.NewInt(1 << 24)
-	updateFeesRequestFieldPoolPayout           = big.NewInt(1 << 25)
-	updateFeesRequestFieldRevshare             = big.NewInt(1 << 26)
-	updateFeesRequestFieldTaxCalculation       = big.NewInt(1 << 27)
-	updateFeesRequestFieldTaxService           = big.NewInt(1 << 28)
-	updateFeesRequestFieldThreeDs              = big.NewInt(1 << 29)
-	updateFeesRequestFieldTransfers            = big.NewInt(1 << 30)
+	updateFeesRequestFieldBankDeposit          = big.NewInt(1 << 1)
+	updateFeesRequestFieldBilling              = big.NewInt(1 << 2)
+	updateFeesRequestFieldBuyer                = big.NewInt(1 << 3)
+	updateFeesRequestFieldCardProcessing       = big.NewInt(1 << 4)
+	updateFeesRequestFieldChildMarkups         = big.NewInt(1 << 5)
+	updateFeesRequestFieldCrossBorder          = big.NewInt(1 << 6)
+	updateFeesRequestFieldDispute              = big.NewInt(1 << 7)
+	updateFeesRequestFieldDisputeAlert         = big.NewInt(1 << 8)
+	updateFeesRequestFieldDisputeAlertCdrn     = big.NewInt(1 << 9)
+	updateFeesRequestFieldDisputeAlertEthoca   = big.NewInt(1 << 10)
+	updateFeesRequestFieldDisputeAlertRdr      = big.NewInt(1 << 11)
+	updateFeesRequestFieldDisputeRepresentment = big.NewInt(1 << 12)
+	updateFeesRequestFieldForeignExchange      = big.NewInt(1 << 13)
+	updateFeesRequestFieldFraudScreening       = big.NewInt(1 << 14)
+	updateFeesRequestFieldHighRisk             = big.NewInt(1 << 15)
+	updateFeesRequestFieldMarketplace          = big.NewInt(1 << 16)
+	updateFeesRequestFieldMarkups              = big.NewInt(1 << 17)
+	updateFeesRequestFieldNotes                = big.NewInt(1 << 18)
+	updateFeesRequestFieldOrchestration        = big.NewInt(1 << 19)
+	updateFeesRequestFieldPaymentMethods       = big.NewInt(1 << 20)
+	updateFeesRequestFieldPayouts              = big.NewInt(1 << 21)
+	updateFeesRequestFieldPendingAutoTopup     = big.NewInt(1 << 22)
+	updateFeesRequestFieldPlatformProcessing   = big.NewInt(1 << 23)
+	updateFeesRequestFieldPoolPayout           = big.NewInt(1 << 24)
+	updateFeesRequestFieldRevshare             = big.NewInt(1 << 25)
+	updateFeesRequestFieldTaxCalculation       = big.NewInt(1 << 26)
+	updateFeesRequestFieldTaxService           = big.NewInt(1 << 27)
+	updateFeesRequestFieldThreeDs              = big.NewInt(1 << 28)
+	updateFeesRequestFieldTransfers            = big.NewInt(1 << 29)
 )
 
 type UpdateFeesRequest struct {
 	// Account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"-"`
-	// The fields of a fee the caller may change. Only the keys sent are replaced.
-	Ads *UpdateFeesRequestAds `json:"ads,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	BankDeposit *UpdateFeesRequestBankDeposit `json:"bank_deposit,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
@@ -7481,13 +7256,6 @@ func (u *UpdateFeesRequest) require(field *big.Int) {
 func (u *UpdateFeesRequest) SetAccountID(accountID string) {
 	u.AccountID = accountID
 	u.require(updateFeesRequestFieldAccountID)
-}
-
-// SetAds sets the Ads field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateFeesRequest) SetAds(ads *UpdateFeesRequestAds) {
-	u.Ads = ads
-	u.require(updateFeesRequestFieldAds)
 }
 
 // SetBankDeposit sets the BankDeposit field and marks it as non-optional;
