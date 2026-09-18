@@ -3682,6 +3682,7 @@ const (
 	AccountRequiredActionActionUpdatePayoutProfile             AccountRequiredActionAction = "update_payout_profile"
 	AccountRequiredActionActionCardUsageReview                 AccountRequiredActionAction = "card_usage_review"
 	AccountRequiredActionActionVerifyIdentity                  AccountRequiredActionAction = "verify_identity"
+	AccountRequiredActionActionVerifyAirwallexAccount          AccountRequiredActionAction = "verify_airwallex_account"
 	AccountRequiredActionActionSignFormationDocuments          AccountRequiredActionAction = "sign_formation_documents"
 	AccountRequiredActionActionConnectFulfillmentTracker       AccountRequiredActionAction = "connect_fulfillment_tracker"
 	AccountRequiredActionActionSetupApplePayDomains            AccountRequiredActionAction = "setup_apple_pay_domains"
@@ -3710,6 +3711,8 @@ func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAc
 		return AccountRequiredActionActionCardUsageReview, nil
 	case "verify_identity":
 		return AccountRequiredActionActionVerifyIdentity, nil
+	case "verify_airwallex_account":
+		return AccountRequiredActionActionVerifyAirwallexAccount, nil
 	case "sign_formation_documents":
 		return AccountRequiredActionActionSignFormationDocuments, nil
 	case "connect_fulfillment_tracker":
