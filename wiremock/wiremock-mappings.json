@@ -8645,6 +8645,213 @@
       }
     },
     {
+      "id": "2b7fb0ff-a25e-4ea7-bc5f-c09673212678",
+      "name": "List partner referral requests - default",
+      "request": {
+        "urlPathTemplate": "/partner_referral_requests",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account\": {\n        \"id\": \"biz_xxxxxxxxxxxxxx\",\n        \"title\": \"Shine Time Auto Detailing\"\n      },\n      \"code\": \"code\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"prfr_xxxxxxxxxxxxxx\",\n      \"max_redemptions\": 1,\n      \"partner\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Dana Whitfield\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"danawhitfield\"\n      },\n      \"request_type\": \"manual\",\n      \"status\": \"pending\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2b7fb0ff-a25e-4ea7-bc5f-c09673212678",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "4f6f7f91-6a93-468a-977f-10145d5b5d89",
+      "name": "Create a partner referral request - default",
+      "request": {
+        "urlPathTemplate": "/partner_referral_requests",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"code\": \"code\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"prfr_xxxxxxxxxxxxxx\",\n  \"max_redemptions\": 1,\n  \"partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"request_type\": \"manual\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "4f6f7f91-6a93-468a-977f-10145d5b5d89",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "3e1c2d27-c16e-4367-a90b-ce7caaa00e1e",
+      "name": "Retrieve a partner referral request - default",
+      "request": {
+        "urlPathTemplate": "/partner_referral_requests/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"code\": \"code\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"prfr_xxxxxxxxxxxxxx\",\n  \"max_redemptions\": 1,\n  \"partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"request_type\": \"manual\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "3e1c2d27-c16e-4367-a90b-ce7caaa00e1e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "894a3e41-c90c-47ac-8e38-ce40d64eb1dc",
+      "name": "Accept a partner referral request - default",
+      "request": {
+        "urlPathTemplate": "/partner_referral_requests/{id}/accept",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"code\": \"code\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"prfr_xxxxxxxxxxxxxx\",\n  \"max_redemptions\": 1,\n  \"partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"request_type\": \"manual\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "894a3e41-c90c-47ac-8e38-ce40d64eb1dc",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "48fcdc93-4a31-478c-aa79-6d7ed87cb36b",
+      "name": "Cancel a partner referral request - default",
+      "request": {
+        "urlPathTemplate": "/partner_referral_requests/{id}/cancel",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"code\": \"code\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"prfr_xxxxxxxxxxxxxx\",\n  \"max_redemptions\": 1,\n  \"partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"request_type\": \"manual\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "48fcdc93-4a31-478c-aa79-6d7ed87cb36b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "4e6e1360-0831-42e1-9b6f-b2a330beac2c",
+      "name": "Decline a partner referral request - default",
+      "request": {
+        "urlPathTemplate": "/partner_referral_requests/{id}/decline",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"code\": \"code\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"prfr_xxxxxxxxxxxxxx\",\n  \"max_redemptions\": 1,\n  \"partner\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"request_type\": \"manual\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "4e6e1360-0831-42e1-9b6f-b2a330beac2c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "fb38c3f3-d355-4f64-89b7-16ef68f6dc42",
       "name": "Enroll as a Whop partner - default",
       "request": {
@@ -14753,6 +14960,6 @@
     }
   ],
   "meta": {
-    "total": 411
+    "total": 417
   }
 }
