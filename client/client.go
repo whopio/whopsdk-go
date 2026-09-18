@@ -61,6 +61,7 @@ import (
 	messages "github.com/whopio/whopsdk-go/messages"
 	notificationsclient "github.com/whopio/whopsdk-go/notifications/client"
 	option "github.com/whopio/whopsdk-go/option"
+	partnerreferralrequests "github.com/whopio/whopsdk-go/partnerreferralrequests"
 	partnersclient "github.com/whopio/whopsdk-go/partners/client"
 	paymentmethoddomains "github.com/whopio/whopsdk-go/paymentmethoddomains"
 	paymentmethods "github.com/whopio/whopsdk-go/paymentmethods"
@@ -148,6 +149,7 @@ type Whop struct {
 	Memberships              *memberships.Client
 	Messages                 *messages.Client
 	Notifications            *notificationsclient.Client
+	PartnerReferralRequests  *partnerreferralrequests.Client
 	Partners                 *partnersclient.Client
 	PaymentMethodDomains     *paymentmethoddomains.Client
 	PaymentMethods           *paymentmethods.Client
@@ -245,6 +247,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Memberships:              memberships.NewClient(options),
 		Messages:                 messages.NewClient(options),
 		Notifications:            notificationsclient.NewClient(options),
+		PartnerReferralRequests:  partnerreferralrequests.NewClient(options),
 		Partners:                 partnersclient.NewClient(options),
 		PaymentMethodDomains:     paymentmethoddomains.NewClient(options),
 		PaymentMethods:           paymentmethods.NewClient(options),

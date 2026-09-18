@@ -1659,6 +1659,41 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("partner:invite:create"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_partner_referral_request_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:referral_request:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:referral_request:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_referral_request_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:referral_request:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:referral_request:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_referral_request_accept", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:referral_request:accept")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:referral_request:accept"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_referral_request_decline", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:referral_request:decline")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:referral_request:decline"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_referral_request_cancel", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("partner:referral_request:cancel")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("partner:referral_request:cancel"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_partner_create", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("partner:create")
