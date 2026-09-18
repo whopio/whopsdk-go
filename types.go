@@ -942,8 +942,9 @@ var (
 	accountFeeFieldPercentage         = big.NewInt(1 << 6)
 	accountFeeFieldRegion             = big.NewInt(1 << 7)
 	accountFeeFieldRegions            = big.NewInt(1 << 8)
-	accountFeeFieldSource             = big.NewInt(1 << 9)
-	accountFeeFieldUnadjustableReason = big.NewInt(1 << 10)
+	accountFeeFieldReset              = big.NewInt(1 << 9)
+	accountFeeFieldSource             = big.NewInt(1 << 10)
+	accountFeeFieldUnadjustableReason = big.NewInt(1 << 11)
 )
 
 type AccountFee struct {
@@ -951,7 +952,7 @@ type AccountFee struct {
 	Adjustable bool `json:"adjustable" url:"adjustable"`
 	// Which group of the fee schedule this fee belongs to, for grouping in a UI.
 	Category AccountFeeCategory `json:"category" url:"category"`
-	// The platform rate with no custom deal: what applies if the custom rate is cleared.
+	// The platform rate before custom or inherited pricing is applied.
 	Default *AccountFeeRate `json:"default" url:"default"`
 	// When a custom or inherited rate expires and the fee returns to `default`, as an ISO 8601 timestamp. `null` when the default applies or the rate does not expire.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
@@ -963,8 +964,10 @@ type AccountFee struct {
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
 	// The acquirer region `percentage` and `fixed` describe, for a fee that varies by where the money is processed. `null` for a fee that does not vary by region.
 	Region *AccountFeeRegion `json:"region,omitempty" url:"region,omitempty"`
-	// The rate in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
-	Regions map[string]*AccountFeeRate `json:"regions" url:"regions"`
+	// The rate, source, default, reset rate, and editable minimum in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
+	Regions map[string]*AccountFeeRegionalRate `json:"regions" url:"regions"`
+	// The rate that takes effect when this account's custom rate is cleared, including inherited pricing.
+	Reset *AccountFeeRate `json:"reset" url:"reset"`
 	// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
 	Source AccountFeeSource `json:"source" url:"source"`
 	// Why the caller may not change this fee, or `null` when `adjustable`. `not_permitted` when the caller has no say over it.
@@ -1033,11 +1036,18 @@ func (a *AccountFee) GetRegion() *AccountFeeRegion {
 	return a.Region
 }
 
-func (a *AccountFee) GetRegions() map[string]*AccountFeeRate {
+func (a *AccountFee) GetRegions() map[string]*AccountFeeRegionalRate {
 	if a == nil {
 		return nil
 	}
 	return a.Regions
+}
+
+func (a *AccountFee) GetReset() *AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Reset
 }
 
 func (a *AccountFee) GetSource() AccountFeeSource {
@@ -1126,9 +1136,16 @@ func (a *AccountFee) SetRegion(region *AccountFeeRegion) {
 
 // SetRegions sets the Regions field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountFee) SetRegions(regions map[string]*AccountFeeRate) {
+func (a *AccountFee) SetRegions(regions map[string]*AccountFeeRegionalRate) {
 	a.Regions = regions
 	a.require(accountFeeFieldRegions)
+}
+
+// SetReset sets the Reset field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFee) SetReset(reset *AccountFeeRate) {
+	a.Reset = reset
+	a.require(accountFeeFieldReset)
 }
 
 // SetSource sets the Source field and marks it as non-optional;
@@ -1763,6 +1780,202 @@ func NewAccountFeeRegionFromString(s string) (AccountFeeRegion, error) {
 }
 
 func (a AccountFeeRegion) Ptr() *AccountFeeRegion {
+	return &a
+}
+
+var (
+	accountFeeRegionalRateFieldDefault    = big.NewInt(1 << 0)
+	accountFeeRegionalRateFieldFixed      = big.NewInt(1 << 1)
+	accountFeeRegionalRateFieldMinimum    = big.NewInt(1 << 2)
+	accountFeeRegionalRateFieldPercentage = big.NewInt(1 << 3)
+	accountFeeRegionalRateFieldReset      = big.NewInt(1 << 4)
+	accountFeeRegionalRateFieldSource     = big.NewInt(1 << 5)
+)
+
+type AccountFeeRegionalRate struct {
+	// The platform rate for this region before custom or inherited pricing is applied.
+	Default *AccountFeeRate `json:"default" url:"default"`
+	// The amount charged per event in effect. `null` when the fee has no fixed component.
+	Fixed *Money `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The lowest regional rate the caller may set, present only when the fee is adjustable.
+	Minimum *AccountFeeRate `json:"minimum,omitempty" url:"minimum,omitempty"`
+	// The percentage of the transaction in effect, where `2` means 2%. `null` when the fee has no percentage component.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+	// The regional rate that takes effect when this account's custom rate is cleared, including inherited pricing.
+	Reset *AccountFeeRate `json:"reset" url:"reset"`
+	// Where the regional rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
+	Source AccountFeeRegionalRateSource `json:"source" url:"source"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountFeeRegionalRate) GetDefault() *AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Default
+}
+
+func (a *AccountFeeRegionalRate) GetFixed() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.Fixed
+}
+
+func (a *AccountFeeRegionalRate) GetMinimum() *AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Minimum
+}
+
+func (a *AccountFeeRegionalRate) GetPercentage() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.Percentage
+}
+
+func (a *AccountFeeRegionalRate) GetReset() *AccountFeeRate {
+	if a == nil {
+		return nil
+	}
+	return a.Reset
+}
+
+func (a *AccountFeeRegionalRate) GetSource() AccountFeeRegionalRateSource {
+	if a == nil {
+		return ""
+	}
+	return a.Source
+}
+
+func (a *AccountFeeRegionalRate) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountFeeRegionalRate) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetDefault sets the Default field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeRegionalRate) SetDefault(default_ *AccountFeeRate) {
+	a.Default = default_
+	a.require(accountFeeRegionalRateFieldDefault)
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeRegionalRate) SetFixed(fixed *Money) {
+	a.Fixed = fixed
+	a.require(accountFeeRegionalRateFieldFixed)
+}
+
+// SetMinimum sets the Minimum field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeRegionalRate) SetMinimum(minimum *AccountFeeRate) {
+	a.Minimum = minimum
+	a.require(accountFeeRegionalRateFieldMinimum)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeRegionalRate) SetPercentage(percentage *float64) {
+	a.Percentage = percentage
+	a.require(accountFeeRegionalRateFieldPercentage)
+}
+
+// SetReset sets the Reset field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeRegionalRate) SetReset(reset *AccountFeeRate) {
+	a.Reset = reset
+	a.require(accountFeeRegionalRateFieldReset)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeRegionalRate) SetSource(source AccountFeeRegionalRateSource) {
+	a.Source = source
+	a.require(accountFeeRegionalRateFieldSource)
+}
+
+func (a *AccountFeeRegionalRate) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountFeeRegionalRate
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountFeeRegionalRate(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountFeeRegionalRate) MarshalJSON() ([]byte, error) {
+	type embed AccountFeeRegionalRate
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountFeeRegionalRate) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Where the regional rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
+type AccountFeeRegionalRateSource string
+
+const (
+	AccountFeeRegionalRateSourceDefault   AccountFeeRegionalRateSource = "default"
+	AccountFeeRegionalRateSourceCustom    AccountFeeRegionalRateSource = "custom"
+	AccountFeeRegionalRateSourceInherited AccountFeeRegionalRateSource = "inherited"
+)
+
+func NewAccountFeeRegionalRateSourceFromString(s string) (AccountFeeRegionalRateSource, error) {
+	switch s {
+	case "default":
+		return AccountFeeRegionalRateSourceDefault, nil
+	case "custom":
+		return AccountFeeRegionalRateSourceCustom, nil
+	case "inherited":
+		return AccountFeeRegionalRateSourceInherited, nil
+	}
+	var t AccountFeeRegionalRateSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountFeeRegionalRateSource) Ptr() *AccountFeeRegionalRateSource {
 	return &a
 }
 
