@@ -28,7 +28,7 @@ type CreateAccountsRequest struct {
 	BlueprintID *string `json:"blueprint_id,omitempty" url:"-"`
 	// The ISO 3166-1 alpha-2 country code where the account's business is located (e.g. `US`). Defaults to the parent account's country for connected accounts.
 	Country *string `json:"country,omitempty" url:"-"`
-	// The email address of the account owner. Required for Account API key requests.
+	// The email address of the account owner. Required when creating a connected account.
 	Email *string `json:"email,omitempty" url:"-"`
 	// Arbitrary key/value metadata to store on the account.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`

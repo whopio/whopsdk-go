@@ -395,7 +395,7 @@ client.Accounts.Create(
 <dl>
 <dd>
 
-**email:** `*string` — The email address of the account owner. Required for Account API key requests.
+**email:** `*string` — The email address of the account owner. Required when creating a connected account.
     
 </dd>
 </dl>
