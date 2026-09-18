@@ -1165,6 +1165,7 @@ const (
 	LedgerActivityLineTypeDisputeAlertFee                           LedgerActivityLineType = "dispute_alert_fee"
 	LedgerActivityLineTypeDisputeHoldAdjustment                     LedgerActivityLineType = "dispute_hold_adjustment"
 	LedgerActivityLineTypeDisputeRepresentmentFee                   LedgerActivityLineType = "dispute_representment_fee"
+	LedgerActivityLineTypeEconomicIntelligencePercentageFee         LedgerActivityLineType = "economic_intelligence_percentage_fee"
 	LedgerActivityLineTypeExternalCardLoadDeposit                   LedgerActivityLineType = "external_card_load_deposit"
 	LedgerActivityLineTypeFraudPreventionFee                        LedgerActivityLineType = "fraud_prevention_fee"
 	LedgerActivityLineTypeFxPercentageFee                           LedgerActivityLineType = "fx_percentage_fee"
@@ -1344,6 +1345,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeDisputeHoldAdjustment, nil
 	case "dispute_representment_fee":
 		return LedgerActivityLineTypeDisputeRepresentmentFee, nil
+	case "economic_intelligence_percentage_fee":
+		return LedgerActivityLineTypeEconomicIntelligencePercentageFee, nil
 	case "external_card_load_deposit":
 		return LedgerActivityLineTypeExternalCardLoadDeposit, nil
 	case "fraud_prevention_fee":
@@ -5101,6 +5104,7 @@ const (
 	ListFinancialActivityRequestLineTypesItemDisputeAlertFee                           ListFinancialActivityRequestLineTypesItem = "dispute_alert_fee"
 	ListFinancialActivityRequestLineTypesItemDisputeHoldAdjustment                     ListFinancialActivityRequestLineTypesItem = "dispute_hold_adjustment"
 	ListFinancialActivityRequestLineTypesItemDisputeRepresentmentFee                   ListFinancialActivityRequestLineTypesItem = "dispute_representment_fee"
+	ListFinancialActivityRequestLineTypesItemEconomicIntelligencePercentageFee         ListFinancialActivityRequestLineTypesItem = "economic_intelligence_percentage_fee"
 	ListFinancialActivityRequestLineTypesItemExternalCardLoadDeposit                   ListFinancialActivityRequestLineTypesItem = "external_card_load_deposit"
 	ListFinancialActivityRequestLineTypesItemFees                                      ListFinancialActivityRequestLineTypesItem = "fees"
 	ListFinancialActivityRequestLineTypesItemFraudPreventionFee                        ListFinancialActivityRequestLineTypesItem = "fraud_prevention_fee"
@@ -5276,6 +5280,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemDisputeHoldAdjustment, nil
 	case "dispute_representment_fee":
 		return ListFinancialActivityRequestLineTypesItemDisputeRepresentmentFee, nil
+	case "economic_intelligence_percentage_fee":
+		return ListFinancialActivityRequestLineTypesItemEconomicIntelligencePercentageFee, nil
 	case "external_card_load_deposit":
 		return ListFinancialActivityRequestLineTypesItemExternalCardLoadDeposit, nil
 	case "fees":

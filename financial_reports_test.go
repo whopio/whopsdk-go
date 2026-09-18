@@ -2451,6 +2451,13 @@ func TestEnumRetrieveFinancialReportsRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("dispute_representment_fee"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_economic_intelligence_percentage_fee", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("economic_intelligence_percentage_fee")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("economic_intelligence_percentage_fee"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_external_card_load_deposit", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("external_card_load_deposit")
@@ -4043,6 +4050,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemLineCategory(t *testing.T) 
 		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("dispute_unreconciled_reversal")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("dispute_unreconciled_reversal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_economic_intelligence_percentage_fee", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("economic_intelligence_percentage_fee")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("economic_intelligence_percentage_fee"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_external_account_connection_fee", func(t *testing.T) {

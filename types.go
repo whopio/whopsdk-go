@@ -40970,39 +40970,40 @@ func (s SocialAccountPlatform) Ptr() *SocialAccountPlatform {
 type SpecificFeeOrigins string
 
 const (
-	SpecificFeeOriginsStripeDomesticProcessingFee      SpecificFeeOrigins = "stripe_domestic_processing_fee"
-	SpecificFeeOriginsStripeInternationalProcessingFee SpecificFeeOrigins = "stripe_international_processing_fee"
-	SpecificFeeOriginsStripeFixedProcessingFee         SpecificFeeOrigins = "stripe_fixed_processing_fee"
-	SpecificFeeOriginsStripeBillingFee                 SpecificFeeOrigins = "stripe_billing_fee"
-	SpecificFeeOriginsStripeRadarFee                   SpecificFeeOrigins = "stripe_radar_fee"
-	SpecificFeeOriginsSalesTaxRemittance               SpecificFeeOrigins = "sales_tax_remittance"
-	SpecificFeeOriginsSalesTaxRemittanceReversal       SpecificFeeOrigins = "sales_tax_remittance_reversal"
-	SpecificFeeOriginsStripeSalesTaxFee                SpecificFeeOrigins = "stripe_sales_tax_fee"
-	SpecificFeeOriginsWhopProcessingFee                SpecificFeeOrigins = "whop_processing_fee"
-	SpecificFeeOriginsMarketplaceAffiliateFee          SpecificFeeOrigins = "marketplace_affiliate_fee"
-	SpecificFeeOriginsAffiliateFee                     SpecificFeeOrigins = "affiliate_fee"
-	SpecificFeeOriginsCryptoFee                        SpecificFeeOrigins = "crypto_fee"
-	SpecificFeeOriginsStripeStandardProcessingFee      SpecificFeeOrigins = "stripe_standard_processing_fee"
-	SpecificFeeOriginsPaypalFee                        SpecificFeeOrigins = "paypal_fee"
-	SpecificFeeOriginsStripePayoutFee                  SpecificFeeOrigins = "stripe_payout_fee"
-	SpecificFeeOriginsDisputeFee                       SpecificFeeOrigins = "dispute_fee"
-	SpecificFeeOriginsDisputeAlertFee                  SpecificFeeOrigins = "dispute_alert_fee"
-	SpecificFeeOriginsDisputeRepresentmentFee          SpecificFeeOrigins = "dispute_representment_fee"
-	SpecificFeeOriginsAppleProcessingFee               SpecificFeeOrigins = "apple_processing_fee"
-	SpecificFeeOriginsBuyerFee                         SpecificFeeOrigins = "buyer_fee"
-	SpecificFeeOriginsSezzleProcessingFee              SpecificFeeOrigins = "sezzle_processing_fee"
-	SpecificFeeOriginsSplititProcessingFee             SpecificFeeOrigins = "splitit_processing_fee"
-	SpecificFeeOriginsPlatformBalanceProcessingFee     SpecificFeeOrigins = "platform_balance_processing_fee"
-	SpecificFeeOriginsPaymentProcessingPercentageFee   SpecificFeeOrigins = "payment_processing_percentage_fee"
-	SpecificFeeOriginsPaymentProcessingFixedFee        SpecificFeeOrigins = "payment_processing_fixed_fee"
-	SpecificFeeOriginsCrossBorderPercentageFee         SpecificFeeOrigins = "cross_border_percentage_fee"
-	SpecificFeeOriginsFxPercentageFee                  SpecificFeeOrigins = "fx_percentage_fee"
-	SpecificFeeOriginsOrchestrationPercentageFee       SpecificFeeOrigins = "orchestration_percentage_fee"
-	SpecificFeeOriginsThreeDsFixedFee                  SpecificFeeOrigins = "three_ds_fixed_fee"
-	SpecificFeeOriginsBillingPercentageFee             SpecificFeeOrigins = "billing_percentage_fee"
-	SpecificFeeOriginsRevsharePercentageFee            SpecificFeeOrigins = "revshare_percentage_fee"
-	SpecificFeeOriginsApplicationFee                   SpecificFeeOrigins = "application_fee"
-	SpecificFeeOriginsHighRiskMerchantFee              SpecificFeeOrigins = "high_risk_merchant_fee"
+	SpecificFeeOriginsStripeDomesticProcessingFee       SpecificFeeOrigins = "stripe_domestic_processing_fee"
+	SpecificFeeOriginsStripeInternationalProcessingFee  SpecificFeeOrigins = "stripe_international_processing_fee"
+	SpecificFeeOriginsStripeFixedProcessingFee          SpecificFeeOrigins = "stripe_fixed_processing_fee"
+	SpecificFeeOriginsStripeBillingFee                  SpecificFeeOrigins = "stripe_billing_fee"
+	SpecificFeeOriginsStripeRadarFee                    SpecificFeeOrigins = "stripe_radar_fee"
+	SpecificFeeOriginsSalesTaxRemittance                SpecificFeeOrigins = "sales_tax_remittance"
+	SpecificFeeOriginsSalesTaxRemittanceReversal        SpecificFeeOrigins = "sales_tax_remittance_reversal"
+	SpecificFeeOriginsStripeSalesTaxFee                 SpecificFeeOrigins = "stripe_sales_tax_fee"
+	SpecificFeeOriginsWhopProcessingFee                 SpecificFeeOrigins = "whop_processing_fee"
+	SpecificFeeOriginsMarketplaceAffiliateFee           SpecificFeeOrigins = "marketplace_affiliate_fee"
+	SpecificFeeOriginsAffiliateFee                      SpecificFeeOrigins = "affiliate_fee"
+	SpecificFeeOriginsCryptoFee                         SpecificFeeOrigins = "crypto_fee"
+	SpecificFeeOriginsStripeStandardProcessingFee       SpecificFeeOrigins = "stripe_standard_processing_fee"
+	SpecificFeeOriginsPaypalFee                         SpecificFeeOrigins = "paypal_fee"
+	SpecificFeeOriginsStripePayoutFee                   SpecificFeeOrigins = "stripe_payout_fee"
+	SpecificFeeOriginsDisputeFee                        SpecificFeeOrigins = "dispute_fee"
+	SpecificFeeOriginsDisputeAlertFee                   SpecificFeeOrigins = "dispute_alert_fee"
+	SpecificFeeOriginsDisputeRepresentmentFee           SpecificFeeOrigins = "dispute_representment_fee"
+	SpecificFeeOriginsAppleProcessingFee                SpecificFeeOrigins = "apple_processing_fee"
+	SpecificFeeOriginsBuyerFee                          SpecificFeeOrigins = "buyer_fee"
+	SpecificFeeOriginsSezzleProcessingFee               SpecificFeeOrigins = "sezzle_processing_fee"
+	SpecificFeeOriginsSplititProcessingFee              SpecificFeeOrigins = "splitit_processing_fee"
+	SpecificFeeOriginsPlatformBalanceProcessingFee      SpecificFeeOrigins = "platform_balance_processing_fee"
+	SpecificFeeOriginsPaymentProcessingPercentageFee    SpecificFeeOrigins = "payment_processing_percentage_fee"
+	SpecificFeeOriginsPaymentProcessingFixedFee         SpecificFeeOrigins = "payment_processing_fixed_fee"
+	SpecificFeeOriginsCrossBorderPercentageFee          SpecificFeeOrigins = "cross_border_percentage_fee"
+	SpecificFeeOriginsFxPercentageFee                   SpecificFeeOrigins = "fx_percentage_fee"
+	SpecificFeeOriginsOrchestrationPercentageFee        SpecificFeeOrigins = "orchestration_percentage_fee"
+	SpecificFeeOriginsThreeDsFixedFee                   SpecificFeeOrigins = "three_ds_fixed_fee"
+	SpecificFeeOriginsBillingPercentageFee              SpecificFeeOrigins = "billing_percentage_fee"
+	SpecificFeeOriginsRevsharePercentageFee             SpecificFeeOrigins = "revshare_percentage_fee"
+	SpecificFeeOriginsApplicationFee                    SpecificFeeOrigins = "application_fee"
+	SpecificFeeOriginsHighRiskMerchantFee               SpecificFeeOrigins = "high_risk_merchant_fee"
+	SpecificFeeOriginsEconomicIntelligencePercentageFee SpecificFeeOrigins = "economic_intelligence_percentage_fee"
 )
 
 func NewSpecificFeeOriginsFromString(s string) (SpecificFeeOrigins, error) {
@@ -41073,6 +41074,8 @@ func NewSpecificFeeOriginsFromString(s string) (SpecificFeeOrigins, error) {
 		return SpecificFeeOriginsApplicationFee, nil
 	case "high_risk_merchant_fee":
 		return SpecificFeeOriginsHighRiskMerchantFee, nil
+	case "economic_intelligence_percentage_fee":
+		return SpecificFeeOriginsEconomicIntelligencePercentageFee, nil
 	}
 	var t SpecificFeeOrigins
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
