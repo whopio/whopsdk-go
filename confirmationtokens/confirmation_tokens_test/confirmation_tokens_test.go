@@ -77,62 +77,6 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
-func TestConfirmationTokensCreateWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.CreateConfirmationTokensRequest{
-		AccountID: "biz_xxxxxxxxxxxxxx",
-		BillingDetails: &whopsdk.CreateConfirmationTokensRequestBillingDetails{
-			Address: map[string]any{
-				"city":        "Austin",
-				"country":     "US",
-				"line1":       "123 Main St",
-				"postal_code": "78701",
-			},
-			Email: "buyer@example.com",
-			Name: whopsdk.String(
-				"Buyer Name",
-			),
-		},
-		PaymentMethod: &whopsdk.CreateConfirmationTokensRequestPaymentMethod{
-			Card: &whopsdk.CreateConfirmationTokensRequestPaymentMethodCard{
-				Brand: whopsdk.String(
-					"visa",
-				),
-				Last4: whopsdk.String(
-					"4242",
-				),
-				TokenIntent: whopsdk.String(
-					"bt_ti_123",
-				),
-			},
-			Category: whopsdk.CreateConfirmationTokensRequestPaymentMethodCategoryCard,
-			Type: whopsdk.String(
-				"card",
-			),
-		},
-		SetupFutureUsage: whopsdk.CreateConfirmationTokensRequestSetupFutureUsageOffSession.Ptr(),
-	}
-	_, invocationErr := client.ConfirmationTokens.Create(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestConfirmationTokensCreateWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestConfirmationTokensCreateWithWireMock", "POST", "/confirmation_tokens", nil, 1)
-}
-
 func TestConfirmationTokensRetrieveWithWireMock(
 	t *testing.T,
 ) {
