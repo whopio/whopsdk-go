@@ -101896,6 +101896,13 @@ func TestEnumAccountFeeRegion(t *testing.T) {
 		assert.Equal(t, AccountFeeRegion("uy"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_br", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountFeeRegionFromString("br")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountFeeRegion("br"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_ph", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAccountFeeRegionFromString("ph")

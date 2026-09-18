@@ -1739,6 +1739,7 @@ const (
 	AccountFeeRegionCr  AccountFeeRegion = "cr"
 	AccountFeeRegionGt  AccountFeeRegion = "gt"
 	AccountFeeRegionUy  AccountFeeRegion = "uy"
+	AccountFeeRegionBr  AccountFeeRegion = "br"
 	AccountFeeRegionPh  AccountFeeRegion = "ph"
 )
 
@@ -1772,6 +1773,8 @@ func NewAccountFeeRegionFromString(s string) (AccountFeeRegion, error) {
 		return AccountFeeRegionGt, nil
 	case "uy":
 		return AccountFeeRegionUy, nil
+	case "br":
+		return AccountFeeRegionBr, nil
 	case "ph":
 		return AccountFeeRegionPh, nil
 	}
