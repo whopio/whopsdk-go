@@ -3010,14 +3010,6 @@ func TestSettersAccountFees(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetAds", func(t *testing.T) {
-		obj := &AccountFees{}
-		var fernTestValueAds *AccountFee
-		obj.SetAds(fernTestValueAds)
-		assert.Equal(t, fernTestValueAds, obj.Ads)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetBankDeposit", func(t *testing.T) {
 		obj := &AccountFees{}
 		var fernTestValueBankDeposit *AccountFee
@@ -3274,39 +3266,6 @@ func TestGettersAccountFees(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAccountID() // Should return zero value
-	})
-
-	t.Run("GetAds", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AccountFees{}
-		var expected *AccountFee
-		obj.Ads = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetAds(), "getter should return the property value")
-	})
-
-	t.Run("GetAds_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AccountFees{}
-		obj.Ads = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetAds(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetAds_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *AccountFees
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetAds() // Should return zero value
 	})
 
 	t.Run("GetBankDeposit", func(t *testing.T) {
@@ -4277,37 +4236,6 @@ func TestSettersMarkExplicitAccountFees(t *testing.T) {
 
 		// Act
 		obj.SetAccountID(fernTestValueAccountID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetAds_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AccountFees{}
-		var fernTestValueAds *AccountFee
-
-		// Act
-		obj.SetAds(fernTestValueAds)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

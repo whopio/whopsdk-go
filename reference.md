@@ -36275,14 +36275,6 @@ client.Accounts.Fees.Update(
 <dl>
 <dd>
 
-**ads:** `*accounts.UpdateFeesRequestAds` — The fields of a fee the caller may change. Only the keys sent are replaced.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **bankDeposit:** `*accounts.UpdateFeesRequestBankDeposit` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
