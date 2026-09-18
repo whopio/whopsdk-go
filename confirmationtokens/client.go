@@ -38,63 +38,6 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Mints a single-use, short-lived confirmation token from what the buyer entered on your collection surface: the payment method payload, billing details, and attested save consent. Public and rate-limited — the account_id in the body scopes the token but does not authenticate. Confirm it with POST /payments from your server.
-//
-// Example:
-//
-//	request := &whopsdk.CreateConfirmationTokensRequest{
-//	    AccountID: "biz_xxxxxxxxxxxxxx",
-//	    BillingDetails: &whopsdk.CreateConfirmationTokensRequestBillingDetails{
-//	        Address: map[string]any{
-//	            "city": "Austin",
-//	            "country": "US",
-//	            "line1": "123 Main St",
-//	            "postal_code": "78701",
-//	        },
-//	        Email: "buyer@example.com",
-//	        Name: whopsdk.String(
-//	            "Buyer Name",
-//	        ),
-//	    },
-//	    PaymentMethod: &whopsdk.CreateConfirmationTokensRequestPaymentMethod{
-//	        Card: &whopsdk.CreateConfirmationTokensRequestPaymentMethodCard{
-//	            Brand: whopsdk.String(
-//	                "visa",
-//	            ),
-//	            Last4: whopsdk.String(
-//	                "4242",
-//	            ),
-//	            TokenIntent: whopsdk.String(
-//	                "bt_ti_123",
-//	            ),
-//	        },
-//	        Category: whopsdk.CreateConfirmationTokensRequestPaymentMethodCategoryCard,
-//	        Type: whopsdk.String(
-//	            "card",
-//	        ),
-//	    },
-//	    SetupFutureUsage: whopsdk.CreateConfirmationTokensRequestSetupFutureUsageOffSession.Ptr(),
-//	}
-//	client.ConfirmationTokens.Create(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) Create(
-	ctx context.Context,
-	request *whopsdk.CreateConfirmationTokensRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.ConfirmationToken, error) {
-	response, err := c.WithRawResponse.Create(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
 // Retrieves a token's display-safe preview — never the underlying payment credential. Public and rate-limited: the account_id query param must match the account the token was minted for.
 //
 // Example:

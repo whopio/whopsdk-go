@@ -2,5 +2,5 @@
 
 // A Confirmation Token is a single-use, short-lived reference to a payment method and billing details collected from a buyer. Its response contains only a display-safe preview and never returns the underlying payment credential.
 //
-// Create a confirmation token in a buyer-facing collection flow, then send its `ctok_` ID to the Payments API from your server. Retrieve a token to display its payment method and billing preview or check whether it is still usable.
+// Whop Elements mint the token in your buyer-facing collection flow and hand you its `ctok_` ID to send to the Payments API from your server. Retrieve a token to display its payment method and billing preview or check whether it is still usable.
 package confirmationtokens
