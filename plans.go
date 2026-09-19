@@ -3958,9 +3958,11 @@ var (
 )
 
 type CreatePlansRequestPaymentMethodConfiguration struct {
-	Disabled                []string `json:"disabled,omitempty" url:"disabled,omitempty"`
-	Enabled                 []string `json:"enabled,omitempty" url:"enabled,omitempty"`
-	IncludePlatformDefaults *bool    `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
+	// Payment method types explicitly disabled for this plan — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
+	// Payment method types explicitly enabled for this plan — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Enabled                 []PaymentMethodTypes `json:"enabled,omitempty" url:"enabled,omitempty"`
+	IncludePlatformDefaults *bool                `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3969,14 +3971,14 @@ type CreatePlansRequestPaymentMethodConfiguration struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreatePlansRequestPaymentMethodConfiguration) GetDisabled() []string {
+func (c *CreatePlansRequestPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
 	return c.Disabled
 }
 
-func (c *CreatePlansRequestPaymentMethodConfiguration) GetEnabled() []string {
+func (c *CreatePlansRequestPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
@@ -4006,14 +4008,14 @@ func (c *CreatePlansRequestPaymentMethodConfiguration) require(field *big.Int) {
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePlansRequestPaymentMethodConfiguration) SetDisabled(disabled []string) {
+func (c *CreatePlansRequestPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
 	c.Disabled = disabled
 	c.require(createPlansRequestPaymentMethodConfigurationFieldDisabled)
 }
 
 // SetEnabled sets the Enabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePlansRequestPaymentMethodConfiguration) SetEnabled(enabled []string) {
+func (c *CreatePlansRequestPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
 	c.Enabled = enabled
 	c.require(createPlansRequestPaymentMethodConfigurationFieldEnabled)
 }
@@ -5532,9 +5534,11 @@ var (
 )
 
 type UpdatePlansRequestPaymentMethodConfiguration struct {
-	Disabled                []string `json:"disabled,omitempty" url:"disabled,omitempty"`
-	Enabled                 []string `json:"enabled,omitempty" url:"enabled,omitempty"`
-	IncludePlatformDefaults *bool    `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
+	// Payment method types explicitly disabled for this plan — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
+	// Payment method types explicitly enabled for this plan — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Enabled                 []PaymentMethodTypes `json:"enabled,omitempty" url:"enabled,omitempty"`
+	IncludePlatformDefaults *bool                `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5543,14 +5547,14 @@ type UpdatePlansRequestPaymentMethodConfiguration struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdatePlansRequestPaymentMethodConfiguration) GetDisabled() []string {
+func (u *UpdatePlansRequestPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
 	if u == nil {
 		return nil
 	}
 	return u.Disabled
 }
 
-func (u *UpdatePlansRequestPaymentMethodConfiguration) GetEnabled() []string {
+func (u *UpdatePlansRequestPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
 	if u == nil {
 		return nil
 	}
@@ -5580,14 +5584,14 @@ func (u *UpdatePlansRequestPaymentMethodConfiguration) require(field *big.Int) {
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePlansRequestPaymentMethodConfiguration) SetDisabled(disabled []string) {
+func (u *UpdatePlansRequestPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
 	u.Disabled = disabled
 	u.require(updatePlansRequestPaymentMethodConfigurationFieldDisabled)
 }
 
 // SetEnabled sets the Enabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePlansRequestPaymentMethodConfiguration) SetEnabled(enabled []string) {
+func (u *UpdatePlansRequestPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
 	u.Enabled = enabled
 	u.require(updatePlansRequestPaymentMethodConfigurationFieldEnabled)
 }
