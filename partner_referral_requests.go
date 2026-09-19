@@ -237,8 +237,9 @@ var (
 	partnerReferralRequestFieldMaxRedemptions = big.NewInt(1 << 4)
 	partnerReferralRequestFieldPartner        = big.NewInt(1 << 5)
 	partnerReferralRequestFieldRequestType    = big.NewInt(1 << 6)
-	partnerReferralRequestFieldStatus         = big.NewInt(1 << 7)
-	partnerReferralRequestFieldUpdatedAt      = big.NewInt(1 << 8)
+	partnerReferralRequestFieldRewards        = big.NewInt(1 << 7)
+	partnerReferralRequestFieldStatus         = big.NewInt(1 << 8)
+	partnerReferralRequestFieldUpdatedAt      = big.NewInt(1 << 9)
 )
 
 type PartnerReferralRequest struct {
@@ -256,6 +257,7 @@ type PartnerReferralRequest struct {
 	Partner *UserSummary `json:"partner" url:"partner"`
 	// How the referral request was initiated.
 	RequestType PartnerReferralRequestRequestType `json:"request_type" url:"request_type"`
+	Rewards     []*PartnerReferralReward          `json:"rewards" url:"rewards"`
 	// The approval state, or null for requests without an approval process.
 	Status *PartnerReferralRequestStatus `json:"status,omitempty" url:"status,omitempty"`
 	// When the request last changed, as an ISO 8601 timestamp.
@@ -315,6 +317,13 @@ func (p *PartnerReferralRequest) GetRequestType() PartnerReferralRequestRequestT
 		return ""
 	}
 	return p.RequestType
+}
+
+func (p *PartnerReferralRequest) GetRewards() []*PartnerReferralReward {
+	if p == nil {
+		return nil
+	}
+	return p.Rewards
 }
 
 func (p *PartnerReferralRequest) GetStatus() *PartnerReferralRequestStatus {
@@ -392,6 +401,13 @@ func (p *PartnerReferralRequest) SetPartner(partner *UserSummary) {
 func (p *PartnerReferralRequest) SetRequestType(requestType PartnerReferralRequestRequestType) {
 	p.RequestType = requestType
 	p.require(partnerReferralRequestFieldRequestType)
+}
+
+// SetRewards sets the Rewards field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequest) SetRewards(rewards []*PartnerReferralReward) {
+	p.Rewards = rewards
+	p.require(partnerReferralRequestFieldRewards)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -502,6 +518,222 @@ func NewPartnerReferralRequestStatusFromString(s string) (PartnerReferralRequest
 }
 
 func (p PartnerReferralRequestStatus) Ptr() *PartnerReferralRequestStatus {
+	return &p
+}
+
+var (
+	partnerReferralRewardFieldBotQualificationType = big.NewInt(1 << 0)
+	partnerReferralRewardFieldID                   = big.NewInt(1 << 1)
+	partnerReferralRewardFieldQualificationAmount  = big.NewInt(1 << 2)
+	partnerReferralRewardFieldRecipient            = big.NewInt(1 << 3)
+	partnerReferralRewardFieldRecipientID          = big.NewInt(1 << 4)
+	partnerReferralRewardFieldRewardAmount         = big.NewInt(1 << 5)
+)
+
+type PartnerReferralReward struct {
+	// Activity that qualifies for this reward, when specified.
+	BotQualificationType *PartnerReferralRewardBotQualificationType `json:"bot_qualification_type,omitempty" url:"bot_qualification_type,omitempty"`
+	// Partner reward ID, prefixed `prwd_`.
+	ID string `json:"id" url:"id"`
+	// USD amount of qualifying activity required to earn the reward.
+	QualificationAmount *Money `json:"qualification_amount" url:"qualification_amount"`
+	// Reward recipient's role, or null for a fixed user who is not the requesting partner.
+	Recipient *PartnerReferralRewardRecipient `json:"recipient,omitempty" url:"recipient,omitempty"`
+	// Concrete recipient's user or business ID, or null until a business redeems the offer.
+	RecipientID *string `json:"recipient_id,omitempty" url:"recipient_id,omitempty"`
+	// USD amount granted after qualification.
+	RewardAmount *Money `json:"reward_amount" url:"reward_amount"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerReferralReward) GetBotQualificationType() *PartnerReferralRewardBotQualificationType {
+	if p == nil {
+		return nil
+	}
+	return p.BotQualificationType
+}
+
+func (p *PartnerReferralReward) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PartnerReferralReward) GetQualificationAmount() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.QualificationAmount
+}
+
+func (p *PartnerReferralReward) GetRecipient() *PartnerReferralRewardRecipient {
+	if p == nil {
+		return nil
+	}
+	return p.Recipient
+}
+
+func (p *PartnerReferralReward) GetRecipientID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.RecipientID
+}
+
+func (p *PartnerReferralReward) GetRewardAmount() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.RewardAmount
+}
+
+func (p *PartnerReferralReward) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerReferralReward) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetBotQualificationType sets the BotQualificationType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralReward) SetBotQualificationType(botQualificationType *PartnerReferralRewardBotQualificationType) {
+	p.BotQualificationType = botQualificationType
+	p.require(partnerReferralRewardFieldBotQualificationType)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralReward) SetID(id string) {
+	p.ID = id
+	p.require(partnerReferralRewardFieldID)
+}
+
+// SetQualificationAmount sets the QualificationAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralReward) SetQualificationAmount(qualificationAmount *Money) {
+	p.QualificationAmount = qualificationAmount
+	p.require(partnerReferralRewardFieldQualificationAmount)
+}
+
+// SetRecipient sets the Recipient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralReward) SetRecipient(recipient *PartnerReferralRewardRecipient) {
+	p.Recipient = recipient
+	p.require(partnerReferralRewardFieldRecipient)
+}
+
+// SetRecipientID sets the RecipientID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralReward) SetRecipientID(recipientID *string) {
+	p.RecipientID = recipientID
+	p.require(partnerReferralRewardFieldRecipientID)
+}
+
+// SetRewardAmount sets the RewardAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralReward) SetRewardAmount(rewardAmount *Money) {
+	p.RewardAmount = rewardAmount
+	p.require(partnerReferralRewardFieldRewardAmount)
+}
+
+func (p *PartnerReferralReward) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerReferralReward
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerReferralReward(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerReferralReward) MarshalJSON() ([]byte, error) {
+	type embed PartnerReferralReward
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerReferralReward) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Activity that qualifies for this reward, when specified.
+type PartnerReferralRewardBotQualificationType string
+
+const (
+	PartnerReferralRewardBotQualificationTypeSales   PartnerReferralRewardBotQualificationType = "sales"
+	PartnerReferralRewardBotQualificationTypeAdSpend PartnerReferralRewardBotQualificationType = "ad_spend"
+)
+
+func NewPartnerReferralRewardBotQualificationTypeFromString(s string) (PartnerReferralRewardBotQualificationType, error) {
+	switch s {
+	case "sales":
+		return PartnerReferralRewardBotQualificationTypeSales, nil
+	case "ad_spend":
+		return PartnerReferralRewardBotQualificationTypeAdSpend, nil
+	}
+	var t PartnerReferralRewardBotQualificationType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PartnerReferralRewardBotQualificationType) Ptr() *PartnerReferralRewardBotQualificationType {
+	return &p
+}
+
+// Reward recipient's role, or null for a fixed user who is not the requesting partner.
+type PartnerReferralRewardRecipient string
+
+const (
+	PartnerReferralRewardRecipientBusiness PartnerReferralRewardRecipient = "business"
+	PartnerReferralRewardRecipientPartner  PartnerReferralRewardRecipient = "partner"
+)
+
+func NewPartnerReferralRewardRecipientFromString(s string) (PartnerReferralRewardRecipient, error) {
+	switch s {
+	case "business":
+		return PartnerReferralRewardRecipientBusiness, nil
+	case "partner":
+		return PartnerReferralRewardRecipientPartner, nil
+	}
+	var t PartnerReferralRewardRecipient
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PartnerReferralRewardRecipient) Ptr() *PartnerReferralRewardRecipient {
 	return &p
 }
 
