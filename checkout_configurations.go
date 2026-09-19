@@ -325,10 +325,10 @@ var (
 )
 
 type CreateCheckoutConfigurationsRequestPaymentMethodConfiguration struct {
-	// Payment methods explicitly disabled for checkout.
-	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
-	// Payment methods explicitly enabled for checkout.
-	Enabled []string `json:"enabled,omitempty" url:"enabled,omitempty"`
+	// Payment method types explicitly disabled for checkout — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
+	// Payment method types explicitly enabled for checkout — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Enabled []PaymentMethodTypes `json:"enabled,omitempty" url:"enabled,omitempty"`
 	// Whether platform default payment methods are included.
 	IncludePlatformDefaults *bool `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
 
@@ -339,14 +339,14 @@ type CreateCheckoutConfigurationsRequestPaymentMethodConfiguration struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) GetDisabled() []string {
+func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
 	return c.Disabled
 }
 
-func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) GetEnabled() []string {
+func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
@@ -376,14 +376,14 @@ func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) require(
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) SetDisabled(disabled []string) {
+func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
 	c.Disabled = disabled
 	c.require(createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldDisabled)
 }
 
 // SetEnabled sets the Enabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) SetEnabled(enabled []string) {
+func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
 	c.Enabled = enabled
 	c.require(createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldEnabled)
 }
@@ -854,10 +854,10 @@ var (
 )
 
 type CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration struct {
-	// Payment methods explicitly disabled for this plan.
-	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
-	// Payment methods explicitly enabled for this plan.
-	Enabled []string `json:"enabled,omitempty" url:"enabled,omitempty"`
+	// Payment method types explicitly disabled for this plan — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
+	// Payment method types explicitly enabled for this plan — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Enabled []PaymentMethodTypes `json:"enabled,omitempty" url:"enabled,omitempty"`
 	// Whether platform default payment methods are included.
 	IncludePlatformDefaults *bool `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
 
@@ -868,14 +868,14 @@ type CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) GetDisabled() []string {
+func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
 	return c.Disabled
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) GetEnabled() []string {
+func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
@@ -905,14 +905,14 @@ func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) requ
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) SetDisabled(disabled []string) {
+func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
 	c.Disabled = disabled
 	c.require(createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldDisabled)
 }
 
 // SetEnabled sets the Enabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) SetEnabled(enabled []string) {
+func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
 	c.Enabled = enabled
 	c.require(createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldEnabled)
 }

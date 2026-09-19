@@ -816,7 +816,7 @@ func TestSettersMarkExplicitRetrieveCheckoutConfigurationsRequest(t *testing.T) 
 func TestSettersCreateCheckoutConfigurationsRequestPaymentMethodConfiguration(t *testing.T) {
 	t.Run("SetDisabled", func(t *testing.T) {
 		obj := &CreateCheckoutConfigurationsRequestPaymentMethodConfiguration{}
-		var fernTestValueDisabled []string
+		var fernTestValueDisabled []PaymentMethodTypes
 		obj.SetDisabled(fernTestValueDisabled)
 		assert.Equal(t, fernTestValueDisabled, obj.Disabled)
 		assert.NotNil(t, obj.explicitFields)
@@ -824,7 +824,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPaymentMethodConfiguration(t 
 
 	t.Run("SetEnabled", func(t *testing.T) {
 		obj := &CreateCheckoutConfigurationsRequestPaymentMethodConfiguration{}
-		var fernTestValueEnabled []string
+		var fernTestValueEnabled []PaymentMethodTypes
 		obj.SetEnabled(fernTestValueEnabled)
 		assert.Equal(t, fernTestValueEnabled, obj.Enabled)
 		assert.NotNil(t, obj.explicitFields)
@@ -845,7 +845,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPaymentMethodConfiguration(t 
 		t.Parallel()
 		// Arrange
 		obj := &CreateCheckoutConfigurationsRequestPaymentMethodConfiguration{}
-		var expected []string
+		var expected []PaymentMethodTypes
 		obj.Disabled = expected
 
 		// Act & Assert
@@ -878,7 +878,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPaymentMethodConfiguration(t 
 		t.Parallel()
 		// Arrange
 		obj := &CreateCheckoutConfigurationsRequestPaymentMethodConfiguration{}
-		var expected []string
+		var expected []PaymentMethodTypes
 		obj.Enabled = expected
 
 		// Act & Assert
@@ -947,7 +947,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPaymentMethodConf
 		t.Parallel()
 		// Arrange
 		obj := &CreateCheckoutConfigurationsRequestPaymentMethodConfiguration{}
-		var fernTestValueDisabled []string
+		var fernTestValueDisabled []PaymentMethodTypes
 
 		// Act
 		obj.SetDisabled(fernTestValueDisabled)
@@ -978,7 +978,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPaymentMethodConf
 		t.Parallel()
 		// Arrange
 		obj := &CreateCheckoutConfigurationsRequestPaymentMethodConfiguration{}
-		var fernTestValueEnabled []string
+		var fernTestValueEnabled []PaymentMethodTypes
 
 		// Act
 		obj.SetEnabled(fernTestValueEnabled)
@@ -2490,7 +2490,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlan(t *testing.T
 func TestSettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration(t *testing.T) {
 	t.Run("SetDisabled", func(t *testing.T) {
 		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
-		var fernTestValueDisabled []string
+		var fernTestValueDisabled []PaymentMethodTypes
 		obj.SetDisabled(fernTestValueDisabled)
 		assert.Equal(t, fernTestValueDisabled, obj.Disabled)
 		assert.NotNil(t, obj.explicitFields)
@@ -2498,7 +2498,7 @@ func TestSettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 
 	t.Run("SetEnabled", func(t *testing.T) {
 		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
-		var fernTestValueEnabled []string
+		var fernTestValueEnabled []PaymentMethodTypes
 		obj.SetEnabled(fernTestValueEnabled)
 		assert.Equal(t, fernTestValueEnabled, obj.Enabled)
 		assert.NotNil(t, obj.explicitFields)
@@ -2519,7 +2519,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 		t.Parallel()
 		// Arrange
 		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
-		var expected []string
+		var expected []PaymentMethodTypes
 		obj.Disabled = expected
 
 		// Act & Assert
@@ -2552,7 +2552,7 @@ func TestGettersCreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguratio
 		t.Parallel()
 		// Arrange
 		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
-		var expected []string
+		var expected []PaymentMethodTypes
 		obj.Enabled = expected
 
 		// Act & Assert
@@ -2621,7 +2621,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlanPaymentMethod
 		t.Parallel()
 		// Arrange
 		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
-		var fernTestValueDisabled []string
+		var fernTestValueDisabled []PaymentMethodTypes
 
 		// Act
 		obj.SetDisabled(fernTestValueDisabled)
@@ -2652,7 +2652,7 @@ func TestSettersMarkExplicitCreateCheckoutConfigurationsRequestPlanPaymentMethod
 		t.Parallel()
 		// Arrange
 		obj := &CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration{}
-		var fernTestValueEnabled []string
+		var fernTestValueEnabled []PaymentMethodTypes
 
 		// Act
 		obj.SetEnabled(fernTestValueEnabled)
