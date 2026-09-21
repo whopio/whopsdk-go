@@ -40,7 +40,6 @@ import (
 	dmmembers "github.com/whopio/whopsdk-go/dmmembers"
 	domains "github.com/whopio/whopsdk-go/domains"
 	economicintelligence "github.com/whopio/whopsdk-go/economicintelligence"
-	entries "github.com/whopio/whopsdk-go/entries"
 	events "github.com/whopio/whopsdk-go/events"
 	experiences "github.com/whopio/whopsdk-go/experiences"
 	experiments "github.com/whopio/whopsdk-go/experiments"
@@ -91,6 +90,7 @@ import (
 	transfers "github.com/whopio/whopsdk-go/transfers"
 	usersclient "github.com/whopio/whopsdk-go/users/client"
 	verifications "github.com/whopio/whopsdk-go/verifications"
+	waitlistentries "github.com/whopio/whopsdk-go/waitlistentries"
 	webhooks "github.com/whopio/whopsdk-go/webhooks"
 )
 
@@ -131,7 +131,6 @@ type Whop struct {
 	DmMembers                *dmmembers.Client
 	Domains                  *domains.Client
 	EconomicIntelligence     *economicintelligence.Client
-	Entries                  *entries.Client
 	Events                   *events.Client
 	Experiences              *experiences.Client
 	Experiments              *experiments.Client
@@ -180,6 +179,7 @@ type Whop struct {
 	Transfers                *transfers.Client
 	Users                    *usersclient.Client
 	Verifications            *verifications.Client
+	WaitlistEntries          *waitlistentries.Client
 	Webhooks                 *webhooks.Client
 
 	options *core.RequestOptions
@@ -230,7 +230,6 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		DmMembers:                dmmembers.NewClient(options),
 		Domains:                  domains.NewClient(options),
 		EconomicIntelligence:     economicintelligence.NewClient(options),
-		Entries:                  entries.NewClient(options),
 		Events:                   events.NewClient(options),
 		Experiences:              experiences.NewClient(options),
 		Experiments:              experiments.NewClient(options),
@@ -279,6 +278,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Transfers:                transfers.NewClient(options),
 		Users:                    usersclient.NewClient(options),
 		Verifications:            verifications.NewClient(options),
+		WaitlistEntries:          waitlistentries.NewClient(options),
 		Webhooks:                 webhooks.NewClient(options),
 		options:                  options,
 		baseURL:                  options.BaseURL,

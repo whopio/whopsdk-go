@@ -1992,7 +1992,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"action\": \"ai_prompt:create\",\n      \"allowed_on_api_key\": true,\n      \"allowed_on_app\": false,\n      \"allowed_on_user\": true,\n      \"category\": \"category\",\n      \"description\": \"\",\n      \"granted_to_system_roles\": [\n        \"owner\"\n      ],\n      \"name\": \"ai_prompt:create\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"action\": \"waitlist_entry:cancel\",\n      \"allowed_on_api_key\": false,\n      \"allowed_on_app\": false,\n      \"allowed_on_user\": true,\n      \"category\": \"category\",\n      \"description\": \"\",\n      \"granted_to_system_roles\": [\n        \"owner\"\n      ],\n      \"name\": \"waitlist_entry:cancel\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -5769,163 +5769,6 @@
         }
       },
       "uuid": "56d7d399-c228-4d45-9e08-111f4a06eb6a",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "9c9a609f-67a2-45f6-aaa3-a8117ecf7efc",
-      "name": "List entries - default",
-      "request": {
-        "urlPathTemplate": "/entries",
-        "method": "GET",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "queryParameters": {
-          "first": {
-            "equalTo": "42"
-          },
-          "last": {
-            "equalTo": "42"
-          },
-          "created_before": {
-            "equalTo": "2023-12-01T05:00:00.000Z"
-          },
-          "created_after": {
-            "equalTo": "2023-12-01T05:00:00.000Z"
-          },
-          "account_id": {
-            "equalTo": "biz_xxxxxxxxxxxxxx"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"created_at\": \"2023-12-01T05:00:00Z\",\n      \"id\": \"entry_xxxxxxxxxxxx\",\n      \"plan\": {\n        \"id\": \"plan_xxxxxxxxxxxxx\"\n      },\n      \"product\": {\n        \"id\": \"prod_xxxxxxxxxxxxx\",\n        \"title\": \"Pickaxe Analytics\"\n      },\n      \"status\": \"drafted\",\n      \"user\": {\n        \"email\": \"john.doe@example.com\",\n        \"id\": \"user_xxxxxxxxxxxxx\",\n        \"name\": \"John Doe\",\n        \"username\": \"johndoe42\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": true,\n    \"has_previous_page\": true,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "9c9a609f-67a2-45f6-aaa3-a8117ecf7efc",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      },
-      "postServeActions": []
-    },
-    {
-      "id": "e55561e7-e0cd-4ec2-822e-8c574272b2bf",
-      "name": "Retrieve entry - default",
-      "request": {
-        "urlPathTemplate": "/entries/{id}",
-        "method": "GET",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "entry_xxxxxxxxxxxx"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"created_at\": \"2023-12-01T05:00:00Z\",\n  \"custom_field_responses\": [\n    {\n      \"answer\": \"answer\",\n      \"id\": \"cfrp_xxxxxxxxxxxxx\",\n      \"question\": \"question\"\n    }\n  ],\n  \"id\": \"entry_xxxxxxxxxxxx\",\n  \"plan\": {\n    \"id\": \"plan_xxxxxxxxxxxxx\"\n  },\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxx\",\n    \"title\": \"Pickaxe Analytics\"\n  },\n  \"status\": \"drafted\",\n  \"user\": {\n    \"email\": \"john.doe@example.com\",\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  }\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "e55561e7-e0cd-4ec2-822e-8c574272b2bf",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "8434ee8c-51a0-48e2-a0ff-6689118ac4ee",
-      "name": "Approve entry - default",
-      "request": {
-        "urlPathTemplate": "/entries/{id}/approve",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "entry_xxxxxxxxxxxx"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"job_id\": \"job_id\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "8434ee8c-51a0-48e2-a0ff-6689118ac4ee",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
-      "id": "20e7cd61-4b52-4601-b3b5-6abc43f34c9b",
-      "name": "Deny entry - default",
-      "request": {
-        "urlPathTemplate": "/entries/{id}/deny",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "entry_xxxxxxxxxxxx"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"created_at\": \"2023-12-01T05:00:00Z\",\n  \"custom_field_responses\": [\n    {\n      \"answer\": \"answer\",\n      \"id\": \"cfrp_xxxxxxxxxxxxx\",\n      \"question\": \"question\"\n    }\n  ],\n  \"id\": \"entry_xxxxxxxxxxxx\",\n  \"plan\": {\n    \"id\": \"plan_xxxxxxxxxxxxx\"\n  },\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxx\",\n    \"title\": \"Pickaxe Analytics\"\n  },\n  \"status\": \"drafted\",\n  \"user\": {\n    \"email\": \"john.doe@example.com\",\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  }\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "20e7cd61-4b52-4601-b3b5-6abc43f34c9b",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10587,7 +10430,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"action\": \"experiment:manage\",\n      \"granted\": false\n    }\n  ]\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"action\": \"waitlist_entry:read\",\n      \"granted\": false\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13622,6 +13465,244 @@
       }
     },
     {
+      "id": "5a9966d1-9453-42fd-9884-6fa513aeaa67",
+      "name": "List Waitlist Entries - default",
+      "request": {
+        "urlPathTemplate": "/waitlist_entries",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"approval_failure_reason\": \"plan_unavailable\",\n      \"buyer_account_id\": \"buyer_account_id\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"custom_field_responses\": [\n        {\n          \"answer\": \"answer\",\n          \"id\": \"id\",\n          \"question\": \"question\"\n        }\n      ],\n      \"id\": \"entry_xxxxxxxxxxxxxx\",\n      \"membership_id\": \"membership_id\",\n      \"metadata\": {\n        \"key\": \"value\"\n      },\n      \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n      \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n      \"status\": \"pending\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"user_id\": \"user_xxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5a9966d1-9453-42fd-9884-6fa513aeaa67",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "9dc41ac8-9999-4506-a590-ee5f6161c0fc",
+      "name": "Create Waitlist Entry - default",
+      "request": {
+        "urlPathTemplate": "/waitlist_entries",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"approval_failure_reason\": \"plan_unavailable\",\n  \"buyer_account_id\": \"buyer_account_id\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_field_responses\": [\n    {\n      \"answer\": \"answer\",\n      \"id\": \"id\",\n      \"question\": \"question\"\n    }\n  ],\n  \"id\": \"entry_xxxxxxxxxxxxxx\",\n  \"membership_id\": \"membership_id\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n  \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9dc41ac8-9999-4506-a590-ee5f6161c0fc",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "3f8bb7a3-a134-489c-bb15-e40610f53eab",
+      "name": "Approve All Waitlist Entries - default",
+      "request": {
+        "urlPathTemplate": "/waitlist_entries/approve_all",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"plan_id\": \"plan_id\",\n  \"queued\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "3f8bb7a3-a134-489c-bb15-e40610f53eab",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "e390ceec-6e6a-4eaa-add5-0ad52bf72e0d",
+      "name": "Retrieve Waitlist Entry - default",
+      "request": {
+        "urlPathTemplate": "/waitlist_entries/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"approval_failure_reason\": \"plan_unavailable\",\n  \"buyer_account_id\": \"buyer_account_id\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_field_responses\": [\n    {\n      \"answer\": \"answer\",\n      \"id\": \"id\",\n      \"question\": \"question\"\n    }\n  ],\n  \"id\": \"entry_xxxxxxxxxxxxxx\",\n  \"membership_id\": \"membership_id\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n  \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e390ceec-6e6a-4eaa-add5-0ad52bf72e0d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "fd2e42f8-9d52-4ab0-be58-2256081cc0e4",
+      "name": "Approve Waitlist Entry - default",
+      "request": {
+        "urlPathTemplate": "/waitlist_entries/{id}/approve",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"approval_failure_reason\": \"plan_unavailable\",\n  \"buyer_account_id\": \"buyer_account_id\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_field_responses\": [\n    {\n      \"answer\": \"answer\",\n      \"id\": \"id\",\n      \"question\": \"question\"\n    }\n  ],\n  \"id\": \"entry_xxxxxxxxxxxxxx\",\n  \"membership_id\": \"membership_id\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n  \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "fd2e42f8-9d52-4ab0-be58-2256081cc0e4",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "455a8d8e-102f-4953-821e-95031e0788d3",
+      "name": "Cancel Waitlist Entry - default",
+      "request": {
+        "urlPathTemplate": "/waitlist_entries/{id}/cancel",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"approval_failure_reason\": \"plan_unavailable\",\n  \"buyer_account_id\": \"buyer_account_id\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_field_responses\": [\n    {\n      \"answer\": \"answer\",\n      \"id\": \"id\",\n      \"question\": \"question\"\n    }\n  ],\n  \"id\": \"entry_xxxxxxxxxxxxxx\",\n  \"membership_id\": \"membership_id\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n  \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "455a8d8e-102f-4953-821e-95031e0788d3",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2444f1db-6f72-42d3-ab64-8e5bb1e8bd2b",
+      "name": "Deny Waitlist Entry - default",
+      "request": {
+        "urlPathTemplate": "/waitlist_entries/{id}/deny",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"approval_failure_reason\": \"plan_unavailable\",\n  \"buyer_account_id\": \"buyer_account_id\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_field_responses\": [\n    {\n      \"answer\": \"answer\",\n      \"id\": \"id\",\n      \"question\": \"question\"\n    }\n  ],\n  \"id\": \"entry_xxxxxxxxxxxxxx\",\n  \"membership_id\": \"membership_id\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n  \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n  \"status\": \"pending\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2444f1db-6f72-42d3-ab64-8e5bb1e8bd2b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "0430104c-9ec2-435e-ada8-843b1045d95e",
       "name": "List Webhooks - default",
       "request": {
@@ -15172,6 +15253,6 @@
     }
   ],
   "meta": {
-    "total": 423
+    "total": 426
   }
 }

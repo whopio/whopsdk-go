@@ -406,6 +406,27 @@ func TestStringListPermissionsResponseDataItem(t *testing.T) {
 }
 
 func TestEnumPermissionAction(t *testing.T) {
+	t.Run("NewFromString_waitlist_entry_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("waitlist_entry:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("waitlist_entry:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_waitlist_entry_create", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("waitlist_entry:create")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("waitlist_entry:create"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_waitlist_entry_cancel", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("waitlist_entry:cancel")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("waitlist_entry:cancel"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_experiment_manage", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("experiment:manage")
@@ -2281,7 +2302,7 @@ func TestEnumPermissionAction(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewPermissionActionFromString("experiment:manage")
+		val, err := NewPermissionActionFromString("waitlist_entry:read")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

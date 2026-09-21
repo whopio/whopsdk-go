@@ -15172,6 +15172,680 @@ func (d DisputeStatuses) Ptr() *DisputeStatuses {
 	return &d
 }
 
+// An entry represents a user's signup for a waitlisted plan.
+var (
+	entryFieldCreatedAt            = big.NewInt(1 << 0)
+	entryFieldCustomFieldResponses = big.NewInt(1 << 1)
+	entryFieldID                   = big.NewInt(1 << 2)
+	entryFieldPlan                 = big.NewInt(1 << 3)
+	entryFieldProduct              = big.NewInt(1 << 4)
+	entryFieldStatus               = big.NewInt(1 << 5)
+	entryFieldUser                 = big.NewInt(1 << 6)
+)
+
+type Entry struct {
+	// The datetime the entry was created.
+	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// The list of responses collected from the user when submitting their waitlist entry.
+	CustomFieldResponses []*EntryCustomFieldResponsesItem `json:"custom_field_responses,omitempty" url:"custom_field_responses,omitempty"`
+	// The unique identifier for the entry.
+	ID string `json:"id" url:"id"`
+	// The waitlisted plan that this entry is a signup for.
+	Plan *EntryPlan `json:"plan,omitempty" url:"plan,omitempty"`
+	// The product associated with this entry's waitlisted plan. Null if the plan is not tied to a product.
+	Product *EntryProduct `json:"product,omitempty" url:"product,omitempty"`
+	// The current status of the waitlist entry (e.g., drafted, pending, approved, denied).
+	Status EntryStatus `json:"status" url:"status"`
+	// The user who submitted this waitlist entry.
+	User *EntryUser `json:"user" url:"user"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *Entry) GetCreatedAt() *time.Time {
+	if e == nil {
+		return nil
+	}
+	return e.CreatedAt
+}
+
+func (e *Entry) GetCustomFieldResponses() []*EntryCustomFieldResponsesItem {
+	if e == nil {
+		return nil
+	}
+	return e.CustomFieldResponses
+}
+
+func (e *Entry) GetID() string {
+	if e == nil {
+		return ""
+	}
+	return e.ID
+}
+
+func (e *Entry) GetPlan() *EntryPlan {
+	if e == nil {
+		return nil
+	}
+	return e.Plan
+}
+
+func (e *Entry) GetProduct() *EntryProduct {
+	if e == nil {
+		return nil
+	}
+	return e.Product
+}
+
+func (e *Entry) GetStatus() EntryStatus {
+	if e == nil {
+		return ""
+	}
+	return e.Status
+}
+
+func (e *Entry) GetUser() *EntryUser {
+	if e == nil {
+		return nil
+	}
+	return e.User
+}
+
+func (e *Entry) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *Entry) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Entry) SetCreatedAt(createdAt *time.Time) {
+	e.CreatedAt = createdAt
+	e.require(entryFieldCreatedAt)
+}
+
+// SetCustomFieldResponses sets the CustomFieldResponses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Entry) SetCustomFieldResponses(customFieldResponses []*EntryCustomFieldResponsesItem) {
+	e.CustomFieldResponses = customFieldResponses
+	e.require(entryFieldCustomFieldResponses)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Entry) SetID(id string) {
+	e.ID = id
+	e.require(entryFieldID)
+}
+
+// SetPlan sets the Plan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Entry) SetPlan(plan *EntryPlan) {
+	e.Plan = plan
+	e.require(entryFieldPlan)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Entry) SetProduct(product *EntryProduct) {
+	e.Product = product
+	e.require(entryFieldProduct)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Entry) SetStatus(status EntryStatus) {
+	e.Status = status
+	e.require(entryFieldStatus)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Entry) SetUser(user *EntryUser) {
+	e.User = user
+	e.require(entryFieldUser)
+}
+
+func (e *Entry) UnmarshalJSON(data []byte) error {
+	type embed Entry
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at,omitempty"`
+	}{
+		embed: embed(*e),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*e = Entry(unmarshaler.embed)
+	e.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *Entry) MarshalJSON() ([]byte, error) {
+	type embed Entry
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at,omitempty"`
+	}{
+		embed:     embed(*e),
+		CreatedAt: internal.NewOptionalDateTime(e.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *Entry) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// The response from a custom field on checkout
+var (
+	entryCustomFieldResponsesItemFieldAnswer   = big.NewInt(1 << 0)
+	entryCustomFieldResponsesItemFieldID       = big.NewInt(1 << 1)
+	entryCustomFieldResponsesItemFieldQuestion = big.NewInt(1 << 2)
+)
+
+type EntryCustomFieldResponsesItem struct {
+	// The response a user gave to the specific question or field.
+	Answer string `json:"answer" url:"answer"`
+	// The unique identifier for the custom field response.
+	ID string `json:"id" url:"id"`
+	// The question asked by the custom field
+	Question string `json:"question" url:"question"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EntryCustomFieldResponsesItem) GetAnswer() string {
+	if e == nil {
+		return ""
+	}
+	return e.Answer
+}
+
+func (e *EntryCustomFieldResponsesItem) GetID() string {
+	if e == nil {
+		return ""
+	}
+	return e.ID
+}
+
+func (e *EntryCustomFieldResponsesItem) GetQuestion() string {
+	if e == nil {
+		return ""
+	}
+	return e.Question
+}
+
+func (e *EntryCustomFieldResponsesItem) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EntryCustomFieldResponsesItem) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetAnswer sets the Answer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EntryCustomFieldResponsesItem) SetAnswer(answer string) {
+	e.Answer = answer
+	e.require(entryCustomFieldResponsesItemFieldAnswer)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EntryCustomFieldResponsesItem) SetID(id string) {
+	e.ID = id
+	e.require(entryCustomFieldResponsesItemFieldID)
+}
+
+// SetQuestion sets the Question field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EntryCustomFieldResponsesItem) SetQuestion(question string) {
+	e.Question = question
+	e.require(entryCustomFieldResponsesItemFieldQuestion)
+}
+
+func (e *EntryCustomFieldResponsesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntryCustomFieldResponsesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntryCustomFieldResponsesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntryCustomFieldResponsesItem) MarshalJSON() ([]byte, error) {
+	type embed EntryCustomFieldResponsesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EntryCustomFieldResponsesItem) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// The waitlisted plan that this entry is a signup for.
+var (
+	entryPlanFieldID = big.NewInt(1 << 0)
+)
+
+type EntryPlan struct {
+	// The unique identifier for the plan.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EntryPlan) GetID() string {
+	if e == nil {
+		return ""
+	}
+	return e.ID
+}
+
+func (e *EntryPlan) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EntryPlan) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EntryPlan) SetID(id string) {
+	e.ID = id
+	e.require(entryPlanFieldID)
+}
+
+func (e *EntryPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntryPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntryPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntryPlan) MarshalJSON() ([]byte, error) {
+	type embed EntryPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EntryPlan) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// The product associated with this entry's waitlisted plan. Null if the plan is not tied to a product.
+var (
+	entryProductFieldID    = big.NewInt(1 << 0)
+	entryProductFieldTitle = big.NewInt(1 << 1)
+)
+
+type EntryProduct struct {
+	// The unique identifier for the product.
+	ID string `json:"id" url:"id"`
+	// The display name of the product shown to customers on the product page and in search results.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EntryProduct) GetID() string {
+	if e == nil {
+		return ""
+	}
+	return e.ID
+}
+
+func (e *EntryProduct) GetTitle() string {
+	if e == nil {
+		return ""
+	}
+	return e.Title
+}
+
+func (e *EntryProduct) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EntryProduct) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EntryProduct) SetID(id string) {
+	e.ID = id
+	e.require(entryProductFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EntryProduct) SetTitle(title string) {
+	e.Title = title
+	e.require(entryProductFieldTitle)
+}
+
+func (e *EntryProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntryProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntryProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntryProduct) MarshalJSON() ([]byte, error) {
+	type embed EntryProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EntryProduct) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// The status of an entry to a waitlist.
+type EntryStatus string
+
+const (
+	EntryStatusDrafted  EntryStatus = "drafted"
+	EntryStatusPending  EntryStatus = "pending"
+	EntryStatusApproved EntryStatus = "approved"
+	EntryStatusDenied   EntryStatus = "denied"
+	EntryStatusAny      EntryStatus = "any"
+)
+
+func NewEntryStatusFromString(s string) (EntryStatus, error) {
+	switch s {
+	case "drafted":
+		return EntryStatusDrafted, nil
+	case "pending":
+		return EntryStatusPending, nil
+	case "approved":
+		return EntryStatusApproved, nil
+	case "denied":
+		return EntryStatusDenied, nil
+	case "any":
+		return EntryStatusAny, nil
+	}
+	var t EntryStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EntryStatus) Ptr() *EntryStatus {
+	return &e
+}
+
+// The user who submitted this waitlist entry.
+var (
+	entryUserFieldEmail    = big.NewInt(1 << 0)
+	entryUserFieldID       = big.NewInt(1 << 1)
+	entryUserFieldName     = big.NewInt(1 << 2)
+	entryUserFieldUsername = big.NewInt(1 << 3)
+)
+
+type EntryUser struct {
+	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The unique identifier for the user.
+	ID string `json:"id" url:"id"`
+	// The user's display name shown on their public profile.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's unique username shown on their public profile.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EntryUser) GetEmail() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Email
+}
+
+func (e *EntryUser) GetID() string {
+	if e == nil {
+		return ""
+	}
+	return e.ID
+}
+
+func (e *EntryUser) GetName() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Name
+}
+
+func (e *EntryUser) GetUsername() string {
+	if e == nil {
+		return ""
+	}
+	return e.Username
+}
+
+func (e *EntryUser) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EntryUser) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EntryUser) SetEmail(email *string) {
+	e.Email = email
+	e.require(entryUserFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EntryUser) SetID(id string) {
+	e.ID = id
+	e.require(entryUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EntryUser) SetName(name *string) {
+	e.Name = name
+	e.require(entryUserFieldName)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EntryUser) SetUsername(username string) {
+	e.Username = username
+	e.require(entryUserFieldUsername)
+}
+
+func (e *EntryUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler EntryUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EntryUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EntryUser) MarshalJSON() ([]byte, error) {
+	type embed EntryUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EntryUser) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
 var (
 	experienceNotificationPreferenceFieldLevel  = big.NewInt(1 << 0)
 	experienceNotificationPreferenceFieldObject = big.NewInt(1 << 1)
