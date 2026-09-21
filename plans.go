@@ -708,28 +708,29 @@ var (
 	planFieldID                                  = big.NewInt(1 << 15)
 	planFieldImage                               = big.NewInt(1 << 16)
 	planFieldInitialPrice                        = big.NewInt(1 << 17)
-	planFieldInternalNotes                       = big.NewInt(1 << 18)
-	planFieldInvoice                             = big.NewInt(1 << 19)
-	planFieldMemberCount                         = big.NewInt(1 << 20)
-	planFieldMetadata                            = big.NewInt(1 << 21)
-	planFieldOfferCancelDiscount                 = big.NewInt(1 << 22)
-	planFieldPaymentMethodConfiguration          = big.NewInt(1 << 23)
-	planFieldPlanType                            = big.NewInt(1 << 24)
-	planFieldProduct                             = big.NewInt(1 << 25)
-	planFieldPurchaseURL                         = big.NewInt(1 << 26)
-	planFieldReleaseMethod                       = big.NewInt(1 << 27)
-	planFieldRenewalPrice                        = big.NewInt(1 << 28)
-	planFieldSplitPayRequiredPayments            = big.NewInt(1 << 29)
-	planFieldStock                               = big.NewInt(1 << 30)
-	planFieldStrikeThroughInitialPrice           = big.NewInt(1 << 31)
-	planFieldStrikeThroughRenewalPrice           = big.NewInt(1 << 32)
-	planFieldTaxType                             = big.NewInt(1 << 33)
-	planFieldThreeDsLevel                        = big.NewInt(1 << 34)
-	planFieldTitle                               = big.NewInt(1 << 35)
-	planFieldTrialPeriodDays                     = big.NewInt(1 << 36)
-	planFieldUnlimitedStock                      = big.NewInt(1 << 37)
-	planFieldUpdatedAt                           = big.NewInt(1 << 38)
-	planFieldVisibility                          = big.NewInt(1 << 39)
+	planFieldInitialPriceDue                     = big.NewInt(1 << 18)
+	planFieldInternalNotes                       = big.NewInt(1 << 19)
+	planFieldInvoice                             = big.NewInt(1 << 20)
+	planFieldMemberCount                         = big.NewInt(1 << 21)
+	planFieldMetadata                            = big.NewInt(1 << 22)
+	planFieldOfferCancelDiscount                 = big.NewInt(1 << 23)
+	planFieldPaymentMethodConfiguration          = big.NewInt(1 << 24)
+	planFieldPlanType                            = big.NewInt(1 << 25)
+	planFieldProduct                             = big.NewInt(1 << 26)
+	planFieldPurchaseURL                         = big.NewInt(1 << 27)
+	planFieldReleaseMethod                       = big.NewInt(1 << 28)
+	planFieldRenewalPrice                        = big.NewInt(1 << 29)
+	planFieldSplitPayRequiredPayments            = big.NewInt(1 << 30)
+	planFieldStock                               = big.NewInt(1 << 31)
+	planFieldStrikeThroughInitialPrice           = big.NewInt(1 << 32)
+	planFieldStrikeThroughRenewalPrice           = big.NewInt(1 << 33)
+	planFieldTaxType                             = big.NewInt(1 << 34)
+	planFieldThreeDsLevel                        = big.NewInt(1 << 35)
+	planFieldTitle                               = big.NewInt(1 << 36)
+	planFieldTrialPeriodDays                     = big.NewInt(1 << 37)
+	planFieldUnlimitedStock                      = big.NewInt(1 << 38)
+	planFieldUpdatedAt                           = big.NewInt(1 << 39)
+	planFieldVisibility                          = big.NewInt(1 << 40)
 )
 
 type Plan struct {
@@ -768,6 +769,8 @@ type Plan struct {
 	Image map[string]any `json:"image,omitempty" url:"image,omitempty"`
 	// Initial purchase price in plan currency.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
+	// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring plans, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this plan.
+	InitialPriceDue *Money `json:"initial_price_due" url:"initial_price_due"`
 	// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
 	// Invoice this plan was generated for; `null` unless created for an invoice.
@@ -944,6 +947,13 @@ func (p *Plan) GetInitialPrice() float64 {
 		return 0
 	}
 	return p.InitialPrice
+}
+
+func (p *Plan) GetInitialPriceDue() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.InitialPriceDue
 }
 
 func (p *Plan) GetInternalNotes() *string {
@@ -1238,6 +1248,13 @@ func (p *Plan) SetImage(image map[string]any) {
 func (p *Plan) SetInitialPrice(initialPrice float64) {
 	p.InitialPrice = initialPrice
 	p.require(planFieldInitialPrice)
+}
+
+// SetInitialPriceDue sets the InitialPriceDue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Plan) SetInitialPriceDue(initialPriceDue *Money) {
+	p.InitialPriceDue = initialPriceDue
+	p.require(planFieldInitialPriceDue)
 }
 
 // SetInternalNotes sets the InternalNotes field and marks it as non-optional;
@@ -1929,27 +1946,28 @@ var (
 	planListItemFieldID                         = big.NewInt(1 << 12)
 	planListItemFieldImage                      = big.NewInt(1 << 13)
 	planListItemFieldInitialPrice               = big.NewInt(1 << 14)
-	planListItemFieldInternalNotes              = big.NewInt(1 << 15)
-	planListItemFieldInvoice                    = big.NewInt(1 << 16)
-	planListItemFieldMemberCount                = big.NewInt(1 << 17)
-	planListItemFieldMetadata                   = big.NewInt(1 << 18)
-	planListItemFieldOfferCancelDiscount        = big.NewInt(1 << 19)
-	planListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 20)
-	planListItemFieldPlanType                   = big.NewInt(1 << 21)
-	planListItemFieldProduct                    = big.NewInt(1 << 22)
-	planListItemFieldPurchaseURL                = big.NewInt(1 << 23)
-	planListItemFieldReleaseMethod              = big.NewInt(1 << 24)
-	planListItemFieldRenewalPrice               = big.NewInt(1 << 25)
-	planListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 26)
-	planListItemFieldStock                      = big.NewInt(1 << 27)
-	planListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 28)
-	planListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 29)
-	planListItemFieldThreeDsLevel               = big.NewInt(1 << 30)
-	planListItemFieldTitle                      = big.NewInt(1 << 31)
-	planListItemFieldTrialPeriodDays            = big.NewInt(1 << 32)
-	planListItemFieldUnlimitedStock             = big.NewInt(1 << 33)
-	planListItemFieldUpdatedAt                  = big.NewInt(1 << 34)
-	planListItemFieldVisibility                 = big.NewInt(1 << 35)
+	planListItemFieldInitialPriceDue            = big.NewInt(1 << 15)
+	planListItemFieldInternalNotes              = big.NewInt(1 << 16)
+	planListItemFieldInvoice                    = big.NewInt(1 << 17)
+	planListItemFieldMemberCount                = big.NewInt(1 << 18)
+	planListItemFieldMetadata                   = big.NewInt(1 << 19)
+	planListItemFieldOfferCancelDiscount        = big.NewInt(1 << 20)
+	planListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 21)
+	planListItemFieldPlanType                   = big.NewInt(1 << 22)
+	planListItemFieldProduct                    = big.NewInt(1 << 23)
+	planListItemFieldPurchaseURL                = big.NewInt(1 << 24)
+	planListItemFieldReleaseMethod              = big.NewInt(1 << 25)
+	planListItemFieldRenewalPrice               = big.NewInt(1 << 26)
+	planListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 27)
+	planListItemFieldStock                      = big.NewInt(1 << 28)
+	planListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 29)
+	planListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 30)
+	planListItemFieldThreeDsLevel               = big.NewInt(1 << 31)
+	planListItemFieldTitle                      = big.NewInt(1 << 32)
+	planListItemFieldTrialPeriodDays            = big.NewInt(1 << 33)
+	planListItemFieldUnlimitedStock             = big.NewInt(1 << 34)
+	planListItemFieldUpdatedAt                  = big.NewInt(1 << 35)
+	planListItemFieldVisibility                 = big.NewInt(1 << 36)
 )
 
 type PlanListItem struct {
@@ -1982,6 +2000,8 @@ type PlanListItem struct {
 	Image map[string]any `json:"image,omitempty" url:"image,omitempty"`
 	// Initial purchase price in plan currency.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
+	// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring plans, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this plan.
+	InitialPriceDue *Money `json:"initial_price_due" url:"initial_price_due"`
 	// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
 	// Invoice this plan was generated for; `null` unless created for an invoice.
@@ -2135,6 +2155,13 @@ func (p *PlanListItem) GetInitialPrice() float64 {
 		return 0
 	}
 	return p.InitialPrice
+}
+
+func (p *PlanListItem) GetInitialPriceDue() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.InitialPriceDue
 }
 
 func (p *PlanListItem) GetInternalNotes() *string {
@@ -2401,6 +2428,13 @@ func (p *PlanListItem) SetImage(image map[string]any) {
 func (p *PlanListItem) SetInitialPrice(initialPrice float64) {
 	p.InitialPrice = initialPrice
 	p.require(planListItemFieldInitialPrice)
+}
+
+// SetInitialPriceDue sets the InitialPriceDue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetInitialPriceDue(initialPriceDue *Money) {
+	p.InitialPriceDue = initialPriceDue
+	p.require(planListItemFieldInitialPriceDue)
 }
 
 // SetInternalNotes sets the InternalNotes field and marks it as non-optional;
