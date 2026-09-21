@@ -17,26 +17,45 @@ var (
 	listPeopleRequestFieldAttributionModel    = big.NewInt(1 << 3)
 	listPeopleRequestFieldEventName           = big.NewInt(1 << 4)
 	listPeopleRequestFieldCustomEvent         = big.NewInt(1 << 5)
-	listPeopleRequestFieldEventFrom           = big.NewInt(1 << 6)
-	listPeopleRequestFieldEventTo             = big.NewInt(1 << 7)
-	listPeopleRequestFieldAudienceID          = big.NewInt(1 << 8)
-	listPeopleRequestFieldUserID              = big.NewInt(1 << 9)
-	listPeopleRequestFieldEmail               = big.NewInt(1 << 10)
-	listPeopleRequestFieldPhone               = big.NewInt(1 << 11)
-	listPeopleRequestFieldCountry             = big.NewInt(1 << 12)
-	listPeopleRequestFieldHasPurchased        = big.NewInt(1 << 13)
-	listPeopleRequestFieldContactable         = big.NewInt(1 << 14)
-	listPeopleRequestFieldFirstSeenWithinDays = big.NewInt(1 << 15)
-	listPeopleRequestFieldLastSeenWithinDays  = big.NewInt(1 << 16)
-	listPeopleRequestFieldFirstSeenAfter      = big.NewInt(1 << 17)
-	listPeopleRequestFieldFirstSeenBefore     = big.NewInt(1 << 18)
-	listPeopleRequestFieldLastSeenAfter       = big.NewInt(1 << 19)
-	listPeopleRequestFieldLastSeenBefore      = big.NewInt(1 << 20)
-	listPeopleRequestFieldFirst               = big.NewInt(1 << 21)
-	listPeopleRequestFieldAfter               = big.NewInt(1 << 22)
-	listPeopleRequestFieldBefore              = big.NewInt(1 << 23)
-	listPeopleRequestFieldOrder               = big.NewInt(1 << 24)
-	listPeopleRequestFieldDirection           = big.NewInt(1 << 25)
+	listPeopleRequestFieldEventWithinDays     = big.NewInt(1 << 6)
+	listPeopleRequestFieldFrom                = big.NewInt(1 << 7)
+	listPeopleRequestFieldTo                  = big.NewInt(1 << 8)
+	listPeopleRequestFieldEventFrom           = big.NewInt(1 << 9)
+	listPeopleRequestFieldEventTo             = big.NewInt(1 << 10)
+	listPeopleRequestFieldAudienceID          = big.NewInt(1 << 11)
+	listPeopleRequestFieldUserID              = big.NewInt(1 << 12)
+	listPeopleRequestFieldEmail               = big.NewInt(1 << 13)
+	listPeopleRequestFieldPhone               = big.NewInt(1 << 14)
+	listPeopleRequestFieldCountry             = big.NewInt(1 << 15)
+	listPeopleRequestFieldHasPurchased        = big.NewInt(1 << 16)
+	listPeopleRequestFieldContactable         = big.NewInt(1 << 17)
+	listPeopleRequestFieldFirstSeenWithinDays = big.NewInt(1 << 18)
+	listPeopleRequestFieldLastSeenWithinDays  = big.NewInt(1 << 19)
+	listPeopleRequestFieldFirstSeenAfter      = big.NewInt(1 << 20)
+	listPeopleRequestFieldFirstSeenBefore     = big.NewInt(1 << 21)
+	listPeopleRequestFieldLastSeenAfter       = big.NewInt(1 << 22)
+	listPeopleRequestFieldLastSeenBefore      = big.NewInt(1 << 23)
+	listPeopleRequestFieldLtvGt               = big.NewInt(1 << 24)
+	listPeopleRequestFieldLtvGte              = big.NewInt(1 << 25)
+	listPeopleRequestFieldLtvLt               = big.NewInt(1 << 26)
+	listPeopleRequestFieldLtvLte              = big.NewInt(1 << 27)
+	listPeopleRequestFieldAovGt               = big.NewInt(1 << 28)
+	listPeopleRequestFieldAovGte              = big.NewInt(1 << 29)
+	listPeopleRequestFieldAovLt               = big.NewInt(1 << 30)
+	listPeopleRequestFieldAovLte              = big.NewInt(1 << 31)
+	listPeopleRequestFieldPurchaseCountGt     = big.NewInt(1 << 32)
+	listPeopleRequestFieldPurchaseCountGte    = big.NewInt(1 << 33)
+	listPeopleRequestFieldPurchaseCountLt     = big.NewInt(1 << 34)
+	listPeopleRequestFieldPurchaseCountLte    = big.NewInt(1 << 35)
+	listPeopleRequestFieldEventCountGt        = big.NewInt(1 << 36)
+	listPeopleRequestFieldEventCountGte       = big.NewInt(1 << 37)
+	listPeopleRequestFieldEventCountLt        = big.NewInt(1 << 38)
+	listPeopleRequestFieldEventCountLte       = big.NewInt(1 << 39)
+	listPeopleRequestFieldFirst               = big.NewInt(1 << 40)
+	listPeopleRequestFieldAfter               = big.NewInt(1 << 41)
+	listPeopleRequestFieldBefore              = big.NewInt(1 << 42)
+	listPeopleRequestFieldOrder               = big.NewInt(1 << 43)
+	listPeopleRequestFieldDirection           = big.NewInt(1 << 44)
 )
 
 type ListPeopleRequest struct {
@@ -52,9 +71,15 @@ type ListPeopleRequest struct {
 	EventName []*string `json:"-" url:"event_name,omitempty"`
 	// Only include people who fired this custom pixel event.
 	CustomEvent *string `json:"-" url:"custom_event,omitempty"`
-	// With event_to plus an event or source filter, switches to exact-population mode: person ids are resolved and paginated on the events side within this window (the same query the people metric counts), then hydrated per page.
+	// Match activity within a rolling number of days. Cannot be combined with event_from/event_to.
+	EventWithinDays *int `json:"-" url:"event_within_days,omitempty"`
+	// Inclusive activity-window start. Alias for event_from.
+	From *time.Time `json:"-" url:"from,omitempty"`
+	// Inclusive activity-window end. Alias for event_to.
+	To *time.Time `json:"-" url:"to,omitempty"`
+	// The inclusive start of the matching activity window.
 	EventFrom *time.Time `json:"-" url:"event_from,omitempty"`
-	// The inclusive end of the event window for exact-population mode.
+	// The inclusive end of the matching activity window, for both stats drilldowns and saved audiences.
 	EventTo *time.Time `json:"-" url:"event_to,omitempty"`
 	// Only include people in this audience. An audience that keeps itself up to date resolves to the People filters that define it, so this always reflects who matches now; uploaded lists and point-in-time snapshots match their recorded members.
 	AudienceID *string `json:"-" url:"audience_id,omitempty"`
@@ -64,7 +89,7 @@ type ListPeopleRequest struct {
 	Email *string `json:"-" url:"email,omitempty"`
 	// Only include the person linked to this phone number.
 	Phone *string `json:"-" url:"phone,omitempty"`
-	// Only include people whose most recent visit came from this ISO 3166-1 alpha-2 country code.
+	// Only include people with activity from this ISO 3166-1 alpha-2 country code.
 	Country *string `json:"-" url:"country,omitempty"`
 	// true for customers only, false for people who have never purchased.
 	HasPurchased *bool `json:"-" url:"has_purchased,omitempty"`
@@ -82,6 +107,38 @@ type ListPeopleRequest struct {
 	LastSeenAfter *time.Time `json:"-" url:"last_seen_after,omitempty"`
 	// Only include people last seen before this ISO 8601 timestamp.
 	LastSeenBefore *time.Time `json:"-" url:"last_seen_before,omitempty"`
+	// Select people whose lifetime ltv is greater than this value. LTV and AOV are in USD.
+	LtvGt *float64 `json:"-" url:"ltv_gt,omitempty"`
+	// Select people whose lifetime ltv is at least this value. LTV and AOV are in USD.
+	LtvGte *float64 `json:"-" url:"ltv_gte,omitempty"`
+	// Select people whose lifetime ltv is less than this value. LTV and AOV are in USD.
+	LtvLt *float64 `json:"-" url:"ltv_lt,omitempty"`
+	// Select people whose lifetime ltv is at most this value. LTV and AOV are in USD.
+	LtvLte *float64 `json:"-" url:"ltv_lte,omitempty"`
+	// Select people whose lifetime aov is greater than this value. LTV and AOV are in USD.
+	AovGt *float64 `json:"-" url:"aov_gt,omitempty"`
+	// Select people whose lifetime aov is at least this value. LTV and AOV are in USD.
+	AovGte *float64 `json:"-" url:"aov_gte,omitempty"`
+	// Select people whose lifetime aov is less than this value. LTV and AOV are in USD.
+	AovLt *float64 `json:"-" url:"aov_lt,omitempty"`
+	// Select people whose lifetime aov is at most this value. LTV and AOV are in USD.
+	AovLte *float64 `json:"-" url:"aov_lte,omitempty"`
+	// Select people whose lifetime purchase_count is greater than this value. LTV and AOV are in USD.
+	PurchaseCountGt *float64 `json:"-" url:"purchase_count_gt,omitempty"`
+	// Select people whose lifetime purchase_count is at least this value. LTV and AOV are in USD.
+	PurchaseCountGte *float64 `json:"-" url:"purchase_count_gte,omitempty"`
+	// Select people whose lifetime purchase_count is less than this value. LTV and AOV are in USD.
+	PurchaseCountLt *float64 `json:"-" url:"purchase_count_lt,omitempty"`
+	// Select people whose lifetime purchase_count is at most this value. LTV and AOV are in USD.
+	PurchaseCountLte *float64 `json:"-" url:"purchase_count_lte,omitempty"`
+	// Select people whose lifetime event_count is greater than this value. LTV and AOV are in USD.
+	EventCountGt *float64 `json:"-" url:"event_count_gt,omitempty"`
+	// Select people whose lifetime event_count is at least this value. LTV and AOV are in USD.
+	EventCountGte *float64 `json:"-" url:"event_count_gte,omitempty"`
+	// Select people whose lifetime event_count is less than this value. LTV and AOV are in USD.
+	EventCountLt *float64 `json:"-" url:"event_count_lt,omitempty"`
+	// Select people whose lifetime event_count is at most this value. LTV and AOV are in USD.
+	EventCountLte *float64 `json:"-" url:"event_count_lte,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -144,6 +201,27 @@ func (l *ListPeopleRequest) SetEventName(eventName []*string) {
 func (l *ListPeopleRequest) SetCustomEvent(customEvent *string) {
 	l.CustomEvent = customEvent
 	l.require(listPeopleRequestFieldCustomEvent)
+}
+
+// SetEventWithinDays sets the EventWithinDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetEventWithinDays(eventWithinDays *int) {
+	l.EventWithinDays = eventWithinDays
+	l.require(listPeopleRequestFieldEventWithinDays)
+}
+
+// SetFrom sets the From field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetFrom(from *time.Time) {
+	l.From = from
+	l.require(listPeopleRequestFieldFrom)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetTo(to *time.Time) {
+	l.To = to
+	l.require(listPeopleRequestFieldTo)
 }
 
 // SetEventFrom sets the EventFrom field and marks it as non-optional;
@@ -249,6 +327,118 @@ func (l *ListPeopleRequest) SetLastSeenAfter(lastSeenAfter *time.Time) {
 func (l *ListPeopleRequest) SetLastSeenBefore(lastSeenBefore *time.Time) {
 	l.LastSeenBefore = lastSeenBefore
 	l.require(listPeopleRequestFieldLastSeenBefore)
+}
+
+// SetLtvGt sets the LtvGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetLtvGt(ltvGt *float64) {
+	l.LtvGt = ltvGt
+	l.require(listPeopleRequestFieldLtvGt)
+}
+
+// SetLtvGte sets the LtvGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetLtvGte(ltvGte *float64) {
+	l.LtvGte = ltvGte
+	l.require(listPeopleRequestFieldLtvGte)
+}
+
+// SetLtvLt sets the LtvLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetLtvLt(ltvLt *float64) {
+	l.LtvLt = ltvLt
+	l.require(listPeopleRequestFieldLtvLt)
+}
+
+// SetLtvLte sets the LtvLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetLtvLte(ltvLte *float64) {
+	l.LtvLte = ltvLte
+	l.require(listPeopleRequestFieldLtvLte)
+}
+
+// SetAovGt sets the AovGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetAovGt(aovGt *float64) {
+	l.AovGt = aovGt
+	l.require(listPeopleRequestFieldAovGt)
+}
+
+// SetAovGte sets the AovGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetAovGte(aovGte *float64) {
+	l.AovGte = aovGte
+	l.require(listPeopleRequestFieldAovGte)
+}
+
+// SetAovLt sets the AovLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetAovLt(aovLt *float64) {
+	l.AovLt = aovLt
+	l.require(listPeopleRequestFieldAovLt)
+}
+
+// SetAovLte sets the AovLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetAovLte(aovLte *float64) {
+	l.AovLte = aovLte
+	l.require(listPeopleRequestFieldAovLte)
+}
+
+// SetPurchaseCountGt sets the PurchaseCountGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetPurchaseCountGt(purchaseCountGt *float64) {
+	l.PurchaseCountGt = purchaseCountGt
+	l.require(listPeopleRequestFieldPurchaseCountGt)
+}
+
+// SetPurchaseCountGte sets the PurchaseCountGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetPurchaseCountGte(purchaseCountGte *float64) {
+	l.PurchaseCountGte = purchaseCountGte
+	l.require(listPeopleRequestFieldPurchaseCountGte)
+}
+
+// SetPurchaseCountLt sets the PurchaseCountLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetPurchaseCountLt(purchaseCountLt *float64) {
+	l.PurchaseCountLt = purchaseCountLt
+	l.require(listPeopleRequestFieldPurchaseCountLt)
+}
+
+// SetPurchaseCountLte sets the PurchaseCountLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetPurchaseCountLte(purchaseCountLte *float64) {
+	l.PurchaseCountLte = purchaseCountLte
+	l.require(listPeopleRequestFieldPurchaseCountLte)
+}
+
+// SetEventCountGt sets the EventCountGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetEventCountGt(eventCountGt *float64) {
+	l.EventCountGt = eventCountGt
+	l.require(listPeopleRequestFieldEventCountGt)
+}
+
+// SetEventCountGte sets the EventCountGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetEventCountGte(eventCountGte *float64) {
+	l.EventCountGte = eventCountGte
+	l.require(listPeopleRequestFieldEventCountGte)
+}
+
+// SetEventCountLt sets the EventCountLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetEventCountLt(eventCountLt *float64) {
+	l.EventCountLt = eventCountLt
+	l.require(listPeopleRequestFieldEventCountLt)
+}
+
+// SetEventCountLte sets the EventCountLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPeopleRequest) SetEventCountLte(eventCountLte *float64) {
+	l.EventCountLte = eventCountLte
+	l.require(listPeopleRequestFieldEventCountLte)
 }
 
 // SetFirst sets the First field and marks it as non-optional;
