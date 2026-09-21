@@ -26082,6 +26082,14 @@ client.Payments.Create(
 <dl>
 <dd>
 
+**shippingAddress:** `*whopsdk.CreatePaymentsRequestShippingAddress` — Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **statementDescriptor:** `*string` — Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*`, be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
     
 </dd>
