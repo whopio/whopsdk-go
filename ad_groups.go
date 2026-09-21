@@ -2760,14 +2760,17 @@ func (a AdGroupConversionLocation) Ptr() *AdGroupConversionLocation {
 }
 
 var (
-	adGroupCustomLocationFieldDistanceUnit = big.NewInt(1 << 0)
-	adGroupCustomLocationFieldLatitude     = big.NewInt(1 << 1)
-	adGroupCustomLocationFieldLongitude    = big.NewInt(1 << 2)
-	adGroupCustomLocationFieldName         = big.NewInt(1 << 3)
-	adGroupCustomLocationFieldRadius       = big.NewInt(1 << 4)
+	adGroupCustomLocationFieldCountryCode  = big.NewInt(1 << 0)
+	adGroupCustomLocationFieldDistanceUnit = big.NewInt(1 << 1)
+	adGroupCustomLocationFieldLatitude     = big.NewInt(1 << 2)
+	adGroupCustomLocationFieldLongitude    = big.NewInt(1 << 3)
+	adGroupCustomLocationFieldName         = big.NewInt(1 << 4)
+	adGroupCustomLocationFieldRadius       = big.NewInt(1 << 5)
 )
 
 type AdGroupCustomLocation struct {
+	// ISO 3166-1 alpha-2 country the point falls in. Send it under a special ad category, where the campaign must declare the countries its ad sets reach.
+	CountryCode *string `json:"country_code,omitempty" url:"country_code,omitempty"`
 	// Unit for `radius`.
 	DistanceUnit AdGroupCustomLocationDistanceUnit `json:"distance_unit" url:"distance_unit"`
 	// Latitude of the center point.
@@ -2784,6 +2787,13 @@ type AdGroupCustomLocation struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupCustomLocation) GetCountryCode() *string {
+	if a == nil {
+		return nil
+	}
+	return a.CountryCode
 }
 
 func (a *AdGroupCustomLocation) GetDistanceUnit() AdGroupCustomLocationDistanceUnit {
@@ -2833,6 +2843,13 @@ func (a *AdGroupCustomLocation) require(field *big.Int) {
 		a.explicitFields = big.NewInt(0)
 	}
 	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetCountryCode sets the CountryCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupCustomLocation) SetCountryCode(countryCode *string) {
+	a.CountryCode = countryCode
+	a.require(adGroupCustomLocationFieldCountryCode)
 }
 
 // SetDistanceUnit sets the DistanceUnit field and marks it as non-optional;
@@ -5051,14 +5068,17 @@ func (a *AdGroupGeoLocationsBodyCitiesItem) String() string {
 }
 
 var (
-	adGroupGeoLocationsBodyCustomLocationsItemFieldDistanceUnit = big.NewInt(1 << 0)
-	adGroupGeoLocationsBodyCustomLocationsItemFieldLatitude     = big.NewInt(1 << 1)
-	adGroupGeoLocationsBodyCustomLocationsItemFieldLongitude    = big.NewInt(1 << 2)
-	adGroupGeoLocationsBodyCustomLocationsItemFieldName         = big.NewInt(1 << 3)
-	adGroupGeoLocationsBodyCustomLocationsItemFieldRadius       = big.NewInt(1 << 4)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldCountryCode  = big.NewInt(1 << 0)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldDistanceUnit = big.NewInt(1 << 1)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldLatitude     = big.NewInt(1 << 2)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldLongitude    = big.NewInt(1 << 3)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldName         = big.NewInt(1 << 4)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldRadius       = big.NewInt(1 << 5)
 )
 
 type AdGroupGeoLocationsBodyCustomLocationsItem struct {
+	// ISO 3166-1 alpha-2 country the point falls in, as `DE`. Send it under a special ad category: the campaign must declare the countries its ad sets reach, and a coordinate names none.
+	CountryCode *string `json:"country_code,omitempty" url:"country_code,omitempty"`
 	// Unit for `radius`. Defaults to `mile`.
 	DistanceUnit *AdGroupGeoLocationsBodyCustomLocationsItemDistanceUnit `json:"distance_unit,omitempty" url:"distance_unit,omitempty"`
 	// Latitude of the center point.
@@ -5075,6 +5095,13 @@ type AdGroupGeoLocationsBodyCustomLocationsItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupGeoLocationsBodyCustomLocationsItem) GetCountryCode() *string {
+	if a == nil {
+		return nil
+	}
+	return a.CountryCode
 }
 
 func (a *AdGroupGeoLocationsBodyCustomLocationsItem) GetDistanceUnit() *AdGroupGeoLocationsBodyCustomLocationsItemDistanceUnit {
@@ -5124,6 +5151,13 @@ func (a *AdGroupGeoLocationsBodyCustomLocationsItem) require(field *big.Int) {
 		a.explicitFields = big.NewInt(0)
 	}
 	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetCountryCode sets the CountryCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupGeoLocationsBodyCustomLocationsItem) SetCountryCode(countryCode *string) {
+	a.CountryCode = countryCode
+	a.require(adGroupGeoLocationsBodyCustomLocationsItemFieldCountryCode)
 }
 
 // SetDistanceUnit sets the DistanceUnit field and marks it as non-optional;

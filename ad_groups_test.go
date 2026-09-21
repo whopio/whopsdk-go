@@ -8414,6 +8414,14 @@ func TestSettersMarkExplicitAdGroupCity(t *testing.T) {
 }
 
 func TestSettersAdGroupCustomLocation(t *testing.T) {
+	t.Run("SetCountryCode", func(t *testing.T) {
+		obj := &AdGroupCustomLocation{}
+		var fernTestValueCountryCode *string
+		obj.SetCountryCode(fernTestValueCountryCode)
+		assert.Equal(t, fernTestValueCountryCode, obj.CountryCode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDistanceUnit", func(t *testing.T) {
 		obj := &AdGroupCustomLocation{}
 		var fernTestValueDistanceUnit AdGroupCustomLocationDistanceUnit
@@ -8457,6 +8465,39 @@ func TestSettersAdGroupCustomLocation(t *testing.T) {
 }
 
 func TestGettersAdGroupCustomLocation(t *testing.T) {
+	t.Run("GetCountryCode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupCustomLocation{}
+		var expected *string
+		obj.CountryCode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCountryCode(), "getter should return the property value")
+	})
+
+	t.Run("GetCountryCode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupCustomLocation{}
+		obj.CountryCode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCountryCode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCountryCode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupCustomLocation
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCountryCode() // Should return zero value
+	})
+
 	t.Run("GetDistanceUnit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -8585,6 +8626,37 @@ func TestGettersAdGroupCustomLocation(t *testing.T) {
 }
 
 func TestSettersMarkExplicitAdGroupCustomLocation(t *testing.T) {
+	t.Run("SetCountryCode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupCustomLocation{}
+		var fernTestValueCountryCode *string
+
+		// Act
+		obj.SetCountryCode(fernTestValueCountryCode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetDistanceUnit_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -12224,6 +12296,14 @@ func TestSettersMarkExplicitAdGroupGeoLocationsBodyCitiesItem(t *testing.T) {
 }
 
 func TestSettersAdGroupGeoLocationsBodyCustomLocationsItem(t *testing.T) {
+	t.Run("SetCountryCode", func(t *testing.T) {
+		obj := &AdGroupGeoLocationsBodyCustomLocationsItem{}
+		var fernTestValueCountryCode *string
+		obj.SetCountryCode(fernTestValueCountryCode)
+		assert.Equal(t, fernTestValueCountryCode, obj.CountryCode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDistanceUnit", func(t *testing.T) {
 		obj := &AdGroupGeoLocationsBodyCustomLocationsItem{}
 		var fernTestValueDistanceUnit *AdGroupGeoLocationsBodyCustomLocationsItemDistanceUnit
@@ -12267,6 +12347,39 @@ func TestSettersAdGroupGeoLocationsBodyCustomLocationsItem(t *testing.T) {
 }
 
 func TestGettersAdGroupGeoLocationsBodyCustomLocationsItem(t *testing.T) {
+	t.Run("GetCountryCode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupGeoLocationsBodyCustomLocationsItem{}
+		var expected *string
+		obj.CountryCode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCountryCode(), "getter should return the property value")
+	})
+
+	t.Run("GetCountryCode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupGeoLocationsBodyCustomLocationsItem{}
+		obj.CountryCode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCountryCode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCountryCode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupGeoLocationsBodyCustomLocationsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCountryCode() // Should return zero value
+	})
+
 	t.Run("GetDistanceUnit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -12405,6 +12518,37 @@ func TestGettersAdGroupGeoLocationsBodyCustomLocationsItem(t *testing.T) {
 }
 
 func TestSettersMarkExplicitAdGroupGeoLocationsBodyCustomLocationsItem(t *testing.T) {
+	t.Run("SetCountryCode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupGeoLocationsBodyCustomLocationsItem{}
+		var fernTestValueCountryCode *string
+
+		// Act
+		obj.SetCountryCode(fernTestValueCountryCode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetDistanceUnit_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
