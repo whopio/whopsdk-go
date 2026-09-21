@@ -15727,367 +15727,6 @@ client.EconomicIntelligence.Update(
 </dl>
 </details>
 
-## Entries
-<details><summary><code>client.Entries.List() -> *whopsdk.ListEntriesResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns a paginated list of waitlist entries for a company, with optional filtering by product, plan, status, and creation date.
-
-Required permissions:
- - `plan:waitlist:read`
- - `member:email:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.ListEntriesRequest{
-    First: whopsdk.Int(
-        42,
-    ),
-    Last: whopsdk.Int(
-        42,
-    ),
-    CreatedBefore: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    CreatedAfter: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    AccountID: "biz_xxxxxxxxxxxxxx",
-}
-client.Entries.List(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**after:** `*string` — Returns the elements in the list that come after the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**before:** `*string` — Returns the elements in the list that come before the specified cursor.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**first:** `*int` — Returns the first _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**last:** `*int` — Returns the last _n_ elements from the list.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**direction:** `*whopsdk.Direction` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**order:** `*whopsdk.EntriesSortableColumns` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**productIDs:** `*string` — Filter entries to only those for specific products.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**planIDs:** `*string` — Filter entries to only those for specific plans.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**statuses:** `*whopsdk.EntryStatus` — Filter entries by their current status.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**createdBefore:** `*time.Time` — Only return entries created before this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**createdAfter:** `*time.Time` — Only return entries created after this timestamp.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accountID:** `string` — The unique identifier of the company to list waitlist entries for.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Entries.Retrieve(ID) -> *whopsdk.Entry</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Retrieves the details of an existing waitlist entry.
-
-Required permissions:
- - `plan:waitlist:read`
- - `member:email:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.RetrieveEntriesRequest{
-    ID: "entry_xxxxxxxxxxxx",
-}
-client.Entries.Retrieve(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the waitlist entry to retrieve.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Entries.Approve(ID) -> *whopsdk.ApproveEntriesResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Approve a pending waitlist entry, triggering the checkout process to grant the user access to the plan.
-
-Required permissions:
- - `plan:waitlist:manage`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.ApproveEntriesRequest{
-    ID: "entry_xxxxxxxxxxxx",
-}
-client.Entries.Approve(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the waitlist entry to approve.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Entries.Deny(ID) -> *whopsdk.Entry</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Deny a pending waitlist entry, preventing the user from gaining access to the plan.
-
-Required permissions:
- - `plan:waitlist:manage`
- - `plan:basic:read`
- - `member:email:read`
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.DenyEntriesRequest{
-    ID: "entry_xxxxxxxxxxxx",
-}
-client.Entries.Deny(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The unique identifier of the waitlist entry to deny.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## Events
 <details><summary><code>client.Events.List() -> *whopsdk.ListEventsResponse</code></summary>
 <dl>
@@ -36372,6 +36011,537 @@ client.Verifications.Update(
 <dd>
 
 **request:** `*whopsdk.UpdateVerificationsRequestBody` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Waitlist Entries
+<details><summary><code>client.WaitlistEntries.List() -> *whopsdk.ListWaitlistEntriesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists visible waitlist signups. waitlist_entry:read grants the user's own signups; plan:waitlist:read grants signups for authorized seller accounts. With both permissions, returns their union. Account credentials are limited to their account. Filters narrow this set.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListWaitlistEntriesRequest{}
+client.WaitlistEntries.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planID:** `*string` — Only return signups for this plan, prefixed `plan_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Only return signups submitted to this seller account, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productID:** `*string` — Only return signups for plans on this product, prefixed `prod_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.ListWaitlistEntriesRequestStatus` — Only return signups in this state. Canceled signups are returned only when `status` is `canceled`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdBefore:** `*string` — Only return signups submitted at or before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdAfter:** `*string` — Only return signups submitted at or after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListWaitlistEntriesRequestOrder` — The field to sort results by. Defaults to `created_at`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListWaitlistEntriesRequestDirection` — The sort direction for results. Defaults to descending.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.WaitlistEntries.Create(request) -> *whopsdk.WaitlistEntry</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Joins a free waitlist plan as the authenticated user. Requires waitlist_entry:create. Repeated joins return the existing pending entry, or an approved entry with a valid membership. Paid plans are rejected; no payment method is collected and no membership is granted.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateWaitlistEntriesRequest{
+    PlanID: "plan_xxxxxxxxxxxxxx",
+}
+client.WaitlistEntries.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**customFieldResponses:** `[]*whopsdk.CreateWaitlistEntriesRequestCustomFieldResponsesItem` — Answers to the plan's checkout questions. Every required question must be answered.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]any` — Custom key-value pairs to store on the signup. Max 50 keys, 100 chars per key, 500 chars per string value. Ignored when the request returns an existing signup.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planID:** `string` — The free waitlist plan to join, prefixed `plan_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.WaitlistEntries.ApproveAll(request) -> *whopsdk.ApproveAllWaitlistEntriesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Queues approval of every pending signup for an account, optionally narrowed to a plan. Requires plan:waitlist:manage. Paid signups may charge saved payment methods. Approval runs asynchronously: list signups with `status` set to `pending` to follow progress, and retrieve a signup to read its outcome. Signups created after this request are excluded.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ApproveAllWaitlistEntriesRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
+}
+client.WaitlistEntries.ApproveAll(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The seller account whose pending signups to approve, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planID:** `*string` — Only approve signups for this plan, prefixed `plan_`. Omit to include every waitlist plan on the account.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.WaitlistEntries.Retrieve(ID) -> *whopsdk.WaitlistEntry</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a signup owned by the caller with waitlist_entry:read, or submitted to an account they can read with plan:waitlist:read.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveWaitlistEntriesRequest{
+    ID: "id",
+}
+client.WaitlistEntries.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Waitlist signup ID, prefixed `entry_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.WaitlistEntries.Approve(ID) -> *whopsdk.WaitlistEntry</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Queues approval of a pending signup. Requires plan:waitlist:manage on its seller account. Paid signups may charge their saved payment method. Returns the signup's current state; retrieve it to read `status` and `approval_failure_reason` after processing.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ApproveWaitlistEntriesRequest{
+    ID: "id",
+}
+client.WaitlistEntries.Approve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Waitlist signup ID, prefixed `entry_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.WaitlistEntries.Cancel(ID) -> *whopsdk.WaitlistEntry</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Withdraws the caller's pending personal signup. Requires waitlist_entry:cancel. Does not cancel an approved membership.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CancelWaitlistEntriesRequest{
+    ID: "id",
+}
+client.WaitlistEntries.Cancel(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Waitlist signup ID, prefixed `entry_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.WaitlistEntries.Deny(ID) -> *whopsdk.WaitlistEntry</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Denies a pending signup. Requires plan:waitlist:manage on its seller account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.DenyWaitlistEntriesRequest{
+    ID: "id",
+}
+client.WaitlistEntries.Deny(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Waitlist signup ID, prefixed `entry_`.
     
 </dd>
 </dl>

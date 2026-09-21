@@ -49,6 +49,9 @@ func (l *ListPermissionsRequest) SetActions(actions *string) {
 type PermissionAction string
 
 const (
+	PermissionActionWaitlistEntryRead                 PermissionAction = "waitlist_entry:read"
+	PermissionActionWaitlistEntryCreate               PermissionAction = "waitlist_entry:create"
+	PermissionActionWaitlistEntryCancel               PermissionAction = "waitlist_entry:cancel"
 	PermissionActionExperimentManage                  PermissionAction = "experiment:manage"
 	PermissionActionExperimentRead                    PermissionAction = "experiment:read"
 	PermissionActionAiPromptCreate                    PermissionAction = "ai_prompt:create"
@@ -320,6 +323,12 @@ const (
 
 func NewPermissionActionFromString(s string) (PermissionAction, error) {
 	switch s {
+	case "waitlist_entry:read":
+		return PermissionActionWaitlistEntryRead, nil
+	case "waitlist_entry:create":
+		return PermissionActionWaitlistEntryCreate, nil
+	case "waitlist_entry:cancel":
+		return PermissionActionWaitlistEntryCancel, nil
 	case "experiment:manage":
 		return PermissionActionExperimentManage, nil
 	case "experiment:read":
