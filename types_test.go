@@ -102354,13 +102354,6 @@ func TestEnumAccountRequiredActionAction(t *testing.T) {
 		assert.Equal(t, AccountRequiredActionAction("review_held_payments"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_accept_airwallex_terms", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAccountRequiredActionActionFromString("accept_airwallex_terms")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AccountRequiredActionAction("accept_airwallex_terms"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_submit_information_request", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAccountRequiredActionActionFromString("submit_information_request")
@@ -102403,11 +102396,11 @@ func TestEnumAccountRequiredActionAction(t *testing.T) {
 		assert.Equal(t, AccountRequiredActionAction("verify_identity"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_verify_airwallex_account", func(t *testing.T) {
+	t.Run("NewFromString_scale_account_setup", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewAccountRequiredActionActionFromString("verify_airwallex_account")
+		val, err := NewAccountRequiredActionActionFromString("scale_account_setup")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AccountRequiredActionAction("verify_airwallex_account"), val, "enum value should match expected wire value")
+		assert.Equal(t, AccountRequiredActionAction("scale_account_setup"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_sign_formation_documents", func(t *testing.T) {
