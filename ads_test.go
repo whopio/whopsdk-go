@@ -2271,6 +2271,14 @@ func TestSettersAd(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPlatform", func(t *testing.T) {
+		obj := &Ad{}
+		var fernTestValuePlatform AdPlatform
+		obj.SetPlatform(fernTestValuePlatform)
+		assert.Equal(t, fernTestValuePlatform, obj.Platform)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPostID", func(t *testing.T) {
 		obj := &Ad{}
 		var fernTestValuePostID *string
@@ -3760,6 +3768,29 @@ func TestGettersAd(t *testing.T) {
 			}
 		}()
 		_ = obj.GetMusic() // Should return zero value
+	})
+
+	t.Run("GetPlatform", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Ad{}
+		var expected AdPlatform
+		obj.Platform = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
+	})
+
+	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Ad
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlatform() // Should return zero value
 	})
 
 	t.Run("GetPostID", func(t *testing.T) {
@@ -5857,6 +5888,37 @@ func TestSettersMarkExplicitAd(t *testing.T) {
 
 		// Act
 		obj.SetMusic(fernTestValueMusic)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Ad{}
+		var fernTestValuePlatform AdPlatform
+
+		// Act
+		obj.SetPlatform(fernTestValuePlatform)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -13013,6 +13075,14 @@ func TestSettersPostAdUpdatedPayloadData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPlatform", func(t *testing.T) {
+		obj := &PostAdUpdatedPayloadData{}
+		var fernTestValuePlatform PostAdUpdatedPayloadDataPlatform
+		obj.SetPlatform(fernTestValuePlatform)
+		assert.Equal(t, fernTestValuePlatform, obj.Platform)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPostID", func(t *testing.T) {
 		obj := &PostAdUpdatedPayloadData{}
 		var fernTestValuePostID *string
@@ -13592,6 +13662,29 @@ func TestGettersPostAdUpdatedPayloadData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetMusic() // Should return zero value
+	})
+
+	t.Run("GetPlatform", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdUpdatedPayloadData{}
+		var expected PostAdUpdatedPayloadDataPlatform
+		obj.Platform = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
+	})
+
+	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostAdUpdatedPayloadData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlatform() // Should return zero value
 	})
 
 	t.Run("GetPostID", func(t *testing.T) {
@@ -14380,6 +14473,37 @@ func TestSettersMarkExplicitPostAdUpdatedPayloadData(t *testing.T) {
 
 		// Act
 		obj.SetMusic(fernTestValueMusic)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdUpdatedPayloadData{}
+		var fernTestValuePlatform PostAdUpdatedPayloadDataPlatform
+
+		// Act
+		obj.SetPlatform(fernTestValuePlatform)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -21118,6 +21242,35 @@ func TestEnumAdLeadFormFormType(t *testing.T) {
 	})
 }
 
+func TestEnumAdPlatform(t *testing.T) {
+	t.Run("NewFromString_meta", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdPlatformFromString("meta")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdPlatform("meta"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tiktok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdPlatformFromString("tiktok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdPlatform("tiktok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAdPlatformFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAdPlatformFromString("meta")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumAdPostSource(t *testing.T) {
 	t.Run("NewFromString_facebook", func(t *testing.T) {
 		t.Parallel()
@@ -22339,6 +22492,35 @@ func TestEnumPostAdUpdatedPayloadDataDeliveryStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPostAdUpdatedPayloadDataDeliveryStatusFromString("rejected")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPostAdUpdatedPayloadDataPlatform(t *testing.T) {
+	t.Run("NewFromString_meta", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostAdUpdatedPayloadDataPlatformFromString("meta")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostAdUpdatedPayloadDataPlatform("meta"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tiktok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostAdUpdatedPayloadDataPlatformFromString("tiktok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostAdUpdatedPayloadDataPlatform("tiktok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostAdUpdatedPayloadDataPlatformFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostAdUpdatedPayloadDataPlatformFromString("meta")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

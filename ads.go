@@ -673,33 +673,34 @@ var (
 	adFieldMessagingConfig              = big.NewInt(1 << 41)
 	adFieldMultiAdvertiserAds           = big.NewInt(1 << 42)
 	adFieldMusic                        = big.NewInt(1 << 43)
-	adFieldPostID                       = big.NewInt(1 << 44)
-	adFieldPostSource                   = big.NewInt(1 << 45)
-	adFieldPostThumbnailURL             = big.NewInt(1 << 46)
-	adFieldPrimaryTexts                 = big.NewInt(1 << 47)
-	adFieldPurchaseValue                = big.NewInt(1 << 48)
-	adFieldPurchases                    = big.NewInt(1 << 49)
-	adFieldReach                        = big.NewInt(1 << 50)
-	adFieldResultEvent                  = big.NewInt(1 << 51)
-	adFieldResultEventName              = big.NewInt(1 << 52)
-	adFieldResults                      = big.NewInt(1 << 53)
-	adFieldReturnOnAdSpend              = big.NewInt(1 << 54)
-	adFieldScheduleValue                = big.NewInt(1 << 55)
-	adFieldSchedules                    = big.NewInt(1 << 56)
-	adFieldSocialAccounts               = big.NewInt(1 << 57)
-	adFieldSpend                        = big.NewInt(1 << 58)
-	adFieldSpendCurrency                = big.NewInt(1 << 59)
-	adFieldStatus                       = big.NewInt(1 << 60)
-	adFieldSubmittedApplicationValue    = big.NewInt(1 << 61)
-	adFieldSubmittedApplications        = big.NewInt(1 << 62)
-	adFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adFieldURL                          = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adFieldURLParameters                = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	adFieldPlatform                     = big.NewInt(1 << 44)
+	adFieldPostID                       = big.NewInt(1 << 45)
+	adFieldPostSource                   = big.NewInt(1 << 46)
+	adFieldPostThumbnailURL             = big.NewInt(1 << 47)
+	adFieldPrimaryTexts                 = big.NewInt(1 << 48)
+	adFieldPurchaseValue                = big.NewInt(1 << 49)
+	adFieldPurchases                    = big.NewInt(1 << 50)
+	adFieldReach                        = big.NewInt(1 << 51)
+	adFieldResultEvent                  = big.NewInt(1 << 52)
+	adFieldResultEventName              = big.NewInt(1 << 53)
+	adFieldResults                      = big.NewInt(1 << 54)
+	adFieldReturnOnAdSpend              = big.NewInt(1 << 55)
+	adFieldScheduleValue                = big.NewInt(1 << 56)
+	adFieldSchedules                    = big.NewInt(1 << 57)
+	adFieldSocialAccounts               = big.NewInt(1 << 58)
+	adFieldSpend                        = big.NewInt(1 << 59)
+	adFieldSpendCurrency                = big.NewInt(1 << 60)
+	adFieldStatus                       = big.NewInt(1 << 61)
+	adFieldSubmittedApplicationValue    = big.NewInt(1 << 62)
+	adFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adFieldURL                          = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adFieldURLParameters                = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 71)
 )
 
 type Ad struct {
@@ -787,6 +788,8 @@ type Ad struct {
 	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"multi_advertiser_ads,omitempty"`
 	// The advertiser-uploaded MP3 a TikTok carousel ad plays. TikTok-only; `null` elsewhere and for non-carousel ads.
 	Music *AdMusic `json:"music,omitempty" url:"music,omitempty"`
+	// The ad platform this ad runs on.
+	Platform AdPlatform `json:"platform" url:"platform"`
 	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
 	PostID *string `json:"post_id,omitempty" url:"post_id,omitempty"`
 	// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
@@ -1153,6 +1156,13 @@ func (a *Ad) GetMusic() *AdMusic {
 		return nil
 	}
 	return a.Music
+}
+
+func (a *Ad) GetPlatform() AdPlatform {
+	if a == nil {
+		return ""
+	}
+	return a.Platform
 }
 
 func (a *Ad) GetPostID() *string {
@@ -1664,6 +1674,13 @@ func (a *Ad) SetMultiAdvertiserAds(multiAdvertiserAds *bool) {
 func (a *Ad) SetMusic(music *AdMusic) {
 	a.Music = music
 	a.require(adFieldMusic)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Ad) SetPlatform(platform AdPlatform) {
+	a.Platform = platform
+	a.require(adFieldPlatform)
 }
 
 // SetPostID sets the PostID field and marks it as non-optional;
@@ -2922,6 +2939,29 @@ func (a *AdMusic) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// The ad platform this ad runs on.
+type AdPlatform string
+
+const (
+	AdPlatformMeta   AdPlatform = "meta"
+	AdPlatformTiktok AdPlatform = "tiktok"
+)
+
+func NewAdPlatformFromString(s string) (AdPlatform, error) {
+	switch s {
+	case "meta":
+		return AdPlatformMeta, nil
+	case "tiktok":
+		return AdPlatformTiktok, nil
+	}
+	var t AdPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdPlatform) Ptr() *AdPlatform {
+	return &a
 }
 
 // Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
@@ -5781,16 +5821,17 @@ var (
 	postAdUpdatedPayloadDataFieldMessagingConfig    = big.NewInt(1 << 13)
 	postAdUpdatedPayloadDataFieldMultiAdvertiserAds = big.NewInt(1 << 14)
 	postAdUpdatedPayloadDataFieldMusic              = big.NewInt(1 << 15)
-	postAdUpdatedPayloadDataFieldPostID             = big.NewInt(1 << 16)
-	postAdUpdatedPayloadDataFieldPostSource         = big.NewInt(1 << 17)
-	postAdUpdatedPayloadDataFieldPostThumbnailURL   = big.NewInt(1 << 18)
-	postAdUpdatedPayloadDataFieldPrimaryTexts       = big.NewInt(1 << 19)
-	postAdUpdatedPayloadDataFieldSocialAccounts     = big.NewInt(1 << 20)
-	postAdUpdatedPayloadDataFieldStatus             = big.NewInt(1 << 21)
-	postAdUpdatedPayloadDataFieldTitle              = big.NewInt(1 << 22)
-	postAdUpdatedPayloadDataFieldUpdatedAt          = big.NewInt(1 << 23)
-	postAdUpdatedPayloadDataFieldURL                = big.NewInt(1 << 24)
-	postAdUpdatedPayloadDataFieldURLParameters      = big.NewInt(1 << 25)
+	postAdUpdatedPayloadDataFieldPlatform           = big.NewInt(1 << 16)
+	postAdUpdatedPayloadDataFieldPostID             = big.NewInt(1 << 17)
+	postAdUpdatedPayloadDataFieldPostSource         = big.NewInt(1 << 18)
+	postAdUpdatedPayloadDataFieldPostThumbnailURL   = big.NewInt(1 << 19)
+	postAdUpdatedPayloadDataFieldPrimaryTexts       = big.NewInt(1 << 20)
+	postAdUpdatedPayloadDataFieldSocialAccounts     = big.NewInt(1 << 21)
+	postAdUpdatedPayloadDataFieldStatus             = big.NewInt(1 << 22)
+	postAdUpdatedPayloadDataFieldTitle              = big.NewInt(1 << 23)
+	postAdUpdatedPayloadDataFieldUpdatedAt          = big.NewInt(1 << 24)
+	postAdUpdatedPayloadDataFieldURL                = big.NewInt(1 << 25)
+	postAdUpdatedPayloadDataFieldURLParameters      = big.NewInt(1 << 26)
 )
 
 type PostAdUpdatedPayloadData struct {
@@ -5822,6 +5863,8 @@ type PostAdUpdatedPayloadData struct {
 	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"multi_advertiser_ads,omitempty"`
 	// The advertiser-uploaded MP3 a TikTok carousel ad plays. TikTok-only; `null` elsewhere and for non-carousel ads.
 	Music *AdMusic `json:"music,omitempty" url:"music,omitempty"`
+	// The ad platform this ad runs on.
+	Platform PostAdUpdatedPayloadDataPlatform `json:"platform" url:"platform"`
 	// The post the ad network serves for this ad, as `pageID_postID` on Meta — the post Meta created for an uploaded creative, or the post being promoted. Use it to open the live post, or to promote the same post from another ad. `null` until the network has created the post.
 	PostID *string `json:"post_id,omitempty" url:"post_id,omitempty"`
 	// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
@@ -5958,6 +6001,13 @@ func (p *PostAdUpdatedPayloadData) GetMusic() *AdMusic {
 		return nil
 	}
 	return p.Music
+}
+
+func (p *PostAdUpdatedPayloadData) GetPlatform() PostAdUpdatedPayloadDataPlatform {
+	if p == nil {
+		return ""
+	}
+	return p.Platform
 }
 
 func (p *PostAdUpdatedPayloadData) GetPostID() *string {
@@ -6154,6 +6204,13 @@ func (p *PostAdUpdatedPayloadData) SetMultiAdvertiserAds(multiAdvertiserAds *boo
 func (p *PostAdUpdatedPayloadData) SetMusic(music *AdMusic) {
 	p.Music = music
 	p.require(postAdUpdatedPayloadDataFieldMusic)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetPlatform(platform PostAdUpdatedPayloadDataPlatform) {
+	p.Platform = platform
+	p.require(postAdUpdatedPayloadDataFieldPlatform)
 }
 
 // SetPostID sets the PostID field and marks it as non-optional;
@@ -6428,6 +6485,29 @@ func NewPostAdUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdUpdate
 }
 
 func (p PostAdUpdatedPayloadDataDeliveryStatus) Ptr() *PostAdUpdatedPayloadDataDeliveryStatus {
+	return &p
+}
+
+// The ad platform this ad runs on.
+type PostAdUpdatedPayloadDataPlatform string
+
+const (
+	PostAdUpdatedPayloadDataPlatformMeta   PostAdUpdatedPayloadDataPlatform = "meta"
+	PostAdUpdatedPayloadDataPlatformTiktok PostAdUpdatedPayloadDataPlatform = "tiktok"
+)
+
+func NewPostAdUpdatedPayloadDataPlatformFromString(s string) (PostAdUpdatedPayloadDataPlatform, error) {
+	switch s {
+	case "meta":
+		return PostAdUpdatedPayloadDataPlatformMeta, nil
+	case "tiktok":
+		return PostAdUpdatedPayloadDataPlatformTiktok, nil
+	}
+	var t PostAdUpdatedPayloadDataPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadDataPlatform) Ptr() *PostAdUpdatedPayloadDataPlatform {
 	return &p
 }
 
