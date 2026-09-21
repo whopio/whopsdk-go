@@ -930,28 +930,29 @@ var (
 	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 48)
 	adGroupFieldOptimizationGoal             = big.NewInt(1 << 49)
 	adGroupFieldPlacements                   = big.NewInt(1 << 50)
-	adGroupFieldPurchaseValue                = big.NewInt(1 << 51)
-	adGroupFieldPurchases                    = big.NewInt(1 << 52)
-	adGroupFieldReach                        = big.NewInt(1 << 53)
-	adGroupFieldRegions                      = big.NewInt(1 << 54)
-	adGroupFieldResultEvent                  = big.NewInt(1 << 55)
-	adGroupFieldResultEventName              = big.NewInt(1 << 56)
-	adGroupFieldResults                      = big.NewInt(1 << 57)
-	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 58)
-	adGroupFieldScheduleValue                = big.NewInt(1 << 59)
-	adGroupFieldSchedules                    = big.NewInt(1 << 60)
-	adGroupFieldSpend                        = big.NewInt(1 << 61)
-	adGroupFieldSpendCurrency                = big.NewInt(1 << 62)
-	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	adGroupFieldPlatform                     = big.NewInt(1 << 51)
+	adGroupFieldPurchaseValue                = big.NewInt(1 << 52)
+	adGroupFieldPurchases                    = big.NewInt(1 << 53)
+	adGroupFieldReach                        = big.NewInt(1 << 54)
+	adGroupFieldRegions                      = big.NewInt(1 << 55)
+	adGroupFieldResultEvent                  = big.NewInt(1 << 56)
+	adGroupFieldResultEventName              = big.NewInt(1 << 57)
+	adGroupFieldResults                      = big.NewInt(1 << 58)
+	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 59)
+	adGroupFieldScheduleValue                = big.NewInt(1 << 60)
+	adGroupFieldSchedules                    = big.NewInt(1 << 61)
+	adGroupFieldSpend                        = big.NewInt(1 << 62)
+	adGroupFieldSpendCurrency                = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 73)
 )
 
 type AdGroup struct {
@@ -1052,6 +1053,8 @@ type AdGroup struct {
 	// The result the ad group's delivery is optimized to get the most of.
 	OptimizationGoal *AdGroupOptimizationGoal `json:"optimization_goal,omitempty" url:"optimization_goal,omitempty"`
 	Placements       []*AdGroupPlacement      `json:"placements" url:"placements"`
+	// The ad platform this ad group runs on.
+	Platform AdGroupPlatform `json:"platform" url:"platform"`
 	// USD value of pixel-attributed purchases.
 	PurchaseValue float64 `json:"purchase_value" url:"purchase_value"`
 	// Whop pixel-attributed purchases, last-click.
@@ -1459,6 +1462,13 @@ func (a *AdGroup) GetPlacements() []*AdGroupPlacement {
 		return nil
 	}
 	return a.Placements
+}
+
+func (a *AdGroup) GetPlatform() AdGroupPlatform {
+	if a == nil {
+		return ""
+	}
+	return a.Platform
 }
 
 func (a *AdGroup) GetPurchaseValue() float64 {
@@ -1984,6 +1994,13 @@ func (a *AdGroup) SetOptimizationGoal(optimizationGoal *AdGroupOptimizationGoal)
 func (a *AdGroup) SetPlacements(placements []*AdGroupPlacement) {
 	a.Placements = placements
 	a.require(adGroupFieldPlacements)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetPlatform(platform AdGroupPlatform) {
+	a.Platform = platform
+	a.require(adGroupFieldPlatform)
 }
 
 // SetPurchaseValue sets the PurchaseValue field and marks it as non-optional;
@@ -5711,6 +5728,29 @@ func NewAdGroupPlacementPlatformFromString(s string) (AdGroupPlacementPlatform, 
 }
 
 func (a AdGroupPlacementPlatform) Ptr() *AdGroupPlacementPlatform {
+	return &a
+}
+
+// The ad platform this ad group runs on.
+type AdGroupPlatform string
+
+const (
+	AdGroupPlatformMeta   AdGroupPlatform = "meta"
+	AdGroupPlatformTiktok AdGroupPlatform = "tiktok"
+)
+
+func NewAdGroupPlatformFromString(s string) (AdGroupPlatform, error) {
+	switch s {
+	case "meta":
+		return AdGroupPlatformMeta, nil
+	case "tiktok":
+		return AdGroupPlatformTiktok, nil
+	}
+	var t AdGroupPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdGroupPlatform) Ptr() *AdGroupPlatform {
 	return &a
 }
 

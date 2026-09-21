@@ -7,6 +7,7 @@ import (
 	accountlinks "github.com/whopio/whopsdk-go/accountlinks"
 	client "github.com/whopio/whopsdk-go/accounts/client"
 	adcampaigns "github.com/whopio/whopsdk-go/adcampaigns"
+	adconversionvaluerules "github.com/whopio/whopsdk-go/adconversionvaluerules"
 	adgroups "github.com/whopio/whopsdk-go/adgroups"
 	ads "github.com/whopio/whopsdk-go/ads"
 	affiliatesclient "github.com/whopio/whopsdk-go/affiliates/client"
@@ -98,6 +99,7 @@ type Whop struct {
 	AccountLinks             *accountlinks.Client
 	Accounts                 *client.Client
 	AdCampaigns              *adcampaigns.Client
+	AdConversionValueRules   *adconversionvaluerules.Client
 	AdGroups                 *adgroups.Client
 	Ads                      *ads.Client
 	Affiliates               *affiliatesclient.Client
@@ -196,6 +198,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		AccountLinks:             accountlinks.NewClient(options),
 		Accounts:                 client.NewClient(options),
 		AdCampaigns:              adcampaigns.NewClient(options),
+		AdConversionValueRules:   adconversionvaluerules.NewClient(options),
 		AdGroups:                 adgroups.NewClient(options),
 		Ads:                      ads.NewClient(options),
 		Affiliates:               affiliatesclient.NewClient(options),

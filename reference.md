@@ -2154,6 +2154,615 @@ client.AdCampaigns.Unpause(
 </dl>
 </details>
 
+## Ad Conversion Value Rules
+<details><summary><code>client.AdConversionValueRules.List() -> *whopsdk.ListAdConversionValueRulesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List saved rules the caller can read. Filter by business with account_id.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListAdConversionValueRulesRequest{}
+client.AdConversionValueRules.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.ListAdConversionValueRulesRequestStatus` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `*whopsdk.ListAdConversionValueRulesRequestPlatform` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**resourceID:** `*string` — Campaign, ad group, or ad ID. Return rules covering this item, its ancestors, or its descendants.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListAdConversionValueRulesRequestOrder` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListAdConversionValueRulesRequestDirection` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AdConversionValueRules.Create(request) -> *whopsdk.AdConversionValueRule</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create one rule covering every selected target and event combination. Active rules cannot overlap for the same platform and event. Customer prices and Whop revenue stay unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateAdConversionValueRulesRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    AdjustmentType: whopsdk.CreateAdConversionValueRulesRequestAdjustmentTypeFixed,
+    Events: []*whopsdk.CreateAdConversionValueRulesRequestEventsItem{
+        &whopsdk.CreateAdConversionValueRulesRequestEventsItem{
+            EventName: whopsdk.CreateAdConversionValueRulesRequestEventsItemEventNamePurchase,
+        },
+    },
+    Targets: []*whopsdk.CreateAdConversionValueRulesRequestTargetsItem{
+        &whopsdk.CreateAdConversionValueRulesRequestTargetsItem{
+            Platform: whopsdk.CreateAdConversionValueRulesRequestTargetsItemPlatformTiktok,
+            Scope: whopsdk.CreateAdConversionValueRulesRequestTargetsItemScopeBusiness,
+        },
+    },
+}
+client.AdConversionValueRules.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — Business that owns the rule.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adjustmentType:** `*whopsdk.CreateAdConversionValueRulesRequestAdjustmentType` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `[]*whopsdk.CreateAdConversionValueRulesRequestEventsItem` — Events adjusted on every selected target. Every platform must support every selected event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fixedValue:** `*whopsdk.CreateAdConversionValueRulesRequestFixedValue` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**percentageChange:** `*float64` — Signed percent change from negative 100 to 10000. The sent value cannot go below zero.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replaceRuleIDs:** `[]string` — Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Stale or incomplete conflict selections fail.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.CreateAdConversionValueRulesRequestStatus` — Initial rule status. Defaults to active.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targets:** `[]*whopsdk.CreateAdConversionValueRulesRequestTargetsItem` — Targets sharing one scope. Every selected event applies to every target. At most 500 target and event combinations.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AdConversionValueRules.Retrieve(ID) -> *whopsdk.AdConversionValueRule</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveAdConversionValueRulesRequest{
+    ID: "id",
+}
+client.AdConversionValueRules.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AdConversionValueRules.Delete(ID) -> *whopsdk.DeleteAdConversionValueRulesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Soft-delete a rule and deactivate all its coverage. Preserve its stored settings.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.DeleteAdConversionValueRulesRequest{
+    ID: "id",
+}
+client.AdConversionValueRules.Delete(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AdConversionValueRules.Update(ID, request) -> *whopsdk.AdConversionValueRule</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Edit a rule without changing its status. Supplied targets or events replace that selection in full. Omitted fields stay unchanged. All changes succeed or fail together.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateAdConversionValueRulesRequest{
+    ID: "id",
+}
+client.AdConversionValueRules.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Conversion value rule ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adjustmentType:** `*whopsdk.UpdateAdConversionValueRulesRequestAdjustmentType` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `[]*whopsdk.UpdateAdConversionValueRulesRequestEventsItem` — Events adjusted on every selected target. Every platform must support every selected event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fixedValue:** `*whopsdk.UpdateAdConversionValueRulesRequestFixedValue` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**percentageChange:** `*float64` — Signed percent change from negative 100 to 10000. The sent value cannot go below zero.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replaceRuleIDs:** `[]string` — Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Stale or incomplete conflict selections fail.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targets:** `[]*whopsdk.UpdateAdConversionValueRulesRequestTargetsItem` — Targets sharing one scope. Every selected event applies to every target. At most 500 target and event combinations.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AdConversionValueRules.Pause(ID) -> *whopsdk.AdConversionValueRule</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Pause the rule across all selected targets and events.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.PauseAdConversionValueRulesRequest{
+    ID: "id",
+}
+client.AdConversionValueRules.Pause(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AdConversionValueRules.Unpause(ID) -> *whopsdk.AdConversionValueRule</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Resume the rule and automatically replace overlapping selections in the same transaction. Other selections keep their values, and broader rules remain as defaults. Rules with no remaining selections are paused. Resuming an already-active rule makes no changes.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UnpauseAdConversionValueRulesRequest{
+    ID: "id",
+}
+client.AdConversionValueRules.Unpause(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Conversion value rule ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Ad Groups
 <details><summary><code>client.AdGroups.List() -> *whopsdk.ListAdGroupsResponse</code></summary>
 <dl>
