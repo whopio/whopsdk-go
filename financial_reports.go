@@ -284,6 +284,7 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemOnchainWalletTransferOutgoing             RetrieveFinancialReportsRequestLineTypesItem = "onchain_wallet_transfer_outgoing"
 	RetrieveFinancialReportsRequestLineTypesItemOnchainWithdrawal                         RetrieveFinancialReportsRequestLineTypesItem = "onchain_withdrawal"
 	RetrieveFinancialReportsRequestLineTypesItemOrchestrationPercentageFee                RetrieveFinancialReportsRequestLineTypesItem = "orchestration_percentage_fee"
+	RetrieveFinancialReportsRequestLineTypesItemPartnerGrantReward                        RetrieveFinancialReportsRequestLineTypesItem = "partner_grant_reward"
 	RetrieveFinancialReportsRequestLineTypesItemPassthroughGmv                            RetrieveFinancialReportsRequestLineTypesItem = "passthrough_gmv"
 	RetrieveFinancialReportsRequestLineTypesItemPaymentDispute                            RetrieveFinancialReportsRequestLineTypesItem = "payment_dispute"
 	RetrieveFinancialReportsRequestLineTypesItemPaymentDisputeAdjustment                  RetrieveFinancialReportsRequestLineTypesItem = "payment_dispute_adjustment"
@@ -498,6 +499,8 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemOnchainWithdrawal, nil
 	case "orchestration_percentage_fee":
 		return RetrieveFinancialReportsRequestLineTypesItemOrchestrationPercentageFee, nil
+	case "partner_grant_reward":
+		return RetrieveFinancialReportsRequestLineTypesItemPartnerGrantReward, nil
 	case "passthrough_gmv":
 		return RetrieveFinancialReportsRequestLineTypesItemPassthroughGmv, nil
 	case "payment_dispute":
@@ -1495,6 +1498,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainWithdrawal                         RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_withdrawal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainWithdrawalOffset                   RetrieveFinancialReportsResponseRowsItemLineCategory = "onchain_withdrawal_offset"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryOrchestrationPercentageFee                RetrieveFinancialReportsResponseRowsItemLineCategory = "orchestration_percentage_fee"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPartnerGrantReward                        RetrieveFinancialReportsResponseRowsItemLineCategory = "partner_grant_reward"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPassthroughGmv                            RetrieveFinancialReportsResponseRowsItemLineCategory = "passthrough_gmv"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPassthroughGmvOffset                      RetrieveFinancialReportsResponseRowsItemLineCategory = "passthrough_gmv_offset"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPaymentDispute                            RetrieveFinancialReportsResponseRowsItemLineCategory = "payment_dispute"
@@ -1924,6 +1928,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryOnchainWithdrawalOffset, nil
 	case "orchestration_percentage_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryOrchestrationPercentageFee, nil
+	case "partner_grant_reward":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPartnerGrantReward, nil
 	case "passthrough_gmv":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPassthroughGmv, nil
 	case "passthrough_gmv_offset":

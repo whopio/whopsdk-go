@@ -1202,6 +1202,7 @@ const (
 	LedgerActivityLineTypeOnchainWalletTransferOutgoing             LedgerActivityLineType = "onchain_wallet_transfer_outgoing"
 	LedgerActivityLineTypeOnchainWithdrawal                         LedgerActivityLineType = "onchain_withdrawal"
 	LedgerActivityLineTypeOrchestrationPercentageFee                LedgerActivityLineType = "orchestration_percentage_fee"
+	LedgerActivityLineTypePartnerGrantReward                        LedgerActivityLineType = "partner_grant_reward"
 	LedgerActivityLineTypePassthroughGmv                            LedgerActivityLineType = "passthrough_gmv"
 	LedgerActivityLineTypePaymentDispute                            LedgerActivityLineType = "payment_dispute"
 	LedgerActivityLineTypePaymentDisputeAdjustment                  LedgerActivityLineType = "payment_dispute_adjustment"
@@ -1419,6 +1420,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeOnchainWithdrawal, nil
 	case "orchestration_percentage_fee":
 		return LedgerActivityLineTypeOrchestrationPercentageFee, nil
+	case "partner_grant_reward":
+		return LedgerActivityLineTypePartnerGrantReward, nil
 	case "passthrough_gmv":
 		return LedgerActivityLineTypePassthroughGmv, nil
 	case "payment_dispute":
@@ -5142,6 +5145,7 @@ const (
 	ListFinancialActivityRequestLineTypesItemOnchainWalletTransferOutgoing             ListFinancialActivityRequestLineTypesItem = "onchain_wallet_transfer_outgoing"
 	ListFinancialActivityRequestLineTypesItemOnchainWithdrawal                         ListFinancialActivityRequestLineTypesItem = "onchain_withdrawal"
 	ListFinancialActivityRequestLineTypesItemOrchestrationPercentageFee                ListFinancialActivityRequestLineTypesItem = "orchestration_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemPartnerGrantReward                        ListFinancialActivityRequestLineTypesItem = "partner_grant_reward"
 	ListFinancialActivityRequestLineTypesItemPassthroughGmv                            ListFinancialActivityRequestLineTypesItem = "passthrough_gmv"
 	ListFinancialActivityRequestLineTypesItemPaymentDispute                            ListFinancialActivityRequestLineTypesItem = "payment_dispute"
 	ListFinancialActivityRequestLineTypesItemPaymentDisputeAdjustment                  ListFinancialActivityRequestLineTypesItem = "payment_dispute_adjustment"
@@ -5356,6 +5360,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemOnchainWithdrawal, nil
 	case "orchestration_percentage_fee":
 		return ListFinancialActivityRequestLineTypesItemOrchestrationPercentageFee, nil
+	case "partner_grant_reward":
+		return ListFinancialActivityRequestLineTypesItemPartnerGrantReward, nil
 	case "passthrough_gmv":
 		return ListFinancialActivityRequestLineTypesItemPassthroughGmv, nil
 	case "payment_dispute":
