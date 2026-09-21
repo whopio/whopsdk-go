@@ -50,7 +50,8 @@ var (
 	createPaymentsRequestFieldPlanID                  = big.NewInt(1 << 10)
 	createPaymentsRequestFieldPromoCodeID             = big.NewInt(1 << 11)
 	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 12)
-	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 13)
+	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 13)
+	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 14)
 )
 
 type CreatePaymentsRequest struct {
@@ -80,6 +81,8 @@ type CreatePaymentsRequest struct {
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
+	// Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
+	ShippingAddress *CreatePaymentsRequestShippingAddress `json:"shipping_address,omitempty" url:"-"`
 	// Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*`, be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"-"`
 
@@ -183,6 +186,13 @@ func (c *CreatePaymentsRequest) SetPromoCodeID(promoCodeID *string) {
 func (c *CreatePaymentsRequest) SetReturnURL(returnURL *string) {
 	c.ReturnURL = returnURL
 	c.require(createPaymentsRequestFieldReturnURL)
+}
+
+// SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetShippingAddress(shippingAddress *CreatePaymentsRequestShippingAddress) {
+	c.ShippingAddress = shippingAddress
+	c.require(createPaymentsRequestFieldShippingAddress)
 }
 
 // SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
@@ -4710,6 +4720,194 @@ func NewCreatePaymentsRequestPlanVisibilityFromString(s string) (CreatePaymentsR
 
 func (c CreatePaymentsRequestPlanVisibility) Ptr() *CreatePaymentsRequestPlanVisibility {
 	return &c
+}
+
+// Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
+var (
+	createPaymentsRequestShippingAddressFieldCity       = big.NewInt(1 << 0)
+	createPaymentsRequestShippingAddressFieldCountry    = big.NewInt(1 << 1)
+	createPaymentsRequestShippingAddressFieldLine1      = big.NewInt(1 << 2)
+	createPaymentsRequestShippingAddressFieldLine2      = big.NewInt(1 << 3)
+	createPaymentsRequestShippingAddressFieldName       = big.NewInt(1 << 4)
+	createPaymentsRequestShippingAddressFieldPostalCode = big.NewInt(1 << 5)
+	createPaymentsRequestShippingAddressFieldState      = big.NewInt(1 << 6)
+)
+
+type CreatePaymentsRequestShippingAddress struct {
+	// City name.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// ISO 3166-1 alpha-2 country code, such as `US`.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// First line of the street address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// Second line of the street address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The recipient's full name, as it should appear on the shipping label.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Postal or ZIP code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// State, province, or region code, such as `CA`.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetCity() *string {
+	if c == nil {
+		return nil
+	}
+	return c.City
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetCountry() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Country
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetLine1() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Line1
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetLine2() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Line2
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetPostalCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PostalCode
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetState() *string {
+	if c == nil {
+		return nil
+	}
+	return c.State
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentsRequestShippingAddress) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetCity(city *string) {
+	c.City = city
+	c.require(createPaymentsRequestShippingAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetCountry(country *string) {
+	c.Country = country
+	c.require(createPaymentsRequestShippingAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetLine1(line1 *string) {
+	c.Line1 = line1
+	c.require(createPaymentsRequestShippingAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetLine2(line2 *string) {
+	c.Line2 = line2
+	c.require(createPaymentsRequestShippingAddressFieldLine2)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetName(name *string) {
+	c.Name = name
+	c.require(createPaymentsRequestShippingAddressFieldName)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetPostalCode(postalCode *string) {
+	c.PostalCode = postalCode
+	c.require(createPaymentsRequestShippingAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetState(state *string) {
+	c.State = state
+	c.require(createPaymentsRequestShippingAddressFieldState)
+}
+
+func (c *CreatePaymentsRequestShippingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestShippingAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePaymentsRequestShippingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePaymentsRequestShippingAddress) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestShippingAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePaymentsRequestShippingAddress) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 var (
