@@ -7,44 +7,72 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
-	retrieveStatsRequestFieldMetric           = big.NewInt(1 << 0)
-	retrieveStatsRequestFieldAccountID        = big.NewInt(1 << 1)
-	retrieveStatsRequestFieldUserID           = big.NewInt(1 << 2)
-	retrieveStatsRequestFieldFrom             = big.NewInt(1 << 3)
-	retrieveStatsRequestFieldTo               = big.NewInt(1 << 4)
-	retrieveStatsRequestFieldInterval         = big.NewInt(1 << 5)
-	retrieveStatsRequestFieldBreakdownBy      = big.NewInt(1 << 6)
-	retrieveStatsRequestFieldConvertTo        = big.NewInt(1 << 7)
-	retrieveStatsRequestFieldCurrency         = big.NewInt(1 << 8)
-	retrieveStatsRequestFieldTimeZone         = big.NewInt(1 << 9)
-	retrieveStatsRequestFieldPaymentMethod    = big.NewInt(1 << 10)
-	retrieveStatsRequestFieldCardNetwork      = big.NewInt(1 << 11)
-	retrieveStatsRequestFieldDisputeReason    = big.NewInt(1 << 12)
-	retrieveStatsRequestFieldSource           = big.NewInt(1 << 13)
-	retrieveStatsRequestFieldHostname         = big.NewInt(1 << 14)
-	retrieveStatsRequestFieldPage             = big.NewInt(1 << 15)
-	retrieveStatsRequestFieldDeviceType       = big.NewInt(1 << 16)
-	retrieveStatsRequestFieldCountryCode      = big.NewInt(1 << 17)
-	retrieveStatsRequestFieldEventName        = big.NewInt(1 << 18)
-	retrieveStatsRequestFieldEventType        = big.NewInt(1 << 19)
-	retrieveStatsRequestFieldCustomName       = big.NewInt(1 << 20)
-	retrieveStatsRequestFieldSegment          = big.NewInt(1 << 21)
-	retrieveStatsRequestFieldCategory         = big.NewInt(1 << 22)
-	retrieveStatsRequestFieldMerchant         = big.NewInt(1 << 23)
-	retrieveStatsRequestFieldFeeType          = big.NewInt(1 << 24)
-	retrieveStatsRequestFieldProduct          = big.NewInt(1 << 25)
-	retrieveStatsRequestFieldStatus           = big.NewInt(1 << 26)
-	retrieveStatsRequestFieldAccessLevel      = big.NewInt(1 << 27)
-	retrieveStatsRequestFieldMostRecentAction = big.NewInt(1 << 28)
-	retrieveStatsRequestFieldReferredUserID   = big.NewInt(1 << 29)
-	retrieveStatsRequestFieldAdCampaignIDs    = big.NewInt(1 << 30)
-	retrieveStatsRequestFieldAdGroupIDs       = big.NewInt(1 << 31)
-	retrieveStatsRequestFieldAdIDs            = big.NewInt(1 << 32)
-	retrieveStatsRequestFieldSnapshotWindow   = big.NewInt(1 << 33)
-	retrieveStatsRequestFieldEvent            = big.NewInt(1 << 34)
+	retrieveStatsRequestFieldMetric              = big.NewInt(1 << 0)
+	retrieveStatsRequestFieldAccountID           = big.NewInt(1 << 1)
+	retrieveStatsRequestFieldUserID              = big.NewInt(1 << 2)
+	retrieveStatsRequestFieldFrom                = big.NewInt(1 << 3)
+	retrieveStatsRequestFieldTo                  = big.NewInt(1 << 4)
+	retrieveStatsRequestFieldInterval            = big.NewInt(1 << 5)
+	retrieveStatsRequestFieldBreakdownBy         = big.NewInt(1 << 6)
+	retrieveStatsRequestFieldConvertTo           = big.NewInt(1 << 7)
+	retrieveStatsRequestFieldCurrency            = big.NewInt(1 << 8)
+	retrieveStatsRequestFieldTimeZone            = big.NewInt(1 << 9)
+	retrieveStatsRequestFieldPaymentMethod       = big.NewInt(1 << 10)
+	retrieveStatsRequestFieldCardNetwork         = big.NewInt(1 << 11)
+	retrieveStatsRequestFieldDisputeReason       = big.NewInt(1 << 12)
+	retrieveStatsRequestFieldSource              = big.NewInt(1 << 13)
+	retrieveStatsRequestFieldHostname            = big.NewInt(1 << 14)
+	retrieveStatsRequestFieldPage                = big.NewInt(1 << 15)
+	retrieveStatsRequestFieldDeviceType          = big.NewInt(1 << 16)
+	retrieveStatsRequestFieldCountryCode         = big.NewInt(1 << 17)
+	retrieveStatsRequestFieldEventName           = big.NewInt(1 << 18)
+	retrieveStatsRequestFieldEventType           = big.NewInt(1 << 19)
+	retrieveStatsRequestFieldCustomName          = big.NewInt(1 << 20)
+	retrieveStatsRequestFieldSegment             = big.NewInt(1 << 21)
+	retrieveStatsRequestFieldCategory            = big.NewInt(1 << 22)
+	retrieveStatsRequestFieldMerchant            = big.NewInt(1 << 23)
+	retrieveStatsRequestFieldFeeType             = big.NewInt(1 << 24)
+	retrieveStatsRequestFieldProduct             = big.NewInt(1 << 25)
+	retrieveStatsRequestFieldStatus              = big.NewInt(1 << 26)
+	retrieveStatsRequestFieldAccessLevel         = big.NewInt(1 << 27)
+	retrieveStatsRequestFieldMostRecentAction    = big.NewInt(1 << 28)
+	retrieveStatsRequestFieldReferredUserID      = big.NewInt(1 << 29)
+	retrieveStatsRequestFieldAdCampaignIDs       = big.NewInt(1 << 30)
+	retrieveStatsRequestFieldAdGroupIDs          = big.NewInt(1 << 31)
+	retrieveStatsRequestFieldAdIDs               = big.NewInt(1 << 32)
+	retrieveStatsRequestFieldSnapshotWindow      = big.NewInt(1 << 33)
+	retrieveStatsRequestFieldEvent               = big.NewInt(1 << 34)
+	retrieveStatsRequestFieldContactable         = big.NewInt(1 << 35)
+	retrieveStatsRequestFieldHasPurchased        = big.NewInt(1 << 36)
+	retrieveStatsRequestFieldFirstSeenAfter      = big.NewInt(1 << 37)
+	retrieveStatsRequestFieldFirstSeenBefore     = big.NewInt(1 << 38)
+	retrieveStatsRequestFieldLastSeenAfter       = big.NewInt(1 << 39)
+	retrieveStatsRequestFieldLastSeenBefore      = big.NewInt(1 << 40)
+	retrieveStatsRequestFieldFirstSeenWithinDays = big.NewInt(1 << 41)
+	retrieveStatsRequestFieldLastSeenWithinDays  = big.NewInt(1 << 42)
+	retrieveStatsRequestFieldKnown               = big.NewInt(1 << 43)
+	retrieveStatsRequestFieldHasEmail            = big.NewInt(1 << 44)
+	retrieveStatsRequestFieldHasPhone            = big.NewInt(1 << 45)
+	retrieveStatsRequestFieldLtvGt               = big.NewInt(1 << 46)
+	retrieveStatsRequestFieldLtvGte              = big.NewInt(1 << 47)
+	retrieveStatsRequestFieldLtvLt               = big.NewInt(1 << 48)
+	retrieveStatsRequestFieldLtvLte              = big.NewInt(1 << 49)
+	retrieveStatsRequestFieldAovGt               = big.NewInt(1 << 50)
+	retrieveStatsRequestFieldAovGte              = big.NewInt(1 << 51)
+	retrieveStatsRequestFieldAovLt               = big.NewInt(1 << 52)
+	retrieveStatsRequestFieldAovLte              = big.NewInt(1 << 53)
+	retrieveStatsRequestFieldPurchaseCountGt     = big.NewInt(1 << 54)
+	retrieveStatsRequestFieldPurchaseCountGte    = big.NewInt(1 << 55)
+	retrieveStatsRequestFieldPurchaseCountLt     = big.NewInt(1 << 56)
+	retrieveStatsRequestFieldPurchaseCountLte    = big.NewInt(1 << 57)
+	retrieveStatsRequestFieldEventCountGt        = big.NewInt(1 << 58)
+	retrieveStatsRequestFieldEventCountGte       = big.NewInt(1 << 59)
+	retrieveStatsRequestFieldEventCountLt        = big.NewInt(1 << 60)
+	retrieveStatsRequestFieldEventCountLte       = big.NewInt(1 << 61)
 )
 
 type RetrieveStatsRequest struct {
@@ -116,8 +144,62 @@ type RetrieveStatsRequest struct {
 	AdIDs []*string `json:"-" url:"ad_ids,omitempty"`
 	// Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Each metric lists its accepted values in the catalog.
 	SnapshotWindow *RetrieveStatsRequestSnapshotWindow `json:"-" url:"snapshot_window,omitempty"`
-	// Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separate several to break the metric down by each event. Available on metrics that list event.
+	// Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
 	Event *string `json:"-" url:"event,omitempty"`
+	// People metric only: contactable equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	Contactable *bool `json:"-" url:"contactable,omitempty"`
+	// People metric only: has_purchased equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	HasPurchased *bool `json:"-" url:"has_purchased,omitempty"`
+	// People metric only: first_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	FirstSeenAfter *time.Time `json:"-" url:"first_seen_after,omitempty"`
+	// People metric only: first_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	FirstSeenBefore *time.Time `json:"-" url:"first_seen_before,omitempty"`
+	// People metric only: last_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LastSeenAfter *time.Time `json:"-" url:"last_seen_after,omitempty"`
+	// People metric only: last_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LastSeenBefore *time.Time `json:"-" url:"last_seen_before,omitempty"`
+	// People metric only: first_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	FirstSeenWithinDays *int `json:"-" url:"first_seen_within_days,omitempty"`
+	// People metric only: last_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LastSeenWithinDays *int `json:"-" url:"last_seen_within_days,omitempty"`
+	// People metric only: known equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	Known *bool `json:"-" url:"known,omitempty"`
+	// People metric only: has_email equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	HasEmail *bool `json:"-" url:"has_email,omitempty"`
+	// People metric only: has_phone equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	HasPhone *bool `json:"-" url:"has_phone,omitempty"`
+	// People metric only: ltv greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LtvGt *float64 `json:"-" url:"ltv_gt,omitempty"`
+	// People metric only: ltv greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LtvGte *float64 `json:"-" url:"ltv_gte,omitempty"`
+	// People metric only: ltv less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LtvLt *float64 `json:"-" url:"ltv_lt,omitempty"`
+	// People metric only: ltv less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LtvLte *float64 `json:"-" url:"ltv_lte,omitempty"`
+	// People metric only: aov greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	AovGt *float64 `json:"-" url:"aov_gt,omitempty"`
+	// People metric only: aov greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	AovGte *float64 `json:"-" url:"aov_gte,omitempty"`
+	// People metric only: aov less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	AovLt *float64 `json:"-" url:"aov_lt,omitempty"`
+	// People metric only: aov less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	AovLte *float64 `json:"-" url:"aov_lte,omitempty"`
+	// People metric only: purchase_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	PurchaseCountGt *float64 `json:"-" url:"purchase_count_gt,omitempty"`
+	// People metric only: purchase_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	PurchaseCountGte *float64 `json:"-" url:"purchase_count_gte,omitempty"`
+	// People metric only: purchase_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	PurchaseCountLt *float64 `json:"-" url:"purchase_count_lt,omitempty"`
+	// People metric only: purchase_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	PurchaseCountLte *float64 `json:"-" url:"purchase_count_lte,omitempty"`
+	// People metric only: event_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	EventCountGt *float64 `json:"-" url:"event_count_gt,omitempty"`
+	// People metric only: event_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	EventCountGte *float64 `json:"-" url:"event_count_gte,omitempty"`
+	// People metric only: event_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	EventCountLt *float64 `json:"-" url:"event_count_lt,omitempty"`
+	// People metric only: event_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	EventCountLte *float64 `json:"-" url:"event_count_lte,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -373,6 +455,195 @@ func (r *RetrieveStatsRequest) SetSnapshotWindow(snapshotWindow *RetrieveStatsRe
 func (r *RetrieveStatsRequest) SetEvent(event *string) {
 	r.Event = event
 	r.require(retrieveStatsRequestFieldEvent)
+}
+
+// SetContactable sets the Contactable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetContactable(contactable *bool) {
+	r.Contactable = contactable
+	r.require(retrieveStatsRequestFieldContactable)
+}
+
+// SetHasPurchased sets the HasPurchased field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetHasPurchased(hasPurchased *bool) {
+	r.HasPurchased = hasPurchased
+	r.require(retrieveStatsRequestFieldHasPurchased)
+}
+
+// SetFirstSeenAfter sets the FirstSeenAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetFirstSeenAfter(firstSeenAfter *time.Time) {
+	r.FirstSeenAfter = firstSeenAfter
+	r.require(retrieveStatsRequestFieldFirstSeenAfter)
+}
+
+// SetFirstSeenBefore sets the FirstSeenBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetFirstSeenBefore(firstSeenBefore *time.Time) {
+	r.FirstSeenBefore = firstSeenBefore
+	r.require(retrieveStatsRequestFieldFirstSeenBefore)
+}
+
+// SetLastSeenAfter sets the LastSeenAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLastSeenAfter(lastSeenAfter *time.Time) {
+	r.LastSeenAfter = lastSeenAfter
+	r.require(retrieveStatsRequestFieldLastSeenAfter)
+}
+
+// SetLastSeenBefore sets the LastSeenBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLastSeenBefore(lastSeenBefore *time.Time) {
+	r.LastSeenBefore = lastSeenBefore
+	r.require(retrieveStatsRequestFieldLastSeenBefore)
+}
+
+// SetFirstSeenWithinDays sets the FirstSeenWithinDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetFirstSeenWithinDays(firstSeenWithinDays *int) {
+	r.FirstSeenWithinDays = firstSeenWithinDays
+	r.require(retrieveStatsRequestFieldFirstSeenWithinDays)
+}
+
+// SetLastSeenWithinDays sets the LastSeenWithinDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLastSeenWithinDays(lastSeenWithinDays *int) {
+	r.LastSeenWithinDays = lastSeenWithinDays
+	r.require(retrieveStatsRequestFieldLastSeenWithinDays)
+}
+
+// SetKnown sets the Known field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetKnown(known *bool) {
+	r.Known = known
+	r.require(retrieveStatsRequestFieldKnown)
+}
+
+// SetHasEmail sets the HasEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetHasEmail(hasEmail *bool) {
+	r.HasEmail = hasEmail
+	r.require(retrieveStatsRequestFieldHasEmail)
+}
+
+// SetHasPhone sets the HasPhone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetHasPhone(hasPhone *bool) {
+	r.HasPhone = hasPhone
+	r.require(retrieveStatsRequestFieldHasPhone)
+}
+
+// SetLtvGt sets the LtvGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLtvGt(ltvGt *float64) {
+	r.LtvGt = ltvGt
+	r.require(retrieveStatsRequestFieldLtvGt)
+}
+
+// SetLtvGte sets the LtvGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLtvGte(ltvGte *float64) {
+	r.LtvGte = ltvGte
+	r.require(retrieveStatsRequestFieldLtvGte)
+}
+
+// SetLtvLt sets the LtvLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLtvLt(ltvLt *float64) {
+	r.LtvLt = ltvLt
+	r.require(retrieveStatsRequestFieldLtvLt)
+}
+
+// SetLtvLte sets the LtvLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLtvLte(ltvLte *float64) {
+	r.LtvLte = ltvLte
+	r.require(retrieveStatsRequestFieldLtvLte)
+}
+
+// SetAovGt sets the AovGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetAovGt(aovGt *float64) {
+	r.AovGt = aovGt
+	r.require(retrieveStatsRequestFieldAovGt)
+}
+
+// SetAovGte sets the AovGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetAovGte(aovGte *float64) {
+	r.AovGte = aovGte
+	r.require(retrieveStatsRequestFieldAovGte)
+}
+
+// SetAovLt sets the AovLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetAovLt(aovLt *float64) {
+	r.AovLt = aovLt
+	r.require(retrieveStatsRequestFieldAovLt)
+}
+
+// SetAovLte sets the AovLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetAovLte(aovLte *float64) {
+	r.AovLte = aovLte
+	r.require(retrieveStatsRequestFieldAovLte)
+}
+
+// SetPurchaseCountGt sets the PurchaseCountGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetPurchaseCountGt(purchaseCountGt *float64) {
+	r.PurchaseCountGt = purchaseCountGt
+	r.require(retrieveStatsRequestFieldPurchaseCountGt)
+}
+
+// SetPurchaseCountGte sets the PurchaseCountGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetPurchaseCountGte(purchaseCountGte *float64) {
+	r.PurchaseCountGte = purchaseCountGte
+	r.require(retrieveStatsRequestFieldPurchaseCountGte)
+}
+
+// SetPurchaseCountLt sets the PurchaseCountLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetPurchaseCountLt(purchaseCountLt *float64) {
+	r.PurchaseCountLt = purchaseCountLt
+	r.require(retrieveStatsRequestFieldPurchaseCountLt)
+}
+
+// SetPurchaseCountLte sets the PurchaseCountLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetPurchaseCountLte(purchaseCountLte *float64) {
+	r.PurchaseCountLte = purchaseCountLte
+	r.require(retrieveStatsRequestFieldPurchaseCountLte)
+}
+
+// SetEventCountGt sets the EventCountGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetEventCountGt(eventCountGt *float64) {
+	r.EventCountGt = eventCountGt
+	r.require(retrieveStatsRequestFieldEventCountGt)
+}
+
+// SetEventCountGte sets the EventCountGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetEventCountGte(eventCountGte *float64) {
+	r.EventCountGte = eventCountGte
+	r.require(retrieveStatsRequestFieldEventCountGte)
+}
+
+// SetEventCountLt sets the EventCountLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetEventCountLt(eventCountLt *float64) {
+	r.EventCountLt = eventCountLt
+	r.require(retrieveStatsRequestFieldEventCountLt)
+}
+
+// SetEventCountLte sets the EventCountLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetEventCountLte(eventCountLte *float64) {
+	r.EventCountLte = eventCountLte
+	r.require(retrieveStatsRequestFieldEventCountLte)
 }
 
 var (
@@ -841,7 +1112,7 @@ type RetrieveStatsResponseData struct {
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
 	// One entry per period, oldest first.
 	Points []*RetrieveStatsResponseDataPointsItem `json:"points" url:"points"`
-	// Whole-window aggregates, present when the metric computes them. Don't derive these from `points`: a rate is measured across the whole window, not averaged across its points, and unique-people counts exist only at window level.
+	// Whole-window aggregates, present when the metric computes them. Don't derive these from `points`: a rate is measured across the whole window, not averaged across its points, and whole-window unique people are distinct across every bucket.
 	Totals []*RetrieveStatsResponseDataTotalsItem `json:"totals,omitempty" url:"totals,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
