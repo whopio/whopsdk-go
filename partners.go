@@ -139,15 +139,18 @@ func (r *RetrievePartnersRequest) SetID(id string) {
 }
 
 var (
-	partnerFieldJoinedAt                   = big.NewInt(1 << 0)
-	partnerFieldPayoutRates                = big.NewInt(1 << 1)
-	partnerFieldReferredBusinessesCount    = big.NewInt(1 << 2)
-	partnerFieldUser                       = big.NewInt(1 << 3)
-	partnerFieldVerificationWaitlistJoined = big.NewInt(1 << 4)
-	partnerFieldWhopPartnerVerifiedAt      = big.NewInt(1 << 5)
+	partnerFieldCertificationComplete      = big.NewInt(1 << 0)
+	partnerFieldJoinedAt                   = big.NewInt(1 << 1)
+	partnerFieldPayoutRates                = big.NewInt(1 << 2)
+	partnerFieldReferredBusinessesCount    = big.NewInt(1 << 3)
+	partnerFieldUser                       = big.NewInt(1 << 4)
+	partnerFieldVerificationWaitlistJoined = big.NewInt(1 << 5)
+	partnerFieldWhopPartnerVerifiedAt      = big.NewInt(1 << 6)
 )
 
 type Partner struct {
+	// Whether the user passed every visible quiz and knowledge check in the partner certification course. `false` until each of those lessons has a passing result.
+	CertificationComplete bool `json:"certification_complete" url:"certification_complete"`
 	// When the user joined the partner program, as an ISO 8601 timestamp. Null when they have not joined.
 	JoinedAt    *string              `json:"joined_at,omitempty" url:"joined_at,omitempty"`
 	PayoutRates []*PartnerPayoutTier `json:"payout_rates" url:"payout_rates"`
@@ -165,6 +168,13 @@ type Partner struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *Partner) GetCertificationComplete() bool {
+	if p == nil {
+		return false
+	}
+	return p.CertificationComplete
 }
 
 func (p *Partner) GetJoinedAt() *string {
@@ -221,6 +231,13 @@ func (p *Partner) require(field *big.Int) {
 		p.explicitFields = big.NewInt(0)
 	}
 	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCertificationComplete sets the CertificationComplete field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Partner) SetCertificationComplete(certificationComplete bool) {
+	p.CertificationComplete = certificationComplete
+	p.require(partnerFieldCertificationComplete)
 }
 
 // SetJoinedAt sets the JoinedAt field and marks it as non-optional;
