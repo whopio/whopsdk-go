@@ -664,7 +664,7 @@ type AdCampaign struct {
 	CustomEventCounts map[string]any `json:"custom_event_counts" url:"custom_event_counts"`
 	// Conversion value attributed to each custom event, keyed by event name like custom_event_counts. Sums the value passed to whop.track, normalized to USD; events fired without a value contribute 0.
 	CustomEventValues map[string]any `json:"custom_event_values" url:"custom_event_values"`
-	// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdCampaignDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// Platform-reported impressions divided by reach.
 	Frequency *float64 `json:"frequency,omitempty" url:"frequency,omitempty"`
@@ -708,7 +708,7 @@ type AdCampaign struct {
 	Spend float64 `json:"spend" url:"spend"`
 	// The ISO 4217 currency code of all monetary metrics.
 	SpendCurrency *string `json:"spend_currency,omitempty" url:"spend_currency,omitempty"`
-	// The lifecycle status of the ad campaign.
+	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status AdCampaignStatus `json:"status" url:"status"`
 	// USD value attributed to submit-application events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
 	SubmittedApplicationValue float64 `json:"submitted_application_value" url:"submitted_application_value"`
@@ -1702,7 +1702,7 @@ func (a AdCampaignBudgetType) Ptr() *AdCampaignBudgetType {
 	return &a
 }
 
-// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 type AdCampaignDeliveryStatus string
 
 const (
@@ -1886,7 +1886,7 @@ func (a AdCampaignSpecialAdCategoriesItem) Ptr() *AdCampaignSpecialAdCategoriesI
 	return &a
 }
 
-// The lifecycle status of the ad campaign.
+// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 type AdCampaignStatus string
 
 const (
@@ -2902,7 +2902,7 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	BudgetType *PostAdCampaignPaymentFailedPayloadDataBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
 	// When the campaign was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdCampaignPaymentFailedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID     string             `json:"id" url:"id"`
@@ -2914,7 +2914,7 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	// The ad network the campaign runs on.
 	Platform            PostAdCampaignPaymentFailedPayloadDataPlatform                  `json:"platform" url:"platform"`
 	SpecialAdCategories []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
-	// The lifecycle status of the ad campaign.
+	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status PostAdCampaignPaymentFailedPayloadDataStatus `json:"status" url:"status"`
 	// Display name of the ad campaign.
 	Title string `json:"title" url:"title"`
@@ -3266,7 +3266,7 @@ func (p PostAdCampaignPaymentFailedPayloadDataBudgetType) Ptr() *PostAdCampaignP
 	return &p
 }
 
-// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 type PostAdCampaignPaymentFailedPayloadDataDeliveryStatus string
 
 const (
@@ -3403,7 +3403,7 @@ func (p PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem) Ptr() *Po
 	return &p
 }
 
-// The lifecycle status of the ad campaign.
+// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 type PostAdCampaignPaymentFailedPayloadDataStatus string
 
 const (
@@ -3736,7 +3736,7 @@ type PostAdCampaignUpdatedPayloadData struct {
 	BudgetType *PostAdCampaignUpdatedPayloadDataBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
 	// When the campaign was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdCampaignUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID     string             `json:"id" url:"id"`
@@ -3748,7 +3748,7 @@ type PostAdCampaignUpdatedPayloadData struct {
 	// The ad network the campaign runs on.
 	Platform            PostAdCampaignUpdatedPayloadDataPlatform                  `json:"platform" url:"platform"`
 	SpecialAdCategories []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
-	// The lifecycle status of the ad campaign.
+	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status PostAdCampaignUpdatedPayloadDataStatus `json:"status" url:"status"`
 	// Display name of the ad campaign.
 	Title string `json:"title" url:"title"`
@@ -4100,7 +4100,7 @@ func (p PostAdCampaignUpdatedPayloadDataBudgetType) Ptr() *PostAdCampaignUpdated
 	return &p
 }
 
-// Whether the campaign's ads are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 type PostAdCampaignUpdatedPayloadDataDeliveryStatus string
 
 const (
@@ -4237,7 +4237,7 @@ func (p PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem) Ptr() *PostAdCa
 	return &p
 }
 
-// The lifecycle status of the ad campaign.
+// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 type PostAdCampaignUpdatedPayloadDataStatus string
 
 const (
