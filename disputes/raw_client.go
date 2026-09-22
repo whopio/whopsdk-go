@@ -40,7 +40,15 @@ func (r *RawClient) Summary(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/disputes/summary"
@@ -89,7 +97,15 @@ func (r *RawClient) Retrieve(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -134,7 +150,15 @@ func (r *RawClient) Update(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -181,7 +205,15 @@ func (r *RawClient) Submit(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -226,7 +258,15 @@ func (r *RawClient) UploadEvidence(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(

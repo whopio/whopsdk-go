@@ -57,7 +57,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/payouts/supported_methods"

@@ -3,6 +3,7 @@
 package option
 
 import (
+	whopsdkgo "github.com/whopio/whopsdk-go"
 	core "github.com/whopio/whopsdk-go/core"
 	http "net/http"
 	url "net/url"
@@ -93,6 +94,14 @@ func WithoutStreamReconnection() *core.WithoutStreamReconnectionOption {
 // attempts.
 func WithoutRetries() *core.WithoutRetriesOption {
 	return &core.WithoutRetriesOption{}
+}
+
+// WithEnvironment sets the environment for the client, which determines
+// the base URL for each endpoint.
+func WithEnvironment(environment whopsdkgo.Environment) *core.EnvironmentOption {
+	return &core.EnvironmentOption{
+		Environment: environment,
+	}
 }
 
 // WithToken sets the 'Authorization: Bearer <token>' request header.

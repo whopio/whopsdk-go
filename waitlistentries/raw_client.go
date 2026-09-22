@@ -40,7 +40,15 @@ func (r *RawClient) Create(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/waitlist_entries"
@@ -84,7 +92,15 @@ func (r *RawClient) ApproveAll(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/waitlist_entries/approve_all"
@@ -128,7 +144,15 @@ func (r *RawClient) Retrieve(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -173,7 +197,15 @@ func (r *RawClient) Approve(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -218,7 +250,15 @@ func (r *RawClient) Cancel(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -263,7 +303,15 @@ func (r *RawClient) Deny(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(

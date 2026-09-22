@@ -40,7 +40,15 @@ func (r *RawClient) Create(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/ad_campaigns"
@@ -84,7 +92,15 @@ func (r *RawClient) Retrieve(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -136,7 +152,15 @@ func (r *RawClient) Delete(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -181,7 +205,15 @@ func (r *RawClient) Update(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -227,7 +259,15 @@ func (r *RawClient) Duplicate(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -274,7 +314,15 @@ func (r *RawClient) Pause(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -319,7 +367,15 @@ func (r *RawClient) Unpause(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(

@@ -69,7 +69,15 @@ func (c *Client) ListIdentityProfile(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/identity_profiles"
@@ -210,7 +218,15 @@ func (c *Client) ListVerificationsIdentityProfile(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(

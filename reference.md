@@ -39432,6 +39432,182 @@ client.Partners.Businesses.Earnings.List(
 </dl>
 </details>
 
+## Payments Direct
+<details><summary><code>client.Payments.Direct.Create(request) -> *whopsdk.Payment</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Charges a buyer for a plan from card details the caller holds itself, for integrators whose own systems are PCI compliant. Card details are accepted only on the vault host, where the card is tokenized before it reaches Whop; the official SDKs route this operation there, and raw card details sent to the regular host are refused. (Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.) Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and what the buyer must still do, such as 3D Secure.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &payments.CreateDirectRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    BillingDetails: &payments.CreateDirectRequestBillingDetails{
+        Address: &payments.CreateDirectRequestBillingDetailsAddress{
+            Country: "US",
+            PostalCode: "94105",
+        },
+        Email: "dana@shinetime.example",
+        Name: "Dana Shine",
+    },
+    PaymentMethod: &payments.CreateDirectRequestPaymentMethod{
+        Type: payments.CreateDirectRequestPaymentMethodTypeCard,
+    },
+}
+client.Payments.Direct.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The account to charge for, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**autoCaptureAfterMinutes:** `*int` — Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingDetails:** `*payments.CreateDirectRequestBillingDetails` — The buyer's billing details.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**capture:** `*bool` — Whether to capture the payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**memberID:** `*string` — The member to charge, prefixed `mber_`. When omitted the buyer is resolved from `billing_details.email`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]*string` — Custom metadata to attach to the payment.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offSession:** `*bool` — Whether the charge is merchant-initiated, with the buyer not present. Defaults to false. When true, `payment_method.card.network_transaction_id` is required: a merchant-initiated charge on a card Whop has not charged before carries the id of the card's prior customer-initiated transaction. No 3D Secure step is offered: an issuer that requires the buyer to authenticate declines the charge, and the payment fails with that reason so the card can be charged again with the buyer present. A declined card is not saved.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethod:** `*payments.CreateDirectRequestPaymentMethod` — The payment method to charge, as the raw details the caller holds. Raw details are accepted only on the vault host, where Whop's vault tokenizes them in transit; the official SDKs route this operation there. Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**plan:** `*payments.CreateDirectRequestPlan` — Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planID:** `*string` — The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**promoCodeID:** `*string` — An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**returnURL:** `*string` — Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**setupFutureUsage:** `*payments.CreateDirectRequestSetupFutureUsage` — Attests that the buyer was told the card will be saved for later charges. `off_session` for merchant-initiated charges, `on_session` for buyer-present ones.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**statementDescriptor:** `*string` — Overrides the text on the buyer's card statement for this payment only. Must start with `WHOP*`, be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Payouts Methods
 <details><summary><code>client.Payouts.Methods.List() -> *payouts.ListMethodsResponse</code></summary>
 <dl>
@@ -39935,6 +40111,126 @@ client.Payouts.SupportedMethods.List(
 <dd>
 
 **before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## SetupIntents Direct
+<details><summary><code>client.SetupIntents.Direct.Create(request) -> *whopsdk.SetupIntent</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Saves a card for later charges from card details the caller holds itself, for integrators whose own systems are PCI compliant. Card details are accepted only on the vault host, where the card is tokenized before it reaches Whop; the official SDKs route this operation there, and raw card details sent to the regular host are refused. (Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.) The setup runs in the background: poll Retrieve setup status for its outcome and for anything the buyer must still do, such as 3D Secure. Once it succeeds, the saved payment method arrives on the `setup_intent.succeeded` webhook and in List payment methods for the member.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &setupintents.CreateDirectRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    BillingDetails: &setupintents.CreateDirectRequestBillingDetails{
+        Address: &setupintents.CreateDirectRequestBillingDetailsAddress{
+            Country: "US",
+            PostalCode: "94105",
+        },
+        Email: "dana@shinetime.example",
+        Name: "Dana Shine",
+    },
+    PaymentMethod: &setupintents.CreateDirectRequestPaymentMethod{
+        Type: setupintents.CreateDirectRequestPaymentMethodTypeCard,
+    },
+}
+client.SetupIntents.Direct.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The account the card is saved for, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingDetails:** `*setupintents.CreateDirectRequestBillingDetails` — The buyer's billing details.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `*string` — The currency the card will be charged in, as a three-letter code. Defaults to usd.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**memberID:** `*string` — The member the card belongs to, prefixed `mber_`. When omitted the buyer is resolved from `billing_details.email`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]*string` — Custom metadata to attach to the setup.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethod:** `*setupintents.CreateDirectRequestPaymentMethod` — The payment method to save, as the raw details the caller holds. Raw details are accepted only on the vault host, where Whop's vault tokenizes them in transit; the official SDKs route this operation there. Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**returnURL:** `*string` — Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters.
     
 </dd>
 </dl>
