@@ -37576,7 +37576,7 @@ client.Accounts.Fees.Update(
 <dl>
 <dd>
 
-**childMarkups:** `*accounts.UpdateFeesRequestChildMarkups` — This platform's default markups for every account connected to it.
+**childMarkups:** `*accounts.UpdateFeesRequestChildMarkups` — Default markups for connected accounts. Available on accounts without a parent, even before any accounts connect.
     
 </dd>
 </dl>
