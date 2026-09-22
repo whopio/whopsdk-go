@@ -266,6 +266,42 @@
       }
     },
     {
+      "id": "ee3aa39a-f740-48a4-ada6-f7664fb7efdc",
+      "name": "Retry Failed Ads Payments - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{id}/retry_ads_payment",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"queued\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "ee3aa39a-f740-48a4-ada6-f7664fb7efdc",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "af743354-6d74-44ae-a352-a67e179f3ee3",
       "name": "Suspend a Connected Account - default",
       "request": {
@@ -15253,6 +15289,6 @@
     }
   ],
   "meta": {
-    "total": 426
+    "total": 427
   }
 }
