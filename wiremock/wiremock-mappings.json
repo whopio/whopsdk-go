@@ -12447,7 +12447,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"description\": \"Share of paid receipts in the selected sales cohort disputed within 14 days of purchase.\",\n      \"key\": \"snapshot_cohorted_dispute_rate_14d_attr\",\n      \"name\": \"Cohorted dispute rate (14-day attribution)\",\n      \"properties\": [\n        \"source\"\n      ],\n      \"unit\": \"count\",\n      \"windows\": [\n        \"7d\"\n      ]\n    }\n  ]\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"breakdowns\": [\n        \"breakdowns\"\n      ],\n      \"description\": \"Share of paid receipts in the selected sales cohort disputed within 14 days of purchase.\",\n      \"key\": \"snapshot_cohorted_dispute_rate_14d_attr\",\n      \"name\": \"Cohorted dispute rate (14-day attribution)\",\n      \"properties\": [\n        \"source\"\n      ],\n      \"unit\": \"count\",\n      \"windows\": [\n        \"7d\"\n      ]\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12513,7 +12513,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": {\n    \"currency\": \"usd\",\n    \"points\": [\n      {\n        \"breakdown\": [\n          {\n            \"name\": \"spend\",\n            \"value\": 2.82\n          }\n        ],\n        \"timestamp\": 1767268800,\n        \"value\": 3\n      }\n    ],\n    \"totals\": [\n      {\n        \"name\": \"wins\",\n        \"value\": 4\n      }\n    ]\n  }\n}",
+        "body": "{\n  \"data\": {\n    \"currency\": \"usd\",\n    \"points\": [\n      {\n        \"breakdown\": [\n          {\n            \"name\": \"spend\",\n            \"steps\": [\n              {\n                \"conversion_rate\": 100,\n                \"count\": 100,\n                \"step\": 1\n              }\n            ],\n            \"value\": 2.82\n          }\n        ],\n        \"steps\": [\n          {\n            \"conversion_rate\": 100,\n            \"count\": 100,\n            \"step\": 1\n          }\n        ],\n        \"timestamp\": 1767268800,\n        \"value\": 3\n      }\n    ],\n    \"totals\": [\n      {\n        \"name\": \"wins\",\n        \"steps\": [\n          {\n            \"conversion_rate\": 100,\n            \"count\": 100,\n            \"step\": 1\n          }\n        ],\n        \"value\": 4\n      }\n    ]\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
