@@ -669,7 +669,7 @@ type Account struct {
 	CanTransferPendingBalanceToChildren bool `json:"can_transfer_pending_balance_to_children" url:"can_transfer_pending_balance_to_children"`
 	// Payment rails enabled for this account, each `active`, `inactive`, or `pending` (onboarding or review in progress). Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
 	Capabilities *AccountCapabilities `json:"capabilities,omitempty" url:"capabilities,omitempty"`
-	// Whop Cards application details for the account. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise, or when the account has no card application.
+	// Whop Cards application details for the account. Returned on `list`, `retrieve`, and `me` for callers with `company:balance:read` scope; `null` otherwise, or when the account has no card application or blocking application review.
 	Cards *AccountCards `json:"cards,omitempty" url:"cards,omitempty"`
 	// Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
 	CollectVatID bool `json:"collect_vat_id" url:"collect_vat_id"`
