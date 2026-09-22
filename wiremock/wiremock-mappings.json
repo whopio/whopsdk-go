@@ -2241,7 +2241,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"checksum\": \"xxxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"file_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"id\": \"apbu_xxxxxxxxxxxxxx\",\n      \"is_production\": false,\n      \"platform\": \"ios\",\n      \"review_message\": \"The hub view crashes on launch when the member has no active membership. Fix and resubmit.\",\n      \"source_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"status\": \"draft\",\n      \"supported_app_view_types\": [\n        \"hub\"\n      ]\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"checksum\": \"xxxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"file_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"id\": \"apbu_xxxxxxxxxxxxxx\",\n      \"is_production\": false,\n      \"platform\": \"ios\",\n      \"review_message\": \"The hub view crashes on launch when the member has no active membership. Fix and resubmit.\",\n      \"source_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/zip/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"status\": \"draft\",\n      \"supported_app_view_types\": [\n        \"hub\"\n      ]\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -2273,7 +2273,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"checksum\": \"xxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"file_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"id\": \"apbu_xxxxxxxxxxxxxx\",\n  \"is_production\": false,\n  \"platform\": \"ios\",\n  \"review_message\": \"The hub view crashes on launch when the member has no active membership. Fix and resubmit.\",\n  \"source_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"status\": \"draft\",\n  \"supported_app_view_types\": [\n    \"hub\"\n  ]\n}",
+        "body": "{\n  \"checksum\": \"xxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"file_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"id\": \"apbu_xxxxxxxxxxxxxx\",\n  \"is_production\": false,\n  \"platform\": \"ios\",\n  \"review_message\": \"The hub view crashes on launch when the member has no active membership. Fix and resubmit.\",\n  \"source_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/zip/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"status\": \"draft\",\n  \"supported_app_view_types\": [\n    \"hub\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -2309,7 +2309,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"checksum\": \"xxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"file_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"id\": \"apbu_xxxxxxxxxxxxxx\",\n  \"is_production\": false,\n  \"platform\": \"ios\",\n  \"review_message\": \"The hub view crashes on launch when the member has no active membership. Fix and resubmit.\",\n  \"source_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"status\": \"draft\",\n  \"supported_app_view_types\": [\n    \"hub\"\n  ]\n}",
+        "body": "{\n  \"checksum\": \"xxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"file_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"id\": \"apbu_xxxxxxxxxxxxxx\",\n  \"is_production\": false,\n  \"platform\": \"ios\",\n  \"review_message\": \"The hub view crashes on launch when the member has no active membership. Fix and resubmit.\",\n  \"source_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/zip/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"status\": \"draft\",\n  \"supported_app_view_types\": [\n    \"hub\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -2345,7 +2345,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"checksum\": \"xxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"file_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"id\": \"apbu_xxxxxxxxxxxxxx\",\n  \"is_production\": false,\n  \"platform\": \"ios\",\n  \"review_message\": \"The hub view crashes on launch when the member has no active membership. Fix and resubmit.\",\n  \"source_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"status\": \"draft\",\n  \"supported_app_view_types\": [\n    \"hub\"\n  ]\n}",
+        "body": "{\n  \"checksum\": \"xxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"file_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"id\": \"apbu_xxxxxxxxxxxxxx\",\n  \"is_production\": false,\n  \"platform\": \"ios\",\n  \"review_message\": \"The hub view crashes on launch when the member has no active membership. Fix and resubmit.\",\n  \"source_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/zip/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"status\": \"draft\",\n  \"supported_app_view_types\": [\n    \"hub\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
