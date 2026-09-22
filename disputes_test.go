@@ -11230,6 +11230,20 @@ func TestEnumDisputeEvidenceDocumentDocumentType(t *testing.T) {
 		assert.Equal(t, DisputeEvidenceDocumentDocumentType("shipping_policy"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_cancellation_policy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDisputeEvidenceDocumentDocumentTypeFromString("cancellation_policy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DisputeEvidenceDocumentDocumentType("cancellation_policy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_terms_of_service", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDisputeEvidenceDocumentDocumentTypeFromString("terms_of_service")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DisputeEvidenceDocumentDocumentType("terms_of_service"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_physical_fulfillment", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewDisputeEvidenceDocumentDocumentTypeFromString("physical_fulfillment")
@@ -11845,6 +11859,20 @@ func TestEnumUploadEvidenceDisputesRequestDocumentsItemDocumentType(t *testing.T
 		val, err := NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString("shipping_policy")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UploadEvidenceDisputesRequestDocumentsItemDocumentType("shipping_policy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cancellation_policy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString("cancellation_policy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UploadEvidenceDisputesRequestDocumentsItemDocumentType("cancellation_policy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_terms_of_service", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString("terms_of_service")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UploadEvidenceDisputesRequestDocumentsItemDocumentType("terms_of_service"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_physical_fulfillment", func(t *testing.T) {

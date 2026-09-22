@@ -622,63 +622,65 @@ var (
 	accountFieldBusinessName                        = big.NewInt(1 << 3)
 	accountFieldBusinessType                        = big.NewInt(1 << 4)
 	accountFieldCanTransferPendingBalanceToChildren = big.NewInt(1 << 5)
-	accountFieldCapabilities                        = big.NewInt(1 << 6)
-	accountFieldCards                               = big.NewInt(1 << 7)
-	accountFieldCollectVatID                        = big.NewInt(1 << 8)
-	accountFieldCompanyFormation                    = big.NewInt(1 << 9)
-	accountFieldCountry                             = big.NewInt(1 << 10)
-	accountFieldCreatedAt                           = big.NewInt(1 << 11)
-	accountFieldDescription                         = big.NewInt(1 << 12)
-	accountFieldEconomicIntelligence                = big.NewInt(1 << 13)
-	accountFieldEmail                               = big.NewInt(1 << 14)
-	accountFieldEula                                = big.NewInt(1 << 15)
-	accountFieldHomePreferences                     = big.NewInt(1 << 16)
-	accountFieldID                                  = big.NewInt(1 << 17)
-	accountFieldIndustryGroup                       = big.NewInt(1 << 18)
-	accountFieldIndustryType                        = big.NewInt(1 << 19)
-	accountFieldInvoicePrefix                       = big.NewInt(1 << 20)
-	accountFieldLogoURL                             = big.NewInt(1 << 21)
-	accountFieldMetadata                            = big.NewInt(1 << 22)
-	accountFieldOnboardingType                      = big.NewInt(1 << 23)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 24)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 25)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 26)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 27)
-	accountFieldOwner                               = big.NewInt(1 << 28)
-	accountFieldParentAccount                       = big.NewInt(1 << 29)
-	accountFieldPartner                             = big.NewInt(1 << 30)
-	accountFieldPaymentControls                     = big.NewInt(1 << 31)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 32)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 33)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 34)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 35)
-	accountFieldRequiredActions                     = big.NewInt(1 << 36)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 37)
-	accountFieldRoute                               = big.NewInt(1 << 38)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 39)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 40)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 41)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 42)
-	accountFieldSocialLinks                         = big.NewInt(1 << 43)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 44)
-	accountFieldStatus                              = big.NewInt(1 << 45)
-	accountFieldStatusReason                        = big.NewInt(1 << 46)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 47)
-	accountFieldTargetAudience                      = big.NewInt(1 << 48)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 49)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 50)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 51)
-	accountFieldTaxType                             = big.NewInt(1 << 52)
-	accountFieldTermsOfService                      = big.NewInt(1 << 53)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 54)
-	accountFieldTitle                               = big.NewInt(1 << 55)
-	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 56)
-	accountFieldTotalUsd                            = big.NewInt(1 << 57)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 58)
-	accountFieldVerification                        = big.NewInt(1 << 59)
-	accountFieldVolumeUsd                           = big.NewInt(1 << 60)
-	accountFieldWallet                              = big.NewInt(1 << 61)
-	accountFieldWebsite                             = big.NewInt(1 << 62)
+	accountFieldCancellationPolicy                  = big.NewInt(1 << 6)
+	accountFieldCapabilities                        = big.NewInt(1 << 7)
+	accountFieldCards                               = big.NewInt(1 << 8)
+	accountFieldCollectVatID                        = big.NewInt(1 << 9)
+	accountFieldCompanyFormation                    = big.NewInt(1 << 10)
+	accountFieldCountry                             = big.NewInt(1 << 11)
+	accountFieldCreatedAt                           = big.NewInt(1 << 12)
+	accountFieldDescription                         = big.NewInt(1 << 13)
+	accountFieldEconomicIntelligence                = big.NewInt(1 << 14)
+	accountFieldEmail                               = big.NewInt(1 << 15)
+	accountFieldEula                                = big.NewInt(1 << 16)
+	accountFieldHomePreferences                     = big.NewInt(1 << 17)
+	accountFieldID                                  = big.NewInt(1 << 18)
+	accountFieldIndustryGroup                       = big.NewInt(1 << 19)
+	accountFieldIndustryType                        = big.NewInt(1 << 20)
+	accountFieldInvoicePrefix                       = big.NewInt(1 << 21)
+	accountFieldLogoURL                             = big.NewInt(1 << 22)
+	accountFieldMetadata                            = big.NewInt(1 << 23)
+	accountFieldOnboardingType                      = big.NewInt(1 << 24)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 25)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 26)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 27)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 28)
+	accountFieldOwner                               = big.NewInt(1 << 29)
+	accountFieldParentAccount                       = big.NewInt(1 << 30)
+	accountFieldPartner                             = big.NewInt(1 << 31)
+	accountFieldPaymentControls                     = big.NewInt(1 << 32)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 33)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 34)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 35)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 36)
+	accountFieldRequiredActions                     = big.NewInt(1 << 37)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 38)
+	accountFieldRoute                               = big.NewInt(1 << 39)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 40)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 41)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 42)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 43)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 44)
+	accountFieldSocialLinks                         = big.NewInt(1 << 45)
+	accountFieldStablecoinRails                     = big.NewInt(1 << 46)
+	accountFieldStatus                              = big.NewInt(1 << 47)
+	accountFieldStatusReason                        = big.NewInt(1 << 48)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 49)
+	accountFieldTargetAudience                      = big.NewInt(1 << 50)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 51)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 52)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 53)
+	accountFieldTaxType                             = big.NewInt(1 << 54)
+	accountFieldTermsOfService                      = big.NewInt(1 << 55)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 56)
+	accountFieldTitle                               = big.NewInt(1 << 57)
+	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 58)
+	accountFieldTotalUsd                            = big.NewInt(1 << 59)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 60)
+	accountFieldVerification                        = big.NewInt(1 << 61)
+	accountFieldVolumeUsd                           = big.NewInt(1 << 62)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 64)
 )
 
 type Account struct {
@@ -693,6 +695,8 @@ type Account struct {
 	BusinessType *string `json:"business_type,omitempty" url:"business_type,omitempty"`
 	// Whether pending funds may be transferred from this platform account to its connected accounts.
 	CanTransferPendingBalanceToChildren bool `json:"can_transfer_pending_balance_to_children" url:"can_transfer_pending_balance_to_children"`
+	// The account's cancellation policy document, or `null` if they have not published one.
+	CancellationPolicy *File `json:"cancellation_policy,omitempty" url:"cancellation_policy,omitempty"`
 	// Payment rails enabled for this account, each `active`, `inactive`, or `pending` (onboarding or review in progress). Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
 	Capabilities *AccountCapabilities `json:"capabilities,omitempty" url:"capabilities,omitempty"`
 	// Whop Cards application details for the account. Returned on `list`, `retrieve`, and `me` for callers with `company:balance:read` scope; `null` otherwise, or when the account has no card application or blocking application review.
@@ -759,6 +763,8 @@ type Account struct {
 	Route string `json:"route" url:"route"`
 	// Whether Whop sends transactional emails to customers on behalf of this account.
 	SendCustomerEmails bool `json:"send_customer_emails" url:"send_customer_emails"`
+	// The account's shipping policy document, or `null` if they have not published one.
+	ShippingPolicy *File `json:"shipping_policy,omitempty" url:"shipping_policy,omitempty"`
 	// Whether the account appears in joined whops on other accounts.
 	ShowJoinedWhops bool `json:"show_joined_whops" url:"show_joined_whops"`
 	// Whether reviews are displayed on direct-to-consumer product pages.
@@ -850,6 +856,13 @@ func (a *Account) GetCanTransferPendingBalanceToChildren() bool {
 		return false
 	}
 	return a.CanTransferPendingBalanceToChildren
+}
+
+func (a *Account) GetCancellationPolicy() *File {
+	if a == nil {
+		return nil
+	}
+	return a.CancellationPolicy
 }
 
 func (a *Account) GetCapabilities() *AccountCapabilities {
@@ -1090,6 +1103,13 @@ func (a *Account) GetSendCustomerEmails() bool {
 	return a.SendCustomerEmails
 }
 
+func (a *Account) GetShippingPolicy() *File {
+	if a == nil {
+		return nil
+	}
+	return a.ShippingPolicy
+}
+
 func (a *Account) GetShowJoinedWhops() bool {
 	if a == nil {
 		return false
@@ -1305,6 +1325,13 @@ func (a *Account) SetBusinessType(businessType *string) {
 func (a *Account) SetCanTransferPendingBalanceToChildren(canTransferPendingBalanceToChildren bool) {
 	a.CanTransferPendingBalanceToChildren = canTransferPendingBalanceToChildren
 	a.require(accountFieldCanTransferPendingBalanceToChildren)
+}
+
+// SetCancellationPolicy sets the CancellationPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetCancellationPolicy(cancellationPolicy *File) {
+	a.CancellationPolicy = cancellationPolicy
+	a.require(accountFieldCancellationPolicy)
 }
 
 // SetCapabilities sets the Capabilities field and marks it as non-optional;
@@ -1543,6 +1570,13 @@ func (a *Account) SetRoute(route string) {
 func (a *Account) SetSendCustomerEmails(sendCustomerEmails bool) {
 	a.SendCustomerEmails = sendCustomerEmails
 	a.require(accountFieldSendCustomerEmails)
+}
+
+// SetShippingPolicy sets the ShippingPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetShippingPolicy(shippingPolicy *File) {
+	a.ShippingPolicy = shippingPolicy
+	a.require(accountFieldShippingPolicy)
 }
 
 // SetShowJoinedWhops sets the ShowJoinedWhops field and marks it as non-optional;
@@ -7477,6 +7511,188 @@ func (u *UpdateAccountsRequestBusinessAddress) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// The account's cancellation policy document. Attached to new disputes as the cancellation policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+var (
+	updateAccountsRequestCancellationPolicyFieldID = big.NewInt(1 << 0)
+)
+
+type UpdateAccountsRequestCancellationPolicy struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestCancellationPolicy) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestCancellationPolicyFieldID)
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestCancellationPolicy
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestCancellationPolicy(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestCancellationPolicy
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+var (
+	updateAccountsRequestEulaFieldID = big.NewInt(1 << 0)
+)
+
+type UpdateAccountsRequestEula struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestEula) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestEula) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestEula) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestEula) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestEulaFieldID)
+}
+
+func (u *UpdateAccountsRequestEula) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestEula
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestEula(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestEula) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestEula
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestEula) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 type UpdateAccountsRequestHomePreferencesItem string
 
 const (
@@ -7728,6 +7944,279 @@ func NewUpdateAccountsRequestOpengraphImageVariantFromString(s string) (UpdateAc
 
 func (u UpdateAccountsRequestOpengraphImageVariant) Ptr() *UpdateAccountsRequestOpengraphImageVariant {
 	return &u
+}
+
+// The account's privacy policy document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+var (
+	updateAccountsRequestPrivacyPolicyFieldID = big.NewInt(1 << 0)
+)
+
+type UpdateAccountsRequestPrivacyPolicy struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestPrivacyPolicy) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestPrivacyPolicyFieldID)
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestPrivacyPolicy
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestPrivacyPolicy(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestPrivacyPolicy
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The account's return and refund policy document. Attached to new disputes as the refund policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+var (
+	updateAccountsRequestReturnPolicyFieldID = big.NewInt(1 << 0)
+)
+
+type UpdateAccountsRequestReturnPolicy struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestReturnPolicy) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestReturnPolicyFieldID)
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestReturnPolicy
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestReturnPolicy(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestReturnPolicy
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The account's shipping policy document. Sent with physical-goods dispute evidence. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+var (
+	updateAccountsRequestShippingPolicyFieldID = big.NewInt(1 << 0)
+)
+
+type UpdateAccountsRequestShippingPolicy struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestShippingPolicy) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestShippingPolicyFieldID)
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestShippingPolicy
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestShippingPolicy(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestShippingPolicy
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
 }
 
 // Account store page display configuration.
@@ -8684,6 +9173,97 @@ func (u UpdateAccountsRequestTaxType) Ptr() *UpdateAccountsRequestTaxType {
 	return &u
 }
 
+// The account's terms of service document. Attached to new disputes as the cancellation policy evidence when no cancellation policy is set. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+var (
+	updateAccountsRequestTermsOfServiceFieldID = big.NewInt(1 << 0)
+)
+
+type UpdateAccountsRequestTermsOfService struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestTermsOfService) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestTermsOfService) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestTermsOfService) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestTermsOfService) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestTermsOfServiceFieldID)
+}
+
+func (u *UpdateAccountsRequestTermsOfService) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestTermsOfService
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestTermsOfService(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestTermsOfService) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestTermsOfService
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestTermsOfService) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 // 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
 type UpdateAccountsRequestThreeDsLevel string
 
@@ -8718,39 +9298,45 @@ var (
 	updateAccountsRequestFieldBusinessAddress                 = big.NewInt(1 << 4)
 	updateAccountsRequestFieldBusinessName                    = big.NewInt(1 << 5)
 	updateAccountsRequestFieldBusinessType                    = big.NewInt(1 << 6)
-	updateAccountsRequestFieldCollectVatID                    = big.NewInt(1 << 7)
-	updateAccountsRequestFieldCountry                         = big.NewInt(1 << 8)
-	updateAccountsRequestFieldDescription                     = big.NewInt(1 << 9)
-	updateAccountsRequestFieldFeaturedAffiliateProductID      = big.NewInt(1 << 10)
-	updateAccountsRequestFieldHomePreferences                 = big.NewInt(1 << 11)
-	updateAccountsRequestFieldIndustryGroup                   = big.NewInt(1 << 12)
-	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 13)
-	updateAccountsRequestFieldInvoicePrefix                   = big.NewInt(1 << 14)
-	updateAccountsRequestFieldLogo                            = big.NewInt(1 << 15)
-	updateAccountsRequestFieldMetadata                        = big.NewInt(1 << 16)
-	updateAccountsRequestFieldOnboardingType                  = big.NewInt(1 << 17)
-	updateAccountsRequestFieldOpengraphImage                  = big.NewInt(1 << 18)
-	updateAccountsRequestFieldOpengraphImageVariant           = big.NewInt(1 << 19)
-	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 20)
-	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 21)
-	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 22)
-	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 23)
-	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 24)
-	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 25)
-	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 26)
-	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 27)
-	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 28)
-	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 29)
-	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 30)
-	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 31)
-	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 32)
-	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 33)
-	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 34)
-	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 35)
-	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 36)
-	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 37)
-	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 38)
-	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 39)
+	updateAccountsRequestFieldCancellationPolicy              = big.NewInt(1 << 7)
+	updateAccountsRequestFieldCollectVatID                    = big.NewInt(1 << 8)
+	updateAccountsRequestFieldCountry                         = big.NewInt(1 << 9)
+	updateAccountsRequestFieldDescription                     = big.NewInt(1 << 10)
+	updateAccountsRequestFieldEula                            = big.NewInt(1 << 11)
+	updateAccountsRequestFieldFeaturedAffiliateProductID      = big.NewInt(1 << 12)
+	updateAccountsRequestFieldHomePreferences                 = big.NewInt(1 << 13)
+	updateAccountsRequestFieldIndustryGroup                   = big.NewInt(1 << 14)
+	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 15)
+	updateAccountsRequestFieldInvoicePrefix                   = big.NewInt(1 << 16)
+	updateAccountsRequestFieldLogo                            = big.NewInt(1 << 17)
+	updateAccountsRequestFieldMetadata                        = big.NewInt(1 << 18)
+	updateAccountsRequestFieldOnboardingType                  = big.NewInt(1 << 19)
+	updateAccountsRequestFieldOpengraphImage                  = big.NewInt(1 << 20)
+	updateAccountsRequestFieldOpengraphImageVariant           = big.NewInt(1 << 21)
+	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 22)
+	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 23)
+	updateAccountsRequestFieldPrivacyPolicy                   = big.NewInt(1 << 24)
+	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 25)
+	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 26)
+	updateAccountsRequestFieldReturnPolicy                    = big.NewInt(1 << 27)
+	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 28)
+	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 29)
+	updateAccountsRequestFieldShippingPolicy                  = big.NewInt(1 << 30)
+	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 31)
+	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 32)
+	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 33)
+	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 34)
+	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 35)
+	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 36)
+	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 37)
+	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 38)
+	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 39)
+	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 40)
+	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 41)
+	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 42)
+	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 43)
+	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 44)
+	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 45)
 )
 
 type UpdateAccountsRequest struct {
@@ -8768,12 +9354,16 @@ type UpdateAccountsRequest struct {
 	BusinessName *string `json:"business_name,omitempty" url:"-"`
 	// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
 	BusinessType *string `json:"business_type,omitempty" url:"-"`
+	// The account's cancellation policy document. Attached to new disputes as the cancellation policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	CancellationPolicy *UpdateAccountsRequestCancellationPolicy `json:"cancellation_policy,omitempty" url:"-"`
 	// Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
 	CollectVatID *bool `json:"collect_vat_id,omitempty" url:"-"`
 	// Country where the account is located.
 	Country *string `json:"country,omitempty" url:"-"`
 	// Account promotional description. When creating a Whop-managed Facebook page, it is truncated to 155 characters and used as the About text.
 	Description *string `json:"description,omitempty" url:"-"`
+	// The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	Eula *UpdateAccountsRequestEula `json:"eula,omitempty" url:"-"`
 	// The ID of the product to feature for affiliates. Pass `null` to clear.
 	FeaturedAffiliateProductID *string `json:"featured_affiliate_product_id,omitempty" url:"-"`
 	// Public account home page preferences.
@@ -8798,14 +9388,20 @@ type UpdateAccountsRequest struct {
 	OtherBusinessDescription *string `json:"other_business_description,omitempty" url:"-"`
 	// The description of the industry type when industry_type is other.
 	OtherIndustryDescription *string `json:"other_industry_description,omitempty" url:"-"`
+	// The account's privacy policy document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	PrivacyPolicy *UpdateAccountsRequestPrivacyPolicy `json:"privacy_policy,omitempty" url:"-"`
 	// ID of the tax classification code applied by default to the account's products. See the available [product categories](https://docs.numeral.com/essentials/product-categories).
 	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"-"`
 	// Whether the account requires authorized users to have two-factor authentication enabled.
 	Require2Fa *bool `json:"require_2fa,omitempty" url:"-"`
+	// The account's return and refund policy document. Attached to new disputes as the refund policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	ReturnPolicy *UpdateAccountsRequestReturnPolicy `json:"return_policy,omitempty" url:"-"`
 	// The unique URL slug for the account.
 	Route *string `json:"route,omitempty" url:"-"`
 	// Whether Whop sends transactional emails to customers on behalf of this account.
 	SendCustomerEmails *bool `json:"send_customer_emails,omitempty" url:"-"`
+	// The account's shipping policy document. Sent with physical-goods dispute evidence. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	ShippingPolicy *UpdateAccountsRequestShippingPolicy `json:"shipping_policy,omitempty" url:"-"`
 	// Whether the account appears in joined whops on other accounts.
 	ShowJoinedWhops *bool `json:"show_joined_whops,omitempty" url:"-"`
 	// Whether reviews are displayed on direct-to-consumer product pages.
@@ -8826,6 +9422,8 @@ type UpdateAccountsRequest struct {
 	TaxRemittedBy *UpdateAccountsRequestTaxRemittedBy `json:"tax_remitted_by,omitempty" url:"-"`
 	// Determines whether tax is included in the listed price or added at checkout.
 	TaxType *UpdateAccountsRequestTaxType `json:"tax_type,omitempty" url:"-"`
+	// The account's terms of service document. Attached to new disputes as the cancellation policy evidence when no cancellation policy is set. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	TermsOfService *UpdateAccountsRequestTermsOfService `json:"terms_of_service,omitempty" url:"-"`
 	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
 	ThreeDsLevel *UpdateAccountsRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
 	// The display name of the account.
@@ -8895,6 +9493,13 @@ func (u *UpdateAccountsRequest) SetBusinessType(businessType *string) {
 	u.require(updateAccountsRequestFieldBusinessType)
 }
 
+// SetCancellationPolicy sets the CancellationPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetCancellationPolicy(cancellationPolicy *UpdateAccountsRequestCancellationPolicy) {
+	u.CancellationPolicy = cancellationPolicy
+	u.require(updateAccountsRequestFieldCancellationPolicy)
+}
+
 // SetCollectVatID sets the CollectVatID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAccountsRequest) SetCollectVatID(collectVatID *bool) {
@@ -8914,6 +9519,13 @@ func (u *UpdateAccountsRequest) SetCountry(country *string) {
 func (u *UpdateAccountsRequest) SetDescription(description *string) {
 	u.Description = description
 	u.require(updateAccountsRequestFieldDescription)
+}
+
+// SetEula sets the Eula field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetEula(eula *UpdateAccountsRequestEula) {
+	u.Eula = eula
+	u.require(updateAccountsRequestFieldEula)
 }
 
 // SetFeaturedAffiliateProductID sets the FeaturedAffiliateProductID field and marks it as non-optional;
@@ -9000,6 +9612,13 @@ func (u *UpdateAccountsRequest) SetOtherIndustryDescription(otherIndustryDescrip
 	u.require(updateAccountsRequestFieldOtherIndustryDescription)
 }
 
+// SetPrivacyPolicy sets the PrivacyPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetPrivacyPolicy(privacyPolicy *UpdateAccountsRequestPrivacyPolicy) {
+	u.PrivacyPolicy = privacyPolicy
+	u.require(updateAccountsRequestFieldPrivacyPolicy)
+}
+
 // SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAccountsRequest) SetProductTaxCodeID(productTaxCodeID *string) {
@@ -9014,6 +9633,13 @@ func (u *UpdateAccountsRequest) SetRequire2Fa(require2Fa *bool) {
 	u.require(updateAccountsRequestFieldRequire2Fa)
 }
 
+// SetReturnPolicy sets the ReturnPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetReturnPolicy(returnPolicy *UpdateAccountsRequestReturnPolicy) {
+	u.ReturnPolicy = returnPolicy
+	u.require(updateAccountsRequestFieldReturnPolicy)
+}
+
 // SetRoute sets the Route field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAccountsRequest) SetRoute(route *string) {
@@ -9026,6 +9652,13 @@ func (u *UpdateAccountsRequest) SetRoute(route *string) {
 func (u *UpdateAccountsRequest) SetSendCustomerEmails(sendCustomerEmails *bool) {
 	u.SendCustomerEmails = sendCustomerEmails
 	u.require(updateAccountsRequestFieldSendCustomerEmails)
+}
+
+// SetShippingPolicy sets the ShippingPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetShippingPolicy(shippingPolicy *UpdateAccountsRequestShippingPolicy) {
+	u.ShippingPolicy = shippingPolicy
+	u.require(updateAccountsRequestFieldShippingPolicy)
 }
 
 // SetShowJoinedWhops sets the ShowJoinedWhops field and marks it as non-optional;
@@ -9096,6 +9729,13 @@ func (u *UpdateAccountsRequest) SetTaxRemittedBy(taxRemittedBy *UpdateAccountsRe
 func (u *UpdateAccountsRequest) SetTaxType(taxType *UpdateAccountsRequestTaxType) {
 	u.TaxType = taxType
 	u.require(updateAccountsRequestFieldTaxType)
+}
+
+// SetTermsOfService sets the TermsOfService field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetTermsOfService(termsOfService *UpdateAccountsRequestTermsOfService) {
+	u.TermsOfService = termsOfService
+	u.require(updateAccountsRequestFieldTermsOfService)
 }
 
 // SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;

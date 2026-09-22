@@ -1050,7 +1050,7 @@ type DisputeEvidence struct {
 	AccessActivityLog *string `json:"access_activity_log,omitempty" url:"access_activity_log,omitempty"`
 	// The billing address the customer provided at checkout.
 	BillingAddress *string `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	// The cancellation policy document. Falls back to Whop's platform policy when the seller has not uploaded their own.
+	// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, then its return policy, then Whop's platform policy.
 	CancellationPolicyAttachment *DisputeAttachment `json:"cancellation_policy_attachment,omitempty" url:"cancellation_policy_attachment,omitempty"`
 	// How the cancellation policy was shown to the customer before purchase.
 	CancellationPolicyDisclosure *string `json:"cancellation_policy_disclosure,omitempty" url:"cancellation_policy_disclosure,omitempty"`
@@ -1065,7 +1065,7 @@ type DisputeEvidence struct {
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
 	// What the customer purchased, in the seller's own words.
 	ProductDescription *string `json:"product_description,omitempty" url:"product_description,omitempty"`
-	// The refund policy document. Falls back to Whop's platform policy when the seller has not uploaded their own.
+	// The refund policy document. Defaults to the account's return policy, then its terms of service, then Whop's platform policy.
 	RefundPolicyAttachment *DisputeAttachment `json:"refund_policy_attachment,omitempty" url:"refund_policy_attachment,omitempty"`
 	// How the refund policy was shown to the customer before purchase.
 	RefundPolicyDisclosure *string `json:"refund_policy_disclosure,omitempty" url:"refund_policy_disclosure,omitempty"`
@@ -1709,6 +1709,8 @@ type DisputeEvidenceDocumentDocumentType string
 const (
 	DisputeEvidenceDocumentDocumentTypeReturnPolicy         DisputeEvidenceDocumentDocumentType = "return_policy"
 	DisputeEvidenceDocumentDocumentTypeShippingPolicy       DisputeEvidenceDocumentDocumentType = "shipping_policy"
+	DisputeEvidenceDocumentDocumentTypeCancellationPolicy   DisputeEvidenceDocumentDocumentType = "cancellation_policy"
+	DisputeEvidenceDocumentDocumentTypeTermsOfService       DisputeEvidenceDocumentDocumentType = "terms_of_service"
 	DisputeEvidenceDocumentDocumentTypePhysicalFulfillment  DisputeEvidenceDocumentDocumentType = "physical_fulfillment"
 	DisputeEvidenceDocumentDocumentTypeCustomerOrderHistory DisputeEvidenceDocumentDocumentType = "customer_order_history"
 	DisputeEvidenceDocumentDocumentTypeProductImage         DisputeEvidenceDocumentDocumentType = "product_image"
@@ -1724,6 +1726,10 @@ func NewDisputeEvidenceDocumentDocumentTypeFromString(s string) (DisputeEvidence
 		return DisputeEvidenceDocumentDocumentTypeReturnPolicy, nil
 	case "shipping_policy":
 		return DisputeEvidenceDocumentDocumentTypeShippingPolicy, nil
+	case "cancellation_policy":
+		return DisputeEvidenceDocumentDocumentTypeCancellationPolicy, nil
+	case "terms_of_service":
+		return DisputeEvidenceDocumentDocumentTypeTermsOfService, nil
 	case "physical_fulfillment":
 		return DisputeEvidenceDocumentDocumentTypePhysicalFulfillment, nil
 	case "customer_order_history":
@@ -3475,7 +3481,7 @@ type UpdateDisputesRequestEvidence struct {
 	AccessActivityLog *string `json:"access_activity_log,omitempty" url:"access_activity_log,omitempty"`
 	// The billing address the customer provided at checkout.
 	BillingAddress *string `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	// The cancellation policy document.
+	// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, when not set.
 	CancellationPolicyAttachment *UpdateDisputesRequestEvidenceCancellationPolicyAttachment `json:"cancellation_policy_attachment,omitempty" url:"cancellation_policy_attachment,omitempty"`
 	// How the cancellation policy was shown to the customer before purchase.
 	CancellationPolicyDisclosure *string `json:"cancellation_policy_disclosure,omitempty" url:"cancellation_policy_disclosure,omitempty"`
@@ -3489,7 +3495,7 @@ type UpdateDisputesRequestEvidence struct {
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
 	// What the customer purchased, in the seller's own words.
 	ProductDescription *string `json:"product_description,omitempty" url:"product_description,omitempty"`
-	// The refund policy document.
+	// The refund policy document. Defaults to the account's return policy when not set.
 	RefundPolicyAttachment *UpdateDisputesRequestEvidenceRefundPolicyAttachment `json:"refund_policy_attachment,omitempty" url:"refund_policy_attachment,omitempty"`
 	// How the refund policy was shown to the customer before purchase.
 	RefundPolicyDisclosure *string `json:"refund_policy_disclosure,omitempty" url:"refund_policy_disclosure,omitempty"`
@@ -3759,7 +3765,7 @@ func (u *UpdateDisputesRequestEvidence) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The cancellation policy document.
+// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, when not set.
 var (
 	updateDisputesRequestEvidenceCancellationPolicyAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceCancellationPolicyAttachmentFieldID             = big.NewInt(1 << 1)
@@ -3965,7 +3971,7 @@ func (u *UpdateDisputesRequestEvidenceCustomerCommunicationAttachment) String() 
 	return fmt.Sprintf("%#v", u)
 }
 
-// The refund policy document.
+// The refund policy document. Defaults to the account's return policy when not set.
 var (
 	updateDisputesRequestEvidenceRefundPolicyAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceRefundPolicyAttachmentFieldID             = big.NewInt(1 << 1)
@@ -4313,6 +4319,8 @@ type UploadEvidenceDisputesRequestDocumentsItemDocumentType string
 const (
 	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeReturnPolicy         UploadEvidenceDisputesRequestDocumentsItemDocumentType = "return_policy"
 	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeShippingPolicy       UploadEvidenceDisputesRequestDocumentsItemDocumentType = "shipping_policy"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCancellationPolicy   UploadEvidenceDisputesRequestDocumentsItemDocumentType = "cancellation_policy"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeTermsOfService       UploadEvidenceDisputesRequestDocumentsItemDocumentType = "terms_of_service"
 	UploadEvidenceDisputesRequestDocumentsItemDocumentTypePhysicalFulfillment  UploadEvidenceDisputesRequestDocumentsItemDocumentType = "physical_fulfillment"
 	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerOrderHistory UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_order_history"
 	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeProductImage         UploadEvidenceDisputesRequestDocumentsItemDocumentType = "product_image"
@@ -4328,6 +4336,10 @@ func NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString(s strin
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeReturnPolicy, nil
 	case "shipping_policy":
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeShippingPolicy, nil
+	case "cancellation_policy":
+		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCancellationPolicy, nil
+	case "terms_of_service":
+		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeTermsOfService, nil
 	case "physical_fulfillment":
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypePhysicalFulfillment, nil
 	case "customer_order_history":
