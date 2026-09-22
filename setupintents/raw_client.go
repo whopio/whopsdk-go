@@ -36,7 +36,7 @@ func (r *RawClient) Create(
 	ctx context.Context,
 	request *whopsdk.CreateSetupIntentsRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.CreateSetupIntentsResponse], error) {
+) (*core.Response[*whopsdk.SetupIntent], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -48,7 +48,8 @@ func (r *RawClient) Create(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *whopsdk.CreateSetupIntentsResponse
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.SetupIntent
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -68,7 +69,7 @@ func (r *RawClient) Create(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.CreateSetupIntentsResponse]{
+	return &core.Response[*whopsdk.SetupIntent]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

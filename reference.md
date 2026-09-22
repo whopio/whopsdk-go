@@ -31676,12 +31676,7 @@ client.Reviews.Retrieve(
 <dl>
 <dd>
 
-Returns a paginated list of setup intents for a company, with optional filtering by creation date. A setup intent securely collects and stores a member's payment method for future use without charging them immediately.
-
-Required permissions:
- - `payment:setup_intent:read`
- - `member:basic:read`
- - `member:email:read`
+Lists setup intents newest first. An account API key lists its own account; a user token lists every account it can read, or one account with `account_id`. `client_secret` is always null on list rows — retrieve the setup intent for it.
 </dd>
 </dl>
 </dd>
@@ -31696,25 +31691,7 @@ Required permissions:
 <dd>
 
 ```go
-request := &whopsdk.ListSetupIntentsRequest{
-    First: whopsdk.Int(
-        42,
-    ),
-    Last: whopsdk.Int(
-        42,
-    ),
-    CreatedBefore: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    CreatedAfter: whopsdk.Time(
-        whopsdk.MustParseDateTime(
-            "2023-12-01T05:00:00Z",
-        ),
-    ),
-    AccountID: "biz_xxxxxxxxxxxxxx",
-}
+request := &whopsdk.ListSetupIntentsRequest{}
 client.SetupIntents.List(
     context.TODO(),
     request,
@@ -31733,7 +31710,7 @@ client.SetupIntents.List(
 <dl>
 <dd>
 
-**after:** `*string` — Returns the elements in the list that come after the specified cursor.
+**accountID:** `*string` — Only setup intents for this account, prefixed `biz_`.
     
 </dd>
 </dl>
@@ -31741,7 +31718,7 @@ client.SetupIntents.List(
 <dl>
 <dd>
 
-**before:** `*string` — Returns the elements in the list that come before the specified cursor.
+**status:** `*whopsdk.ListSetupIntentsRequestStatus` — Only setup intents in this state.
     
 </dd>
 </dl>
@@ -31749,7 +31726,7 @@ client.SetupIntents.List(
 <dl>
 <dd>
 
-**first:** `*int` — Returns the first _n_ elements from the list.
+**createdBefore:** `*time.Time` — Only setup intents created before this ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -31757,7 +31734,7 @@ client.SetupIntents.List(
 <dl>
 <dd>
 
-**last:** `*int` — Returns the last _n_ elements from the list.
+**createdAfter:** `*time.Time` — Only setup intents created after this ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -31765,7 +31742,7 @@ client.SetupIntents.List(
 <dl>
 <dd>
 
-**direction:** `*whopsdk.Direction` 
+**order:** `*whopsdk.ListSetupIntentsRequestOrder` — The field to sort by.
     
 </dd>
 </dl>
@@ -31773,7 +31750,7 @@ client.SetupIntents.List(
 <dl>
 <dd>
 
-**createdBefore:** `*time.Time` — Only return setup intents created before this timestamp.
+**direction:** `*whopsdk.ListSetupIntentsRequestDirection` — The sort direction.
     
 </dd>
 </dl>
@@ -31781,7 +31758,7 @@ client.SetupIntents.List(
 <dl>
 <dd>
 
-**createdAfter:** `*time.Time` — Only return setup intents created after this timestamp.
+**first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
 </dl>
@@ -31789,7 +31766,23 @@ client.SetupIntents.List(
 <dl>
 <dd>
 
-**accountID:** `string` — The unique identifier of the company to list setup intents for.
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -31801,7 +31794,7 @@ client.SetupIntents.List(
 </dl>
 </details>
 
-<details><summary><code>client.SetupIntents.Create(request) -> *whopsdk.CreateSetupIntentsResponse</code></summary>
+<details><summary><code>client.SetupIntents.Create(request) -> *whopsdk.SetupIntent</code></summary>
 <dl>
 <dd>
 
@@ -31813,12 +31806,7 @@ client.SetupIntents.List(
 <dl>
 <dd>
 
-Save a buyer's payment method for later without charging it. Provide a confirmation token for a method the buyer just supplied, or an existing payment method to re-verify. The buyer may still have a step to complete — 3D Secure, a hosted enrollment, linking a bank account — so poll the setup intent's status endpoint for what to do next.
-
-Required permissions:
- - `payment:charge`
- - `member:basic:read`
- - `member:email:read`
+Saves a buyer's payment method for later without charging it. Pass a `confirmation_token` for a method the buyer just supplied through the payment elements in setup mode, or a `payment_method_id` already on file to re-verify it. The response is the setup intent as created, not its outcome: while it is `requires_action` the buyer still has a step, so hand `client_secret` to the elements' `handleNextAction` or poll Retrieve setup status. A buyer's own token holding `member:payment_methods:use` may create a setup intent for itself from a confirmation token.
 </dd>
 </dl>
 </dd>
@@ -31834,10 +31822,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.CreateSetupIntentsRequest{
-    CreateSetupIntentsRequestConfirmationToken: &whopsdk.CreateSetupIntentsRequestConfirmationToken{
-        AccountID: "biz_xxxxxxxxxxxxxx",
-        ConfirmationToken: "ctok_xxxxxxxxxxxxxx",
-    },
+    AccountID: "biz_xxxxxxxxxxxxxx",
 }
 client.SetupIntents.Create(
     context.TODO(),
@@ -31857,7 +31842,55 @@ client.SetupIntents.Create(
 <dl>
 <dd>
 
-**request:** `*whopsdk.CreateSetupIntentsRequest` — Parameters for CreateSetupIntent
+**accountID:** `string` — The account to save the payment method for, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**confirmationToken:** `*string` — A confirmation token describing a payment method the buyer just supplied, collected by the payment elements in setup mode. Provide this or `payment_method_id`, not both. The buyer is resolved from the token's billing email, or from `email`, and may still have a step to complete — poll Retrieve setup status for what to do next.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `*string` — The currency the saved payment method will be used with, as a lowercase ISO 4217 code. Controls which currency-specific payment methods are available. Defaults to `usd`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `*string` — Overrides the buyer email carried on the confirmation token, resolving or creating the user the method belongs to. Ignored unless `confirmation_token` is provided, and when the token was created by a signed-in buyer or the caller is the buyer.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]*string` — Custom metadata to attach to the setup intent. Returned on the setup intent and its webhooks.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethodID:** `*string` — An existing payment method to re-verify and save, prefixed `payt_`. Provide this or `confirmation_token`, not both. Not available to a buyer credential.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**returnURL:** `*string` — Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters.
     
 </dd>
 </dl>
@@ -31881,12 +31914,7 @@ client.SetupIntents.Create(
 <dl>
 <dd>
 
-Retrieves the details of an existing setup intent.
-
-Required permissions:
- - `payment:setup_intent:read`
- - `member:basic:read`
- - `member:email:read`
+Returns one setup intent. Related records are ids — once `status` is `succeeded`, `payment_method_id` is the saved method to charge or retrieve. The buyer's own token may retrieve a setup intent that belongs to it.
 </dd>
 </dl>
 </dd>
@@ -31902,7 +31930,7 @@ Required permissions:
 
 ```go
 request := &whopsdk.RetrieveSetupIntentsRequest{
-    ID: "sint_xxxxxxxxxxxxx",
+    ID: "id",
 }
 client.SetupIntents.Retrieve(
     context.TODO(),
@@ -31922,7 +31950,7 @@ client.SetupIntents.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the setup intent.
+**id:** `string` — The setup intent to retrieve, prefixed `sint_`.
     
 </dd>
 </dl>

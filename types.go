@@ -6731,161 +6731,6 @@ func (c CancelationStatus) Ptr() *CancelationStatus {
 	return &c
 }
 
-// Possible card brands that a payment token can have
-type CardBrands string
-
-const (
-	CardBrandsMastercard          CardBrands = "mastercard"
-	CardBrandsVisa                CardBrands = "visa"
-	CardBrandsAmex                CardBrands = "amex"
-	CardBrandsDiscover            CardBrands = "discover"
-	CardBrandsUnionpay            CardBrands = "unionpay"
-	CardBrandsJcb                 CardBrands = "jcb"
-	CardBrandsDiners              CardBrands = "diners"
-	CardBrandsLink                CardBrands = "link"
-	CardBrandsTroy                CardBrands = "troy"
-	CardBrandsVisadankort         CardBrands = "visadankort"
-	CardBrandsVisabancontact      CardBrands = "visabancontact"
-	CardBrandsChinaUnionPay       CardBrands = "china_union_pay"
-	CardBrandsRupay               CardBrands = "rupay"
-	CardBrandsJcbrupay            CardBrands = "jcbrupay"
-	CardBrandsElo                 CardBrands = "elo"
-	CardBrandsMaestro             CardBrands = "maestro"
-	CardBrandsTarjetaNaranja      CardBrands = "tarjeta_naranja"
-	CardBrandsCirrus              CardBrands = "cirrus"
-	CardBrandsNspkMir             CardBrands = "nspk_mir"
-	CardBrandsVerve               CardBrands = "verve"
-	CardBrandsEbt                 CardBrands = "ebt"
-	CardBrandsPrivateLabel        CardBrands = "private_label"
-	CardBrandsLocalBrand          CardBrands = "local_brand"
-	CardBrandsUatp                CardBrands = "uatp"
-	CardBrandsWexcard             CardBrands = "wexcard"
-	CardBrandsUzcard              CardBrands = "uzcard"
-	CardBrandsMeeza               CardBrands = "meeza"
-	CardBrandsHrgStoreCard        CardBrands = "hrg_store_card"
-	CardBrandsGirocard            CardBrands = "girocard"
-	CardBrandsFuelCard            CardBrands = "fuel_card"
-	CardBrandsDankort             CardBrands = "dankort"
-	CardBrandsCarnet              CardBrands = "carnet"
-	CardBrandsAtmCard             CardBrands = "atm_card"
-	CardBrandsChinaUnionPayuzcard CardBrands = "china_union_payuzcard"
-	CardBrandsCodensa             CardBrands = "codensa"
-	CardBrandsCabal               CardBrands = "cabal"
-	CardBrandsHipercard           CardBrands = "hipercard"
-	CardBrandsJcblankapay         CardBrands = "jcblankapay"
-	CardBrandsCmi                 CardBrands = "cmi"
-	CardBrandsAura                CardBrands = "aura"
-	CardBrandsAccel               CardBrands = "accel"
-	CardBrandsCuliance            CardBrands = "culiance"
-	CardBrandsNyce                CardBrands = "nyce"
-	CardBrandsPulse               CardBrands = "pulse"
-	CardBrandsStar                CardBrands = "star"
-	CardBrandsUnknown             CardBrands = "unknown"
-)
-
-func NewCardBrandsFromString(s string) (CardBrands, error) {
-	switch s {
-	case "mastercard":
-		return CardBrandsMastercard, nil
-	case "visa":
-		return CardBrandsVisa, nil
-	case "amex":
-		return CardBrandsAmex, nil
-	case "discover":
-		return CardBrandsDiscover, nil
-	case "unionpay":
-		return CardBrandsUnionpay, nil
-	case "jcb":
-		return CardBrandsJcb, nil
-	case "diners":
-		return CardBrandsDiners, nil
-	case "link":
-		return CardBrandsLink, nil
-	case "troy":
-		return CardBrandsTroy, nil
-	case "visadankort":
-		return CardBrandsVisadankort, nil
-	case "visabancontact":
-		return CardBrandsVisabancontact, nil
-	case "china_union_pay":
-		return CardBrandsChinaUnionPay, nil
-	case "rupay":
-		return CardBrandsRupay, nil
-	case "jcbrupay":
-		return CardBrandsJcbrupay, nil
-	case "elo":
-		return CardBrandsElo, nil
-	case "maestro":
-		return CardBrandsMaestro, nil
-	case "tarjeta_naranja":
-		return CardBrandsTarjetaNaranja, nil
-	case "cirrus":
-		return CardBrandsCirrus, nil
-	case "nspk_mir":
-		return CardBrandsNspkMir, nil
-	case "verve":
-		return CardBrandsVerve, nil
-	case "ebt":
-		return CardBrandsEbt, nil
-	case "private_label":
-		return CardBrandsPrivateLabel, nil
-	case "local_brand":
-		return CardBrandsLocalBrand, nil
-	case "uatp":
-		return CardBrandsUatp, nil
-	case "wexcard":
-		return CardBrandsWexcard, nil
-	case "uzcard":
-		return CardBrandsUzcard, nil
-	case "meeza":
-		return CardBrandsMeeza, nil
-	case "hrg_store_card":
-		return CardBrandsHrgStoreCard, nil
-	case "girocard":
-		return CardBrandsGirocard, nil
-	case "fuel_card":
-		return CardBrandsFuelCard, nil
-	case "dankort":
-		return CardBrandsDankort, nil
-	case "carnet":
-		return CardBrandsCarnet, nil
-	case "atm_card":
-		return CardBrandsAtmCard, nil
-	case "china_union_payuzcard":
-		return CardBrandsChinaUnionPayuzcard, nil
-	case "codensa":
-		return CardBrandsCodensa, nil
-	case "cabal":
-		return CardBrandsCabal, nil
-	case "hipercard":
-		return CardBrandsHipercard, nil
-	case "jcblankapay":
-		return CardBrandsJcblankapay, nil
-	case "cmi":
-		return CardBrandsCmi, nil
-	case "aura":
-		return CardBrandsAura, nil
-	case "accel":
-		return CardBrandsAccel, nil
-	case "culiance":
-		return CardBrandsCuliance, nil
-	case "nyce":
-		return CardBrandsNyce, nil
-	case "pulse":
-		return CardBrandsPulse, nil
-	case "star":
-		return CardBrandsStar, nil
-	case "unknown":
-		return CardBrandsUnknown, nil
-	}
-	var t CardBrands
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CardBrands) Ptr() *CardBrands {
-	return &c
-}
-
 // The lifecycle status of a card transaction.
 type CardIssuingTransactionStatus string
 
@@ -23367,13 +23212,19 @@ func (p *PaymentInstrument) String() string {
 
 var (
 	paymentInstrumentCardFieldBrand                      = big.NewInt(1 << 0)
-	paymentInstrumentCardFieldIssuerIdentificationNumber = big.NewInt(1 << 1)
-	paymentInstrumentCardFieldLast4                      = big.NewInt(1 << 2)
+	paymentInstrumentCardFieldExpMonth                   = big.NewInt(1 << 1)
+	paymentInstrumentCardFieldExpYear                    = big.NewInt(1 << 2)
+	paymentInstrumentCardFieldIssuerIdentificationNumber = big.NewInt(1 << 3)
+	paymentInstrumentCardFieldLast4                      = big.NewInt(1 << 4)
 )
 
 type PaymentInstrumentCard struct {
-	// The network identifier (`visa`, `amex`, …), matching `card.networks` entries and saved card payment methods.
-	Brand string `json:"brand" url:"brand"`
+	// The network identifier (`visa`, `amex`, …), matching `card.networks` entries and saved card payment methods. Null when the vault did not record the network.
+	Brand *string `json:"brand,omitempty" url:"brand,omitempty"`
+	// The card's expiry month, 1 to 12. Null when the vault did not record it.
+	ExpMonth *float64 `json:"exp_month,omitempty" url:"exp_month,omitempty"`
+	// The card's four-digit expiry year. Null when the vault did not record it.
+	ExpYear *float64 `json:"exp_year,omitempty" url:"exp_year,omitempty"`
 	// The issuer identification number, also called the BIN: the card's leading six or eight digits, which identify the issuing bank. Null when the processor did not report it.
 	IssuerIdentificationNumber *string `json:"issuer_identification_number,omitempty" url:"issuer_identification_number,omitempty"`
 	// The card's last four digits, when captured.
@@ -23386,11 +23237,25 @@ type PaymentInstrumentCard struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PaymentInstrumentCard) GetBrand() string {
+func (p *PaymentInstrumentCard) GetBrand() *string {
 	if p == nil {
-		return ""
+		return nil
 	}
 	return p.Brand
+}
+
+func (p *PaymentInstrumentCard) GetExpMonth() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.ExpMonth
+}
+
+func (p *PaymentInstrumentCard) GetExpYear() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.ExpYear
 }
 
 func (p *PaymentInstrumentCard) GetIssuerIdentificationNumber() *string {
@@ -23423,9 +23288,23 @@ func (p *PaymentInstrumentCard) require(field *big.Int) {
 
 // SetBrand sets the Brand field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInstrumentCard) SetBrand(brand string) {
+func (p *PaymentInstrumentCard) SetBrand(brand *string) {
 	p.Brand = brand
 	p.require(paymentInstrumentCardFieldBrand)
+}
+
+// SetExpMonth sets the ExpMonth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInstrumentCard) SetExpMonth(expMonth *float64) {
+	p.ExpMonth = expMonth
+	p.require(paymentInstrumentCardFieldExpMonth)
+}
+
+// SetExpYear sets the ExpYear field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInstrumentCard) SetExpYear(expYear *float64) {
+	p.ExpYear = expYear
+	p.require(paymentInstrumentCardFieldExpYear)
 }
 
 // SetIssuerIdentificationNumber sets the IssuerIdentificationNumber field and marks it as non-optional;
@@ -40358,6 +40237,2310 @@ func NewScheduleFrequenciesFromString(s string) (ScheduleFrequencies, error) {
 }
 
 func (s ScheduleFrequencies) Ptr() *ScheduleFrequencies {
+	return &s
+}
+
+// A setup intent allows a user to save a payment method for future use without making an immediate purchase.
+var (
+	setupIntentLegacyFieldCheckoutConfiguration = big.NewInt(1 << 0)
+	setupIntentLegacyFieldCompany               = big.NewInt(1 << 1)
+	setupIntentLegacyFieldCreatedAt             = big.NewInt(1 << 2)
+	setupIntentLegacyFieldErrorMessage          = big.NewInt(1 << 3)
+	setupIntentLegacyFieldID                    = big.NewInt(1 << 4)
+	setupIntentLegacyFieldMember                = big.NewInt(1 << 5)
+	setupIntentLegacyFieldMetadata              = big.NewInt(1 << 6)
+	setupIntentLegacyFieldPaymentMethod         = big.NewInt(1 << 7)
+	setupIntentLegacyFieldStatus                = big.NewInt(1 << 8)
+	setupIntentLegacyFieldThreeDsVerified       = big.NewInt(1 << 9)
+)
+
+type SetupIntentLegacy struct {
+	// The checkout session configuration associated with this setup intent. Null if no checkout session was used.
+	CheckoutConfiguration *SetupIntentLegacyCheckoutConfiguration `json:"checkout_configuration,omitempty" url:"checkout_configuration,omitempty"`
+	// The company that initiated this setup intent. Null if the company has been deleted.
+	Company *SetupIntentLegacyCompany `json:"company,omitempty" url:"company,omitempty"`
+	// The datetime the setup intent was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// A human-readable error message explaining why the setup intent failed. Null if no error occurred.
+	ErrorMessage *string `json:"error_message,omitempty" url:"error_message,omitempty"`
+	// The unique identifier for the setup intent.
+	ID string `json:"id" url:"id"`
+	// The company member associated with this setup intent. Null if the user is not a member.
+	Member *SetupIntentLegacyMember `json:"member,omitempty" url:"member,omitempty"`
+	// Custom key-value pairs attached to this setup intent. Null if no metadata was provided.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// The saved payment method created by this setup intent. Null if the setup has not completed successfully.
+	PaymentMethod *SetupIntentLegacyPaymentMethod `json:"payment_method,omitempty" url:"payment_method,omitempty"`
+	// The current status of the setup intent.
+	Status SetupIntentStatuses `json:"status" url:"status"`
+	// Whether 3D Secure authentication was completed when this payment method was set up.
+	ThreeDsVerified bool `json:"three_ds_verified" url:"three_ds_verified"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentLegacy) GetCheckoutConfiguration() *SetupIntentLegacyCheckoutConfiguration {
+	if s == nil {
+		return nil
+	}
+	return s.CheckoutConfiguration
+}
+
+func (s *SetupIntentLegacy) GetCompany() *SetupIntentLegacyCompany {
+	if s == nil {
+		return nil
+	}
+	return s.Company
+}
+
+func (s *SetupIntentLegacy) GetCreatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.CreatedAt
+}
+
+func (s *SetupIntentLegacy) GetErrorMessage() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ErrorMessage
+}
+
+func (s *SetupIntentLegacy) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentLegacy) GetMember() *SetupIntentLegacyMember {
+	if s == nil {
+		return nil
+	}
+	return s.Member
+}
+
+func (s *SetupIntentLegacy) GetMetadata() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Metadata
+}
+
+func (s *SetupIntentLegacy) GetPaymentMethod() *SetupIntentLegacyPaymentMethod {
+	if s == nil {
+		return nil
+	}
+	return s.PaymentMethod
+}
+
+func (s *SetupIntentLegacy) GetStatus() SetupIntentStatuses {
+	if s == nil {
+		return ""
+	}
+	return s.Status
+}
+
+func (s *SetupIntentLegacy) GetThreeDsVerified() bool {
+	if s == nil {
+		return false
+	}
+	return s.ThreeDsVerified
+}
+
+func (s *SetupIntentLegacy) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentLegacy) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCheckoutConfiguration sets the CheckoutConfiguration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacy) SetCheckoutConfiguration(checkoutConfiguration *SetupIntentLegacyCheckoutConfiguration) {
+	s.CheckoutConfiguration = checkoutConfiguration
+	s.require(setupIntentLegacyFieldCheckoutConfiguration)
+}
+
+// SetCompany sets the Company field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacy) SetCompany(company *SetupIntentLegacyCompany) {
+	s.Company = company
+	s.require(setupIntentLegacyFieldCompany)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacy) SetCreatedAt(createdAt time.Time) {
+	s.CreatedAt = createdAt
+	s.require(setupIntentLegacyFieldCreatedAt)
+}
+
+// SetErrorMessage sets the ErrorMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacy) SetErrorMessage(errorMessage *string) {
+	s.ErrorMessage = errorMessage
+	s.require(setupIntentLegacyFieldErrorMessage)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacy) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentLegacyFieldID)
+}
+
+// SetMember sets the Member field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacy) SetMember(member *SetupIntentLegacyMember) {
+	s.Member = member
+	s.require(setupIntentLegacyFieldMember)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacy) SetMetadata(metadata map[string]any) {
+	s.Metadata = metadata
+	s.require(setupIntentLegacyFieldMetadata)
+}
+
+// SetPaymentMethod sets the PaymentMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacy) SetPaymentMethod(paymentMethod *SetupIntentLegacyPaymentMethod) {
+	s.PaymentMethod = paymentMethod
+	s.require(setupIntentLegacyFieldPaymentMethod)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacy) SetStatus(status SetupIntentStatuses) {
+	s.Status = status
+	s.require(setupIntentLegacyFieldStatus)
+}
+
+// SetThreeDsVerified sets the ThreeDsVerified field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacy) SetThreeDsVerified(threeDsVerified bool) {
+	s.ThreeDsVerified = threeDsVerified
+	s.require(setupIntentLegacyFieldThreeDsVerified)
+}
+
+func (s *SetupIntentLegacy) UnmarshalJSON(data []byte) error {
+	type embed SetupIntentLegacy
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SetupIntentLegacy(unmarshaler.embed)
+	s.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentLegacy) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentLegacy
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed:     embed(*s),
+		CreatedAt: internal.NewDateTime(s.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentLegacy) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The checkout session configuration associated with this setup intent. Null if no checkout session was used.
+var (
+	setupIntentLegacyCheckoutConfigurationFieldID = big.NewInt(1 << 0)
+)
+
+type SetupIntentLegacyCheckoutConfiguration struct {
+	// The unique identifier for the checkout session.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentLegacyCheckoutConfiguration) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentLegacyCheckoutConfiguration) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentLegacyCheckoutConfiguration) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyCheckoutConfiguration) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentLegacyCheckoutConfigurationFieldID)
+}
+
+func (s *SetupIntentLegacyCheckoutConfiguration) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentLegacyCheckoutConfiguration
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentLegacyCheckoutConfiguration(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentLegacyCheckoutConfiguration) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentLegacyCheckoutConfiguration
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentLegacyCheckoutConfiguration) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The company that initiated this setup intent. Null if the company has been deleted.
+var (
+	setupIntentLegacyCompanyFieldID = big.NewInt(1 << 0)
+)
+
+type SetupIntentLegacyCompany struct {
+	// The unique identifier for the company.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentLegacyCompany) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentLegacyCompany) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentLegacyCompany) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyCompany) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentLegacyCompanyFieldID)
+}
+
+func (s *SetupIntentLegacyCompany) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentLegacyCompany
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentLegacyCompany(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentLegacyCompany) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentLegacyCompany
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentLegacyCompany) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The company member associated with this setup intent. Null if the user is not a member.
+var (
+	setupIntentLegacyMemberFieldID   = big.NewInt(1 << 0)
+	setupIntentLegacyMemberFieldUser = big.NewInt(1 << 1)
+)
+
+type SetupIntentLegacyMember struct {
+	// The unique identifier for the company member.
+	ID string `json:"id" url:"id"`
+	// The user for this member, if any.
+	User *SetupIntentLegacyMemberUser `json:"user,omitempty" url:"user,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentLegacyMember) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentLegacyMember) GetUser() *SetupIntentLegacyMemberUser {
+	if s == nil {
+		return nil
+	}
+	return s.User
+}
+
+func (s *SetupIntentLegacyMember) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentLegacyMember) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyMember) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentLegacyMemberFieldID)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyMember) SetUser(user *SetupIntentLegacyMemberUser) {
+	s.User = user
+	s.require(setupIntentLegacyMemberFieldUser)
+}
+
+func (s *SetupIntentLegacyMember) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentLegacyMember
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentLegacyMember(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentLegacyMember) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentLegacyMember
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentLegacyMember) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The user for this member, if any.
+var (
+	setupIntentLegacyMemberUserFieldEmail    = big.NewInt(1 << 0)
+	setupIntentLegacyMemberUserFieldID       = big.NewInt(1 << 1)
+	setupIntentLegacyMemberUserFieldName     = big.NewInt(1 << 2)
+	setupIntentLegacyMemberUserFieldUsername = big.NewInt(1 << 3)
+)
+
+type SetupIntentLegacyMemberUser struct {
+	// The digital mailing address of the user.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The unique identifier for the company member user.
+	ID string `json:"id" url:"id"`
+	// The user's full name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The whop username.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentLegacyMemberUser) GetEmail() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Email
+}
+
+func (s *SetupIntentLegacyMemberUser) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentLegacyMemberUser) GetName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Name
+}
+
+func (s *SetupIntentLegacyMemberUser) GetUsername() string {
+	if s == nil {
+		return ""
+	}
+	return s.Username
+}
+
+func (s *SetupIntentLegacyMemberUser) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentLegacyMemberUser) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyMemberUser) SetEmail(email *string) {
+	s.Email = email
+	s.require(setupIntentLegacyMemberUserFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyMemberUser) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentLegacyMemberUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyMemberUser) SetName(name *string) {
+	s.Name = name
+	s.require(setupIntentLegacyMemberUserFieldName)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyMemberUser) SetUsername(username string) {
+	s.Username = username
+	s.require(setupIntentLegacyMemberUserFieldUsername)
+}
+
+func (s *SetupIntentLegacyMemberUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentLegacyMemberUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentLegacyMemberUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentLegacyMemberUser) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentLegacyMemberUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentLegacyMemberUser) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The saved payment method created by this setup intent. Null if the setup has not completed successfully.
+var (
+	setupIntentLegacyPaymentMethodFieldCard              = big.NewInt(1 << 0)
+	setupIntentLegacyPaymentMethodFieldCreatedAt         = big.NewInt(1 << 1)
+	setupIntentLegacyPaymentMethodFieldID                = big.NewInt(1 << 2)
+	setupIntentLegacyPaymentMethodFieldMailingAddress    = big.NewInt(1 << 3)
+	setupIntentLegacyPaymentMethodFieldPaymentMethodType = big.NewInt(1 << 4)
+)
+
+type SetupIntentLegacyPaymentMethod struct {
+	// The card data associated with the payment method, if its a debit or credit card.
+	Card *SetupIntentLegacyPaymentMethodCard `json:"card,omitempty" url:"card,omitempty"`
+	// The datetime the payment token was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// The unique identifier for the payment token.
+	ID string `json:"id" url:"id"`
+	// The mailing address associated with the payment method's user
+	MailingAddress *SetupIntentLegacyPaymentMethodMailingAddress `json:"mailing_address,omitempty" url:"mailing_address,omitempty"`
+	// The payment method type of the payment method
+	PaymentMethodType PaymentMethodTypes `json:"payment_method_type" url:"payment_method_type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentLegacyPaymentMethod) GetCard() *SetupIntentLegacyPaymentMethodCard {
+	if s == nil {
+		return nil
+	}
+	return s.Card
+}
+
+func (s *SetupIntentLegacyPaymentMethod) GetCreatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.CreatedAt
+}
+
+func (s *SetupIntentLegacyPaymentMethod) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentLegacyPaymentMethod) GetMailingAddress() *SetupIntentLegacyPaymentMethodMailingAddress {
+	if s == nil {
+		return nil
+	}
+	return s.MailingAddress
+}
+
+func (s *SetupIntentLegacyPaymentMethod) GetPaymentMethodType() PaymentMethodTypes {
+	if s == nil {
+		return ""
+	}
+	return s.PaymentMethodType
+}
+
+func (s *SetupIntentLegacyPaymentMethod) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentLegacyPaymentMethod) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCard sets the Card field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethod) SetCard(card *SetupIntentLegacyPaymentMethodCard) {
+	s.Card = card
+	s.require(setupIntentLegacyPaymentMethodFieldCard)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethod) SetCreatedAt(createdAt time.Time) {
+	s.CreatedAt = createdAt
+	s.require(setupIntentLegacyPaymentMethodFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethod) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentLegacyPaymentMethodFieldID)
+}
+
+// SetMailingAddress sets the MailingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethod) SetMailingAddress(mailingAddress *SetupIntentLegacyPaymentMethodMailingAddress) {
+	s.MailingAddress = mailingAddress
+	s.require(setupIntentLegacyPaymentMethodFieldMailingAddress)
+}
+
+// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethod) SetPaymentMethodType(paymentMethodType PaymentMethodTypes) {
+	s.PaymentMethodType = paymentMethodType
+	s.require(setupIntentLegacyPaymentMethodFieldPaymentMethodType)
+}
+
+func (s *SetupIntentLegacyPaymentMethod) UnmarshalJSON(data []byte) error {
+	type embed SetupIntentLegacyPaymentMethod
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SetupIntentLegacyPaymentMethod(unmarshaler.embed)
+	s.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentLegacyPaymentMethod) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentLegacyPaymentMethod
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed:     embed(*s),
+		CreatedAt: internal.NewDateTime(s.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentLegacyPaymentMethod) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The card data associated with the payment method, if its a debit or credit card.
+var (
+	setupIntentLegacyPaymentMethodCardFieldBrand    = big.NewInt(1 << 0)
+	setupIntentLegacyPaymentMethodCardFieldExpMonth = big.NewInt(1 << 1)
+	setupIntentLegacyPaymentMethodCardFieldExpYear  = big.NewInt(1 << 2)
+	setupIntentLegacyPaymentMethodCardFieldLast4    = big.NewInt(1 << 3)
+)
+
+type SetupIntentLegacyPaymentMethodCard struct {
+	// The card network (e.g., visa, mastercard, amex). Null if the brand could not be determined.
+	Brand *CardBrands `json:"brand,omitempty" url:"brand,omitempty"`
+	// The two-digit expiration month of the card (1-12). Null if not available.
+	ExpMonth *int `json:"exp_month,omitempty" url:"exp_month,omitempty"`
+	// The two-digit expiration year of the card (e.g., 27 for 2027). Null if not available.
+	ExpYear *int `json:"exp_year,omitempty" url:"exp_year,omitempty"`
+	// The last four digits of the card number. Null if not available.
+	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentLegacyPaymentMethodCard) GetBrand() *CardBrands {
+	if s == nil {
+		return nil
+	}
+	return s.Brand
+}
+
+func (s *SetupIntentLegacyPaymentMethodCard) GetExpMonth() *int {
+	if s == nil {
+		return nil
+	}
+	return s.ExpMonth
+}
+
+func (s *SetupIntentLegacyPaymentMethodCard) GetExpYear() *int {
+	if s == nil {
+		return nil
+	}
+	return s.ExpYear
+}
+
+func (s *SetupIntentLegacyPaymentMethodCard) GetLast4() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Last4
+}
+
+func (s *SetupIntentLegacyPaymentMethodCard) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentLegacyPaymentMethodCard) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodCard) SetBrand(brand *CardBrands) {
+	s.Brand = brand
+	s.require(setupIntentLegacyPaymentMethodCardFieldBrand)
+}
+
+// SetExpMonth sets the ExpMonth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodCard) SetExpMonth(expMonth *int) {
+	s.ExpMonth = expMonth
+	s.require(setupIntentLegacyPaymentMethodCardFieldExpMonth)
+}
+
+// SetExpYear sets the ExpYear field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodCard) SetExpYear(expYear *int) {
+	s.ExpYear = expYear
+	s.require(setupIntentLegacyPaymentMethodCardFieldExpYear)
+}
+
+// SetLast4 sets the Last4 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodCard) SetLast4(last4 *string) {
+	s.Last4 = last4
+	s.require(setupIntentLegacyPaymentMethodCardFieldLast4)
+}
+
+func (s *SetupIntentLegacyPaymentMethodCard) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentLegacyPaymentMethodCard
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentLegacyPaymentMethodCard(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentLegacyPaymentMethodCard) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentLegacyPaymentMethodCard
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentLegacyPaymentMethodCard) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The mailing address associated with the payment method's user
+var (
+	setupIntentLegacyPaymentMethodMailingAddressFieldCity       = big.NewInt(1 << 0)
+	setupIntentLegacyPaymentMethodMailingAddressFieldCountry    = big.NewInt(1 << 1)
+	setupIntentLegacyPaymentMethodMailingAddressFieldLine1      = big.NewInt(1 << 2)
+	setupIntentLegacyPaymentMethodMailingAddressFieldLine2      = big.NewInt(1 << 3)
+	setupIntentLegacyPaymentMethodMailingAddressFieldName       = big.NewInt(1 << 4)
+	setupIntentLegacyPaymentMethodMailingAddressFieldPostalCode = big.NewInt(1 << 5)
+	setupIntentLegacyPaymentMethodMailingAddressFieldState      = big.NewInt(1 << 6)
+)
+
+type SetupIntentLegacyPaymentMethodMailingAddress struct {
+	// The city of the address.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// The country of the address.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The line 1 of the address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// The line 2 of the address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The name of the customer.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The postal code of the address.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// The state of the address.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) GetCity() *string {
+	if s == nil {
+		return nil
+	}
+	return s.City
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) GetCountry() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Country
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) GetLine1() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Line1
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) GetLine2() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Line2
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) GetName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Name
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) GetPostalCode() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PostalCode
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) GetState() *string {
+	if s == nil {
+		return nil
+	}
+	return s.State
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) SetCity(city *string) {
+	s.City = city
+	s.require(setupIntentLegacyPaymentMethodMailingAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) SetCountry(country *string) {
+	s.Country = country
+	s.require(setupIntentLegacyPaymentMethodMailingAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) SetLine1(line1 *string) {
+	s.Line1 = line1
+	s.require(setupIntentLegacyPaymentMethodMailingAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) SetLine2(line2 *string) {
+	s.Line2 = line2
+	s.require(setupIntentLegacyPaymentMethodMailingAddressFieldLine2)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) SetName(name *string) {
+	s.Name = name
+	s.require(setupIntentLegacyPaymentMethodMailingAddressFieldName)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) SetPostalCode(postalCode *string) {
+	s.PostalCode = postalCode
+	s.require(setupIntentLegacyPaymentMethodMailingAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) SetState(state *string) {
+	s.State = state
+	s.require(setupIntentLegacyPaymentMethodMailingAddressFieldState)
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentLegacyPaymentMethodMailingAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentLegacyPaymentMethodMailingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentLegacyPaymentMethodMailingAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentLegacyPaymentMethodMailingAddress) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// A setup intent allows a user to save a payment method for future use without making an immediate purchase.
+var (
+	setupIntentListItemFieldCheckoutConfiguration = big.NewInt(1 << 0)
+	setupIntentListItemFieldCompany               = big.NewInt(1 << 1)
+	setupIntentListItemFieldCreatedAt             = big.NewInt(1 << 2)
+	setupIntentListItemFieldErrorMessage          = big.NewInt(1 << 3)
+	setupIntentListItemFieldID                    = big.NewInt(1 << 4)
+	setupIntentListItemFieldMember                = big.NewInt(1 << 5)
+	setupIntentListItemFieldMetadata              = big.NewInt(1 << 6)
+	setupIntentListItemFieldPaymentMethod         = big.NewInt(1 << 7)
+	setupIntentListItemFieldStatus                = big.NewInt(1 << 8)
+)
+
+type SetupIntentListItem struct {
+	// The checkout session configuration associated with this setup intent. Null if no checkout session was used.
+	CheckoutConfiguration *SetupIntentListItemCheckoutConfiguration `json:"checkout_configuration,omitempty" url:"checkout_configuration,omitempty"`
+	// The company that initiated this setup intent. Null if the company has been deleted.
+	Company *SetupIntentListItemCompany `json:"company,omitempty" url:"company,omitempty"`
+	// The datetime the setup intent was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// A human-readable error message explaining why the setup intent failed. Null if no error occurred.
+	ErrorMessage *string `json:"error_message,omitempty" url:"error_message,omitempty"`
+	// The unique identifier for the setup intent.
+	ID string `json:"id" url:"id"`
+	// The company member associated with this setup intent. Null if the user is not a member.
+	Member *SetupIntentListItemMember `json:"member,omitempty" url:"member,omitempty"`
+	// Custom key-value pairs attached to this setup intent. Null if no metadata was provided.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// The saved payment method created by this setup intent. Null if the setup has not completed successfully.
+	PaymentMethod *SetupIntentListItemPaymentMethod `json:"payment_method,omitempty" url:"payment_method,omitempty"`
+	// The current status of the setup intent.
+	Status SetupIntentStatuses `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentListItem) GetCheckoutConfiguration() *SetupIntentListItemCheckoutConfiguration {
+	if s == nil {
+		return nil
+	}
+	return s.CheckoutConfiguration
+}
+
+func (s *SetupIntentListItem) GetCompany() *SetupIntentListItemCompany {
+	if s == nil {
+		return nil
+	}
+	return s.Company
+}
+
+func (s *SetupIntentListItem) GetCreatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.CreatedAt
+}
+
+func (s *SetupIntentListItem) GetErrorMessage() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ErrorMessage
+}
+
+func (s *SetupIntentListItem) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentListItem) GetMember() *SetupIntentListItemMember {
+	if s == nil {
+		return nil
+	}
+	return s.Member
+}
+
+func (s *SetupIntentListItem) GetMetadata() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Metadata
+}
+
+func (s *SetupIntentListItem) GetPaymentMethod() *SetupIntentListItemPaymentMethod {
+	if s == nil {
+		return nil
+	}
+	return s.PaymentMethod
+}
+
+func (s *SetupIntentListItem) GetStatus() SetupIntentStatuses {
+	if s == nil {
+		return ""
+	}
+	return s.Status
+}
+
+func (s *SetupIntentListItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentListItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCheckoutConfiguration sets the CheckoutConfiguration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItem) SetCheckoutConfiguration(checkoutConfiguration *SetupIntentListItemCheckoutConfiguration) {
+	s.CheckoutConfiguration = checkoutConfiguration
+	s.require(setupIntentListItemFieldCheckoutConfiguration)
+}
+
+// SetCompany sets the Company field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItem) SetCompany(company *SetupIntentListItemCompany) {
+	s.Company = company
+	s.require(setupIntentListItemFieldCompany)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItem) SetCreatedAt(createdAt time.Time) {
+	s.CreatedAt = createdAt
+	s.require(setupIntentListItemFieldCreatedAt)
+}
+
+// SetErrorMessage sets the ErrorMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItem) SetErrorMessage(errorMessage *string) {
+	s.ErrorMessage = errorMessage
+	s.require(setupIntentListItemFieldErrorMessage)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItem) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentListItemFieldID)
+}
+
+// SetMember sets the Member field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItem) SetMember(member *SetupIntentListItemMember) {
+	s.Member = member
+	s.require(setupIntentListItemFieldMember)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItem) SetMetadata(metadata map[string]any) {
+	s.Metadata = metadata
+	s.require(setupIntentListItemFieldMetadata)
+}
+
+// SetPaymentMethod sets the PaymentMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItem) SetPaymentMethod(paymentMethod *SetupIntentListItemPaymentMethod) {
+	s.PaymentMethod = paymentMethod
+	s.require(setupIntentListItemFieldPaymentMethod)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItem) SetStatus(status SetupIntentStatuses) {
+	s.Status = status
+	s.require(setupIntentListItemFieldStatus)
+}
+
+func (s *SetupIntentListItem) UnmarshalJSON(data []byte) error {
+	type embed SetupIntentListItem
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SetupIntentListItem(unmarshaler.embed)
+	s.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentListItem) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentListItem
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed:     embed(*s),
+		CreatedAt: internal.NewDateTime(s.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentListItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The checkout session configuration associated with this setup intent. Null if no checkout session was used.
+var (
+	setupIntentListItemCheckoutConfigurationFieldID = big.NewInt(1 << 0)
+)
+
+type SetupIntentListItemCheckoutConfiguration struct {
+	// The unique identifier for the checkout session.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentListItemCheckoutConfiguration) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentListItemCheckoutConfiguration) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentListItemCheckoutConfiguration) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemCheckoutConfiguration) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentListItemCheckoutConfigurationFieldID)
+}
+
+func (s *SetupIntentListItemCheckoutConfiguration) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentListItemCheckoutConfiguration
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentListItemCheckoutConfiguration(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentListItemCheckoutConfiguration) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentListItemCheckoutConfiguration
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentListItemCheckoutConfiguration) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The company that initiated this setup intent. Null if the company has been deleted.
+var (
+	setupIntentListItemCompanyFieldID = big.NewInt(1 << 0)
+)
+
+type SetupIntentListItemCompany struct {
+	// The unique identifier for the company.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentListItemCompany) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentListItemCompany) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentListItemCompany) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemCompany) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentListItemCompanyFieldID)
+}
+
+func (s *SetupIntentListItemCompany) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentListItemCompany
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentListItemCompany(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentListItemCompany) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentListItemCompany
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentListItemCompany) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The company member associated with this setup intent. Null if the user is not a member.
+var (
+	setupIntentListItemMemberFieldID   = big.NewInt(1 << 0)
+	setupIntentListItemMemberFieldUser = big.NewInt(1 << 1)
+)
+
+type SetupIntentListItemMember struct {
+	// The unique identifier for the company member.
+	ID string `json:"id" url:"id"`
+	// The user for this member, if any.
+	User *SetupIntentListItemMemberUser `json:"user,omitempty" url:"user,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentListItemMember) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentListItemMember) GetUser() *SetupIntentListItemMemberUser {
+	if s == nil {
+		return nil
+	}
+	return s.User
+}
+
+func (s *SetupIntentListItemMember) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentListItemMember) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemMember) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentListItemMemberFieldID)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemMember) SetUser(user *SetupIntentListItemMemberUser) {
+	s.User = user
+	s.require(setupIntentListItemMemberFieldUser)
+}
+
+func (s *SetupIntentListItemMember) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentListItemMember
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentListItemMember(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentListItemMember) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentListItemMember
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentListItemMember) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The user for this member, if any.
+var (
+	setupIntentListItemMemberUserFieldEmail    = big.NewInt(1 << 0)
+	setupIntentListItemMemberUserFieldID       = big.NewInt(1 << 1)
+	setupIntentListItemMemberUserFieldName     = big.NewInt(1 << 2)
+	setupIntentListItemMemberUserFieldUsername = big.NewInt(1 << 3)
+)
+
+type SetupIntentListItemMemberUser struct {
+	// The digital mailing address of the user.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The unique identifier for the company member user.
+	ID string `json:"id" url:"id"`
+	// The user's full name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The whop username.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentListItemMemberUser) GetEmail() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Email
+}
+
+func (s *SetupIntentListItemMemberUser) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentListItemMemberUser) GetName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Name
+}
+
+func (s *SetupIntentListItemMemberUser) GetUsername() string {
+	if s == nil {
+		return ""
+	}
+	return s.Username
+}
+
+func (s *SetupIntentListItemMemberUser) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentListItemMemberUser) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemMemberUser) SetEmail(email *string) {
+	s.Email = email
+	s.require(setupIntentListItemMemberUserFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemMemberUser) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentListItemMemberUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemMemberUser) SetName(name *string) {
+	s.Name = name
+	s.require(setupIntentListItemMemberUserFieldName)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemMemberUser) SetUsername(username string) {
+	s.Username = username
+	s.require(setupIntentListItemMemberUserFieldUsername)
+}
+
+func (s *SetupIntentListItemMemberUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentListItemMemberUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentListItemMemberUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentListItemMemberUser) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentListItemMemberUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentListItemMemberUser) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The saved payment method created by this setup intent. Null if the setup has not completed successfully.
+var (
+	setupIntentListItemPaymentMethodFieldCard              = big.NewInt(1 << 0)
+	setupIntentListItemPaymentMethodFieldCreatedAt         = big.NewInt(1 << 1)
+	setupIntentListItemPaymentMethodFieldID                = big.NewInt(1 << 2)
+	setupIntentListItemPaymentMethodFieldMailingAddress    = big.NewInt(1 << 3)
+	setupIntentListItemPaymentMethodFieldPaymentMethodType = big.NewInt(1 << 4)
+)
+
+type SetupIntentListItemPaymentMethod struct {
+	// The card data associated with the payment method, if its a debit or credit card.
+	Card *SetupIntentListItemPaymentMethodCard `json:"card,omitempty" url:"card,omitempty"`
+	// The datetime the payment token was created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// The unique identifier for the payment token.
+	ID string `json:"id" url:"id"`
+	// The mailing address associated with the payment method's user
+	MailingAddress *SetupIntentListItemPaymentMethodMailingAddress `json:"mailing_address,omitempty" url:"mailing_address,omitempty"`
+	// The payment method type of the payment method
+	PaymentMethodType PaymentMethodTypes `json:"payment_method_type" url:"payment_method_type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentListItemPaymentMethod) GetCard() *SetupIntentListItemPaymentMethodCard {
+	if s == nil {
+		return nil
+	}
+	return s.Card
+}
+
+func (s *SetupIntentListItemPaymentMethod) GetCreatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.CreatedAt
+}
+
+func (s *SetupIntentListItemPaymentMethod) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SetupIntentListItemPaymentMethod) GetMailingAddress() *SetupIntentListItemPaymentMethodMailingAddress {
+	if s == nil {
+		return nil
+	}
+	return s.MailingAddress
+}
+
+func (s *SetupIntentListItemPaymentMethod) GetPaymentMethodType() PaymentMethodTypes {
+	if s == nil {
+		return ""
+	}
+	return s.PaymentMethodType
+}
+
+func (s *SetupIntentListItemPaymentMethod) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentListItemPaymentMethod) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCard sets the Card field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethod) SetCard(card *SetupIntentListItemPaymentMethodCard) {
+	s.Card = card
+	s.require(setupIntentListItemPaymentMethodFieldCard)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethod) SetCreatedAt(createdAt time.Time) {
+	s.CreatedAt = createdAt
+	s.require(setupIntentListItemPaymentMethodFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethod) SetID(id string) {
+	s.ID = id
+	s.require(setupIntentListItemPaymentMethodFieldID)
+}
+
+// SetMailingAddress sets the MailingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethod) SetMailingAddress(mailingAddress *SetupIntentListItemPaymentMethodMailingAddress) {
+	s.MailingAddress = mailingAddress
+	s.require(setupIntentListItemPaymentMethodFieldMailingAddress)
+}
+
+// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethod) SetPaymentMethodType(paymentMethodType PaymentMethodTypes) {
+	s.PaymentMethodType = paymentMethodType
+	s.require(setupIntentListItemPaymentMethodFieldPaymentMethodType)
+}
+
+func (s *SetupIntentListItemPaymentMethod) UnmarshalJSON(data []byte) error {
+	type embed SetupIntentListItemPaymentMethod
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SetupIntentListItemPaymentMethod(unmarshaler.embed)
+	s.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentListItemPaymentMethod) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentListItemPaymentMethod
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed:     embed(*s),
+		CreatedAt: internal.NewDateTime(s.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentListItemPaymentMethod) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The card data associated with the payment method, if its a debit or credit card.
+var (
+	setupIntentListItemPaymentMethodCardFieldBrand    = big.NewInt(1 << 0)
+	setupIntentListItemPaymentMethodCardFieldExpMonth = big.NewInt(1 << 1)
+	setupIntentListItemPaymentMethodCardFieldExpYear  = big.NewInt(1 << 2)
+	setupIntentListItemPaymentMethodCardFieldLast4    = big.NewInt(1 << 3)
+)
+
+type SetupIntentListItemPaymentMethodCard struct {
+	// The card network (e.g., visa, mastercard, amex). Null if the brand could not be determined.
+	Brand *CardBrands `json:"brand,omitempty" url:"brand,omitempty"`
+	// The two-digit expiration month of the card (1-12). Null if not available.
+	ExpMonth *int `json:"exp_month,omitempty" url:"exp_month,omitempty"`
+	// The two-digit expiration year of the card (e.g., 27 for 2027). Null if not available.
+	ExpYear *int `json:"exp_year,omitempty" url:"exp_year,omitempty"`
+	// The last four digits of the card number. Null if not available.
+	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentListItemPaymentMethodCard) GetBrand() *CardBrands {
+	if s == nil {
+		return nil
+	}
+	return s.Brand
+}
+
+func (s *SetupIntentListItemPaymentMethodCard) GetExpMonth() *int {
+	if s == nil {
+		return nil
+	}
+	return s.ExpMonth
+}
+
+func (s *SetupIntentListItemPaymentMethodCard) GetExpYear() *int {
+	if s == nil {
+		return nil
+	}
+	return s.ExpYear
+}
+
+func (s *SetupIntentListItemPaymentMethodCard) GetLast4() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Last4
+}
+
+func (s *SetupIntentListItemPaymentMethodCard) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentListItemPaymentMethodCard) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodCard) SetBrand(brand *CardBrands) {
+	s.Brand = brand
+	s.require(setupIntentListItemPaymentMethodCardFieldBrand)
+}
+
+// SetExpMonth sets the ExpMonth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodCard) SetExpMonth(expMonth *int) {
+	s.ExpMonth = expMonth
+	s.require(setupIntentListItemPaymentMethodCardFieldExpMonth)
+}
+
+// SetExpYear sets the ExpYear field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodCard) SetExpYear(expYear *int) {
+	s.ExpYear = expYear
+	s.require(setupIntentListItemPaymentMethodCardFieldExpYear)
+}
+
+// SetLast4 sets the Last4 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodCard) SetLast4(last4 *string) {
+	s.Last4 = last4
+	s.require(setupIntentListItemPaymentMethodCardFieldLast4)
+}
+
+func (s *SetupIntentListItemPaymentMethodCard) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentListItemPaymentMethodCard
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentListItemPaymentMethodCard(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentListItemPaymentMethodCard) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentListItemPaymentMethodCard
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentListItemPaymentMethodCard) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The mailing address associated with the payment method's user
+var (
+	setupIntentListItemPaymentMethodMailingAddressFieldCity       = big.NewInt(1 << 0)
+	setupIntentListItemPaymentMethodMailingAddressFieldCountry    = big.NewInt(1 << 1)
+	setupIntentListItemPaymentMethodMailingAddressFieldLine1      = big.NewInt(1 << 2)
+	setupIntentListItemPaymentMethodMailingAddressFieldLine2      = big.NewInt(1 << 3)
+	setupIntentListItemPaymentMethodMailingAddressFieldName       = big.NewInt(1 << 4)
+	setupIntentListItemPaymentMethodMailingAddressFieldPostalCode = big.NewInt(1 << 5)
+	setupIntentListItemPaymentMethodMailingAddressFieldState      = big.NewInt(1 << 6)
+)
+
+type SetupIntentListItemPaymentMethodMailingAddress struct {
+	// The city of the address.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// The country of the address.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The line 1 of the address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// The line 2 of the address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The name of the customer.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The postal code of the address.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// The state of the address.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) GetCity() *string {
+	if s == nil {
+		return nil
+	}
+	return s.City
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) GetCountry() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Country
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) GetLine1() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Line1
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) GetLine2() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Line2
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) GetName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Name
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) GetPostalCode() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PostalCode
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) GetState() *string {
+	if s == nil {
+		return nil
+	}
+	return s.State
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodMailingAddress) SetCity(city *string) {
+	s.City = city
+	s.require(setupIntentListItemPaymentMethodMailingAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodMailingAddress) SetCountry(country *string) {
+	s.Country = country
+	s.require(setupIntentListItemPaymentMethodMailingAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodMailingAddress) SetLine1(line1 *string) {
+	s.Line1 = line1
+	s.require(setupIntentListItemPaymentMethodMailingAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodMailingAddress) SetLine2(line2 *string) {
+	s.Line2 = line2
+	s.require(setupIntentListItemPaymentMethodMailingAddressFieldLine2)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodMailingAddress) SetName(name *string) {
+	s.Name = name
+	s.require(setupIntentListItemPaymentMethodMailingAddressFieldName)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodMailingAddress) SetPostalCode(postalCode *string) {
+	s.PostalCode = postalCode
+	s.require(setupIntentListItemPaymentMethodMailingAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntentListItemPaymentMethodMailingAddress) SetState(state *string) {
+	s.State = state
+	s.require(setupIntentListItemPaymentMethodMailingAddressFieldState)
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler SetupIntentListItemPaymentMethodMailingAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SetupIntentListItemPaymentMethodMailingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) MarshalJSON() ([]byte, error) {
+	type embed SetupIntentListItemPaymentMethodMailingAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SetupIntentListItemPaymentMethodMailingAddress) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// The status of the setup intent.
+type SetupIntentStatuses string
+
+const (
+	SetupIntentStatusesProcessing     SetupIntentStatuses = "processing"
+	SetupIntentStatusesSucceeded      SetupIntentStatuses = "succeeded"
+	SetupIntentStatusesCanceled       SetupIntentStatuses = "canceled"
+	SetupIntentStatusesRequiresAction SetupIntentStatuses = "requires_action"
+)
+
+func NewSetupIntentStatusesFromString(s string) (SetupIntentStatuses, error) {
+	switch s {
+	case "processing":
+		return SetupIntentStatusesProcessing, nil
+	case "succeeded":
+		return SetupIntentStatusesSucceeded, nil
+	case "canceled":
+		return SetupIntentStatusesCanceled, nil
+	case "requires_action":
+		return SetupIntentStatusesRequiresAction, nil
+	}
+	var t SetupIntentStatuses
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SetupIntentStatuses) Ptr() *SetupIntentStatuses {
 	return &s
 }
 

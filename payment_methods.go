@@ -276,6 +276,161 @@ func (r *RetrievePaymentMethodsRequest) SetAccountID(accountID *string) {
 	r.require(retrievePaymentMethodsRequestFieldAccountID)
 }
 
+// Possible card brands that a payment token can have
+type CardBrands string
+
+const (
+	CardBrandsMastercard          CardBrands = "mastercard"
+	CardBrandsVisa                CardBrands = "visa"
+	CardBrandsAmex                CardBrands = "amex"
+	CardBrandsDiscover            CardBrands = "discover"
+	CardBrandsUnionpay            CardBrands = "unionpay"
+	CardBrandsJcb                 CardBrands = "jcb"
+	CardBrandsDiners              CardBrands = "diners"
+	CardBrandsLink                CardBrands = "link"
+	CardBrandsTroy                CardBrands = "troy"
+	CardBrandsVisadankort         CardBrands = "visadankort"
+	CardBrandsVisabancontact      CardBrands = "visabancontact"
+	CardBrandsChinaUnionPay       CardBrands = "china_union_pay"
+	CardBrandsRupay               CardBrands = "rupay"
+	CardBrandsJcbrupay            CardBrands = "jcbrupay"
+	CardBrandsElo                 CardBrands = "elo"
+	CardBrandsMaestro             CardBrands = "maestro"
+	CardBrandsTarjetaNaranja      CardBrands = "tarjeta_naranja"
+	CardBrandsCirrus              CardBrands = "cirrus"
+	CardBrandsNspkMir             CardBrands = "nspk_mir"
+	CardBrandsVerve               CardBrands = "verve"
+	CardBrandsEbt                 CardBrands = "ebt"
+	CardBrandsPrivateLabel        CardBrands = "private_label"
+	CardBrandsLocalBrand          CardBrands = "local_brand"
+	CardBrandsUatp                CardBrands = "uatp"
+	CardBrandsWexcard             CardBrands = "wexcard"
+	CardBrandsUzcard              CardBrands = "uzcard"
+	CardBrandsMeeza               CardBrands = "meeza"
+	CardBrandsHrgStoreCard        CardBrands = "hrg_store_card"
+	CardBrandsGirocard            CardBrands = "girocard"
+	CardBrandsFuelCard            CardBrands = "fuel_card"
+	CardBrandsDankort             CardBrands = "dankort"
+	CardBrandsCarnet              CardBrands = "carnet"
+	CardBrandsAtmCard             CardBrands = "atm_card"
+	CardBrandsChinaUnionPayuzcard CardBrands = "china_union_payuzcard"
+	CardBrandsCodensa             CardBrands = "codensa"
+	CardBrandsCabal               CardBrands = "cabal"
+	CardBrandsHipercard           CardBrands = "hipercard"
+	CardBrandsJcblankapay         CardBrands = "jcblankapay"
+	CardBrandsCmi                 CardBrands = "cmi"
+	CardBrandsAura                CardBrands = "aura"
+	CardBrandsAccel               CardBrands = "accel"
+	CardBrandsCuliance            CardBrands = "culiance"
+	CardBrandsNyce                CardBrands = "nyce"
+	CardBrandsPulse               CardBrands = "pulse"
+	CardBrandsStar                CardBrands = "star"
+	CardBrandsUnknown             CardBrands = "unknown"
+)
+
+func NewCardBrandsFromString(s string) (CardBrands, error) {
+	switch s {
+	case "mastercard":
+		return CardBrandsMastercard, nil
+	case "visa":
+		return CardBrandsVisa, nil
+	case "amex":
+		return CardBrandsAmex, nil
+	case "discover":
+		return CardBrandsDiscover, nil
+	case "unionpay":
+		return CardBrandsUnionpay, nil
+	case "jcb":
+		return CardBrandsJcb, nil
+	case "diners":
+		return CardBrandsDiners, nil
+	case "link":
+		return CardBrandsLink, nil
+	case "troy":
+		return CardBrandsTroy, nil
+	case "visadankort":
+		return CardBrandsVisadankort, nil
+	case "visabancontact":
+		return CardBrandsVisabancontact, nil
+	case "china_union_pay":
+		return CardBrandsChinaUnionPay, nil
+	case "rupay":
+		return CardBrandsRupay, nil
+	case "jcbrupay":
+		return CardBrandsJcbrupay, nil
+	case "elo":
+		return CardBrandsElo, nil
+	case "maestro":
+		return CardBrandsMaestro, nil
+	case "tarjeta_naranja":
+		return CardBrandsTarjetaNaranja, nil
+	case "cirrus":
+		return CardBrandsCirrus, nil
+	case "nspk_mir":
+		return CardBrandsNspkMir, nil
+	case "verve":
+		return CardBrandsVerve, nil
+	case "ebt":
+		return CardBrandsEbt, nil
+	case "private_label":
+		return CardBrandsPrivateLabel, nil
+	case "local_brand":
+		return CardBrandsLocalBrand, nil
+	case "uatp":
+		return CardBrandsUatp, nil
+	case "wexcard":
+		return CardBrandsWexcard, nil
+	case "uzcard":
+		return CardBrandsUzcard, nil
+	case "meeza":
+		return CardBrandsMeeza, nil
+	case "hrg_store_card":
+		return CardBrandsHrgStoreCard, nil
+	case "girocard":
+		return CardBrandsGirocard, nil
+	case "fuel_card":
+		return CardBrandsFuelCard, nil
+	case "dankort":
+		return CardBrandsDankort, nil
+	case "carnet":
+		return CardBrandsCarnet, nil
+	case "atm_card":
+		return CardBrandsAtmCard, nil
+	case "china_union_payuzcard":
+		return CardBrandsChinaUnionPayuzcard, nil
+	case "codensa":
+		return CardBrandsCodensa, nil
+	case "cabal":
+		return CardBrandsCabal, nil
+	case "hipercard":
+		return CardBrandsHipercard, nil
+	case "jcblankapay":
+		return CardBrandsJcblankapay, nil
+	case "cmi":
+		return CardBrandsCmi, nil
+	case "aura":
+		return CardBrandsAura, nil
+	case "accel":
+		return CardBrandsAccel, nil
+	case "culiance":
+		return CardBrandsCuliance, nil
+	case "nyce":
+		return CardBrandsNyce, nil
+	case "pulse":
+		return CardBrandsPulse, nil
+	case "star":
+		return CardBrandsStar, nil
+	case "unknown":
+		return CardBrandsUnknown, nil
+	}
+	var t CardBrands
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CardBrands) Ptr() *CardBrands {
+	return &c
+}
+
 // The funding types of a card
 type CardFundingTypes string
 

@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-22"
+		apiVersionDateDefault := "2026-09-22-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,34 +39,11 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of setup intents for a company, with optional filtering by creation date. A setup intent securely collects and stores a member's payment method for future use without charging them immediately.
-//
-// Required permissions:
-//   - `payment:setup_intent:read`
-//   - `member:basic:read`
-//   - `member:email:read`
+// Lists setup intents newest first. An account API key lists its own account; a user token lists every account it can read, or one account with `account_id`. `client_secret` is always null on list rows — retrieve the setup intent for it.
 //
 // Example:
 //
-//	request := &whopsdk.ListSetupIntentsRequest{
-//	    First: whopsdk.Int(
-//	        42,
-//	    ),
-//	    Last: whopsdk.Int(
-//	        42,
-//	    ),
-//	    CreatedBefore: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	    CreatedAfter: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	    AccountID: "biz_xxxxxxxxxxxxxx",
-//	}
+//	request := &whopsdk.ListSetupIntentsRequest{}
 //	client.SetupIntents.List(
 //	    context.TODO(),
 //	    request,
@@ -75,7 +52,7 @@ func (c *Client) List(
 	ctx context.Context,
 	request *whopsdk.ListSetupIntentsRequest,
 	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.SetupIntentListItem, *whopsdk.ListSetupIntentsResponse], error) {
+) (*core.Page[*string, *whopsdk.SetupIntent, *whopsdk.ListSetupIntentsResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -112,14 +89,14 @@ func (c *Client) List(
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
-	readPageResponse := func(response *whopsdk.ListSetupIntentsResponse) *core.PageResponse[*string, *whopsdk.SetupIntentListItem, *whopsdk.ListSetupIntentsResponse] {
+	readPageResponse := func(response *whopsdk.ListSetupIntentsResponse) *core.PageResponse[*string, *whopsdk.SetupIntent, *whopsdk.ListSetupIntentsResponse] {
 		var zeroValue *string
 		var next *string
 		if response.PageInfo != nil {
 			next = response.PageInfo.EndCursor
 		}
 		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.SetupIntentListItem, *whopsdk.ListSetupIntentsResponse]{
+		return &core.PageResponse[*string, *whopsdk.SetupIntent, *whopsdk.ListSetupIntentsResponse]{
 			Results:  results,
 			Response: response,
 			Next:     next,
@@ -134,20 +111,12 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Save a buyer's payment method for later without charging it. Provide a confirmation token for a method the buyer just supplied, or an existing payment method to re-verify. The buyer may still have a step to complete — 3D Secure, a hosted enrollment, linking a bank account — so poll the setup intent's status endpoint for what to do next.
-//
-// Required permissions:
-//   - `payment:charge`
-//   - `member:basic:read`
-//   - `member:email:read`
+// Saves a buyer's payment method for later without charging it. Pass a `confirmation_token` for a method the buyer just supplied through the payment elements in setup mode, or a `payment_method_id` already on file to re-verify it. The response is the setup intent as created, not its outcome: while it is `requires_action` the buyer still has a step, so hand `client_secret` to the elements' `handleNextAction` or poll Retrieve setup status. A buyer's own token holding `member:payment_methods:use` may create a setup intent for itself from a confirmation token.
 //
 // Example:
 //
 //	request := &whopsdk.CreateSetupIntentsRequest{
-//	    CreateSetupIntentsRequestConfirmationToken: &whopsdk.CreateSetupIntentsRequestConfirmationToken{
-//	        AccountID: "biz_xxxxxxxxxxxxxx",
-//	        ConfirmationToken: "ctok_xxxxxxxxxxxxxx",
-//	    },
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.SetupIntents.Create(
 //	    context.TODO(),
@@ -157,7 +126,7 @@ func (c *Client) Create(
 	ctx context.Context,
 	request *whopsdk.CreateSetupIntentsRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.CreateSetupIntentsResponse, error) {
+) (*whopsdk.SetupIntent, error) {
 	response, err := c.WithRawResponse.Create(
 		ctx,
 		request,
@@ -169,17 +138,12 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing setup intent.
-//
-// Required permissions:
-//   - `payment:setup_intent:read`
-//   - `member:basic:read`
-//   - `member:email:read`
+// Returns one setup intent. Related records are ids — once `status` is `succeeded`, `payment_method_id` is the saved method to charge or retrieve. The buyer's own token may retrieve a setup intent that belongs to it.
 //
 // Example:
 //
 //	request := &whopsdk.RetrieveSetupIntentsRequest{
-//	    ID: "sint_xxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.SetupIntents.Retrieve(
 //	    context.TODO(),
