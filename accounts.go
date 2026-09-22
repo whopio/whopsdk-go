@@ -655,32 +655,33 @@ var (
 	accountFieldRequire2Fa                          = big.NewInt(1 << 36)
 	accountFieldRequiredActions                     = big.NewInt(1 << 37)
 	accountFieldReturnPolicy                        = big.NewInt(1 << 38)
-	accountFieldRoute                               = big.NewInt(1 << 39)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 40)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 41)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 42)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 43)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 44)
-	accountFieldSocialLinks                         = big.NewInt(1 << 45)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 46)
-	accountFieldStatus                              = big.NewInt(1 << 47)
-	accountFieldStatusReason                        = big.NewInt(1 << 48)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 49)
-	accountFieldTargetAudience                      = big.NewInt(1 << 50)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 51)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 52)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 53)
-	accountFieldTaxType                             = big.NewInt(1 << 54)
-	accountFieldTermsOfService                      = big.NewInt(1 << 55)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 56)
-	accountFieldTitle                               = big.NewInt(1 << 57)
-	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 58)
-	accountFieldTotalUsd                            = big.NewInt(1 << 59)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 60)
-	accountFieldVerification                        = big.NewInt(1 << 61)
-	accountFieldVolumeUsd                           = big.NewInt(1 << 62)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldRewards                             = big.NewInt(1 << 39)
+	accountFieldRoute                               = big.NewInt(1 << 40)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 41)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 42)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 43)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 44)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 45)
+	accountFieldSocialLinks                         = big.NewInt(1 << 46)
+	accountFieldStablecoinRails                     = big.NewInt(1 << 47)
+	accountFieldStatus                              = big.NewInt(1 << 48)
+	accountFieldStatusReason                        = big.NewInt(1 << 49)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 50)
+	accountFieldTargetAudience                      = big.NewInt(1 << 51)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 52)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 53)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 54)
+	accountFieldTaxType                             = big.NewInt(1 << 55)
+	accountFieldTermsOfService                      = big.NewInt(1 << 56)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 57)
+	accountFieldTitle                               = big.NewInt(1 << 58)
+	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 59)
+	accountFieldTotalUsd                            = big.NewInt(1 << 60)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 61)
+	accountFieldVerification                        = big.NewInt(1 << 62)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 65)
 )
 
 type Account struct {
@@ -758,7 +759,8 @@ type Account struct {
 	Require2Fa      bool                     `json:"require_2fa" url:"require_2fa"`
 	RequiredActions []*AccountRequiredAction `json:"required_actions,omitempty" url:"required_actions,omitempty"`
 	// The account's return policy document, or `null` if they have not published one.
-	ReturnPolicy *File `json:"return_policy,omitempty" url:"return_policy,omitempty"`
+	ReturnPolicy *File                   `json:"return_policy,omitempty" url:"return_policy,omitempty"`
+	Rewards      []*AccountPartnerReward `json:"rewards,omitempty" url:"rewards,omitempty"`
 	// Account public route identifier.
 	Route string `json:"route" url:"route"`
 	// Whether Whop sends transactional emails to customers on behalf of this account.
@@ -1087,6 +1089,13 @@ func (a *Account) GetReturnPolicy() *File {
 		return nil
 	}
 	return a.ReturnPolicy
+}
+
+func (a *Account) GetRewards() []*AccountPartnerReward {
+	if a == nil {
+		return nil
+	}
+	return a.Rewards
 }
 
 func (a *Account) GetRoute() string {
@@ -1556,6 +1565,13 @@ func (a *Account) SetRequiredActions(requiredActions []*AccountRequiredAction) {
 func (a *Account) SetReturnPolicy(returnPolicy *File) {
 	a.ReturnPolicy = returnPolicy
 	a.require(accountFieldReturnPolicy)
+}
+
+// SetRewards sets the Rewards field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetRewards(rewards []*AccountPartnerReward) {
+	a.Rewards = rewards
+	a.require(accountFieldRewards)
 }
 
 // SetRoute sets the Route field and marks it as non-optional;
@@ -3049,6 +3065,234 @@ func (a *AccountPartner) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	accountPartnerRewardFieldID                    = big.NewInt(1 << 0)
+	accountPartnerRewardFieldQualificationAmount   = big.NewInt(1 << 1)
+	accountPartnerRewardFieldQualificationProgress = big.NewInt(1 << 2)
+	accountPartnerRewardFieldQualificationType     = big.NewInt(1 << 3)
+	accountPartnerRewardFieldRewardAmount          = big.NewInt(1 << 4)
+	accountPartnerRewardFieldStatus                = big.NewInt(1 << 5)
+)
+
+type AccountPartnerReward struct {
+	// Reward definition ID, prefixed `prwd_`. Progress and status apply to the containing account.
+	ID string `json:"id" url:"id"`
+	// Qualifying USD volume required to earn this reward.
+	QualificationAmount *Money `json:"qualification_amount" url:"qualification_amount"`
+	// Qualifying USD volume for the reward’s activity accumulated by this account since attribution, calculated using the fulfillment rules.
+	QualificationProgress *Money `json:"qualification_progress" url:"qualification_progress"`
+	// Activity that qualifies this account for the reward.
+	QualificationType AccountPartnerRewardQualificationType `json:"qualification_type" url:"qualification_type"`
+	// USD balance credit for this reward. Uses the saved grant amount once fulfillment has started.
+	RewardAmount *Money `json:"reward_amount" url:"reward_amount"`
+	// This account's reward state. Credited requires a posted ledger entry; processing includes a met requirement awaiting fulfillment. Reversing and reversed reflect a subsequent reward reversal.
+	Status AccountPartnerRewardStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountPartnerReward) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AccountPartnerReward) GetQualificationAmount() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.QualificationAmount
+}
+
+func (a *AccountPartnerReward) GetQualificationProgress() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.QualificationProgress
+}
+
+func (a *AccountPartnerReward) GetQualificationType() AccountPartnerRewardQualificationType {
+	if a == nil {
+		return ""
+	}
+	return a.QualificationType
+}
+
+func (a *AccountPartnerReward) GetRewardAmount() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.RewardAmount
+}
+
+func (a *AccountPartnerReward) GetStatus() AccountPartnerRewardStatus {
+	if a == nil {
+		return ""
+	}
+	return a.Status
+}
+
+func (a *AccountPartnerReward) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountPartnerReward) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetID(id string) {
+	a.ID = id
+	a.require(accountPartnerRewardFieldID)
+}
+
+// SetQualificationAmount sets the QualificationAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetQualificationAmount(qualificationAmount *Money) {
+	a.QualificationAmount = qualificationAmount
+	a.require(accountPartnerRewardFieldQualificationAmount)
+}
+
+// SetQualificationProgress sets the QualificationProgress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetQualificationProgress(qualificationProgress *Money) {
+	a.QualificationProgress = qualificationProgress
+	a.require(accountPartnerRewardFieldQualificationProgress)
+}
+
+// SetQualificationType sets the QualificationType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetQualificationType(qualificationType AccountPartnerRewardQualificationType) {
+	a.QualificationType = qualificationType
+	a.require(accountPartnerRewardFieldQualificationType)
+}
+
+// SetRewardAmount sets the RewardAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetRewardAmount(rewardAmount *Money) {
+	a.RewardAmount = rewardAmount
+	a.require(accountPartnerRewardFieldRewardAmount)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetStatus(status AccountPartnerRewardStatus) {
+	a.Status = status
+	a.require(accountPartnerRewardFieldStatus)
+}
+
+func (a *AccountPartnerReward) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountPartnerReward
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountPartnerReward(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountPartnerReward) MarshalJSON() ([]byte, error) {
+	type embed AccountPartnerReward
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountPartnerReward) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Activity that qualifies this account for the reward.
+type AccountPartnerRewardQualificationType string
+
+const (
+	AccountPartnerRewardQualificationTypeSales   AccountPartnerRewardQualificationType = "sales"
+	AccountPartnerRewardQualificationTypeAdSpend AccountPartnerRewardQualificationType = "ad_spend"
+)
+
+func NewAccountPartnerRewardQualificationTypeFromString(s string) (AccountPartnerRewardQualificationType, error) {
+	switch s {
+	case "sales":
+		return AccountPartnerRewardQualificationTypeSales, nil
+	case "ad_spend":
+		return AccountPartnerRewardQualificationTypeAdSpend, nil
+	}
+	var t AccountPartnerRewardQualificationType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountPartnerRewardQualificationType) Ptr() *AccountPartnerRewardQualificationType {
+	return &a
+}
+
+// This account's reward state. Credited requires a posted ledger entry; processing includes a met requirement awaiting fulfillment. Reversing and reversed reflect a subsequent reward reversal.
+type AccountPartnerRewardStatus string
+
+const (
+	AccountPartnerRewardStatusInProgress  AccountPartnerRewardStatus = "in_progress"
+	AccountPartnerRewardStatusProcessing  AccountPartnerRewardStatus = "processing"
+	AccountPartnerRewardStatusCredited    AccountPartnerRewardStatus = "credited"
+	AccountPartnerRewardStatusReversing   AccountPartnerRewardStatus = "reversing"
+	AccountPartnerRewardStatusReversed    AccountPartnerRewardStatus = "reversed"
+	AccountPartnerRewardStatusUnavailable AccountPartnerRewardStatus = "unavailable"
+)
+
+func NewAccountPartnerRewardStatusFromString(s string) (AccountPartnerRewardStatus, error) {
+	switch s {
+	case "in_progress":
+		return AccountPartnerRewardStatusInProgress, nil
+	case "processing":
+		return AccountPartnerRewardStatusProcessing, nil
+	case "credited":
+		return AccountPartnerRewardStatusCredited, nil
+	case "reversing":
+		return AccountPartnerRewardStatusReversing, nil
+	case "reversed":
+		return AccountPartnerRewardStatusReversed, nil
+	case "unavailable":
+		return AccountPartnerRewardStatusUnavailable, nil
+	}
+	var t AccountPartnerRewardStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountPartnerRewardStatus) Ptr() *AccountPartnerRewardStatus {
+	return &a
 }
 
 var (
