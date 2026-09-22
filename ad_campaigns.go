@@ -519,32 +519,6 @@ func (r *RetrieveAdCampaignsRequest) SetAttributionModel(attributionModel *Retri
 }
 
 var (
-	retryPaymentAdCampaignsRequestFieldID = big.NewInt(1 << 0)
-)
-
-type RetryPaymentAdCampaignsRequest struct {
-	// The ad campaign ID.
-	ID string `json:"-" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (r *RetryPaymentAdCampaignsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetryPaymentAdCampaignsRequest) SetID(id string) {
-	r.ID = id
-	r.require(retryPaymentAdCampaignsRequestFieldID)
-}
-
-var (
 	adCampaignFieldAddedToCartValue             = big.NewInt(1 << 0)
 	adCampaignFieldAddedToCarts                 = big.NewInt(1 << 1)
 	adCampaignFieldBidType                      = big.NewInt(1 << 2)

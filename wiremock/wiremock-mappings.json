@@ -617,42 +617,6 @@
       }
     },
     {
-      "id": "6d21afc5-9aff-4f03-97b4-8096328e3c2e",
-      "name": "Retry a Failed Ad Campaign Payment - default",
-      "request": {
-        "urlPathTemplate": "/ad_campaigns/{id}/retry_payment",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        },
-        "pathParameters": {
-          "id": {
-            "equalTo": "id"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"added_to_cart_value\": 12650,\n  \"added_to_carts\": 165,\n  \"bid_type\": \"minimum_cost\",\n  \"budget_amount\": 50,\n  \"budget_optimization\": \"ad_campaign\",\n  \"budget_type\": \"daily\",\n  \"click_through_rate\": 0.025,\n  \"clicks\": 5500,\n  \"completed_registration_value\": 1650,\n  \"completed_registrations\": 55,\n  \"contact_value\": 2640,\n  \"contacts\": 88,\n  \"cost_per_added_to_cart\": 8,\n  \"cost_per_click\": 0.24,\n  \"cost_per_completed_registration\": 24,\n  \"cost_per_contact\": 15,\n  \"cost_per_lead\": 10,\n  \"cost_per_mille\": 6,\n  \"cost_per_purchase\": 30,\n  \"cost_per_result\": 40,\n  \"cost_per_schedule\": 22,\n  \"cost_per_submitted_application\": 120,\n  \"cost_per_unique_click\": 0.4,\n  \"cost_per_viewed_content\": 1.1,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_conversions\": 41,\n  \"custom_event_counts\": {\n    \"gift_card_purchased\": 5,\n    \"quote_requested\": 33\n  },\n  \"custom_event_values\": {\n    \"gift_card_purchased\": 750,\n    \"quote_requested\": 0\n  },\n  \"delivery_status\": \"payment_failed\",\n  \"frequency\": 1.1,\n  \"id\": \"adcamp_xxxxxxxxxxxxxx\",\n  \"impressions\": 220000,\n  \"issues\": [\n    {\n      \"id\": \"adiss_xxxxxxxxxxxxxx\",\n      \"message\": \"Your ad was rejected for unacceptable business practices. Edit the ad's content and resubmit.\",\n      \"resource_id\": \"ad_xxxxxxxxxxxxxx\",\n      \"resource_type\": \"ad_campaign\"\n    }\n  ],\n  \"lead_value\": 3960,\n  \"leads\": 132,\n  \"link_clicks\": 4400,\n  \"objective\": \"awareness\",\n  \"optimization_goal\": \"optimization_goal\",\n  \"platform\": \"meta\",\n  \"purchase_value\": 7920,\n  \"purchases\": 44,\n  \"reach\": 0,\n  \"result_event\": \"purchase\",\n  \"result_event_name\": \"quote_requested\",\n  \"results\": 33,\n  \"return_on_ad_spend\": 6,\n  \"schedule_value\": 5400,\n  \"schedules\": 60,\n  \"special_ad_categories\": [\n    \"housing\"\n  ],\n  \"spend\": 1320,\n  \"spend_currency\": \"usd\",\n  \"status\": \"active\",\n  \"submitted_application_value\": 1320,\n  \"submitted_applications\": 11,\n  \"title\": \"Ceramic coating — Austin leads\",\n  \"unique_click_through_rate\": 1.1,\n  \"unique_clicks\": 3300,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"viewed_content_value\": 8400,\n  \"viewed_contents\": 1200\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "6d21afc5-9aff-4f03-97b4-8096328e3c2e",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
       "id": "945f9d89-a6b9-4aee-af88-eac690382129",
       "name": "Unpause an Ad Campaign - default",
       "request": {
@@ -15289,6 +15253,6 @@
     }
   ],
   "meta": {
-    "total": 427
+    "total": 426
   }
 }
