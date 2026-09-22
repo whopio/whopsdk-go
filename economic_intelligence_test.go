@@ -374,6 +374,14 @@ func TestSettersEconomicIntelligence(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetExpectedToolCalls", func(t *testing.T) {
+		obj := &EconomicIntelligence{}
+		var fernTestValueExpectedToolCalls []string
+		obj.SetExpectedToolCalls(fernTestValueExpectedToolCalls)
+		assert.Equal(t, fernTestValueExpectedToolCalls, obj.ExpectedToolCalls)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetID", func(t *testing.T) {
 		obj := &EconomicIntelligence{}
 		var fernTestValueID string
@@ -620,6 +628,39 @@ func TestGettersEconomicIntelligence(t *testing.T) {
 			}
 		}()
 		_ = obj.GetExecutedAt() // Should return zero value
+	})
+
+	t.Run("GetExpectedToolCalls", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		var expected []string
+		obj.ExpectedToolCalls = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetExpectedToolCalls(), "getter should return the property value")
+	})
+
+	t.Run("GetExpectedToolCalls_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		obj.ExpectedToolCalls = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetExpectedToolCalls(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetExpectedToolCalls_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EconomicIntelligence
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetExpectedToolCalls() // Should return zero value
 	})
 
 	t.Run("GetID", func(t *testing.T) {
@@ -1067,6 +1108,37 @@ func TestSettersMarkExplicitEconomicIntelligence(t *testing.T) {
 
 		// Act
 		obj.SetExecutedAt(fernTestValueExecutedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetExpectedToolCalls_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EconomicIntelligence{}
+		var fernTestValueExpectedToolCalls []string
+
+		// Act
+		obj.SetExpectedToolCalls(fernTestValueExpectedToolCalls)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

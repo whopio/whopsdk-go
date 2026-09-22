@@ -143,21 +143,22 @@ func (l *ListEconomicIntelligenceRequest) SetBefore(before *string) {
 }
 
 var (
-	economicIntelligenceFieldAccountID    = big.NewInt(1 << 0)
-	economicIntelligenceFieldActionType   = big.NewInt(1 << 1)
-	economicIntelligenceFieldAiChatID     = big.NewInt(1 << 2)
-	economicIntelligenceFieldCreatedAt    = big.NewInt(1 << 3)
-	economicIntelligenceFieldExecutedAt   = big.NewInt(1 << 4)
-	economicIntelligenceFieldID           = big.NewInt(1 << 5)
-	economicIntelligenceFieldInput        = big.NewInt(1 << 6)
-	economicIntelligenceFieldPrompt       = big.NewInt(1 << 7)
-	economicIntelligenceFieldReasoning    = big.NewInt(1 << 8)
-	economicIntelligenceFieldSentiment    = big.NewInt(1 << 9)
-	economicIntelligenceFieldStatus       = big.NewInt(1 << 10)
-	economicIntelligenceFieldSupersededAt = big.NewInt(1 << 11)
-	economicIntelligenceFieldTargetURL    = big.NewInt(1 << 12)
-	economicIntelligenceFieldTitle        = big.NewInt(1 << 13)
-	economicIntelligenceFieldUserFeedback = big.NewInt(1 << 14)
+	economicIntelligenceFieldAccountID         = big.NewInt(1 << 0)
+	economicIntelligenceFieldActionType        = big.NewInt(1 << 1)
+	economicIntelligenceFieldAiChatID          = big.NewInt(1 << 2)
+	economicIntelligenceFieldCreatedAt         = big.NewInt(1 << 3)
+	economicIntelligenceFieldExecutedAt        = big.NewInt(1 << 4)
+	economicIntelligenceFieldExpectedToolCalls = big.NewInt(1 << 5)
+	economicIntelligenceFieldID                = big.NewInt(1 << 6)
+	economicIntelligenceFieldInput             = big.NewInt(1 << 7)
+	economicIntelligenceFieldPrompt            = big.NewInt(1 << 8)
+	economicIntelligenceFieldReasoning         = big.NewInt(1 << 9)
+	economicIntelligenceFieldSentiment         = big.NewInt(1 << 10)
+	economicIntelligenceFieldStatus            = big.NewInt(1 << 11)
+	economicIntelligenceFieldSupersededAt      = big.NewInt(1 << 12)
+	economicIntelligenceFieldTargetURL         = big.NewInt(1 << 13)
+	economicIntelligenceFieldTitle             = big.NewInt(1 << 14)
+	economicIntelligenceFieldUserFeedback      = big.NewInt(1 << 15)
 )
 
 type EconomicIntelligence struct {
@@ -170,7 +171,8 @@ type EconomicIntelligence struct {
 	// When the recommendation was created, as an ISO 8601 timestamp, or null for an unsaved recommendation.
 	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
 	// When the recommendation was approved, as an ISO 8601 timestamp, or `null` if it has not been approved.
-	ExecutedAt *string `json:"executed_at,omitempty" url:"executed_at,omitempty"`
+	ExecutedAt        *string  `json:"executed_at,omitempty" url:"executed_at,omitempty"`
+	ExpectedToolCalls []string `json:"expected_tool_calls,omitempty" url:"expected_tool_calls,omitempty"`
 	// Recommendation ID, prefixed `reca_`, or `create_business` for an unsaved setup recommendation. Authenticate and list again before executing an unsaved recommendation.
 	ID string `json:"id" url:"id"`
 	// What you requested, in your own words, or `null` for recommendations generated without your input.
@@ -232,6 +234,13 @@ func (e *EconomicIntelligence) GetExecutedAt() *string {
 		return nil
 	}
 	return e.ExecutedAt
+}
+
+func (e *EconomicIntelligence) GetExpectedToolCalls() []string {
+	if e == nil {
+		return nil
+	}
+	return e.ExpectedToolCalls
 }
 
 func (e *EconomicIntelligence) GetID() string {
@@ -351,6 +360,13 @@ func (e *EconomicIntelligence) SetCreatedAt(createdAt *string) {
 func (e *EconomicIntelligence) SetExecutedAt(executedAt *string) {
 	e.ExecutedAt = executedAt
 	e.require(economicIntelligenceFieldExecutedAt)
+}
+
+// SetExpectedToolCalls sets the ExpectedToolCalls field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetExpectedToolCalls(expectedToolCalls []string) {
+	e.ExpectedToolCalls = expectedToolCalls
+	e.require(economicIntelligenceFieldExpectedToolCalls)
 }
 
 // SetID sets the ID field and marks it as non-optional;
