@@ -311,6 +311,33 @@ func (c *Client) FormCompany(
 	return response.Body, nil
 }
 
+// Queues a background retry of the account's failed ads payments using its configured ads payment methods. A queued response does not mean payment succeeded. Check the account's ad campaigns for the outcome.
+//
+// Example:
+//
+//	request := &whopsdk.RetryAdsPaymentAccountsRequest{
+//	    ID: "id",
+//	}
+//	client.Accounts.RetryAdsPayment(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) RetryAdsPayment(
+	ctx context.Context,
+	request *whopsdk.RetryAdsPaymentAccountsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.RetryAdsPaymentAccountsResponse, error) {
+	response, err := c.WithRawResponse.RetryAdsPayment(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Suspends a connected account directly owned by the authenticated platform account. This cannot suspend the platform account itself or an account owned by another platform.
 //
 // Example:

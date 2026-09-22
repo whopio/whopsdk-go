@@ -1148,6 +1148,66 @@ client.Accounts.FormCompany(
 </dl>
 </details>
 
+<details><summary><code>client.Accounts.RetryAdsPayment(ID) -> *whopsdk.RetryAdsPaymentAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Queues a background retry of the account's failed ads payments using its configured ads payment methods. A queued response does not mean payment succeeded. Check the account's ad campaigns for the outcome.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetryAdsPaymentAccountsRequest{
+    ID: "id",
+}
+client.Accounts.RetryAdsPayment(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The account ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Accounts.Suspend(ID) -> *whopsdk.Account</code></summary>
 <dl>
 <dd>

@@ -487,6 +487,32 @@ func (r *RetrieveAccountsRequest) SetID(id string) {
 }
 
 var (
+	retryAdsPaymentAccountsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type RetryAdsPaymentAccountsRequest struct {
+	// The account ID.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *RetryAdsPaymentAccountsRequest) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetryAdsPaymentAccountsRequest) SetID(id string) {
+	r.ID = id
+	r.require(retryAdsPaymentAccountsRequestFieldID)
+}
+
+var (
 	suspendAccountsRequestFieldID = big.NewInt(1 << 0)
 )
 
@@ -7001,6 +7027,108 @@ func NewPostAccountUpdatedPayloadTypeFromString(s string) (PostAccountUpdatedPay
 
 func (p PostAccountUpdatedPayloadType) Ptr() *PostAccountUpdatedPayloadType {
 	return &p
+}
+
+var (
+	retryAdsPaymentAccountsResponseFieldAccountID = big.NewInt(1 << 0)
+	retryAdsPaymentAccountsResponseFieldQueued    = big.NewInt(1 << 1)
+)
+
+type RetryAdsPaymentAccountsResponse struct {
+	// The account whose ads payments will be retried.
+	AccountID string `json:"account_id" url:"account_id"`
+	// Whether the retry was accepted for background processing.
+	Queued bool `json:"queued" url:"queued"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetryAdsPaymentAccountsResponse) GetAccountID() string {
+	if r == nil {
+		return ""
+	}
+	return r.AccountID
+}
+
+func (r *RetryAdsPaymentAccountsResponse) GetQueued() bool {
+	if r == nil {
+		return false
+	}
+	return r.Queued
+}
+
+func (r *RetryAdsPaymentAccountsResponse) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetryAdsPaymentAccountsResponse) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetryAdsPaymentAccountsResponse) SetAccountID(accountID string) {
+	r.AccountID = accountID
+	r.require(retryAdsPaymentAccountsResponseFieldAccountID)
+}
+
+// SetQueued sets the Queued field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetryAdsPaymentAccountsResponse) SetQueued(queued bool) {
+	r.Queued = queued
+	r.require(retryAdsPaymentAccountsResponseFieldQueued)
+}
+
+func (r *RetryAdsPaymentAccountsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetryAdsPaymentAccountsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetryAdsPaymentAccountsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetryAdsPaymentAccountsResponse) MarshalJSON() ([]byte, error) {
+	type embed RetryAdsPaymentAccountsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetryAdsPaymentAccountsResponse) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
 }
 
 var (
