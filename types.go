@@ -43963,7 +43963,6 @@ const (
 	WebhookEventAdCampaignPaymentFailed            WebhookEvent = "ad_campaign.payment_failed"
 	WebhookEventAdCampaignUpdated                  WebhookEvent = "ad_campaign.updated"
 	WebhookEventAdUpdated                          WebhookEvent = "ad.updated"
-	WebhookEventPixelEventCreated                  WebhookEvent = "pixel_event.created"
 	WebhookEventChatMessageCreated                 WebhookEvent = "chat.message.created"
 	WebhookEventChatReactionCreated                WebhookEvent = "chat.reaction.created"
 	WebhookEventPaymentCreated                     WebhookEvent = "payment.created"
@@ -44129,8 +44128,6 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventAdCampaignUpdated, nil
 	case "ad.updated":
 		return WebhookEventAdUpdated, nil
-	case "pixel_event.created":
-		return WebhookEventPixelEventCreated, nil
 	case "chat.message.created":
 		return WebhookEventChatMessageCreated, nil
 	case "chat.reaction.created":
