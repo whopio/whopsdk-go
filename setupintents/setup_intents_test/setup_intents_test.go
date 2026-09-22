@@ -88,25 +88,7 @@ func TestSetupIntentsListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListSetupIntentsRequest{
-		First: whopsdk.Int(
-			42,
-		),
-		Last: whopsdk.Int(
-			42,
-		),
-		CreatedBefore: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		CreatedAfter: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		AccountID: "biz_xxxxxxxxxxxxxx",
-	}
+	request := &whopsdk.ListSetupIntentsRequest{}
 	_, invocationErr := client.SetupIntents.List(
 		context.TODO(),
 		request,
@@ -116,7 +98,7 @@ func TestSetupIntentsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestSetupIntentsListWithWireMock", "GET", "/setup_intents", map[string]interface{}{"first": "42", "last": "42", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestSetupIntentsListWithWireMock", "GET", "/setup_intents", nil, 1)
 }
 
 func TestSetupIntentsCreateWithWireMock(
@@ -131,10 +113,7 @@ func TestSetupIntentsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateSetupIntentsRequest{
-		CreateSetupIntentsRequestConfirmationToken: &whopsdk.CreateSetupIntentsRequestConfirmationToken{
-			AccountID:         "biz_xxxxxxxxxxxxxx",
-			ConfirmationToken: "ctok_xxxxxxxxxxxxxx",
-		},
+		AccountID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.SetupIntents.Create(
 		context.TODO(),
@@ -160,7 +139,7 @@ func TestSetupIntentsRetrieveWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.RetrieveSetupIntentsRequest{
-		ID: "sint_xxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.SetupIntents.Retrieve(
 		context.TODO(),
@@ -171,7 +150,7 @@ func TestSetupIntentsRetrieveWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestSetupIntentsRetrieveWithWireMock", "GET", "/setup_intents/sint_xxxxxxxxxxxxx", nil, 1)
+	VerifyRequestCount(t, "TestSetupIntentsRetrieveWithWireMock", "GET", "/setup_intents/id", nil, 1)
 }
 
 func TestSetupIntentsUpdateReturnURLWithWireMock(
