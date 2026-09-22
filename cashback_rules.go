@@ -25,13 +25,13 @@ type CreateCashbackRulesRequest struct {
 	Description *string `json:"description,omitempty" url:"-"`
 	// Exclusive end, strictly later than starts_at. Omit or set null for no expiration.
 	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"-"`
-	// Four-digit MCC, including leading zeros. Must match together with merchant_name.
-	MerchantCategoryCode string `json:"merchant_category_code" url:"-"`
-	// Raw merchant name reported by the card provider, not the enriched display name. Matched with the MCC; not a substring or wildcard.
-	MerchantName string `json:"merchant_name" url:"-"`
+	// Four-digit MCC, including leading zeros. Null matches any MCC. When both merchant filters are absent, scoped_account_id is required.
+	MerchantCategoryCode *string `json:"merchant_category_code,omitempty" url:"-"`
+	// Raw merchant name reported by the card provider, not the enriched display name. Omit or set null to match any merchant name. Supplied names must contain a non-whitespace character and match together with any MCC filter.
+	MerchantName *string `json:"merchant_name,omitempty" url:"-"`
 	// Cashback rate in basis points: 500 means 5%.
 	RateBps int `json:"rate_bps" url:"-"`
-	// Account ID prefixed biz_ belonging to a direct connected account. Omit or set null to designate all direct connected accounts.
+	// Account ID prefixed biz_ belonging to a direct connected account. Required when both merchant filters are omitted or null. Otherwise, omit or set null to designate all direct connected accounts.
 	ScopedAccountID *string `json:"scoped_account_id,omitempty" url:"-"`
 	// Inclusive start, strictly later than the current time, as an ISO 8601 timestamp.
 	StartsAt time.Time `json:"starts_at" url:"-"`
@@ -63,14 +63,14 @@ func (c *CreateCashbackRulesRequest) SetExpiresAt(expiresAt *time.Time) {
 
 // SetMerchantCategoryCode sets the MerchantCategoryCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCashbackRulesRequest) SetMerchantCategoryCode(merchantCategoryCode string) {
+func (c *CreateCashbackRulesRequest) SetMerchantCategoryCode(merchantCategoryCode *string) {
 	c.MerchantCategoryCode = merchantCategoryCode
 	c.require(createCashbackRulesRequestFieldMerchantCategoryCode)
 }
 
 // SetMerchantName sets the MerchantName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCashbackRulesRequest) SetMerchantName(merchantName string) {
+func (c *CreateCashbackRulesRequest) SetMerchantName(merchantName *string) {
 	c.MerchantName = merchantName
 	c.require(createCashbackRulesRequestFieldMerchantName)
 }
@@ -225,10 +225,10 @@ type CashbackRule struct {
 	FundingAccountID string `json:"funding_account_id" url:"funding_account_id"`
 	// Cashback rule ID, prefixed `cicbr_`.
 	ID string `json:"id" url:"id"`
-	// Four-digit merchant category code. Both merchant filters must match.
-	MerchantCategoryCode string `json:"merchant_category_code" url:"merchant_category_code"`
-	// Raw merchant name reported by the card provider. Matched together with the merchant category code; not a substring or enriched display-name match.
-	MerchantName string `json:"merchant_name" url:"merchant_name"`
+	// Four-digit merchant category code. Null matches any MCC. When both merchant filters are null, scoped_account_id is required.
+	MerchantCategoryCode *string `json:"merchant_category_code,omitempty" url:"merchant_category_code,omitempty"`
+	// Raw merchant name reported by the card provider. Null matches any merchant name. When set, matches together with any MCC filter; not a substring or enriched display-name match.
+	MerchantName *string `json:"merchant_name,omitempty" url:"merchant_name,omitempty"`
 	// Cashback rate in basis points. 100 means 1%, and 10000 means 100%.
 	RateBps int `json:"rate_bps" url:"rate_bps"`
 	// Connected account ID, prefixed `biz_`. Null designates all direct connected accounts of the funding platform.
@@ -287,16 +287,16 @@ func (c *CashbackRule) GetID() string {
 	return c.ID
 }
 
-func (c *CashbackRule) GetMerchantCategoryCode() string {
+func (c *CashbackRule) GetMerchantCategoryCode() *string {
 	if c == nil {
-		return ""
+		return nil
 	}
 	return c.MerchantCategoryCode
 }
 
-func (c *CashbackRule) GetMerchantName() string {
+func (c *CashbackRule) GetMerchantName() *string {
 	if c == nil {
-		return ""
+		return nil
 	}
 	return c.MerchantName
 }
@@ -387,14 +387,14 @@ func (c *CashbackRule) SetID(id string) {
 
 // SetMerchantCategoryCode sets the MerchantCategoryCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CashbackRule) SetMerchantCategoryCode(merchantCategoryCode string) {
+func (c *CashbackRule) SetMerchantCategoryCode(merchantCategoryCode *string) {
 	c.MerchantCategoryCode = merchantCategoryCode
 	c.require(cashbackRuleFieldMerchantCategoryCode)
 }
 
 // SetMerchantName sets the MerchantName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CashbackRule) SetMerchantName(merchantName string) {
+func (c *CashbackRule) SetMerchantName(merchantName *string) {
 	c.MerchantName = merchantName
 	c.require(cashbackRuleFieldMerchantName)
 }
@@ -757,9 +757,9 @@ type UpdateCashbackRulesRequest struct {
 	Description *string `json:"description,omitempty" url:"-"`
 	// Exclusive end as an ISO 8601 timestamp, strictly later than the original starts_at. May be in the past to end an active rule. Set null to remove the expiration.
 	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"-"`
-	// Four-digit MCC, including leading zeros. Must match together with merchant_name.
+	// Four-digit MCC, including leading zeros. Null matches any MCC. When both merchant filters are absent, scoped_account_id is required.
 	MerchantCategoryCode *string `json:"merchant_category_code,omitempty" url:"-"`
-	// Raw merchant name reported by the card provider. Must contain a non-whitespace character. Matched with the MCC; not a substring or wildcard.
+	// Raw merchant name reported by the card provider. Set null to match any merchant name. Supplied names must contain a non-whitespace character and match together with any MCC filter. Clearing both filters requires an existing scoped_account_id.
 	MerchantName *string `json:"merchant_name,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

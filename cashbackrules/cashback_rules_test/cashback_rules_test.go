@@ -89,9 +89,7 @@ func TestCashbackRulesCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateCashbackRulesRequest{
-		MerchantCategoryCode: "5734",
-		MerchantName:         "ACME SOFTWARE",
-		RateBps:              500,
+		RateBps: 500,
 		StartsAt: whopsdk.MustParseDateTime(
 			"2026-01-01T12:00:00Z",
 		),
