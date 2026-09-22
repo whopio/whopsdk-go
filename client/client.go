@@ -66,7 +66,7 @@ import (
 	paymentmethoddomains "github.com/whopio/whopsdk-go/paymentmethoddomains"
 	paymentmethods "github.com/whopio/whopsdk-go/paymentmethods"
 	paymentrules "github.com/whopio/whopsdk-go/paymentrules"
-	payments "github.com/whopio/whopsdk-go/payments"
+	paymentsclient "github.com/whopio/whopsdk-go/payments/client"
 	payoutaccounts "github.com/whopio/whopsdk-go/payoutaccounts"
 	payoutmethods "github.com/whopio/whopsdk-go/payoutmethods"
 	payoutsclient "github.com/whopio/whopsdk-go/payouts/client"
@@ -79,7 +79,7 @@ import (
 	refunds "github.com/whopio/whopsdk-go/refunds"
 	resolutioncentercases "github.com/whopio/whopsdk-go/resolutioncentercases"
 	reviews "github.com/whopio/whopsdk-go/reviews"
-	setupintents "github.com/whopio/whopsdk-go/setupintents"
+	setupintentsclient "github.com/whopio/whopsdk-go/setupintents/client"
 	shipments "github.com/whopio/whopsdk-go/shipments"
 	socialaccounts "github.com/whopio/whopsdk-go/socialaccounts"
 	stats "github.com/whopio/whopsdk-go/stats"
@@ -155,7 +155,7 @@ type Whop struct {
 	PaymentMethodDomains     *paymentmethoddomains.Client
 	PaymentMethods           *paymentmethods.Client
 	PaymentRules             *paymentrules.Client
-	Payments                 *payments.Client
+	Payments                 *paymentsclient.Client
 	PayoutAccounts           *payoutaccounts.Client
 	PayoutMethods            *payoutmethods.Client
 	Payouts                  *payoutsclient.Client
@@ -168,7 +168,7 @@ type Whop struct {
 	Refunds                  *refunds.Client
 	ResolutionCenterCases    *resolutioncentercases.Client
 	Reviews                  *reviews.Client
-	SetupIntents             *setupintents.Client
+	SetupIntents             *setupintentsclient.Client
 	Shipments                *shipments.Client
 	SocialAccounts           *socialaccounts.Client
 	Stats                    *stats.Client
@@ -254,7 +254,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		PaymentMethodDomains:     paymentmethoddomains.NewClient(options),
 		PaymentMethods:           paymentmethods.NewClient(options),
 		PaymentRules:             paymentrules.NewClient(options),
-		Payments:                 payments.NewClient(options),
+		Payments:                 paymentsclient.NewClient(options),
 		PayoutAccounts:           payoutaccounts.NewClient(options),
 		PayoutMethods:            payoutmethods.NewClient(options),
 		Payouts:                  payoutsclient.NewClient(options),
@@ -267,7 +267,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Refunds:                  refunds.NewClient(options),
 		ResolutionCenterCases:    resolutioncentercases.NewClient(options),
 		Reviews:                  reviews.NewClient(options),
-		SetupIntents:             setupintents.NewClient(options),
+		SetupIntents:             setupintentsclient.NewClient(options),
 		Shipments:                shipments.NewClient(options),
 		SocialAccounts:           socialaccounts.NewClient(options),
 		Stats:                    stats.NewClient(options),

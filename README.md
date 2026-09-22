@@ -64,7 +64,7 @@ URL, which is particularly useful in test environments.
 
 ```go
 client := client.NewClient(
-    option.WithBaseURL(whopsdk.Environments.Default),
+    option.WithBaseURL(whopsdk.Environments.Production),
 )
 ```
 
