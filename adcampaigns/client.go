@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-15"
+		apiVersionDateDefault := "2026-09-22"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -265,33 +265,6 @@ func (c *Client) Pause(
 	opts ...option.RequestOption,
 ) (*whopsdk.AdCampaign, error) {
 	response, err := c.WithRawResponse.Pause(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Queues a background payment retry for the campaign's entire account, including other campaigns with failed payments. Prefer POST /accounts/{id}/retry_ads_payment for new integrations. The returned campaign does not confirm payment success; read delivery_status and issues for the outcome.
-//
-// Example:
-//
-//	request := &whopsdk.RetryPaymentAdCampaignsRequest{
-//	    ID: "id",
-//	}
-//	client.AdCampaigns.RetryPayment(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) RetryPayment(
-	ctx context.Context,
-	request *whopsdk.RetryPaymentAdCampaignsRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.AdCampaign, error) {
-	response, err := c.WithRawResponse.RetryPayment(
 		ctx,
 		request,
 		opts...,

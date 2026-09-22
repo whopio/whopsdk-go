@@ -259,32 +259,6 @@ func TestAdCampaignsPauseWithWireMock(
 	VerifyRequestCount(t, "TestAdCampaignsPauseWithWireMock", "POST", "/ad_campaigns/id/pause", nil, 1)
 }
 
-func TestAdCampaignsRetryPaymentWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.RetryPaymentAdCampaignsRequest{
-		ID: "id",
-	}
-	_, invocationErr := client.AdCampaigns.RetryPayment(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestAdCampaignsRetryPaymentWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestAdCampaignsRetryPaymentWithWireMock", "POST", "/ad_campaigns/id/retry_payment", nil, 1)
-}
-
 func TestAdCampaignsUnpauseWithWireMock(
 	t *testing.T,
 ) {

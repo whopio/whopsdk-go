@@ -2142,66 +2142,6 @@ client.AdCampaigns.Pause(
 </dl>
 </details>
 
-<details><summary><code>client.AdCampaigns.RetryPayment(ID) -> *whopsdk.AdCampaign</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Queues a background payment retry for the campaign's entire account, including other campaigns with failed payments. Prefer POST /accounts/{id}/retry_ads_payment for new integrations. The returned campaign does not confirm payment success; read delivery_status and issues for the outcome.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.RetryPaymentAdCampaignsRequest{
-    ID: "id",
-}
-client.AdCampaigns.RetryPayment(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — The ad campaign ID.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 <details><summary><code>client.AdCampaigns.Unpause(ID) -> *whopsdk.AdCampaign</code></summary>
 <dl>
 <dd>
