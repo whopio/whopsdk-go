@@ -29,7 +29,7 @@ func TestSettersCreateCashbackRulesRequest(t *testing.T) {
 
 	t.Run("SetMerchantCategoryCode", func(t *testing.T) {
 		obj := &CreateCashbackRulesRequest{}
-		var fernTestValueMerchantCategoryCode string
+		var fernTestValueMerchantCategoryCode *string
 		obj.SetMerchantCategoryCode(fernTestValueMerchantCategoryCode)
 		assert.Equal(t, fernTestValueMerchantCategoryCode, obj.MerchantCategoryCode)
 		assert.NotNil(t, obj.explicitFields)
@@ -37,7 +37,7 @@ func TestSettersCreateCashbackRulesRequest(t *testing.T) {
 
 	t.Run("SetMerchantName", func(t *testing.T) {
 		obj := &CreateCashbackRulesRequest{}
-		var fernTestValueMerchantName string
+		var fernTestValueMerchantName *string
 		obj.SetMerchantName(fernTestValueMerchantName)
 		assert.Equal(t, fernTestValueMerchantName, obj.MerchantName)
 		assert.NotNil(t, obj.explicitFields)
@@ -136,7 +136,7 @@ func TestSettersMarkExplicitCreateCashbackRulesRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateCashbackRulesRequest{}
-		var fernTestValueMerchantCategoryCode string
+		var fernTestValueMerchantCategoryCode *string
 
 		// Act
 		obj.SetMerchantCategoryCode(fernTestValueMerchantCategoryCode)
@@ -167,7 +167,7 @@ func TestSettersMarkExplicitCreateCashbackRulesRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateCashbackRulesRequest{}
-		var fernTestValueMerchantName string
+		var fernTestValueMerchantName *string
 
 		// Act
 		obj.SetMerchantName(fernTestValueMerchantName)
@@ -580,7 +580,7 @@ func TestSettersCashbackRule(t *testing.T) {
 
 	t.Run("SetMerchantCategoryCode", func(t *testing.T) {
 		obj := &CashbackRule{}
-		var fernTestValueMerchantCategoryCode string
+		var fernTestValueMerchantCategoryCode *string
 		obj.SetMerchantCategoryCode(fernTestValueMerchantCategoryCode)
 		assert.Equal(t, fernTestValueMerchantCategoryCode, obj.MerchantCategoryCode)
 		assert.NotNil(t, obj.explicitFields)
@@ -588,7 +588,7 @@ func TestSettersCashbackRule(t *testing.T) {
 
 	t.Run("SetMerchantName", func(t *testing.T) {
 		obj := &CashbackRule{}
-		var fernTestValueMerchantName string
+		var fernTestValueMerchantName *string
 		obj.SetMerchantName(fernTestValueMerchantName)
 		assert.Equal(t, fernTestValueMerchantName, obj.MerchantName)
 		assert.NotNil(t, obj.explicitFields)
@@ -801,11 +801,21 @@ func TestGettersCashbackRule(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CashbackRule{}
-		var expected string
+		var expected *string
 		obj.MerchantCategoryCode = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetMerchantCategoryCode(), "getter should return the property value")
+	})
+
+	t.Run("GetMerchantCategoryCode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CashbackRule{}
+		obj.MerchantCategoryCode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMerchantCategoryCode(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetMerchantCategoryCode_NilReceiver", func(t *testing.T) {
@@ -824,11 +834,21 @@ func TestGettersCashbackRule(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CashbackRule{}
-		var expected string
+		var expected *string
 		obj.MerchantName = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetMerchantName(), "getter should return the property value")
+	})
+
+	t.Run("GetMerchantName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CashbackRule{}
+		obj.MerchantName = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMerchantName(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetMerchantName_NilReceiver", func(t *testing.T) {
@@ -1138,7 +1158,7 @@ func TestSettersMarkExplicitCashbackRule(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CashbackRule{}
-		var fernTestValueMerchantCategoryCode string
+		var fernTestValueMerchantCategoryCode *string
 
 		// Act
 		obj.SetMerchantCategoryCode(fernTestValueMerchantCategoryCode)
@@ -1169,7 +1189,7 @@ func TestSettersMarkExplicitCashbackRule(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CashbackRule{}
-		var fernTestValueMerchantName string
+		var fernTestValueMerchantName *string
 
 		// Act
 		obj.SetMerchantName(fernTestValueMerchantName)
