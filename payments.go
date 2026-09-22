@@ -917,7 +917,7 @@ type Payment struct {
 	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
 	// The Address Verification Service (AVS), cardholder name, and Card Verification Value (CVV/CVC) results, or null when the processor returned none.
 	VerificationChecks *PaymentVerificationChecks `json:"verification_checks,omitempty" url:"verification_checks,omitempty"`
-	// True when the payment is `open` on a past-due membership and its processor supports voiding — see `POST /payments/{id}/void`.
+	// True when the payment can be voided or canceled. The request is rejected if the payment is no longer eligible — see `POST /payments/{id}/void`.
 	Voidable bool `json:"voidable" url:"voidable"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

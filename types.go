@@ -23679,7 +23679,7 @@ type PaymentLegacy struct {
 	User *PaymentLegacyUser `json:"user,omitempty" url:"user,omitempty"`
 	// The issuer's address and card security code check results for this payment. Null when the processor returned none.
 	VerificationChecks *PaymentLegacyVerificationChecks `json:"verification_checks,omitempty" url:"verification_checks,omitempty"`
-	// True when the payment is tied to a membership in `past_due`, the payment status is `open`, and the processor allows voiding payments; otherwise false.
+	// True when the payment can be voided or canceled. The request is rejected if the payment is no longer eligible.
 	Voidable bool `json:"voidable" url:"voidable"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -28892,7 +28892,7 @@ type PaymentListItem struct {
 	UsdTotal *float64 `json:"usd_total,omitempty" url:"usd_total,omitempty"`
 	// The user that made this payment.
 	User *PaymentListItemUser `json:"user,omitempty" url:"user,omitempty"`
-	// True when the payment is tied to a membership in `past_due`, the payment status is `open`, and the processor allows voiding payments; otherwise false.
+	// True when the payment can be voided or canceled. The request is rejected if the payment is no longer eligible.
 	Voidable bool `json:"voidable" url:"voidable"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
