@@ -1484,14 +1484,17 @@ func (a AccountFeeMarkupUnadjustableReason) Ptr() *AccountFeeMarkupUnadjustableR
 }
 
 var (
-	accountFeeMarkupsFieldCryptoSwaps = big.NewInt(1 << 0)
-	accountFeeMarkupsFieldDeposits    = big.NewInt(1 << 1)
-	accountFeeMarkupsFieldPayments    = big.NewInt(1 << 2)
-	accountFeeMarkupsFieldPayouts     = big.NewInt(1 << 3)
-	accountFeeMarkupsFieldTransfers   = big.NewInt(1 << 4)
+	accountFeeMarkupsFieldCardSpend   = big.NewInt(1 << 0)
+	accountFeeMarkupsFieldCryptoSwaps = big.NewInt(1 << 1)
+	accountFeeMarkupsFieldDeposits    = big.NewInt(1 << 2)
+	accountFeeMarkupsFieldPayments    = big.NewInt(1 << 3)
+	accountFeeMarkupsFieldPayouts     = big.NewInt(1 << 4)
+	accountFeeMarkupsFieldTransfers   = big.NewInt(1 << 5)
 )
 
 type AccountFeeMarkups struct {
+	// The markup on card purchases settled by the connected account.
+	CardSpend *AccountFeeMarkup `json:"card_spend" url:"card_spend"`
 	// The markup on cryptocurrency token swaps.
 	CryptoSwaps *AccountFeeMarkup `json:"crypto_swaps" url:"crypto_swaps"`
 	// Markups on deposits into the account's balance, keyed by rail: `bank` and `crypto`.
@@ -1508,6 +1511,13 @@ type AccountFeeMarkups struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AccountFeeMarkups) GetCardSpend() *AccountFeeMarkup {
+	if a == nil {
+		return nil
+	}
+	return a.CardSpend
 }
 
 func (a *AccountFeeMarkups) GetCryptoSwaps() *AccountFeeMarkup {
@@ -1557,6 +1567,13 @@ func (a *AccountFeeMarkups) require(field *big.Int) {
 		a.explicitFields = big.NewInt(0)
 	}
 	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetCardSpend sets the CardSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkups) SetCardSpend(cardSpend *AccountFeeMarkup) {
+	a.CardSpend = cardSpend
+	a.require(accountFeeMarkupsFieldCardSpend)
 }
 
 // SetCryptoSwaps sets the CryptoSwaps field and marks it as non-optional;
@@ -2106,7 +2123,7 @@ type AccountFees struct {
 	Buyer *AccountFee `json:"buyer" url:"buyer"`
 	// Card payments. `percentage` and `fixed` are the rate in the headline `region`; every other acquirer region is under `regions`.
 	CardProcessing *AccountFee `json:"card_processing" url:"card_processing"`
-	// The default markups this account charges the accounts connected to it. `null` unless the account is a platform.
+	// The default markups this account charges connected accounts, configurable before any accounts connect. `null` if this account has a parent.
 	ChildMarkups *AccountFeeMarkups `json:"child_markups,omitempty" url:"child_markups,omitempty"`
 	// Added to a payment whose card was issued outside the region where the payment was processed.
 	CrossBorder *AccountFee `json:"cross_border" url:"cross_border"`

@@ -2624,6 +2624,14 @@ func TestSettersMarkExplicitAccountFeeMarkup(t *testing.T) {
 }
 
 func TestSettersAccountFeeMarkups(t *testing.T) {
+	t.Run("SetCardSpend", func(t *testing.T) {
+		obj := &AccountFeeMarkups{}
+		var fernTestValueCardSpend *AccountFeeMarkup
+		obj.SetCardSpend(fernTestValueCardSpend)
+		assert.Equal(t, fernTestValueCardSpend, obj.CardSpend)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCryptoSwaps", func(t *testing.T) {
 		obj := &AccountFeeMarkups{}
 		var fernTestValueCryptoSwaps *AccountFeeMarkup
@@ -2667,6 +2675,39 @@ func TestSettersAccountFeeMarkups(t *testing.T) {
 }
 
 func TestGettersAccountFeeMarkups(t *testing.T) {
+	t.Run("GetCardSpend", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountFeeMarkups{}
+		var expected *AccountFeeMarkup
+		obj.CardSpend = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCardSpend(), "getter should return the property value")
+	})
+
+	t.Run("GetCardSpend_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountFeeMarkups{}
+		obj.CardSpend = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCardSpend(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCardSpend_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountFeeMarkups
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCardSpend() // Should return zero value
+	})
+
 	t.Run("GetCryptoSwaps", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2835,6 +2876,37 @@ func TestGettersAccountFeeMarkups(t *testing.T) {
 }
 
 func TestSettersMarkExplicitAccountFeeMarkups(t *testing.T) {
+	t.Run("SetCardSpend_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountFeeMarkups{}
+		var fernTestValueCardSpend *AccountFeeMarkup
+
+		// Act
+		obj.SetCardSpend(fernTestValueCardSpend)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCryptoSwaps_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
