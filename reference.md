@@ -18832,7 +18832,7 @@ client.FinancialActivity.List(
 <dl>
 <dd>
 
-**availableAfter:** `*time.Time` — Only include rows whose funds became withdrawable on or after this `YYYY-MM-DD` settlement date (UTC), distinct from posted_at. Requires currency.
+**availableAfter:** `*time.Time` — Only include balance credits and debits available on or after this `YYYY-MM-DD` date (UTC), distinct from posted_at. Requires currency.
     
 </dd>
 </dl>
@@ -18840,7 +18840,7 @@ client.FinancialActivity.List(
 <dl>
 <dd>
 
-**availableBefore:** `*time.Time` — Only include rows whose funds became withdrawable on or before this `YYYY-MM-DD` settlement date (UTC). Set equal to available_after for a single day. Requires currency.
+**availableBefore:** `*time.Time` — Only include balance credits and debits available on or before this `YYYY-MM-DD` date (UTC). Set equal to available_after for a single day. Requires currency.
     
 </dd>
 </dl>

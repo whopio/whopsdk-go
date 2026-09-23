@@ -54,9 +54,9 @@ type ListFinancialActivityRequest struct {
 	PostedAfter *time.Time `json:"-" url:"posted_after,omitempty"`
 	// Only include rows posted before this ISO 8601 timestamp.
 	PostedBefore *time.Time `json:"-" url:"posted_before,omitempty"`
-	// Only include rows whose funds became withdrawable on or after this `YYYY-MM-DD` settlement date (UTC), distinct from posted_at. Requires currency.
+	// Only include balance credits and debits available on or after this `YYYY-MM-DD` date (UTC), distinct from posted_at. Requires currency.
 	AvailableAfter *time.Time `json:"-" url:"available_after,omitempty" format:"date"`
-	// Only include rows whose funds became withdrawable on or before this `YYYY-MM-DD` settlement date (UTC). Set equal to available_after for a single day. Requires currency.
+	// Only include balance credits and debits available on or before this `YYYY-MM-DD` date (UTC). Set equal to available_after for a single day. Requires currency.
 	AvailableBefore *time.Time `json:"-" url:"available_before,omitempty" format:"date"`
 	// Maximum number of rows to return.
 	Limit *int `json:"-" url:"limit,omitempty"`
@@ -215,7 +215,7 @@ type LedgerActivity struct {
 	Account *LedgerActivityAccount `json:"account,omitempty" url:"account,omitempty"`
 	// Signed amount in the currency's smallest precision units.
 	Amount string `json:"amount" url:"amount"`
-	// ISO 8601 timestamp these funds became (or are scheduled to become) withdrawable: the posted time for already-settled funds, or 00:00:00 UTC on the scheduled release date for pending funds. Present only on inflows entering the balance (payments, top-ups, incoming transfers/affiliate); null on payouts, refunds, disputes and on-chain rows. The available_after/before filters window on its UTC settlement date.
+	// ISO 8601 timestamp when this activity affects available funds: 00:00:00 UTC on the scheduled release date for credits and debits in a pending good-funds release bucket; the posted time for credits and debits to settled available funds, including refunds, disputes and payouts. Null for activity outside these paths, including on-chain rows. The available_after/before filters use its UTC date; default activity excludes some movements, including opt-in reserves.
 	AvailableAt *time.Time `json:"available_at,omitempty" url:"available_at,omitempty"`
 	// Currency for this ledger activity.
 	Currency *LedgerActivityCurrency `json:"currency" url:"currency"`
