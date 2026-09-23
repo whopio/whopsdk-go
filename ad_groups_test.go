@@ -42,6 +42,14 @@ func TestSettersCreateAdGroupsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBudgetAmountLocal", func(t *testing.T) {
+		obj := &CreateAdGroupsRequest{}
+		var fernTestValueBudgetAmountLocal *float64
+		obj.SetBudgetAmountLocal(fernTestValueBudgetAmountLocal)
+		assert.Equal(t, fernTestValueBudgetAmountLocal, obj.BudgetAmountLocal)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBudgetType", func(t *testing.T) {
 		obj := &CreateAdGroupsRequest{}
 		var fernTestValueBudgetType *CreateAdGroupsRequestBudgetType
@@ -298,6 +306,37 @@ func TestSettersMarkExplicitCreateAdGroupsRequest(t *testing.T) {
 
 		// Act
 		obj.SetBudgetAmount(fernTestValueBudgetAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetBudgetAmountLocal_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequest{}
+		var fernTestValueBudgetAmountLocal *float64
+
+		// Act
+		obj.SetBudgetAmountLocal(fernTestValueBudgetAmountLocal)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2719,6 +2758,22 @@ func TestSettersAdGroup(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBudgetAmountLocal", func(t *testing.T) {
+		obj := &AdGroup{}
+		var fernTestValueBudgetAmountLocal *float64
+		obj.SetBudgetAmountLocal(fernTestValueBudgetAmountLocal)
+		assert.Equal(t, fernTestValueBudgetAmountLocal, obj.BudgetAmountLocal)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetBudgetCurrency", func(t *testing.T) {
+		obj := &AdGroup{}
+		var fernTestValueBudgetCurrency string
+		obj.SetBudgetCurrency(fernTestValueBudgetCurrency)
+		assert.Equal(t, fernTestValueBudgetCurrency, obj.BudgetCurrency)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBudgetType", func(t *testing.T) {
 		obj := &AdGroup{}
 		var fernTestValueBudgetType *AdGroupBudgetType
@@ -3442,6 +3497,62 @@ func TestGettersAdGroup(t *testing.T) {
 			}
 		}()
 		_ = obj.GetBudgetAmount() // Should return zero value
+	})
+
+	t.Run("GetBudgetAmountLocal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroup{}
+		var expected *float64
+		obj.BudgetAmountLocal = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBudgetAmountLocal(), "getter should return the property value")
+	})
+
+	t.Run("GetBudgetAmountLocal_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroup{}
+		obj.BudgetAmountLocal = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBudgetAmountLocal(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetBudgetAmountLocal_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroup
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBudgetAmountLocal() // Should return zero value
+	})
+
+	t.Run("GetBudgetCurrency", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroup{}
+		var expected string
+		obj.BudgetCurrency = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBudgetCurrency(), "getter should return the property value")
+	})
+
+	t.Run("GetBudgetCurrency_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroup
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBudgetCurrency() // Should return zero value
 	})
 
 	t.Run("GetBudgetType", func(t *testing.T) {
@@ -5544,6 +5655,68 @@ func TestSettersMarkExplicitAdGroup(t *testing.T) {
 
 		// Act
 		obj.SetBudgetAmount(fernTestValueBudgetAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetBudgetAmountLocal_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroup{}
+		var fernTestValueBudgetAmountLocal *float64
+
+		// Act
+		obj.SetBudgetAmountLocal(fernTestValueBudgetAmountLocal)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetBudgetCurrency_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroup{}
+		var fernTestValueBudgetCurrency string
+
+		// Act
+		obj.SetBudgetCurrency(fernTestValueBudgetCurrency)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -16745,6 +16918,14 @@ func TestSettersUpdateAdGroupsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetBudgetAmountLocal", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequest{}
+		var fernTestValueBudgetAmountLocal *float64
+		obj.SetBudgetAmountLocal(fernTestValueBudgetAmountLocal)
+		assert.Equal(t, fernTestValueBudgetAmountLocal, obj.BudgetAmountLocal)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBudgetType", func(t *testing.T) {
 		obj := &UpdateAdGroupsRequest{}
 		var fernTestValueBudgetType *UpdateAdGroupsRequestBudgetType
@@ -16993,6 +17174,37 @@ func TestSettersMarkExplicitUpdateAdGroupsRequest(t *testing.T) {
 
 		// Act
 		obj.SetBudgetAmount(fernTestValueBudgetAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetBudgetAmountLocal_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequest{}
+		var fernTestValueBudgetAmountLocal *float64
+
+		// Act
+		obj.SetBudgetAmountLocal(fernTestValueBudgetAmountLocal)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

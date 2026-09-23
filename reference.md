@@ -1638,7 +1638,15 @@ client.AdCampaigns.Create(
 <dl>
 <dd>
 
-**budgetAmount:** `*float64` — The campaign's budget, in the ad account's currency. Required when budget_optimization is `ad_campaign`; omit when each ad group sets its own budget.
+**budgetAmount:** `*float64` — The campaign's budget in USD, which is what it is stored and billed in. Required when budget_optimization is `ad_campaign` (or send budget_amount_local instead); omit when each ad group sets its own budget.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**budgetAmountLocal:** `*float64` — The campaign's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount. Provide this or budget_amount, not both.
     
 </dd>
 </dl>
@@ -1938,7 +1946,15 @@ client.AdCampaigns.Update(
 <dl>
 <dd>
 
-**budgetAmount:** `*float64` — The campaign budget, in the account's currency. Interpreted as daily or lifetime per the campaign's budget type, including a budget_type sent in the same request.
+**budgetAmount:** `*float64` — The campaign budget in USD, which is what it is stored and billed in. Interpreted as daily or lifetime per the campaign's budget type, including a budget_type sent in the same request.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**budgetAmountLocal:** `*float64` — The campaign budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
     
 </dd>
 </dl>
@@ -3076,7 +3092,15 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
-**budgetAmount:** `*float64` — This ad group's budget, in the ad account's currency. Omit when the budget is set on the campaign instead.
+**budgetAmount:** `*float64` — This ad group's budget in USD, which is what it is stored and billed in. Omit when the budget is set on the campaign instead.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**budgetAmountLocal:** `*float64` — This ad group's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; on an update, an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
     
 </dd>
 </dl>
@@ -3707,7 +3731,15 @@ client.AdGroups.Update(
 <dl>
 <dd>
 
-**budgetAmount:** `*float64` — This ad group's budget, in the ad account's currency. Omit when the budget is set on the campaign instead.
+**budgetAmount:** `*float64` — This ad group's budget in USD, which is what it is stored and billed in. Omit when the budget is set on the campaign instead.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**budgetAmountLocal:** `*float64` — This ad group's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; on an update, an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
     
 </dd>
 </dl>
