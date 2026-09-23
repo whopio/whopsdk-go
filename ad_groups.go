@@ -2956,6 +2956,7 @@ func (a AdGroupCustomLocationDistanceUnit) Ptr() *AdGroupCustomLocationDistanceU
 type AdGroupDeliveryStatus string
 
 const (
+	AdGroupDeliveryStatusInAppeal        AdGroupDeliveryStatus = "in_appeal"
 	AdGroupDeliveryStatusAllAdsRejected  AdGroupDeliveryStatus = "all_ads_rejected"
 	AdGroupDeliveryStatusRejected        AdGroupDeliveryStatus = "rejected"
 	AdGroupDeliveryStatusDraft           AdGroupDeliveryStatus = "draft"
@@ -2974,6 +2975,8 @@ const (
 
 func NewAdGroupDeliveryStatusFromString(s string) (AdGroupDeliveryStatus, error) {
 	switch s {
+	case "in_appeal":
+		return AdGroupDeliveryStatusInAppeal, nil
 	case "all_ads_rejected":
 		return AdGroupDeliveryStatusAllAdsRejected, nil
 	case "rejected":
