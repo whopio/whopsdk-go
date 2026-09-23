@@ -171,8 +171,8 @@ type EconomicIntelligence struct {
 	// When the recommendation was created, as an ISO 8601 timestamp, or null for an unsaved recommendation.
 	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
 	// When the recommendation was approved, as an ISO 8601 timestamp, or `null` if it has not been approved.
-	ExecutedAt        *string  `json:"executed_at,omitempty" url:"executed_at,omitempty"`
-	ExpectedToolCalls []string `json:"expected_tool_calls,omitempty" url:"expected_tool_calls,omitempty"`
+	ExecutedAt        *string                          `json:"executed_at,omitempty" url:"executed_at,omitempty"`
+	ExpectedToolCalls []*EconomicIntelligenceOperation `json:"expected_tool_calls,omitempty" url:"expected_tool_calls,omitempty"`
 	// Recommendation ID, prefixed `reca_`, or `create_business` for an unsaved setup recommendation. Authenticate and list again before executing an unsaved recommendation.
 	ID string `json:"id" url:"id"`
 	// What you requested, in your own words, or `null` for recommendations generated without your input.
@@ -236,7 +236,7 @@ func (e *EconomicIntelligence) GetExecutedAt() *string {
 	return e.ExecutedAt
 }
 
-func (e *EconomicIntelligence) GetExpectedToolCalls() []string {
+func (e *EconomicIntelligence) GetExpectedToolCalls() []*EconomicIntelligenceOperation {
 	if e == nil {
 		return nil
 	}
@@ -364,7 +364,7 @@ func (e *EconomicIntelligence) SetExecutedAt(executedAt *string) {
 
 // SetExpectedToolCalls sets the ExpectedToolCalls field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetExpectedToolCalls(expectedToolCalls []string) {
+func (e *EconomicIntelligence) SetExpectedToolCalls(expectedToolCalls []*EconomicIntelligenceOperation) {
 	e.ExpectedToolCalls = expectedToolCalls
 	e.require(economicIntelligenceFieldExpectedToolCalls)
 }
@@ -467,6 +467,108 @@ func (e *EconomicIntelligence) MarshalJSON() ([]byte, error) {
 }
 
 func (e *EconomicIntelligence) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	economicIntelligenceOperationFieldDescription = big.NewInt(1 << 0)
+	economicIntelligenceOperationFieldToolName    = big.NewInt(1 << 1)
+)
+
+type EconomicIntelligenceOperation struct {
+	// Concise description of the operation and affected resource, or null for older recommendations.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// API operation or assistant tool name.
+	ToolName string `json:"tool_name" url:"tool_name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EconomicIntelligenceOperation) GetDescription() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Description
+}
+
+func (e *EconomicIntelligenceOperation) GetToolName() string {
+	if e == nil {
+		return ""
+	}
+	return e.ToolName
+}
+
+func (e *EconomicIntelligenceOperation) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EconomicIntelligenceOperation) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligenceOperation) SetDescription(description *string) {
+	e.Description = description
+	e.require(economicIntelligenceOperationFieldDescription)
+}
+
+// SetToolName sets the ToolName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligenceOperation) SetToolName(toolName string) {
+	e.ToolName = toolName
+	e.require(economicIntelligenceOperationFieldToolName)
+}
+
+func (e *EconomicIntelligenceOperation) UnmarshalJSON(data []byte) error {
+	type unmarshaler EconomicIntelligenceOperation
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EconomicIntelligenceOperation(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EconomicIntelligenceOperation) MarshalJSON() ([]byte, error) {
+	type embed EconomicIntelligenceOperation
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EconomicIntelligenceOperation) String() string {
 	if e == nil {
 		return "<nil>"
 	}
