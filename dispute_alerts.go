@@ -163,29 +163,25 @@ func (r *RetrieveDisputeAlertsRequest) SetID(id string) {
 }
 
 var (
-	disputeAlertFieldAccountID           = big.NewInt(1 << 0)
-	disputeAlertFieldActionable          = big.NewInt(1 << 1)
-	disputeAlertFieldAmount              = big.NewInt(1 << 2)
-	disputeAlertFieldCardBrand           = big.NewInt(1 << 3)
-	disputeAlertFieldCreatedAt           = big.NewInt(1 << 4)
-	disputeAlertFieldCurrency            = big.NewInt(1 << 5)
-	disputeAlertFieldFeeCharged          = big.NewInt(1 << 6)
-	disputeAlertFieldID                  = big.NewInt(1 << 7)
-	disputeAlertFieldIssuer              = big.NewInt(1 << 8)
-	disputeAlertFieldNotActionableReason = big.NewInt(1 << 9)
-	disputeAlertFieldPaymentID           = big.NewInt(1 << 10)
-	disputeAlertFieldProductID           = big.NewInt(1 << 11)
-	disputeAlertFieldReportedAt          = big.NewInt(1 << 12)
-	disputeAlertFieldTransactionAt       = big.NewInt(1 << 13)
-	disputeAlertFieldType                = big.NewInt(1 << 14)
-	disputeAlertFieldUpdatedAt           = big.NewInt(1 << 15)
+	disputeAlertFieldAccountID     = big.NewInt(1 << 0)
+	disputeAlertFieldAmount        = big.NewInt(1 << 1)
+	disputeAlertFieldCardBrand     = big.NewInt(1 << 2)
+	disputeAlertFieldCreatedAt     = big.NewInt(1 << 3)
+	disputeAlertFieldCurrency      = big.NewInt(1 << 4)
+	disputeAlertFieldFeeCharged    = big.NewInt(1 << 5)
+	disputeAlertFieldID            = big.NewInt(1 << 6)
+	disputeAlertFieldIssuer        = big.NewInt(1 << 7)
+	disputeAlertFieldPaymentID     = big.NewInt(1 << 8)
+	disputeAlertFieldProductID     = big.NewInt(1 << 9)
+	disputeAlertFieldReportedAt    = big.NewInt(1 << 10)
+	disputeAlertFieldTransactionAt = big.NewInt(1 << 11)
+	disputeAlertFieldType          = big.NewInt(1 << 12)
+	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 13)
 )
 
 type DisputeAlert struct {
 	// The account the alerted payment belongs to, prefixed `biz_`. `null` while the alert is unmatched.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// Whether refunding the payment can still avoid a chargeback. `false` once the payment has been disputed or fully refunded, or when the alert could not be matched to a payment — `not_actionable_reason` says which.
-	Actionable bool `json:"actionable" url:"actionable"`
 	// The alerted amount, in whole units of `currency`. This is what the issuer reported, which can differ from the payment's own amount.
 	Amount float64 `json:"amount" url:"amount"`
 	// The card network as reported by the issuer, lowercased, such as `visa` or `mastercard`. `unknown` when the report carries neither a network nor a recognizable BIN.
@@ -198,17 +194,16 @@ type DisputeAlert struct {
 	FeeCharged bool `json:"fee_charged" url:"fee_charged"`
 	// Dispute alert ID, prefixed `dspa_`.
 	ID string `json:"id" url:"id"`
-	// Name of the bank that issued the card and filed the report.
+	// Deprecated: always `null` outside Whop's own dashboard. Name of the bank that issued the card and filed the report.
+	// DEPRECATED: Always null outside Whop's own dashboard.
 	Issuer *string `json:"issuer,omitempty" url:"issuer,omitempty"`
-	// Why refunding can no longer avoid a chargeback. `network_resolved` when a Visa RDR already closed the case, `payment_unmatched` when no payment matched, `payment_not_captured` when it never captured money, `payment_disputed` once the payment carries a dispute, `payment_refunded` once fully refunded. `null` while `actionable` is true.
-	NotActionableReason *DisputeAlertNotActionableReason `json:"not_actionable_reason,omitempty" url:"not_actionable_reason,omitempty"`
 	// The payment the issuer reported, prefixed `pay_`. `null` when Whop could not match the report to a payment.
 	PaymentID *string `json:"payment_id,omitempty" url:"payment_id,omitempty"`
 	// The product the alerted payment was for, prefixed `prod_`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// When the issuer filed the report, as an ISO 8601 timestamp. Earlier than `created_at`, which is when Whop received it.
 	ReportedAt string `json:"reported_at" url:"reported_at"`
-	// When the reported transaction was made, as an ISO 8601 timestamp.
+	// When the reported transaction was made, as an ISO 8601 timestamp — falls back to when the matched payment was made if the issuer's own report didn't carry one. Should not be `null` in practice; treat one as a data issue rather than expected behavior.
 	TransactionAt *string `json:"transaction_at,omitempty" url:"transaction_at,omitempty"`
 	// What the issuer sent. `early_fraud_warning` is a fraud report on a settled payment (Visa TC40 / Mastercard SAFE) — refunding still avoids the chargeback, and Whop never charges a fee for one. `dispute_alert` is a pre-dispute notice from the issuer's alert network, which Whop pays for and passes on as a fee. `rapid_dispute_resolution` is a Visa RDR case the network already closed by refunding the payment — nothing is left to act on.
 	Type DisputeAlertType `json:"type" url:"type"`
@@ -227,13 +222,6 @@ func (d *DisputeAlert) GetAccountID() *string {
 		return nil
 	}
 	return d.AccountID
-}
-
-func (d *DisputeAlert) GetActionable() bool {
-	if d == nil {
-		return false
-	}
-	return d.Actionable
 }
 
 func (d *DisputeAlert) GetAmount() float64 {
@@ -283,13 +271,6 @@ func (d *DisputeAlert) GetIssuer() *string {
 		return nil
 	}
 	return d.Issuer
-}
-
-func (d *DisputeAlert) GetNotActionableReason() *DisputeAlertNotActionableReason {
-	if d == nil {
-		return nil
-	}
-	return d.NotActionableReason
 }
 
 func (d *DisputeAlert) GetPaymentID() *string {
@@ -355,13 +336,6 @@ func (d *DisputeAlert) SetAccountID(accountID *string) {
 	d.require(disputeAlertFieldAccountID)
 }
 
-// SetActionable sets the Actionable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DisputeAlert) SetActionable(actionable bool) {
-	d.Actionable = actionable
-	d.require(disputeAlertFieldActionable)
-}
-
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeAlert) SetAmount(amount float64) {
@@ -409,13 +383,6 @@ func (d *DisputeAlert) SetID(id string) {
 func (d *DisputeAlert) SetIssuer(issuer *string) {
 	d.Issuer = issuer
 	d.require(disputeAlertFieldIssuer)
-}
-
-// SetNotActionableReason sets the NotActionableReason field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DisputeAlert) SetNotActionableReason(notActionableReason *DisputeAlertNotActionableReason) {
-	d.NotActionableReason = notActionableReason
-	d.require(disputeAlertFieldNotActionableReason)
 }
 
 // SetPaymentID sets the PaymentID field and marks it as non-optional;
@@ -500,38 +467,6 @@ func (d *DisputeAlert) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
-}
-
-// Why refunding can no longer avoid a chargeback. `network_resolved` when a Visa RDR already closed the case, `payment_unmatched` when no payment matched, `payment_not_captured` when it never captured money, `payment_disputed` once the payment carries a dispute, `payment_refunded` once fully refunded. `null` while `actionable` is true.
-type DisputeAlertNotActionableReason string
-
-const (
-	DisputeAlertNotActionableReasonNetworkResolved    DisputeAlertNotActionableReason = "network_resolved"
-	DisputeAlertNotActionableReasonPaymentUnmatched   DisputeAlertNotActionableReason = "payment_unmatched"
-	DisputeAlertNotActionableReasonPaymentNotCaptured DisputeAlertNotActionableReason = "payment_not_captured"
-	DisputeAlertNotActionableReasonPaymentDisputed    DisputeAlertNotActionableReason = "payment_disputed"
-	DisputeAlertNotActionableReasonPaymentRefunded    DisputeAlertNotActionableReason = "payment_refunded"
-)
-
-func NewDisputeAlertNotActionableReasonFromString(s string) (DisputeAlertNotActionableReason, error) {
-	switch s {
-	case "network_resolved":
-		return DisputeAlertNotActionableReasonNetworkResolved, nil
-	case "payment_unmatched":
-		return DisputeAlertNotActionableReasonPaymentUnmatched, nil
-	case "payment_not_captured":
-		return DisputeAlertNotActionableReasonPaymentNotCaptured, nil
-	case "payment_disputed":
-		return DisputeAlertNotActionableReasonPaymentDisputed, nil
-	case "payment_refunded":
-		return DisputeAlertNotActionableReasonPaymentRefunded, nil
-	}
-	var t DisputeAlertNotActionableReason
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (d DisputeAlertNotActionableReason) Ptr() *DisputeAlertNotActionableReason {
-	return &d
 }
 
 // What the issuer sent. `early_fraud_warning` is a fraud report on a settled payment (Visa TC40 / Mastercard SAFE) — refunding still avoids the chargeback, and Whop never charges a fee for one. `dispute_alert` is a pre-dispute notice from the issuer's alert network, which Whop pays for and passes on as a fee. `rapid_dispute_resolution` is a Visa RDR case the network already closed by refunding the payment — nothing is left to act on.

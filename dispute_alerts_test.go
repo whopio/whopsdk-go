@@ -499,14 +499,6 @@ func TestSettersDisputeAlert(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetActionable", func(t *testing.T) {
-		obj := &DisputeAlert{}
-		var fernTestValueActionable bool
-		obj.SetActionable(fernTestValueActionable)
-		assert.Equal(t, fernTestValueActionable, obj.Actionable)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetAmount", func(t *testing.T) {
 		obj := &DisputeAlert{}
 		var fernTestValueAmount float64
@@ -560,14 +552,6 @@ func TestSettersDisputeAlert(t *testing.T) {
 		var fernTestValueIssuer *string
 		obj.SetIssuer(fernTestValueIssuer)
 		assert.Equal(t, fernTestValueIssuer, obj.Issuer)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetNotActionableReason", func(t *testing.T) {
-		obj := &DisputeAlert{}
-		var fernTestValueNotActionableReason *DisputeAlertNotActionableReason
-		obj.SetNotActionableReason(fernTestValueNotActionableReason)
-		assert.Equal(t, fernTestValueNotActionableReason, obj.NotActionableReason)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -653,29 +637,6 @@ func TestGettersDisputeAlert(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAccountID() // Should return zero value
-	})
-
-	t.Run("GetActionable", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &DisputeAlert{}
-		var expected bool
-		obj.Actionable = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetActionable(), "getter should return the property value")
-	})
-
-	t.Run("GetActionable_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *DisputeAlert
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetActionable() // Should return zero value
 	})
 
 	t.Run("GetAmount", func(t *testing.T) {
@@ -859,39 +820,6 @@ func TestGettersDisputeAlert(t *testing.T) {
 		_ = obj.GetIssuer() // Should return zero value
 	})
 
-	t.Run("GetNotActionableReason", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &DisputeAlert{}
-		var expected *DisputeAlertNotActionableReason
-		obj.NotActionableReason = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetNotActionableReason(), "getter should return the property value")
-	})
-
-	t.Run("GetNotActionableReason_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &DisputeAlert{}
-		obj.NotActionableReason = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetNotActionableReason(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetNotActionableReason_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *DisputeAlert
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetNotActionableReason() // Should return zero value
-	})
-
 	t.Run("GetPaymentID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1071,37 +999,6 @@ func TestSettersMarkExplicitDisputeAlert(t *testing.T) {
 
 		// Act
 		obj.SetAccountID(fernTestValueAccountID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetActionable_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &DisputeAlert{}
-		var fernTestValueActionable bool
-
-		// Act
-		obj.SetActionable(fernTestValueActionable)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1319,37 +1216,6 @@ func TestSettersMarkExplicitDisputeAlert(t *testing.T) {
 
 		// Act
 		obj.SetIssuer(fernTestValueIssuer)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetNotActionableReason_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &DisputeAlert{}
-		var fernTestValueNotActionableReason *DisputeAlertNotActionableReason
-
-		// Act
-		obj.SetNotActionableReason(fernTestValueNotActionableReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2729,56 +2595,6 @@ func TestStringPostDisputeAlertCreatedPayload(t *testing.T) {
 		var obj *PostDisputeAlertCreatedPayload
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
-	})
-}
-
-func TestEnumDisputeAlertNotActionableReason(t *testing.T) {
-	t.Run("NewFromString_network_resolved", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewDisputeAlertNotActionableReasonFromString("network_resolved")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, DisputeAlertNotActionableReason("network_resolved"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_payment_unmatched", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewDisputeAlertNotActionableReasonFromString("payment_unmatched")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, DisputeAlertNotActionableReason("payment_unmatched"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_payment_not_captured", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewDisputeAlertNotActionableReasonFromString("payment_not_captured")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, DisputeAlertNotActionableReason("payment_not_captured"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_payment_disputed", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewDisputeAlertNotActionableReasonFromString("payment_disputed")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, DisputeAlertNotActionableReason("payment_disputed"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_payment_refunded", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewDisputeAlertNotActionableReasonFromString("payment_refunded")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, DisputeAlertNotActionableReason("payment_refunded"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewDisputeAlertNotActionableReasonFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewDisputeAlertNotActionableReasonFromString("network_resolved")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
 	})
 }
 

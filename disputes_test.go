@@ -856,14 +856,6 @@ func TestSettersDispute(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetGeneratedResponseAttachment", func(t *testing.T) {
-		obj := &Dispute{}
-		var fernTestValueGeneratedResponseAttachment *DisputeAttachment
-		obj.SetGeneratedResponseAttachment(fernTestValueGeneratedResponseAttachment)
-		assert.Equal(t, fernTestValueGeneratedResponseAttachment, obj.GeneratedResponseAttachment)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetID", func(t *testing.T) {
 		obj := &Dispute{}
 		var fernTestValueID string
@@ -917,14 +909,6 @@ func TestSettersDispute(t *testing.T) {
 		var fernTestValueProductID *string
 		obj.SetProductID(fernTestValueProductID)
 		assert.Equal(t, fernTestValueProductID, obj.ProductID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetRapidDisputeResolution", func(t *testing.T) {
-		obj := &Dispute{}
-		var fernTestValueRapidDisputeResolution bool
-		obj.SetRapidDisputeResolution(fernTestValueRapidDisputeResolution)
-		assert.Equal(t, fernTestValueRapidDisputeResolution, obj.RapidDisputeResolution)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1253,39 +1237,6 @@ func TestGettersDispute(t *testing.T) {
 		_ = obj.GetEvidenceSubmittedAt() // Should return zero value
 	})
 
-	t.Run("GetGeneratedResponseAttachment", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Dispute{}
-		var expected *DisputeAttachment
-		obj.GeneratedResponseAttachment = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetGeneratedResponseAttachment(), "getter should return the property value")
-	})
-
-	t.Run("GetGeneratedResponseAttachment_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Dispute{}
-		obj.GeneratedResponseAttachment = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetGeneratedResponseAttachment(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetGeneratedResponseAttachment_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *Dispute
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetGeneratedResponseAttachment() // Should return zero value
-	})
-
 	t.Run("GetID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1495,29 +1446,6 @@ func TestGettersDispute(t *testing.T) {
 			}
 		}()
 		_ = obj.GetProductID() // Should return zero value
-	})
-
-	t.Run("GetRapidDisputeResolution", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Dispute{}
-		var expected bool
-		obj.RapidDisputeResolution = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetRapidDisputeResolution(), "getter should return the property value")
-	})
-
-	t.Run("GetRapidDisputeResolution_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *Dispute
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetRapidDisputeResolution() // Should return zero value
 	})
 
 	t.Run("GetReason", func(t *testing.T) {
@@ -1935,37 +1863,6 @@ func TestSettersMarkExplicitDispute(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetGeneratedResponseAttachment_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Dispute{}
-		var fernTestValueGeneratedResponseAttachment *DisputeAttachment
-
-		// Act
-		obj.SetGeneratedResponseAttachment(fernTestValueGeneratedResponseAttachment)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2160,37 +2057,6 @@ func TestSettersMarkExplicitDispute(t *testing.T) {
 
 		// Act
 		obj.SetProductID(fernTestValueProductID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetRapidDisputeResolution_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &Dispute{}
-		var fernTestValueRapidDisputeResolution bool
-
-		// Act
-		obj.SetRapidDisputeResolution(fernTestValueRapidDisputeResolution)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -8158,6 +8024,14 @@ func TestSettersUpdateDisputesRequestEvidence(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDocuments", func(t *testing.T) {
+		obj := &UpdateDisputesRequestEvidence{}
+		var fernTestValueDocuments []*UpdateDisputesRequestEvidenceDocumentsItem
+		obj.SetDocuments(fernTestValueDocuments)
+		assert.Equal(t, fernTestValueDocuments, obj.Documents)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetNotes", func(t *testing.T) {
 		obj := &UpdateDisputesRequestEvidence{}
 		var fernTestValueNotes *string
@@ -8446,6 +8320,39 @@ func TestGettersUpdateDisputesRequestEvidence(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCustomerName() // Should return zero value
+	})
+
+	t.Run("GetDocuments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidence{}
+		var expected []*UpdateDisputesRequestEvidenceDocumentsItem
+		obj.Documents = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDocuments(), "getter should return the property value")
+	})
+
+	t.Run("GetDocuments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidence{}
+		obj.Documents = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDocuments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDocuments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDisputesRequestEvidence
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDocuments() // Should return zero value
 	})
 
 	t.Run("GetNotes", func(t *testing.T) {
@@ -8876,6 +8783,37 @@ func TestSettersMarkExplicitUpdateDisputesRequestEvidence(t *testing.T) {
 
 		// Act
 		obj.SetCustomerName(fernTestValueCustomerName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDocuments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidence{}
+		var fernTestValueDocuments []*UpdateDisputesRequestEvidenceDocumentsItem
+
+		// Act
+		obj.SetDocuments(fernTestValueDocuments)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9395,6 +9333,293 @@ func TestSettersMarkExplicitUpdateDisputesRequestEvidenceCustomerCommunicationAt
 		t.Parallel()
 		// Arrange
 		obj := &UpdateDisputesRequestEvidenceCustomerCommunicationAttachment{}
+		var fernTestValueID *string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersUpdateDisputesRequestEvidenceDocumentsItem(t *testing.T) {
+	t.Run("SetDirectUploadID", func(t *testing.T) {
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var fernTestValueDirectUploadID *string
+		obj.SetDirectUploadID(fernTestValueDirectUploadID)
+		assert.Equal(t, fernTestValueDirectUploadID, obj.DirectUploadID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDocumentType", func(t *testing.T) {
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var fernTestValueDocumentType UpdateDisputesRequestEvidenceDocumentsItemDocumentType
+		obj.SetDocumentType(fernTestValueDocumentType)
+		assert.Equal(t, fernTestValueDocumentType, obj.DocumentType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFile", func(t *testing.T) {
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var fernTestValueFile *string
+		obj.SetFile(fernTestValueFile)
+		assert.Equal(t, fernTestValueFile, obj.File)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetID", func(t *testing.T) {
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var fernTestValueID *string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateDisputesRequestEvidenceDocumentsItem(t *testing.T) {
+	t.Run("GetDirectUploadID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var expected *string
+		obj.DirectUploadID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDirectUploadID(), "getter should return the property value")
+	})
+
+	t.Run("GetDirectUploadID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		obj.DirectUploadID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDirectUploadID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDirectUploadID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDisputesRequestEvidenceDocumentsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDirectUploadID() // Should return zero value
+	})
+
+	t.Run("GetDocumentType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var expected UpdateDisputesRequestEvidenceDocumentsItemDocumentType
+		obj.DocumentType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDocumentType(), "getter should return the property value")
+	})
+
+	t.Run("GetDocumentType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDisputesRequestEvidenceDocumentsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDocumentType() // Should return zero value
+	})
+
+	t.Run("GetFile", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var expected *string
+		obj.File = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFile(), "getter should return the property value")
+	})
+
+	t.Run("GetFile_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		obj.File = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFile(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFile_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDisputesRequestEvidenceDocumentsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFile() // Should return zero value
+	})
+
+	t.Run("GetID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var expected *string
+		obj.ID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
+	})
+
+	t.Run("GetID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		obj.ID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDisputesRequestEvidenceDocumentsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetID() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateDisputesRequestEvidenceDocumentsItem(t *testing.T) {
+	t.Run("SetDirectUploadID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var fernTestValueDirectUploadID *string
+
+		// Act
+		obj.SetDirectUploadID(fernTestValueDirectUploadID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDocumentType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var fernTestValueDocumentType UpdateDisputesRequestEvidenceDocumentsItemDocumentType
+
+		// Act
+		obj.SetDocumentType(fernTestValueDocumentType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFile_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		var fernTestValueFile *string
+
+		// Act
+		obj.SetFile(fernTestValueFile)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
 		var fernTestValueID *string
 
 		// Act
@@ -10746,6 +10971,39 @@ func TestJSONMarshalingUpdateDisputesRequestEvidenceCustomerCommunicationAttachm
 	})
 }
 
+func TestJSONMarshalingUpdateDisputesRequestEvidenceDocumentsItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateDisputesRequestEvidenceDocumentsItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateDisputesRequestEvidenceDocumentsItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateDisputesRequestEvidenceDocumentsItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUpdateDisputesRequestEvidenceRefundPolicyAttachment(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -11117,6 +11375,22 @@ func TestStringUpdateDisputesRequestEvidenceCustomerCommunicationAttachment(t *t
 	})
 }
 
+func TestStringUpdateDisputesRequestEvidenceDocumentsItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDisputesRequestEvidenceDocumentsItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringUpdateDisputesRequestEvidenceRefundPolicyAttachment(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -11291,6 +11565,13 @@ func TestEnumDisputeEvidenceDocumentDocumentType(t *testing.T) {
 		val, err := NewDisputeEvidenceDocumentDocumentTypeFromString("subscription")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, DisputeEvidenceDocumentDocumentType("subscription"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_customer_communication", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDisputeEvidenceDocumentDocumentTypeFromString("customer_communication")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DisputeEvidenceDocumentDocumentType("customer_communication"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -11846,6 +12127,105 @@ func TestEnumSummaryDisputesRequestStatusItem(t *testing.T) {
 	})
 }
 
+func TestEnumUpdateDisputesRequestEvidenceDocumentsItemDocumentType(t *testing.T) {
+	t.Run("NewFromString_return_policy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("return_policy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("return_policy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_shipping_policy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("shipping_policy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("shipping_policy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cancellation_policy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("cancellation_policy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("cancellation_policy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_terms_of_service", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("terms_of_service")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("terms_of_service"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_physical_fulfillment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("physical_fulfillment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("physical_fulfillment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_customer_order_history", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("customer_order_history")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("customer_order_history"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_product_image", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("product_image")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("product_image"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_prior_transactions", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("prior_transactions")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("prior_transactions"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_customer_session", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("customer_session")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("customer_session"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_digital_fulfillment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("digital_fulfillment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("digital_fulfillment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subscription", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("subscription")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("subscription"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_customer_communication", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("customer_communication")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDisputesRequestEvidenceDocumentsItemDocumentType("customer_communication"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString("return_policy")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumUploadEvidenceDisputesRequestDocumentsItemDocumentType(t *testing.T) {
 	t.Run("NewFromString_return_policy", func(t *testing.T) {
 		t.Parallel()
@@ -11922,6 +12302,13 @@ func TestEnumUploadEvidenceDisputesRequestDocumentsItemDocumentType(t *testing.T
 		val, err := NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString("subscription")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UploadEvidenceDisputesRequestDocumentsItemDocumentType("subscription"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_customer_communication", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString("customer_communication")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UploadEvidenceDisputesRequestDocumentsItemDocumentType("customer_communication"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -12324,6 +12711,29 @@ func TestExtraPropertiesUpdateDisputesRequestEvidenceCustomerCommunicationAttach
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UpdateDisputesRequestEvidenceCustomerCommunicationAttachment
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateDisputesRequestEvidenceDocumentsItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateDisputesRequestEvidenceDocumentsItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDisputesRequestEvidenceDocumentsItem
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

@@ -1712,6 +1712,171 @@ func (u *UpdateFeesRequestChildMarkupsTransfers) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// Changes to the payout fees this account covers for connected accounts. Send either all or individual category keys. Omitted categories stay unchanged; category changes have no effect while all is true.
+var (
+	updateFeesRequestCoveredPayoutFeesFieldAll           = big.NewInt(1 << 0)
+	updateFeesRequestCoveredPayoutFeesFieldBankWire      = big.NewInt(1 << 1)
+	updateFeesRequestCoveredPayoutFeesFieldCrypto        = big.NewInt(1 << 2)
+	updateFeesRequestCoveredPayoutFeesFieldDigitalWallet = big.NewInt(1 << 3)
+	updateFeesRequestCoveredPayoutFeesFieldNextDayBank   = big.NewInt(1 << 4)
+	updateFeesRequestCoveredPayoutFeesFieldRtp           = big.NewInt(1 << 5)
+)
+
+type UpdateFeesRequestCoveredPayoutFees struct {
+	All           *bool `json:"all,omitempty" url:"all,omitempty"`
+	BankWire      *bool `json:"bank_wire,omitempty" url:"bank_wire,omitempty"`
+	Crypto        *bool `json:"crypto,omitempty" url:"crypto,omitempty"`
+	DigitalWallet *bool `json:"digital_wallet,omitempty" url:"digital_wallet,omitempty"`
+	NextDayBank   *bool `json:"next_day_bank,omitempty" url:"next_day_bank,omitempty"`
+	Rtp           *bool `json:"rtp,omitempty" url:"rtp,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) GetAll() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.All
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) GetBankWire() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.BankWire
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) GetCrypto() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Crypto
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) GetDigitalWallet() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.DigitalWallet
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) GetNextDayBank() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.NextDayBank
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) GetRtp() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Rtp
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetAll sets the All field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestCoveredPayoutFees) SetAll(all *bool) {
+	u.All = all
+	u.require(updateFeesRequestCoveredPayoutFeesFieldAll)
+}
+
+// SetBankWire sets the BankWire field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestCoveredPayoutFees) SetBankWire(bankWire *bool) {
+	u.BankWire = bankWire
+	u.require(updateFeesRequestCoveredPayoutFeesFieldBankWire)
+}
+
+// SetCrypto sets the Crypto field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestCoveredPayoutFees) SetCrypto(crypto *bool) {
+	u.Crypto = crypto
+	u.require(updateFeesRequestCoveredPayoutFeesFieldCrypto)
+}
+
+// SetDigitalWallet sets the DigitalWallet field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestCoveredPayoutFees) SetDigitalWallet(digitalWallet *bool) {
+	u.DigitalWallet = digitalWallet
+	u.require(updateFeesRequestCoveredPayoutFeesFieldDigitalWallet)
+}
+
+// SetNextDayBank sets the NextDayBank field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestCoveredPayoutFees) SetNextDayBank(nextDayBank *bool) {
+	u.NextDayBank = nextDayBank
+	u.require(updateFeesRequestCoveredPayoutFeesFieldNextDayBank)
+}
+
+// SetRtp sets the Rtp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestCoveredPayoutFees) SetRtp(rtp *bool) {
+	u.Rtp = rtp
+	u.require(updateFeesRequestCoveredPayoutFeesFieldRtp)
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestCoveredPayoutFees
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestCoveredPayoutFees(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestCoveredPayoutFees
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestCoveredPayoutFees) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestCrossBorderFieldFixed      = big.NewInt(1 << 0)
@@ -7392,30 +7557,31 @@ var (
 	updateFeesRequestFieldBuyer                = big.NewInt(1 << 3)
 	updateFeesRequestFieldCardProcessing       = big.NewInt(1 << 4)
 	updateFeesRequestFieldChildMarkups         = big.NewInt(1 << 5)
-	updateFeesRequestFieldCrossBorder          = big.NewInt(1 << 6)
-	updateFeesRequestFieldDispute              = big.NewInt(1 << 7)
-	updateFeesRequestFieldDisputeAlert         = big.NewInt(1 << 8)
-	updateFeesRequestFieldDisputeAlertCdrn     = big.NewInt(1 << 9)
-	updateFeesRequestFieldDisputeAlertEthoca   = big.NewInt(1 << 10)
-	updateFeesRequestFieldDisputeAlertRdr      = big.NewInt(1 << 11)
-	updateFeesRequestFieldDisputeRepresentment = big.NewInt(1 << 12)
-	updateFeesRequestFieldForeignExchange      = big.NewInt(1 << 13)
-	updateFeesRequestFieldFraudScreening       = big.NewInt(1 << 14)
-	updateFeesRequestFieldHighRisk             = big.NewInt(1 << 15)
-	updateFeesRequestFieldMarketplace          = big.NewInt(1 << 16)
-	updateFeesRequestFieldMarkups              = big.NewInt(1 << 17)
-	updateFeesRequestFieldNotes                = big.NewInt(1 << 18)
-	updateFeesRequestFieldOrchestration        = big.NewInt(1 << 19)
-	updateFeesRequestFieldPaymentMethods       = big.NewInt(1 << 20)
-	updateFeesRequestFieldPayouts              = big.NewInt(1 << 21)
-	updateFeesRequestFieldPendingAutoTopup     = big.NewInt(1 << 22)
-	updateFeesRequestFieldPlatformProcessing   = big.NewInt(1 << 23)
-	updateFeesRequestFieldPoolPayout           = big.NewInt(1 << 24)
-	updateFeesRequestFieldRevshare             = big.NewInt(1 << 25)
-	updateFeesRequestFieldTaxCalculation       = big.NewInt(1 << 26)
-	updateFeesRequestFieldTaxService           = big.NewInt(1 << 27)
-	updateFeesRequestFieldThreeDs              = big.NewInt(1 << 28)
-	updateFeesRequestFieldTransfers            = big.NewInt(1 << 29)
+	updateFeesRequestFieldCoveredPayoutFees    = big.NewInt(1 << 6)
+	updateFeesRequestFieldCrossBorder          = big.NewInt(1 << 7)
+	updateFeesRequestFieldDispute              = big.NewInt(1 << 8)
+	updateFeesRequestFieldDisputeAlert         = big.NewInt(1 << 9)
+	updateFeesRequestFieldDisputeAlertCdrn     = big.NewInt(1 << 10)
+	updateFeesRequestFieldDisputeAlertEthoca   = big.NewInt(1 << 11)
+	updateFeesRequestFieldDisputeAlertRdr      = big.NewInt(1 << 12)
+	updateFeesRequestFieldDisputeRepresentment = big.NewInt(1 << 13)
+	updateFeesRequestFieldForeignExchange      = big.NewInt(1 << 14)
+	updateFeesRequestFieldFraudScreening       = big.NewInt(1 << 15)
+	updateFeesRequestFieldHighRisk             = big.NewInt(1 << 16)
+	updateFeesRequestFieldMarketplace          = big.NewInt(1 << 17)
+	updateFeesRequestFieldMarkups              = big.NewInt(1 << 18)
+	updateFeesRequestFieldNotes                = big.NewInt(1 << 19)
+	updateFeesRequestFieldOrchestration        = big.NewInt(1 << 20)
+	updateFeesRequestFieldPaymentMethods       = big.NewInt(1 << 21)
+	updateFeesRequestFieldPayouts              = big.NewInt(1 << 22)
+	updateFeesRequestFieldPendingAutoTopup     = big.NewInt(1 << 23)
+	updateFeesRequestFieldPlatformProcessing   = big.NewInt(1 << 24)
+	updateFeesRequestFieldPoolPayout           = big.NewInt(1 << 25)
+	updateFeesRequestFieldRevshare             = big.NewInt(1 << 26)
+	updateFeesRequestFieldTaxCalculation       = big.NewInt(1 << 27)
+	updateFeesRequestFieldTaxService           = big.NewInt(1 << 28)
+	updateFeesRequestFieldThreeDs              = big.NewInt(1 << 29)
+	updateFeesRequestFieldTransfers            = big.NewInt(1 << 30)
 )
 
 type UpdateFeesRequest struct {
@@ -7431,6 +7597,8 @@ type UpdateFeesRequest struct {
 	CardProcessing *UpdateFeesRequestCardProcessing `json:"card_processing,omitempty" url:"-"`
 	// Default markups for connected accounts. Available on accounts without a parent, even before any accounts connect.
 	ChildMarkups *UpdateFeesRequestChildMarkups `json:"child_markups,omitempty" url:"-"`
+	// Changes to the payout fees this account covers for connected accounts. Send either all or individual category keys. Omitted categories stay unchanged; category changes have no effect while all is true.
+	CoveredPayoutFees *UpdateFeesRequestCoveredPayoutFees `json:"covered_payout_fees,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	CrossBorder *UpdateFeesRequestCrossBorder `json:"cross_border,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
@@ -7531,6 +7699,13 @@ func (u *UpdateFeesRequest) SetCardProcessing(cardProcessing *UpdateFeesRequestC
 func (u *UpdateFeesRequest) SetChildMarkups(childMarkups *UpdateFeesRequestChildMarkups) {
 	u.ChildMarkups = childMarkups
 	u.require(updateFeesRequestFieldChildMarkups)
+}
+
+// SetCoveredPayoutFees sets the CoveredPayoutFees field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequest) SetCoveredPayoutFees(coveredPayoutFees *UpdateFeesRequestCoveredPayoutFees) {
+	u.CoveredPayoutFees = coveredPayoutFees
+	u.require(updateFeesRequestFieldCoveredPayoutFees)
 }
 
 // SetCrossBorder sets the CrossBorder field and marks it as non-optional;
