@@ -11,13 +11,11 @@ import (
 	internal "github.com/whopio/whopsdk-go/internal"
 	option "github.com/whopio/whopsdk-go/option"
 	client "github.com/whopio/whopsdk-go/partners/businesses/client"
-	links "github.com/whopio/whopsdk-go/partners/links"
 )
 
 type Client struct {
 	WithRawResponse *RawClient
 	Businesses      *client.Client
-	Links           *links.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -31,7 +29,6 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 	return &Client{
 		Businesses:      client.NewClient(options),
-		Links:           links.NewClient(options),
 		WithRawResponse: NewRawClient(options),
 		options:         options,
 		baseURL:         options.BaseURL,
@@ -171,7 +168,7 @@ func (c *Client) ReferredUsers(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Retrieves the authenticated user's public profile, enrollment date, partner verification timestamp, verification waitlist status, partner certification completion, active direct business referral count, and default payout rates. Use me or the authenticated user's own user ID; other users are not accessible. Users who have not enrolled have a null joined_at. Retrieve referral URLs and promotion links from GET /partners/links.
+// Retrieves the authenticated user's public profile, enrollment date, partner verification timestamp, verification waitlist status, partner certification completion, active direct business referral count, and default payout rates. Use me or the authenticated user's own user ID; other users are not accessible. Users who have not enrolled have a null joined_at. Create and manage referral links through /partner_referral_requests.
 //
 // Example:
 //

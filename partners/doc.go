@@ -2,5 +2,5 @@
 
 // Get started at [whop.com/network](https://whop.com/network). A Partner is a user who refers people and businesses to Whop. The partner profile includes enrollment, active direct business referral counts, and default payout terms.
 //
-// Retrieve your profile with `/partners/{id}`. Use `/partners/links` for your standard referral URL and paginated promotion links, including reward amounts, requirements, redemption counts, and availability. You can also enroll in the partner program, review referred users and businesses, track earnings, and see the partner leaderboard.
+// Retrieve your profile with `/partners/{id}`. Use `/partner_referral_requests` to create and manage referral links and their rewards. You can also enroll in the partner program, review referred users and businesses, track earnings, and see the partner leaderboard.
 package partners
