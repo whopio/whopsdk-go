@@ -101,32 +101,6 @@ func TestEconomicIntelligenceListWithWireMock(
 	VerifyRequestCount(t, "TestEconomicIntelligenceListWithWireMock", "GET", "/economic_intelligence", nil, 1)
 }
 
-func TestEconomicIntelligenceCreateWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.CreateEconomicIntelligenceRequest{
-		Input: "I sell $79 customized gym straps. The number of purchases per day fell from 84 to 66 since June and my ads cost per signup doubled to $38. Half the leads never open the checkout. I want to win back churned visitors and lift conversion without cutting the price, and I can spend up to $500 this month on it.",
-	}
-	_, invocationErr := client.EconomicIntelligence.Create(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestEconomicIntelligenceCreateWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestEconomicIntelligenceCreateWithWireMock", "POST", "/economic_intelligence", nil, 1)
-}
-
 func TestEconomicIntelligenceUpdateWithWireMock(
 	t *testing.T,
 ) {

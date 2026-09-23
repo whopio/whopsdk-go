@@ -5714,37 +5714,6 @@
       "postServeActions": []
     },
     {
-      "id": "a58a8b23-5d58-4296-963d-f386331dfdb1",
-      "name": "Create Recommendations - default",
-      "request": {
-        "urlPathTemplate": "/economic_intelligence",
-        "method": "POST",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        }
-      },
-      "response": {
-        "status": 202,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"action_type\": \"scale_winning_ads\",\n  \"ai_chat_id\": \"ai_chat_id\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"executed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"expected_tool_calls\": [\n    {\n      \"description\": \"Increase the summer campaign budget\",\n      \"tool_name\": \"updateAdCampaign\"\n    }\n  ],\n  \"id\": \"reca_xxxxxxxxxxxxxx\",\n  \"input\": \"more sales from ads\",\n  \"prompt\": \"Create a 20% off promo code for my members.\",\n  \"reasoning\": \"Capped 9 of 14 days.\",\n  \"sentiment\": \"positive\",\n  \"status\": \"queued\",\n  \"superseded_at\": \"2026-01-01T12:00:00.000Z\",\n  \"target_url\": \"https://example.com/join\",\n  \"title\": \"Move $180 from 3 dead ad groups into BATCH#3, +1.7x return\",\n  \"user_feedback\": \"user_feedback\"\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "a58a8b23-5d58-4296-963d-f386331dfdb1",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      }
-    },
-    {
       "id": "56d7d399-c228-4d45-9e08-111f4a06eb6a",
       "name": "Update Recommendation - default",
       "request": {
@@ -15298,6 +15267,6 @@
     }
   ],
   "meta": {
-    "total": 428
+    "total": 427
   }
 }
