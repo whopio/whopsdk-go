@@ -6327,22 +6327,6 @@ func TestSettersListEventsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetRecommendedActionChainID", func(t *testing.T) {
-		obj := &ListEventsResponseDataItem{}
-		var fernTestValueRecommendedActionChainID *string
-		obj.SetRecommendedActionChainID(fernTestValueRecommendedActionChainID)
-		assert.Equal(t, fernTestValueRecommendedActionChainID, obj.RecommendedActionChainID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetRecommendedActionShownPosition", func(t *testing.T) {
-		obj := &ListEventsResponseDataItem{}
-		var fernTestValueRecommendedActionShownPosition *int
-		obj.SetRecommendedActionShownPosition(fernTestValueRecommendedActionShownPosition)
-		assert.Equal(t, fernTestValueRecommendedActionShownPosition, obj.RecommendedActionShownPosition)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetReferrerURL", func(t *testing.T) {
 		obj := &ListEventsResponseDataItem{}
 		var fernTestValueReferrerURL *string
@@ -6672,72 +6656,6 @@ func TestGettersListEventsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetQuestions() // Should return zero value
-	})
-
-	t.Run("GetRecommendedActionChainID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListEventsResponseDataItem{}
-		var expected *string
-		obj.RecommendedActionChainID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetRecommendedActionChainID(), "getter should return the property value")
-	})
-
-	t.Run("GetRecommendedActionChainID_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListEventsResponseDataItem{}
-		obj.RecommendedActionChainID = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetRecommendedActionChainID(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetRecommendedActionChainID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ListEventsResponseDataItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetRecommendedActionChainID() // Should return zero value
-	})
-
-	t.Run("GetRecommendedActionShownPosition", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListEventsResponseDataItem{}
-		var expected *int
-		obj.RecommendedActionShownPosition = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetRecommendedActionShownPosition(), "getter should return the property value")
-	})
-
-	t.Run("GetRecommendedActionShownPosition_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListEventsResponseDataItem{}
-		obj.RecommendedActionShownPosition = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetRecommendedActionShownPosition(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetRecommendedActionShownPosition_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ListEventsResponseDataItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetRecommendedActionShownPosition() // Should return zero value
 	})
 
 	t.Run("GetReferrerURL", func(t *testing.T) {
@@ -7228,68 +7146,6 @@ func TestSettersMarkExplicitListEventsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetQuestions(fernTestValueQuestions)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetRecommendedActionChainID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListEventsResponseDataItem{}
-		var fernTestValueRecommendedActionChainID *string
-
-		// Act
-		obj.SetRecommendedActionChainID(fernTestValueRecommendedActionChainID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetRecommendedActionShownPosition_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListEventsResponseDataItem{}
-		var fernTestValueRecommendedActionShownPosition *int
-
-		// Act
-		obj.SetRecommendedActionShownPosition(fernTestValueRecommendedActionShownPosition)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
