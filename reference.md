@@ -25479,7 +25479,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**userID:** `*string` — Only payments made by this buyer, prefixed `user_`.
+**userID:** `*string` — Only payments made by this buyer, prefixed `user_`. Payments are listed for the accounts the caller manages, so `me` is not accepted; list the caller's own purchases with `GET /memberships?user_id=me`.
     
 </dd>
 </dl>
@@ -28003,7 +28003,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**paymentMethodConfiguration:** `*whopsdk.CreatePlansRequestPaymentMethodConfiguration` — Explicit payment method configuration for the plan. When not provided, the account's defaults apply.
+**paymentMethodConfiguration:** `*whopsdk.CreatePlansRequestPaymentMethodConfiguration` — Explicit payment method configuration for the plan. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
     
 </dd>
 </dl>
@@ -28067,7 +28067,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**title:** `*string` — The display name of the plan shown to customers on the product page.
+**title:** `*string` — The display name of the plan shown to customers on the product page. Maximum 30 characters.
     
 </dd>
 </dl>
@@ -28399,7 +28399,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**paymentMethodConfiguration:** `*whopsdk.UpdatePlansRequestPaymentMethodConfiguration` — Explicit payment method configuration for the plan. When not provided, the account's defaults apply.
+**paymentMethodConfiguration:** `*whopsdk.UpdatePlansRequestPaymentMethodConfiguration` — Explicit payment method configuration for the plan. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
     
 </dd>
 </dl>
@@ -28455,7 +28455,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**title:** `*string` — The display name of the plan shown to customers on the product page.
+**title:** `*string` — The display name of the plan shown to customers on the product page. Maximum 30 characters.
     
 </dd>
 </dl>
@@ -28867,7 +28867,7 @@ client.Products.Create(
 <dl>
 <dd>
 
-**description:** `*string` — A written description displayed on the product page.
+**description:** `*string` — A written description displayed on the product page. Maximum 1,500 characters.
     
 </dd>
 </dl>
@@ -28899,7 +28899,7 @@ client.Products.Create(
 <dl>
 <dd>
 
-**headline:** `*string` — A short marketing headline for the product page.
+**headline:** `*string` — A short marketing headline for the product page. Maximum 80 characters.
     
 </dd>
 </dl>
@@ -29175,7 +29175,7 @@ client.Products.Update(
 <dl>
 <dd>
 
-**description:** `*string` — A written description displayed on the product page.
+**description:** `*string` — A written description displayed on the product page. Maximum 1,500 characters.
     
 </dd>
 </dl>
@@ -29191,7 +29191,7 @@ client.Products.Update(
 <dl>
 <dd>
 
-**headline:** `*string` — A short marketing headline for the product page.
+**headline:** `*string` — A short marketing headline for the product page. Maximum 80 characters.
     
 </dd>
 </dl>
@@ -29231,7 +29231,7 @@ client.Products.Update(
 <dl>
 <dd>
 
-**title:** `*string` — The display name of the product.
+**title:** `*string` — The display name of the product. Maximum 80 characters.
     
 </dd>
 </dl>

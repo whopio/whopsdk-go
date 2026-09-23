@@ -253,7 +253,7 @@ type ListPaymentsRequest struct {
 	BillingReason *ListPaymentsRequestBillingReason `json:"-" url:"billing_reason,omitempty"`
 	// Only payments presented in this three-letter currency, such as `usd`.
 	Currency *string `json:"-" url:"currency,omitempty"`
-	// Only payments made by this buyer, prefixed `user_`.
+	// Only payments made by this buyer, prefixed `user_`. Payments are listed for the accounts the caller manages, so `me` is not accepted; list the caller's own purchases with `GET /memberships?user_id=me`.
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Search payments by user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
 	Query *string `json:"-" url:"query,omitempty"`
