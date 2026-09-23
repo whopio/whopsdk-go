@@ -2343,6 +2343,7 @@ func (a AdCreativeFormat) Ptr() *AdCreativeFormat {
 type AdDeliveryStatus string
 
 const (
+	AdDeliveryStatusInAppeal        AdDeliveryStatus = "in_appeal"
 	AdDeliveryStatusRejected        AdDeliveryStatus = "rejected"
 	AdDeliveryStatusInReview        AdDeliveryStatus = "in_review"
 	AdDeliveryStatusDraft           AdDeliveryStatus = "draft"
@@ -2359,6 +2360,8 @@ const (
 
 func NewAdDeliveryStatusFromString(s string) (AdDeliveryStatus, error) {
 	switch s {
+	case "in_appeal":
+		return AdDeliveryStatusInAppeal, nil
 	case "rejected":
 		return AdDeliveryStatusRejected, nil
 	case "in_review":
@@ -6439,6 +6442,7 @@ func (p PostAdUpdatedPayloadDataCallToAction) Ptr() *PostAdUpdatedPayloadDataCal
 type PostAdUpdatedPayloadDataDeliveryStatus string
 
 const (
+	PostAdUpdatedPayloadDataDeliveryStatusInAppeal        PostAdUpdatedPayloadDataDeliveryStatus = "in_appeal"
 	PostAdUpdatedPayloadDataDeliveryStatusRejected        PostAdUpdatedPayloadDataDeliveryStatus = "rejected"
 	PostAdUpdatedPayloadDataDeliveryStatusInReview        PostAdUpdatedPayloadDataDeliveryStatus = "in_review"
 	PostAdUpdatedPayloadDataDeliveryStatusDraft           PostAdUpdatedPayloadDataDeliveryStatus = "draft"
@@ -6455,6 +6459,8 @@ const (
 
 func NewPostAdUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdUpdatedPayloadDataDeliveryStatus, error) {
 	switch s {
+	case "in_appeal":
+		return PostAdUpdatedPayloadDataDeliveryStatusInAppeal, nil
 	case "rejected":
 		return PostAdUpdatedPayloadDataDeliveryStatusRejected, nil
 	case "in_review":
