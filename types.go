@@ -30132,15 +30132,18 @@ func (p *PaymentLegacyUser) String() string {
 
 // The issuer's address and card security code check results for this payment. Null when the processor returned none.
 var (
-	paymentLegacyVerificationChecksFieldAddressLine1     = big.NewInt(1 << 0)
-	paymentLegacyVerificationChecksFieldCardHolderName   = big.NewInt(1 << 1)
-	paymentLegacyVerificationChecksFieldCardSecurityCode = big.NewInt(1 << 2)
-	paymentLegacyVerificationChecksFieldZipCode          = big.NewInt(1 << 3)
+	paymentLegacyVerificationChecksFieldAddressLine1      = big.NewInt(1 << 0)
+	paymentLegacyVerificationChecksFieldAuthorizationCode = big.NewInt(1 << 1)
+	paymentLegacyVerificationChecksFieldCardHolderName    = big.NewInt(1 << 2)
+	paymentLegacyVerificationChecksFieldCardSecurityCode  = big.NewInt(1 << 3)
+	paymentLegacyVerificationChecksFieldZipCode           = big.NewInt(1 << 4)
 )
 
 type PaymentLegacyVerificationChecks struct {
 	// Whether the billing street address the customer entered matched the address the issuer has on file.
 	AddressLine1 *string `json:"address_line1,omitempty" url:"address_line1,omitempty"`
+	// The card issuer's authorization code for this charge. Null when the processor did not return one.
+	AuthorizationCode *string `json:"authorization_code,omitempty" url:"authorization_code,omitempty"`
 	// Whether the cardholder name the customer entered matched the name the issuer has on file.
 	CardHolderName *string `json:"card_holder_name,omitempty" url:"card_holder_name,omitempty"`
 	// Whether the CVV / CVC the customer entered matched the card.
@@ -30160,6 +30163,13 @@ func (p *PaymentLegacyVerificationChecks) GetAddressLine1() *string {
 		return nil
 	}
 	return p.AddressLine1
+}
+
+func (p *PaymentLegacyVerificationChecks) GetAuthorizationCode() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AuthorizationCode
 }
 
 func (p *PaymentLegacyVerificationChecks) GetCardHolderName() *string {
@@ -30202,6 +30212,13 @@ func (p *PaymentLegacyVerificationChecks) require(field *big.Int) {
 func (p *PaymentLegacyVerificationChecks) SetAddressLine1(addressLine1 *string) {
 	p.AddressLine1 = addressLine1
 	p.require(paymentLegacyVerificationChecksFieldAddressLine1)
+}
+
+// SetAuthorizationCode sets the AuthorizationCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLegacyVerificationChecks) SetAuthorizationCode(authorizationCode *string) {
+	p.AuthorizationCode = authorizationCode
+	p.require(paymentLegacyVerificationChecksFieldAuthorizationCode)
 }
 
 // SetCardHolderName sets the CardHolderName field and marks it as non-optional;
@@ -36443,15 +36460,18 @@ func (p PaymentTransactionTypes) Ptr() *PaymentTransactionTypes {
 }
 
 var (
-	paymentVerificationChecksFieldAddressLine1     = big.NewInt(1 << 0)
-	paymentVerificationChecksFieldCardHolderName   = big.NewInt(1 << 1)
-	paymentVerificationChecksFieldCardSecurityCode = big.NewInt(1 << 2)
-	paymentVerificationChecksFieldZipCode          = big.NewInt(1 << 3)
+	paymentVerificationChecksFieldAddressLine1      = big.NewInt(1 << 0)
+	paymentVerificationChecksFieldAuthorizationCode = big.NewInt(1 << 1)
+	paymentVerificationChecksFieldCardHolderName    = big.NewInt(1 << 2)
+	paymentVerificationChecksFieldCardSecurityCode  = big.NewInt(1 << 3)
+	paymentVerificationChecksFieldZipCode           = big.NewInt(1 << 4)
 )
 
 type PaymentVerificationChecks struct {
 	// The Address Verification Service (AVS) result for the billing street address.
 	AddressLine1 *string `json:"address_line1,omitempty" url:"address_line1,omitempty"`
+	// The card issuer's authorization code for this charge, or null when the processor did not return one.
+	AuthorizationCode *string `json:"authorization_code,omitempty" url:"authorization_code,omitempty"`
 	// Whether the cardholder name matched the issuer's records.
 	CardHolderName *string `json:"card_holder_name,omitempty" url:"card_holder_name,omitempty"`
 	// The Card Verification Value (CVV/CVC) result.
@@ -36471,6 +36491,13 @@ func (p *PaymentVerificationChecks) GetAddressLine1() *string {
 		return nil
 	}
 	return p.AddressLine1
+}
+
+func (p *PaymentVerificationChecks) GetAuthorizationCode() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AuthorizationCode
 }
 
 func (p *PaymentVerificationChecks) GetCardHolderName() *string {
@@ -36513,6 +36540,13 @@ func (p *PaymentVerificationChecks) require(field *big.Int) {
 func (p *PaymentVerificationChecks) SetAddressLine1(addressLine1 *string) {
 	p.AddressLine1 = addressLine1
 	p.require(paymentVerificationChecksFieldAddressLine1)
+}
+
+// SetAuthorizationCode sets the AuthorizationCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentVerificationChecks) SetAuthorizationCode(authorizationCode *string) {
+	p.AuthorizationCode = authorizationCode
+	p.require(paymentVerificationChecksFieldAuthorizationCode)
 }
 
 // SetCardHolderName sets the CardHolderName field and marks it as non-optional;
