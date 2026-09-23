@@ -14618,38 +14618,6 @@
       }
     },
     {
-      "id": "4bfcb70c-3fd3-450a-9ff2-dddb3caae33b",
-      "name": "List partner links - default",
-      "request": {
-        "urlPathTemplate": "/partners/links",
-        "method": "GET",
-        "headers": {
-          "Authorization": {
-            "matches": "Bearer .+"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "body": "{\n  \"base_referral_url\": \"https://whop.com/network/\",\n  \"data\": [\n    {\n      \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"onbr_xxxxxxxxxxxxxx\",\n      \"max_redemptions\": 1,\n      \"name\": \"reward-1\",\n      \"partner_reward_amount\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"qualification_amount\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"qualification_income_source\": \"sales\",\n      \"redemptions\": 0,\n      \"referral_url\": \"https://whop.com/start/\",\n      \"referred_business_reward_amount\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"reward_type\": \"ad_credit\",\n      \"status\": \"available\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      },
-      "uuid": "4bfcb70c-3fd3-450a-9ff2-dddb3caae33b",
-      "persistent": true,
-      "priority": 3,
-      "metadata": {
-        "mocklab": {
-          "created": {
-            "at": "2020-01-01T00:00:00.000Z",
-            "via": "SYSTEM"
-          }
-        }
-      },
-      "postServeActions": []
-    },
-    {
       "id": "5daeab44-8d64-44f7-bc89-64dcd4bcb27f",
       "name": "List referred business earnings - default",
       "request": {
@@ -15267,6 +15235,6 @@
     }
   ],
   "meta": {
-    "total": 427
+    "total": 426
   }
 }

@@ -2160,10 +2160,10 @@ type ListEarningsResponseDataItemResourceSlug struct {
 	// The referred business that qualified.
 	BusinessID string    `json:"business_id" url:"business_id"`
 	CreatedAt  time.Time `json:"created_at" url:"created_at"`
-	// The onboarding reward the referred business qualified for, prefixed `onbr_`.
+	// The retired onboarding reward ID. Always null; retained for historical earnings compatibility.
 	ID     *string                                        `json:"id,omitempty" url:"id,omitempty"`
 	Object ListEarningsResponseDataItemResourceSlugObject `json:"object" url:"object"`
-	// The reward link slug.
+	// The retired reward link slug. Always null; retained for historical earnings compatibility.
 	Slug *string `json:"slug,omitempty" url:"slug,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
