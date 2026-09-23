@@ -14,25 +14,26 @@ var (
 	createAdGroupsRequestFieldAudiences            = big.NewInt(1 << 1)
 	createAdGroupsRequestFieldBidType              = big.NewInt(1 << 2)
 	createAdGroupsRequestFieldBudgetAmount         = big.NewInt(1 << 3)
-	createAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 4)
-	createAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 5)
-	createAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 6)
-	createAdGroupsRequestFieldDemographics         = big.NewInt(1 << 7)
-	createAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 8)
-	createAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 9)
-	createAdGroupsRequestFieldDevices              = big.NewInt(1 << 10)
-	createAdGroupsRequestFieldDynamicCreative      = big.NewInt(1 << 11)
-	createAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 12)
-	createAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 13)
-	createAdGroupsRequestFieldLanguages            = big.NewInt(1 << 14)
-	createAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 15)
-	createAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 16)
-	createAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 17)
-	createAdGroupsRequestFieldPlacements           = big.NewInt(1 << 18)
-	createAdGroupsRequestFieldRegions              = big.NewInt(1 << 19)
-	createAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 20)
-	createAdGroupsRequestFieldStatus               = big.NewInt(1 << 21)
-	createAdGroupsRequestFieldTitle                = big.NewInt(1 << 22)
+	createAdGroupsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 4)
+	createAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 5)
+	createAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 6)
+	createAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 7)
+	createAdGroupsRequestFieldDemographics         = big.NewInt(1 << 8)
+	createAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 9)
+	createAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 10)
+	createAdGroupsRequestFieldDevices              = big.NewInt(1 << 11)
+	createAdGroupsRequestFieldDynamicCreative      = big.NewInt(1 << 12)
+	createAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 13)
+	createAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 14)
+	createAdGroupsRequestFieldLanguages            = big.NewInt(1 << 15)
+	createAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 16)
+	createAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 17)
+	createAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 18)
+	createAdGroupsRequestFieldPlacements           = big.NewInt(1 << 19)
+	createAdGroupsRequestFieldRegions              = big.NewInt(1 << 20)
+	createAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 21)
+	createAdGroupsRequestFieldStatus               = big.NewInt(1 << 22)
+	createAdGroupsRequestFieldTitle                = big.NewInt(1 << 23)
 )
 
 type CreateAdGroupsRequest struct {
@@ -42,8 +43,10 @@ type CreateAdGroupsRequest struct {
 	Audiences *AdGroupAudiencesBody `json:"audiences,omitempty" url:"-"`
 	// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
 	BidType *CreateAdGroupsRequestBidType `json:"bid_type,omitempty" url:"-"`
-	// This ad group's budget, in the ad account's currency. Omit when the budget is set on the campaign instead.
+	// This ad group's budget in USD, which is what it is stored and billed in. Omit when the budget is set on the campaign instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
+	// This ad group's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; on an update, an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"-"`
 	// Whether budget_amount is spent per day (`daily`) or over the ad group's full run (`lifetime`).
 	BudgetType      *CreateAdGroupsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	ConversionEvent *ConversionEvent                 `json:"conversion_event,omitempty" url:"-"`
@@ -128,6 +131,13 @@ func (c *CreateAdGroupsRequest) SetBidType(bidType *CreateAdGroupsRequestBidType
 func (c *CreateAdGroupsRequest) SetBudgetAmount(budgetAmount *float64) {
 	c.BudgetAmount = budgetAmount
 	c.require(createAdGroupsRequestFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequest) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	c.BudgetAmountLocal = budgetAmountLocal
+	c.require(createAdGroupsRequestFieldBudgetAmountLocal)
 }
 
 // SetBudgetType sets the BudgetType field and marks it as non-optional;
@@ -885,74 +895,76 @@ var (
 	adGroupFieldAudiences                    = big.NewInt(1 << 3)
 	adGroupFieldBidType                      = big.NewInt(1 << 4)
 	adGroupFieldBudgetAmount                 = big.NewInt(1 << 5)
-	adGroupFieldBudgetType                   = big.NewInt(1 << 6)
-	adGroupFieldClickThroughRate             = big.NewInt(1 << 7)
-	adGroupFieldClicks                       = big.NewInt(1 << 8)
-	adGroupFieldCompletedRegistrationValue   = big.NewInt(1 << 9)
-	adGroupFieldCompletedRegistrations       = big.NewInt(1 << 10)
-	adGroupFieldContactValue                 = big.NewInt(1 << 11)
-	adGroupFieldContacts                     = big.NewInt(1 << 12)
-	adGroupFieldConversionEvent              = big.NewInt(1 << 13)
-	adGroupFieldConversionLocation           = big.NewInt(1 << 14)
-	adGroupFieldCostPerAddedToCart           = big.NewInt(1 << 15)
-	adGroupFieldCostPerClick                 = big.NewInt(1 << 16)
-	adGroupFieldCostPerCompletedRegistration = big.NewInt(1 << 17)
-	adGroupFieldCostPerContact               = big.NewInt(1 << 18)
-	adGroupFieldCostPerLead                  = big.NewInt(1 << 19)
-	adGroupFieldCostPerMille                 = big.NewInt(1 << 20)
-	adGroupFieldCostPerPurchase              = big.NewInt(1 << 21)
-	adGroupFieldCostPerResult                = big.NewInt(1 << 22)
-	adGroupFieldCostPerSchedule              = big.NewInt(1 << 23)
-	adGroupFieldCostPerSubmittedApplication  = big.NewInt(1 << 24)
-	adGroupFieldCostPerUniqueClick           = big.NewInt(1 << 25)
-	adGroupFieldCostPerViewedContent         = big.NewInt(1 << 26)
-	adGroupFieldCreatedAt                    = big.NewInt(1 << 27)
-	adGroupFieldCustomConversions            = big.NewInt(1 << 28)
-	adGroupFieldCustomEventCounts            = big.NewInt(1 << 29)
-	adGroupFieldCustomEventValues            = big.NewInt(1 << 30)
-	adGroupFieldDeliveryStatus               = big.NewInt(1 << 31)
-	adGroupFieldDemographics                 = big.NewInt(1 << 32)
-	adGroupFieldDesiredCostPerResult         = big.NewInt(1 << 33)
-	adGroupFieldDetailedTargeting            = big.NewInt(1 << 34)
-	adGroupFieldDevices                      = big.NewInt(1 << 35)
-	adGroupFieldDynamicCreative              = big.NewInt(1 << 36)
-	adGroupFieldEndsAt                       = big.NewInt(1 << 37)
-	adGroupFieldFrequency                    = big.NewInt(1 << 38)
-	adGroupFieldFrequencyCap                 = big.NewInt(1 << 39)
-	adGroupFieldID                           = big.NewInt(1 << 40)
-	adGroupFieldImpressions                  = big.NewInt(1 << 41)
-	adGroupFieldIssues                       = big.NewInt(1 << 42)
-	adGroupFieldLanguages                    = big.NewInt(1 << 43)
-	adGroupFieldLeadValue                    = big.NewInt(1 << 44)
-	adGroupFieldLeads                        = big.NewInt(1 << 45)
-	adGroupFieldLinkClicks                   = big.NewInt(1 << 46)
-	adGroupFieldMessageApps                  = big.NewInt(1 << 47)
-	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 48)
-	adGroupFieldOptimizationGoal             = big.NewInt(1 << 49)
-	adGroupFieldPlacements                   = big.NewInt(1 << 50)
-	adGroupFieldPlatform                     = big.NewInt(1 << 51)
-	adGroupFieldPurchaseValue                = big.NewInt(1 << 52)
-	adGroupFieldPurchases                    = big.NewInt(1 << 53)
-	adGroupFieldReach                        = big.NewInt(1 << 54)
-	adGroupFieldRegions                      = big.NewInt(1 << 55)
-	adGroupFieldResultEvent                  = big.NewInt(1 << 56)
-	adGroupFieldResultEventName              = big.NewInt(1 << 57)
-	adGroupFieldResults                      = big.NewInt(1 << 58)
-	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 59)
-	adGroupFieldScheduleValue                = big.NewInt(1 << 60)
-	adGroupFieldSchedules                    = big.NewInt(1 << 61)
-	adGroupFieldSpend                        = big.NewInt(1 << 62)
-	adGroupFieldSpendCurrency                = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	adGroupFieldBudgetAmountLocal            = big.NewInt(1 << 6)
+	adGroupFieldBudgetCurrency               = big.NewInt(1 << 7)
+	adGroupFieldBudgetType                   = big.NewInt(1 << 8)
+	adGroupFieldClickThroughRate             = big.NewInt(1 << 9)
+	adGroupFieldClicks                       = big.NewInt(1 << 10)
+	adGroupFieldCompletedRegistrationValue   = big.NewInt(1 << 11)
+	adGroupFieldCompletedRegistrations       = big.NewInt(1 << 12)
+	adGroupFieldContactValue                 = big.NewInt(1 << 13)
+	adGroupFieldContacts                     = big.NewInt(1 << 14)
+	adGroupFieldConversionEvent              = big.NewInt(1 << 15)
+	adGroupFieldConversionLocation           = big.NewInt(1 << 16)
+	adGroupFieldCostPerAddedToCart           = big.NewInt(1 << 17)
+	adGroupFieldCostPerClick                 = big.NewInt(1 << 18)
+	adGroupFieldCostPerCompletedRegistration = big.NewInt(1 << 19)
+	adGroupFieldCostPerContact               = big.NewInt(1 << 20)
+	adGroupFieldCostPerLead                  = big.NewInt(1 << 21)
+	adGroupFieldCostPerMille                 = big.NewInt(1 << 22)
+	adGroupFieldCostPerPurchase              = big.NewInt(1 << 23)
+	adGroupFieldCostPerResult                = big.NewInt(1 << 24)
+	adGroupFieldCostPerSchedule              = big.NewInt(1 << 25)
+	adGroupFieldCostPerSubmittedApplication  = big.NewInt(1 << 26)
+	adGroupFieldCostPerUniqueClick           = big.NewInt(1 << 27)
+	adGroupFieldCostPerViewedContent         = big.NewInt(1 << 28)
+	adGroupFieldCreatedAt                    = big.NewInt(1 << 29)
+	adGroupFieldCustomConversions            = big.NewInt(1 << 30)
+	adGroupFieldCustomEventCounts            = big.NewInt(1 << 31)
+	adGroupFieldCustomEventValues            = big.NewInt(1 << 32)
+	adGroupFieldDeliveryStatus               = big.NewInt(1 << 33)
+	adGroupFieldDemographics                 = big.NewInt(1 << 34)
+	adGroupFieldDesiredCostPerResult         = big.NewInt(1 << 35)
+	adGroupFieldDetailedTargeting            = big.NewInt(1 << 36)
+	adGroupFieldDevices                      = big.NewInt(1 << 37)
+	adGroupFieldDynamicCreative              = big.NewInt(1 << 38)
+	adGroupFieldEndsAt                       = big.NewInt(1 << 39)
+	adGroupFieldFrequency                    = big.NewInt(1 << 40)
+	adGroupFieldFrequencyCap                 = big.NewInt(1 << 41)
+	adGroupFieldID                           = big.NewInt(1 << 42)
+	adGroupFieldImpressions                  = big.NewInt(1 << 43)
+	adGroupFieldIssues                       = big.NewInt(1 << 44)
+	adGroupFieldLanguages                    = big.NewInt(1 << 45)
+	adGroupFieldLeadValue                    = big.NewInt(1 << 46)
+	adGroupFieldLeads                        = big.NewInt(1 << 47)
+	adGroupFieldLinkClicks                   = big.NewInt(1 << 48)
+	adGroupFieldMessageApps                  = big.NewInt(1 << 49)
+	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 50)
+	adGroupFieldOptimizationGoal             = big.NewInt(1 << 51)
+	adGroupFieldPlacements                   = big.NewInt(1 << 52)
+	adGroupFieldPlatform                     = big.NewInt(1 << 53)
+	adGroupFieldPurchaseValue                = big.NewInt(1 << 54)
+	adGroupFieldPurchases                    = big.NewInt(1 << 55)
+	adGroupFieldReach                        = big.NewInt(1 << 56)
+	adGroupFieldRegions                      = big.NewInt(1 << 57)
+	adGroupFieldResultEvent                  = big.NewInt(1 << 58)
+	adGroupFieldResultEventName              = big.NewInt(1 << 59)
+	adGroupFieldResults                      = big.NewInt(1 << 60)
+	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 61)
+	adGroupFieldScheduleValue                = big.NewInt(1 << 62)
+	adGroupFieldSchedules                    = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adGroupFieldSpend                        = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adGroupFieldSpendCurrency                = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 75)
 )
 
 type AdGroup struct {
@@ -966,8 +978,12 @@ type AdGroup struct {
 	Audiences *AdGroupAudiences `json:"audiences" url:"audiences"`
 	// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
 	BidType *AdGroupBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
-	// This ad group's budget, in the ad account's currency. `null` when the budget is set on the campaign instead.
+	// This ad group's budget in USD, which is what it is stored and billed in. `null` when the budget is set on the campaign instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
+	// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"budget_amount_local,omitempty"`
+	// The ISO 4217 code `budget_amount_local` is in: the account's `ads_reporting_currency` preference. `usd` unless the account changed it.
+	BudgetCurrency string `json:"budget_currency" url:"budget_currency"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
 	BudgetType *AdGroupBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
 	// Clicks divided by impressions, between 0 and 1.
@@ -1147,6 +1163,20 @@ func (a *AdGroup) GetBudgetAmount() *float64 {
 		return nil
 	}
 	return a.BudgetAmount
+}
+
+func (a *AdGroup) GetBudgetAmountLocal() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.BudgetAmountLocal
+}
+
+func (a *AdGroup) GetBudgetCurrency() string {
+	if a == nil {
+		return ""
+	}
+	return a.BudgetCurrency
 }
 
 func (a *AdGroup) GetBudgetType() *AdGroupBudgetType {
@@ -1679,6 +1709,20 @@ func (a *AdGroup) SetBidType(bidType *AdGroupBidType) {
 func (a *AdGroup) SetBudgetAmount(budgetAmount *float64) {
 	a.BudgetAmount = budgetAmount
 	a.require(adGroupFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	a.BudgetAmountLocal = budgetAmountLocal
+	a.require(adGroupFieldBudgetAmountLocal)
+}
+
+// SetBudgetCurrency sets the BudgetCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetBudgetCurrency(budgetCurrency string) {
+	a.BudgetCurrency = budgetCurrency
+	a.require(adGroupFieldBudgetCurrency)
 }
 
 // SetBudgetType sets the BudgetType field and marks it as non-optional;
@@ -9229,24 +9273,25 @@ var (
 	updateAdGroupsRequestFieldAudiences            = big.NewInt(1 << 1)
 	updateAdGroupsRequestFieldBidType              = big.NewInt(1 << 2)
 	updateAdGroupsRequestFieldBudgetAmount         = big.NewInt(1 << 3)
-	updateAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 4)
-	updateAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 5)
-	updateAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 6)
-	updateAdGroupsRequestFieldDemographics         = big.NewInt(1 << 7)
-	updateAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 8)
-	updateAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 9)
-	updateAdGroupsRequestFieldDevices              = big.NewInt(1 << 10)
-	updateAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 11)
-	updateAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 12)
-	updateAdGroupsRequestFieldLanguages            = big.NewInt(1 << 13)
-	updateAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 14)
-	updateAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 15)
-	updateAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 16)
-	updateAdGroupsRequestFieldPlacements           = big.NewInt(1 << 17)
-	updateAdGroupsRequestFieldRegions              = big.NewInt(1 << 18)
-	updateAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 19)
-	updateAdGroupsRequestFieldStatus               = big.NewInt(1 << 20)
-	updateAdGroupsRequestFieldTitle                = big.NewInt(1 << 21)
+	updateAdGroupsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 4)
+	updateAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 5)
+	updateAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 6)
+	updateAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 7)
+	updateAdGroupsRequestFieldDemographics         = big.NewInt(1 << 8)
+	updateAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 9)
+	updateAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 10)
+	updateAdGroupsRequestFieldDevices              = big.NewInt(1 << 11)
+	updateAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 12)
+	updateAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 13)
+	updateAdGroupsRequestFieldLanguages            = big.NewInt(1 << 14)
+	updateAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 15)
+	updateAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 16)
+	updateAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 17)
+	updateAdGroupsRequestFieldPlacements           = big.NewInt(1 << 18)
+	updateAdGroupsRequestFieldRegions              = big.NewInt(1 << 19)
+	updateAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 20)
+	updateAdGroupsRequestFieldStatus               = big.NewInt(1 << 21)
+	updateAdGroupsRequestFieldTitle                = big.NewInt(1 << 22)
 )
 
 type UpdateAdGroupsRequest struct {
@@ -9256,8 +9301,10 @@ type UpdateAdGroupsRequest struct {
 	Audiences *AdGroupAudiencesBody `json:"audiences,omitempty" url:"-"`
 	// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
 	BidType *UpdateAdGroupsRequestBidType `json:"bid_type,omitempty" url:"-"`
-	// This ad group's budget, in the ad account's currency. Omit when the budget is set on the campaign instead.
+	// This ad group's budget in USD, which is what it is stored and billed in. Omit when the budget is set on the campaign instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
+	// This ad group's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; on an update, an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"-"`
 	// Whether budget_amount is spent per day (`daily`) or over the ad group's full run (`lifetime`).
 	BudgetType      *UpdateAdGroupsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	ConversionEvent *ConversionEvent                 `json:"conversion_event,omitempty" url:"-"`
@@ -9340,6 +9387,13 @@ func (u *UpdateAdGroupsRequest) SetBidType(bidType *UpdateAdGroupsRequestBidType
 func (u *UpdateAdGroupsRequest) SetBudgetAmount(budgetAmount *float64) {
 	u.BudgetAmount = budgetAmount
 	u.require(updateAdGroupsRequestFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequest) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	u.BudgetAmountLocal = budgetAmountLocal
+	u.require(updateAdGroupsRequestFieldBudgetAmountLocal)
 }
 
 // SetBudgetType sets the BudgetType field and marks it as non-optional;

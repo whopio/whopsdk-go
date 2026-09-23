@@ -14,15 +14,16 @@ var (
 	createAdCampaignsRequestFieldAccountID            = big.NewInt(1 << 0)
 	createAdCampaignsRequestFieldBidType              = big.NewInt(1 << 1)
 	createAdCampaignsRequestFieldBudgetAmount         = big.NewInt(1 << 2)
-	createAdCampaignsRequestFieldBudgetOptimization   = big.NewInt(1 << 3)
-	createAdCampaignsRequestFieldBudgetType           = big.NewInt(1 << 4)
-	createAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 5)
-	createAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 6)
-	createAdCampaignsRequestFieldObjective            = big.NewInt(1 << 7)
-	createAdCampaignsRequestFieldPlatform             = big.NewInt(1 << 8)
-	createAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 9)
-	createAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 10)
-	createAdCampaignsRequestFieldTitle                = big.NewInt(1 << 11)
+	createAdCampaignsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 3)
+	createAdCampaignsRequestFieldBudgetOptimization   = big.NewInt(1 << 4)
+	createAdCampaignsRequestFieldBudgetType           = big.NewInt(1 << 5)
+	createAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 6)
+	createAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 7)
+	createAdCampaignsRequestFieldObjective            = big.NewInt(1 << 8)
+	createAdCampaignsRequestFieldPlatform             = big.NewInt(1 << 9)
+	createAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 10)
+	createAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 11)
+	createAdCampaignsRequestFieldTitle                = big.NewInt(1 << 12)
 )
 
 type CreateAdCampaignsRequest struct {
@@ -30,8 +31,10 @@ type CreateAdCampaignsRequest struct {
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Only for campaigns that own the budget.
 	BidType *CreateAdCampaignsRequestBidType `json:"bid_type,omitempty" url:"-"`
-	// The campaign's budget, in the ad account's currency. Required when budget_optimization is `ad_campaign`; omit when each ad group sets its own budget.
+	// The campaign's budget in USD, which is what it is stored and billed in. Required when budget_optimization is `ad_campaign` (or send budget_amount_local instead); omit when each ad group sets its own budget.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
+	// The campaign's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount. Provide this or budget_amount, not both.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"-"`
 	// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Defaults to `ad_group`.
 	BudgetOptimization *CreateAdCampaignsRequestBudgetOptimization `json:"budget_optimization,omitempty" url:"-"`
 	// Whether the budget is spent per day (`daily`) or over the campaign's full run (`lifetime`). Defaults to `daily`.
@@ -81,6 +84,13 @@ func (c *CreateAdCampaignsRequest) SetBidType(bidType *CreateAdCampaignsRequestB
 func (c *CreateAdCampaignsRequest) SetBudgetAmount(budgetAmount *float64) {
 	c.BudgetAmount = budgetAmount
 	c.require(createAdCampaignsRequestFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdCampaignsRequest) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	c.BudgetAmountLocal = budgetAmountLocal
+	c.require(createAdCampaignsRequestFieldBudgetAmountLocal)
 }
 
 // SetBudgetOptimization sets the BudgetOptimization field and marks it as non-optional;
@@ -523,62 +533,64 @@ var (
 	adCampaignFieldAddedToCarts                 = big.NewInt(1 << 1)
 	adCampaignFieldBidType                      = big.NewInt(1 << 2)
 	adCampaignFieldBudgetAmount                 = big.NewInt(1 << 3)
-	adCampaignFieldBudgetOptimization           = big.NewInt(1 << 4)
-	adCampaignFieldBudgetType                   = big.NewInt(1 << 5)
-	adCampaignFieldClickThroughRate             = big.NewInt(1 << 6)
-	adCampaignFieldClicks                       = big.NewInt(1 << 7)
-	adCampaignFieldCompletedRegistrationValue   = big.NewInt(1 << 8)
-	adCampaignFieldCompletedRegistrations       = big.NewInt(1 << 9)
-	adCampaignFieldContactValue                 = big.NewInt(1 << 10)
-	adCampaignFieldContacts                     = big.NewInt(1 << 11)
-	adCampaignFieldCostPerAddedToCart           = big.NewInt(1 << 12)
-	adCampaignFieldCostPerClick                 = big.NewInt(1 << 13)
-	adCampaignFieldCostPerCompletedRegistration = big.NewInt(1 << 14)
-	adCampaignFieldCostPerContact               = big.NewInt(1 << 15)
-	adCampaignFieldCostPerLead                  = big.NewInt(1 << 16)
-	adCampaignFieldCostPerMille                 = big.NewInt(1 << 17)
-	adCampaignFieldCostPerPurchase              = big.NewInt(1 << 18)
-	adCampaignFieldCostPerResult                = big.NewInt(1 << 19)
-	adCampaignFieldCostPerSchedule              = big.NewInt(1 << 20)
-	adCampaignFieldCostPerSubmittedApplication  = big.NewInt(1 << 21)
-	adCampaignFieldCostPerUniqueClick           = big.NewInt(1 << 22)
-	adCampaignFieldCostPerViewedContent         = big.NewInt(1 << 23)
-	adCampaignFieldCreatedAt                    = big.NewInt(1 << 24)
-	adCampaignFieldCustomConversions            = big.NewInt(1 << 25)
-	adCampaignFieldCustomEventCounts            = big.NewInt(1 << 26)
-	adCampaignFieldCustomEventValues            = big.NewInt(1 << 27)
-	adCampaignFieldDeliveryStatus               = big.NewInt(1 << 28)
-	adCampaignFieldFrequency                    = big.NewInt(1 << 29)
-	adCampaignFieldID                           = big.NewInt(1 << 30)
-	adCampaignFieldImpressions                  = big.NewInt(1 << 31)
-	adCampaignFieldIssues                       = big.NewInt(1 << 32)
-	adCampaignFieldLeadValue                    = big.NewInt(1 << 33)
-	adCampaignFieldLeads                        = big.NewInt(1 << 34)
-	adCampaignFieldLinkClicks                   = big.NewInt(1 << 35)
-	adCampaignFieldObjective                    = big.NewInt(1 << 36)
-	adCampaignFieldOptimizationGoal             = big.NewInt(1 << 37)
-	adCampaignFieldPlatform                     = big.NewInt(1 << 38)
-	adCampaignFieldPurchaseValue                = big.NewInt(1 << 39)
-	adCampaignFieldPurchases                    = big.NewInt(1 << 40)
-	adCampaignFieldReach                        = big.NewInt(1 << 41)
-	adCampaignFieldResultEvent                  = big.NewInt(1 << 42)
-	adCampaignFieldResultEventName              = big.NewInt(1 << 43)
-	adCampaignFieldResults                      = big.NewInt(1 << 44)
-	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 45)
-	adCampaignFieldScheduleValue                = big.NewInt(1 << 46)
-	adCampaignFieldSchedules                    = big.NewInt(1 << 47)
-	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 48)
-	adCampaignFieldSpend                        = big.NewInt(1 << 49)
-	adCampaignFieldSpendCurrency                = big.NewInt(1 << 50)
-	adCampaignFieldStatus                       = big.NewInt(1 << 51)
-	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 52)
-	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 53)
-	adCampaignFieldTitle                        = big.NewInt(1 << 54)
-	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 55)
-	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 56)
-	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 57)
-	adCampaignFieldViewedContentValue           = big.NewInt(1 << 58)
-	adCampaignFieldViewedContents               = big.NewInt(1 << 59)
+	adCampaignFieldBudgetAmountLocal            = big.NewInt(1 << 4)
+	adCampaignFieldBudgetCurrency               = big.NewInt(1 << 5)
+	adCampaignFieldBudgetOptimization           = big.NewInt(1 << 6)
+	adCampaignFieldBudgetType                   = big.NewInt(1 << 7)
+	adCampaignFieldClickThroughRate             = big.NewInt(1 << 8)
+	adCampaignFieldClicks                       = big.NewInt(1 << 9)
+	adCampaignFieldCompletedRegistrationValue   = big.NewInt(1 << 10)
+	adCampaignFieldCompletedRegistrations       = big.NewInt(1 << 11)
+	adCampaignFieldContactValue                 = big.NewInt(1 << 12)
+	adCampaignFieldContacts                     = big.NewInt(1 << 13)
+	adCampaignFieldCostPerAddedToCart           = big.NewInt(1 << 14)
+	adCampaignFieldCostPerClick                 = big.NewInt(1 << 15)
+	adCampaignFieldCostPerCompletedRegistration = big.NewInt(1 << 16)
+	adCampaignFieldCostPerContact               = big.NewInt(1 << 17)
+	adCampaignFieldCostPerLead                  = big.NewInt(1 << 18)
+	adCampaignFieldCostPerMille                 = big.NewInt(1 << 19)
+	adCampaignFieldCostPerPurchase              = big.NewInt(1 << 20)
+	adCampaignFieldCostPerResult                = big.NewInt(1 << 21)
+	adCampaignFieldCostPerSchedule              = big.NewInt(1 << 22)
+	adCampaignFieldCostPerSubmittedApplication  = big.NewInt(1 << 23)
+	adCampaignFieldCostPerUniqueClick           = big.NewInt(1 << 24)
+	adCampaignFieldCostPerViewedContent         = big.NewInt(1 << 25)
+	adCampaignFieldCreatedAt                    = big.NewInt(1 << 26)
+	adCampaignFieldCustomConversions            = big.NewInt(1 << 27)
+	adCampaignFieldCustomEventCounts            = big.NewInt(1 << 28)
+	adCampaignFieldCustomEventValues            = big.NewInt(1 << 29)
+	adCampaignFieldDeliveryStatus               = big.NewInt(1 << 30)
+	adCampaignFieldFrequency                    = big.NewInt(1 << 31)
+	adCampaignFieldID                           = big.NewInt(1 << 32)
+	adCampaignFieldImpressions                  = big.NewInt(1 << 33)
+	adCampaignFieldIssues                       = big.NewInt(1 << 34)
+	adCampaignFieldLeadValue                    = big.NewInt(1 << 35)
+	adCampaignFieldLeads                        = big.NewInt(1 << 36)
+	adCampaignFieldLinkClicks                   = big.NewInt(1 << 37)
+	adCampaignFieldObjective                    = big.NewInt(1 << 38)
+	adCampaignFieldOptimizationGoal             = big.NewInt(1 << 39)
+	adCampaignFieldPlatform                     = big.NewInt(1 << 40)
+	adCampaignFieldPurchaseValue                = big.NewInt(1 << 41)
+	adCampaignFieldPurchases                    = big.NewInt(1 << 42)
+	adCampaignFieldReach                        = big.NewInt(1 << 43)
+	adCampaignFieldResultEvent                  = big.NewInt(1 << 44)
+	adCampaignFieldResultEventName              = big.NewInt(1 << 45)
+	adCampaignFieldResults                      = big.NewInt(1 << 46)
+	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 47)
+	adCampaignFieldScheduleValue                = big.NewInt(1 << 48)
+	adCampaignFieldSchedules                    = big.NewInt(1 << 49)
+	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 50)
+	adCampaignFieldSpend                        = big.NewInt(1 << 51)
+	adCampaignFieldSpendCurrency                = big.NewInt(1 << 52)
+	adCampaignFieldStatus                       = big.NewInt(1 << 53)
+	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 54)
+	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 55)
+	adCampaignFieldTitle                        = big.NewInt(1 << 56)
+	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 57)
+	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 58)
+	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 59)
+	adCampaignFieldViewedContentValue           = big.NewInt(1 << 60)
+	adCampaignFieldViewedContents               = big.NewInt(1 << 61)
 )
 
 type AdCampaign struct {
@@ -588,8 +600,12 @@ type AdCampaign struct {
 	AddedToCarts float64 `json:"added_to_carts" url:"added_to_carts"`
 	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
 	BidType *AdCampaignBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
-	// The campaign's budget, in the ad account's currency. `null` when each ad group sets its own budget instead.
+	// The campaign's budget in USD, which is what it is stored and billed in. `null` when each ad group sets its own budget instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
+	// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"budget_amount_local,omitempty"`
+	// The ISO 4217 code `budget_amount_local` is in: the account's `ads_reporting_currency` preference. `usd` unless the account changed it.
+	BudgetCurrency string `json:"budget_currency" url:"budget_currency"`
 	// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`).
 	BudgetOptimization *AdCampaignBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
@@ -734,6 +750,20 @@ func (a *AdCampaign) GetBudgetAmount() *float64 {
 		return nil
 	}
 	return a.BudgetAmount
+}
+
+func (a *AdCampaign) GetBudgetAmountLocal() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.BudgetAmountLocal
+}
+
+func (a *AdCampaign) GetBudgetCurrency() string {
+	if a == nil {
+		return ""
+	}
+	return a.BudgetCurrency
 }
 
 func (a *AdCampaign) GetBudgetOptimization() *AdCampaignBudgetOptimization {
@@ -1168,6 +1198,20 @@ func (a *AdCampaign) SetBidType(bidType *AdCampaignBidType) {
 func (a *AdCampaign) SetBudgetAmount(budgetAmount *float64) {
 	a.BudgetAmount = budgetAmount
 	a.require(adCampaignFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCampaign) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	a.BudgetAmountLocal = budgetAmountLocal
+	a.require(adCampaignFieldBudgetAmountLocal)
+}
+
+// SetBudgetCurrency sets the BudgetCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCampaign) SetBudgetCurrency(budgetCurrency string) {
+	a.BudgetCurrency = budgetCurrency
+	a.require(adCampaignFieldBudgetCurrency)
 }
 
 // SetBudgetOptimization sets the BudgetOptimization field and marks it as non-optional;
@@ -2853,26 +2897,32 @@ func (p PostAdCampaignPaymentFailedPayloadAPIVersion) Ptr() *PostAdCampaignPayme
 var (
 	postAdCampaignPaymentFailedPayloadDataFieldBidType             = big.NewInt(1 << 0)
 	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmount        = big.NewInt(1 << 1)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization  = big.NewInt(1 << 2)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetType          = big.NewInt(1 << 3)
-	postAdCampaignPaymentFailedPayloadDataFieldCreatedAt           = big.NewInt(1 << 4)
-	postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus      = big.NewInt(1 << 5)
-	postAdCampaignPaymentFailedPayloadDataFieldID                  = big.NewInt(1 << 6)
-	postAdCampaignPaymentFailedPayloadDataFieldIssues              = big.NewInt(1 << 7)
-	postAdCampaignPaymentFailedPayloadDataFieldObjective           = big.NewInt(1 << 8)
-	postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal    = big.NewInt(1 << 9)
-	postAdCampaignPaymentFailedPayloadDataFieldPlatform            = big.NewInt(1 << 10)
-	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories = big.NewInt(1 << 11)
-	postAdCampaignPaymentFailedPayloadDataFieldStatus              = big.NewInt(1 << 12)
-	postAdCampaignPaymentFailedPayloadDataFieldTitle               = big.NewInt(1 << 13)
-	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt           = big.NewInt(1 << 14)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmountLocal   = big.NewInt(1 << 2)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetCurrency      = big.NewInt(1 << 3)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization  = big.NewInt(1 << 4)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetType          = big.NewInt(1 << 5)
+	postAdCampaignPaymentFailedPayloadDataFieldCreatedAt           = big.NewInt(1 << 6)
+	postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus      = big.NewInt(1 << 7)
+	postAdCampaignPaymentFailedPayloadDataFieldID                  = big.NewInt(1 << 8)
+	postAdCampaignPaymentFailedPayloadDataFieldIssues              = big.NewInt(1 << 9)
+	postAdCampaignPaymentFailedPayloadDataFieldObjective           = big.NewInt(1 << 10)
+	postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal    = big.NewInt(1 << 11)
+	postAdCampaignPaymentFailedPayloadDataFieldPlatform            = big.NewInt(1 << 12)
+	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories = big.NewInt(1 << 13)
+	postAdCampaignPaymentFailedPayloadDataFieldStatus              = big.NewInt(1 << 14)
+	postAdCampaignPaymentFailedPayloadDataFieldTitle               = big.NewInt(1 << 15)
+	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt           = big.NewInt(1 << 16)
 )
 
 type PostAdCampaignPaymentFailedPayloadData struct {
 	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
 	BidType *PostAdCampaignPaymentFailedPayloadDataBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
-	// The campaign's budget, in the ad account's currency. `null` when each ad group sets its own budget instead.
+	// The campaign's budget in USD, which is what it is stored and billed in. `null` when each ad group sets its own budget instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
+	// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"budget_amount_local,omitempty"`
+	// The ISO 4217 code `budget_amount_local` is in: the account's `ads_reporting_currency` preference. `usd` unless the account changed it.
+	BudgetCurrency string `json:"budget_currency" url:"budget_currency"`
 	// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`).
 	BudgetOptimization *PostAdCampaignPaymentFailedPayloadDataBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
@@ -2917,6 +2967,20 @@ func (p *PostAdCampaignPaymentFailedPayloadData) GetBudgetAmount() *float64 {
 		return nil
 	}
 	return p.BudgetAmount
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetBudgetAmountLocal() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetAmountLocal
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetBudgetCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.BudgetCurrency
 }
 
 func (p *PostAdCampaignPaymentFailedPayloadData) GetBudgetOptimization() *PostAdCampaignPaymentFailedPayloadDataBudgetOptimization {
@@ -3036,6 +3100,20 @@ func (p *PostAdCampaignPaymentFailedPayloadData) SetBidType(bidType *PostAdCampa
 func (p *PostAdCampaignPaymentFailedPayloadData) SetBudgetAmount(budgetAmount *float64) {
 	p.BudgetAmount = budgetAmount
 	p.require(postAdCampaignPaymentFailedPayloadDataFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	p.BudgetAmountLocal = budgetAmountLocal
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldBudgetAmountLocal)
+}
+
+// SetBudgetCurrency sets the BudgetCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetBudgetCurrency(budgetCurrency string) {
+	p.BudgetCurrency = budgetCurrency
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldBudgetCurrency)
 }
 
 // SetBudgetOptimization sets the BudgetOptimization field and marks it as non-optional;
@@ -3690,26 +3768,32 @@ func (p PostAdCampaignUpdatedPayloadAPIVersion) Ptr() *PostAdCampaignUpdatedPayl
 var (
 	postAdCampaignUpdatedPayloadDataFieldBidType             = big.NewInt(1 << 0)
 	postAdCampaignUpdatedPayloadDataFieldBudgetAmount        = big.NewInt(1 << 1)
-	postAdCampaignUpdatedPayloadDataFieldBudgetOptimization  = big.NewInt(1 << 2)
-	postAdCampaignUpdatedPayloadDataFieldBudgetType          = big.NewInt(1 << 3)
-	postAdCampaignUpdatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 4)
-	postAdCampaignUpdatedPayloadDataFieldDeliveryStatus      = big.NewInt(1 << 5)
-	postAdCampaignUpdatedPayloadDataFieldID                  = big.NewInt(1 << 6)
-	postAdCampaignUpdatedPayloadDataFieldIssues              = big.NewInt(1 << 7)
-	postAdCampaignUpdatedPayloadDataFieldObjective           = big.NewInt(1 << 8)
-	postAdCampaignUpdatedPayloadDataFieldOptimizationGoal    = big.NewInt(1 << 9)
-	postAdCampaignUpdatedPayloadDataFieldPlatform            = big.NewInt(1 << 10)
-	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories = big.NewInt(1 << 11)
-	postAdCampaignUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 12)
-	postAdCampaignUpdatedPayloadDataFieldTitle               = big.NewInt(1 << 13)
-	postAdCampaignUpdatedPayloadDataFieldUpdatedAt           = big.NewInt(1 << 14)
+	postAdCampaignUpdatedPayloadDataFieldBudgetAmountLocal   = big.NewInt(1 << 2)
+	postAdCampaignUpdatedPayloadDataFieldBudgetCurrency      = big.NewInt(1 << 3)
+	postAdCampaignUpdatedPayloadDataFieldBudgetOptimization  = big.NewInt(1 << 4)
+	postAdCampaignUpdatedPayloadDataFieldBudgetType          = big.NewInt(1 << 5)
+	postAdCampaignUpdatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 6)
+	postAdCampaignUpdatedPayloadDataFieldDeliveryStatus      = big.NewInt(1 << 7)
+	postAdCampaignUpdatedPayloadDataFieldID                  = big.NewInt(1 << 8)
+	postAdCampaignUpdatedPayloadDataFieldIssues              = big.NewInt(1 << 9)
+	postAdCampaignUpdatedPayloadDataFieldObjective           = big.NewInt(1 << 10)
+	postAdCampaignUpdatedPayloadDataFieldOptimizationGoal    = big.NewInt(1 << 11)
+	postAdCampaignUpdatedPayloadDataFieldPlatform            = big.NewInt(1 << 12)
+	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories = big.NewInt(1 << 13)
+	postAdCampaignUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 14)
+	postAdCampaignUpdatedPayloadDataFieldTitle               = big.NewInt(1 << 15)
+	postAdCampaignUpdatedPayloadDataFieldUpdatedAt           = big.NewInt(1 << 16)
 )
 
 type PostAdCampaignUpdatedPayloadData struct {
 	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
 	BidType *PostAdCampaignUpdatedPayloadDataBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
-	// The campaign's budget, in the ad account's currency. `null` when each ad group sets its own budget instead.
+	// The campaign's budget in USD, which is what it is stored and billed in. `null` when each ad group sets its own budget instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
+	// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"budget_amount_local,omitempty"`
+	// The ISO 4217 code `budget_amount_local` is in: the account's `ads_reporting_currency` preference. `usd` unless the account changed it.
+	BudgetCurrency string `json:"budget_currency" url:"budget_currency"`
 	// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`).
 	BudgetOptimization *PostAdCampaignUpdatedPayloadDataBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
@@ -3754,6 +3838,20 @@ func (p *PostAdCampaignUpdatedPayloadData) GetBudgetAmount() *float64 {
 		return nil
 	}
 	return p.BudgetAmount
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetBudgetAmountLocal() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetAmountLocal
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetBudgetCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.BudgetCurrency
 }
 
 func (p *PostAdCampaignUpdatedPayloadData) GetBudgetOptimization() *PostAdCampaignUpdatedPayloadDataBudgetOptimization {
@@ -3873,6 +3971,20 @@ func (p *PostAdCampaignUpdatedPayloadData) SetBidType(bidType *PostAdCampaignUpd
 func (p *PostAdCampaignUpdatedPayloadData) SetBudgetAmount(budgetAmount *float64) {
 	p.BudgetAmount = budgetAmount
 	p.require(postAdCampaignUpdatedPayloadDataFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	p.BudgetAmountLocal = budgetAmountLocal
+	p.require(postAdCampaignUpdatedPayloadDataFieldBudgetAmountLocal)
+}
+
+// SetBudgetCurrency sets the BudgetCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetBudgetCurrency(budgetCurrency string) {
+	p.BudgetCurrency = budgetCurrency
+	p.require(postAdCampaignUpdatedPayloadDataFieldBudgetCurrency)
 }
 
 // SetBudgetOptimization sets the BudgetOptimization field and marks it as non-optional;
@@ -4465,13 +4577,14 @@ var (
 	updateAdCampaignsRequestFieldID                  = big.NewInt(1 << 0)
 	updateAdCampaignsRequestFieldBidType             = big.NewInt(1 << 1)
 	updateAdCampaignsRequestFieldBudgetAmount        = big.NewInt(1 << 2)
-	updateAdCampaignsRequestFieldBudgetOptimization  = big.NewInt(1 << 3)
-	updateAdCampaignsRequestFieldBudgetType          = big.NewInt(1 << 4)
-	updateAdCampaignsRequestFieldEndsAt              = big.NewInt(1 << 5)
-	updateAdCampaignsRequestFieldSpecialAdCategories = big.NewInt(1 << 6)
-	updateAdCampaignsRequestFieldStartsAt            = big.NewInt(1 << 7)
-	updateAdCampaignsRequestFieldStatus              = big.NewInt(1 << 8)
-	updateAdCampaignsRequestFieldTitle               = big.NewInt(1 << 9)
+	updateAdCampaignsRequestFieldBudgetAmountLocal   = big.NewInt(1 << 3)
+	updateAdCampaignsRequestFieldBudgetOptimization  = big.NewInt(1 << 4)
+	updateAdCampaignsRequestFieldBudgetType          = big.NewInt(1 << 5)
+	updateAdCampaignsRequestFieldEndsAt              = big.NewInt(1 << 6)
+	updateAdCampaignsRequestFieldSpecialAdCategories = big.NewInt(1 << 7)
+	updateAdCampaignsRequestFieldStartsAt            = big.NewInt(1 << 8)
+	updateAdCampaignsRequestFieldStatus              = big.NewInt(1 << 9)
+	updateAdCampaignsRequestFieldTitle               = big.NewInt(1 << 10)
 )
 
 type UpdateAdCampaignsRequest struct {
@@ -4479,8 +4592,10 @@ type UpdateAdCampaignsRequest struct {
 	ID string `json:"-" url:"-"`
 	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Switching to `minimum_cost` clears the cap amounts stored on the campaign's ad groups. Only for campaigns that own the budget.
 	BidType *UpdateAdCampaignsRequestBidType `json:"bid_type,omitempty" url:"-"`
-	// The campaign budget, in the account's currency. Interpreted as daily or lifetime per the campaign's budget type, including a budget_type sent in the same request.
+	// The campaign budget in USD, which is what it is stored and billed in. Interpreted as daily or lifetime per the campaign's budget type, including a budget_type sent in the same request.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
+	// The campaign budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"-"`
 	// Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign is live on the ad network; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
 	BudgetOptimization *UpdateAdCampaignsRequestBudgetOptimization `json:"budget_optimization,omitempty" url:"-"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`). Only changeable while the campaign is a draft; send budget_amount in the same request so the amount lands on the new type.
@@ -4526,6 +4641,13 @@ func (u *UpdateAdCampaignsRequest) SetBidType(bidType *UpdateAdCampaignsRequestB
 func (u *UpdateAdCampaignsRequest) SetBudgetAmount(budgetAmount *float64) {
 	u.BudgetAmount = budgetAmount
 	u.require(updateAdCampaignsRequestFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdCampaignsRequest) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	u.BudgetAmountLocal = budgetAmountLocal
+	u.require(updateAdCampaignsRequestFieldBudgetAmountLocal)
 }
 
 // SetBudgetOptimization sets the BudgetOptimization field and marks it as non-optional;
