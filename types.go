@@ -22605,47 +22605,48 @@ var (
 	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 12)
 	paymentFieldFailureMessage             = big.NewInt(1 << 13)
 	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 14)
-	paymentFieldID                         = big.NewInt(1 << 15)
-	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 16)
-	paymentFieldLineItems                  = big.NewInt(1 << 17)
-	paymentFieldMemberID                   = big.NewInt(1 << 18)
-	paymentFieldMembershipID               = big.NewInt(1 << 19)
-	paymentFieldMetadata                   = big.NewInt(1 << 20)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 21)
-	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 22)
-	paymentFieldPaidAt                     = big.NewInt(1 << 23)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 24)
-	paymentFieldPaymentMethodID            = big.NewInt(1 << 25)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 26)
-	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 27)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 28)
-	paymentFieldPlanID                     = big.NewInt(1 << 29)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 30)
-	paymentFieldProductID                  = big.NewInt(1 << 31)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 32)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 33)
-	paymentFieldRefundable                 = big.NewInt(1 << 34)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 35)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 36)
-	paymentFieldRetryable                  = big.NewInt(1 << 37)
-	paymentFieldRiskScore                  = big.NewInt(1 << 38)
-	paymentFieldRiskSignals                = big.NewInt(1 << 39)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 40)
-	paymentFieldShipmentID                 = big.NewInt(1 << 41)
-	paymentFieldShippingAddress            = big.NewInt(1 << 42)
-	paymentFieldStatus                     = big.NewInt(1 << 43)
-	paymentFieldSubstatus                  = big.NewInt(1 << 44)
-	paymentFieldSubtotal                   = big.NewInt(1 << 45)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 46)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 47)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 48)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 49)
-	paymentFieldTotal                      = big.NewInt(1 << 50)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 51)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 52)
-	paymentFieldUser                       = big.NewInt(1 << 53)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 54)
-	paymentFieldVoidable                   = big.NewInt(1 << 55)
+	paymentFieldHolds                      = big.NewInt(1 << 15)
+	paymentFieldID                         = big.NewInt(1 << 16)
+	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 17)
+	paymentFieldLineItems                  = big.NewInt(1 << 18)
+	paymentFieldMemberID                   = big.NewInt(1 << 19)
+	paymentFieldMembershipID               = big.NewInt(1 << 20)
+	paymentFieldMetadata                   = big.NewInt(1 << 21)
+	paymentFieldNeedsTracking              = big.NewInt(1 << 22)
+	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 23)
+	paymentFieldPaidAt                     = big.NewInt(1 << 24)
+	paymentFieldPaymentInstrument          = big.NewInt(1 << 25)
+	paymentFieldPaymentMethodID            = big.NewInt(1 << 26)
+	paymentFieldPaymentMethodType          = big.NewInt(1 << 27)
+	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 28)
+	paymentFieldPaymentsFailed             = big.NewInt(1 << 29)
+	paymentFieldPlanID                     = big.NewInt(1 << 30)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 31)
+	paymentFieldProductID                  = big.NewInt(1 << 32)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 33)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 34)
+	paymentFieldRefundable                 = big.NewInt(1 << 35)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 36)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 37)
+	paymentFieldRetryable                  = big.NewInt(1 << 38)
+	paymentFieldRiskScore                  = big.NewInt(1 << 39)
+	paymentFieldRiskSignals                = big.NewInt(1 << 40)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 41)
+	paymentFieldShipmentID                 = big.NewInt(1 << 42)
+	paymentFieldShippingAddress            = big.NewInt(1 << 43)
+	paymentFieldStatus                     = big.NewInt(1 << 44)
+	paymentFieldSubstatus                  = big.NewInt(1 << 45)
+	paymentFieldSubtotal                   = big.NewInt(1 << 46)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 47)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 48)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 49)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 50)
+	paymentFieldTotal                      = big.NewInt(1 << 51)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 52)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 53)
+	paymentFieldUser                       = big.NewInt(1 << 54)
+	paymentFieldVerificationChecks         = big.NewInt(1 << 55)
+	paymentFieldVoidable                   = big.NewInt(1 << 56)
 )
 
 type Payment struct {
@@ -22678,7 +22679,8 @@ type Payment struct {
 	// Why the most recent attempt failed, in plain words, or null.
 	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
 	// For installment methods, how many payments the charge splits into.
-	FinancingInstallmentsCount *float64 `json:"financing_installments_count,omitempty" url:"financing_installments_count,omitempty"`
+	FinancingInstallmentsCount *float64       `json:"financing_installments_count,omitempty" url:"financing_installments_count,omitempty"`
+	Holds                      []*PaymentHold `json:"holds" url:"holds"`
 	// Payment ID, prefixed `pay_`.
 	ID string `json:"id" url:"id"`
 	// When the most recent charge attempt ran, or null.
@@ -22728,7 +22730,7 @@ type Payment struct {
 	// Deprecated. Risk score explanations are no longer provided; always null.
 	// DEPRECATED: Risk score explanations are no longer provided. Always null.
 	RiskSignals map[string]any `json:"risk_signals,omitempty" url:"risk_signals,omitempty"`
-	// When the funds post to the account's available balance, at midnight UTC. The `financial_activity.funds_available` webhook's `posted_at` carries the same value when the settlement that clears it posts. Null until the payment is paid, and always null in list responses — retrieve the payment for it.
+	// When the portion not listed in `holds` posts to the account's available balance, at midnight UTC. The `financial_activity.funds_available` webhook's `posted_at` carries the same value when the settlement that clears it posts. Null until the payment is paid, and always null in list responses — retrieve the payment for it.
 	SettlementTimeAt *string `json:"settlement_time_at,omitempty" url:"settlement_time_at,omitempty"`
 	// The shipment fulfilling this payment, prefixed `ship_`. Null when nothing ships or without the shipment:basic:read permission.
 	ShipmentID *string `json:"shipment_id,omitempty" url:"shipment_id,omitempty"`
@@ -22871,6 +22873,13 @@ func (p *Payment) GetFinancingInstallmentsCount() *float64 {
 		return nil
 	}
 	return p.FinancingInstallmentsCount
+}
+
+func (p *Payment) GetHolds() []*PaymentHold {
+	if p == nil {
+		return nil
+	}
+	return p.Holds
 }
 
 func (p *Payment) GetID() string {
@@ -23277,6 +23286,13 @@ func (p *Payment) SetFailureMessage(failureMessage *string) {
 func (p *Payment) SetFinancingInstallmentsCount(financingInstallmentsCount *float64) {
 	p.FinancingInstallmentsCount = financingInstallmentsCount
 	p.require(paymentFieldFinancingInstallmentsCount)
+}
+
+// SetHolds sets the Holds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetHolds(holds []*PaymentHold) {
+	p.Holds = holds
+	p.require(paymentFieldHolds)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -24543,6 +24559,174 @@ func NewPaymentDeclineCodesFromString(s string) (PaymentDeclineCodes, error) {
 }
 
 func (p PaymentDeclineCodes) Ptr() *PaymentDeclineCodes {
+	return &p
+}
+
+var (
+	paymentHoldFieldAmount     = big.NewInt(1 << 0)
+	paymentHoldFieldPercentage = big.NewInt(1 << 1)
+	paymentHoldFieldReleaseAt  = big.NewInt(1 << 2)
+	paymentHoldFieldType       = big.NewInt(1 << 3)
+)
+
+type PaymentHold struct {
+	// The amount currently held, in the hold's currency.
+	Amount *Money `json:"amount" url:"amount"`
+	// The reserve percentage recorded when the hold was created, for example 3.5 for 3.5%. Null for other hold types or when no percentage was recorded.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+	// When the held funds are scheduled to become available, as an ISO 8601 timestamp. Never earlier than the payment's settlement date. Null when release depends on an event, such as shipment resolution, rather than a date.
+	ReleaseAt *string `json:"release_at,omitempty" url:"release_at,omitempty"`
+	// The reason funds are held: `reserve`, `bnpl`, `sequra`, `fraud_hold`, or `preshipment_hold`.
+	Type PaymentHoldType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentHold) GetAmount() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.Amount
+}
+
+func (p *PaymentHold) GetPercentage() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.Percentage
+}
+
+func (p *PaymentHold) GetReleaseAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ReleaseAt
+}
+
+func (p *PaymentHold) GetType() PaymentHoldType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PaymentHold) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentHold) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentHold) SetAmount(amount *Money) {
+	p.Amount = amount
+	p.require(paymentHoldFieldAmount)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentHold) SetPercentage(percentage *float64) {
+	p.Percentage = percentage
+	p.require(paymentHoldFieldPercentage)
+}
+
+// SetReleaseAt sets the ReleaseAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentHold) SetReleaseAt(releaseAt *string) {
+	p.ReleaseAt = releaseAt
+	p.require(paymentHoldFieldReleaseAt)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentHold) SetType(type_ PaymentHoldType) {
+	p.Type = type_
+	p.require(paymentHoldFieldType)
+}
+
+func (p *PaymentHold) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentHold
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentHold(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentHold) MarshalJSON() ([]byte, error) {
+	type embed PaymentHold
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentHold) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The reason funds are held: `reserve`, `bnpl`, `sequra`, `fraud_hold`, or `preshipment_hold`.
+type PaymentHoldType string
+
+const (
+	PaymentHoldTypeReserve         PaymentHoldType = "reserve"
+	PaymentHoldTypeBnpl            PaymentHoldType = "bnpl"
+	PaymentHoldTypeSequra          PaymentHoldType = "sequra"
+	PaymentHoldTypeFraudHold       PaymentHoldType = "fraud_hold"
+	PaymentHoldTypePreshipmentHold PaymentHoldType = "preshipment_hold"
+)
+
+func NewPaymentHoldTypeFromString(s string) (PaymentHoldType, error) {
+	switch s {
+	case "reserve":
+		return PaymentHoldTypeReserve, nil
+	case "bnpl":
+		return PaymentHoldTypeBnpl, nil
+	case "sequra":
+		return PaymentHoldTypeSequra, nil
+	case "fraud_hold":
+		return PaymentHoldTypeFraudHold, nil
+	case "preshipment_hold":
+		return PaymentHoldTypePreshipmentHold, nil
+	}
+	var t PaymentHoldType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentHoldType) Ptr() *PaymentHoldType {
 	return &p
 }
 
