@@ -371,7 +371,7 @@ client.Accounts.Create(
 <dl>
 <dd>
 
-**affiliateCode:** `*string` — The username, if any, of the partner who referred this account
+**affiliateCode:** `*string` — A saved partner referral link code for this new business account. An existing primary user referral takes priority. Used with user tokens creating top-level accounts.
     
 </dd>
 </dl>
