@@ -44,7 +44,7 @@ type CreateProductsRequest struct {
 	CustomCtaURL *string `json:"custom_cta_url,omitempty" url:"-"`
 	// Custom bank statement descriptor. Must start with WHOP*.
 	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"-"`
-	// A written description displayed on the product page.
+	// A written description displayed on the product page. Maximum 1,500 characters.
 	Description *string `json:"description,omitempty" url:"-"`
 	// Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
 	GalleryImages []*CreateProductsRequestGalleryImagesItem `json:"gallery_images,omitempty" url:"-"`
@@ -52,7 +52,7 @@ type CreateProductsRequest struct {
 	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"-"`
 	// The enrollment status in the global affiliate program.
 	GlobalAffiliateStatus *CreateProductsRequestGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"-"`
-	// A short marketing headline for the product page.
+	// A short marketing headline for the product page. Maximum 80 characters.
 	Headline *string `json:"headline,omitempty" url:"-"`
 	// Labels used to group products into collections. Stored lowercased and de-duplicated. Maximum 20 labels, 50 characters each.
 	Labels []string `json:"labels,omitempty" url:"-"`
@@ -4032,11 +4032,11 @@ type UpdateProductsRequest struct {
 	ID string `json:"-" url:"-"`
 	// A wide image for the product, shown on the product page and on listing cards. Pass `{ id }` for an existing attachment or `{ direct_upload_id }` for a completed direct upload; `null` removes it.
 	BannerImage *UpdateProductsRequestBannerImage `json:"banner_image,omitempty" url:"-"`
-	// A written description displayed on the product page.
+	// A written description displayed on the product page. Maximum 1,500 characters.
 	Description *string `json:"description,omitempty" url:"-"`
 	// Images or videos displayed in the product gallery, in display order. Replaces the existing gallery. Send an empty array to clear it; omit or pass null to leave it unchanged. A banner image does not populate the gallery.
 	GalleryImages []*UpdateProductsRequestGalleryImagesItem `json:"gallery_images,omitempty" url:"-"`
-	// A short marketing headline for the product page.
+	// A short marketing headline for the product page. Maximum 80 characters.
 	Headline *string `json:"headline,omitempty" url:"-"`
 	// Labels used to group products into collections. Replaces the existing labels. Send an empty array to clear them.
 	Labels []string `json:"labels,omitempty" url:"-"`
@@ -4046,7 +4046,7 @@ type UpdateProductsRequest struct {
 	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"-"`
 	// Whether to send an automated welcome message via support chat when a user joins this product.
 	SendWelcomeMessage *bool `json:"send_welcome_message,omitempty" url:"-"`
-	// The display name of the product.
+	// The display name of the product. Maximum 80 characters.
 	Title *string `json:"title,omitempty" url:"-"`
 	// Whether the product is visible to customers.
 	Visibility *string `json:"visibility,omitempty" url:"-"`

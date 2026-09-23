@@ -142,7 +142,7 @@ type CreatePlansRequest struct {
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
 	// Override the default tax classification for this specific plan.
 	OverrideTaxType *string `json:"override_tax_type,omitempty" url:"-"`
-	// Explicit payment method configuration for the plan. When not provided, the account's defaults apply.
+	// Explicit payment method configuration for the plan. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
 	PaymentMethodConfiguration *CreatePlansRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
 	// Plan billing type, such as `one_time` or `renewal`.
 	PlanType *string `json:"plan_type,omitempty" url:"-"`
@@ -158,7 +158,7 @@ type CreatePlansRequest struct {
 	Stock *int `json:"stock,omitempty" url:"-"`
 	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
 	ThreeDsLevel *CreatePlansRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
-	// The display name of the plan shown to customers on the product page.
+	// The display name of the plan shown to customers on the product page. Maximum 30 characters.
 	Title *string `json:"title,omitempty" url:"-"`
 	// Free trial duration before the first recurring charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"-"`
@@ -3984,7 +3984,7 @@ func (c *CreatePlansRequestImage) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Explicit payment method configuration for the plan. When not provided, the account's defaults apply.
+// Explicit payment method configuration for the plan. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
 var (
 	createPlansRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createPlansRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -5560,7 +5560,7 @@ func (u *UpdatePlansRequestImage) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Explicit payment method configuration for the plan. When not provided, the account's defaults apply.
+// Explicit payment method configuration for the plan. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
 var (
 	updatePlansRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	updatePlansRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -5768,7 +5768,7 @@ type UpdatePlansRequest struct {
 	OfferCancelDiscount *bool `json:"offer_cancel_discount,omitempty" url:"-"`
 	// Override the default tax classification for this specific plan.
 	OverrideTaxType *string `json:"override_tax_type,omitempty" url:"-"`
-	// Explicit payment method configuration for the plan. When not provided, the account's defaults apply.
+	// Explicit payment method configuration for the plan. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
 	PaymentMethodConfiguration *UpdatePlansRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
 	// Sales method for this plan.
 	ReleaseMethod *string `json:"release_method,omitempty" url:"-"`
@@ -5782,7 +5782,7 @@ type UpdatePlansRequest struct {
 	StrikeThroughRenewalPrice *float64 `json:"strike_through_renewal_price,omitempty" url:"-"`
 	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
 	ThreeDsLevel *UpdatePlansRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
-	// The display name of the plan shown to customers on the product page.
+	// The display name of the plan shown to customers on the product page. Maximum 30 characters.
 	Title *string `json:"title,omitempty" url:"-"`
 	// Free trial duration before the first recurring charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"-"`
