@@ -17,13 +17,13 @@ var (
 )
 
 type ConnectSocialAccountsRequest struct {
-	// The Account (biz_ identifier) to connect the social account for. An account-scoped API key may omit this to default to its own account.
+	// The Account (biz_ identifier) to connect the social account for. An account-scoped API key may omit this to default to its own account. Omit for LinkedIn connections.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts.
+	// The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts or `linkedin` to connect the authenticated user’s LinkedIn profile.
 	Platform ConnectSocialAccountsRequestPlatform `json:"platform" url:"-"`
 	// Where to send the user once they finish connecting their accounts. Any `http` or `https` URL. If the connection fails, the user is redirected with a `social_account_error` query param.
 	RedirectURL string `json:"redirect_url" url:"-"`
-	// Capabilities to grant for the connected social account. `advertise` is required for both `meta_business` and `tiktok` connections — it is not conditional on whether you intend to run ads, and omitting it fails the request.
+	// Capabilities to grant for the connected social account. `advertise` is required for both `meta_business` and `tiktok` connections — it is not conditional on whether you intend to run ads, and omitting it fails the request. Omit scopes for LinkedIn connections.
 	Scopes []ConnectSocialAccountsRequestScopesItem `json:"scopes,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1075,12 +1075,13 @@ func (s SocialAccountPostRestrictionsItem) Ptr() *SocialAccountPostRestrictionsI
 	return &s
 }
 
-// The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts.
+// The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts or `linkedin` to connect the authenticated user’s LinkedIn profile.
 type ConnectSocialAccountsRequestPlatform string
 
 const (
 	ConnectSocialAccountsRequestPlatformMetaBusiness ConnectSocialAccountsRequestPlatform = "meta_business"
 	ConnectSocialAccountsRequestPlatformTiktok       ConnectSocialAccountsRequestPlatform = "tiktok"
+	ConnectSocialAccountsRequestPlatformLinkedin     ConnectSocialAccountsRequestPlatform = "linkedin"
 )
 
 func NewConnectSocialAccountsRequestPlatformFromString(s string) (ConnectSocialAccountsRequestPlatform, error) {
@@ -1089,6 +1090,8 @@ func NewConnectSocialAccountsRequestPlatformFromString(s string) (ConnectSocialA
 		return ConnectSocialAccountsRequestPlatformMetaBusiness, nil
 	case "tiktok":
 		return ConnectSocialAccountsRequestPlatformTiktok, nil
+	case "linkedin":
+		return ConnectSocialAccountsRequestPlatformLinkedin, nil
 	}
 	var t ConnectSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1465,6 +1468,7 @@ const (
 	ListSocialAccountsRequestPlatformFacebook  ListSocialAccountsRequestPlatform = "facebook"
 	ListSocialAccountsRequestPlatformDiscord   ListSocialAccountsRequestPlatform = "discord"
 	ListSocialAccountsRequestPlatformTelegram  ListSocialAccountsRequestPlatform = "telegram"
+	ListSocialAccountsRequestPlatformLinkedin  ListSocialAccountsRequestPlatform = "linkedin"
 )
 
 func NewListSocialAccountsRequestPlatformFromString(s string) (ListSocialAccountsRequestPlatform, error) {
@@ -1483,6 +1487,8 @@ func NewListSocialAccountsRequestPlatformFromString(s string) (ListSocialAccount
 		return ListSocialAccountsRequestPlatformDiscord, nil
 	case "telegram":
 		return ListSocialAccountsRequestPlatformTelegram, nil
+	case "linkedin":
+		return ListSocialAccountsRequestPlatformLinkedin, nil
 	}
 	var t ListSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

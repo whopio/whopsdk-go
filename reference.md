@@ -32641,7 +32641,7 @@ client.SocialAccounts.Create(
 <dl>
 <dd>
 
-Starts an OAuth connection flow and returns an authorize_url where the user can connect a social account.
+Starts an OAuth connection flow and returns an authorize_url where the user can connect a social account. LinkedIn connects the authenticated user’s profile and must be completed in a browser signed in as that same Whop user.
 </dd>
 </dl>
 </dd>
@@ -32678,7 +32678,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**accountID:** `*string` — The Account (biz_ identifier) to connect the social account for. An account-scoped API key may omit this to default to its own account.
+**accountID:** `*string` — The Account (biz_ identifier) to connect the social account for. An account-scoped API key may omit this to default to its own account. Omit for LinkedIn connections.
     
 </dd>
 </dl>
@@ -32686,7 +32686,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**platform:** `*whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts.
+**platform:** `*whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts or `linkedin` to connect the authenticated user’s LinkedIn profile.
     
 </dd>
 </dl>
@@ -32702,7 +32702,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**scopes:** `[]*whopsdk.ConnectSocialAccountsRequestScopesItem` — Capabilities to grant for the connected social account. `advertise` is required for both `meta_business` and `tiktok` connections — it is not conditional on whether you intend to run ads, and omitting it fails the request.
+**scopes:** `[]*whopsdk.ConnectSocialAccountsRequestScopesItem` — Capabilities to grant for the connected social account. `advertise` is required for both `meta_business` and `tiktok` connections — it is not conditional on whether you intend to run ads, and omitting it fails the request. Omit scopes for LinkedIn connections.
     
 </dd>
 </dl>
