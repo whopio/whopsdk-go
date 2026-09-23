@@ -22,7 +22,7 @@ var (
 )
 
 type CreateAccountsRequest struct {
-	// The username, if any, of the partner who referred this account
+	// A saved partner referral link code for this new business account. An existing primary user referral takes priority. Used with user tokens creating top-level accounts.
 	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
 	// The blueprint App ID, prefixed `app_`. Creates a hosted website for the account and queues its deployment asynchronously; the Account response does not report deployment completion.
 	BlueprintID *string `json:"blueprint_id,omitempty" url:"-"`
