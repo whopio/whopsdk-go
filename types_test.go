@@ -64850,6 +64850,14 @@ func TestSettersPaymentLegacyVerificationChecks(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAuthorizationCode", func(t *testing.T) {
+		obj := &PaymentLegacyVerificationChecks{}
+		var fernTestValueAuthorizationCode *string
+		obj.SetAuthorizationCode(fernTestValueAuthorizationCode)
+		assert.Equal(t, fernTestValueAuthorizationCode, obj.AuthorizationCode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCardHolderName", func(t *testing.T) {
 		obj := &PaymentLegacyVerificationChecks{}
 		var fernTestValueCardHolderName *string
@@ -64908,6 +64916,39 @@ func TestGettersPaymentLegacyVerificationChecks(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAddressLine1() // Should return zero value
+	})
+
+	t.Run("GetAuthorizationCode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentLegacyVerificationChecks{}
+		var expected *string
+		obj.AuthorizationCode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAuthorizationCode(), "getter should return the property value")
+	})
+
+	t.Run("GetAuthorizationCode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentLegacyVerificationChecks{}
+		obj.AuthorizationCode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAuthorizationCode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAuthorizationCode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentLegacyVerificationChecks
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAuthorizationCode() // Should return zero value
 	})
 
 	t.Run("GetCardHolderName", func(t *testing.T) {
@@ -65020,6 +65061,37 @@ func TestSettersMarkExplicitPaymentLegacyVerificationChecks(t *testing.T) {
 
 		// Act
 		obj.SetAddressLine1(fernTestValueAddressLine1)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAuthorizationCode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentLegacyVerificationChecks{}
+		var fernTestValueAuthorizationCode *string
+
+		// Act
+		obj.SetAuthorizationCode(fernTestValueAuthorizationCode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -76848,6 +76920,14 @@ func TestSettersPaymentVerificationChecks(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAuthorizationCode", func(t *testing.T) {
+		obj := &PaymentVerificationChecks{}
+		var fernTestValueAuthorizationCode *string
+		obj.SetAuthorizationCode(fernTestValueAuthorizationCode)
+		assert.Equal(t, fernTestValueAuthorizationCode, obj.AuthorizationCode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCardHolderName", func(t *testing.T) {
 		obj := &PaymentVerificationChecks{}
 		var fernTestValueCardHolderName *string
@@ -76906,6 +76986,39 @@ func TestGettersPaymentVerificationChecks(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAddressLine1() // Should return zero value
+	})
+
+	t.Run("GetAuthorizationCode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentVerificationChecks{}
+		var expected *string
+		obj.AuthorizationCode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAuthorizationCode(), "getter should return the property value")
+	})
+
+	t.Run("GetAuthorizationCode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentVerificationChecks{}
+		obj.AuthorizationCode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAuthorizationCode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAuthorizationCode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentVerificationChecks
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAuthorizationCode() // Should return zero value
 	})
 
 	t.Run("GetCardHolderName", func(t *testing.T) {
@@ -77018,6 +77131,37 @@ func TestSettersMarkExplicitPaymentVerificationChecks(t *testing.T) {
 
 		// Act
 		obj.SetAddressLine1(fernTestValueAddressLine1)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAuthorizationCode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentVerificationChecks{}
+		var fernTestValueAuthorizationCode *string
+
+		// Act
+		obj.SetAuthorizationCode(fernTestValueAuthorizationCode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
