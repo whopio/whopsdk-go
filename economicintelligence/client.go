@@ -119,33 +119,6 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Generates a recommendation based on your input. Returns immediately; poll the list endpoint until its `status` is `ready`.
-//
-// Example:
-//
-//	request := &whopsdk.CreateEconomicIntelligenceRequest{
-//	    Input: "I sell $79 customized gym straps. The number of purchases per day fell from 84 to 66 since June and my ads cost per signup doubled to $38. Half the leads never open the checkout. I want to win back churned visitors and lift conversion without cutting the price, and I can spend up to $500 this month on it.",
-//	}
-//	client.EconomicIntelligence.Create(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) Create(
-	ctx context.Context,
-	request *whopsdk.CreateEconomicIntelligenceRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.EconomicIntelligence, error) {
-	response, err := c.WithRawResponse.Create(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
 // Updates a recommendation status, records feedback, or both. Send `sentiment` to rate it. Include `status: superseded` to retire it and request replacements; a rating alone leaves its status unchanged.
 //
 // Example:

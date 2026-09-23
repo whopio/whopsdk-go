@@ -15577,6 +15577,14 @@ client.EconomicIntelligence.List(
 <dl>
 <dd>
 
+**input:** `*string` — What you want recommendations for, in your own words. Up to 1000 characters. Narrows the list to the recommendations that address it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
@@ -15602,74 +15610,6 @@ client.EconomicIntelligence.List(
 <dd>
 
 **before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.EconomicIntelligence.Create(request) -> *whopsdk.EconomicIntelligence</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Generates a recommendation based on your input. Returns immediately; poll the list endpoint until its `status` is `ready`.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.CreateEconomicIntelligenceRequest{
-    Input: "I sell $79 customized gym straps. The number of purchases per day fell from 84 to 66 since June and my ads cost per signup doubled to $38. Half the leads never open the checkout. I want to win back churned visitors and lift conversion without cutting the price, and I can spend up to $500 this month on it.",
-}
-client.EconomicIntelligence.Create(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**accountID:** `*string` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**input:** `string` — What the owner wants, in their own words. Up to 1000 characters.
     
 </dd>
 </dl>
@@ -15738,6 +15678,14 @@ client.EconomicIntelligence.Update(
 <dd>
 
 **accountID:** `*string` — Account ID, prefixed `biz_`. Defaults to the API key's own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**input:** `*string` — What you want the replacement recommendation for, in your own words. Up to 1000 characters. Sent when superseding, it directs the generation that replaces the rejected recommendation.
     
 </dd>
 </dl>

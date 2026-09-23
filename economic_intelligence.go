@@ -10,69 +10,13 @@ import (
 )
 
 var (
-	createEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 0)
-	createEconomicIntelligenceRequestFieldInput     = big.NewInt(1 << 1)
-)
-
-type CreateEconomicIntelligenceRequest struct {
-	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
-	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// What the owner wants, in their own words. Up to 1000 characters.
-	Input string `json:"input" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (c *CreateEconomicIntelligenceRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateEconomicIntelligenceRequest) SetAccountID(accountID *string) {
-	c.AccountID = accountID
-	c.require(createEconomicIntelligenceRequestFieldAccountID)
-}
-
-// SetInput sets the Input field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateEconomicIntelligenceRequest) SetInput(input string) {
-	c.Input = input
-	c.require(createEconomicIntelligenceRequestFieldInput)
-}
-
-func (c *CreateEconomicIntelligenceRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateEconomicIntelligenceRequest
-	var body unmarshaler
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*c = CreateEconomicIntelligenceRequest(body)
-	return nil
-}
-
-func (c *CreateEconomicIntelligenceRequest) MarshalJSON() ([]byte, error) {
-	type embed CreateEconomicIntelligenceRequest
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-var (
 	listEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 0)
 	listEconomicIntelligenceRequestFieldStatus    = big.NewInt(1 << 1)
-	listEconomicIntelligenceRequestFieldFirst     = big.NewInt(1 << 2)
-	listEconomicIntelligenceRequestFieldAfter     = big.NewInt(1 << 3)
-	listEconomicIntelligenceRequestFieldLast      = big.NewInt(1 << 4)
-	listEconomicIntelligenceRequestFieldBefore    = big.NewInt(1 << 5)
+	listEconomicIntelligenceRequestFieldInput     = big.NewInt(1 << 2)
+	listEconomicIntelligenceRequestFieldFirst     = big.NewInt(1 << 3)
+	listEconomicIntelligenceRequestFieldAfter     = big.NewInt(1 << 4)
+	listEconomicIntelligenceRequestFieldLast      = big.NewInt(1 << 5)
+	listEconomicIntelligenceRequestFieldBefore    = big.NewInt(1 << 6)
 )
 
 type ListEconomicIntelligenceRequest struct {
@@ -80,6 +24,8 @@ type ListEconomicIntelligenceRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Filter recommendations by their current status.
 	Status *ListEconomicIntelligenceRequestStatus `json:"-" url:"status,omitempty"`
+	// What you want recommendations for, in your own words. Up to 1000 characters. Narrows the list to the recommendations that address it.
+	Input *string `json:"-" url:"input,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -112,6 +58,13 @@ func (l *ListEconomicIntelligenceRequest) SetAccountID(accountID *string) {
 func (l *ListEconomicIntelligenceRequest) SetStatus(status *ListEconomicIntelligenceRequestStatus) {
 	l.Status = status
 	l.require(listEconomicIntelligenceRequestFieldStatus)
+}
+
+// SetInput sets the Input field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEconomicIntelligenceRequest) SetInput(input *string) {
+	l.Input = input
+	l.require(listEconomicIntelligenceRequestFieldInput)
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -950,9 +903,10 @@ func (u UpdateEconomicIntelligenceRequestStatus) Ptr() *UpdateEconomicIntelligen
 var (
 	updateEconomicIntelligenceRequestFieldID           = big.NewInt(1 << 0)
 	updateEconomicIntelligenceRequestFieldAccountID    = big.NewInt(1 << 1)
-	updateEconomicIntelligenceRequestFieldSentiment    = big.NewInt(1 << 2)
-	updateEconomicIntelligenceRequestFieldStatus       = big.NewInt(1 << 3)
-	updateEconomicIntelligenceRequestFieldUserFeedback = big.NewInt(1 << 4)
+	updateEconomicIntelligenceRequestFieldInput        = big.NewInt(1 << 2)
+	updateEconomicIntelligenceRequestFieldSentiment    = big.NewInt(1 << 3)
+	updateEconomicIntelligenceRequestFieldStatus       = big.NewInt(1 << 4)
+	updateEconomicIntelligenceRequestFieldUserFeedback = big.NewInt(1 << 5)
 )
 
 type UpdateEconomicIntelligenceRequest struct {
@@ -960,6 +914,8 @@ type UpdateEconomicIntelligenceRequest struct {
 	ID string `json:"-" url:"-"`
 	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// What you want the replacement recommendation for, in your own words. Up to 1000 characters. Sent when superseding, it directs the generation that replaces the rejected recommendation.
+	Input *string `json:"input,omitempty" url:"-"`
 	// A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
 	Sentiment *UpdateEconomicIntelligenceRequestSentiment `json:"sentiment,omitempty" url:"-"`
 	// Use `executed` to record approval, or `superseded` to reject the recommendation.
@@ -990,6 +946,13 @@ func (u *UpdateEconomicIntelligenceRequest) SetID(id string) {
 func (u *UpdateEconomicIntelligenceRequest) SetAccountID(accountID *string) {
 	u.AccountID = accountID
 	u.require(updateEconomicIntelligenceRequestFieldAccountID)
+}
+
+// SetInput sets the Input field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateEconomicIntelligenceRequest) SetInput(input *string) {
+	u.Input = input
+	u.require(updateEconomicIntelligenceRequestFieldInput)
 }
 
 // SetSentiment sets the Sentiment field and marks it as non-optional;
