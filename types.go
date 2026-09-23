@@ -34694,6 +34694,7 @@ const (
 	PaymentMethodTypesSplitit                PaymentMethodTypes = "splitit"
 	PaymentMethodTypesSunbit                 PaymentMethodTypes = "sunbit"
 	PaymentMethodTypesSwish                  PaymentMethodTypes = "swish"
+	PaymentMethodTypesTabby                  PaymentMethodTypes = "tabby"
 	PaymentMethodTypesTamara                 PaymentMethodTypes = "tamara"
 	PaymentMethodTypesTouchNGo               PaymentMethodTypes = "touch_n_go"
 	PaymentMethodTypesTwint                  PaymentMethodTypes = "twint"
@@ -34937,6 +34938,8 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesSunbit, nil
 	case "swish":
 		return PaymentMethodTypesSwish, nil
+	case "tabby":
+		return PaymentMethodTypesTabby, nil
 	case "tamara":
 		return PaymentMethodTypesTamara, nil
 	case "touch_n_go":
