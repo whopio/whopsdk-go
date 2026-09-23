@@ -472,7 +472,7 @@ type PartnerReferralRequestRequestType string
 const (
 	PartnerReferralRequestRequestTypeManual            PartnerReferralRequestRequestType = "manual"
 	PartnerReferralRequestRequestTypeOwnershipTransfer PartnerReferralRequestRequestType = "ownership_transfer"
-	PartnerReferralRequestRequestTypeRewardLink        PartnerReferralRequestRequestType = "reward_link"
+	PartnerReferralRequestRequestTypeLink              PartnerReferralRequestRequestType = "link"
 )
 
 func NewPartnerReferralRequestRequestTypeFromString(s string) (PartnerReferralRequestRequestType, error) {
@@ -481,8 +481,8 @@ func NewPartnerReferralRequestRequestTypeFromString(s string) (PartnerReferralRe
 		return PartnerReferralRequestRequestTypeManual, nil
 	case "ownership_transfer":
 		return PartnerReferralRequestRequestTypeOwnershipTransfer, nil
-	case "reward_link":
-		return PartnerReferralRequestRequestTypeRewardLink, nil
+	case "link":
+		return PartnerReferralRequestRequestTypeLink, nil
 	}
 	var t PartnerReferralRequestRequestType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -740,6 +740,8 @@ func (p PartnerReferralRewardRecipient) Ptr() *PartnerReferralRewardRecipient {
 type CreatePartnerReferralRequestsRequestBody struct {
 	CreatePartnerReferralRequestsRequestBodyAccountID  *CreatePartnerReferralRequestsRequestBodyAccountID
 	CreatePartnerReferralRequestsRequestBodyAccountURL *CreatePartnerReferralRequestsRequestBodyAccountURL
+	// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link or creates one with a random code. Only authorized staff can configure rewards or select another partner.
+	CreatePartnerReferralRequestsRequestBodyCode *CreatePartnerReferralRequestsRequestBodyCode
 
 	typ string
 }
@@ -758,6 +760,13 @@ func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralReque
 	return c.CreatePartnerReferralRequestsRequestBodyAccountURL
 }
 
+func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralRequestsRequestBodyCode() *CreatePartnerReferralRequestsRequestBodyCode {
+	if c == nil {
+		return nil
+	}
+	return c.CreatePartnerReferralRequestsRequestBodyCode
+}
+
 func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) error {
 	valueCreatePartnerReferralRequestsRequestBodyAccountID := new(CreatePartnerReferralRequestsRequestBodyAccountID)
 	if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyAccountID); err == nil {
@@ -771,6 +780,12 @@ func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) er
 		c.CreatePartnerReferralRequestsRequestBodyAccountURL = valueCreatePartnerReferralRequestsRequestBodyAccountURL
 		return nil
 	}
+	valueCreatePartnerReferralRequestsRequestBodyCode := new(CreatePartnerReferralRequestsRequestBodyCode)
+	if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyCode); err == nil {
+		c.typ = "CreatePartnerReferralRequestsRequestBodyCode"
+		c.CreatePartnerReferralRequestsRequestBodyCode = valueCreatePartnerReferralRequestsRequestBodyCode
+		return nil
+	}
 	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
 }
 
@@ -781,12 +796,16 @@ func (c CreatePartnerReferralRequestsRequestBody) MarshalJSON() ([]byte, error) 
 	if c.typ == "CreatePartnerReferralRequestsRequestBodyAccountURL" || c.CreatePartnerReferralRequestsRequestBodyAccountURL != nil {
 		return json.Marshal(c.CreatePartnerReferralRequestsRequestBodyAccountURL)
 	}
+	if c.typ == "CreatePartnerReferralRequestsRequestBodyCode" || c.CreatePartnerReferralRequestsRequestBodyCode != nil {
+		return json.Marshal(c.CreatePartnerReferralRequestsRequestBodyCode)
+	}
 	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
 }
 
 type CreatePartnerReferralRequestsRequestBodyVisitor interface {
 	VisitCreatePartnerReferralRequestsRequestBodyAccountID(*CreatePartnerReferralRequestsRequestBodyAccountID) error
 	VisitCreatePartnerReferralRequestsRequestBodyAccountURL(*CreatePartnerReferralRequestsRequestBodyAccountURL) error
+	VisitCreatePartnerReferralRequestsRequestBodyCode(*CreatePartnerReferralRequestsRequestBodyCode) error
 }
 
 func (c *CreatePartnerReferralRequestsRequestBody) Accept(visitor CreatePartnerReferralRequestsRequestBodyVisitor) error {
@@ -795,6 +814,9 @@ func (c *CreatePartnerReferralRequestsRequestBody) Accept(visitor CreatePartnerR
 	}
 	if c.typ == "CreatePartnerReferralRequestsRequestBodyAccountURL" || c.CreatePartnerReferralRequestsRequestBodyAccountURL != nil {
 		return visitor.VisitCreatePartnerReferralRequestsRequestBodyAccountURL(c.CreatePartnerReferralRequestsRequestBodyAccountURL)
+	}
+	if c.typ == "CreatePartnerReferralRequestsRequestBodyCode" || c.CreatePartnerReferralRequestsRequestBodyCode != nil {
+		return visitor.VisitCreatePartnerReferralRequestsRequestBodyCode(c.CreatePartnerReferralRequestsRequestBodyCode)
 	}
 	return fmt.Errorf("type %T does not include a non-empty union type", c)
 }
@@ -969,6 +991,163 @@ func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link or creates one with a random code. Only authorized staff can configure rewards or select another partner.
+var (
+	createPartnerReferralRequestsRequestBodyCodeFieldCode           = big.NewInt(1 << 0)
+	createPartnerReferralRequestsRequestBodyCodeFieldMaxRedemptions = big.NewInt(1 << 1)
+	createPartnerReferralRequestsRequestBodyCodeFieldPartnerID      = big.NewInt(1 << 2)
+	createPartnerReferralRequestsRequestBodyCodeFieldRequestType    = big.NewInt(1 << 3)
+)
+
+type CreatePartnerReferralRequestsRequestBodyCode struct {
+	// Case-insensitive referral code containing letters, numbers, and single hyphens. New codes are stored in lowercase. Omit to generate six random letters, or reuse a saved link when no configuration is supplied.
+	Code *string `json:"code,omitempty" url:"code,omitempty"`
+	// Maximum permitted redemptions, or null for no configured limit.
+	MaxRedemptions *int `json:"max_redemptions,omitempty" url:"max_redemptions,omitempty"`
+	// Optional authenticated partner ID, prefixed `user_`. Ordinary credentials cannot select another partner. Staff must supply the enrolled, non-suspended partner receiving attribution.
+	PartnerID *string `json:"partner_id,omitempty" url:"partner_id,omitempty"`
+	// Create or retrieve a reusable referral link without requesting attribution for an existing business.
+	RequestType CreatePartnerReferralRequestsRequestBodyCodeRequestType `json:"request_type" url:"request_type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyCode) GetCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Code
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyCode) GetMaxRedemptions() *int {
+	if c == nil {
+		return nil
+	}
+	return c.MaxRedemptions
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyCode) GetPartnerID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PartnerID
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyCode) GetRequestType() CreatePartnerReferralRequestsRequestBodyCodeRequestType {
+	if c == nil {
+		return ""
+	}
+	return c.RequestType
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyCode) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyCode) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePartnerReferralRequestsRequestBodyCode) SetCode(code *string) {
+	c.Code = code
+	c.require(createPartnerReferralRequestsRequestBodyCodeFieldCode)
+}
+
+// SetMaxRedemptions sets the MaxRedemptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePartnerReferralRequestsRequestBodyCode) SetMaxRedemptions(maxRedemptions *int) {
+	c.MaxRedemptions = maxRedemptions
+	c.require(createPartnerReferralRequestsRequestBodyCodeFieldMaxRedemptions)
+}
+
+// SetPartnerID sets the PartnerID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePartnerReferralRequestsRequestBodyCode) SetPartnerID(partnerID *string) {
+	c.PartnerID = partnerID
+	c.require(createPartnerReferralRequestsRequestBodyCodeFieldPartnerID)
+}
+
+// SetRequestType sets the RequestType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePartnerReferralRequestsRequestBodyCode) SetRequestType(requestType CreatePartnerReferralRequestsRequestBodyCodeRequestType) {
+	c.RequestType = requestType
+	c.require(createPartnerReferralRequestsRequestBodyCodeFieldRequestType)
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyCode) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePartnerReferralRequestsRequestBodyCode
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePartnerReferralRequestsRequestBodyCode(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyCode) MarshalJSON() ([]byte, error) {
+	type embed CreatePartnerReferralRequestsRequestBodyCode
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyCode) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Create or retrieve a reusable referral link without requesting attribution for an existing business.
+type CreatePartnerReferralRequestsRequestBodyCodeRequestType string
+
+const (
+	CreatePartnerReferralRequestsRequestBodyCodeRequestTypeLink CreatePartnerReferralRequestsRequestBodyCodeRequestType = "link"
+)
+
+func NewCreatePartnerReferralRequestsRequestBodyCodeRequestTypeFromString(s string) (CreatePartnerReferralRequestsRequestBodyCodeRequestType, error) {
+	switch s {
+	case "link":
+		return CreatePartnerReferralRequestsRequestBodyCodeRequestTypeLink, nil
+	}
+	var t CreatePartnerReferralRequestsRequestBodyCodeRequestType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePartnerReferralRequestsRequestBodyCodeRequestType) Ptr() *CreatePartnerReferralRequestsRequestBodyCodeRequestType {
+	return &c
+}
+
 type ListPartnerReferralRequestsRequestDirection string
 
 const (
@@ -1015,7 +1194,7 @@ type ListPartnerReferralRequestsRequestRequestType string
 const (
 	ListPartnerReferralRequestsRequestRequestTypeManual            ListPartnerReferralRequestsRequestRequestType = "manual"
 	ListPartnerReferralRequestsRequestRequestTypeOwnershipTransfer ListPartnerReferralRequestsRequestRequestType = "ownership_transfer"
-	ListPartnerReferralRequestsRequestRequestTypeRewardLink        ListPartnerReferralRequestsRequestRequestType = "reward_link"
+	ListPartnerReferralRequestsRequestRequestTypeLink              ListPartnerReferralRequestsRequestRequestType = "link"
 )
 
 func NewListPartnerReferralRequestsRequestRequestTypeFromString(s string) (ListPartnerReferralRequestsRequestRequestType, error) {
@@ -1024,8 +1203,8 @@ func NewListPartnerReferralRequestsRequestRequestTypeFromString(s string) (ListP
 		return ListPartnerReferralRequestsRequestRequestTypeManual, nil
 	case "ownership_transfer":
 		return ListPartnerReferralRequestsRequestRequestTypeOwnershipTransfer, nil
-	case "reward_link":
-		return ListPartnerReferralRequestsRequestRequestTypeRewardLink, nil
+	case "link":
+		return ListPartnerReferralRequestsRequestRequestTypeLink, nil
 	}
 	var t ListPartnerReferralRequestsRequestRequestType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
