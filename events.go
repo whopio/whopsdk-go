@@ -2320,40 +2320,36 @@ func (l *ListEventsResponse) String() string {
 }
 
 var (
-	listEventsResponseDataItemFieldContext                        = big.NewInt(1 << 0)
-	listEventsResponseDataItemFieldCurrency                       = big.NewInt(1 << 1)
-	listEventsResponseDataItemFieldCustomName                     = big.NewInt(1 << 2)
-	listEventsResponseDataItemFieldEventID                        = big.NewInt(1 << 3)
-	listEventsResponseDataItemFieldEventName                      = big.NewInt(1 << 4)
-	listEventsResponseDataItemFieldEventTime                      = big.NewInt(1 << 5)
-	listEventsResponseDataItemFieldID                             = big.NewInt(1 << 6)
-	listEventsResponseDataItemFieldPath                           = big.NewInt(1 << 7)
-	listEventsResponseDataItemFieldPersonID                       = big.NewInt(1 << 8)
-	listEventsResponseDataItemFieldQuestions                      = big.NewInt(1 << 9)
-	listEventsResponseDataItemFieldRecommendedActionChainID       = big.NewInt(1 << 10)
-	listEventsResponseDataItemFieldRecommendedActionShownPosition = big.NewInt(1 << 11)
-	listEventsResponseDataItemFieldReferrerURL                    = big.NewInt(1 << 12)
-	listEventsResponseDataItemFieldRelated                        = big.NewInt(1 << 13)
-	listEventsResponseDataItemFieldTotalUsdAmount                 = big.NewInt(1 << 14)
-	listEventsResponseDataItemFieldURL                            = big.NewInt(1 << 15)
-	listEventsResponseDataItemFieldUser                           = big.NewInt(1 << 16)
-	listEventsResponseDataItemFieldValue                          = big.NewInt(1 << 17)
+	listEventsResponseDataItemFieldContext        = big.NewInt(1 << 0)
+	listEventsResponseDataItemFieldCurrency       = big.NewInt(1 << 1)
+	listEventsResponseDataItemFieldCustomName     = big.NewInt(1 << 2)
+	listEventsResponseDataItemFieldEventID        = big.NewInt(1 << 3)
+	listEventsResponseDataItemFieldEventName      = big.NewInt(1 << 4)
+	listEventsResponseDataItemFieldEventTime      = big.NewInt(1 << 5)
+	listEventsResponseDataItemFieldID             = big.NewInt(1 << 6)
+	listEventsResponseDataItemFieldPath           = big.NewInt(1 << 7)
+	listEventsResponseDataItemFieldPersonID       = big.NewInt(1 << 8)
+	listEventsResponseDataItemFieldQuestions      = big.NewInt(1 << 9)
+	listEventsResponseDataItemFieldReferrerURL    = big.NewInt(1 << 10)
+	listEventsResponseDataItemFieldRelated        = big.NewInt(1 << 11)
+	listEventsResponseDataItemFieldTotalUsdAmount = big.NewInt(1 << 12)
+	listEventsResponseDataItemFieldURL            = big.NewInt(1 << 13)
+	listEventsResponseDataItemFieldUser           = big.NewInt(1 << 14)
+	listEventsResponseDataItemFieldValue          = big.NewInt(1 << 15)
 )
 
 type ListEventsResponseDataItem struct {
-	Context                        *ListEventsResponseDataItemContext         `json:"context,omitempty" url:"context,omitempty"`
-	Currency                       *string                                    `json:"currency,omitempty" url:"currency,omitempty"`
-	CustomName                     *string                                    `json:"custom_name,omitempty" url:"custom_name,omitempty"`
-	EventID                        string                                     `json:"event_id" url:"event_id"`
-	EventName                      string                                     `json:"event_name" url:"event_name"`
-	EventTime                      time.Time                                  `json:"event_time" url:"event_time"`
-	ID                             string                                     `json:"id" url:"id"`
-	Path                           *string                                    `json:"path,omitempty" url:"path,omitempty"`
-	PersonID                       string                                     `json:"person_id" url:"person_id"`
-	Questions                      []*ListEventsResponseDataItemQuestionsItem `json:"questions,omitempty" url:"questions,omitempty"`
-	RecommendedActionChainID       *string                                    `json:"recommended_action_chain_id,omitempty" url:"recommended_action_chain_id,omitempty"`
-	RecommendedActionShownPosition *int                                       `json:"recommended_action_shown_position,omitempty" url:"recommended_action_shown_position,omitempty"`
-	ReferrerURL                    *string                                    `json:"referrer_url,omitempty" url:"referrer_url,omitempty"`
+	Context     *ListEventsResponseDataItemContext         `json:"context,omitempty" url:"context,omitempty"`
+	Currency    *string                                    `json:"currency,omitempty" url:"currency,omitempty"`
+	CustomName  *string                                    `json:"custom_name,omitempty" url:"custom_name,omitempty"`
+	EventID     string                                     `json:"event_id" url:"event_id"`
+	EventName   string                                     `json:"event_name" url:"event_name"`
+	EventTime   time.Time                                  `json:"event_time" url:"event_time"`
+	ID          string                                     `json:"id" url:"id"`
+	Path        *string                                    `json:"path,omitempty" url:"path,omitempty"`
+	PersonID    string                                     `json:"person_id" url:"person_id"`
+	Questions   []*ListEventsResponseDataItemQuestionsItem `json:"questions,omitempty" url:"questions,omitempty"`
+	ReferrerURL *string                                    `json:"referrer_url,omitempty" url:"referrer_url,omitempty"`
 	// Hydrated details for the records this event references. Only present keys resolved.
 	Related        *ListEventsResponseDataItemRelated `json:"related,omitempty" url:"related,omitempty"`
 	TotalUsdAmount *float64                           `json:"total_usd_amount,omitempty" url:"total_usd_amount,omitempty"`
@@ -2436,20 +2432,6 @@ func (l *ListEventsResponseDataItem) GetQuestions() []*ListEventsResponseDataIte
 		return nil
 	}
 	return l.Questions
-}
-
-func (l *ListEventsResponseDataItem) GetRecommendedActionChainID() *string {
-	if l == nil {
-		return nil
-	}
-	return l.RecommendedActionChainID
-}
-
-func (l *ListEventsResponseDataItem) GetRecommendedActionShownPosition() *int {
-	if l == nil {
-		return nil
-	}
-	return l.RecommendedActionShownPosition
 }
 
 func (l *ListEventsResponseDataItem) GetReferrerURL() *string {
@@ -2576,20 +2558,6 @@ func (l *ListEventsResponseDataItem) SetPersonID(personID string) {
 func (l *ListEventsResponseDataItem) SetQuestions(questions []*ListEventsResponseDataItemQuestionsItem) {
 	l.Questions = questions
 	l.require(listEventsResponseDataItemFieldQuestions)
-}
-
-// SetRecommendedActionChainID sets the RecommendedActionChainID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEventsResponseDataItem) SetRecommendedActionChainID(recommendedActionChainID *string) {
-	l.RecommendedActionChainID = recommendedActionChainID
-	l.require(listEventsResponseDataItemFieldRecommendedActionChainID)
-}
-
-// SetRecommendedActionShownPosition sets the RecommendedActionShownPosition field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEventsResponseDataItem) SetRecommendedActionShownPosition(recommendedActionShownPosition *int) {
-	l.RecommendedActionShownPosition = recommendedActionShownPosition
-	l.require(listEventsResponseDataItemFieldRecommendedActionShownPosition)
 }
 
 // SetReferrerURL sets the ReferrerURL field and marks it as non-optional;
