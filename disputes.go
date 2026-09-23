@@ -265,29 +265,27 @@ func (s *SummaryDisputesRequest) SetCreatedAfter(createdAfter *string) {
 }
 
 var (
-	disputeFieldAccountID                   = big.NewInt(1 << 0)
-	disputeFieldAmount                      = big.NewInt(1 << 1)
-	disputeFieldBuyer                       = big.NewInt(1 << 2)
-	disputeFieldCreatedAt                   = big.NewInt(1 << 3)
-	disputeFieldCurrency                    = big.NewInt(1 << 4)
-	disputeFieldEvidence                    = big.NewInt(1 << 5)
-	disputeFieldEvidenceDueAt               = big.NewInt(1 << 6)
-	disputeFieldEvidenceEditable            = big.NewInt(1 << 7)
-	disputeFieldEvidenceLockedReason        = big.NewInt(1 << 8)
-	disputeFieldEvidenceSubmittedAt         = big.NewInt(1 << 9)
-	disputeFieldGeneratedResponseAttachment = big.NewInt(1 << 10)
-	disputeFieldID                          = big.NewInt(1 << 11)
-	disputeFieldInquiry                     = big.NewInt(1 << 12)
-	disputeFieldIssuerComments              = big.NewInt(1 << 13)
-	disputeFieldLineItems                   = big.NewInt(1 << 14)
-	disputeFieldPayment                     = big.NewInt(1 << 15)
-	disputeFieldPlanID                      = big.NewInt(1 << 16)
-	disputeFieldProductID                   = big.NewInt(1 << 17)
-	disputeFieldRapidDisputeResolution      = big.NewInt(1 << 18)
-	disputeFieldReason                      = big.NewInt(1 << 19)
-	disputeFieldReasonCode                  = big.NewInt(1 << 20)
-	disputeFieldStatus                      = big.NewInt(1 << 21)
-	disputeFieldUpdatedAt                   = big.NewInt(1 << 22)
+	disputeFieldAccountID            = big.NewInt(1 << 0)
+	disputeFieldAmount               = big.NewInt(1 << 1)
+	disputeFieldBuyer                = big.NewInt(1 << 2)
+	disputeFieldCreatedAt            = big.NewInt(1 << 3)
+	disputeFieldCurrency             = big.NewInt(1 << 4)
+	disputeFieldEvidence             = big.NewInt(1 << 5)
+	disputeFieldEvidenceDueAt        = big.NewInt(1 << 6)
+	disputeFieldEvidenceEditable     = big.NewInt(1 << 7)
+	disputeFieldEvidenceLockedReason = big.NewInt(1 << 8)
+	disputeFieldEvidenceSubmittedAt  = big.NewInt(1 << 9)
+	disputeFieldID                   = big.NewInt(1 << 10)
+	disputeFieldInquiry              = big.NewInt(1 << 11)
+	disputeFieldIssuerComments       = big.NewInt(1 << 12)
+	disputeFieldLineItems            = big.NewInt(1 << 13)
+	disputeFieldPayment              = big.NewInt(1 << 14)
+	disputeFieldPlanID               = big.NewInt(1 << 15)
+	disputeFieldProductID            = big.NewInt(1 << 16)
+	disputeFieldReason               = big.NewInt(1 << 17)
+	disputeFieldReasonCode           = big.NewInt(1 << 18)
+	disputeFieldStatus               = big.NewInt(1 << 19)
+	disputeFieldUpdatedAt            = big.NewInt(1 << 20)
 )
 
 type Dispute struct {
@@ -296,14 +294,14 @@ type Dispute struct {
 	// The disputed amount, in whole units of `currency`.
 	Amount float64 `json:"amount" url:"amount"`
 	// The customer who filed the dispute.
-	Buyer *DisputeBuyer `json:"buyer,omitempty" url:"buyer,omitempty"`
+	Buyer *DisputeBuyer `json:"buyer" url:"buyer"`
 	// When the dispute was opened, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Three-letter ISO currency code of the disputed amount.
 	Currency string `json:"currency" url:"currency"`
 	// The evidence packet sent to the processor to contest the dispute.
 	Evidence *DisputeEvidence `json:"evidence" url:"evidence"`
-	// The deadline to submit evidence, as an ISO 8601 timestamp. Whop reserves the last 24 hours before the processor's own cutoff to forward the submission.
+	// The deadline to submit evidence, as an ISO 8601 timestamp. `null` when the network already auto-resolved the dispute (Visa RDR) with no evidence round, or when the processor hasn't reported a deadline for this dispute.
 	EvidenceDueAt *string `json:"evidence_due_at,omitempty" url:"evidence_due_at,omitempty"`
 	// Whether `evidence` can still be changed and submitted.
 	EvidenceEditable bool `json:"evidence_editable" url:"evidence_editable"`
@@ -311,8 +309,6 @@ type Dispute struct {
 	EvidenceLockedReason *DisputeEvidenceLockedReason `json:"evidence_locked_reason,omitempty" url:"evidence_locked_reason,omitempty"`
 	// When the evidence was submitted to the processor, as an ISO 8601 timestamp.
 	EvidenceSubmittedAt *string `json:"evidence_submitted_at,omitempty" url:"evidence_submitted_at,omitempty"`
-	// The AI-generated representment document filed with the processor on the seller's behalf, once ready. Null until generation completes, and for disputes not using Whop Dispute Fighter.
-	GeneratedResponseAttachment *DisputeAttachment `json:"generated_response_attachment,omitempty" url:"generated_response_attachment,omitempty"`
 	// Dispute ID, prefixed `dspt_`.
 	ID string `json:"id" url:"id"`
 	// Whether this is a pre-dispute inquiry rather than a formal chargeback. Inquiries follow the same lifecycle but move no funds unless one escalates.
@@ -320,13 +316,11 @@ type Dispute struct {
 	IssuerComments []*DisputeIssuerComment `json:"issuer_comments" url:"issuer_comments"`
 	LineItems      []*ReceiptLineItem      `json:"line_items" url:"line_items"`
 	// The payment being disputed.
-	Payment *DisputePayment `json:"payment,omitempty" url:"payment,omitempty"`
+	Payment *DisputePayment `json:"payment" url:"payment"`
 	// The plan the disputed payment was made on, prefixed `plan_`.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product the disputed payment was for, prefixed `prod_`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
-	// Whether Visa Rapid Dispute Resolution settled this automatically. These refund the customer without an evidence round.
-	RapidDisputeResolution bool `json:"rapid_dispute_resolution" url:"rapid_dispute_resolution"`
 	// Why the customer says they are disputing, normalized across processors and card networks. `other` covers a processor reason Whop has not categorized yet.
 	Reason DisputeReason `json:"reason" url:"reason"`
 	// The raw card-network or processor reason code, such as `10.4`. Informational only — `reason` is not derived from it.
@@ -413,13 +407,6 @@ func (d *Dispute) GetEvidenceSubmittedAt() *string {
 	return d.EvidenceSubmittedAt
 }
 
-func (d *Dispute) GetGeneratedResponseAttachment() *DisputeAttachment {
-	if d == nil {
-		return nil
-	}
-	return d.GeneratedResponseAttachment
-}
-
 func (d *Dispute) GetID() string {
 	if d == nil {
 		return ""
@@ -467,13 +454,6 @@ func (d *Dispute) GetProductID() *string {
 		return nil
 	}
 	return d.ProductID
-}
-
-func (d *Dispute) GetRapidDisputeResolution() bool {
-	if d == nil {
-		return false
-	}
-	return d.RapidDisputeResolution
 }
 
 func (d *Dispute) GetReason() DisputeReason {
@@ -588,13 +568,6 @@ func (d *Dispute) SetEvidenceSubmittedAt(evidenceSubmittedAt *string) {
 	d.require(disputeFieldEvidenceSubmittedAt)
 }
 
-// SetGeneratedResponseAttachment sets the GeneratedResponseAttachment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Dispute) SetGeneratedResponseAttachment(generatedResponseAttachment *DisputeAttachment) {
-	d.GeneratedResponseAttachment = generatedResponseAttachment
-	d.require(disputeFieldGeneratedResponseAttachment)
-}
-
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *Dispute) SetID(id string) {
@@ -642,13 +615,6 @@ func (d *Dispute) SetPlanID(planID *string) {
 func (d *Dispute) SetProductID(productID *string) {
 	d.ProductID = productID
 	d.require(disputeFieldProductID)
-}
-
-// SetRapidDisputeResolution sets the RapidDisputeResolution field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Dispute) SetRapidDisputeResolution(rapidDisputeResolution bool) {
-	d.RapidDisputeResolution = rapidDisputeResolution
-	d.require(disputeFieldRapidDisputeResolution)
 }
 
 // SetReason sets the Reason field and marks it as non-optional;
@@ -1368,11 +1334,11 @@ var (
 )
 
 type DisputeEvidenceDocument struct {
-	// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts.
+	// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts, and rejected without one — never null.
 	ContentType *DisputeEvidenceDocumentContentType `json:"content_type,omitempty" url:"content_type,omitempty"`
 	// When the file was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// What kind of evidence the document is.
+	// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
 	DocumentType DisputeEvidenceDocumentDocumentType `json:"document_type" url:"document_type"`
 	// The original filename, including its extension.
 	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
@@ -1671,7 +1637,7 @@ func (d *DisputeEvidenceDocument) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts.
+// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts, and rejected without one — never null.
 type DisputeEvidenceDocumentContentType string
 
 const (
@@ -1703,21 +1669,22 @@ func (d DisputeEvidenceDocumentContentType) Ptr() *DisputeEvidenceDocumentConten
 	return &d
 }
 
-// What kind of evidence the document is.
+// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
 type DisputeEvidenceDocumentDocumentType string
 
 const (
-	DisputeEvidenceDocumentDocumentTypeReturnPolicy         DisputeEvidenceDocumentDocumentType = "return_policy"
-	DisputeEvidenceDocumentDocumentTypeShippingPolicy       DisputeEvidenceDocumentDocumentType = "shipping_policy"
-	DisputeEvidenceDocumentDocumentTypeCancellationPolicy   DisputeEvidenceDocumentDocumentType = "cancellation_policy"
-	DisputeEvidenceDocumentDocumentTypeTermsOfService       DisputeEvidenceDocumentDocumentType = "terms_of_service"
-	DisputeEvidenceDocumentDocumentTypePhysicalFulfillment  DisputeEvidenceDocumentDocumentType = "physical_fulfillment"
-	DisputeEvidenceDocumentDocumentTypeCustomerOrderHistory DisputeEvidenceDocumentDocumentType = "customer_order_history"
-	DisputeEvidenceDocumentDocumentTypeProductImage         DisputeEvidenceDocumentDocumentType = "product_image"
-	DisputeEvidenceDocumentDocumentTypePriorTransactions    DisputeEvidenceDocumentDocumentType = "prior_transactions"
-	DisputeEvidenceDocumentDocumentTypeCustomerSession      DisputeEvidenceDocumentDocumentType = "customer_session"
-	DisputeEvidenceDocumentDocumentTypeDigitalFulfillment   DisputeEvidenceDocumentDocumentType = "digital_fulfillment"
-	DisputeEvidenceDocumentDocumentTypeSubscription         DisputeEvidenceDocumentDocumentType = "subscription"
+	DisputeEvidenceDocumentDocumentTypeReturnPolicy          DisputeEvidenceDocumentDocumentType = "return_policy"
+	DisputeEvidenceDocumentDocumentTypeShippingPolicy        DisputeEvidenceDocumentDocumentType = "shipping_policy"
+	DisputeEvidenceDocumentDocumentTypeCancellationPolicy    DisputeEvidenceDocumentDocumentType = "cancellation_policy"
+	DisputeEvidenceDocumentDocumentTypeTermsOfService        DisputeEvidenceDocumentDocumentType = "terms_of_service"
+	DisputeEvidenceDocumentDocumentTypePhysicalFulfillment   DisputeEvidenceDocumentDocumentType = "physical_fulfillment"
+	DisputeEvidenceDocumentDocumentTypeCustomerOrderHistory  DisputeEvidenceDocumentDocumentType = "customer_order_history"
+	DisputeEvidenceDocumentDocumentTypeProductImage          DisputeEvidenceDocumentDocumentType = "product_image"
+	DisputeEvidenceDocumentDocumentTypePriorTransactions     DisputeEvidenceDocumentDocumentType = "prior_transactions"
+	DisputeEvidenceDocumentDocumentTypeCustomerSession       DisputeEvidenceDocumentDocumentType = "customer_session"
+	DisputeEvidenceDocumentDocumentTypeDigitalFulfillment    DisputeEvidenceDocumentDocumentType = "digital_fulfillment"
+	DisputeEvidenceDocumentDocumentTypeSubscription          DisputeEvidenceDocumentDocumentType = "subscription"
+	DisputeEvidenceDocumentDocumentTypeCustomerCommunication DisputeEvidenceDocumentDocumentType = "customer_communication"
 )
 
 func NewDisputeEvidenceDocumentDocumentTypeFromString(s string) (DisputeEvidenceDocumentDocumentType, error) {
@@ -1744,6 +1711,8 @@ func NewDisputeEvidenceDocumentDocumentTypeFromString(s string) (DisputeEvidence
 		return DisputeEvidenceDocumentDocumentTypeDigitalFulfillment, nil
 	case "subscription":
 		return DisputeEvidenceDocumentDocumentTypeSubscription, nil
+	case "customer_communication":
+		return DisputeEvidenceDocumentDocumentTypeCustomerCommunication, nil
 	}
 	var t DisputeEvidenceDocumentDocumentType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1962,7 +1931,8 @@ type DisputePayment struct {
 	PaymentInstrument *PaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
 	// How the customer paid, such as `card` or `paypal`.
 	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
-	// The processor that handled the payment, such as `stripe`.
+	// Deprecated: no longer populated. Always `null`.
+	// DEPRECATED: No longer populated. Always null.
 	PaymentProcessor *string `json:"payment_processor,omitempty" url:"payment_processor,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3467,13 +3437,14 @@ var (
 	updateDisputesRequestEvidenceFieldCustomerCommunicationAttachment = big.NewInt(1 << 4)
 	updateDisputesRequestEvidenceFieldCustomerEmailAddress            = big.NewInt(1 << 5)
 	updateDisputesRequestEvidenceFieldCustomerName                    = big.NewInt(1 << 6)
-	updateDisputesRequestEvidenceFieldNotes                           = big.NewInt(1 << 7)
-	updateDisputesRequestEvidenceFieldProductDescription              = big.NewInt(1 << 8)
-	updateDisputesRequestEvidenceFieldRefundPolicyAttachment          = big.NewInt(1 << 9)
-	updateDisputesRequestEvidenceFieldRefundPolicyDisclosure          = big.NewInt(1 << 10)
-	updateDisputesRequestEvidenceFieldRefundRefusalExplanation        = big.NewInt(1 << 11)
-	updateDisputesRequestEvidenceFieldServiceDate                     = big.NewInt(1 << 12)
-	updateDisputesRequestEvidenceFieldUncategorizedAttachment         = big.NewInt(1 << 13)
+	updateDisputesRequestEvidenceFieldDocuments                       = big.NewInt(1 << 7)
+	updateDisputesRequestEvidenceFieldNotes                           = big.NewInt(1 << 8)
+	updateDisputesRequestEvidenceFieldProductDescription              = big.NewInt(1 << 9)
+	updateDisputesRequestEvidenceFieldRefundPolicyAttachment          = big.NewInt(1 << 10)
+	updateDisputesRequestEvidenceFieldRefundPolicyDisclosure          = big.NewInt(1 << 11)
+	updateDisputesRequestEvidenceFieldRefundRefusalExplanation        = big.NewInt(1 << 12)
+	updateDisputesRequestEvidenceFieldServiceDate                     = big.NewInt(1 << 13)
+	updateDisputesRequestEvidenceFieldUncategorizedAttachment         = big.NewInt(1 << 14)
 )
 
 type UpdateDisputesRequestEvidence struct {
@@ -3491,6 +3462,8 @@ type UpdateDisputesRequestEvidence struct {
 	CustomerEmailAddress *string `json:"customer_email_address,omitempty" url:"customer_email_address,omitempty"`
 	// The customer's name as given at checkout.
 	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
+	// The full set of evidence documents the dispute should carry, beyond the four fixed evidence slots. Replaces all previously uploaded documents. Upload files through `POST /files` and reference them by `id`, or send the files as multipart file parts to upload and attach in one call. Policy documents (`return_policy`, `shipping_policy`, `cancellation_policy`, `terms_of_service`) default from the account's own documents; uploading one here replaces the account copy for this dispute, and a `cancellation_policy` or `return_policy` upload also takes precedence over the matching fixed evidence slot.
+	Documents []*UpdateDisputesRequestEvidenceDocumentsItem `json:"documents,omitempty" url:"documents,omitempty"`
 	// Any additional context for the processor reviewing the dispute.
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
 	// What the customer purchased, in the seller's own words.
@@ -3560,6 +3533,13 @@ func (u *UpdateDisputesRequestEvidence) GetCustomerName() *string {
 		return nil
 	}
 	return u.CustomerName
+}
+
+func (u *UpdateDisputesRequestEvidence) GetDocuments() []*UpdateDisputesRequestEvidenceDocumentsItem {
+	if u == nil {
+		return nil
+	}
+	return u.Documents
 }
 
 func (u *UpdateDisputesRequestEvidence) GetNotes() *string {
@@ -3672,6 +3652,13 @@ func (u *UpdateDisputesRequestEvidence) SetCustomerEmailAddress(customerEmailAdd
 func (u *UpdateDisputesRequestEvidence) SetCustomerName(customerName *string) {
 	u.CustomerName = customerName
 	u.require(updateDisputesRequestEvidenceFieldCustomerName)
+}
+
+// SetDocuments sets the Documents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDisputesRequestEvidence) SetDocuments(documents []*UpdateDisputesRequestEvidenceDocumentsItem) {
+	u.Documents = documents
+	u.require(updateDisputesRequestEvidenceFieldDocuments)
 }
 
 // SetNotes sets the Notes field and marks it as non-optional;
@@ -3971,6 +3958,195 @@ func (u *UpdateDisputesRequestEvidenceCustomerCommunicationAttachment) String() 
 	return fmt.Sprintf("%#v", u)
 }
 
+var (
+	updateDisputesRequestEvidenceDocumentsItemFieldDirectUploadID = big.NewInt(1 << 0)
+	updateDisputesRequestEvidenceDocumentsItemFieldDocumentType   = big.NewInt(1 << 1)
+	updateDisputesRequestEvidenceDocumentsItemFieldFile           = big.NewInt(1 << 2)
+	updateDisputesRequestEvidenceDocumentsItemFieldID             = big.NewInt(1 << 3)
+)
+
+type UpdateDisputesRequestEvidenceDocumentsItem struct {
+	// The ID returned by a direct upload.
+	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
+	// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
+	DocumentType UpdateDisputesRequestEvidenceDocumentsItemDocumentType `json:"document_type" url:"document_type"`
+	// The file itself. Send it as a file part to upload and attach in one call, or use `id`/`direct_upload_id` for a file that is already stored.
+	File *string `json:"file,omitempty" url:"file,omitempty"`
+	// The ID of a file already stored on Whop, prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetDirectUploadID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DirectUploadID
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetDocumentType() UpdateDisputesRequestEvidenceDocumentsItemDocumentType {
+	if u == nil {
+		return ""
+	}
+	return u.DocumentType
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetFile() *string {
+	if u == nil {
+		return nil
+	}
+	return u.File
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) SetDirectUploadID(directUploadID *string) {
+	u.DirectUploadID = directUploadID
+	u.require(updateDisputesRequestEvidenceDocumentsItemFieldDirectUploadID)
+}
+
+// SetDocumentType sets the DocumentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) SetDocumentType(documentType UpdateDisputesRequestEvidenceDocumentsItemDocumentType) {
+	u.DocumentType = documentType
+	u.require(updateDisputesRequestEvidenceDocumentsItemFieldDocumentType)
+}
+
+// SetFile sets the File field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) SetFile(file *string) {
+	u.File = file
+	u.require(updateDisputesRequestEvidenceDocumentsItemFieldFile)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) SetID(id *string) {
+	u.ID = id
+	u.require(updateDisputesRequestEvidenceDocumentsItemFieldID)
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateDisputesRequestEvidenceDocumentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateDisputesRequestEvidenceDocumentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateDisputesRequestEvidenceDocumentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
+type UpdateDisputesRequestEvidenceDocumentsItemDocumentType string
+
+const (
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeReturnPolicy          UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "return_policy"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeShippingPolicy        UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "shipping_policy"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCancellationPolicy    UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "cancellation_policy"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeTermsOfService        UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "terms_of_service"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypePhysicalFulfillment   UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "physical_fulfillment"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerOrderHistory  UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "customer_order_history"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeProductImage          UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "product_image"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypePriorTransactions     UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "prior_transactions"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerSession       UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "customer_session"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeDigitalFulfillment    UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "digital_fulfillment"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeSubscription          UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "subscription"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerCommunication UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "customer_communication"
+)
+
+func NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString(s string) (UpdateDisputesRequestEvidenceDocumentsItemDocumentType, error) {
+	switch s {
+	case "return_policy":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeReturnPolicy, nil
+	case "shipping_policy":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeShippingPolicy, nil
+	case "cancellation_policy":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCancellationPolicy, nil
+	case "terms_of_service":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeTermsOfService, nil
+	case "physical_fulfillment":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypePhysicalFulfillment, nil
+	case "customer_order_history":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerOrderHistory, nil
+	case "product_image":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeProductImage, nil
+	case "prior_transactions":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypePriorTransactions, nil
+	case "customer_session":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerSession, nil
+	case "digital_fulfillment":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeDigitalFulfillment, nil
+	case "subscription":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeSubscription, nil
+	case "customer_communication":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerCommunication, nil
+	}
+	var t UpdateDisputesRequestEvidenceDocumentsItemDocumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateDisputesRequestEvidenceDocumentsItemDocumentType) Ptr() *UpdateDisputesRequestEvidenceDocumentsItemDocumentType {
+	return &u
+}
+
 // The refund policy document. Defaults to the account's return policy when not set.
 var (
 	updateDisputesRequestEvidenceRefundPolicyAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
@@ -4187,7 +4363,7 @@ var (
 type UploadEvidenceDisputesRequestDocumentsItem struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
-	// What kind of evidence the document is.
+	// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
 	DocumentType UploadEvidenceDisputesRequestDocumentsItemDocumentType `json:"document_type" url:"document_type"`
 	// The file itself. Send it as a file part to upload and attach in one call, or use `id`/`direct_upload_id` for a file that is already stored.
 	File *string `json:"file,omitempty" url:"file,omitempty"`
@@ -4313,21 +4489,22 @@ func (u *UploadEvidenceDisputesRequestDocumentsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// What kind of evidence the document is.
+// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
 type UploadEvidenceDisputesRequestDocumentsItemDocumentType string
 
 const (
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeReturnPolicy         UploadEvidenceDisputesRequestDocumentsItemDocumentType = "return_policy"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeShippingPolicy       UploadEvidenceDisputesRequestDocumentsItemDocumentType = "shipping_policy"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCancellationPolicy   UploadEvidenceDisputesRequestDocumentsItemDocumentType = "cancellation_policy"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeTermsOfService       UploadEvidenceDisputesRequestDocumentsItemDocumentType = "terms_of_service"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypePhysicalFulfillment  UploadEvidenceDisputesRequestDocumentsItemDocumentType = "physical_fulfillment"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerOrderHistory UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_order_history"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeProductImage         UploadEvidenceDisputesRequestDocumentsItemDocumentType = "product_image"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypePriorTransactions    UploadEvidenceDisputesRequestDocumentsItemDocumentType = "prior_transactions"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerSession      UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_session"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeDigitalFulfillment   UploadEvidenceDisputesRequestDocumentsItemDocumentType = "digital_fulfillment"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeSubscription         UploadEvidenceDisputesRequestDocumentsItemDocumentType = "subscription"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeReturnPolicy          UploadEvidenceDisputesRequestDocumentsItemDocumentType = "return_policy"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeShippingPolicy        UploadEvidenceDisputesRequestDocumentsItemDocumentType = "shipping_policy"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCancellationPolicy    UploadEvidenceDisputesRequestDocumentsItemDocumentType = "cancellation_policy"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeTermsOfService        UploadEvidenceDisputesRequestDocumentsItemDocumentType = "terms_of_service"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypePhysicalFulfillment   UploadEvidenceDisputesRequestDocumentsItemDocumentType = "physical_fulfillment"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerOrderHistory  UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_order_history"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeProductImage          UploadEvidenceDisputesRequestDocumentsItemDocumentType = "product_image"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypePriorTransactions     UploadEvidenceDisputesRequestDocumentsItemDocumentType = "prior_transactions"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerSession       UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_session"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeDigitalFulfillment    UploadEvidenceDisputesRequestDocumentsItemDocumentType = "digital_fulfillment"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeSubscription          UploadEvidenceDisputesRequestDocumentsItemDocumentType = "subscription"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerCommunication UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_communication"
 )
 
 func NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString(s string) (UploadEvidenceDisputesRequestDocumentsItemDocumentType, error) {
@@ -4354,6 +4531,8 @@ func NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString(s strin
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeDigitalFulfillment, nil
 	case "subscription":
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeSubscription, nil
+	case "customer_communication":
+		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerCommunication, nil
 	}
 	var t UploadEvidenceDisputesRequestDocumentsItemDocumentType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4428,7 +4607,7 @@ var (
 type UploadEvidenceDisputesRequest struct {
 	// The dispute ID (`dspt_` tag).
 	ID string `json:"-" url:"-"`
-	// The full set of evidence documents the dispute should carry. Replaces all previously uploaded documents.
+	// The full set of evidence documents the dispute should carry, beyond the four fixed evidence slots. Replaces all previously uploaded documents. Upload files through `POST /files` and reference them by `id`, or send the files as multipart file parts to upload and attach in one call. Policy documents (`return_policy`, `shipping_policy`, `cancellation_policy`, `terms_of_service`) default from the account's own documents; uploading one here replaces the account copy for this dispute, and a `cancellation_policy` or `return_policy` upload also takes precedence over the matching fixed evidence slot.
 	Documents []*UploadEvidenceDisputesRequestDocumentsItem `json:"documents" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

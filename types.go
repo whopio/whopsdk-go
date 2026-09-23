@@ -933,6 +933,176 @@ func (a AccountCapabilitiesTransfer) Ptr() *AccountCapabilitiesTransfer {
 }
 
 var (
+	accountCoveredPayoutFeesFieldAll           = big.NewInt(1 << 0)
+	accountCoveredPayoutFeesFieldBankWire      = big.NewInt(1 << 1)
+	accountCoveredPayoutFeesFieldCrypto        = big.NewInt(1 << 2)
+	accountCoveredPayoutFeesFieldDigitalWallet = big.NewInt(1 << 3)
+	accountCoveredPayoutFeesFieldNextDayBank   = big.NewInt(1 << 4)
+	accountCoveredPayoutFeesFieldRtp           = big.NewInt(1 << 5)
+)
+
+type AccountCoveredPayoutFees struct {
+	// Whether this account pays payout fees for all of its connected accounts' payout methods. Turning this off clears category coverage.
+	All bool `json:"all" url:"all"`
+	// Whether this account covers its connected accounts' bank wire payout fees. Individual changes have no effect while `all` is true.
+	BankWire bool `json:"bank_wire" url:"bank_wire"`
+	// Whether this account covers its connected accounts' crypto payout fees. Individual changes have no effect while `all` is true.
+	Crypto bool `json:"crypto" url:"crypto"`
+	// Whether this account covers its connected accounts' digital wallet payout fees. Individual changes have no effect while `all` is true.
+	DigitalWallet bool `json:"digital_wallet" url:"digital_wallet"`
+	// Whether this account covers its connected accounts' next day bank payout fees. Individual changes have no effect while `all` is true.
+	NextDayBank bool `json:"next_day_bank" url:"next_day_bank"`
+	// Whether this account covers its connected accounts' real-time payment payout fees. Individual changes have no effect while `all` is true.
+	Rtp bool `json:"rtp" url:"rtp"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountCoveredPayoutFees) GetAll() bool {
+	if a == nil {
+		return false
+	}
+	return a.All
+}
+
+func (a *AccountCoveredPayoutFees) GetBankWire() bool {
+	if a == nil {
+		return false
+	}
+	return a.BankWire
+}
+
+func (a *AccountCoveredPayoutFees) GetCrypto() bool {
+	if a == nil {
+		return false
+	}
+	return a.Crypto
+}
+
+func (a *AccountCoveredPayoutFees) GetDigitalWallet() bool {
+	if a == nil {
+		return false
+	}
+	return a.DigitalWallet
+}
+
+func (a *AccountCoveredPayoutFees) GetNextDayBank() bool {
+	if a == nil {
+		return false
+	}
+	return a.NextDayBank
+}
+
+func (a *AccountCoveredPayoutFees) GetRtp() bool {
+	if a == nil {
+		return false
+	}
+	return a.Rtp
+}
+
+func (a *AccountCoveredPayoutFees) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountCoveredPayoutFees) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetAll sets the All field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCoveredPayoutFees) SetAll(all bool) {
+	a.All = all
+	a.require(accountCoveredPayoutFeesFieldAll)
+}
+
+// SetBankWire sets the BankWire field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCoveredPayoutFees) SetBankWire(bankWire bool) {
+	a.BankWire = bankWire
+	a.require(accountCoveredPayoutFeesFieldBankWire)
+}
+
+// SetCrypto sets the Crypto field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCoveredPayoutFees) SetCrypto(crypto bool) {
+	a.Crypto = crypto
+	a.require(accountCoveredPayoutFeesFieldCrypto)
+}
+
+// SetDigitalWallet sets the DigitalWallet field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCoveredPayoutFees) SetDigitalWallet(digitalWallet bool) {
+	a.DigitalWallet = digitalWallet
+	a.require(accountCoveredPayoutFeesFieldDigitalWallet)
+}
+
+// SetNextDayBank sets the NextDayBank field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCoveredPayoutFees) SetNextDayBank(nextDayBank bool) {
+	a.NextDayBank = nextDayBank
+	a.require(accountCoveredPayoutFeesFieldNextDayBank)
+}
+
+// SetRtp sets the Rtp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCoveredPayoutFees) SetRtp(rtp bool) {
+	a.Rtp = rtp
+	a.require(accountCoveredPayoutFeesFieldRtp)
+}
+
+func (a *AccountCoveredPayoutFees) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountCoveredPayoutFees
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountCoveredPayoutFees(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountCoveredPayoutFees) MarshalJSON() ([]byte, error) {
+	type embed AccountCoveredPayoutFees
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountCoveredPayoutFees) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
 	accountFeeFieldAdjustable         = big.NewInt(1 << 0)
 	accountFeeFieldCategory           = big.NewInt(1 << 1)
 	accountFeeFieldDefault            = big.NewInt(1 << 2)
@@ -2086,30 +2256,31 @@ var (
 	accountFeesFieldBuyer                = big.NewInt(1 << 3)
 	accountFeesFieldCardProcessing       = big.NewInt(1 << 4)
 	accountFeesFieldChildMarkups         = big.NewInt(1 << 5)
-	accountFeesFieldCrossBorder          = big.NewInt(1 << 6)
-	accountFeesFieldDispute              = big.NewInt(1 << 7)
-	accountFeesFieldDisputeAlert         = big.NewInt(1 << 8)
-	accountFeesFieldDisputeAlertCdrn     = big.NewInt(1 << 9)
-	accountFeesFieldDisputeAlertEthoca   = big.NewInt(1 << 10)
-	accountFeesFieldDisputeAlertRdr      = big.NewInt(1 << 11)
-	accountFeesFieldDisputeRepresentment = big.NewInt(1 << 12)
-	accountFeesFieldForeignExchange      = big.NewInt(1 << 13)
-	accountFeesFieldFraudScreening       = big.NewInt(1 << 14)
-	accountFeesFieldHighRisk             = big.NewInt(1 << 15)
-	accountFeesFieldMarketplace          = big.NewInt(1 << 16)
-	accountFeesFieldMarkups              = big.NewInt(1 << 17)
-	accountFeesFieldOrchestration        = big.NewInt(1 << 18)
-	accountFeesFieldParentAccountID      = big.NewInt(1 << 19)
-	accountFeesFieldPaymentMethods       = big.NewInt(1 << 20)
-	accountFeesFieldPayouts              = big.NewInt(1 << 21)
-	accountFeesFieldPendingAutoTopup     = big.NewInt(1 << 22)
-	accountFeesFieldPlatformProcessing   = big.NewInt(1 << 23)
-	accountFeesFieldPoolPayout           = big.NewInt(1 << 24)
-	accountFeesFieldRevshare             = big.NewInt(1 << 25)
-	accountFeesFieldTaxCalculation       = big.NewInt(1 << 26)
-	accountFeesFieldTaxService           = big.NewInt(1 << 27)
-	accountFeesFieldThreeDs              = big.NewInt(1 << 28)
-	accountFeesFieldTransfers            = big.NewInt(1 << 29)
+	accountFeesFieldCoveredPayoutFees    = big.NewInt(1 << 6)
+	accountFeesFieldCrossBorder          = big.NewInt(1 << 7)
+	accountFeesFieldDispute              = big.NewInt(1 << 8)
+	accountFeesFieldDisputeAlert         = big.NewInt(1 << 9)
+	accountFeesFieldDisputeAlertCdrn     = big.NewInt(1 << 10)
+	accountFeesFieldDisputeAlertEthoca   = big.NewInt(1 << 11)
+	accountFeesFieldDisputeAlertRdr      = big.NewInt(1 << 12)
+	accountFeesFieldDisputeRepresentment = big.NewInt(1 << 13)
+	accountFeesFieldForeignExchange      = big.NewInt(1 << 14)
+	accountFeesFieldFraudScreening       = big.NewInt(1 << 15)
+	accountFeesFieldHighRisk             = big.NewInt(1 << 16)
+	accountFeesFieldMarketplace          = big.NewInt(1 << 17)
+	accountFeesFieldMarkups              = big.NewInt(1 << 18)
+	accountFeesFieldOrchestration        = big.NewInt(1 << 19)
+	accountFeesFieldParentAccountID      = big.NewInt(1 << 20)
+	accountFeesFieldPaymentMethods       = big.NewInt(1 << 21)
+	accountFeesFieldPayouts              = big.NewInt(1 << 22)
+	accountFeesFieldPendingAutoTopup     = big.NewInt(1 << 23)
+	accountFeesFieldPlatformProcessing   = big.NewInt(1 << 24)
+	accountFeesFieldPoolPayout           = big.NewInt(1 << 25)
+	accountFeesFieldRevshare             = big.NewInt(1 << 26)
+	accountFeesFieldTaxCalculation       = big.NewInt(1 << 27)
+	accountFeesFieldTaxService           = big.NewInt(1 << 28)
+	accountFeesFieldThreeDs              = big.NewInt(1 << 29)
+	accountFeesFieldTransfers            = big.NewInt(1 << 30)
 )
 
 type AccountFees struct {
@@ -2125,6 +2296,8 @@ type AccountFees struct {
 	CardProcessing *AccountFee `json:"card_processing" url:"card_processing"`
 	// The default markups this account charges connected accounts, configurable before any accounts connect. `null` if this account has a parent.
 	ChildMarkups *AccountFeeMarkups `json:"child_markups,omitempty" url:"child_markups,omitempty"`
+	// Which payout fees this account pays for its connected accounts.
+	CoveredPayoutFees *AccountCoveredPayoutFees `json:"covered_payout_fees" url:"covered_payout_fees"`
 	// Added to a payment whose card was issued outside the region where the payment was processed.
 	CrossBorder *AccountFee `json:"cross_border" url:"cross_border"`
 	// Charged when a payment is disputed.
@@ -2221,6 +2394,13 @@ func (a *AccountFees) GetChildMarkups() *AccountFeeMarkups {
 		return nil
 	}
 	return a.ChildMarkups
+}
+
+func (a *AccountFees) GetCoveredPayoutFees() *AccountCoveredPayoutFees {
+	if a == nil {
+		return nil
+	}
+	return a.CoveredPayoutFees
 }
 
 func (a *AccountFees) GetCrossBorder() *AccountFee {
@@ -2445,6 +2625,13 @@ func (a *AccountFees) SetCardProcessing(cardProcessing *AccountFee) {
 func (a *AccountFees) SetChildMarkups(childMarkups *AccountFeeMarkups) {
 	a.ChildMarkups = childMarkups
 	a.require(accountFeesFieldChildMarkups)
+}
+
+// SetCoveredPayoutFees sets the CoveredPayoutFees field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetCoveredPayoutFees(coveredPayoutFees *AccountCoveredPayoutFees) {
+	a.CoveredPayoutFees = coveredPayoutFees
+	a.require(accountFeesFieldCoveredPayoutFees)
 }
 
 // SetCrossBorder sets the CrossBorder field and marks it as non-optional;
