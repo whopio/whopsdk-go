@@ -36989,6 +36989,1027 @@ func (p PayoutAccountCalculatedStatuses) Ptr() *PayoutAccountCalculatedStatuses 
 	return &p
 }
 
+var (
+	planCustomFieldFieldFieldType   = big.NewInt(1 << 0)
+	planCustomFieldFieldID          = big.NewInt(1 << 1)
+	planCustomFieldFieldName        = big.NewInt(1 << 2)
+	planCustomFieldFieldOrder       = big.NewInt(1 << 3)
+	planCustomFieldFieldPlaceholder = big.NewInt(1 << 4)
+	planCustomFieldFieldRequired    = big.NewInt(1 << 5)
+)
+
+type PlanCustomField struct {
+	// Custom field input type.
+	FieldType PlanCustomFieldFieldType `json:"field_type" url:"field_type"`
+	// Custom field ID, prefixed `field_`.
+	ID string `json:"id" url:"id"`
+	// Field label shown to customer at checkout.
+	Name string `json:"name" url:"name"`
+	// Field position on checkout form.
+	Order float64 `json:"order" url:"order"`
+	// Placeholder text shown in the empty field. `null` if none is set.
+	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
+	// Whether the customer must complete this field to check out.
+	Required bool `json:"required" url:"required"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlanCustomField) GetFieldType() PlanCustomFieldFieldType {
+	if p == nil {
+		return ""
+	}
+	return p.FieldType
+}
+
+func (p *PlanCustomField) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PlanCustomField) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PlanCustomField) GetOrder() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.Order
+}
+
+func (p *PlanCustomField) GetPlaceholder() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Placeholder
+}
+
+func (p *PlanCustomField) GetRequired() bool {
+	if p == nil {
+		return false
+	}
+	return p.Required
+}
+
+func (p *PlanCustomField) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlanCustomField) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetFieldType sets the FieldType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanCustomField) SetFieldType(fieldType PlanCustomFieldFieldType) {
+	p.FieldType = fieldType
+	p.require(planCustomFieldFieldFieldType)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanCustomField) SetID(id string) {
+	p.ID = id
+	p.require(planCustomFieldFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanCustomField) SetName(name string) {
+	p.Name = name
+	p.require(planCustomFieldFieldName)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanCustomField) SetOrder(order float64) {
+	p.Order = order
+	p.require(planCustomFieldFieldOrder)
+}
+
+// SetPlaceholder sets the Placeholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanCustomField) SetPlaceholder(placeholder *string) {
+	p.Placeholder = placeholder
+	p.require(planCustomFieldFieldPlaceholder)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanCustomField) SetRequired(required bool) {
+	p.Required = required
+	p.require(planCustomFieldFieldRequired)
+}
+
+func (p *PlanCustomField) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlanCustomField
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlanCustomField(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlanCustomField) MarshalJSON() ([]byte, error) {
+	type embed PlanCustomField
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlanCustomField) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Custom field input type.
+type PlanCustomFieldFieldType string
+
+const (
+	PlanCustomFieldFieldTypeText PlanCustomFieldFieldType = "text"
+)
+
+func NewPlanCustomFieldFieldTypeFromString(s string) (PlanCustomFieldFieldType, error) {
+	switch s {
+	case "text":
+		return PlanCustomFieldFieldTypeText, nil
+	}
+	var t PlanCustomFieldFieldType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlanCustomFieldFieldType) Ptr() *PlanCustomFieldFieldType {
+	return &p
+}
+
+var (
+	planListItemFieldAccount                    = big.NewInt(1 << 0)
+	planListItemFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
+	planListItemFieldAttributes                 = big.NewInt(1 << 2)
+	planListItemFieldBillingPeriod              = big.NewInt(1 << 3)
+	planListItemFieldCancelDiscountIntervals    = big.NewInt(1 << 4)
+	planListItemFieldCancelDiscountPercentage   = big.NewInt(1 << 5)
+	planListItemFieldCheckoutStyling            = big.NewInt(1 << 6)
+	planListItemFieldCreatedAt                  = big.NewInt(1 << 7)
+	planListItemFieldCurrency                   = big.NewInt(1 << 8)
+	planListItemFieldCustomFields               = big.NewInt(1 << 9)
+	planListItemFieldDescription                = big.NewInt(1 << 10)
+	planListItemFieldExpirationDays             = big.NewInt(1 << 11)
+	planListItemFieldFormattedPrice             = big.NewInt(1 << 12)
+	planListItemFieldID                         = big.NewInt(1 << 13)
+	planListItemFieldImage                      = big.NewInt(1 << 14)
+	planListItemFieldInitialPrice               = big.NewInt(1 << 15)
+	planListItemFieldInitialPriceDue            = big.NewInt(1 << 16)
+	planListItemFieldInternalNotes              = big.NewInt(1 << 17)
+	planListItemFieldInvoice                    = big.NewInt(1 << 18)
+	planListItemFieldMemberCount                = big.NewInt(1 << 19)
+	planListItemFieldMetadata                   = big.NewInt(1 << 20)
+	planListItemFieldOfferCancelDiscount        = big.NewInt(1 << 21)
+	planListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 22)
+	planListItemFieldPlanType                   = big.NewInt(1 << 23)
+	planListItemFieldProduct                    = big.NewInt(1 << 24)
+	planListItemFieldPurchaseURL                = big.NewInt(1 << 25)
+	planListItemFieldReleaseMethod              = big.NewInt(1 << 26)
+	planListItemFieldRenewalPrice               = big.NewInt(1 << 27)
+	planListItemFieldSku                        = big.NewInt(1 << 28)
+	planListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 29)
+	planListItemFieldStock                      = big.NewInt(1 << 30)
+	planListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 31)
+	planListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 32)
+	planListItemFieldThreeDsLevel               = big.NewInt(1 << 33)
+	planListItemFieldTitle                      = big.NewInt(1 << 34)
+	planListItemFieldTrialPeriodDays            = big.NewInt(1 << 35)
+	planListItemFieldUnlimitedStock             = big.NewInt(1 << 36)
+	planListItemFieldUpdatedAt                  = big.NewInt(1 << 37)
+	planListItemFieldVisibility                 = big.NewInt(1 << 38)
+)
+
+type PlanListItem struct {
+	// Account that sells this plan; `null` for standalone invoice plans.
+	Account *AccountSummary `json:"account,omitempty" url:"account,omitempty"`
+	// Whether adaptive pricing is enabled for this plan. Raw setting — does not check processor compatibility or feature flags.
+	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
+	// Attribute values that make this plan one variant of its product, as a map of attribute name to value, e.g. `{"color": "Blue", "size": "Large"}`. Names are snake_case identifiers and come back in alphabetical order. Every variant plan on a product carries the same attribute names and a distinct set of values; the product lists the full option set as `variant_attributes`. `null` for a plan that is not a variant.
+	Attributes map[string]*string `json:"attributes,omitempty" url:"attributes,omitempty"`
+	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Billing intervals the cancellation discount applies to (`0` forever, `1` first payment, or a month count). `null` when none is offered or the actor lacks the `plan:basic:read` scope.
+	CancelDiscountIntervals *float64 `json:"cancel_discount_intervals,omitempty" url:"cancel_discount_intervals,omitempty"`
+	// Cancellation discount as a whole-number percentage. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
+	CancelDiscountPercentage *float64 `json:"cancel_discount_percentage,omitempty" url:"cancel_discount_percentage,omitempty"`
+	// Plan-level checkout styling (`background_color`, `button_color`, `font_family`, `border_style`); `null` inherits the account default.
+	CheckoutStyling map[string]any `json:"checkout_styling,omitempty" url:"checkout_styling,omitempty"`
+	// When the plan was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// Three-letter ISO currency code for this plan's prices.
+	Currency     string             `json:"currency" url:"currency"`
+	CustomFields []*PlanCustomField `json:"custom_fields" url:"custom_fields"`
+	// Customer-visible plan description. Maximum 1000 characters. `null` if no description is set.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Access duration in days for expiration-based plans, such as 365 for a one-year pass. `null` for plans without an expiration.
+	ExpirationDays *float64 `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
+	// Human-readable price for display (currency + interval), e.g. "$10 / month".
+	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
+	// Plan ID, prefixed `plan_`.
+	ID string `json:"id" url:"id"`
+	// Pricing-tier image (`url`, `blurhash`) shown on the product page; `null` when no image is set.
+	Image map[string]any `json:"image,omitempty" url:"image,omitempty"`
+	// Initial purchase price in plan currency.
+	InitialPrice float64 `json:"initial_price" url:"initial_price"`
+	// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring plans, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this plan.
+	InitialPriceDue *Money `json:"initial_price_due" url:"initial_price_due"`
+	// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
+	// Invoice this plan was generated for; `null` unless created for an invoice.
+	Invoice map[string]any `json:"invoice,omitempty" url:"invoice,omitempty"`
+	// Active memberships through this plan. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	MemberCount *float64 `json:"member_count,omitempty" url:"member_count,omitempty"`
+	// Custom key-value pairs stored on the plan. Included in webhook payloads for payment and membership events. Maximum 50 keys, 100 characters per key, 500 characters per value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this plan.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Whether a cancellation discount is offered. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	OfferCancelDiscount *bool `json:"offer_cancel_discount,omitempty" url:"offer_cancel_discount,omitempty"`
+	// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when plan uses default settings.
+	PaymentMethodConfiguration map[string]any `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
+	// Billing model for this plan.
+	PlanType PlanListItemPlanType `json:"plan_type" url:"plan_type"`
+	// Product this plan belongs to; `null` for standalone plans.
+	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
+	// URL where customers can purchase this plan directly.
+	PurchaseURL string `json:"purchase_url" url:"purchase_url"`
+	// Sales method for this plan.
+	ReleaseMethod PlanListItemReleaseMethod `json:"release_method" url:"release_method"`
+	// Recurring price charged every billing period.
+	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
+	// Stock keeping unit, free text set by the seller (e.g. `TSHIRT-LARGE-BLUE`). Not enforced unique. `null` when unset.
+	Sku *string `json:"sku,omitempty" url:"sku,omitempty"`
+	// Installment payments required before the subscription pauses. Must be greater than 1. `null` if split pay is not configured.
+	SplitPayRequiredPayments *float64 `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
+	// Units available for purchase. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	Stock *float64 `json:"stock,omitempty" url:"stock,omitempty"`
+	// Original initial price shown with a strikethrough, in the plan's currency. `null` when no strikethrough is set.
+	StrikeThroughInitialPrice *float64 `json:"strike_through_initial_price,omitempty" url:"strike_through_initial_price,omitempty"`
+	// Original renewal price shown with a strikethrough, in the plan's currency. `null` when no strikethrough is set.
+	StrikeThroughRenewalPrice *float64 `json:"strike_through_renewal_price,omitempty" url:"strike_through_renewal_price,omitempty"`
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+	ThreeDsLevel *PlanListItemThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
+	// Plan display name shown to customers. Maximum 30 characters. A variant created without one defaults to its attribute values joined with ` / `. `null` if no title has been set.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// Free trial days before the first renewal charge. `null` if no trial is configured or the user has already used a trial for this plan.
+	TrialPeriodDays *float64 `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
+	// Whether the plan has unlimited stock. When `true`, the `stock` field is ignored; waitlist plans always report `true`.
+	UnlimitedStock bool `json:"unlimited_stock" url:"unlimited_stock"`
+	// When the plan was last updated, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// Controls where this plan can be seen. When `hidden`, the plan is reachable only by its direct link.
+	Visibility PlanListItemVisibility `json:"visibility" url:"visibility"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlanListItem) GetAccount() *AccountSummary {
+	if p == nil {
+		return nil
+	}
+	return p.Account
+}
+
+func (p *PlanListItem) GetAdaptivePricingEnabled() bool {
+	if p == nil {
+		return false
+	}
+	return p.AdaptivePricingEnabled
+}
+
+func (p *PlanListItem) GetAttributes() map[string]*string {
+	if p == nil {
+		return nil
+	}
+	return p.Attributes
+}
+
+func (p *PlanListItem) GetBillingPeriod() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.BillingPeriod
+}
+
+func (p *PlanListItem) GetCancelDiscountIntervals() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.CancelDiscountIntervals
+}
+
+func (p *PlanListItem) GetCancelDiscountPercentage() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.CancelDiscountPercentage
+}
+
+func (p *PlanListItem) GetCheckoutStyling() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.CheckoutStyling
+}
+
+func (p *PlanListItem) GetCreatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.CreatedAt
+}
+
+func (p *PlanListItem) GetCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.Currency
+}
+
+func (p *PlanListItem) GetCustomFields() []*PlanCustomField {
+	if p == nil {
+		return nil
+	}
+	return p.CustomFields
+}
+
+func (p *PlanListItem) GetDescription() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Description
+}
+
+func (p *PlanListItem) GetExpirationDays() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.ExpirationDays
+}
+
+func (p *PlanListItem) GetFormattedPrice() string {
+	if p == nil {
+		return ""
+	}
+	return p.FormattedPrice
+}
+
+func (p *PlanListItem) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PlanListItem) GetImage() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.Image
+}
+
+func (p *PlanListItem) GetInitialPrice() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.InitialPrice
+}
+
+func (p *PlanListItem) GetInitialPriceDue() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.InitialPriceDue
+}
+
+func (p *PlanListItem) GetInternalNotes() *string {
+	if p == nil {
+		return nil
+	}
+	return p.InternalNotes
+}
+
+func (p *PlanListItem) GetInvoice() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.Invoice
+}
+
+func (p *PlanListItem) GetMemberCount() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.MemberCount
+}
+
+func (p *PlanListItem) GetMetadata() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.Metadata
+}
+
+func (p *PlanListItem) GetOfferCancelDiscount() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.OfferCancelDiscount
+}
+
+func (p *PlanListItem) GetPaymentMethodConfiguration() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PaymentMethodConfiguration
+}
+
+func (p *PlanListItem) GetPlanType() PlanListItemPlanType {
+	if p == nil {
+		return ""
+	}
+	return p.PlanType
+}
+
+func (p *PlanListItem) GetProduct() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.Product
+}
+
+func (p *PlanListItem) GetPurchaseURL() string {
+	if p == nil {
+		return ""
+	}
+	return p.PurchaseURL
+}
+
+func (p *PlanListItem) GetReleaseMethod() PlanListItemReleaseMethod {
+	if p == nil {
+		return ""
+	}
+	return p.ReleaseMethod
+}
+
+func (p *PlanListItem) GetRenewalPrice() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.RenewalPrice
+}
+
+func (p *PlanListItem) GetSku() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Sku
+}
+
+func (p *PlanListItem) GetSplitPayRequiredPayments() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.SplitPayRequiredPayments
+}
+
+func (p *PlanListItem) GetStock() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.Stock
+}
+
+func (p *PlanListItem) GetStrikeThroughInitialPrice() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.StrikeThroughInitialPrice
+}
+
+func (p *PlanListItem) GetStrikeThroughRenewalPrice() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.StrikeThroughRenewalPrice
+}
+
+func (p *PlanListItem) GetThreeDsLevel() *PlanListItemThreeDsLevel {
+	if p == nil {
+		return nil
+	}
+	return p.ThreeDsLevel
+}
+
+func (p *PlanListItem) GetTitle() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Title
+}
+
+func (p *PlanListItem) GetTrialPeriodDays() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.TrialPeriodDays
+}
+
+func (p *PlanListItem) GetUnlimitedStock() bool {
+	if p == nil {
+		return false
+	}
+	return p.UnlimitedStock
+}
+
+func (p *PlanListItem) GetUpdatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.UpdatedAt
+}
+
+func (p *PlanListItem) GetVisibility() PlanListItemVisibility {
+	if p == nil {
+		return ""
+	}
+	return p.Visibility
+}
+
+func (p *PlanListItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlanListItem) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccount sets the Account field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetAccount(account *AccountSummary) {
+	p.Account = account
+	p.require(planListItemFieldAccount)
+}
+
+// SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
+	p.AdaptivePricingEnabled = adaptivePricingEnabled
+	p.require(planListItemFieldAdaptivePricingEnabled)
+}
+
+// SetAttributes sets the Attributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetAttributes(attributes map[string]*string) {
+	p.Attributes = attributes
+	p.require(planListItemFieldAttributes)
+}
+
+// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetBillingPeriod(billingPeriod *float64) {
+	p.BillingPeriod = billingPeriod
+	p.require(planListItemFieldBillingPeriod)
+}
+
+// SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetCancelDiscountIntervals(cancelDiscountIntervals *float64) {
+	p.CancelDiscountIntervals = cancelDiscountIntervals
+	p.require(planListItemFieldCancelDiscountIntervals)
+}
+
+// SetCancelDiscountPercentage sets the CancelDiscountPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetCancelDiscountPercentage(cancelDiscountPercentage *float64) {
+	p.CancelDiscountPercentage = cancelDiscountPercentage
+	p.require(planListItemFieldCancelDiscountPercentage)
+}
+
+// SetCheckoutStyling sets the CheckoutStyling field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetCheckoutStyling(checkoutStyling map[string]any) {
+	p.CheckoutStyling = checkoutStyling
+	p.require(planListItemFieldCheckoutStyling)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetCreatedAt(createdAt string) {
+	p.CreatedAt = createdAt
+	p.require(planListItemFieldCreatedAt)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetCurrency(currency string) {
+	p.Currency = currency
+	p.require(planListItemFieldCurrency)
+}
+
+// SetCustomFields sets the CustomFields field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetCustomFields(customFields []*PlanCustomField) {
+	p.CustomFields = customFields
+	p.require(planListItemFieldCustomFields)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetDescription(description *string) {
+	p.Description = description
+	p.require(planListItemFieldDescription)
+}
+
+// SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetExpirationDays(expirationDays *float64) {
+	p.ExpirationDays = expirationDays
+	p.require(planListItemFieldExpirationDays)
+}
+
+// SetFormattedPrice sets the FormattedPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetFormattedPrice(formattedPrice string) {
+	p.FormattedPrice = formattedPrice
+	p.require(planListItemFieldFormattedPrice)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetID(id string) {
+	p.ID = id
+	p.require(planListItemFieldID)
+}
+
+// SetImage sets the Image field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetImage(image map[string]any) {
+	p.Image = image
+	p.require(planListItemFieldImage)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetInitialPrice(initialPrice float64) {
+	p.InitialPrice = initialPrice
+	p.require(planListItemFieldInitialPrice)
+}
+
+// SetInitialPriceDue sets the InitialPriceDue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetInitialPriceDue(initialPriceDue *Money) {
+	p.InitialPriceDue = initialPriceDue
+	p.require(planListItemFieldInitialPriceDue)
+}
+
+// SetInternalNotes sets the InternalNotes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetInternalNotes(internalNotes *string) {
+	p.InternalNotes = internalNotes
+	p.require(planListItemFieldInternalNotes)
+}
+
+// SetInvoice sets the Invoice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetInvoice(invoice map[string]any) {
+	p.Invoice = invoice
+	p.require(planListItemFieldInvoice)
+}
+
+// SetMemberCount sets the MemberCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetMemberCount(memberCount *float64) {
+	p.MemberCount = memberCount
+	p.require(planListItemFieldMemberCount)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetMetadata(metadata map[string]any) {
+	p.Metadata = metadata
+	p.require(planListItemFieldMetadata)
+}
+
+// SetOfferCancelDiscount sets the OfferCancelDiscount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetOfferCancelDiscount(offerCancelDiscount *bool) {
+	p.OfferCancelDiscount = offerCancelDiscount
+	p.require(planListItemFieldOfferCancelDiscount)
+}
+
+// SetPaymentMethodConfiguration sets the PaymentMethodConfiguration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetPaymentMethodConfiguration(paymentMethodConfiguration map[string]any) {
+	p.PaymentMethodConfiguration = paymentMethodConfiguration
+	p.require(planListItemFieldPaymentMethodConfiguration)
+}
+
+// SetPlanType sets the PlanType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetPlanType(planType PlanListItemPlanType) {
+	p.PlanType = planType
+	p.require(planListItemFieldPlanType)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetProduct(product map[string]any) {
+	p.Product = product
+	p.require(planListItemFieldProduct)
+}
+
+// SetPurchaseURL sets the PurchaseURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetPurchaseURL(purchaseURL string) {
+	p.PurchaseURL = purchaseURL
+	p.require(planListItemFieldPurchaseURL)
+}
+
+// SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetReleaseMethod(releaseMethod PlanListItemReleaseMethod) {
+	p.ReleaseMethod = releaseMethod
+	p.require(planListItemFieldReleaseMethod)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetRenewalPrice(renewalPrice float64) {
+	p.RenewalPrice = renewalPrice
+	p.require(planListItemFieldRenewalPrice)
+}
+
+// SetSku sets the Sku field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetSku(sku *string) {
+	p.Sku = sku
+	p.require(planListItemFieldSku)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetSplitPayRequiredPayments(splitPayRequiredPayments *float64) {
+	p.SplitPayRequiredPayments = splitPayRequiredPayments
+	p.require(planListItemFieldSplitPayRequiredPayments)
+}
+
+// SetStock sets the Stock field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetStock(stock *float64) {
+	p.Stock = stock
+	p.require(planListItemFieldStock)
+}
+
+// SetStrikeThroughInitialPrice sets the StrikeThroughInitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetStrikeThroughInitialPrice(strikeThroughInitialPrice *float64) {
+	p.StrikeThroughInitialPrice = strikeThroughInitialPrice
+	p.require(planListItemFieldStrikeThroughInitialPrice)
+}
+
+// SetStrikeThroughRenewalPrice sets the StrikeThroughRenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetStrikeThroughRenewalPrice(strikeThroughRenewalPrice *float64) {
+	p.StrikeThroughRenewalPrice = strikeThroughRenewalPrice
+	p.require(planListItemFieldStrikeThroughRenewalPrice)
+}
+
+// SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetThreeDsLevel(threeDsLevel *PlanListItemThreeDsLevel) {
+	p.ThreeDsLevel = threeDsLevel
+	p.require(planListItemFieldThreeDsLevel)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetTitle(title *string) {
+	p.Title = title
+	p.require(planListItemFieldTitle)
+}
+
+// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetTrialPeriodDays(trialPeriodDays *float64) {
+	p.TrialPeriodDays = trialPeriodDays
+	p.require(planListItemFieldTrialPeriodDays)
+}
+
+// SetUnlimitedStock sets the UnlimitedStock field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetUnlimitedStock(unlimitedStock bool) {
+	p.UnlimitedStock = unlimitedStock
+	p.require(planListItemFieldUnlimitedStock)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetUpdatedAt(updatedAt string) {
+	p.UpdatedAt = updatedAt
+	p.require(planListItemFieldUpdatedAt)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetVisibility(visibility PlanListItemVisibility) {
+	p.Visibility = visibility
+	p.require(planListItemFieldVisibility)
+}
+
+func (p *PlanListItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlanListItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlanListItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlanListItem) MarshalJSON() ([]byte, error) {
+	type embed PlanListItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlanListItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Billing model for this plan.
+type PlanListItemPlanType string
+
+const (
+	PlanListItemPlanTypeRenewal PlanListItemPlanType = "renewal"
+	PlanListItemPlanTypeOneTime PlanListItemPlanType = "one_time"
+)
+
+func NewPlanListItemPlanTypeFromString(s string) (PlanListItemPlanType, error) {
+	switch s {
+	case "renewal":
+		return PlanListItemPlanTypeRenewal, nil
+	case "one_time":
+		return PlanListItemPlanTypeOneTime, nil
+	}
+	var t PlanListItemPlanType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlanListItemPlanType) Ptr() *PlanListItemPlanType {
+	return &p
+}
+
+// Sales method for this plan.
+type PlanListItemReleaseMethod string
+
+const (
+	PlanListItemReleaseMethodBuyNow   PlanListItemReleaseMethod = "buy_now"
+	PlanListItemReleaseMethodWaitlist PlanListItemReleaseMethod = "waitlist"
+)
+
+func NewPlanListItemReleaseMethodFromString(s string) (PlanListItemReleaseMethod, error) {
+	switch s {
+	case "buy_now":
+		return PlanListItemReleaseMethodBuyNow, nil
+	case "waitlist":
+		return PlanListItemReleaseMethodWaitlist, nil
+	}
+	var t PlanListItemReleaseMethod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlanListItemReleaseMethod) Ptr() *PlanListItemReleaseMethod {
+	return &p
+}
+
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+type PlanListItemThreeDsLevel string
+
+const (
+	PlanListItemThreeDsLevelMandateChallenge       PlanListItemThreeDsLevel = "mandate_challenge"
+	PlanListItemThreeDsLevelMandateIfRequired      PlanListItemThreeDsLevel = "mandate_if_required"
+	PlanListItemThreeDsLevelFrictionlessIfRequired PlanListItemThreeDsLevel = "frictionless_if_required"
+)
+
+func NewPlanListItemThreeDsLevelFromString(s string) (PlanListItemThreeDsLevel, error) {
+	switch s {
+	case "mandate_challenge":
+		return PlanListItemThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return PlanListItemThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return PlanListItemThreeDsLevelFrictionlessIfRequired, nil
+	}
+	var t PlanListItemThreeDsLevel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlanListItemThreeDsLevel) Ptr() *PlanListItemThreeDsLevel {
+	return &p
+}
+
+// Controls where this plan can be seen. When `hidden`, the plan is reachable only by its direct link.
+type PlanListItemVisibility string
+
+const (
+	PlanListItemVisibilityVisible   PlanListItemVisibility = "visible"
+	PlanListItemVisibilityHidden    PlanListItemVisibility = "hidden"
+	PlanListItemVisibilityArchived  PlanListItemVisibility = "archived"
+	PlanListItemVisibilityQuickLink PlanListItemVisibility = "quick_link"
+)
+
+func NewPlanListItemVisibilityFromString(s string) (PlanListItemVisibility, error) {
+	switch s {
+	case "visible":
+		return PlanListItemVisibilityVisible, nil
+	case "hidden":
+		return PlanListItemVisibilityHidden, nil
+	case "archived":
+		return PlanListItemVisibilityArchived, nil
+	case "quick_link":
+		return PlanListItemVisibilityQuickLink, nil
+	}
+	var t PlanListItemVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlanListItemVisibility) Ptr() *PlanListItemVisibility {
+	return &p
+}
+
 // The 3D Secure behavior for a plan.
 type PlanThreeDsLevels string
 

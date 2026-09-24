@@ -27915,6 +27915,14 @@ client.Plans.Create(
 <dl>
 <dd>
 
+**attributes:** `map[string]any` — Attribute values that make this plan one variant of its product, as a map of attribute name to value, e.g. `{"size": "Large", "color": "Blue"}`. Names are normalized to snake_case identifiers (`Ring Size` becomes `ring_size`) and come back in alphabetical order. Every variant plan on a product must carry the same attribute names and a distinct set of values. Send `null` to make the plan an ordinary pricing option again.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **billingPeriod:** `*int` — Recurring billing interval in days, such as 30 for monthly or 365 for annual.
     
 </dd>
@@ -28036,6 +28044,14 @@ client.Plans.Create(
 <dd>
 
 **renewalPrice:** `*float64` — The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sku:** `*string` — Stock keeping unit for this plan. Maximum 100 characters. Free text, not enforced unique.
     
 </dd>
 </dl>
@@ -28287,6 +28303,14 @@ client.Plans.Update(
 <dl>
 <dd>
 
+**attributes:** `map[string]any` — Attribute values that make this plan one variant of its product, as a map of attribute name to value, e.g. `{"size": "Large", "color": "Blue"}`. Names are normalized to snake_case identifiers (`Ring Size` becomes `ring_size`) and come back in alphabetical order. Every variant plan on a product must carry the same attribute names and a distinct set of values. Send `null` to make the plan an ordinary pricing option again.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **billingPeriod:** `*int` — Recurring billing interval in days, such as 30 for monthly or 365 for annual.
     
 </dd>
@@ -28416,6 +28440,14 @@ client.Plans.Update(
 <dd>
 
 **renewalPrice:** `*float64` — The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sku:** `*string` — Stock keeping unit for this plan. Maximum 100 characters. Free text, not enforced unique.
     
 </dd>
 </dl>
