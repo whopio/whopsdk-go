@@ -4551,19 +4551,28 @@ func (a *AdEntityReference) String() string {
 
 var (
 	adLeadFormCompletionFieldButtonText  = big.NewInt(1 << 0)
-	adLeadFormCompletionFieldDescription = big.NewInt(1 << 1)
-	adLeadFormCompletionFieldHeadline    = big.NewInt(1 << 2)
-	adLeadFormCompletionFieldURL         = big.NewInt(1 << 3)
+	adLeadFormCompletionFieldButtonType  = big.NewInt(1 << 1)
+	adLeadFormCompletionFieldDescription = big.NewInt(1 << 2)
+	adLeadFormCompletionFieldFileURL     = big.NewInt(1 << 3)
+	adLeadFormCompletionFieldHeadline    = big.NewInt(1 << 4)
+	adLeadFormCompletionFieldPhoneNumber = big.NewInt(1 << 5)
+	adLeadFormCompletionFieldURL         = big.NewInt(1 << 6)
 )
 
 type AdLeadFormCompletion struct {
 	// Text of the follow-up button.
 	ButtonText *string `json:"button_text,omitempty" url:"button_text,omitempty"`
+	// What the follow-up button does. `null` on forms saved before the button was configurable.
+	ButtonType *AdLeadFormCompletionButtonType `json:"button_type,omitempty" url:"button_type,omitempty"`
 	// Body text under the headline.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// File the follow-up button opens. Set when `button_type` is `download`.
+	FileURL *string `json:"file_url,omitempty" url:"file_url,omitempty"`
 	// Headline of the completion screen.
 	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
-	// Website the follow-up button opens. `null` when the screen has no button.
+	// Number the follow-up button calls. Set when `button_type` is `call`.
+	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
+	// Website the follow-up button opens. Set when `button_type` is `website`.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4580,6 +4589,13 @@ func (a *AdLeadFormCompletion) GetButtonText() *string {
 	return a.ButtonText
 }
 
+func (a *AdLeadFormCompletion) GetButtonType() *AdLeadFormCompletionButtonType {
+	if a == nil {
+		return nil
+	}
+	return a.ButtonType
+}
+
 func (a *AdLeadFormCompletion) GetDescription() *string {
 	if a == nil {
 		return nil
@@ -4587,11 +4603,25 @@ func (a *AdLeadFormCompletion) GetDescription() *string {
 	return a.Description
 }
 
+func (a *AdLeadFormCompletion) GetFileURL() *string {
+	if a == nil {
+		return nil
+	}
+	return a.FileURL
+}
+
 func (a *AdLeadFormCompletion) GetHeadline() *string {
 	if a == nil {
 		return nil
 	}
 	return a.Headline
+}
+
+func (a *AdLeadFormCompletion) GetPhoneNumber() *string {
+	if a == nil {
+		return nil
+	}
+	return a.PhoneNumber
 }
 
 func (a *AdLeadFormCompletion) GetURL() *string {
@@ -4622,6 +4652,13 @@ func (a *AdLeadFormCompletion) SetButtonText(buttonText *string) {
 	a.require(adLeadFormCompletionFieldButtonText)
 }
 
+// SetButtonType sets the ButtonType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdLeadFormCompletion) SetButtonType(buttonType *AdLeadFormCompletionButtonType) {
+	a.ButtonType = buttonType
+	a.require(adLeadFormCompletionFieldButtonType)
+}
+
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AdLeadFormCompletion) SetDescription(description *string) {
@@ -4629,11 +4666,25 @@ func (a *AdLeadFormCompletion) SetDescription(description *string) {
 	a.require(adLeadFormCompletionFieldDescription)
 }
 
+// SetFileURL sets the FileURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdLeadFormCompletion) SetFileURL(fileURL *string) {
+	a.FileURL = fileURL
+	a.require(adLeadFormCompletionFieldFileURL)
+}
+
 // SetHeadline sets the Headline field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AdLeadFormCompletion) SetHeadline(headline *string) {
 	a.Headline = headline
 	a.require(adLeadFormCompletionFieldHeadline)
+}
+
+// SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdLeadFormCompletion) SetPhoneNumber(phoneNumber *string) {
+	a.PhoneNumber = phoneNumber
+	a.require(adLeadFormCompletionFieldPhoneNumber)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -4683,6 +4734,32 @@ func (a *AdLeadFormCompletion) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// What the follow-up button does. `null` on forms saved before the button was configurable.
+type AdLeadFormCompletionButtonType string
+
+const (
+	AdLeadFormCompletionButtonTypeWebsite  AdLeadFormCompletionButtonType = "website"
+	AdLeadFormCompletionButtonTypeCall     AdLeadFormCompletionButtonType = "call"
+	AdLeadFormCompletionButtonTypeDownload AdLeadFormCompletionButtonType = "download"
+)
+
+func NewAdLeadFormCompletionButtonTypeFromString(s string) (AdLeadFormCompletionButtonType, error) {
+	switch s {
+	case "website":
+		return AdLeadFormCompletionButtonTypeWebsite, nil
+	case "call":
+		return AdLeadFormCompletionButtonTypeCall, nil
+	case "download":
+		return AdLeadFormCompletionButtonTypeDownload, nil
+	}
+	var t AdLeadFormCompletionButtonType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdLeadFormCompletionButtonType) Ptr() *AdLeadFormCompletionButtonType {
+	return &a
 }
 
 var (
