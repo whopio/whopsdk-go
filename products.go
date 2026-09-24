@@ -538,8 +538,10 @@ var (
 	productFieldRoute                     = big.NewInt(1 << 23)
 	productFieldTitle                     = big.NewInt(1 << 24)
 	productFieldUpdatedAt                 = big.NewInt(1 << 25)
-	productFieldVerified                  = big.NewInt(1 << 26)
-	productFieldVisibility                = big.NewInt(1 << 27)
+	productFieldVariantAttributes         = big.NewInt(1 << 26)
+	productFieldVariants                  = big.NewInt(1 << 27)
+	productFieldVerified                  = big.NewInt(1 << 28)
+	productFieldVisibility                = big.NewInt(1 << 29)
 )
 
 type Product struct {
@@ -593,6 +595,9 @@ type Product struct {
 	Title string `json:"title" url:"title"`
 	// When the product was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// The option set the product's variants span, as a map of attribute name to the values in use, e.g. `{"color": ["Blue", "Red"], "size": ["S", "M", "L"]}`. Derived from the visible, non-invoice plans that carry `attributes`: keys alphabetical, values in the order the plans were created. Read-only. `null` when the product has no variants.
+	VariantAttributes map[string]any  `json:"variant_attributes,omitempty" url:"variant_attributes,omitempty"`
+	Variants          []*PlanListItem `json:"variants,omitempty" url:"variants,omitempty"`
 	// Whether the product has been verified by Whop.
 	Verified bool `json:"verified" url:"verified"`
 	// Whether the product is publicly visible, hidden, or archived.
@@ -785,6 +790,20 @@ func (p *Product) GetUpdatedAt() string {
 		return ""
 	}
 	return p.UpdatedAt
+}
+
+func (p *Product) GetVariantAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.VariantAttributes
+}
+
+func (p *Product) GetVariants() []*PlanListItem {
+	if p == nil {
+		return nil
+	}
+	return p.Variants
 }
 
 func (p *Product) GetVerified() bool {
@@ -995,6 +1014,20 @@ func (p *Product) SetTitle(title string) {
 func (p *Product) SetUpdatedAt(updatedAt string) {
 	p.UpdatedAt = updatedAt
 	p.require(productFieldUpdatedAt)
+}
+
+// SetVariantAttributes sets the VariantAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Product) SetVariantAttributes(variantAttributes map[string]any) {
+	p.VariantAttributes = variantAttributes
+	p.require(productFieldVariantAttributes)
+}
+
+// SetVariants sets the Variants field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Product) SetVariants(variants []*PlanListItem) {
+	p.Variants = variants
+	p.require(productFieldVariants)
 }
 
 // SetVerified sets the Verified field and marks it as non-optional;
@@ -1268,8 +1301,9 @@ var (
 	productListItemFieldRoute                 = big.NewInt(1 << 13)
 	productListItemFieldTitle                 = big.NewInt(1 << 14)
 	productListItemFieldUpdatedAt             = big.NewInt(1 << 15)
-	productListItemFieldVerified              = big.NewInt(1 << 16)
-	productListItemFieldVisibility            = big.NewInt(1 << 17)
+	productListItemFieldVariantAttributes     = big.NewInt(1 << 16)
+	productListItemFieldVerified              = big.NewInt(1 << 17)
+	productListItemFieldVisibility            = big.NewInt(1 << 18)
 )
 
 type ProductListItem struct {
@@ -1303,6 +1337,8 @@ type ProductListItem struct {
 	Title string `json:"title" url:"title"`
 	// When the product was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// The option set the product's variants span, as a map of attribute name to the values in use, e.g. `{"color": ["Blue", "Red"], "size": ["S", "M", "L"]}`. Derived from the visible, non-invoice plans that carry `attributes`: keys alphabetical, values in the order the plans were created. Read-only. `null` when the product has no variants.
+	VariantAttributes map[string]any `json:"variant_attributes,omitempty" url:"variant_attributes,omitempty"`
 	// Whether the product has been verified by Whop.
 	Verified bool `json:"verified" url:"verified"`
 	// Whether the product is publicly visible, hidden, or archived.
@@ -1425,6 +1461,13 @@ func (p *ProductListItem) GetUpdatedAt() string {
 		return ""
 	}
 	return p.UpdatedAt
+}
+
+func (p *ProductListItem) GetVariantAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.VariantAttributes
 }
 
 func (p *ProductListItem) GetVerified() bool {
@@ -1565,6 +1608,13 @@ func (p *ProductListItem) SetTitle(title string) {
 func (p *ProductListItem) SetUpdatedAt(updatedAt string) {
 	p.UpdatedAt = updatedAt
 	p.require(productListItemFieldUpdatedAt)
+}
+
+// SetVariantAttributes sets the VariantAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductListItem) SetVariantAttributes(variantAttributes map[string]any) {
+	p.VariantAttributes = variantAttributes
+	p.require(productListItemFieldVariantAttributes)
 }
 
 // SetVerified sets the Verified field and marks it as non-optional;
