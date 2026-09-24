@@ -11,14 +11,16 @@ import (
 )
 
 var (
-	createAccountsRequestFieldAffiliateCode      = big.NewInt(1 << 0)
-	createAccountsRequestFieldBlueprintID        = big.NewInt(1 << 1)
-	createAccountsRequestFieldCountry            = big.NewInt(1 << 2)
-	createAccountsRequestFieldEmail              = big.NewInt(1 << 3)
-	createAccountsRequestFieldMetadata           = big.NewInt(1 << 4)
-	createAccountsRequestFieldSendCustomerEmails = big.NewInt(1 << 5)
-	createAccountsRequestFieldTitle              = big.NewInt(1 << 6)
-	createAccountsRequestFieldWebsite            = big.NewInt(1 << 7)
+	createAccountsRequestFieldAffiliateCode         = big.NewInt(1 << 0)
+	createAccountsRequestFieldBlueprintID           = big.NewInt(1 << 1)
+	createAccountsRequestFieldCountry               = big.NewInt(1 << 2)
+	createAccountsRequestFieldDisputeFighterEnabled = big.NewInt(1 << 3)
+	createAccountsRequestFieldEmail                 = big.NewInt(1 << 4)
+	createAccountsRequestFieldMetadata              = big.NewInt(1 << 5)
+	createAccountsRequestFieldOrchestrationEnabled  = big.NewInt(1 << 6)
+	createAccountsRequestFieldSendCustomerEmails    = big.NewInt(1 << 7)
+	createAccountsRequestFieldTitle                 = big.NewInt(1 << 8)
+	createAccountsRequestFieldWebsite               = big.NewInt(1 << 9)
 )
 
 type CreateAccountsRequest struct {
@@ -28,10 +30,14 @@ type CreateAccountsRequest struct {
 	BlueprintID *string `json:"blueprint_id,omitempty" url:"-"`
 	// The ISO 3166-1 alpha-2 country code where the account's business is located (e.g. `US`). Defaults to the parent account's country for connected accounts.
 	Country *string `json:"country,omitempty" url:"-"`
+	// Whether Whop assembles and files dispute evidence for this account. Enabling it opts into the success fee charged on disputes it wins. Requires payment:dispute. Omit to preserve the existing setting or creation default.
+	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
 	// The email address of the account owner. Required when creating a connected account.
 	Email *string `json:"email,omitempty" url:"-"`
 	// Arbitrary key/value metadata to store on the account.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
+	// Whether payment orchestration is enabled for this account. Requires payout:account:update. Omit to preserve the existing setting or creation default.
+	OrchestrationEnabled *bool `json:"orchestration_enabled,omitempty" url:"-"`
 	// Whether Whop sends transactional emails to customers on behalf of the connected account.
 	SendCustomerEmails *bool `json:"send_customer_emails,omitempty" url:"-"`
 	// The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
@@ -71,6 +77,13 @@ func (c *CreateAccountsRequest) SetCountry(country *string) {
 	c.require(createAccountsRequestFieldCountry)
 }
 
+// SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetDisputeFighterEnabled(disputeFighterEnabled *bool) {
+	c.DisputeFighterEnabled = disputeFighterEnabled
+	c.require(createAccountsRequestFieldDisputeFighterEnabled)
+}
+
 // SetEmail sets the Email field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAccountsRequest) SetEmail(email *string) {
@@ -83,6 +96,13 @@ func (c *CreateAccountsRequest) SetEmail(email *string) {
 func (c *CreateAccountsRequest) SetMetadata(metadata map[string]any) {
 	c.Metadata = metadata
 	c.require(createAccountsRequestFieldMetadata)
+}
+
+// SetOrchestrationEnabled sets the OrchestrationEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetOrchestrationEnabled(orchestrationEnabled *bool) {
+	c.OrchestrationEnabled = orchestrationEnabled
+	c.require(createAccountsRequestFieldOrchestrationEnabled)
 }
 
 // SetSendCustomerEmails sets the SendCustomerEmails field and marks it as non-optional;
@@ -666,59 +686,61 @@ var (
 	accountFieldCountry                             = big.NewInt(1 << 11)
 	accountFieldCreatedAt                           = big.NewInt(1 << 12)
 	accountFieldDescription                         = big.NewInt(1 << 13)
-	accountFieldEconomicIntelligence                = big.NewInt(1 << 14)
-	accountFieldEmail                               = big.NewInt(1 << 15)
-	accountFieldEula                                = big.NewInt(1 << 16)
-	accountFieldHomePreferences                     = big.NewInt(1 << 17)
-	accountFieldID                                  = big.NewInt(1 << 18)
-	accountFieldIndustryGroup                       = big.NewInt(1 << 19)
-	accountFieldIndustryType                        = big.NewInt(1 << 20)
-	accountFieldInvoicePrefix                       = big.NewInt(1 << 21)
-	accountFieldLogoURL                             = big.NewInt(1 << 22)
-	accountFieldMetadata                            = big.NewInt(1 << 23)
-	accountFieldOnboardingType                      = big.NewInt(1 << 24)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 25)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 26)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 27)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 28)
-	accountFieldOwner                               = big.NewInt(1 << 29)
-	accountFieldParentAccount                       = big.NewInt(1 << 30)
-	accountFieldPartner                             = big.NewInt(1 << 31)
-	accountFieldPaymentControls                     = big.NewInt(1 << 32)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 33)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 34)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 35)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 36)
-	accountFieldRequiredActions                     = big.NewInt(1 << 37)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 38)
-	accountFieldRewards                             = big.NewInt(1 << 39)
-	accountFieldRoute                               = big.NewInt(1 << 40)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 41)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 42)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 43)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 44)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 45)
-	accountFieldSocialLinks                         = big.NewInt(1 << 46)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 47)
-	accountFieldStatus                              = big.NewInt(1 << 48)
-	accountFieldStatusReason                        = big.NewInt(1 << 49)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 50)
-	accountFieldTargetAudience                      = big.NewInt(1 << 51)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 52)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 53)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 54)
-	accountFieldTaxType                             = big.NewInt(1 << 55)
-	accountFieldTermsOfService                      = big.NewInt(1 << 56)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 57)
-	accountFieldTitle                               = big.NewInt(1 << 58)
-	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 59)
-	accountFieldTotalUsd                            = big.NewInt(1 << 60)
-	accountFieldTrading                             = big.NewInt(1 << 61)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 62)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldDisputeFighterEnabled               = big.NewInt(1 << 14)
+	accountFieldEconomicIntelligence                = big.NewInt(1 << 15)
+	accountFieldEmail                               = big.NewInt(1 << 16)
+	accountFieldEula                                = big.NewInt(1 << 17)
+	accountFieldHomePreferences                     = big.NewInt(1 << 18)
+	accountFieldID                                  = big.NewInt(1 << 19)
+	accountFieldIndustryGroup                       = big.NewInt(1 << 20)
+	accountFieldIndustryType                        = big.NewInt(1 << 21)
+	accountFieldInvoicePrefix                       = big.NewInt(1 << 22)
+	accountFieldLogoURL                             = big.NewInt(1 << 23)
+	accountFieldMetadata                            = big.NewInt(1 << 24)
+	accountFieldOnboardingType                      = big.NewInt(1 << 25)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 26)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 27)
+	accountFieldOrchestrationEnabled                = big.NewInt(1 << 28)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 29)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 30)
+	accountFieldOwner                               = big.NewInt(1 << 31)
+	accountFieldParentAccount                       = big.NewInt(1 << 32)
+	accountFieldPartner                             = big.NewInt(1 << 33)
+	accountFieldPaymentControls                     = big.NewInt(1 << 34)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 35)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 36)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 37)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 38)
+	accountFieldRequiredActions                     = big.NewInt(1 << 39)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 40)
+	accountFieldRewards                             = big.NewInt(1 << 41)
+	accountFieldRoute                               = big.NewInt(1 << 42)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 43)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 44)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 45)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 46)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 47)
+	accountFieldSocialLinks                         = big.NewInt(1 << 48)
+	accountFieldStablecoinRails                     = big.NewInt(1 << 49)
+	accountFieldStatus                              = big.NewInt(1 << 50)
+	accountFieldStatusReason                        = big.NewInt(1 << 51)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 52)
+	accountFieldTargetAudience                      = big.NewInt(1 << 53)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 54)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 55)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 56)
+	accountFieldTaxType                             = big.NewInt(1 << 57)
+	accountFieldTermsOfService                      = big.NewInt(1 << 58)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 59)
+	accountFieldTitle                               = big.NewInt(1 << 60)
+	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 61)
+	accountFieldTotalUsd                            = big.NewInt(1 << 62)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 68)
 )
 
 type Account struct {
@@ -749,6 +771,8 @@ type Account struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Account promotional description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Whether Whop assembles and files dispute evidence for this account. Enabling it opts the account into the success fee charged on disputes it wins.
+	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically when its committed period ends.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
 	// Account owner email address.
@@ -774,6 +798,8 @@ type Account struct {
 	OpengraphImageURL *string `json:"opengraph_image_url,omitempty" url:"opengraph_image_url,omitempty"`
 	// Account Open Graph image variant.
 	OpengraphImageVariant *AccountOpengraphImageVariant `json:"opengraph_image_variant,omitempty" url:"opengraph_image_variant,omitempty"`
+	// Whether payment orchestration is enabled for this account.
+	OrchestrationEnabled bool `json:"orchestration_enabled" url:"orchestration_enabled"`
 	// Business type details when business_type is `other`.
 	OtherBusinessDescription *string `json:"other_business_description,omitempty" url:"other_business_description,omitempty"`
 	// Industry details when industry_type is `other`.
@@ -955,6 +981,13 @@ func (a *Account) GetDescription() *string {
 	return a.Description
 }
 
+func (a *Account) GetDisputeFighterEnabled() bool {
+	if a == nil {
+		return false
+	}
+	return a.DisputeFighterEnabled
+}
+
 func (a *Account) GetEconomicIntelligence() bool {
 	if a == nil {
 		return false
@@ -1044,6 +1077,13 @@ func (a *Account) GetOpengraphImageVariant() *AccountOpengraphImageVariant {
 		return nil
 	}
 	return a.OpengraphImageVariant
+}
+
+func (a *Account) GetOrchestrationEnabled() bool {
+	if a == nil {
+		return false
+	}
+	return a.OrchestrationEnabled
 }
 
 func (a *Account) GetOtherBusinessDescription() *string {
@@ -1438,6 +1478,13 @@ func (a *Account) SetDescription(description *string) {
 	a.require(accountFieldDescription)
 }
 
+// SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetDisputeFighterEnabled(disputeFighterEnabled bool) {
+	a.DisputeFighterEnabled = disputeFighterEnabled
+	a.require(accountFieldDisputeFighterEnabled)
+}
+
 // SetEconomicIntelligence sets the EconomicIntelligence field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetEconomicIntelligence(economicIntelligence bool) {
@@ -1527,6 +1574,13 @@ func (a *Account) SetOpengraphImageURL(opengraphImageURL *string) {
 func (a *Account) SetOpengraphImageVariant(opengraphImageVariant *AccountOpengraphImageVariant) {
 	a.OpengraphImageVariant = opengraphImageVariant
 	a.require(accountFieldOpengraphImageVariant)
+}
+
+// SetOrchestrationEnabled sets the OrchestrationEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetOrchestrationEnabled(orchestrationEnabled bool) {
+	a.OrchestrationEnabled = orchestrationEnabled
+	a.require(accountFieldOrchestrationEnabled)
 }
 
 // SetOtherBusinessDescription sets the OtherBusinessDescription field and marks it as non-optional;
@@ -9599,41 +9653,43 @@ var (
 	updateAccountsRequestFieldCollectVatID                    = big.NewInt(1 << 8)
 	updateAccountsRequestFieldCountry                         = big.NewInt(1 << 9)
 	updateAccountsRequestFieldDescription                     = big.NewInt(1 << 10)
-	updateAccountsRequestFieldEula                            = big.NewInt(1 << 11)
-	updateAccountsRequestFieldFeaturedAffiliateProductID      = big.NewInt(1 << 12)
-	updateAccountsRequestFieldHomePreferences                 = big.NewInt(1 << 13)
-	updateAccountsRequestFieldIndustryGroup                   = big.NewInt(1 << 14)
-	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 15)
-	updateAccountsRequestFieldInvoicePrefix                   = big.NewInt(1 << 16)
-	updateAccountsRequestFieldLogo                            = big.NewInt(1 << 17)
-	updateAccountsRequestFieldMetadata                        = big.NewInt(1 << 18)
-	updateAccountsRequestFieldOnboardingType                  = big.NewInt(1 << 19)
-	updateAccountsRequestFieldOpengraphImage                  = big.NewInt(1 << 20)
-	updateAccountsRequestFieldOpengraphImageVariant           = big.NewInt(1 << 21)
-	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 22)
-	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 23)
-	updateAccountsRequestFieldPrivacyPolicy                   = big.NewInt(1 << 24)
-	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 25)
-	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 26)
-	updateAccountsRequestFieldReturnPolicy                    = big.NewInt(1 << 27)
-	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 28)
-	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 29)
-	updateAccountsRequestFieldShippingPolicy                  = big.NewInt(1 << 30)
-	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 31)
-	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 32)
-	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 33)
-	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 34)
-	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 35)
-	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 36)
-	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 37)
-	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 38)
-	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 39)
-	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 40)
-	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 41)
-	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 42)
-	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 43)
-	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 44)
-	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 45)
+	updateAccountsRequestFieldDisputeFighterEnabled           = big.NewInt(1 << 11)
+	updateAccountsRequestFieldEula                            = big.NewInt(1 << 12)
+	updateAccountsRequestFieldFeaturedAffiliateProductID      = big.NewInt(1 << 13)
+	updateAccountsRequestFieldHomePreferences                 = big.NewInt(1 << 14)
+	updateAccountsRequestFieldIndustryGroup                   = big.NewInt(1 << 15)
+	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 16)
+	updateAccountsRequestFieldInvoicePrefix                   = big.NewInt(1 << 17)
+	updateAccountsRequestFieldLogo                            = big.NewInt(1 << 18)
+	updateAccountsRequestFieldMetadata                        = big.NewInt(1 << 19)
+	updateAccountsRequestFieldOnboardingType                  = big.NewInt(1 << 20)
+	updateAccountsRequestFieldOpengraphImage                  = big.NewInt(1 << 21)
+	updateAccountsRequestFieldOpengraphImageVariant           = big.NewInt(1 << 22)
+	updateAccountsRequestFieldOrchestrationEnabled            = big.NewInt(1 << 23)
+	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 24)
+	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 25)
+	updateAccountsRequestFieldPrivacyPolicy                   = big.NewInt(1 << 26)
+	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 27)
+	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 28)
+	updateAccountsRequestFieldReturnPolicy                    = big.NewInt(1 << 29)
+	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 30)
+	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 31)
+	updateAccountsRequestFieldShippingPolicy                  = big.NewInt(1 << 32)
+	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 33)
+	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 34)
+	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 35)
+	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 36)
+	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 37)
+	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 38)
+	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 39)
+	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 40)
+	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 41)
+	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 42)
+	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 43)
+	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 44)
+	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 45)
+	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 46)
+	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 47)
 )
 
 type UpdateAccountsRequest struct {
@@ -9659,6 +9715,8 @@ type UpdateAccountsRequest struct {
 	Country *string `json:"country,omitempty" url:"-"`
 	// Account promotional description. When creating a Whop-managed Facebook page, it is truncated to 155 characters and used as the About text.
 	Description *string `json:"description,omitempty" url:"-"`
+	// Whether Whop assembles and files dispute evidence for this account. Enabling it opts into the success fee charged on disputes it wins. Requires payment:dispute. Omit to preserve the existing setting or creation default.
+	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
 	// The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 	Eula *UpdateAccountsRequestEula `json:"eula,omitempty" url:"-"`
 	// The ID of the product to feature for affiliates. Pass `null` to clear.
@@ -9681,6 +9739,8 @@ type UpdateAccountsRequest struct {
 	OpengraphImage *UpdateAccountsRequestOpengraphImage `json:"opengraph_image,omitempty" url:"-"`
 	// The account Open Graph image variant.
 	OpengraphImageVariant *UpdateAccountsRequestOpengraphImageVariant `json:"opengraph_image_variant,omitempty" url:"-"`
+	// Whether payment orchestration is enabled for this account. Requires payout:account:update. Omit to preserve the existing setting or creation default.
+	OrchestrationEnabled *bool `json:"orchestration_enabled,omitempty" url:"-"`
 	// The description of the business type when business_type is other.
 	OtherBusinessDescription *string `json:"other_business_description,omitempty" url:"-"`
 	// The description of the industry type when industry_type is other.
@@ -9818,6 +9878,13 @@ func (u *UpdateAccountsRequest) SetDescription(description *string) {
 	u.require(updateAccountsRequestFieldDescription)
 }
 
+// SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetDisputeFighterEnabled(disputeFighterEnabled *bool) {
+	u.DisputeFighterEnabled = disputeFighterEnabled
+	u.require(updateAccountsRequestFieldDisputeFighterEnabled)
+}
+
 // SetEula sets the Eula field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAccountsRequest) SetEula(eula *UpdateAccountsRequestEula) {
@@ -9893,6 +9960,13 @@ func (u *UpdateAccountsRequest) SetOpengraphImage(opengraphImage *UpdateAccounts
 func (u *UpdateAccountsRequest) SetOpengraphImageVariant(opengraphImageVariant *UpdateAccountsRequestOpengraphImageVariant) {
 	u.OpengraphImageVariant = opengraphImageVariant
 	u.require(updateAccountsRequestFieldOpengraphImageVariant)
+}
+
+// SetOrchestrationEnabled sets the OrchestrationEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetOrchestrationEnabled(orchestrationEnabled *bool) {
+	u.OrchestrationEnabled = orchestrationEnabled
+	u.require(updateAccountsRequestFieldOrchestrationEnabled)
 }
 
 // SetOtherBusinessDescription sets the OtherBusinessDescription field and marks it as non-optional;
