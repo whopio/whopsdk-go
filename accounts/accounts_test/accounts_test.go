@@ -136,8 +136,10 @@ func TestAccountsMeWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
+	request := &whopsdk.MeAccountsRequest{}
 	_, invocationErr := client.Accounts.Me(
 		context.TODO(),
+		request,
 		option.WithHTTPHeader(
 			http.Header{"X-Test-Id": []string{"TestAccountsMeWithWireMock"}},
 		),

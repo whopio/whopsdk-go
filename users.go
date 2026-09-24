@@ -112,16 +112,19 @@ func (l *ListUsersRequest) SetBefore(before *string) {
 }
 
 var (
-	meUsersRequestFieldAccountID             = big.NewInt(1 << 0)
-	meUsersRequestFieldIncludeBalance        = big.NewInt(1 << 1)
-	meUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 2)
-	meUsersRequestFieldFrom                  = big.NewInt(1 << 3)
-	meUsersRequestFieldTo                    = big.NewInt(1 << 4)
-	meUsersRequestFieldInterval              = big.NewInt(1 << 5)
-	meUsersRequestFieldTimeZone              = big.NewInt(1 << 6)
+	meUsersRequestFieldIncludeTrading        = big.NewInt(1 << 0)
+	meUsersRequestFieldAccountID             = big.NewInt(1 << 1)
+	meUsersRequestFieldIncludeBalance        = big.NewInt(1 << 2)
+	meUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 3)
+	meUsersRequestFieldFrom                  = big.NewInt(1 << 4)
+	meUsersRequestFieldTo                    = big.NewInt(1 << 5)
+	meUsersRequestFieldInterval              = big.NewInt(1 << 6)
+	meUsersRequestFieldTimeZone              = big.NewInt(1 << 7)
 )
 
 type MeUsersRequest struct {
+	// Also retrieve live trading state under `trading`. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet. Provider failures return 503.
+	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 	// When set, returns your account-specific profile overrides for this account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Compute live wallet and owned-account balances (default true). Set false for identity-only reads. Ignored for callers without balance-read scope.
@@ -146,6 +149,13 @@ func (m *MeUsersRequest) require(field *big.Int) {
 		m.explicitFields = big.NewInt(0)
 	}
 	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetIncludeTrading sets the IncludeTrading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MeUsersRequest) SetIncludeTrading(includeTrading *bool) {
+	m.IncludeTrading = includeTrading
+	m.require(meUsersRequestFieldIncludeTrading)
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -225,18 +235,21 @@ func (r *RecommendActionsUsersRequest) SetID(id string) {
 
 var (
 	retrieveUsersRequestFieldID                    = big.NewInt(1 << 0)
-	retrieveUsersRequestFieldAccountID             = big.NewInt(1 << 1)
-	retrieveUsersRequestFieldIncludeBalance        = big.NewInt(1 << 2)
-	retrieveUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 3)
-	retrieveUsersRequestFieldFrom                  = big.NewInt(1 << 4)
-	retrieveUsersRequestFieldTo                    = big.NewInt(1 << 5)
-	retrieveUsersRequestFieldInterval              = big.NewInt(1 << 6)
-	retrieveUsersRequestFieldTimeZone              = big.NewInt(1 << 7)
+	retrieveUsersRequestFieldIncludeTrading        = big.NewInt(1 << 1)
+	retrieveUsersRequestFieldAccountID             = big.NewInt(1 << 2)
+	retrieveUsersRequestFieldIncludeBalance        = big.NewInt(1 << 3)
+	retrieveUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 4)
+	retrieveUsersRequestFieldFrom                  = big.NewInt(1 << 5)
+	retrieveUsersRequestFieldTo                    = big.NewInt(1 << 6)
+	retrieveUsersRequestFieldInterval              = big.NewInt(1 << 7)
+	retrieveUsersRequestFieldTimeZone              = big.NewInt(1 << 8)
 )
 
 type RetrieveUsersRequest struct {
 	// User ID (prefixed `user_`), username, or `me` for the authenticated user.
 	ID string `json:"-" url:"-"`
+	// Also retrieve live trading state under `trading`. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet. Provider failures return 503.
+	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 	// When set, returns the user's account-specific profile overrides for this account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Compute live wallet and owned-account balances on the self view (default true). Set false for identity-only reads. Ignored when the id is not `me` or the caller lacks balance-read scope.
@@ -268,6 +281,13 @@ func (r *RetrieveUsersRequest) require(field *big.Int) {
 func (r *RetrieveUsersRequest) SetID(id string) {
 	r.ID = id
 	r.require(retrieveUsersRequestFieldID)
+}
+
+// SetIncludeTrading sets the IncludeTrading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveUsersRequest) SetIncludeTrading(includeTrading *bool) {
+	r.IncludeTrading = includeTrading
+	r.require(retrieveUsersRequestFieldIncludeTrading)
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -332,9 +352,10 @@ var (
 	userFieldProfilePicture       = big.NewInt(1 << 9)
 	userFieldSocialAccounts       = big.NewInt(1 << 10)
 	userFieldStaff                = big.NewInt(1 << 11)
-	userFieldUsername             = big.NewInt(1 << 12)
-	userFieldVerification         = big.NewInt(1 << 13)
-	userFieldWhopPartnerEnabledAt = big.NewInt(1 << 14)
+	userFieldTrading              = big.NewInt(1 << 12)
+	userFieldUsername             = big.NewInt(1 << 13)
+	userFieldVerification         = big.NewInt(1 << 14)
+	userFieldWhopPartnerEnabledAt = big.NewInt(1 << 15)
 )
 
 type User struct {
@@ -361,6 +382,8 @@ type User struct {
 	SocialAccounts []*SocialAccount    `json:"social_accounts" url:"social_accounts"`
 	// Whop staff access flags. Populated only on the self view (retrieved with the reserved id `me`) for callers with staff-read scope; `null` there for every user who is not Whop staff, and always `null` elsewhere.
 	Staff *UserStaffAccess `json:"staff,omitempty" url:"staff,omitempty"`
+	// Live trading state. Opt in with `include_trading=true` when retrieving `me`; `null` otherwise, without trading permission, or without an Ethereum wallet. Provider failures return an error, not a zero balance.
+	Trading *TradingAccount `json:"trading,omitempty" url:"trading,omitempty"`
 	// The user's unique username
 	Username string `json:"username" url:"username"`
 	// Identity verification status for the user's `individual` (KYC) and `business` (KYB) profiles. Each is `null` until created, otherwise a `status` of `not_started`, `pending`, `approved`, or `rejected`.
@@ -457,6 +480,13 @@ func (u *User) GetStaff() *UserStaffAccess {
 		return nil
 	}
 	return u.Staff
+}
+
+func (u *User) GetTrading() *TradingAccount {
+	if u == nil {
+		return nil
+	}
+	return u.Trading
 }
 
 func (u *User) GetUsername() string {
@@ -576,6 +606,13 @@ func (u *User) SetSocialAccounts(socialAccounts []*SocialAccount) {
 func (u *User) SetStaff(staff *UserStaffAccess) {
 	u.Staff = staff
 	u.require(userFieldStaff)
+}
+
+// SetTrading sets the Trading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetTrading(trading *TradingAccount) {
+	u.Trading = trading
+	u.require(userFieldTrading)
 }
 
 // SetUsername sets the Username field and marks it as non-optional;

@@ -2163,6 +2163,20 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("crypto_wallet:swap"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_crypto_wallet_trade", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("crypto_wallet:trade")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("crypto_wallet:trade"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_crypto_wallet_trade_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("crypto_wallet:trade:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("crypto_wallet:trade:read"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_airdrop_link_basic_read", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("airdrop_link:basic:read")

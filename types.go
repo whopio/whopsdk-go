@@ -47895,6 +47895,1889 @@ func (t *TooManyRequestsErrorBodyError) String() string {
 }
 
 var (
+	tradingAccountFieldAccountID   = big.NewInt(1 << 0)
+	tradingAccountFieldHyperliquid = big.NewInt(1 << 1)
+	tradingAccountFieldID          = big.NewInt(1 << 2)
+	tradingAccountFieldObject      = big.NewInt(1 << 3)
+	tradingAccountFieldOpenOrders  = big.NewInt(1 << 4)
+	tradingAccountFieldPositions   = big.NewInt(1 << 5)
+	tradingAccountFieldProvider    = big.NewInt(1 << 6)
+	tradingAccountFieldUserID      = big.NewInt(1 << 7)
+)
+
+type TradingAccount struct {
+	// The account that owns this trading account, prefixed `biz_`. `null` when a user owns it.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// Hyperliquid-specific state. Present when `provider` is `hyperliquid`, otherwise `null`.
+	Hyperliquid *TradingHyperliquidAccount `json:"hyperliquid,omitempty" url:"hyperliquid,omitempty"`
+	// The Whop wallet ID backing this trading account, prefixed `cwal_`.
+	ID         string               `json:"id" url:"id"`
+	Object     TradingAccountObject `json:"object" url:"object"`
+	OpenOrders []*TradingOrder      `json:"open_orders" url:"open_orders"`
+	Positions  []*TradingPosition   `json:"positions" url:"positions"`
+	// Trading venue that holds the positions and orders.
+	Provider TradingAccountProvider `json:"provider" url:"provider"`
+	// The user who owns this trading account, prefixed `user_`. `null` when an account owns it.
+	UserID *string `json:"user_id,omitempty" url:"user_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingAccount) GetAccountID() *string {
+	if t == nil {
+		return nil
+	}
+	return t.AccountID
+}
+
+func (t *TradingAccount) GetHyperliquid() *TradingHyperliquidAccount {
+	if t == nil {
+		return nil
+	}
+	return t.Hyperliquid
+}
+
+func (t *TradingAccount) GetID() string {
+	if t == nil {
+		return ""
+	}
+	return t.ID
+}
+
+func (t *TradingAccount) GetObject() TradingAccountObject {
+	if t == nil {
+		return ""
+	}
+	return t.Object
+}
+
+func (t *TradingAccount) GetOpenOrders() []*TradingOrder {
+	if t == nil {
+		return nil
+	}
+	return t.OpenOrders
+}
+
+func (t *TradingAccount) GetPositions() []*TradingPosition {
+	if t == nil {
+		return nil
+	}
+	return t.Positions
+}
+
+func (t *TradingAccount) GetProvider() TradingAccountProvider {
+	if t == nil {
+		return ""
+	}
+	return t.Provider
+}
+
+func (t *TradingAccount) GetUserID() *string {
+	if t == nil {
+		return nil
+	}
+	return t.UserID
+}
+
+func (t *TradingAccount) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingAccount) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingAccount) SetAccountID(accountID *string) {
+	t.AccountID = accountID
+	t.require(tradingAccountFieldAccountID)
+}
+
+// SetHyperliquid sets the Hyperliquid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingAccount) SetHyperliquid(hyperliquid *TradingHyperliquidAccount) {
+	t.Hyperliquid = hyperliquid
+	t.require(tradingAccountFieldHyperliquid)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingAccount) SetID(id string) {
+	t.ID = id
+	t.require(tradingAccountFieldID)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingAccount) SetObject(object TradingAccountObject) {
+	t.Object = object
+	t.require(tradingAccountFieldObject)
+}
+
+// SetOpenOrders sets the OpenOrders field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingAccount) SetOpenOrders(openOrders []*TradingOrder) {
+	t.OpenOrders = openOrders
+	t.require(tradingAccountFieldOpenOrders)
+}
+
+// SetPositions sets the Positions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingAccount) SetPositions(positions []*TradingPosition) {
+	t.Positions = positions
+	t.require(tradingAccountFieldPositions)
+}
+
+// SetProvider sets the Provider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingAccount) SetProvider(provider TradingAccountProvider) {
+	t.Provider = provider
+	t.require(tradingAccountFieldProvider)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingAccount) SetUserID(userID *string) {
+	t.UserID = userID
+	t.require(tradingAccountFieldUserID)
+}
+
+func (t *TradingAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingAccount) MarshalJSON() ([]byte, error) {
+	type embed TradingAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingAccount) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TradingAccountObject string
+
+const (
+	TradingAccountObjectTradingAccount TradingAccountObject = "trading_account"
+)
+
+func NewTradingAccountObjectFromString(s string) (TradingAccountObject, error) {
+	switch s {
+	case "trading_account":
+		return TradingAccountObjectTradingAccount, nil
+	}
+	var t TradingAccountObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingAccountObject) Ptr() *TradingAccountObject {
+	return &t
+}
+
+// Trading venue that holds the positions and orders.
+type TradingAccountProvider string
+
+const (
+	TradingAccountProviderHyperliquid TradingAccountProvider = "hyperliquid"
+)
+
+func NewTradingAccountProviderFromString(s string) (TradingAccountProvider, error) {
+	switch s {
+	case "hyperliquid":
+		return TradingAccountProviderHyperliquid, nil
+	}
+	var t TradingAccountProvider
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingAccountProvider) Ptr() *TradingAccountProvider {
+	return &t
+}
+
+var (
+	tradingCumulativeFundingFieldAllTime     = big.NewInt(1 << 0)
+	tradingCumulativeFundingFieldSinceChange = big.NewInt(1 << 1)
+	tradingCumulativeFundingFieldSinceOpen   = big.NewInt(1 << 2)
+)
+
+type TradingCumulativeFunding struct {
+	// Funding paid on this market across the account's history, in USD, or `null` when unavailable.
+	AllTime *Money `json:"all_time,omitempty" url:"all_time,omitempty"`
+	// Funding paid since the position size last changed, in USD, or `null` when unavailable.
+	SinceChange *Money `json:"since_change,omitempty" url:"since_change,omitempty"`
+	// Funding paid since the position opened, in USD, or `null` when unavailable.
+	SinceOpen *Money `json:"since_open,omitempty" url:"since_open,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingCumulativeFunding) GetAllTime() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.AllTime
+}
+
+func (t *TradingCumulativeFunding) GetSinceChange() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.SinceChange
+}
+
+func (t *TradingCumulativeFunding) GetSinceOpen() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.SinceOpen
+}
+
+func (t *TradingCumulativeFunding) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingCumulativeFunding) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetAllTime sets the AllTime field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingCumulativeFunding) SetAllTime(allTime *Money) {
+	t.AllTime = allTime
+	t.require(tradingCumulativeFundingFieldAllTime)
+}
+
+// SetSinceChange sets the SinceChange field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingCumulativeFunding) SetSinceChange(sinceChange *Money) {
+	t.SinceChange = sinceChange
+	t.require(tradingCumulativeFundingFieldSinceChange)
+}
+
+// SetSinceOpen sets the SinceOpen field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingCumulativeFunding) SetSinceOpen(sinceOpen *Money) {
+	t.SinceOpen = sinceOpen
+	t.require(tradingCumulativeFundingFieldSinceOpen)
+}
+
+func (t *TradingCumulativeFunding) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingCumulativeFunding
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingCumulativeFunding(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingCumulativeFunding) MarshalJSON() ([]byte, error) {
+	type embed TradingCumulativeFunding
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingCumulativeFunding) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	tradingHyperliquidAccountFieldAddress                = big.NewInt(1 << 0)
+	tradingHyperliquidAccountFieldBuilderFeeBps          = big.NewInt(1 << 1)
+	tradingHyperliquidAccountFieldMarginSummary          = big.NewInt(1 << 2)
+	tradingHyperliquidAccountFieldWebsocketSubscriptions = big.NewInt(1 << 3)
+	tradingHyperliquidAccountFieldWebsocketURL           = big.NewInt(1 << 4)
+)
+
+type TradingHyperliquidAccount struct {
+	// Lowercase wallet address that holds the Hyperliquid account.
+	Address string `json:"address" url:"address"`
+	// Builder fee Whop charges on orders, in basis points as a decimal string, or `null` when no fee is configured.
+	BuilderFeeBps *string `json:"builder_fee_bps,omitempty" url:"builder_fee_bps,omitempty"`
+	// Account value, margin, and withdrawable balance, all in USD.
+	MarginSummary          *TradingMarginSummary           `json:"margin_summary" url:"margin_summary"`
+	WebsocketSubscriptions []*TradingWebsocketSubscription `json:"websocket_subscriptions" url:"websocket_subscriptions"`
+	// Hyperliquid WebSocket URL to connect to directly for live updates.
+	WebsocketURL string `json:"websocket_url" url:"websocket_url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingHyperliquidAccount) GetAddress() string {
+	if t == nil {
+		return ""
+	}
+	return t.Address
+}
+
+func (t *TradingHyperliquidAccount) GetBuilderFeeBps() *string {
+	if t == nil {
+		return nil
+	}
+	return t.BuilderFeeBps
+}
+
+func (t *TradingHyperliquidAccount) GetMarginSummary() *TradingMarginSummary {
+	if t == nil {
+		return nil
+	}
+	return t.MarginSummary
+}
+
+func (t *TradingHyperliquidAccount) GetWebsocketSubscriptions() []*TradingWebsocketSubscription {
+	if t == nil {
+		return nil
+	}
+	return t.WebsocketSubscriptions
+}
+
+func (t *TradingHyperliquidAccount) GetWebsocketURL() string {
+	if t == nil {
+		return ""
+	}
+	return t.WebsocketURL
+}
+
+func (t *TradingHyperliquidAccount) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingHyperliquidAccount) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetAddress sets the Address field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidAccount) SetAddress(address string) {
+	t.Address = address
+	t.require(tradingHyperliquidAccountFieldAddress)
+}
+
+// SetBuilderFeeBps sets the BuilderFeeBps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidAccount) SetBuilderFeeBps(builderFeeBps *string) {
+	t.BuilderFeeBps = builderFeeBps
+	t.require(tradingHyperliquidAccountFieldBuilderFeeBps)
+}
+
+// SetMarginSummary sets the MarginSummary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidAccount) SetMarginSummary(marginSummary *TradingMarginSummary) {
+	t.MarginSummary = marginSummary
+	t.require(tradingHyperliquidAccountFieldMarginSummary)
+}
+
+// SetWebsocketSubscriptions sets the WebsocketSubscriptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidAccount) SetWebsocketSubscriptions(websocketSubscriptions []*TradingWebsocketSubscription) {
+	t.WebsocketSubscriptions = websocketSubscriptions
+	t.require(tradingHyperliquidAccountFieldWebsocketSubscriptions)
+}
+
+// SetWebsocketURL sets the WebsocketURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidAccount) SetWebsocketURL(websocketURL string) {
+	t.WebsocketURL = websocketURL
+	t.require(tradingHyperliquidAccountFieldWebsocketURL)
+}
+
+func (t *TradingHyperliquidAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingHyperliquidAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingHyperliquidAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingHyperliquidAccount) MarshalJSON() ([]byte, error) {
+	type embed TradingHyperliquidAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingHyperliquidAccount) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	tradingHyperliquidOrderFieldReduceOnly   = big.NewInt(1 << 0)
+	tradingHyperliquidOrderFieldTriggerPrice = big.NewInt(1 << 1)
+)
+
+type TradingHyperliquidOrder struct {
+	// Whether the order can only reduce an existing position, or `null` when Hyperliquid omits it.
+	ReduceOnly *bool `json:"reduce_only,omitempty" url:"reduce_only,omitempty"`
+	// Trigger price in USD for take-profit and stop-loss orders, or `null` for orders without a trigger.
+	TriggerPrice *Money `json:"trigger_price,omitempty" url:"trigger_price,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingHyperliquidOrder) GetReduceOnly() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.ReduceOnly
+}
+
+func (t *TradingHyperliquidOrder) GetTriggerPrice() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.TriggerPrice
+}
+
+func (t *TradingHyperliquidOrder) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingHyperliquidOrder) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetReduceOnly sets the ReduceOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidOrder) SetReduceOnly(reduceOnly *bool) {
+	t.ReduceOnly = reduceOnly
+	t.require(tradingHyperliquidOrderFieldReduceOnly)
+}
+
+// SetTriggerPrice sets the TriggerPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidOrder) SetTriggerPrice(triggerPrice *Money) {
+	t.TriggerPrice = triggerPrice
+	t.require(tradingHyperliquidOrderFieldTriggerPrice)
+}
+
+func (t *TradingHyperliquidOrder) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingHyperliquidOrder
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingHyperliquidOrder(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingHyperliquidOrder) MarshalJSON() ([]byte, error) {
+	type embed TradingHyperliquidOrder
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingHyperliquidOrder) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	tradingHyperliquidPositionFieldCumulativeFunding = big.NewInt(1 << 0)
+	tradingHyperliquidPositionFieldLeverage          = big.NewInt(1 << 1)
+	tradingHyperliquidPositionFieldLiquidationPrice  = big.NewInt(1 << 2)
+	tradingHyperliquidPositionFieldMarginUsed        = big.NewInt(1 << 3)
+	tradingHyperliquidPositionFieldReturnOnEquity    = big.NewInt(1 << 4)
+)
+
+type TradingHyperliquidPosition struct {
+	// Funding paid on the position over several windows, in USD.
+	CumulativeFunding *TradingCumulativeFunding `json:"cumulative_funding" url:"cumulative_funding"`
+	// Margin mode and multiplier for the position.
+	Leverage *TradingPositionLeverage `json:"leverage" url:"leverage"`
+	// Estimated liquidation price in USD, or `null` when Hyperliquid reports none.
+	LiquidationPrice *Money `json:"liquidation_price,omitempty" url:"liquidation_price,omitempty"`
+	// Margin allocated to the position, in USD.
+	MarginUsed *Money `json:"margin_used" url:"margin_used"`
+	// Return on equity as a decimal ratio string, such as `0.1` for 10%.
+	ReturnOnEquity string `json:"return_on_equity" url:"return_on_equity"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingHyperliquidPosition) GetCumulativeFunding() *TradingCumulativeFunding {
+	if t == nil {
+		return nil
+	}
+	return t.CumulativeFunding
+}
+
+func (t *TradingHyperliquidPosition) GetLeverage() *TradingPositionLeverage {
+	if t == nil {
+		return nil
+	}
+	return t.Leverage
+}
+
+func (t *TradingHyperliquidPosition) GetLiquidationPrice() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.LiquidationPrice
+}
+
+func (t *TradingHyperliquidPosition) GetMarginUsed() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.MarginUsed
+}
+
+func (t *TradingHyperliquidPosition) GetReturnOnEquity() string {
+	if t == nil {
+		return ""
+	}
+	return t.ReturnOnEquity
+}
+
+func (t *TradingHyperliquidPosition) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingHyperliquidPosition) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetCumulativeFunding sets the CumulativeFunding field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidPosition) SetCumulativeFunding(cumulativeFunding *TradingCumulativeFunding) {
+	t.CumulativeFunding = cumulativeFunding
+	t.require(tradingHyperliquidPositionFieldCumulativeFunding)
+}
+
+// SetLeverage sets the Leverage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidPosition) SetLeverage(leverage *TradingPositionLeverage) {
+	t.Leverage = leverage
+	t.require(tradingHyperliquidPositionFieldLeverage)
+}
+
+// SetLiquidationPrice sets the LiquidationPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidPosition) SetLiquidationPrice(liquidationPrice *Money) {
+	t.LiquidationPrice = liquidationPrice
+	t.require(tradingHyperliquidPositionFieldLiquidationPrice)
+}
+
+// SetMarginUsed sets the MarginUsed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidPosition) SetMarginUsed(marginUsed *Money) {
+	t.MarginUsed = marginUsed
+	t.require(tradingHyperliquidPositionFieldMarginUsed)
+}
+
+// SetReturnOnEquity sets the ReturnOnEquity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidPosition) SetReturnOnEquity(returnOnEquity string) {
+	t.ReturnOnEquity = returnOnEquity
+	t.require(tradingHyperliquidPositionFieldReturnOnEquity)
+}
+
+func (t *TradingHyperliquidPosition) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingHyperliquidPosition
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingHyperliquidPosition(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingHyperliquidPosition) MarshalJSON() ([]byte, error) {
+	type embed TradingHyperliquidPosition
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingHyperliquidPosition) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	tradingMarginSummaryFieldAccountValue          = big.NewInt(1 << 0)
+	tradingMarginSummaryFieldTotalMarginUsed       = big.NewInt(1 << 1)
+	tradingMarginSummaryFieldTotalPositionNotional = big.NewInt(1 << 2)
+	tradingMarginSummaryFieldTotalRawUsd           = big.NewInt(1 << 3)
+	tradingMarginSummaryFieldWithdrawable          = big.NewInt(1 << 4)
+)
+
+type TradingMarginSummary struct {
+	// Total account value in USD, including unrealized profit and loss.
+	AccountValue *Money `json:"account_value" url:"account_value"`
+	// Margin allocated across open positions, in USD.
+	TotalMarginUsed *Money `json:"total_margin_used" url:"total_margin_used"`
+	// Combined notional value of open positions, in USD.
+	TotalPositionNotional *Money `json:"total_position_notional" url:"total_position_notional"`
+	// Raw USD balance as Hyperliquid reports it, excluding position value.
+	TotalRawUsd *Money `json:"total_raw_usd" url:"total_raw_usd"`
+	// USD that can be withdrawn now without closing positions.
+	Withdrawable *Money `json:"withdrawable" url:"withdrawable"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingMarginSummary) GetAccountValue() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.AccountValue
+}
+
+func (t *TradingMarginSummary) GetTotalMarginUsed() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.TotalMarginUsed
+}
+
+func (t *TradingMarginSummary) GetTotalPositionNotional() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.TotalPositionNotional
+}
+
+func (t *TradingMarginSummary) GetTotalRawUsd() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.TotalRawUsd
+}
+
+func (t *TradingMarginSummary) GetWithdrawable() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.Withdrawable
+}
+
+func (t *TradingMarginSummary) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingMarginSummary) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetAccountValue sets the AccountValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingMarginSummary) SetAccountValue(accountValue *Money) {
+	t.AccountValue = accountValue
+	t.require(tradingMarginSummaryFieldAccountValue)
+}
+
+// SetTotalMarginUsed sets the TotalMarginUsed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingMarginSummary) SetTotalMarginUsed(totalMarginUsed *Money) {
+	t.TotalMarginUsed = totalMarginUsed
+	t.require(tradingMarginSummaryFieldTotalMarginUsed)
+}
+
+// SetTotalPositionNotional sets the TotalPositionNotional field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingMarginSummary) SetTotalPositionNotional(totalPositionNotional *Money) {
+	t.TotalPositionNotional = totalPositionNotional
+	t.require(tradingMarginSummaryFieldTotalPositionNotional)
+}
+
+// SetTotalRawUsd sets the TotalRawUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingMarginSummary) SetTotalRawUsd(totalRawUsd *Money) {
+	t.TotalRawUsd = totalRawUsd
+	t.require(tradingMarginSummaryFieldTotalRawUsd)
+}
+
+// SetWithdrawable sets the Withdrawable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingMarginSummary) SetWithdrawable(withdrawable *Money) {
+	t.Withdrawable = withdrawable
+	t.require(tradingMarginSummaryFieldWithdrawable)
+}
+
+func (t *TradingMarginSummary) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingMarginSummary
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingMarginSummary(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingMarginSummary) MarshalJSON() ([]byte, error) {
+	type embed TradingMarginSummary
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingMarginSummary) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	tradingOrderFieldClientOrderID   = big.NewInt(1 << 0)
+	tradingOrderFieldCreatedAt       = big.NewInt(1 << 1)
+	tradingOrderFieldHyperliquid     = big.NewInt(1 << 2)
+	tradingOrderFieldID              = big.NewInt(1 << 3)
+	tradingOrderFieldMarket          = big.NewInt(1 << 4)
+	tradingOrderFieldObject          = big.NewInt(1 << 5)
+	tradingOrderFieldOrderType       = big.NewInt(1 << 6)
+	tradingOrderFieldOriginalSize    = big.NewInt(1 << 7)
+	tradingOrderFieldPrice           = big.NewInt(1 << 8)
+	tradingOrderFieldProviderOrderID = big.NewInt(1 << 9)
+	tradingOrderFieldSide            = big.NewInt(1 << 10)
+	tradingOrderFieldSize            = big.NewInt(1 << 11)
+	tradingOrderFieldStatus          = big.NewInt(1 << 12)
+	tradingOrderFieldStatusUpdatedAt = big.NewInt(1 << 13)
+	tradingOrderFieldTimeInForce     = big.NewInt(1 << 14)
+)
+
+type TradingOrder struct {
+	// Client order ID, prefixed `trdcloid_`, or `null` when the order was placed without one.
+	ClientOrderID *string `json:"client_order_id,omitempty" url:"client_order_id,omitempty"`
+	// When the order was placed, as an ISO 8601 timestamp, or `null` when the provider omits it.
+	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// Hyperliquid-specific order details. Present on Hyperliquid orders, otherwise `null`.
+	Hyperliquid *TradingHyperliquidOrder `json:"hyperliquid,omitempty" url:"hyperliquid,omitempty"`
+	// Trading order ID, prefixed `trdord_`.
+	ID string `json:"id" url:"id"`
+	// Market symbol on the provider, such as `ETH`.
+	Market    string                `json:"market" url:"market"`
+	Object    TradingOrderObject    `json:"object" url:"object"`
+	OrderType TradingOrderOrderType `json:"order_type" url:"order_type"`
+	// Size when the order was placed, as a decimal string, or `null` when the provider omits it.
+	OriginalSize *string `json:"original_size,omitempty" url:"original_size,omitempty"`
+	// Limit price in USD.
+	Price *Money `json:"price" url:"price"`
+	// The provider's own order ID, as a string.
+	ProviderOrderID *string          `json:"provider_order_id,omitempty" url:"provider_order_id,omitempty"`
+	Side            TradingOrderSide `json:"side" url:"side"`
+	// Remaining order size as a decimal string.
+	Size   string             `json:"size" url:"size"`
+	Status TradingOrderStatus `json:"status" url:"status"`
+	// When the status last changed, as an ISO 8601 timestamp, or `null` when the provider omits it.
+	StatusUpdatedAt *string `json:"status_updated_at,omitempty" url:"status_updated_at,omitempty"`
+	// How long the order stays active. `null` when the provider omits it or reports a policy outside the supported values.
+	TimeInForce *TradingOrderTimeInForce `json:"time_in_force,omitempty" url:"time_in_force,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingOrder) GetClientOrderID() *string {
+	if t == nil {
+		return nil
+	}
+	return t.ClientOrderID
+}
+
+func (t *TradingOrder) GetCreatedAt() *string {
+	if t == nil {
+		return nil
+	}
+	return t.CreatedAt
+}
+
+func (t *TradingOrder) GetHyperliquid() *TradingHyperliquidOrder {
+	if t == nil {
+		return nil
+	}
+	return t.Hyperliquid
+}
+
+func (t *TradingOrder) GetID() string {
+	if t == nil {
+		return ""
+	}
+	return t.ID
+}
+
+func (t *TradingOrder) GetMarket() string {
+	if t == nil {
+		return ""
+	}
+	return t.Market
+}
+
+func (t *TradingOrder) GetObject() TradingOrderObject {
+	if t == nil {
+		return ""
+	}
+	return t.Object
+}
+
+func (t *TradingOrder) GetOrderType() TradingOrderOrderType {
+	if t == nil {
+		return ""
+	}
+	return t.OrderType
+}
+
+func (t *TradingOrder) GetOriginalSize() *string {
+	if t == nil {
+		return nil
+	}
+	return t.OriginalSize
+}
+
+func (t *TradingOrder) GetPrice() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.Price
+}
+
+func (t *TradingOrder) GetProviderOrderID() *string {
+	if t == nil {
+		return nil
+	}
+	return t.ProviderOrderID
+}
+
+func (t *TradingOrder) GetSide() TradingOrderSide {
+	if t == nil {
+		return ""
+	}
+	return t.Side
+}
+
+func (t *TradingOrder) GetSize() string {
+	if t == nil {
+		return ""
+	}
+	return t.Size
+}
+
+func (t *TradingOrder) GetStatus() TradingOrderStatus {
+	if t == nil {
+		return ""
+	}
+	return t.Status
+}
+
+func (t *TradingOrder) GetStatusUpdatedAt() *string {
+	if t == nil {
+		return nil
+	}
+	return t.StatusUpdatedAt
+}
+
+func (t *TradingOrder) GetTimeInForce() *TradingOrderTimeInForce {
+	if t == nil {
+		return nil
+	}
+	return t.TimeInForce
+}
+
+func (t *TradingOrder) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingOrder) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetClientOrderID sets the ClientOrderID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetClientOrderID(clientOrderID *string) {
+	t.ClientOrderID = clientOrderID
+	t.require(tradingOrderFieldClientOrderID)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetCreatedAt(createdAt *string) {
+	t.CreatedAt = createdAt
+	t.require(tradingOrderFieldCreatedAt)
+}
+
+// SetHyperliquid sets the Hyperliquid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetHyperliquid(hyperliquid *TradingHyperliquidOrder) {
+	t.Hyperliquid = hyperliquid
+	t.require(tradingOrderFieldHyperliquid)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetID(id string) {
+	t.ID = id
+	t.require(tradingOrderFieldID)
+}
+
+// SetMarket sets the Market field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetMarket(market string) {
+	t.Market = market
+	t.require(tradingOrderFieldMarket)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetObject(object TradingOrderObject) {
+	t.Object = object
+	t.require(tradingOrderFieldObject)
+}
+
+// SetOrderType sets the OrderType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetOrderType(orderType TradingOrderOrderType) {
+	t.OrderType = orderType
+	t.require(tradingOrderFieldOrderType)
+}
+
+// SetOriginalSize sets the OriginalSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetOriginalSize(originalSize *string) {
+	t.OriginalSize = originalSize
+	t.require(tradingOrderFieldOriginalSize)
+}
+
+// SetPrice sets the Price field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetPrice(price *Money) {
+	t.Price = price
+	t.require(tradingOrderFieldPrice)
+}
+
+// SetProviderOrderID sets the ProviderOrderID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetProviderOrderID(providerOrderID *string) {
+	t.ProviderOrderID = providerOrderID
+	t.require(tradingOrderFieldProviderOrderID)
+}
+
+// SetSide sets the Side field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetSide(side TradingOrderSide) {
+	t.Side = side
+	t.require(tradingOrderFieldSide)
+}
+
+// SetSize sets the Size field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetSize(size string) {
+	t.Size = size
+	t.require(tradingOrderFieldSize)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetStatus(status TradingOrderStatus) {
+	t.Status = status
+	t.require(tradingOrderFieldStatus)
+}
+
+// SetStatusUpdatedAt sets the StatusUpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetStatusUpdatedAt(statusUpdatedAt *string) {
+	t.StatusUpdatedAt = statusUpdatedAt
+	t.require(tradingOrderFieldStatusUpdatedAt)
+}
+
+// SetTimeInForce sets the TimeInForce field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingOrder) SetTimeInForce(timeInForce *TradingOrderTimeInForce) {
+	t.TimeInForce = timeInForce
+	t.require(tradingOrderFieldTimeInForce)
+}
+
+func (t *TradingOrder) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingOrder
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingOrder(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingOrder) MarshalJSON() ([]byte, error) {
+	type embed TradingOrder
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingOrder) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TradingOrderObject string
+
+const (
+	TradingOrderObjectTradingOrder TradingOrderObject = "trading_order"
+)
+
+func NewTradingOrderObjectFromString(s string) (TradingOrderObject, error) {
+	switch s {
+	case "trading_order":
+		return TradingOrderObjectTradingOrder, nil
+	}
+	var t TradingOrderObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingOrderObject) Ptr() *TradingOrderObject {
+	return &t
+}
+
+type TradingOrderOrderType string
+
+const (
+	TradingOrderOrderTypeLimit      TradingOrderOrderType = "limit"
+	TradingOrderOrderTypeMarket     TradingOrderOrderType = "market"
+	TradingOrderOrderTypeTakeProfit TradingOrderOrderType = "take_profit"
+	TradingOrderOrderTypeStopLoss   TradingOrderOrderType = "stop_loss"
+)
+
+func NewTradingOrderOrderTypeFromString(s string) (TradingOrderOrderType, error) {
+	switch s {
+	case "limit":
+		return TradingOrderOrderTypeLimit, nil
+	case "market":
+		return TradingOrderOrderTypeMarket, nil
+	case "take_profit":
+		return TradingOrderOrderTypeTakeProfit, nil
+	case "stop_loss":
+		return TradingOrderOrderTypeStopLoss, nil
+	}
+	var t TradingOrderOrderType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingOrderOrderType) Ptr() *TradingOrderOrderType {
+	return &t
+}
+
+type TradingOrderSide string
+
+const (
+	TradingOrderSideBuy  TradingOrderSide = "buy"
+	TradingOrderSideSell TradingOrderSide = "sell"
+)
+
+func NewTradingOrderSideFromString(s string) (TradingOrderSide, error) {
+	switch s {
+	case "buy":
+		return TradingOrderSideBuy, nil
+	case "sell":
+		return TradingOrderSideSell, nil
+	}
+	var t TradingOrderSide
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingOrderSide) Ptr() *TradingOrderSide {
+	return &t
+}
+
+type TradingOrderStatus string
+
+const (
+	TradingOrderStatusOpen      TradingOrderStatus = "open"
+	TradingOrderStatusFilled    TradingOrderStatus = "filled"
+	TradingOrderStatusCanceled  TradingOrderStatus = "canceled"
+	TradingOrderStatusTriggered TradingOrderStatus = "triggered"
+	TradingOrderStatusRejected  TradingOrderStatus = "rejected"
+)
+
+func NewTradingOrderStatusFromString(s string) (TradingOrderStatus, error) {
+	switch s {
+	case "open":
+		return TradingOrderStatusOpen, nil
+	case "filled":
+		return TradingOrderStatusFilled, nil
+	case "canceled":
+		return TradingOrderStatusCanceled, nil
+	case "triggered":
+		return TradingOrderStatusTriggered, nil
+	case "rejected":
+		return TradingOrderStatusRejected, nil
+	}
+	var t TradingOrderStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingOrderStatus) Ptr() *TradingOrderStatus {
+	return &t
+}
+
+// How long the order stays active. `null` when the provider omits it or reports a policy outside the supported values.
+type TradingOrderTimeInForce string
+
+const (
+	TradingOrderTimeInForceAddLiquidityOnly  TradingOrderTimeInForce = "add_liquidity_only"
+	TradingOrderTimeInForceGoodTilCanceled   TradingOrderTimeInForce = "good_til_canceled"
+	TradingOrderTimeInForceImmediateOrCancel TradingOrderTimeInForce = "immediate_or_cancel"
+)
+
+func NewTradingOrderTimeInForceFromString(s string) (TradingOrderTimeInForce, error) {
+	switch s {
+	case "add_liquidity_only":
+		return TradingOrderTimeInForceAddLiquidityOnly, nil
+	case "good_til_canceled":
+		return TradingOrderTimeInForceGoodTilCanceled, nil
+	case "immediate_or_cancel":
+		return TradingOrderTimeInForceImmediateOrCancel, nil
+	}
+	var t TradingOrderTimeInForce
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingOrderTimeInForce) Ptr() *TradingOrderTimeInForce {
+	return &t
+}
+
+var (
+	tradingPositionFieldEntryPrice    = big.NewInt(1 << 0)
+	tradingPositionFieldHyperliquid   = big.NewInt(1 << 1)
+	tradingPositionFieldID            = big.NewInt(1 << 2)
+	tradingPositionFieldMarket        = big.NewInt(1 << 3)
+	tradingPositionFieldObject        = big.NewInt(1 << 4)
+	tradingPositionFieldPositionValue = big.NewInt(1 << 5)
+	tradingPositionFieldSide          = big.NewInt(1 << 6)
+	tradingPositionFieldSize          = big.NewInt(1 << 7)
+	tradingPositionFieldUnrealizedPnl = big.NewInt(1 << 8)
+)
+
+type TradingPosition struct {
+	// Average entry price in USD, or `null` when the provider omits it.
+	EntryPrice *Money `json:"entry_price,omitempty" url:"entry_price,omitempty"`
+	// Hyperliquid perpetual details. Present on Hyperliquid positions, otherwise `null`.
+	Hyperliquid *TradingHyperliquidPosition `json:"hyperliquid,omitempty" url:"hyperliquid,omitempty"`
+	// Trading position ID, prefixed `trdpos_`. Stable for a market within one trading account.
+	ID string `json:"id" url:"id"`
+	// Market symbol on the provider, such as `ETH`.
+	Market string                `json:"market" url:"market"`
+	Object TradingPositionObject `json:"object" url:"object"`
+	// Current position value in USD.
+	PositionValue *Money              `json:"position_value" url:"position_value"`
+	Side          TradingPositionSide `json:"side" url:"side"`
+	// Absolute position size as a decimal string.
+	Size string `json:"size" url:"size"`
+	// Unrealized profit or loss in USD. Negative for a loss.
+	UnrealizedPnl *Money `json:"unrealized_pnl" url:"unrealized_pnl"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingPosition) GetEntryPrice() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.EntryPrice
+}
+
+func (t *TradingPosition) GetHyperliquid() *TradingHyperliquidPosition {
+	if t == nil {
+		return nil
+	}
+	return t.Hyperliquid
+}
+
+func (t *TradingPosition) GetID() string {
+	if t == nil {
+		return ""
+	}
+	return t.ID
+}
+
+func (t *TradingPosition) GetMarket() string {
+	if t == nil {
+		return ""
+	}
+	return t.Market
+}
+
+func (t *TradingPosition) GetObject() TradingPositionObject {
+	if t == nil {
+		return ""
+	}
+	return t.Object
+}
+
+func (t *TradingPosition) GetPositionValue() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.PositionValue
+}
+
+func (t *TradingPosition) GetSide() TradingPositionSide {
+	if t == nil {
+		return ""
+	}
+	return t.Side
+}
+
+func (t *TradingPosition) GetSize() string {
+	if t == nil {
+		return ""
+	}
+	return t.Size
+}
+
+func (t *TradingPosition) GetUnrealizedPnl() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.UnrealizedPnl
+}
+
+func (t *TradingPosition) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingPosition) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetEntryPrice sets the EntryPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPosition) SetEntryPrice(entryPrice *Money) {
+	t.EntryPrice = entryPrice
+	t.require(tradingPositionFieldEntryPrice)
+}
+
+// SetHyperliquid sets the Hyperliquid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPosition) SetHyperliquid(hyperliquid *TradingHyperliquidPosition) {
+	t.Hyperliquid = hyperliquid
+	t.require(tradingPositionFieldHyperliquid)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPosition) SetID(id string) {
+	t.ID = id
+	t.require(tradingPositionFieldID)
+}
+
+// SetMarket sets the Market field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPosition) SetMarket(market string) {
+	t.Market = market
+	t.require(tradingPositionFieldMarket)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPosition) SetObject(object TradingPositionObject) {
+	t.Object = object
+	t.require(tradingPositionFieldObject)
+}
+
+// SetPositionValue sets the PositionValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPosition) SetPositionValue(positionValue *Money) {
+	t.PositionValue = positionValue
+	t.require(tradingPositionFieldPositionValue)
+}
+
+// SetSide sets the Side field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPosition) SetSide(side TradingPositionSide) {
+	t.Side = side
+	t.require(tradingPositionFieldSide)
+}
+
+// SetSize sets the Size field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPosition) SetSize(size string) {
+	t.Size = size
+	t.require(tradingPositionFieldSize)
+}
+
+// SetUnrealizedPnl sets the UnrealizedPnl field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPosition) SetUnrealizedPnl(unrealizedPnl *Money) {
+	t.UnrealizedPnl = unrealizedPnl
+	t.require(tradingPositionFieldUnrealizedPnl)
+}
+
+func (t *TradingPosition) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingPosition
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingPosition(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingPosition) MarshalJSON() ([]byte, error) {
+	type embed TradingPosition
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingPosition) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	tradingPositionLeverageFieldType  = big.NewInt(1 << 0)
+	tradingPositionLeverageFieldValue = big.NewInt(1 << 1)
+)
+
+type TradingPositionLeverage struct {
+	// `cross` shares margin across positions; `isolated` limits margin to this position.
+	Type TradingPositionLeverageType `json:"type" url:"type"`
+	// Multiplier applied to the position's margin, such as `10` for 10x.
+	Value int `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingPositionLeverage) GetType() TradingPositionLeverageType {
+	if t == nil {
+		return ""
+	}
+	return t.Type
+}
+
+func (t *TradingPositionLeverage) GetValue() int {
+	if t == nil {
+		return 0
+	}
+	return t.Value
+}
+
+func (t *TradingPositionLeverage) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingPositionLeverage) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPositionLeverage) SetType(type_ TradingPositionLeverageType) {
+	t.Type = type_
+	t.require(tradingPositionLeverageFieldType)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingPositionLeverage) SetValue(value int) {
+	t.Value = value
+	t.require(tradingPositionLeverageFieldValue)
+}
+
+func (t *TradingPositionLeverage) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingPositionLeverage
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingPositionLeverage(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingPositionLeverage) MarshalJSON() ([]byte, error) {
+	type embed TradingPositionLeverage
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingPositionLeverage) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+// `cross` shares margin across positions; `isolated` limits margin to this position.
+type TradingPositionLeverageType string
+
+const (
+	TradingPositionLeverageTypeCross    TradingPositionLeverageType = "cross"
+	TradingPositionLeverageTypeIsolated TradingPositionLeverageType = "isolated"
+)
+
+func NewTradingPositionLeverageTypeFromString(s string) (TradingPositionLeverageType, error) {
+	switch s {
+	case "cross":
+		return TradingPositionLeverageTypeCross, nil
+	case "isolated":
+		return TradingPositionLeverageTypeIsolated, nil
+	}
+	var t TradingPositionLeverageType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingPositionLeverageType) Ptr() *TradingPositionLeverageType {
+	return &t
+}
+
+type TradingPositionObject string
+
+const (
+	TradingPositionObjectTradingPosition TradingPositionObject = "trading_position"
+)
+
+func NewTradingPositionObjectFromString(s string) (TradingPositionObject, error) {
+	switch s {
+	case "trading_position":
+		return TradingPositionObjectTradingPosition, nil
+	}
+	var t TradingPositionObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingPositionObject) Ptr() *TradingPositionObject {
+	return &t
+}
+
+type TradingPositionSide string
+
+const (
+	TradingPositionSideLong  TradingPositionSide = "long"
+	TradingPositionSideShort TradingPositionSide = "short"
+)
+
+func NewTradingPositionSideFromString(s string) (TradingPositionSide, error) {
+	switch s {
+	case "long":
+		return TradingPositionSideLong, nil
+	case "short":
+		return TradingPositionSideShort, nil
+	}
+	var t TradingPositionSide
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingPositionSide) Ptr() *TradingPositionSide {
+	return &t
+}
+
+var (
+	tradingWebsocketSubscriptionFieldChannel = big.NewInt(1 << 0)
+	tradingWebsocketSubscriptionFieldMessage = big.NewInt(1 << 1)
+)
+
+type TradingWebsocketSubscription struct {
+	// The live update stream this subscription opens.
+	Channel TradingWebsocketSubscriptionChannel `json:"channel" url:"channel"`
+	// JSON subscription message to send unchanged over the Hyperliquid WebSocket.
+	Message string `json:"message" url:"message"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingWebsocketSubscription) GetChannel() TradingWebsocketSubscriptionChannel {
+	if t == nil {
+		return ""
+	}
+	return t.Channel
+}
+
+func (t *TradingWebsocketSubscription) GetMessage() string {
+	if t == nil {
+		return ""
+	}
+	return t.Message
+}
+
+func (t *TradingWebsocketSubscription) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingWebsocketSubscription) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetChannel sets the Channel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingWebsocketSubscription) SetChannel(channel TradingWebsocketSubscriptionChannel) {
+	t.Channel = channel
+	t.require(tradingWebsocketSubscriptionFieldChannel)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingWebsocketSubscription) SetMessage(message string) {
+	t.Message = message
+	t.require(tradingWebsocketSubscriptionFieldMessage)
+}
+
+func (t *TradingWebsocketSubscription) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingWebsocketSubscription
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingWebsocketSubscription(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingWebsocketSubscription) MarshalJSON() ([]byte, error) {
+	type embed TradingWebsocketSubscription
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingWebsocketSubscription) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+// The live update stream this subscription opens.
+type TradingWebsocketSubscriptionChannel string
+
+const (
+	TradingWebsocketSubscriptionChannelClearinghouseState TradingWebsocketSubscriptionChannel = "clearinghouse_state"
+	TradingWebsocketSubscriptionChannelOpenOrders         TradingWebsocketSubscriptionChannel = "open_orders"
+	TradingWebsocketSubscriptionChannelOrderUpdates       TradingWebsocketSubscriptionChannel = "order_updates"
+	TradingWebsocketSubscriptionChannelUserFills          TradingWebsocketSubscriptionChannel = "user_fills"
+	TradingWebsocketSubscriptionChannelUserEvents         TradingWebsocketSubscriptionChannel = "user_events"
+)
+
+func NewTradingWebsocketSubscriptionChannelFromString(s string) (TradingWebsocketSubscriptionChannel, error) {
+	switch s {
+	case "clearinghouse_state":
+		return TradingWebsocketSubscriptionChannelClearinghouseState, nil
+	case "open_orders":
+		return TradingWebsocketSubscriptionChannelOpenOrders, nil
+	case "order_updates":
+		return TradingWebsocketSubscriptionChannelOrderUpdates, nil
+	case "user_fills":
+		return TradingWebsocketSubscriptionChannelUserFills, nil
+	case "user_events":
+		return TradingWebsocketSubscriptionChannelUserEvents, nil
+	}
+	var t TradingWebsocketSubscriptionChannel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradingWebsocketSubscriptionChannel) Ptr() *TradingWebsocketSubscriptionChannel {
+	return &t
+}
+
+var (
 	unauthorizedErrorBodyFieldError = big.NewInt(1 << 0)
 )
 

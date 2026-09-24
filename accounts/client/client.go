@@ -28,7 +28,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-22-4"
+		apiVersionDateDefault := "2026-09-23"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -157,15 +157,19 @@ func (c *Client) Create(
 //
 // Example:
 //
+//	request := &whopsdk.MeAccountsRequest{}
 //	client.Accounts.Me(
 //	    context.TODO(),
+//	    request,
 //	)
 func (c *Client) Me(
 	ctx context.Context,
+	request *whopsdk.MeAccountsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.Account, error) {
 	response, err := c.WithRawResponse.Me(
 		ctx,
+		request,
 		opts...,
 	)
 	if err != nil {

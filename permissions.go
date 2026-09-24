@@ -300,6 +300,8 @@ const (
 	PermissionActionCheckoutRequestBasicRead          PermissionAction = "checkout_request:basic:read"
 	PermissionActionCryptoWalletManage                PermissionAction = "crypto_wallet:manage"
 	PermissionActionCryptoWalletSwap                  PermissionAction = "crypto_wallet:swap"
+	PermissionActionCryptoWalletTrade                 PermissionAction = "crypto_wallet:trade"
+	PermissionActionCryptoWalletTradeRead             PermissionAction = "crypto_wallet:trade:read"
 	PermissionActionAirdropLinkBasicRead              PermissionAction = "airdrop_link:basic:read"
 	PermissionActionAirdropLinkManage                 PermissionAction = "airdrop_link:manage"
 	PermissionActionLeadManage                        PermissionAction = "lead:manage"
@@ -825,6 +827,10 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionCryptoWalletManage, nil
 	case "crypto_wallet:swap":
 		return PermissionActionCryptoWalletSwap, nil
+	case "crypto_wallet:trade":
+		return PermissionActionCryptoWalletTrade, nil
+	case "crypto_wallet:trade:read":
+		return PermissionActionCryptoWalletTradeRead, nil
 	case "airdrop_link:basic:read":
 		return PermissionActionAirdropLinkBasicRead, nil
 	case "airdrop_link:manage":
