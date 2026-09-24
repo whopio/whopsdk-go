@@ -226,23 +226,31 @@ jobs:
               ;;
           esac
 
-          latest_status=$(proxy "https://proxy.golang.org/${module_path}/@latest" /tmp/proxy-latest.txt)
-          case "$latest_status" in
+          # Tagged versions only. @latest falls back to a pseudo-version minted from the default
+          # branch when no tag exists yet (a dry run of this workflow is enough to make the proxy
+          # mint and cache one), and sort -V ranks 2.0.0-20260924131203-8585cf7dc6a4 above
+          # 2.0.0, which read as "2.0.0 already published" on the first 2.x release.
+          list_status=$(proxy "https://proxy.golang.org/${module_path}/@v/list" /tmp/proxy-list.txt)
+          case "$list_status" in
             200)
-              latest=$(jq -r '.Version' /tmp/proxy-latest.txt)
+              latest=$(grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' /tmp/proxy-list.txt | sort -V | tail -1 || true)
               latest="${latest#v}"
-              echo "Latest on proxy.golang.org: ${latest}"
-              highest=$(printf '%s\n%s\n' "$latest" "$version" | sort -V | tail -1)
-              if [ "$highest" = "$latest" ] && [ "$latest" != "$version" ]; then
-                echo "::error::${VERSION_FILE} is at ${version} but ${module_path}@v${latest} is already published. This tree was generated before that release; regenerate it before merging."
-                exit 1
+              if [ -z "$latest" ]; then
+                echo "::notice::proxy.golang.org lists no tagged version of ${module_path} yet; skipping the regression check."
+              else
+                echo "Latest tagged on proxy.golang.org: ${latest}"
+                highest=$(printf '%s\n%s\n' "$latest" "$version" | sort -V | tail -1)
+                if [ "$highest" = "$latest" ] && [ "$latest" != "$version" ]; then
+                  echo "::error::${VERSION_FILE} is at ${version} but ${module_path}@v${latest} is already published. This tree was generated before that release; regenerate it before merging."
+                  exit 1
+                fi
               fi
               ;;
             404)
               echo "::notice::proxy.golang.org serves no version of ${module_path} yet; skipping the regression check."
               ;;
             *)
-              echo "::error::proxy.golang.org returned HTTP ${latest_status} for @latest; refusing to guess the published version."
+              echo "::error::proxy.golang.org returned HTTP ${list_status} for @v/list; refusing to guess the published version."
               exit 1
               ;;
           esac
