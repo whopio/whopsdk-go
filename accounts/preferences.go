@@ -36,16 +36,18 @@ func (r *RetrievePreferencesRequest) SetAccountID(accountID string) {
 }
 
 var (
-	retrievePreferencesResponseFieldAdsAgreement              = big.NewInt(1 << 0)
-	retrievePreferencesResponseFieldAdsCertifications         = big.NewInt(1 << 1)
-	retrievePreferencesResponseFieldAdsPaymentMethods         = big.NewInt(1 << 2)
-	retrievePreferencesResponseFieldAdsReportingCurrency      = big.NewInt(1 << 3)
-	retrievePreferencesResponseFieldAdsSchedulingTimezone     = big.NewInt(1 << 4)
-	retrievePreferencesResponseFieldAdsTripleWhaleIntegration = big.NewInt(1 << 5)
-	retrievePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 6)
-	retrievePreferencesResponseFieldCardsNotifications        = big.NewInt(1 << 7)
-	retrievePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 8)
-	retrievePreferencesResponseFieldEconomicIntelligence      = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldAdsAgreement               = big.NewInt(1 << 0)
+	retrievePreferencesResponseFieldAdsCertifications          = big.NewInt(1 << 1)
+	retrievePreferencesResponseFieldAdsPaymentMethods          = big.NewInt(1 << 2)
+	retrievePreferencesResponseFieldAdsReportingCurrency       = big.NewInt(1 << 3)
+	retrievePreferencesResponseFieldAdsSchedulingTimezone      = big.NewInt(1 << 4)
+	retrievePreferencesResponseFieldAdsTripleWhaleIntegration  = big.NewInt(1 << 5)
+	retrievePreferencesResponseFieldCardsAutoTopUp             = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldCardsNotifications         = big.NewInt(1 << 7)
+	retrievePreferencesResponseFieldDisputeFighterEnabled      = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldEconomicIntelligence       = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt = big.NewInt(1 << 10)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers = big.NewInt(1 << 11)
 )
 
 type RetrievePreferencesResponse struct {
@@ -67,8 +69,12 @@ type RetrievePreferencesResponse struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
-	// Whether economic intelligence is enabled for the account.
+	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
+	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or has no end date.
+	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
+	// Durations the account can choose from to turn on Economic Intelligence, each with its fee. `null` while Economic Intelligence is on or during a free trial.
+	EconomicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers,omitempty" url:"economic_intelligence_offers,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -145,6 +151,20 @@ func (r *RetrievePreferencesResponse) GetEconomicIntelligence() bool {
 		return false
 	}
 	return r.EconomicIntelligence
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligenceEndsAt() *string {
+	if r == nil {
+		return nil
+	}
+	return r.EconomicIntelligenceEndsAt
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligenceOffers() []*RetrievePreferencesResponseEconomicIntelligenceOffersItem {
+	if r == nil {
+		return nil
+	}
+	return r.EconomicIntelligenceOffers
 }
 
 func (r *RetrievePreferencesResponse) GetExtraProperties() map[string]interface{} {
@@ -229,6 +249,20 @@ func (r *RetrievePreferencesResponse) SetDisputeFighterEnabled(disputeFighterEna
 func (r *RetrievePreferencesResponse) SetEconomicIntelligence(economicIntelligence bool) {
 	r.EconomicIntelligence = economicIntelligence
 	r.require(retrievePreferencesResponseFieldEconomicIntelligence)
+}
+
+// SetEconomicIntelligenceEndsAt sets the EconomicIntelligenceEndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligenceEndsAt(economicIntelligenceEndsAt *string) {
+	r.EconomicIntelligenceEndsAt = economicIntelligenceEndsAt
+	r.require(retrievePreferencesResponseFieldEconomicIntelligenceEndsAt)
+}
+
+// SetEconomicIntelligenceOffers sets the EconomicIntelligenceOffers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligenceOffers(economicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem) {
+	r.EconomicIntelligenceOffers = economicIntelligenceOffers
+	r.require(retrievePreferencesResponseFieldEconomicIntelligenceOffers)
 }
 
 func (r *RetrievePreferencesResponse) UnmarshalJSON(data []byte) error {
@@ -1437,6 +1471,125 @@ func (r RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus) Ptr() *Retri
 }
 
 var (
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDurationDays  = big.NewInt(1 << 0)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage = big.NewInt(1 << 1)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended   = big.NewInt(1 << 2)
+)
+
+type RetrievePreferencesResponseEconomicIntelligenceOffersItem struct {
+	// How many days Economic Intelligence stays on. Pass this value as `economic_intelligence_duration_days` to turn it on.
+	DurationDays int `json:"duration_days" url:"duration_days"`
+	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
+	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
+	// Whether Whop recommends this duration. Exactly one offer is recommended.
+	Recommended bool `json:"recommended" url:"recommended"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetDurationDays() int {
+	if r == nil {
+		return 0
+	}
+	return r.DurationDays
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetFeePercentage() float64 {
+	if r == nil {
+		return 0
+	}
+	return r.FeePercentage
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetRecommended() bool {
+	if r == nil {
+		return false
+	}
+	return r.Recommended
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetDurationDays sets the DurationDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetDurationDays(durationDays int) {
+	r.DurationDays = durationDays
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDurationDays)
+}
+
+// SetFeePercentage sets the FeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetFeePercentage(feePercentage float64) {
+	r.FeePercentage = feePercentage
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage)
+}
+
+// SetRecommended sets the Recommended field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetRecommended(recommended bool) {
+	r.Recommended = recommended
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended)
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrievePreferencesResponseEconomicIntelligenceOffersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrievePreferencesResponseEconomicIntelligenceOffersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) MarshalJSON() ([]byte, error) {
+	type embed RetrievePreferencesResponseEconomicIntelligenceOffersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
 	updatePreferencesRequestAdsCertificationsValueFieldStatus = big.NewInt(1 << 0)
 )
 
@@ -1998,16 +2151,18 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) String() string {
 }
 
 var (
-	updatePreferencesResponseFieldAdsAgreement              = big.NewInt(1 << 0)
-	updatePreferencesResponseFieldAdsCertifications         = big.NewInt(1 << 1)
-	updatePreferencesResponseFieldAdsPaymentMethods         = big.NewInt(1 << 2)
-	updatePreferencesResponseFieldAdsReportingCurrency      = big.NewInt(1 << 3)
-	updatePreferencesResponseFieldAdsSchedulingTimezone     = big.NewInt(1 << 4)
-	updatePreferencesResponseFieldAdsTripleWhaleIntegration = big.NewInt(1 << 5)
-	updatePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 6)
-	updatePreferencesResponseFieldCardsNotifications        = big.NewInt(1 << 7)
-	updatePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 8)
-	updatePreferencesResponseFieldEconomicIntelligence      = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldAdsAgreement               = big.NewInt(1 << 0)
+	updatePreferencesResponseFieldAdsCertifications          = big.NewInt(1 << 1)
+	updatePreferencesResponseFieldAdsPaymentMethods          = big.NewInt(1 << 2)
+	updatePreferencesResponseFieldAdsReportingCurrency       = big.NewInt(1 << 3)
+	updatePreferencesResponseFieldAdsSchedulingTimezone      = big.NewInt(1 << 4)
+	updatePreferencesResponseFieldAdsTripleWhaleIntegration  = big.NewInt(1 << 5)
+	updatePreferencesResponseFieldCardsAutoTopUp             = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldCardsNotifications         = big.NewInt(1 << 7)
+	updatePreferencesResponseFieldDisputeFighterEnabled      = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldEconomicIntelligence       = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldEconomicIntelligenceEndsAt = big.NewInt(1 << 10)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers = big.NewInt(1 << 11)
 )
 
 type UpdatePreferencesResponse struct {
@@ -2029,8 +2184,12 @@ type UpdatePreferencesResponse struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
-	// Whether economic intelligence is enabled for the account.
+	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
+	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or has no end date.
+	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
+	// Durations the account can choose from to turn on Economic Intelligence, each with its fee. `null` while Economic Intelligence is on or during a free trial.
+	EconomicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers,omitempty" url:"economic_intelligence_offers,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2107,6 +2266,20 @@ func (u *UpdatePreferencesResponse) GetEconomicIntelligence() bool {
 		return false
 	}
 	return u.EconomicIntelligence
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligenceEndsAt() *string {
+	if u == nil {
+		return nil
+	}
+	return u.EconomicIntelligenceEndsAt
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligenceOffers() []*UpdatePreferencesResponseEconomicIntelligenceOffersItem {
+	if u == nil {
+		return nil
+	}
+	return u.EconomicIntelligenceOffers
 }
 
 func (u *UpdatePreferencesResponse) GetExtraProperties() map[string]interface{} {
@@ -2191,6 +2364,20 @@ func (u *UpdatePreferencesResponse) SetDisputeFighterEnabled(disputeFighterEnabl
 func (u *UpdatePreferencesResponse) SetEconomicIntelligence(economicIntelligence bool) {
 	u.EconomicIntelligence = economicIntelligence
 	u.require(updatePreferencesResponseFieldEconomicIntelligence)
+}
+
+// SetEconomicIntelligenceEndsAt sets the EconomicIntelligenceEndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligenceEndsAt(economicIntelligenceEndsAt *string) {
+	u.EconomicIntelligenceEndsAt = economicIntelligenceEndsAt
+	u.require(updatePreferencesResponseFieldEconomicIntelligenceEndsAt)
+}
+
+// SetEconomicIntelligenceOffers sets the EconomicIntelligenceOffers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligenceOffers(economicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem) {
+	u.EconomicIntelligenceOffers = economicIntelligenceOffers
+	u.require(updatePreferencesResponseFieldEconomicIntelligenceOffers)
 }
 
 func (u *UpdatePreferencesResponse) UnmarshalJSON(data []byte) error {
@@ -3399,16 +3586,135 @@ func (u UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus) Ptr() *UpdateP
 }
 
 var (
-	updatePreferencesRequestFieldAccountID                 = big.NewInt(1 << 0)
-	updatePreferencesRequestFieldAdsCertifications         = big.NewInt(1 << 1)
-	updatePreferencesRequestFieldAdsPaymentMethods         = big.NewInt(1 << 2)
-	updatePreferencesRequestFieldAdsReportingCurrency      = big.NewInt(1 << 3)
-	updatePreferencesRequestFieldAdsSchedulingTimezone     = big.NewInt(1 << 4)
-	updatePreferencesRequestFieldAdsTripleWhaleIntegration = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldCardsAutoTopUp            = big.NewInt(1 << 6)
-	updatePreferencesRequestFieldCardsNotifications        = big.NewInt(1 << 7)
-	updatePreferencesRequestFieldDisputeFighterEnabled     = big.NewInt(1 << 8)
-	updatePreferencesRequestFieldEconomicIntelligence      = big.NewInt(1 << 9)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldDurationDays  = big.NewInt(1 << 0)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage = big.NewInt(1 << 1)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended   = big.NewInt(1 << 2)
+)
+
+type UpdatePreferencesResponseEconomicIntelligenceOffersItem struct {
+	// How many days Economic Intelligence stays on. Pass this value as `economic_intelligence_duration_days` to turn it on.
+	DurationDays int `json:"duration_days" url:"duration_days"`
+	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
+	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
+	// Whether Whop recommends this duration. Exactly one offer is recommended.
+	Recommended bool `json:"recommended" url:"recommended"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetDurationDays() int {
+	if u == nil {
+		return 0
+	}
+	return u.DurationDays
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetFeePercentage() float64 {
+	if u == nil {
+		return 0
+	}
+	return u.FeePercentage
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetRecommended() bool {
+	if u == nil {
+		return false
+	}
+	return u.Recommended
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetDurationDays sets the DurationDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetDurationDays(durationDays int) {
+	u.DurationDays = durationDays
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldDurationDays)
+}
+
+// SetFeePercentage sets the FeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetFeePercentage(feePercentage float64) {
+	u.FeePercentage = feePercentage
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage)
+}
+
+// SetRecommended sets the Recommended field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetRecommended(recommended bool) {
+	u.Recommended = recommended
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended)
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesResponseEconomicIntelligenceOffersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesResponseEconomicIntelligenceOffersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesResponseEconomicIntelligenceOffersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updatePreferencesRequestFieldAccountID                        = big.NewInt(1 << 0)
+	updatePreferencesRequestFieldAdsCertifications                = big.NewInt(1 << 1)
+	updatePreferencesRequestFieldAdsPaymentMethods                = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldAdsReportingCurrency             = big.NewInt(1 << 3)
+	updatePreferencesRequestFieldAdsSchedulingTimezone            = big.NewInt(1 << 4)
+	updatePreferencesRequestFieldAdsTripleWhaleIntegration        = big.NewInt(1 << 5)
+	updatePreferencesRequestFieldCardsAutoTopUp                   = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCardsNotifications               = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldDisputeFighterEnabled            = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldEconomicIntelligenceDurationDays = big.NewInt(1 << 9)
 )
 
 type UpdatePreferencesRequest struct {
@@ -3430,8 +3736,8 @@ type UpdatePreferencesRequest struct {
 	CardsNotifications *bool `json:"cards_notifications,omitempty" url:"-"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins. Requires the `payment:dispute` scope on your API key.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
-	// Whether economic intelligence is enabled for the account. Requires an existing ledger account and the `company:update` scope on your API key.
-	EconomicIntelligence *bool `json:"economic_intelligence,omitempty" url:"-"`
+	// Turns on Economic Intelligence for this many days, at the fee listed for that duration in `economic_intelligence_offers`. It can't be changed or turned off until `economic_intelligence_ends_at`, and it can't be turned on during a free trial. Requires the `company:update` scope on your API key.
+	EconomicIntelligenceDurationDays *int `json:"economic_intelligence_duration_days,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3507,11 +3813,11 @@ func (u *UpdatePreferencesRequest) SetDisputeFighterEnabled(disputeFighterEnable
 	u.require(updatePreferencesRequestFieldDisputeFighterEnabled)
 }
 
-// SetEconomicIntelligence sets the EconomicIntelligence field and marks it as non-optional;
+// SetEconomicIntelligenceDurationDays sets the EconomicIntelligenceDurationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePreferencesRequest) SetEconomicIntelligence(economicIntelligence *bool) {
-	u.EconomicIntelligence = economicIntelligence
-	u.require(updatePreferencesRequestFieldEconomicIntelligence)
+func (u *UpdatePreferencesRequest) SetEconomicIntelligenceDurationDays(economicIntelligenceDurationDays *int) {
+	u.EconomicIntelligenceDurationDays = economicIntelligenceDurationDays
+	u.require(updatePreferencesRequestFieldEconomicIntelligenceDurationDays)
 }
 
 func (u *UpdatePreferencesRequest) UnmarshalJSON(data []byte) error {

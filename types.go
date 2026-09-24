@@ -1103,6 +1103,125 @@ func (a *AccountCoveredPayoutFees) String() string {
 }
 
 var (
+	accountEconomicIntelligenceOfferFieldDurationDays  = big.NewInt(1 << 0)
+	accountEconomicIntelligenceOfferFieldFeePercentage = big.NewInt(1 << 1)
+	accountEconomicIntelligenceOfferFieldRecommended   = big.NewInt(1 << 2)
+)
+
+type AccountEconomicIntelligenceOffer struct {
+	// How many days Economic Intelligence stays on. Pass this value as `economic_intelligence_duration_days` to turn it on.
+	DurationDays int `json:"duration_days" url:"duration_days"`
+	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
+	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
+	// Whether Whop recommends this duration. Exactly one offer is recommended.
+	Recommended bool `json:"recommended" url:"recommended"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountEconomicIntelligenceOffer) GetDurationDays() int {
+	if a == nil {
+		return 0
+	}
+	return a.DurationDays
+}
+
+func (a *AccountEconomicIntelligenceOffer) GetFeePercentage() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.FeePercentage
+}
+
+func (a *AccountEconomicIntelligenceOffer) GetRecommended() bool {
+	if a == nil {
+		return false
+	}
+	return a.Recommended
+}
+
+func (a *AccountEconomicIntelligenceOffer) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountEconomicIntelligenceOffer) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetDurationDays sets the DurationDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountEconomicIntelligenceOffer) SetDurationDays(durationDays int) {
+	a.DurationDays = durationDays
+	a.require(accountEconomicIntelligenceOfferFieldDurationDays)
+}
+
+// SetFeePercentage sets the FeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountEconomicIntelligenceOffer) SetFeePercentage(feePercentage float64) {
+	a.FeePercentage = feePercentage
+	a.require(accountEconomicIntelligenceOfferFieldFeePercentage)
+}
+
+// SetRecommended sets the Recommended field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountEconomicIntelligenceOffer) SetRecommended(recommended bool) {
+	a.Recommended = recommended
+	a.require(accountEconomicIntelligenceOfferFieldRecommended)
+}
+
+func (a *AccountEconomicIntelligenceOffer) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountEconomicIntelligenceOffer
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountEconomicIntelligenceOffer(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountEconomicIntelligenceOffer) MarshalJSON() ([]byte, error) {
+	type embed AccountEconomicIntelligenceOffer
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountEconomicIntelligenceOffer) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
 	accountFeeFieldAdjustable         = big.NewInt(1 << 0)
 	accountFeeFieldCategory           = big.NewInt(1 << 1)
 	accountFeeFieldDefault            = big.NewInt(1 << 2)
@@ -3100,16 +3219,18 @@ func (a *AccountParentFeesValue) String() string {
 }
 
 var (
-	accountPreferencesFieldAdsAgreement              = big.NewInt(1 << 0)
-	accountPreferencesFieldAdsCertifications         = big.NewInt(1 << 1)
-	accountPreferencesFieldAdsPaymentMethods         = big.NewInt(1 << 2)
-	accountPreferencesFieldAdsReportingCurrency      = big.NewInt(1 << 3)
-	accountPreferencesFieldAdsSchedulingTimezone     = big.NewInt(1 << 4)
-	accountPreferencesFieldAdsTripleWhaleIntegration = big.NewInt(1 << 5)
-	accountPreferencesFieldCardsAutoTopUp            = big.NewInt(1 << 6)
-	accountPreferencesFieldCardsNotifications        = big.NewInt(1 << 7)
-	accountPreferencesFieldDisputeFighterEnabled     = big.NewInt(1 << 8)
-	accountPreferencesFieldEconomicIntelligence      = big.NewInt(1 << 9)
+	accountPreferencesFieldAdsAgreement               = big.NewInt(1 << 0)
+	accountPreferencesFieldAdsCertifications          = big.NewInt(1 << 1)
+	accountPreferencesFieldAdsPaymentMethods          = big.NewInt(1 << 2)
+	accountPreferencesFieldAdsReportingCurrency       = big.NewInt(1 << 3)
+	accountPreferencesFieldAdsSchedulingTimezone      = big.NewInt(1 << 4)
+	accountPreferencesFieldAdsTripleWhaleIntegration  = big.NewInt(1 << 5)
+	accountPreferencesFieldCardsAutoTopUp             = big.NewInt(1 << 6)
+	accountPreferencesFieldCardsNotifications         = big.NewInt(1 << 7)
+	accountPreferencesFieldDisputeFighterEnabled      = big.NewInt(1 << 8)
+	accountPreferencesFieldEconomicIntelligence       = big.NewInt(1 << 9)
+	accountPreferencesFieldEconomicIntelligenceEndsAt = big.NewInt(1 << 10)
+	accountPreferencesFieldEconomicIntelligenceOffers = big.NewInt(1 << 11)
 )
 
 type AccountPreferences struct {
@@ -3130,8 +3251,11 @@ type AccountPreferences struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
-	// Whether economic intelligence is enabled for the account.
+	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
+	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or has no end date.
+	EconomicIntelligenceEndsAt *string                             `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
+	EconomicIntelligenceOffers []*AccountEconomicIntelligenceOffer `json:"economic_intelligence_offers,omitempty" url:"economic_intelligence_offers,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3208,6 +3332,20 @@ func (a *AccountPreferences) GetEconomicIntelligence() bool {
 		return false
 	}
 	return a.EconomicIntelligence
+}
+
+func (a *AccountPreferences) GetEconomicIntelligenceEndsAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.EconomicIntelligenceEndsAt
+}
+
+func (a *AccountPreferences) GetEconomicIntelligenceOffers() []*AccountEconomicIntelligenceOffer {
+	if a == nil {
+		return nil
+	}
+	return a.EconomicIntelligenceOffers
 }
 
 func (a *AccountPreferences) GetExtraProperties() map[string]interface{} {
@@ -3292,6 +3430,20 @@ func (a *AccountPreferences) SetDisputeFighterEnabled(disputeFighterEnabled bool
 func (a *AccountPreferences) SetEconomicIntelligence(economicIntelligence bool) {
 	a.EconomicIntelligence = economicIntelligence
 	a.require(accountPreferencesFieldEconomicIntelligence)
+}
+
+// SetEconomicIntelligenceEndsAt sets the EconomicIntelligenceEndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetEconomicIntelligenceEndsAt(economicIntelligenceEndsAt *string) {
+	a.EconomicIntelligenceEndsAt = economicIntelligenceEndsAt
+	a.require(accountPreferencesFieldEconomicIntelligenceEndsAt)
+}
+
+// SetEconomicIntelligenceOffers sets the EconomicIntelligenceOffers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetEconomicIntelligenceOffers(economicIntelligenceOffers []*AccountEconomicIntelligenceOffer) {
+	a.EconomicIntelligenceOffers = economicIntelligenceOffers
+	a.require(accountPreferencesFieldEconomicIntelligenceOffers)
 }
 
 func (a *AccountPreferences) UnmarshalJSON(data []byte) error {
