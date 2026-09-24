@@ -149,6 +149,31 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
+// Distributes cashback on demand from the authenticated platform's available USD balance to its direct connected accounts. Requires payout:transfer_funds. Optional filters combine; an empty body includes all eligible transactions. Only completed, unpaid transactions created before this request are considered. The latest matching rule wins; its funding account must be the authenticated platform. Amounts are calculated when processed. Returns status `processing` and echoes supplied filters when background processing is queued. Status `failed` with HTTP 200 means the queue rejected the request. This is not a payment confirmation. Failed transaction jobs retry automatically; insufficient funds requires adding USD to the funding wallet. Supports Idempotency-Key, and overlapping requests cannot pay the same card transaction twice.
+//
+// Example:
+//
+//	request := &whopsdk.PayoutCashbackRulesRequest{}
+//	client.CashbackRules.Payout(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Payout(
+	ctx context.Context,
+	request *whopsdk.PayoutCashbackRulesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.CashbackPayout, error) {
+	response, err := c.WithRawResponse.Payout(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Updates a cashback rule funded by the authenticated platform account. Requires payout:transfer_funds. Only merchant_name, merchant_category_code, description, and expires_at can change; starts_at, rate_bps, funding_account_id, and scoped_account_id are immutable. Omitted fields stay unchanged. Scheduled, active, and expired rules can be updated; discarded rules cannot. Updating a rule does not transfer funds.
 //
 // Example:

@@ -3573,6 +3573,37 @@
       "postServeActions": []
     },
     {
+      "id": "529e4ad8-6899-4bfc-8e68-7f3f1609961a",
+      "name": "Pay Out Cashback - default",
+      "request": {
+        "urlPathTemplate": "/cashback_rules/payout",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"account_id\",\n  \"cashback_rule_id\": \"cashback_rule_id\",\n  \"status\": \"processing\",\n  \"transaction_id\": \"citx_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "529e4ad8-6899-4bfc-8e68-7f3f1609961a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "acacd969-2538-4036-bcd5-259ac243ab39",
       "name": "Update Cashback Rule - default",
       "request": {
@@ -15292,6 +15323,6 @@
     }
   ],
   "meta": {
-    "total": 428
+    "total": 429
   }
 }
