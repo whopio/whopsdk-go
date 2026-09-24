@@ -34147,9 +34147,7 @@ Retrieve the account's completed or pending swaps — currently just the latest 
 <dd>
 
 ```go
-request := &whopsdk.ListSwapsRequest{
-    AccountID: "account_id",
-}
+request := &whopsdk.ListSwapsRequest{}
 client.Swaps.List(
     context.TODO(),
     request,
@@ -34168,7 +34166,15 @@ client.Swaps.List(
 <dl>
 <dd>
 
-**accountID:** `string` — Business or user account ID (biz_* / user_*).
+**accountID:** `*string` — Business account whose swaps to list, prefixed `biz_`. Provide this or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The caller's own user ID, prefixed `user_`, to list swaps in their personal account. Provide this or `account_id`.
     
 </dd>
 </dl>
@@ -34208,7 +34214,6 @@ Swaps one token for another from the account's wallet, or converts between fiat 
 
 ```go
 request := &whopsdk.CreateSwapsRequest{
-    AccountID: "biz_xxxxxxxxxxxxxx",
     FromToken: "usd",
     ToToken: "cad",
 }
@@ -34230,7 +34235,7 @@ client.Swaps.Create(
 <dl>
 <dd>
 
-**accountID:** `string` — Business or user account ID (biz_* / user_*).
+**accountID:** `*string` — Business account that makes the swap, prefixed `biz_`. Provide this or `user_id`.
     
 </dd>
 </dl>
@@ -34287,6 +34292,14 @@ client.Swaps.Create(
 <dd>
 
 **toToken:** `string` — Destination token contract address or ticker symbol, such as "XAUT".
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The caller's own user ID, prefixed `user_`, to swap in their personal account. Provide this or `account_id`.
     
 </dd>
 </dl>
@@ -36114,9 +36127,7 @@ Returns verifications for an account, including their status and any required ac
 <dd>
 
 ```go
-request := &whopsdk.ListVerificationsRequest{
-    AccountID: "account_id",
-}
+request := &whopsdk.ListVerificationsRequest{}
 client.Verifications.List(
     context.TODO(),
     request,
@@ -36135,7 +36146,15 @@ client.Verifications.List(
 <dl>
 <dd>
 
-**accountID:** `string` — Account or user ID whose verifications you want to list. Use a `biz_` account ID, or the caller's `user_` ID for personal verifications.
+**accountID:** `*string` — Business account whose verifications you want to list, prefixed `biz_`. Provide this or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The caller's own user ID, prefixed `user_`, to list personal verifications. Provide this or `account_id`.
     
 </dd>
 </dl>
@@ -36191,7 +36210,6 @@ Starts a hosted verification session for an account or user, or returns the acti
 
 ```go
 request := &whopsdk.CreateVerificationsRequest{
-    AccountID: "account_id",
     Body: &whopsdk.CreateVerificationsRequestBody{
         Individual: &whopsdk.CreateVerificationsRequestBodyIndividual{},
     },
@@ -36214,7 +36232,15 @@ client.Verifications.Create(
 <dl>
 <dd>
 
-**accountID:** `string` — Account or user ID whose identity you want to verify. Use a `biz_` account ID for account verifications, or the caller's `user_` ID for personal verification.
+**accountID:** `*string` — Business account whose identity you want to verify, prefixed `biz_`. Provide this or `user_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The caller's own user ID, prefixed `user_`, for a personal verification. Provide this or `account_id`.
     
 </dd>
 </dl>

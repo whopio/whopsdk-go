@@ -42,9 +42,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //
 // Example:
 //
-//	request := &whopsdk.ListSwapsRequest{
-//	    AccountID: "account_id",
-//	}
+//	request := &whopsdk.ListSwapsRequest{}
 //	client.Swaps.List(
 //	    context.TODO(),
 //	    request,
@@ -70,7 +68,6 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateSwapsRequest{
-//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	    FromToken: "usd",
 //	    ToToken: "cad",
 //	}

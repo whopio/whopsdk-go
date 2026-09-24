@@ -42,9 +42,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //
 // Example:
 //
-//	request := &whopsdk.ListVerificationsRequest{
-//	    AccountID: "account_id",
-//	}
+//	request := &whopsdk.ListVerificationsRequest{}
 //	client.Verifications.List(
 //	    context.TODO(),
 //	    request,
@@ -70,7 +68,6 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateVerificationsRequest{
-//	    AccountID: "account_id",
 //	    Body: &whopsdk.CreateVerificationsRequestBody{
 //	        Individual: &whopsdk.CreateVerificationsRequestBodyIndividual{},
 //	    },
