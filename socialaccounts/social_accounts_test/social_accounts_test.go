@@ -233,3 +233,29 @@ func TestSocialAccountsPostsWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSocialAccountsPostsWithWireMock", "GET", "/social_accounts/id/posts", map[string]interface{}{"account_id": "account_id"}, 1)
 }
+
+func TestSocialAccountsRefreshWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.RefreshSocialAccountsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.SocialAccounts.Refresh(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSocialAccountsRefreshWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSocialAccountsRefreshWithWireMock", "POST", "/social_accounts/id/refresh", nil, 1)
+}
