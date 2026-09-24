@@ -560,37 +560,40 @@ var (
 	adCampaignFieldCustomEventCounts            = big.NewInt(1 << 28)
 	adCampaignFieldCustomEventValues            = big.NewInt(1 << 29)
 	adCampaignFieldDeliveryStatus               = big.NewInt(1 << 30)
-	adCampaignFieldFrequency                    = big.NewInt(1 << 31)
-	adCampaignFieldID                           = big.NewInt(1 << 32)
-	adCampaignFieldImpressions                  = big.NewInt(1 << 33)
-	adCampaignFieldIssues                       = big.NewInt(1 << 34)
-	adCampaignFieldLeadValue                    = big.NewInt(1 << 35)
-	adCampaignFieldLeads                        = big.NewInt(1 << 36)
-	adCampaignFieldLinkClicks                   = big.NewInt(1 << 37)
-	adCampaignFieldObjective                    = big.NewInt(1 << 38)
-	adCampaignFieldOptimizationGoal             = big.NewInt(1 << 39)
-	adCampaignFieldPlatform                     = big.NewInt(1 << 40)
-	adCampaignFieldPurchaseValue                = big.NewInt(1 << 41)
-	adCampaignFieldPurchases                    = big.NewInt(1 << 42)
-	adCampaignFieldReach                        = big.NewInt(1 << 43)
-	adCampaignFieldResultEvent                  = big.NewInt(1 << 44)
-	adCampaignFieldResultEventName              = big.NewInt(1 << 45)
-	adCampaignFieldResults                      = big.NewInt(1 << 46)
-	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 47)
-	adCampaignFieldScheduleValue                = big.NewInt(1 << 48)
-	adCampaignFieldSchedules                    = big.NewInt(1 << 49)
-	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 50)
-	adCampaignFieldSpend                        = big.NewInt(1 << 51)
-	adCampaignFieldSpendCurrency                = big.NewInt(1 << 52)
-	adCampaignFieldStatus                       = big.NewInt(1 << 53)
-	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 54)
-	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 55)
-	adCampaignFieldTitle                        = big.NewInt(1 << 56)
-	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 57)
-	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 58)
-	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 59)
-	adCampaignFieldViewedContentValue           = big.NewInt(1 << 60)
-	adCampaignFieldViewedContents               = big.NewInt(1 << 61)
+	adCampaignFieldDesiredCostPerResult         = big.NewInt(1 << 31)
+	adCampaignFieldEndsAt                       = big.NewInt(1 << 32)
+	adCampaignFieldFrequency                    = big.NewInt(1 << 33)
+	adCampaignFieldID                           = big.NewInt(1 << 34)
+	adCampaignFieldImpressions                  = big.NewInt(1 << 35)
+	adCampaignFieldIssues                       = big.NewInt(1 << 36)
+	adCampaignFieldLeadValue                    = big.NewInt(1 << 37)
+	adCampaignFieldLeads                        = big.NewInt(1 << 38)
+	adCampaignFieldLinkClicks                   = big.NewInt(1 << 39)
+	adCampaignFieldObjective                    = big.NewInt(1 << 40)
+	adCampaignFieldOptimizationGoal             = big.NewInt(1 << 41)
+	adCampaignFieldPlatform                     = big.NewInt(1 << 42)
+	adCampaignFieldPurchaseValue                = big.NewInt(1 << 43)
+	adCampaignFieldPurchases                    = big.NewInt(1 << 44)
+	adCampaignFieldReach                        = big.NewInt(1 << 45)
+	adCampaignFieldResultEvent                  = big.NewInt(1 << 46)
+	adCampaignFieldResultEventName              = big.NewInt(1 << 47)
+	adCampaignFieldResults                      = big.NewInt(1 << 48)
+	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 49)
+	adCampaignFieldScheduleValue                = big.NewInt(1 << 50)
+	adCampaignFieldSchedules                    = big.NewInt(1 << 51)
+	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 52)
+	adCampaignFieldSpend                        = big.NewInt(1 << 53)
+	adCampaignFieldSpendCurrency                = big.NewInt(1 << 54)
+	adCampaignFieldStartsAt                     = big.NewInt(1 << 55)
+	adCampaignFieldStatus                       = big.NewInt(1 << 56)
+	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 57)
+	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 58)
+	adCampaignFieldTitle                        = big.NewInt(1 << 59)
+	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 60)
+	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 61)
+	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 62)
+	adCampaignFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 64)
 )
 
 type AdCampaign struct {
@@ -656,6 +659,10 @@ type AdCampaign struct {
 	CustomEventValues map[string]any `json:"custom_event_values" url:"custom_event_values"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdCampaignDeliveryStatus `json:"delivery_status" url:"delivery_status"`
+	// Google only: the target cost per conversion in USD when `bid_type` is `average_target`. `null` otherwise.
+	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
+	// Google only: when the campaign stops delivering, as an ISO 8601 timestamp. `null` runs it until paused.
+	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// Platform-reported impressions divided by reach.
 	Frequency *float64 `json:"frequency,omitempty" url:"frequency,omitempty"`
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
@@ -698,6 +705,8 @@ type AdCampaign struct {
 	Spend float64 `json:"spend" url:"spend"`
 	// The ISO 4217 currency code of all monetary metrics.
 	SpendCurrency *string `json:"spend_currency,omitempty" url:"spend_currency,omitempty"`
+	// Google only: when the campaign starts delivering, as an ISO 8601 timestamp. `null` starts it as soon as it launches.
+	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
 	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status AdCampaignStatus `json:"status" url:"status"`
 	// USD value attributed to submit-application events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
@@ -941,6 +950,20 @@ func (a *AdCampaign) GetDeliveryStatus() AdCampaignDeliveryStatus {
 	return a.DeliveryStatus
 }
 
+func (a *AdCampaign) GetDesiredCostPerResult() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.DesiredCostPerResult
+}
+
+func (a *AdCampaign) GetEndsAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.EndsAt
+}
+
 func (a *AdCampaign) GetFrequency() *float64 {
 	if a == nil {
 		return nil
@@ -1093,6 +1116,13 @@ func (a *AdCampaign) GetSpendCurrency() *string {
 		return nil
 	}
 	return a.SpendCurrency
+}
+
+func (a *AdCampaign) GetStartsAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.StartsAt
 }
 
 func (a *AdCampaign) GetStatus() AdCampaignStatus {
@@ -1389,6 +1419,20 @@ func (a *AdCampaign) SetDeliveryStatus(deliveryStatus AdCampaignDeliveryStatus) 
 	a.require(adCampaignFieldDeliveryStatus)
 }
 
+// SetDesiredCostPerResult sets the DesiredCostPerResult field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCampaign) SetDesiredCostPerResult(desiredCostPerResult *float64) {
+	a.DesiredCostPerResult = desiredCostPerResult
+	a.require(adCampaignFieldDesiredCostPerResult)
+}
+
+// SetEndsAt sets the EndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCampaign) SetEndsAt(endsAt *string) {
+	a.EndsAt = endsAt
+	a.require(adCampaignFieldEndsAt)
+}
+
 // SetFrequency sets the Frequency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AdCampaign) SetFrequency(frequency *float64) {
@@ -1541,6 +1585,13 @@ func (a *AdCampaign) SetSpend(spend float64) {
 func (a *AdCampaign) SetSpendCurrency(spendCurrency *string) {
 	a.SpendCurrency = spendCurrency
 	a.require(adCampaignFieldSpendCurrency)
+}
+
+// SetStartsAt sets the StartsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCampaign) SetStartsAt(startsAt *string) {
+	a.StartsAt = startsAt
+	a.require(adCampaignFieldStartsAt)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -2898,23 +2949,26 @@ func (p PostAdCampaignPaymentFailedPayloadAPIVersion) Ptr() *PostAdCampaignPayme
 }
 
 var (
-	postAdCampaignPaymentFailedPayloadDataFieldBidType             = big.NewInt(1 << 0)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmount        = big.NewInt(1 << 1)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmountLocal   = big.NewInt(1 << 2)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetCurrency      = big.NewInt(1 << 3)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization  = big.NewInt(1 << 4)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetType          = big.NewInt(1 << 5)
-	postAdCampaignPaymentFailedPayloadDataFieldCreatedAt           = big.NewInt(1 << 6)
-	postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus      = big.NewInt(1 << 7)
-	postAdCampaignPaymentFailedPayloadDataFieldID                  = big.NewInt(1 << 8)
-	postAdCampaignPaymentFailedPayloadDataFieldIssues              = big.NewInt(1 << 9)
-	postAdCampaignPaymentFailedPayloadDataFieldObjective           = big.NewInt(1 << 10)
-	postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal    = big.NewInt(1 << 11)
-	postAdCampaignPaymentFailedPayloadDataFieldPlatform            = big.NewInt(1 << 12)
-	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories = big.NewInt(1 << 13)
-	postAdCampaignPaymentFailedPayloadDataFieldStatus              = big.NewInt(1 << 14)
-	postAdCampaignPaymentFailedPayloadDataFieldTitle               = big.NewInt(1 << 15)
-	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt           = big.NewInt(1 << 16)
+	postAdCampaignPaymentFailedPayloadDataFieldBidType              = big.NewInt(1 << 0)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmount         = big.NewInt(1 << 1)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmountLocal    = big.NewInt(1 << 2)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetCurrency       = big.NewInt(1 << 3)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization   = big.NewInt(1 << 4)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetType           = big.NewInt(1 << 5)
+	postAdCampaignPaymentFailedPayloadDataFieldCreatedAt            = big.NewInt(1 << 6)
+	postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 7)
+	postAdCampaignPaymentFailedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 8)
+	postAdCampaignPaymentFailedPayloadDataFieldEndsAt               = big.NewInt(1 << 9)
+	postAdCampaignPaymentFailedPayloadDataFieldID                   = big.NewInt(1 << 10)
+	postAdCampaignPaymentFailedPayloadDataFieldIssues               = big.NewInt(1 << 11)
+	postAdCampaignPaymentFailedPayloadDataFieldObjective            = big.NewInt(1 << 12)
+	postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal     = big.NewInt(1 << 13)
+	postAdCampaignPaymentFailedPayloadDataFieldPlatform             = big.NewInt(1 << 14)
+	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 15)
+	postAdCampaignPaymentFailedPayloadDataFieldStartsAt             = big.NewInt(1 << 16)
+	postAdCampaignPaymentFailedPayloadDataFieldStatus               = big.NewInt(1 << 17)
+	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 18)
+	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 19)
 )
 
 type PostAdCampaignPaymentFailedPayloadData struct {
@@ -2934,6 +2988,10 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdCampaignPaymentFailedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
+	// Google only: the target cost per conversion in USD when `bid_type` is `average_target`. `null` otherwise.
+	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
+	// Google only: when the campaign stops delivering, as an ISO 8601 timestamp. `null` runs it until paused.
+	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID     string             `json:"id" url:"id"`
 	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
@@ -2944,6 +3002,8 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	// The ad network the campaign runs on.
 	Platform            PostAdCampaignPaymentFailedPayloadDataPlatform                  `json:"platform" url:"platform"`
 	SpecialAdCategories []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
+	// Google only: when the campaign starts delivering, as an ISO 8601 timestamp. `null` starts it as soon as it launches.
+	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
 	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status PostAdCampaignPaymentFailedPayloadDataStatus `json:"status" url:"status"`
 	// Display name of the ad campaign.
@@ -3014,6 +3074,20 @@ func (p *PostAdCampaignPaymentFailedPayloadData) GetDeliveryStatus() PostAdCampa
 	return p.DeliveryStatus
 }
 
+func (p *PostAdCampaignPaymentFailedPayloadData) GetDesiredCostPerResult() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.DesiredCostPerResult
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetEndsAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.EndsAt
+}
+
 func (p *PostAdCampaignPaymentFailedPayloadData) GetID() string {
 	if p == nil {
 		return ""
@@ -3054,6 +3128,13 @@ func (p *PostAdCampaignPaymentFailedPayloadData) GetSpecialAdCategories() []Post
 		return nil
 	}
 	return p.SpecialAdCategories
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetStartsAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StartsAt
 }
 
 func (p *PostAdCampaignPaymentFailedPayloadData) GetStatus() PostAdCampaignPaymentFailedPayloadDataStatus {
@@ -3147,6 +3228,20 @@ func (p *PostAdCampaignPaymentFailedPayloadData) SetDeliveryStatus(deliveryStatu
 	p.require(postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus)
 }
 
+// SetDesiredCostPerResult sets the DesiredCostPerResult field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetDesiredCostPerResult(desiredCostPerResult *float64) {
+	p.DesiredCostPerResult = desiredCostPerResult
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldDesiredCostPerResult)
+}
+
+// SetEndsAt sets the EndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetEndsAt(endsAt *string) {
+	p.EndsAt = endsAt
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldEndsAt)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostAdCampaignPaymentFailedPayloadData) SetID(id string) {
@@ -3187,6 +3282,13 @@ func (p *PostAdCampaignPaymentFailedPayloadData) SetPlatform(platform PostAdCamp
 func (p *PostAdCampaignPaymentFailedPayloadData) SetSpecialAdCategories(specialAdCategories []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem) {
 	p.SpecialAdCategories = specialAdCategories
 	p.require(postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories)
+}
+
+// SetStartsAt sets the StartsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetStartsAt(startsAt *string) {
+	p.StartsAt = startsAt
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldStartsAt)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -3772,23 +3874,26 @@ func (p PostAdCampaignUpdatedPayloadAPIVersion) Ptr() *PostAdCampaignUpdatedPayl
 }
 
 var (
-	postAdCampaignUpdatedPayloadDataFieldBidType             = big.NewInt(1 << 0)
-	postAdCampaignUpdatedPayloadDataFieldBudgetAmount        = big.NewInt(1 << 1)
-	postAdCampaignUpdatedPayloadDataFieldBudgetAmountLocal   = big.NewInt(1 << 2)
-	postAdCampaignUpdatedPayloadDataFieldBudgetCurrency      = big.NewInt(1 << 3)
-	postAdCampaignUpdatedPayloadDataFieldBudgetOptimization  = big.NewInt(1 << 4)
-	postAdCampaignUpdatedPayloadDataFieldBudgetType          = big.NewInt(1 << 5)
-	postAdCampaignUpdatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 6)
-	postAdCampaignUpdatedPayloadDataFieldDeliveryStatus      = big.NewInt(1 << 7)
-	postAdCampaignUpdatedPayloadDataFieldID                  = big.NewInt(1 << 8)
-	postAdCampaignUpdatedPayloadDataFieldIssues              = big.NewInt(1 << 9)
-	postAdCampaignUpdatedPayloadDataFieldObjective           = big.NewInt(1 << 10)
-	postAdCampaignUpdatedPayloadDataFieldOptimizationGoal    = big.NewInt(1 << 11)
-	postAdCampaignUpdatedPayloadDataFieldPlatform            = big.NewInt(1 << 12)
-	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories = big.NewInt(1 << 13)
-	postAdCampaignUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 14)
-	postAdCampaignUpdatedPayloadDataFieldTitle               = big.NewInt(1 << 15)
-	postAdCampaignUpdatedPayloadDataFieldUpdatedAt           = big.NewInt(1 << 16)
+	postAdCampaignUpdatedPayloadDataFieldBidType              = big.NewInt(1 << 0)
+	postAdCampaignUpdatedPayloadDataFieldBudgetAmount         = big.NewInt(1 << 1)
+	postAdCampaignUpdatedPayloadDataFieldBudgetAmountLocal    = big.NewInt(1 << 2)
+	postAdCampaignUpdatedPayloadDataFieldBudgetCurrency       = big.NewInt(1 << 3)
+	postAdCampaignUpdatedPayloadDataFieldBudgetOptimization   = big.NewInt(1 << 4)
+	postAdCampaignUpdatedPayloadDataFieldBudgetType           = big.NewInt(1 << 5)
+	postAdCampaignUpdatedPayloadDataFieldCreatedAt            = big.NewInt(1 << 6)
+	postAdCampaignUpdatedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 7)
+	postAdCampaignUpdatedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 8)
+	postAdCampaignUpdatedPayloadDataFieldEndsAt               = big.NewInt(1 << 9)
+	postAdCampaignUpdatedPayloadDataFieldID                   = big.NewInt(1 << 10)
+	postAdCampaignUpdatedPayloadDataFieldIssues               = big.NewInt(1 << 11)
+	postAdCampaignUpdatedPayloadDataFieldObjective            = big.NewInt(1 << 12)
+	postAdCampaignUpdatedPayloadDataFieldOptimizationGoal     = big.NewInt(1 << 13)
+	postAdCampaignUpdatedPayloadDataFieldPlatform             = big.NewInt(1 << 14)
+	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 15)
+	postAdCampaignUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 16)
+	postAdCampaignUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 17)
+	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 18)
+	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 19)
 )
 
 type PostAdCampaignUpdatedPayloadData struct {
@@ -3808,6 +3913,10 @@ type PostAdCampaignUpdatedPayloadData struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdCampaignUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
+	// Google only: the target cost per conversion in USD when `bid_type` is `average_target`. `null` otherwise.
+	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
+	// Google only: when the campaign stops delivering, as an ISO 8601 timestamp. `null` runs it until paused.
+	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID     string             `json:"id" url:"id"`
 	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
@@ -3818,6 +3927,8 @@ type PostAdCampaignUpdatedPayloadData struct {
 	// The ad network the campaign runs on.
 	Platform            PostAdCampaignUpdatedPayloadDataPlatform                  `json:"platform" url:"platform"`
 	SpecialAdCategories []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
+	// Google only: when the campaign starts delivering, as an ISO 8601 timestamp. `null` starts it as soon as it launches.
+	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
 	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status PostAdCampaignUpdatedPayloadDataStatus `json:"status" url:"status"`
 	// Display name of the ad campaign.
@@ -3888,6 +3999,20 @@ func (p *PostAdCampaignUpdatedPayloadData) GetDeliveryStatus() PostAdCampaignUpd
 	return p.DeliveryStatus
 }
 
+func (p *PostAdCampaignUpdatedPayloadData) GetDesiredCostPerResult() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.DesiredCostPerResult
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetEndsAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.EndsAt
+}
+
 func (p *PostAdCampaignUpdatedPayloadData) GetID() string {
 	if p == nil {
 		return ""
@@ -3928,6 +4053,13 @@ func (p *PostAdCampaignUpdatedPayloadData) GetSpecialAdCategories() []PostAdCamp
 		return nil
 	}
 	return p.SpecialAdCategories
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetStartsAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StartsAt
 }
 
 func (p *PostAdCampaignUpdatedPayloadData) GetStatus() PostAdCampaignUpdatedPayloadDataStatus {
@@ -4021,6 +4153,20 @@ func (p *PostAdCampaignUpdatedPayloadData) SetDeliveryStatus(deliveryStatus Post
 	p.require(postAdCampaignUpdatedPayloadDataFieldDeliveryStatus)
 }
 
+// SetDesiredCostPerResult sets the DesiredCostPerResult field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetDesiredCostPerResult(desiredCostPerResult *float64) {
+	p.DesiredCostPerResult = desiredCostPerResult
+	p.require(postAdCampaignUpdatedPayloadDataFieldDesiredCostPerResult)
+}
+
+// SetEndsAt sets the EndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetEndsAt(endsAt *string) {
+	p.EndsAt = endsAt
+	p.require(postAdCampaignUpdatedPayloadDataFieldEndsAt)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostAdCampaignUpdatedPayloadData) SetID(id string) {
@@ -4061,6 +4207,13 @@ func (p *PostAdCampaignUpdatedPayloadData) SetPlatform(platform PostAdCampaignUp
 func (p *PostAdCampaignUpdatedPayloadData) SetSpecialAdCategories(specialAdCategories []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem) {
 	p.SpecialAdCategories = specialAdCategories
 	p.require(postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories)
+}
+
+// SetStartsAt sets the StartsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetStartsAt(startsAt *string) {
+	p.StartsAt = startsAt
+	p.require(postAdCampaignUpdatedPayloadDataFieldStartsAt)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
