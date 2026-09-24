@@ -1230,6 +1230,9 @@ const (
 	LedgerActivityLineTypePlatformBalanceTransferIncoming           LedgerActivityLineType = "platform_balance_transfer_incoming"
 	LedgerActivityLineTypePlatformBalanceTransferOutgoing           LedgerActivityLineType = "platform_balance_transfer_outgoing"
 	LedgerActivityLineTypePlatformCoveredDispute                    LedgerActivityLineType = "platform_covered_dispute"
+	LedgerActivityLineTypePlatformCreditsGranted                    LedgerActivityLineType = "platform_credits_granted"
+	LedgerActivityLineTypePlatformCreditsPayment                    LedgerActivityLineType = "platform_credits_payment"
+	LedgerActivityLineTypePlatformCreditsPaymentRefund              LedgerActivityLineType = "platform_credits_payment_refund"
 	LedgerActivityLineTypePlatformEarning                           LedgerActivityLineType = "platform_earning"
 	LedgerActivityLineTypePlatformMarkupFee                         LedgerActivityLineType = "platform_markup_fee"
 	LedgerActivityLineTypePlatformMarkupFeePayout                   LedgerActivityLineType = "platform_markup_fee_payout"
@@ -1476,6 +1479,12 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypePlatformBalanceTransferOutgoing, nil
 	case "platform_covered_dispute":
 		return LedgerActivityLineTypePlatformCoveredDispute, nil
+	case "platform_credits_granted":
+		return LedgerActivityLineTypePlatformCreditsGranted, nil
+	case "platform_credits_payment":
+		return LedgerActivityLineTypePlatformCreditsPayment, nil
+	case "platform_credits_payment_refund":
+		return LedgerActivityLineTypePlatformCreditsPaymentRefund, nil
 	case "platform_earning":
 		return LedgerActivityLineTypePlatformEarning, nil
 	case "platform_markup_fee":
@@ -5173,6 +5182,9 @@ const (
 	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncoming           ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_incoming"
 	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_outgoing"
 	ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute                    ListFinancialActivityRequestLineTypesItem = "platform_covered_dispute"
+	ListFinancialActivityRequestLineTypesItemPlatformCreditsGranted                    ListFinancialActivityRequestLineTypesItem = "platform_credits_granted"
+	ListFinancialActivityRequestLineTypesItemPlatformCreditsPayment                    ListFinancialActivityRequestLineTypesItem = "platform_credits_payment"
+	ListFinancialActivityRequestLineTypesItemPlatformCreditsPaymentRefund              ListFinancialActivityRequestLineTypesItem = "platform_credits_payment_refund"
 	ListFinancialActivityRequestLineTypesItemPlatformEarning                           ListFinancialActivityRequestLineTypesItem = "platform_earning"
 	ListFinancialActivityRequestLineTypesItemPlatformMarkupFee                         ListFinancialActivityRequestLineTypesItem = "platform_markup_fee"
 	ListFinancialActivityRequestLineTypesItemPlatformMarkupFeePayout                   ListFinancialActivityRequestLineTypesItem = "platform_markup_fee_payout"
@@ -5416,6 +5428,12 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing, nil
 	case "platform_covered_dispute":
 		return ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute, nil
+	case "platform_credits_granted":
+		return ListFinancialActivityRequestLineTypesItemPlatformCreditsGranted, nil
+	case "platform_credits_payment":
+		return ListFinancialActivityRequestLineTypesItemPlatformCreditsPayment, nil
+	case "platform_credits_payment_refund":
+		return ListFinancialActivityRequestLineTypesItemPlatformCreditsPaymentRefund, nil
 	case "platform_earning":
 		return ListFinancialActivityRequestLineTypesItemPlatformEarning, nil
 	case "platform_markup_fee":

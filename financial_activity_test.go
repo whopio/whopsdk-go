@@ -13114,6 +13114,27 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("platform_covered_dispute"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_platform_credits_granted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("platform_credits_granted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("platform_credits_granted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits_payment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("platform_credits_payment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("platform_credits_payment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits_payment_refund", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("platform_credits_payment_refund")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("platform_credits_payment_refund"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_platform_earning", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("platform_earning")
@@ -14435,6 +14456,27 @@ func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
 		val, err := NewListFinancialActivityRequestLineTypesItemFromString("platform_covered_dispute")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("platform_covered_dispute"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits_granted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("platform_credits_granted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("platform_credits_granted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits_payment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("platform_credits_payment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("platform_credits_payment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits_payment_refund", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("platform_credits_payment_refund")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("platform_credits_payment_refund"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_platform_earning", func(t *testing.T) {
