@@ -395,6 +395,14 @@ client.Accounts.Create(
 <dl>
 <dd>
 
+**disputeFighterEnabled:** `*bool` — Whether Whop assembles and files dispute evidence for this account. Enabling it opts into the success fee charged on disputes it wins. Requires payment:dispute. Omit to preserve the existing setting or creation default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **email:** `*string` — The email address of the account owner. Required when creating a connected account.
     
 </dd>
@@ -404,6 +412,14 @@ client.Accounts.Create(
 <dd>
 
 **metadata:** `map[string]any` — Arbitrary key/value metadata to store on the account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**orchestrationEnabled:** `*bool` — Whether payment orchestration is enabled for this account. Requires payout:account:update. Omit to preserve the existing setting or creation default.
     
 </dd>
 </dl>
@@ -701,6 +717,14 @@ client.Accounts.Update(
 <dl>
 <dd>
 
+**disputeFighterEnabled:** `*bool` — Whether Whop assembles and files dispute evidence for this account. Enabling it opts into the success fee charged on disputes it wins. Requires payment:dispute. Omit to preserve the existing setting or creation default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **eula:** `*whopsdk.UpdateAccountsRequestEula` — The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
     
 </dd>
@@ -782,6 +806,14 @@ client.Accounts.Update(
 <dd>
 
 **opengraphImageVariant:** `*whopsdk.UpdateAccountsRequestOpengraphImageVariant` — The account Open Graph image variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**orchestrationEnabled:** `*bool` — Whether payment orchestration is enabled for this account. Requires payout:account:update. Omit to preserve the existing setting or creation default.
     
 </dd>
 </dl>
