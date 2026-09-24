@@ -88,9 +88,7 @@ func TestVerificationsListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListVerificationsRequest{
-		AccountID: "account_id",
-	}
+	request := &whopsdk.ListVerificationsRequest{}
 	_, invocationErr := client.Verifications.List(
 		context.TODO(),
 		request,
@@ -100,7 +98,7 @@ func TestVerificationsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestVerificationsListWithWireMock", "GET", "/verifications", map[string]interface{}{"account_id": "account_id"}, 1)
+	VerifyRequestCount(t, "TestVerificationsListWithWireMock", "GET", "/verifications", nil, 1)
 }
 
 func TestVerificationsCreateWithWireMock(
@@ -115,7 +113,6 @@ func TestVerificationsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateVerificationsRequest{
-		AccountID: "account_id",
 		Body: &whopsdk.CreateVerificationsRequestBody{
 			Individual: &whopsdk.CreateVerificationsRequestBodyIndividual{},
 		},
@@ -129,7 +126,7 @@ func TestVerificationsCreateWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestVerificationsCreateWithWireMock", "POST", "/verifications", map[string]interface{}{"account_id": "account_id"}, 1)
+	VerifyRequestCount(t, "TestVerificationsCreateWithWireMock", "POST", "/verifications", nil, 1)
 }
 
 func TestVerificationsRetrieveWithWireMock(

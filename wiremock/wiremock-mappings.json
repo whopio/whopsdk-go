@@ -12638,16 +12638,11 @@
           "Authorization": {
             "matches": "Bearer .+"
           }
-        },
-        "queryParameters": {
-          "account_id": {
-            "equalTo": "account_id"
-          }
         }
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"error\": \"Swap reverted: quoted price moved beyond the slippage tolerance\",\n      \"id\": \"vault-swap-cwal_xxxxxxxxxxxxxx\",\n      \"object\": \"swap\",\n      \"status\": \"queued\",\n      \"tx_hashes\": [\n        \"0xabc\"\n      ]\n    }\n  ]\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"error\": \"Swap reverted: quoted price moved beyond the slippage tolerance\",\n      \"id\": \"vault-swap-cwal_xxxxxxxxxxxxxx\",\n      \"object\": \"swap\",\n      \"status\": \"queued\",\n      \"tx_hashes\": [\n        \"0xabc\"\n      ],\n      \"user_id\": \"user_id\"\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12679,7 +12674,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount_in\": 131.4,\n  \"amount_out\": 180,\n  \"amount_out_expected\": \"98.9\",\n  \"amount_out_min\": \"98.4\",\n  \"from_token\": {\n    \"symbol\": \"usd\"\n  },\n  \"id\": \"vault-swap-cwal_xxxxxxxxxxxxxx\",\n  \"object\": \"swap\",\n  \"rate\": \"0.989\",\n  \"status\": \"queued\",\n  \"to_chain\": \"ethereum\",\n  \"to_token\": {\n    \"symbol\": \"cad\"\n  }\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount_in\": 131.4,\n  \"amount_out\": 180,\n  \"amount_out_expected\": \"98.9\",\n  \"amount_out_min\": \"98.4\",\n  \"from_token\": {\n    \"symbol\": \"usd\"\n  },\n  \"id\": \"vault-swap-cwal_xxxxxxxxxxxxxx\",\n  \"object\": \"swap\",\n  \"rate\": \"0.989\",\n  \"status\": \"queued\",\n  \"to_chain\": \"ethereum\",\n  \"to_token\": {\n    \"symbol\": \"cad\"\n  },\n  \"user_id\": \"user_id\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12741,7 +12736,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"error\": \"Swap reverted: quoted price moved beyond the slippage tolerance\",\n  \"id\": \"vault-swap-cwal_xxxxxxxxxxxxxx\",\n  \"object\": \"swap\",\n  \"status\": \"queued\",\n  \"tx_hashes\": [\n    \"0xabc\"\n  ]\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"error\": \"Swap reverted: quoted price moved beyond the slippage tolerance\",\n  \"id\": \"vault-swap-cwal_xxxxxxxxxxxxxx\",\n  \"object\": \"swap\",\n  \"status\": \"queued\",\n  \"tx_hashes\": [\n    \"0xabc\"\n  ],\n  \"user_id\": \"user_id\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13353,11 +13348,6 @@
           "Authorization": {
             "matches": "Bearer .+"
           }
-        },
-        "queryParameters": {
-          "account_id": {
-            "equalTo": "account_id"
-          }
         }
       },
       "response": {
@@ -13389,11 +13379,6 @@
         "headers": {
           "Authorization": {
             "matches": "Bearer .+"
-          }
-        },
-        "queryParameters": {
-          "account_id": {
-            "equalTo": "account_id"
           }
         }
       },

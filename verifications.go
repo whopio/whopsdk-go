@@ -12,12 +12,15 @@ import (
 
 var (
 	createVerificationsRequestFieldAccountID = big.NewInt(1 << 0)
+	createVerificationsRequestFieldUserID    = big.NewInt(1 << 1)
 )
 
 type CreateVerificationsRequest struct {
-	// Account or user ID whose identity you want to verify. Use a `biz_` account ID for account verifications, or the caller's `user_` ID for personal verification.
-	AccountID string                          `json:"-" url:"account_id"`
-	Body      *CreateVerificationsRequestBody `json:"-" url:"-"`
+	// Business account whose identity you want to verify, prefixed `biz_`. Provide this or `user_id`.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// The caller's own user ID, prefixed `user_`, for a personal verification. Provide this or `account_id`.
+	UserID *string                         `json:"-" url:"user_id,omitempty"`
+	Body   *CreateVerificationsRequestBody `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -32,9 +35,16 @@ func (c *CreateVerificationsRequest) require(field *big.Int) {
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateVerificationsRequest) SetAccountID(accountID string) {
+func (c *CreateVerificationsRequest) SetAccountID(accountID *string) {
 	c.AccountID = accountID
 	c.require(createVerificationsRequestFieldAccountID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsRequest) SetUserID(userID *string) {
+	c.UserID = userID
+	c.require(createVerificationsRequestFieldUserID)
 }
 
 func (c *CreateVerificationsRequest) UnmarshalJSON(data []byte) error {
@@ -52,13 +62,16 @@ func (c *CreateVerificationsRequest) MarshalJSON() ([]byte, error) {
 
 var (
 	listVerificationsRequestFieldAccountID = big.NewInt(1 << 0)
-	listVerificationsRequestFieldOrder     = big.NewInt(1 << 1)
-	listVerificationsRequestFieldDirection = big.NewInt(1 << 2)
+	listVerificationsRequestFieldUserID    = big.NewInt(1 << 1)
+	listVerificationsRequestFieldOrder     = big.NewInt(1 << 2)
+	listVerificationsRequestFieldDirection = big.NewInt(1 << 3)
 )
 
 type ListVerificationsRequest struct {
-	// Account or user ID whose verifications you want to list. Use a `biz_` account ID, or the caller's `user_` ID for personal verifications.
-	AccountID string `json:"-" url:"account_id"`
+	// Business account whose verifications you want to list, prefixed `biz_`. Provide this or `user_id`.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// The caller's own user ID, prefixed `user_`, to list personal verifications. Provide this or `account_id`.
+	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Field used to sort returned verifications.
 	Order *ListVerificationsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction for returned verifications.
@@ -77,9 +90,16 @@ func (l *ListVerificationsRequest) require(field *big.Int) {
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListVerificationsRequest) SetAccountID(accountID string) {
+func (l *ListVerificationsRequest) SetAccountID(accountID *string) {
 	l.AccountID = accountID
 	l.require(listVerificationsRequestFieldAccountID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsRequest) SetUserID(userID *string) {
+	l.UserID = userID
+	l.require(listVerificationsRequestFieldUserID)
 }
 
 // SetOrder sets the Order field and marks it as non-optional;
