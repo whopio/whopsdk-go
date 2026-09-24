@@ -36,18 +36,19 @@ func (r *RetrievePreferencesRequest) SetAccountID(accountID string) {
 }
 
 var (
-	retrievePreferencesResponseFieldAdsAgreement               = big.NewInt(1 << 0)
-	retrievePreferencesResponseFieldAdsCertifications          = big.NewInt(1 << 1)
-	retrievePreferencesResponseFieldAdsPaymentMethods          = big.NewInt(1 << 2)
-	retrievePreferencesResponseFieldAdsReportingCurrency       = big.NewInt(1 << 3)
-	retrievePreferencesResponseFieldAdsSchedulingTimezone      = big.NewInt(1 << 4)
-	retrievePreferencesResponseFieldAdsTripleWhaleIntegration  = big.NewInt(1 << 5)
-	retrievePreferencesResponseFieldCardsAutoTopUp             = big.NewInt(1 << 6)
-	retrievePreferencesResponseFieldCardsNotifications         = big.NewInt(1 << 7)
-	retrievePreferencesResponseFieldDisputeFighterEnabled      = big.NewInt(1 << 8)
-	retrievePreferencesResponseFieldEconomicIntelligence       = big.NewInt(1 << 9)
-	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt = big.NewInt(1 << 10)
-	retrievePreferencesResponseFieldEconomicIntelligenceOffers = big.NewInt(1 << 11)
+	retrievePreferencesResponseFieldAdsAgreement                = big.NewInt(1 << 0)
+	retrievePreferencesResponseFieldAdsCertifications           = big.NewInt(1 << 1)
+	retrievePreferencesResponseFieldAdsPaymentMethods           = big.NewInt(1 << 2)
+	retrievePreferencesResponseFieldAdsReportingCurrency        = big.NewInt(1 << 3)
+	retrievePreferencesResponseFieldAdsSchedulingTimezone       = big.NewInt(1 << 4)
+	retrievePreferencesResponseFieldAdsTripleWhaleIntegration   = big.NewInt(1 << 5)
+	retrievePreferencesResponseFieldCardsAutoTopUp              = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldCardsNotifications          = big.NewInt(1 << 7)
+	retrievePreferencesResponseFieldDisputeFighterEnabled       = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldEconomicIntelligence        = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt  = big.NewInt(1 << 10)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers  = big.NewInt(1 << 11)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior = big.NewInt(1 << 12)
 )
 
 type RetrievePreferencesResponse struct {
@@ -75,6 +76,8 @@ type RetrievePreferencesResponse struct {
 	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
 	// Durations the account can choose from to turn on Economic Intelligence, each with its fee. `null` while Economic Intelligence is on or during a free trial.
 	EconomicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers,omitempty" url:"economic_intelligence_offers,omitempty"`
+	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
+	SubscriptionFailureBehavior RetrievePreferencesResponseSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -165,6 +168,13 @@ func (r *RetrievePreferencesResponse) GetEconomicIntelligenceOffers() []*Retriev
 		return nil
 	}
 	return r.EconomicIntelligenceOffers
+}
+
+func (r *RetrievePreferencesResponse) GetSubscriptionFailureBehavior() RetrievePreferencesResponseSubscriptionFailureBehavior {
+	if r == nil {
+		return ""
+	}
+	return r.SubscriptionFailureBehavior
 }
 
 func (r *RetrievePreferencesResponse) GetExtraProperties() map[string]interface{} {
@@ -263,6 +273,13 @@ func (r *RetrievePreferencesResponse) SetEconomicIntelligenceEndsAt(economicInte
 func (r *RetrievePreferencesResponse) SetEconomicIntelligenceOffers(economicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem) {
 	r.EconomicIntelligenceOffers = economicIntelligenceOffers
 	r.require(retrievePreferencesResponseFieldEconomicIntelligenceOffers)
+}
+
+// SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetSubscriptionFailureBehavior(subscriptionFailureBehavior RetrievePreferencesResponseSubscriptionFailureBehavior) {
+	r.SubscriptionFailureBehavior = subscriptionFailureBehavior
+	r.require(retrievePreferencesResponseFieldSubscriptionFailureBehavior)
 }
 
 func (r *RetrievePreferencesResponse) UnmarshalJSON(data []byte) error {
@@ -1589,6 +1606,29 @@ func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) String() str
 	return fmt.Sprintf("%#v", r)
 }
 
+// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
+type RetrievePreferencesResponseSubscriptionFailureBehavior string
+
+const (
+	RetrievePreferencesResponseSubscriptionFailureBehaviorCancel RetrievePreferencesResponseSubscriptionFailureBehavior = "cancel"
+	RetrievePreferencesResponseSubscriptionFailureBehaviorNone   RetrievePreferencesResponseSubscriptionFailureBehavior = "none"
+)
+
+func NewRetrievePreferencesResponseSubscriptionFailureBehaviorFromString(s string) (RetrievePreferencesResponseSubscriptionFailureBehavior, error) {
+	switch s {
+	case "cancel":
+		return RetrievePreferencesResponseSubscriptionFailureBehaviorCancel, nil
+	case "none":
+		return RetrievePreferencesResponseSubscriptionFailureBehaviorNone, nil
+	}
+	var t RetrievePreferencesResponseSubscriptionFailureBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseSubscriptionFailureBehavior) Ptr() *RetrievePreferencesResponseSubscriptionFailureBehavior {
+	return &r
+}
+
 var (
 	updatePreferencesRequestAdsCertificationsValueFieldStatus = big.NewInt(1 << 0)
 )
@@ -2150,19 +2190,43 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting. Requires company:manage_checkout permission.
+type UpdatePreferencesRequestSubscriptionFailureBehavior string
+
+const (
+	UpdatePreferencesRequestSubscriptionFailureBehaviorCancel UpdatePreferencesRequestSubscriptionFailureBehavior = "cancel"
+	UpdatePreferencesRequestSubscriptionFailureBehaviorNone   UpdatePreferencesRequestSubscriptionFailureBehavior = "none"
+)
+
+func NewUpdatePreferencesRequestSubscriptionFailureBehaviorFromString(s string) (UpdatePreferencesRequestSubscriptionFailureBehavior, error) {
+	switch s {
+	case "cancel":
+		return UpdatePreferencesRequestSubscriptionFailureBehaviorCancel, nil
+	case "none":
+		return UpdatePreferencesRequestSubscriptionFailureBehaviorNone, nil
+	}
+	var t UpdatePreferencesRequestSubscriptionFailureBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestSubscriptionFailureBehavior) Ptr() *UpdatePreferencesRequestSubscriptionFailureBehavior {
+	return &u
+}
+
 var (
-	updatePreferencesResponseFieldAdsAgreement               = big.NewInt(1 << 0)
-	updatePreferencesResponseFieldAdsCertifications          = big.NewInt(1 << 1)
-	updatePreferencesResponseFieldAdsPaymentMethods          = big.NewInt(1 << 2)
-	updatePreferencesResponseFieldAdsReportingCurrency       = big.NewInt(1 << 3)
-	updatePreferencesResponseFieldAdsSchedulingTimezone      = big.NewInt(1 << 4)
-	updatePreferencesResponseFieldAdsTripleWhaleIntegration  = big.NewInt(1 << 5)
-	updatePreferencesResponseFieldCardsAutoTopUp             = big.NewInt(1 << 6)
-	updatePreferencesResponseFieldCardsNotifications         = big.NewInt(1 << 7)
-	updatePreferencesResponseFieldDisputeFighterEnabled      = big.NewInt(1 << 8)
-	updatePreferencesResponseFieldEconomicIntelligence       = big.NewInt(1 << 9)
-	updatePreferencesResponseFieldEconomicIntelligenceEndsAt = big.NewInt(1 << 10)
-	updatePreferencesResponseFieldEconomicIntelligenceOffers = big.NewInt(1 << 11)
+	updatePreferencesResponseFieldAdsAgreement                = big.NewInt(1 << 0)
+	updatePreferencesResponseFieldAdsCertifications           = big.NewInt(1 << 1)
+	updatePreferencesResponseFieldAdsPaymentMethods           = big.NewInt(1 << 2)
+	updatePreferencesResponseFieldAdsReportingCurrency        = big.NewInt(1 << 3)
+	updatePreferencesResponseFieldAdsSchedulingTimezone       = big.NewInt(1 << 4)
+	updatePreferencesResponseFieldAdsTripleWhaleIntegration   = big.NewInt(1 << 5)
+	updatePreferencesResponseFieldCardsAutoTopUp              = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldCardsNotifications          = big.NewInt(1 << 7)
+	updatePreferencesResponseFieldDisputeFighterEnabled       = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldEconomicIntelligence        = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldEconomicIntelligenceEndsAt  = big.NewInt(1 << 10)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers  = big.NewInt(1 << 11)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior = big.NewInt(1 << 12)
 )
 
 type UpdatePreferencesResponse struct {
@@ -2190,6 +2254,8 @@ type UpdatePreferencesResponse struct {
 	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
 	// Durations the account can choose from to turn on Economic Intelligence, each with its fee. `null` while Economic Intelligence is on or during a free trial.
 	EconomicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers,omitempty" url:"economic_intelligence_offers,omitempty"`
+	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
+	SubscriptionFailureBehavior UpdatePreferencesResponseSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2280,6 +2346,13 @@ func (u *UpdatePreferencesResponse) GetEconomicIntelligenceOffers() []*UpdatePre
 		return nil
 	}
 	return u.EconomicIntelligenceOffers
+}
+
+func (u *UpdatePreferencesResponse) GetSubscriptionFailureBehavior() UpdatePreferencesResponseSubscriptionFailureBehavior {
+	if u == nil {
+		return ""
+	}
+	return u.SubscriptionFailureBehavior
 }
 
 func (u *UpdatePreferencesResponse) GetExtraProperties() map[string]interface{} {
@@ -2378,6 +2451,13 @@ func (u *UpdatePreferencesResponse) SetEconomicIntelligenceEndsAt(economicIntell
 func (u *UpdatePreferencesResponse) SetEconomicIntelligenceOffers(economicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem) {
 	u.EconomicIntelligenceOffers = economicIntelligenceOffers
 	u.require(updatePreferencesResponseFieldEconomicIntelligenceOffers)
+}
+
+// SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetSubscriptionFailureBehavior(subscriptionFailureBehavior UpdatePreferencesResponseSubscriptionFailureBehavior) {
+	u.SubscriptionFailureBehavior = subscriptionFailureBehavior
+	u.require(updatePreferencesResponseFieldSubscriptionFailureBehavior)
 }
 
 func (u *UpdatePreferencesResponse) UnmarshalJSON(data []byte) error {
@@ -3704,6 +3784,29 @@ func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) String() strin
 	return fmt.Sprintf("%#v", u)
 }
 
+// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
+type UpdatePreferencesResponseSubscriptionFailureBehavior string
+
+const (
+	UpdatePreferencesResponseSubscriptionFailureBehaviorCancel UpdatePreferencesResponseSubscriptionFailureBehavior = "cancel"
+	UpdatePreferencesResponseSubscriptionFailureBehaviorNone   UpdatePreferencesResponseSubscriptionFailureBehavior = "none"
+)
+
+func NewUpdatePreferencesResponseSubscriptionFailureBehaviorFromString(s string) (UpdatePreferencesResponseSubscriptionFailureBehavior, error) {
+	switch s {
+	case "cancel":
+		return UpdatePreferencesResponseSubscriptionFailureBehaviorCancel, nil
+	case "none":
+		return UpdatePreferencesResponseSubscriptionFailureBehaviorNone, nil
+	}
+	var t UpdatePreferencesResponseSubscriptionFailureBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseSubscriptionFailureBehavior) Ptr() *UpdatePreferencesResponseSubscriptionFailureBehavior {
+	return &u
+}
+
 var (
 	updatePreferencesRequestFieldAccountID                        = big.NewInt(1 << 0)
 	updatePreferencesRequestFieldAdsCertifications                = big.NewInt(1 << 1)
@@ -3715,6 +3818,7 @@ var (
 	updatePreferencesRequestFieldCardsNotifications               = big.NewInt(1 << 7)
 	updatePreferencesRequestFieldDisputeFighterEnabled            = big.NewInt(1 << 8)
 	updatePreferencesRequestFieldEconomicIntelligenceDurationDays = big.NewInt(1 << 9)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 10)
 )
 
 type UpdatePreferencesRequest struct {
@@ -3738,6 +3842,8 @@ type UpdatePreferencesRequest struct {
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
 	// Turns on Economic Intelligence for this many days, at the fee listed for that duration in `economic_intelligence_offers`. It can't be changed or turned off until `economic_intelligence_ends_at`, and it can't be turned on during a free trial. Requires the `company:update` scope on your API key.
 	EconomicIntelligenceDurationDays *int `json:"economic_intelligence_duration_days,omitempty" url:"-"`
+	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting. Requires company:manage_checkout permission.
+	SubscriptionFailureBehavior *UpdatePreferencesRequestSubscriptionFailureBehavior `json:"subscription_failure_behavior,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3818,6 +3924,13 @@ func (u *UpdatePreferencesRequest) SetDisputeFighterEnabled(disputeFighterEnable
 func (u *UpdatePreferencesRequest) SetEconomicIntelligenceDurationDays(economicIntelligenceDurationDays *int) {
 	u.EconomicIntelligenceDurationDays = economicIntelligenceDurationDays
 	u.require(updatePreferencesRequestFieldEconomicIntelligenceDurationDays)
+}
+
+// SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetSubscriptionFailureBehavior(subscriptionFailureBehavior *UpdatePreferencesRequestSubscriptionFailureBehavior) {
+	u.SubscriptionFailureBehavior = subscriptionFailureBehavior
+	u.require(updatePreferencesRequestFieldSubscriptionFailureBehavior)
 }
 
 func (u *UpdatePreferencesRequest) UnmarshalJSON(data []byte) error {

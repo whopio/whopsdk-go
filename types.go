@@ -3219,18 +3219,19 @@ func (a *AccountParentFeesValue) String() string {
 }
 
 var (
-	accountPreferencesFieldAdsAgreement               = big.NewInt(1 << 0)
-	accountPreferencesFieldAdsCertifications          = big.NewInt(1 << 1)
-	accountPreferencesFieldAdsPaymentMethods          = big.NewInt(1 << 2)
-	accountPreferencesFieldAdsReportingCurrency       = big.NewInt(1 << 3)
-	accountPreferencesFieldAdsSchedulingTimezone      = big.NewInt(1 << 4)
-	accountPreferencesFieldAdsTripleWhaleIntegration  = big.NewInt(1 << 5)
-	accountPreferencesFieldCardsAutoTopUp             = big.NewInt(1 << 6)
-	accountPreferencesFieldCardsNotifications         = big.NewInt(1 << 7)
-	accountPreferencesFieldDisputeFighterEnabled      = big.NewInt(1 << 8)
-	accountPreferencesFieldEconomicIntelligence       = big.NewInt(1 << 9)
-	accountPreferencesFieldEconomicIntelligenceEndsAt = big.NewInt(1 << 10)
-	accountPreferencesFieldEconomicIntelligenceOffers = big.NewInt(1 << 11)
+	accountPreferencesFieldAdsAgreement                = big.NewInt(1 << 0)
+	accountPreferencesFieldAdsCertifications           = big.NewInt(1 << 1)
+	accountPreferencesFieldAdsPaymentMethods           = big.NewInt(1 << 2)
+	accountPreferencesFieldAdsReportingCurrency        = big.NewInt(1 << 3)
+	accountPreferencesFieldAdsSchedulingTimezone       = big.NewInt(1 << 4)
+	accountPreferencesFieldAdsTripleWhaleIntegration   = big.NewInt(1 << 5)
+	accountPreferencesFieldCardsAutoTopUp              = big.NewInt(1 << 6)
+	accountPreferencesFieldCardsNotifications          = big.NewInt(1 << 7)
+	accountPreferencesFieldDisputeFighterEnabled       = big.NewInt(1 << 8)
+	accountPreferencesFieldEconomicIntelligence        = big.NewInt(1 << 9)
+	accountPreferencesFieldEconomicIntelligenceEndsAt  = big.NewInt(1 << 10)
+	accountPreferencesFieldEconomicIntelligenceOffers  = big.NewInt(1 << 11)
+	accountPreferencesFieldSubscriptionFailureBehavior = big.NewInt(1 << 12)
 )
 
 type AccountPreferences struct {
@@ -3256,6 +3257,8 @@ type AccountPreferences struct {
 	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or has no end date.
 	EconomicIntelligenceEndsAt *string                             `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
 	EconomicIntelligenceOffers []*AccountEconomicIntelligenceOffer `json:"economic_intelligence_offers,omitempty" url:"economic_intelligence_offers,omitempty"`
+	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
+	SubscriptionFailureBehavior AccountPreferencesSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3346,6 +3349,13 @@ func (a *AccountPreferences) GetEconomicIntelligenceOffers() []*AccountEconomicI
 		return nil
 	}
 	return a.EconomicIntelligenceOffers
+}
+
+func (a *AccountPreferences) GetSubscriptionFailureBehavior() AccountPreferencesSubscriptionFailureBehavior {
+	if a == nil {
+		return ""
+	}
+	return a.SubscriptionFailureBehavior
 }
 
 func (a *AccountPreferences) GetExtraProperties() map[string]interface{} {
@@ -3446,6 +3456,13 @@ func (a *AccountPreferences) SetEconomicIntelligenceOffers(economicIntelligenceO
 	a.require(accountPreferencesFieldEconomicIntelligenceOffers)
 }
 
+// SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetSubscriptionFailureBehavior(subscriptionFailureBehavior AccountPreferencesSubscriptionFailureBehavior) {
+	a.SubscriptionFailureBehavior = subscriptionFailureBehavior
+	a.require(accountPreferencesFieldSubscriptionFailureBehavior)
+}
+
 func (a *AccountPreferences) UnmarshalJSON(data []byte) error {
 	type unmarshaler AccountPreferences
 	var value unmarshaler
@@ -3486,6 +3503,29 @@ func (a *AccountPreferences) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
+type AccountPreferencesSubscriptionFailureBehavior string
+
+const (
+	AccountPreferencesSubscriptionFailureBehaviorCancel AccountPreferencesSubscriptionFailureBehavior = "cancel"
+	AccountPreferencesSubscriptionFailureBehaviorNone   AccountPreferencesSubscriptionFailureBehavior = "none"
+)
+
+func NewAccountPreferencesSubscriptionFailureBehaviorFromString(s string) (AccountPreferencesSubscriptionFailureBehavior, error) {
+	switch s {
+	case "cancel":
+		return AccountPreferencesSubscriptionFailureBehaviorCancel, nil
+	case "none":
+		return AccountPreferencesSubscriptionFailureBehaviorNone, nil
+	}
+	var t AccountPreferencesSubscriptionFailureBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountPreferencesSubscriptionFailureBehavior) Ptr() *AccountPreferencesSubscriptionFailureBehavior {
+	return &a
 }
 
 var (
