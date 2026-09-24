@@ -2492,133 +2492,90 @@ func (w WebhookTestableEventsItem) Ptr() *WebhookTestableEventsItem {
 type CreateWebhooksRequestEventsItem string
 
 const (
-	CreateWebhooksRequestEventsItemAccountUpdated                                  CreateWebhooksRequestEventsItem = "account.updated"
-	CreateWebhooksRequestEventsItemAccountFinancingApproved                        CreateWebhooksRequestEventsItem = "account.financing_approved"
-	CreateWebhooksRequestEventsItemAccountFinancingDenied                          CreateWebhooksRequestEventsItem = "account.financing_denied"
-	CreateWebhooksRequestEventsItemInvoiceCreated                                  CreateWebhooksRequestEventsItem = "invoice.created"
-	CreateWebhooksRequestEventsItemInvoiceMarkedUncollectible                      CreateWebhooksRequestEventsItem = "invoice.marked_uncollectible"
-	CreateWebhooksRequestEventsItemInvoicePaid                                     CreateWebhooksRequestEventsItem = "invoice.paid"
-	CreateWebhooksRequestEventsItemInvoicePastDue                                  CreateWebhooksRequestEventsItem = "invoice.past_due"
-	CreateWebhooksRequestEventsItemInvoiceVoided                                   CreateWebhooksRequestEventsItem = "invoice.voided"
-	CreateWebhooksRequestEventsItemMembershipActivated                             CreateWebhooksRequestEventsItem = "membership.activated"
-	CreateWebhooksRequestEventsItemMembershipDeactivated                           CreateWebhooksRequestEventsItem = "membership.deactivated"
-	CreateWebhooksRequestEventsItemMembershipTrialEndingSoon                       CreateWebhooksRequestEventsItem = "membership.trial_ending_soon"
-	CreateWebhooksRequestEventsItemEntryCreated                                    CreateWebhooksRequestEventsItem = "entry.created"
-	CreateWebhooksRequestEventsItemEntryApproved                                   CreateWebhooksRequestEventsItem = "entry.approved"
-	CreateWebhooksRequestEventsItemEntryDenied                                     CreateWebhooksRequestEventsItem = "entry.denied"
-	CreateWebhooksRequestEventsItemEntryDeleted                                    CreateWebhooksRequestEventsItem = "entry.deleted"
-	CreateWebhooksRequestEventsItemExportCompleted                                 CreateWebhooksRequestEventsItem = "export.completed"
-	CreateWebhooksRequestEventsItemExportFailed                                    CreateWebhooksRequestEventsItem = "export.failed"
-	CreateWebhooksRequestEventsItemSetupIntentRequiresAction                       CreateWebhooksRequestEventsItem = "setup_intent.requires_action"
-	CreateWebhooksRequestEventsItemSetupIntentSucceeded                            CreateWebhooksRequestEventsItem = "setup_intent.succeeded"
-	CreateWebhooksRequestEventsItemSetupIntentCanceled                             CreateWebhooksRequestEventsItem = "setup_intent.canceled"
-	CreateWebhooksRequestEventsItemLedgerAccountFundsAvailable                     CreateWebhooksRequestEventsItem = "ledger_account.funds_available"
-	CreateWebhooksRequestEventsItemSwapCompleted                                   CreateWebhooksRequestEventsItem = "swap.completed"
-	CreateWebhooksRequestEventsItemDepositSucceeded                                CreateWebhooksRequestEventsItem = "deposit.succeeded"
-	CreateWebhooksRequestEventsItemFinancialActivityFundsAvailable                 CreateWebhooksRequestEventsItem = "financial_activity.funds_available"
-	CreateWebhooksRequestEventsItemTransferCreated                                 CreateWebhooksRequestEventsItem = "transfer.created"
-	CreateWebhooksRequestEventsItemTransferCompleted                               CreateWebhooksRequestEventsItem = "transfer.completed"
-	CreateWebhooksRequestEventsItemTransferFailed                                  CreateWebhooksRequestEventsItem = "transfer.failed"
-	CreateWebhooksRequestEventsItemPayoutCreated                                   CreateWebhooksRequestEventsItem = "payout.created"
-	CreateWebhooksRequestEventsItemPayoutUpdated                                   CreateWebhooksRequestEventsItem = "payout.updated"
-	CreateWebhooksRequestEventsItemPayoutReversed                                  CreateWebhooksRequestEventsItem = "payout.reversed"
-	CreateWebhooksRequestEventsItemCardTransactionCreated                          CreateWebhooksRequestEventsItem = "card_transaction.created"
-	CreateWebhooksRequestEventsItemCardTransactionUpdated                          CreateWebhooksRequestEventsItem = "card_transaction.updated"
-	CreateWebhooksRequestEventsItemCardTransactionCompleted                        CreateWebhooksRequestEventsItem = "card_transaction.completed"
-	CreateWebhooksRequestEventsItemCardTransactionDeclined                         CreateWebhooksRequestEventsItem = "card_transaction.declined"
-	CreateWebhooksRequestEventsItemCardTransactionReversed                         CreateWebhooksRequestEventsItem = "card_transaction.reversed"
-	CreateWebhooksRequestEventsItemCardCreated                                     CreateWebhooksRequestEventsItem = "card.created"
-	CreateWebhooksRequestEventsItemCardUpdated                                     CreateWebhooksRequestEventsItem = "card.updated"
-	CreateWebhooksRequestEventsItemCardFrozen                                      CreateWebhooksRequestEventsItem = "card.frozen"
-	CreateWebhooksRequestEventsItemCardCanceled                                    CreateWebhooksRequestEventsItem = "card.canceled"
-	CreateWebhooksRequestEventsItemCardApplicationCreated                          CreateWebhooksRequestEventsItem = "card_application.created"
-	CreateWebhooksRequestEventsItemCardApplicationUpdated                          CreateWebhooksRequestEventsItem = "card_application.updated"
-	CreateWebhooksRequestEventsItemCardApplicationApproved                         CreateWebhooksRequestEventsItem = "card_application.approved"
-	CreateWebhooksRequestEventsItemCardApplicationDenied                           CreateWebhooksRequestEventsItem = "card_application.denied"
-	CreateWebhooksRequestEventsItemCourseLessonInteractionCompleted                CreateWebhooksRequestEventsItem = "course_lesson_interaction.completed"
-	CreateWebhooksRequestEventsItemPayoutMethodCreated                             CreateWebhooksRequestEventsItem = "payout_method.created"
-	CreateWebhooksRequestEventsItemVerificationSucceeded                           CreateWebhooksRequestEventsItem = "verification.succeeded"
-	CreateWebhooksRequestEventsItemIdentityProfileApproved                         CreateWebhooksRequestEventsItem = "identity_profile.approved"
-	CreateWebhooksRequestEventsItemIdentityProfileRejected                         CreateWebhooksRequestEventsItem = "identity_profile.rejected"
-	CreateWebhooksRequestEventsItemIdentityProfileNeedsAction                      CreateWebhooksRequestEventsItem = "identity_profile.needs_action"
-	CreateWebhooksRequestEventsItemIdentityProfileUpdated                          CreateWebhooksRequestEventsItem = "identity_profile.updated"
-	CreateWebhooksRequestEventsItemPayoutAccountStatusUpdated                      CreateWebhooksRequestEventsItem = "payout_account.status_updated"
-	CreateWebhooksRequestEventsItemPaymentAuthorized                               CreateWebhooksRequestEventsItem = "payment.authorized"
-	CreateWebhooksRequestEventsItemPaymentCanceled                                 CreateWebhooksRequestEventsItem = "payment.canceled"
-	CreateWebhooksRequestEventsItemResolutionCenterCaseCreated                     CreateWebhooksRequestEventsItem = "resolution_center_case.created"
-	CreateWebhooksRequestEventsItemResolutionCenterCaseUpdated                     CreateWebhooksRequestEventsItem = "resolution_center_case.updated"
-	CreateWebhooksRequestEventsItemResolutionCenterCaseDecided                     CreateWebhooksRequestEventsItem = "resolution_center_case.decided"
-	CreateWebhooksRequestEventsItemProductCreated                                  CreateWebhooksRequestEventsItem = "product.created"
-	CreateWebhooksRequestEventsItemProductUpdated                                  CreateWebhooksRequestEventsItem = "product.updated"
-	CreateWebhooksRequestEventsItemProductDeleted                                  CreateWebhooksRequestEventsItem = "product.deleted"
-	CreateWebhooksRequestEventsItemProductPublished                                CreateWebhooksRequestEventsItem = "product.published"
-	CreateWebhooksRequestEventsItemProductUnpublished                              CreateWebhooksRequestEventsItem = "product.unpublished"
-	CreateWebhooksRequestEventsItemPlanCreated                                     CreateWebhooksRequestEventsItem = "plan.created"
-	CreateWebhooksRequestEventsItemPlanUpdated                                     CreateWebhooksRequestEventsItem = "plan.updated"
-	CreateWebhooksRequestEventsItemPlanDeleted                                     CreateWebhooksRequestEventsItem = "plan.deleted"
-	CreateWebhooksRequestEventsItemShipmentCreated                                 CreateWebhooksRequestEventsItem = "shipment.created"
-	CreateWebhooksRequestEventsItemShipmentUpdated                                 CreateWebhooksRequestEventsItem = "shipment.updated"
-	CreateWebhooksRequestEventsItemMemberCreated                                   CreateWebhooksRequestEventsItem = "member.created"
-	CreateWebhooksRequestEventsItemMemberUpdated                                   CreateWebhooksRequestEventsItem = "member.updated"
-	CreateWebhooksRequestEventsItemAdCampaignPaymentFailed                         CreateWebhooksRequestEventsItem = "ad_campaign.payment_failed"
-	CreateWebhooksRequestEventsItemAdCampaignUpdated                               CreateWebhooksRequestEventsItem = "ad_campaign.updated"
-	CreateWebhooksRequestEventsItemAdUpdated                                       CreateWebhooksRequestEventsItem = "ad.updated"
-	CreateWebhooksRequestEventsItemChatMessageCreated                              CreateWebhooksRequestEventsItem = "chat.message.created"
-	CreateWebhooksRequestEventsItemChatReactionCreated                             CreateWebhooksRequestEventsItem = "chat.reaction.created"
-	CreateWebhooksRequestEventsItemPaymentCreated                                  CreateWebhooksRequestEventsItem = "payment.created"
-	CreateWebhooksRequestEventsItemPaymentSucceeded                                CreateWebhooksRequestEventsItem = "payment.succeeded"
-	CreateWebhooksRequestEventsItemPaymentFailed                                   CreateWebhooksRequestEventsItem = "payment.failed"
-	CreateWebhooksRequestEventsItemPaymentPending                                  CreateWebhooksRequestEventsItem = "payment.pending"
-	CreateWebhooksRequestEventsItemPaymentRequiresAction                           CreateWebhooksRequestEventsItem = "payment.requires_action"
-	CreateWebhooksRequestEventsItemDisputeCreated                                  CreateWebhooksRequestEventsItem = "dispute.created"
-	CreateWebhooksRequestEventsItemDisputeUpdated                                  CreateWebhooksRequestEventsItem = "dispute.updated"
-	CreateWebhooksRequestEventsItemRefundCreated                                   CreateWebhooksRequestEventsItem = "refund.created"
-	CreateWebhooksRequestEventsItemRefundUpdated                                   CreateWebhooksRequestEventsItem = "refund.updated"
-	CreateWebhooksRequestEventsItemDisputeAlertCreated                             CreateWebhooksRequestEventsItem = "dispute_alert.created"
-	CreateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged              CreateWebhooksRequestEventsItem = "membership.cancel_at_period_end_changed"
-	CreateWebhooksRequestEventsItemMembershipWentValidUnderscore                   CreateWebhooksRequestEventsItem = "membership_went_valid"
-	CreateWebhooksRequestEventsItemMembershipWentInvalidUnderscore                 CreateWebhooksRequestEventsItem = "membership_went_invalid"
-	CreateWebhooksRequestEventsItemMembershipMetadataUpdatedUnderscore             CreateWebhooksRequestEventsItem = "membership_metadata_updated"
-	CreateWebhooksRequestEventsItemResolutionCreatedUnderscore                     CreateWebhooksRequestEventsItem = "resolution_created"
-	CreateWebhooksRequestEventsItemResolutionUpdatedUnderscore                     CreateWebhooksRequestEventsItem = "resolution_updated"
-	CreateWebhooksRequestEventsItemResolutionDecidedUnderscore                     CreateWebhooksRequestEventsItem = "resolution_decided"
-	CreateWebhooksRequestEventsItemPaymentAffiliateRewardCreatedUnderscore         CreateWebhooksRequestEventsItem = "payment_affiliate_reward_created"
-	CreateWebhooksRequestEventsItemMembershipExperienceClaimedUnderscore           CreateWebhooksRequestEventsItem = "membership_experience_claimed"
-	CreateWebhooksRequestEventsItemAppMembershipWentValidUnderscore                CreateWebhooksRequestEventsItem = "app_membership_went_valid"
-	CreateWebhooksRequestEventsItemAppMembershipWentInvalidUnderscore              CreateWebhooksRequestEventsItem = "app_membership_went_invalid"
-	CreateWebhooksRequestEventsItemAppPaymentCreatedUnderscore                     CreateWebhooksRequestEventsItem = "app_payment_created"
-	CreateWebhooksRequestEventsItemAppPaymentSucceededUnderscore                   CreateWebhooksRequestEventsItem = "app_payment_succeeded"
-	CreateWebhooksRequestEventsItemAppPaymentFailedUnderscore                      CreateWebhooksRequestEventsItem = "app_payment_failed"
-	CreateWebhooksRequestEventsItemAppPaymentPendingUnderscore                     CreateWebhooksRequestEventsItem = "app_payment_pending"
-	CreateWebhooksRequestEventsItemAppPaymentRequiresActionUnderscore              CreateWebhooksRequestEventsItem = "app_payment_requires_action"
-	CreateWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChangedUnderscore CreateWebhooksRequestEventsItem = "app_membership_cancel_at_period_end_changed"
-	CreateWebhooksRequestEventsItemPaymentCreatedUnderscore                        CreateWebhooksRequestEventsItem = "payment_created"
-	CreateWebhooksRequestEventsItemPaymentSucceededUnderscore                      CreateWebhooksRequestEventsItem = "payment_succeeded"
-	CreateWebhooksRequestEventsItemPaymentFailedUnderscore                         CreateWebhooksRequestEventsItem = "payment_failed"
-	CreateWebhooksRequestEventsItemPaymentPendingUnderscore                        CreateWebhooksRequestEventsItem = "payment_pending"
-	CreateWebhooksRequestEventsItemPaymentRequiresActionUnderscore                 CreateWebhooksRequestEventsItem = "payment_requires_action"
-	CreateWebhooksRequestEventsItemDisputeCreatedUnderscore                        CreateWebhooksRequestEventsItem = "dispute_created"
-	CreateWebhooksRequestEventsItemDisputeUpdatedUnderscore                        CreateWebhooksRequestEventsItem = "dispute_updated"
-	CreateWebhooksRequestEventsItemRefundCreatedUnderscore                         CreateWebhooksRequestEventsItem = "refund_created"
-	CreateWebhooksRequestEventsItemRefundUpdatedUnderscore                         CreateWebhooksRequestEventsItem = "refund_updated"
-	CreateWebhooksRequestEventsItemDisputeAlertCreatedUnderscore                   CreateWebhooksRequestEventsItem = "dispute_alert_created"
-	CreateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChangedUnderscore    CreateWebhooksRequestEventsItem = "membership_cancel_at_period_end_changed"
-	CreateWebhooksRequestEventsItemMembershipWentValid                             CreateWebhooksRequestEventsItem = "membership.went_valid"
-	CreateWebhooksRequestEventsItemMembershipWentInvalid                           CreateWebhooksRequestEventsItem = "membership.went_invalid"
-	CreateWebhooksRequestEventsItemMembershipMetadataUpdated                       CreateWebhooksRequestEventsItem = "membership.metadata_updated"
-	CreateWebhooksRequestEventsItemResolutionCreated                               CreateWebhooksRequestEventsItem = "resolution.created"
-	CreateWebhooksRequestEventsItemResolutionUpdated                               CreateWebhooksRequestEventsItem = "resolution.updated"
-	CreateWebhooksRequestEventsItemResolutionDecided                               CreateWebhooksRequestEventsItem = "resolution.decided"
-	CreateWebhooksRequestEventsItemPaymentAffiliateRewardCreated                   CreateWebhooksRequestEventsItem = "payment.affiliate_reward_created"
-	CreateWebhooksRequestEventsItemMembershipExperienceClaimed                     CreateWebhooksRequestEventsItem = "membership.experience_claimed"
-	CreateWebhooksRequestEventsItemAppMembershipWentValid                          CreateWebhooksRequestEventsItem = "app_membership.went_valid"
-	CreateWebhooksRequestEventsItemAppMembershipWentInvalid                        CreateWebhooksRequestEventsItem = "app_membership.went_invalid"
-	CreateWebhooksRequestEventsItemAppPaymentCreated                               CreateWebhooksRequestEventsItem = "app_payment.created"
-	CreateWebhooksRequestEventsItemAppPaymentSucceeded                             CreateWebhooksRequestEventsItem = "app_payment.succeeded"
-	CreateWebhooksRequestEventsItemAppPaymentFailed                                CreateWebhooksRequestEventsItem = "app_payment.failed"
-	CreateWebhooksRequestEventsItemAppPaymentPending                               CreateWebhooksRequestEventsItem = "app_payment.pending"
-	CreateWebhooksRequestEventsItemAppPaymentRequiresAction                        CreateWebhooksRequestEventsItem = "app_payment.requires_action"
-	CreateWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChanged           CreateWebhooksRequestEventsItem = "app_membership.cancel_at_period_end_changed"
+	CreateWebhooksRequestEventsItemAccountUpdated                     CreateWebhooksRequestEventsItem = "account.updated"
+	CreateWebhooksRequestEventsItemAccountFinancingApproved           CreateWebhooksRequestEventsItem = "account.financing_approved"
+	CreateWebhooksRequestEventsItemAccountFinancingDenied             CreateWebhooksRequestEventsItem = "account.financing_denied"
+	CreateWebhooksRequestEventsItemInvoiceCreated                     CreateWebhooksRequestEventsItem = "invoice.created"
+	CreateWebhooksRequestEventsItemInvoiceMarkedUncollectible         CreateWebhooksRequestEventsItem = "invoice.marked_uncollectible"
+	CreateWebhooksRequestEventsItemInvoicePaid                        CreateWebhooksRequestEventsItem = "invoice.paid"
+	CreateWebhooksRequestEventsItemInvoicePastDue                     CreateWebhooksRequestEventsItem = "invoice.past_due"
+	CreateWebhooksRequestEventsItemInvoiceVoided                      CreateWebhooksRequestEventsItem = "invoice.voided"
+	CreateWebhooksRequestEventsItemMembershipActivated                CreateWebhooksRequestEventsItem = "membership.activated"
+	CreateWebhooksRequestEventsItemMembershipDeactivated              CreateWebhooksRequestEventsItem = "membership.deactivated"
+	CreateWebhooksRequestEventsItemMembershipTrialEndingSoon          CreateWebhooksRequestEventsItem = "membership.trial_ending_soon"
+	CreateWebhooksRequestEventsItemEntryCreated                       CreateWebhooksRequestEventsItem = "entry.created"
+	CreateWebhooksRequestEventsItemEntryApproved                      CreateWebhooksRequestEventsItem = "entry.approved"
+	CreateWebhooksRequestEventsItemEntryDenied                        CreateWebhooksRequestEventsItem = "entry.denied"
+	CreateWebhooksRequestEventsItemEntryDeleted                       CreateWebhooksRequestEventsItem = "entry.deleted"
+	CreateWebhooksRequestEventsItemExportCompleted                    CreateWebhooksRequestEventsItem = "export.completed"
+	CreateWebhooksRequestEventsItemExportFailed                       CreateWebhooksRequestEventsItem = "export.failed"
+	CreateWebhooksRequestEventsItemSetupIntentRequiresAction          CreateWebhooksRequestEventsItem = "setup_intent.requires_action"
+	CreateWebhooksRequestEventsItemSetupIntentSucceeded               CreateWebhooksRequestEventsItem = "setup_intent.succeeded"
+	CreateWebhooksRequestEventsItemSetupIntentCanceled                CreateWebhooksRequestEventsItem = "setup_intent.canceled"
+	CreateWebhooksRequestEventsItemLedgerAccountFundsAvailable        CreateWebhooksRequestEventsItem = "ledger_account.funds_available"
+	CreateWebhooksRequestEventsItemSwapCompleted                      CreateWebhooksRequestEventsItem = "swap.completed"
+	CreateWebhooksRequestEventsItemDepositSucceeded                   CreateWebhooksRequestEventsItem = "deposit.succeeded"
+	CreateWebhooksRequestEventsItemFinancialActivityFundsAvailable    CreateWebhooksRequestEventsItem = "financial_activity.funds_available"
+	CreateWebhooksRequestEventsItemTransferCreated                    CreateWebhooksRequestEventsItem = "transfer.created"
+	CreateWebhooksRequestEventsItemTransferCompleted                  CreateWebhooksRequestEventsItem = "transfer.completed"
+	CreateWebhooksRequestEventsItemTransferFailed                     CreateWebhooksRequestEventsItem = "transfer.failed"
+	CreateWebhooksRequestEventsItemPayoutCreated                      CreateWebhooksRequestEventsItem = "payout.created"
+	CreateWebhooksRequestEventsItemPayoutUpdated                      CreateWebhooksRequestEventsItem = "payout.updated"
+	CreateWebhooksRequestEventsItemPayoutReversed                     CreateWebhooksRequestEventsItem = "payout.reversed"
+	CreateWebhooksRequestEventsItemCardTransactionCreated             CreateWebhooksRequestEventsItem = "card_transaction.created"
+	CreateWebhooksRequestEventsItemCardTransactionUpdated             CreateWebhooksRequestEventsItem = "card_transaction.updated"
+	CreateWebhooksRequestEventsItemCardTransactionCompleted           CreateWebhooksRequestEventsItem = "card_transaction.completed"
+	CreateWebhooksRequestEventsItemCardTransactionDeclined            CreateWebhooksRequestEventsItem = "card_transaction.declined"
+	CreateWebhooksRequestEventsItemCardTransactionReversed            CreateWebhooksRequestEventsItem = "card_transaction.reversed"
+	CreateWebhooksRequestEventsItemCardCreated                        CreateWebhooksRequestEventsItem = "card.created"
+	CreateWebhooksRequestEventsItemCardUpdated                        CreateWebhooksRequestEventsItem = "card.updated"
+	CreateWebhooksRequestEventsItemCardFrozen                         CreateWebhooksRequestEventsItem = "card.frozen"
+	CreateWebhooksRequestEventsItemCardCanceled                       CreateWebhooksRequestEventsItem = "card.canceled"
+	CreateWebhooksRequestEventsItemCardApplicationCreated             CreateWebhooksRequestEventsItem = "card_application.created"
+	CreateWebhooksRequestEventsItemCardApplicationUpdated             CreateWebhooksRequestEventsItem = "card_application.updated"
+	CreateWebhooksRequestEventsItemCardApplicationApproved            CreateWebhooksRequestEventsItem = "card_application.approved"
+	CreateWebhooksRequestEventsItemCardApplicationDenied              CreateWebhooksRequestEventsItem = "card_application.denied"
+	CreateWebhooksRequestEventsItemCourseLessonInteractionCompleted   CreateWebhooksRequestEventsItem = "course_lesson_interaction.completed"
+	CreateWebhooksRequestEventsItemPayoutMethodCreated                CreateWebhooksRequestEventsItem = "payout_method.created"
+	CreateWebhooksRequestEventsItemVerificationSucceeded              CreateWebhooksRequestEventsItem = "verification.succeeded"
+	CreateWebhooksRequestEventsItemIdentityProfileApproved            CreateWebhooksRequestEventsItem = "identity_profile.approved"
+	CreateWebhooksRequestEventsItemIdentityProfileRejected            CreateWebhooksRequestEventsItem = "identity_profile.rejected"
+	CreateWebhooksRequestEventsItemIdentityProfileNeedsAction         CreateWebhooksRequestEventsItem = "identity_profile.needs_action"
+	CreateWebhooksRequestEventsItemIdentityProfileUpdated             CreateWebhooksRequestEventsItem = "identity_profile.updated"
+	CreateWebhooksRequestEventsItemPayoutAccountStatusUpdated         CreateWebhooksRequestEventsItem = "payout_account.status_updated"
+	CreateWebhooksRequestEventsItemPaymentAuthorized                  CreateWebhooksRequestEventsItem = "payment.authorized"
+	CreateWebhooksRequestEventsItemPaymentCanceled                    CreateWebhooksRequestEventsItem = "payment.canceled"
+	CreateWebhooksRequestEventsItemResolutionCenterCaseCreated        CreateWebhooksRequestEventsItem = "resolution_center_case.created"
+	CreateWebhooksRequestEventsItemResolutionCenterCaseUpdated        CreateWebhooksRequestEventsItem = "resolution_center_case.updated"
+	CreateWebhooksRequestEventsItemResolutionCenterCaseDecided        CreateWebhooksRequestEventsItem = "resolution_center_case.decided"
+	CreateWebhooksRequestEventsItemProductCreated                     CreateWebhooksRequestEventsItem = "product.created"
+	CreateWebhooksRequestEventsItemProductUpdated                     CreateWebhooksRequestEventsItem = "product.updated"
+	CreateWebhooksRequestEventsItemProductDeleted                     CreateWebhooksRequestEventsItem = "product.deleted"
+	CreateWebhooksRequestEventsItemProductPublished                   CreateWebhooksRequestEventsItem = "product.published"
+	CreateWebhooksRequestEventsItemProductUnpublished                 CreateWebhooksRequestEventsItem = "product.unpublished"
+	CreateWebhooksRequestEventsItemPlanCreated                        CreateWebhooksRequestEventsItem = "plan.created"
+	CreateWebhooksRequestEventsItemPlanUpdated                        CreateWebhooksRequestEventsItem = "plan.updated"
+	CreateWebhooksRequestEventsItemPlanDeleted                        CreateWebhooksRequestEventsItem = "plan.deleted"
+	CreateWebhooksRequestEventsItemShipmentCreated                    CreateWebhooksRequestEventsItem = "shipment.created"
+	CreateWebhooksRequestEventsItemShipmentUpdated                    CreateWebhooksRequestEventsItem = "shipment.updated"
+	CreateWebhooksRequestEventsItemMemberCreated                      CreateWebhooksRequestEventsItem = "member.created"
+	CreateWebhooksRequestEventsItemMemberUpdated                      CreateWebhooksRequestEventsItem = "member.updated"
+	CreateWebhooksRequestEventsItemAdCampaignPaymentFailed            CreateWebhooksRequestEventsItem = "ad_campaign.payment_failed"
+	CreateWebhooksRequestEventsItemAdCampaignUpdated                  CreateWebhooksRequestEventsItem = "ad_campaign.updated"
+	CreateWebhooksRequestEventsItemAdUpdated                          CreateWebhooksRequestEventsItem = "ad.updated"
+	CreateWebhooksRequestEventsItemChatMessageCreated                 CreateWebhooksRequestEventsItem = "chat.message.created"
+	CreateWebhooksRequestEventsItemChatReactionCreated                CreateWebhooksRequestEventsItem = "chat.reaction.created"
+	CreateWebhooksRequestEventsItemPaymentCreated                     CreateWebhooksRequestEventsItem = "payment.created"
+	CreateWebhooksRequestEventsItemPaymentSucceeded                   CreateWebhooksRequestEventsItem = "payment.succeeded"
+	CreateWebhooksRequestEventsItemPaymentFailed                      CreateWebhooksRequestEventsItem = "payment.failed"
+	CreateWebhooksRequestEventsItemPaymentPending                     CreateWebhooksRequestEventsItem = "payment.pending"
+	CreateWebhooksRequestEventsItemPaymentRequiresAction              CreateWebhooksRequestEventsItem = "payment.requires_action"
+	CreateWebhooksRequestEventsItemDisputeCreated                     CreateWebhooksRequestEventsItem = "dispute.created"
+	CreateWebhooksRequestEventsItemDisputeUpdated                     CreateWebhooksRequestEventsItem = "dispute.updated"
+	CreateWebhooksRequestEventsItemRefundCreated                      CreateWebhooksRequestEventsItem = "refund.created"
+	CreateWebhooksRequestEventsItemRefundUpdated                      CreateWebhooksRequestEventsItem = "refund.updated"
+	CreateWebhooksRequestEventsItemDisputeAlertCreated                CreateWebhooksRequestEventsItem = "dispute_alert.created"
+	CreateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged CreateWebhooksRequestEventsItem = "membership.cancel_at_period_end_changed"
 )
 
 func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksRequestEventsItem, error) {
@@ -2791,92 +2748,6 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemDisputeAlertCreated, nil
 	case "membership.cancel_at_period_end_changed":
 		return CreateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged, nil
-	case "membership_went_valid":
-		return CreateWebhooksRequestEventsItemMembershipWentValidUnderscore, nil
-	case "membership_went_invalid":
-		return CreateWebhooksRequestEventsItemMembershipWentInvalidUnderscore, nil
-	case "membership_metadata_updated":
-		return CreateWebhooksRequestEventsItemMembershipMetadataUpdatedUnderscore, nil
-	case "resolution_created":
-		return CreateWebhooksRequestEventsItemResolutionCreatedUnderscore, nil
-	case "resolution_updated":
-		return CreateWebhooksRequestEventsItemResolutionUpdatedUnderscore, nil
-	case "resolution_decided":
-		return CreateWebhooksRequestEventsItemResolutionDecidedUnderscore, nil
-	case "payment_affiliate_reward_created":
-		return CreateWebhooksRequestEventsItemPaymentAffiliateRewardCreatedUnderscore, nil
-	case "membership_experience_claimed":
-		return CreateWebhooksRequestEventsItemMembershipExperienceClaimedUnderscore, nil
-	case "app_membership_went_valid":
-		return CreateWebhooksRequestEventsItemAppMembershipWentValidUnderscore, nil
-	case "app_membership_went_invalid":
-		return CreateWebhooksRequestEventsItemAppMembershipWentInvalidUnderscore, nil
-	case "app_payment_created":
-		return CreateWebhooksRequestEventsItemAppPaymentCreatedUnderscore, nil
-	case "app_payment_succeeded":
-		return CreateWebhooksRequestEventsItemAppPaymentSucceededUnderscore, nil
-	case "app_payment_failed":
-		return CreateWebhooksRequestEventsItemAppPaymentFailedUnderscore, nil
-	case "app_payment_pending":
-		return CreateWebhooksRequestEventsItemAppPaymentPendingUnderscore, nil
-	case "app_payment_requires_action":
-		return CreateWebhooksRequestEventsItemAppPaymentRequiresActionUnderscore, nil
-	case "app_membership_cancel_at_period_end_changed":
-		return CreateWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChangedUnderscore, nil
-	case "payment_created":
-		return CreateWebhooksRequestEventsItemPaymentCreatedUnderscore, nil
-	case "payment_succeeded":
-		return CreateWebhooksRequestEventsItemPaymentSucceededUnderscore, nil
-	case "payment_failed":
-		return CreateWebhooksRequestEventsItemPaymentFailedUnderscore, nil
-	case "payment_pending":
-		return CreateWebhooksRequestEventsItemPaymentPendingUnderscore, nil
-	case "payment_requires_action":
-		return CreateWebhooksRequestEventsItemPaymentRequiresActionUnderscore, nil
-	case "dispute_created":
-		return CreateWebhooksRequestEventsItemDisputeCreatedUnderscore, nil
-	case "dispute_updated":
-		return CreateWebhooksRequestEventsItemDisputeUpdatedUnderscore, nil
-	case "refund_created":
-		return CreateWebhooksRequestEventsItemRefundCreatedUnderscore, nil
-	case "refund_updated":
-		return CreateWebhooksRequestEventsItemRefundUpdatedUnderscore, nil
-	case "dispute_alert_created":
-		return CreateWebhooksRequestEventsItemDisputeAlertCreatedUnderscore, nil
-	case "membership_cancel_at_period_end_changed":
-		return CreateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChangedUnderscore, nil
-	case "membership.went_valid":
-		return CreateWebhooksRequestEventsItemMembershipWentValid, nil
-	case "membership.went_invalid":
-		return CreateWebhooksRequestEventsItemMembershipWentInvalid, nil
-	case "membership.metadata_updated":
-		return CreateWebhooksRequestEventsItemMembershipMetadataUpdated, nil
-	case "resolution.created":
-		return CreateWebhooksRequestEventsItemResolutionCreated, nil
-	case "resolution.updated":
-		return CreateWebhooksRequestEventsItemResolutionUpdated, nil
-	case "resolution.decided":
-		return CreateWebhooksRequestEventsItemResolutionDecided, nil
-	case "payment.affiliate_reward_created":
-		return CreateWebhooksRequestEventsItemPaymentAffiliateRewardCreated, nil
-	case "membership.experience_claimed":
-		return CreateWebhooksRequestEventsItemMembershipExperienceClaimed, nil
-	case "app_membership.went_valid":
-		return CreateWebhooksRequestEventsItemAppMembershipWentValid, nil
-	case "app_membership.went_invalid":
-		return CreateWebhooksRequestEventsItemAppMembershipWentInvalid, nil
-	case "app_payment.created":
-		return CreateWebhooksRequestEventsItemAppPaymentCreated, nil
-	case "app_payment.succeeded":
-		return CreateWebhooksRequestEventsItemAppPaymentSucceeded, nil
-	case "app_payment.failed":
-		return CreateWebhooksRequestEventsItemAppPaymentFailed, nil
-	case "app_payment.pending":
-		return CreateWebhooksRequestEventsItemAppPaymentPending, nil
-	case "app_payment.requires_action":
-		return CreateWebhooksRequestEventsItemAppPaymentRequiresAction, nil
-	case "app_membership.cancel_at_period_end_changed":
-		return CreateWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChanged, nil
 	}
 	var t CreateWebhooksRequestEventsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3777,133 +3648,90 @@ func (t *TestWebhooksResponse) String() string {
 type UpdateWebhooksRequestEventsItem string
 
 const (
-	UpdateWebhooksRequestEventsItemAccountUpdated                                  UpdateWebhooksRequestEventsItem = "account.updated"
-	UpdateWebhooksRequestEventsItemAccountFinancingApproved                        UpdateWebhooksRequestEventsItem = "account.financing_approved"
-	UpdateWebhooksRequestEventsItemAccountFinancingDenied                          UpdateWebhooksRequestEventsItem = "account.financing_denied"
-	UpdateWebhooksRequestEventsItemInvoiceCreated                                  UpdateWebhooksRequestEventsItem = "invoice.created"
-	UpdateWebhooksRequestEventsItemInvoiceMarkedUncollectible                      UpdateWebhooksRequestEventsItem = "invoice.marked_uncollectible"
-	UpdateWebhooksRequestEventsItemInvoicePaid                                     UpdateWebhooksRequestEventsItem = "invoice.paid"
-	UpdateWebhooksRequestEventsItemInvoicePastDue                                  UpdateWebhooksRequestEventsItem = "invoice.past_due"
-	UpdateWebhooksRequestEventsItemInvoiceVoided                                   UpdateWebhooksRequestEventsItem = "invoice.voided"
-	UpdateWebhooksRequestEventsItemMembershipActivated                             UpdateWebhooksRequestEventsItem = "membership.activated"
-	UpdateWebhooksRequestEventsItemMembershipDeactivated                           UpdateWebhooksRequestEventsItem = "membership.deactivated"
-	UpdateWebhooksRequestEventsItemMembershipTrialEndingSoon                       UpdateWebhooksRequestEventsItem = "membership.trial_ending_soon"
-	UpdateWebhooksRequestEventsItemEntryCreated                                    UpdateWebhooksRequestEventsItem = "entry.created"
-	UpdateWebhooksRequestEventsItemEntryApproved                                   UpdateWebhooksRequestEventsItem = "entry.approved"
-	UpdateWebhooksRequestEventsItemEntryDenied                                     UpdateWebhooksRequestEventsItem = "entry.denied"
-	UpdateWebhooksRequestEventsItemEntryDeleted                                    UpdateWebhooksRequestEventsItem = "entry.deleted"
-	UpdateWebhooksRequestEventsItemExportCompleted                                 UpdateWebhooksRequestEventsItem = "export.completed"
-	UpdateWebhooksRequestEventsItemExportFailed                                    UpdateWebhooksRequestEventsItem = "export.failed"
-	UpdateWebhooksRequestEventsItemSetupIntentRequiresAction                       UpdateWebhooksRequestEventsItem = "setup_intent.requires_action"
-	UpdateWebhooksRequestEventsItemSetupIntentSucceeded                            UpdateWebhooksRequestEventsItem = "setup_intent.succeeded"
-	UpdateWebhooksRequestEventsItemSetupIntentCanceled                             UpdateWebhooksRequestEventsItem = "setup_intent.canceled"
-	UpdateWebhooksRequestEventsItemLedgerAccountFundsAvailable                     UpdateWebhooksRequestEventsItem = "ledger_account.funds_available"
-	UpdateWebhooksRequestEventsItemSwapCompleted                                   UpdateWebhooksRequestEventsItem = "swap.completed"
-	UpdateWebhooksRequestEventsItemDepositSucceeded                                UpdateWebhooksRequestEventsItem = "deposit.succeeded"
-	UpdateWebhooksRequestEventsItemFinancialActivityFundsAvailable                 UpdateWebhooksRequestEventsItem = "financial_activity.funds_available"
-	UpdateWebhooksRequestEventsItemTransferCreated                                 UpdateWebhooksRequestEventsItem = "transfer.created"
-	UpdateWebhooksRequestEventsItemTransferCompleted                               UpdateWebhooksRequestEventsItem = "transfer.completed"
-	UpdateWebhooksRequestEventsItemTransferFailed                                  UpdateWebhooksRequestEventsItem = "transfer.failed"
-	UpdateWebhooksRequestEventsItemPayoutCreated                                   UpdateWebhooksRequestEventsItem = "payout.created"
-	UpdateWebhooksRequestEventsItemPayoutUpdated                                   UpdateWebhooksRequestEventsItem = "payout.updated"
-	UpdateWebhooksRequestEventsItemPayoutReversed                                  UpdateWebhooksRequestEventsItem = "payout.reversed"
-	UpdateWebhooksRequestEventsItemCardTransactionCreated                          UpdateWebhooksRequestEventsItem = "card_transaction.created"
-	UpdateWebhooksRequestEventsItemCardTransactionUpdated                          UpdateWebhooksRequestEventsItem = "card_transaction.updated"
-	UpdateWebhooksRequestEventsItemCardTransactionCompleted                        UpdateWebhooksRequestEventsItem = "card_transaction.completed"
-	UpdateWebhooksRequestEventsItemCardTransactionDeclined                         UpdateWebhooksRequestEventsItem = "card_transaction.declined"
-	UpdateWebhooksRequestEventsItemCardTransactionReversed                         UpdateWebhooksRequestEventsItem = "card_transaction.reversed"
-	UpdateWebhooksRequestEventsItemCardCreated                                     UpdateWebhooksRequestEventsItem = "card.created"
-	UpdateWebhooksRequestEventsItemCardUpdated                                     UpdateWebhooksRequestEventsItem = "card.updated"
-	UpdateWebhooksRequestEventsItemCardFrozen                                      UpdateWebhooksRequestEventsItem = "card.frozen"
-	UpdateWebhooksRequestEventsItemCardCanceled                                    UpdateWebhooksRequestEventsItem = "card.canceled"
-	UpdateWebhooksRequestEventsItemCardApplicationCreated                          UpdateWebhooksRequestEventsItem = "card_application.created"
-	UpdateWebhooksRequestEventsItemCardApplicationUpdated                          UpdateWebhooksRequestEventsItem = "card_application.updated"
-	UpdateWebhooksRequestEventsItemCardApplicationApproved                         UpdateWebhooksRequestEventsItem = "card_application.approved"
-	UpdateWebhooksRequestEventsItemCardApplicationDenied                           UpdateWebhooksRequestEventsItem = "card_application.denied"
-	UpdateWebhooksRequestEventsItemCourseLessonInteractionCompleted                UpdateWebhooksRequestEventsItem = "course_lesson_interaction.completed"
-	UpdateWebhooksRequestEventsItemPayoutMethodCreated                             UpdateWebhooksRequestEventsItem = "payout_method.created"
-	UpdateWebhooksRequestEventsItemVerificationSucceeded                           UpdateWebhooksRequestEventsItem = "verification.succeeded"
-	UpdateWebhooksRequestEventsItemIdentityProfileApproved                         UpdateWebhooksRequestEventsItem = "identity_profile.approved"
-	UpdateWebhooksRequestEventsItemIdentityProfileRejected                         UpdateWebhooksRequestEventsItem = "identity_profile.rejected"
-	UpdateWebhooksRequestEventsItemIdentityProfileNeedsAction                      UpdateWebhooksRequestEventsItem = "identity_profile.needs_action"
-	UpdateWebhooksRequestEventsItemIdentityProfileUpdated                          UpdateWebhooksRequestEventsItem = "identity_profile.updated"
-	UpdateWebhooksRequestEventsItemPayoutAccountStatusUpdated                      UpdateWebhooksRequestEventsItem = "payout_account.status_updated"
-	UpdateWebhooksRequestEventsItemPaymentAuthorized                               UpdateWebhooksRequestEventsItem = "payment.authorized"
-	UpdateWebhooksRequestEventsItemPaymentCanceled                                 UpdateWebhooksRequestEventsItem = "payment.canceled"
-	UpdateWebhooksRequestEventsItemResolutionCenterCaseCreated                     UpdateWebhooksRequestEventsItem = "resolution_center_case.created"
-	UpdateWebhooksRequestEventsItemResolutionCenterCaseUpdated                     UpdateWebhooksRequestEventsItem = "resolution_center_case.updated"
-	UpdateWebhooksRequestEventsItemResolutionCenterCaseDecided                     UpdateWebhooksRequestEventsItem = "resolution_center_case.decided"
-	UpdateWebhooksRequestEventsItemProductCreated                                  UpdateWebhooksRequestEventsItem = "product.created"
-	UpdateWebhooksRequestEventsItemProductUpdated                                  UpdateWebhooksRequestEventsItem = "product.updated"
-	UpdateWebhooksRequestEventsItemProductDeleted                                  UpdateWebhooksRequestEventsItem = "product.deleted"
-	UpdateWebhooksRequestEventsItemProductPublished                                UpdateWebhooksRequestEventsItem = "product.published"
-	UpdateWebhooksRequestEventsItemProductUnpublished                              UpdateWebhooksRequestEventsItem = "product.unpublished"
-	UpdateWebhooksRequestEventsItemPlanCreated                                     UpdateWebhooksRequestEventsItem = "plan.created"
-	UpdateWebhooksRequestEventsItemPlanUpdated                                     UpdateWebhooksRequestEventsItem = "plan.updated"
-	UpdateWebhooksRequestEventsItemPlanDeleted                                     UpdateWebhooksRequestEventsItem = "plan.deleted"
-	UpdateWebhooksRequestEventsItemShipmentCreated                                 UpdateWebhooksRequestEventsItem = "shipment.created"
-	UpdateWebhooksRequestEventsItemShipmentUpdated                                 UpdateWebhooksRequestEventsItem = "shipment.updated"
-	UpdateWebhooksRequestEventsItemMemberCreated                                   UpdateWebhooksRequestEventsItem = "member.created"
-	UpdateWebhooksRequestEventsItemMemberUpdated                                   UpdateWebhooksRequestEventsItem = "member.updated"
-	UpdateWebhooksRequestEventsItemAdCampaignPaymentFailed                         UpdateWebhooksRequestEventsItem = "ad_campaign.payment_failed"
-	UpdateWebhooksRequestEventsItemAdCampaignUpdated                               UpdateWebhooksRequestEventsItem = "ad_campaign.updated"
-	UpdateWebhooksRequestEventsItemAdUpdated                                       UpdateWebhooksRequestEventsItem = "ad.updated"
-	UpdateWebhooksRequestEventsItemChatMessageCreated                              UpdateWebhooksRequestEventsItem = "chat.message.created"
-	UpdateWebhooksRequestEventsItemChatReactionCreated                             UpdateWebhooksRequestEventsItem = "chat.reaction.created"
-	UpdateWebhooksRequestEventsItemPaymentCreated                                  UpdateWebhooksRequestEventsItem = "payment.created"
-	UpdateWebhooksRequestEventsItemPaymentSucceeded                                UpdateWebhooksRequestEventsItem = "payment.succeeded"
-	UpdateWebhooksRequestEventsItemPaymentFailed                                   UpdateWebhooksRequestEventsItem = "payment.failed"
-	UpdateWebhooksRequestEventsItemPaymentPending                                  UpdateWebhooksRequestEventsItem = "payment.pending"
-	UpdateWebhooksRequestEventsItemPaymentRequiresAction                           UpdateWebhooksRequestEventsItem = "payment.requires_action"
-	UpdateWebhooksRequestEventsItemDisputeCreated                                  UpdateWebhooksRequestEventsItem = "dispute.created"
-	UpdateWebhooksRequestEventsItemDisputeUpdated                                  UpdateWebhooksRequestEventsItem = "dispute.updated"
-	UpdateWebhooksRequestEventsItemRefundCreated                                   UpdateWebhooksRequestEventsItem = "refund.created"
-	UpdateWebhooksRequestEventsItemRefundUpdated                                   UpdateWebhooksRequestEventsItem = "refund.updated"
-	UpdateWebhooksRequestEventsItemDisputeAlertCreated                             UpdateWebhooksRequestEventsItem = "dispute_alert.created"
-	UpdateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged              UpdateWebhooksRequestEventsItem = "membership.cancel_at_period_end_changed"
-	UpdateWebhooksRequestEventsItemMembershipWentValidUnderscore                   UpdateWebhooksRequestEventsItem = "membership_went_valid"
-	UpdateWebhooksRequestEventsItemMembershipWentInvalidUnderscore                 UpdateWebhooksRequestEventsItem = "membership_went_invalid"
-	UpdateWebhooksRequestEventsItemMembershipMetadataUpdatedUnderscore             UpdateWebhooksRequestEventsItem = "membership_metadata_updated"
-	UpdateWebhooksRequestEventsItemResolutionCreatedUnderscore                     UpdateWebhooksRequestEventsItem = "resolution_created"
-	UpdateWebhooksRequestEventsItemResolutionUpdatedUnderscore                     UpdateWebhooksRequestEventsItem = "resolution_updated"
-	UpdateWebhooksRequestEventsItemResolutionDecidedUnderscore                     UpdateWebhooksRequestEventsItem = "resolution_decided"
-	UpdateWebhooksRequestEventsItemPaymentAffiliateRewardCreatedUnderscore         UpdateWebhooksRequestEventsItem = "payment_affiliate_reward_created"
-	UpdateWebhooksRequestEventsItemMembershipExperienceClaimedUnderscore           UpdateWebhooksRequestEventsItem = "membership_experience_claimed"
-	UpdateWebhooksRequestEventsItemAppMembershipWentValidUnderscore                UpdateWebhooksRequestEventsItem = "app_membership_went_valid"
-	UpdateWebhooksRequestEventsItemAppMembershipWentInvalidUnderscore              UpdateWebhooksRequestEventsItem = "app_membership_went_invalid"
-	UpdateWebhooksRequestEventsItemAppPaymentCreatedUnderscore                     UpdateWebhooksRequestEventsItem = "app_payment_created"
-	UpdateWebhooksRequestEventsItemAppPaymentSucceededUnderscore                   UpdateWebhooksRequestEventsItem = "app_payment_succeeded"
-	UpdateWebhooksRequestEventsItemAppPaymentFailedUnderscore                      UpdateWebhooksRequestEventsItem = "app_payment_failed"
-	UpdateWebhooksRequestEventsItemAppPaymentPendingUnderscore                     UpdateWebhooksRequestEventsItem = "app_payment_pending"
-	UpdateWebhooksRequestEventsItemAppPaymentRequiresActionUnderscore              UpdateWebhooksRequestEventsItem = "app_payment_requires_action"
-	UpdateWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChangedUnderscore UpdateWebhooksRequestEventsItem = "app_membership_cancel_at_period_end_changed"
-	UpdateWebhooksRequestEventsItemPaymentCreatedUnderscore                        UpdateWebhooksRequestEventsItem = "payment_created"
-	UpdateWebhooksRequestEventsItemPaymentSucceededUnderscore                      UpdateWebhooksRequestEventsItem = "payment_succeeded"
-	UpdateWebhooksRequestEventsItemPaymentFailedUnderscore                         UpdateWebhooksRequestEventsItem = "payment_failed"
-	UpdateWebhooksRequestEventsItemPaymentPendingUnderscore                        UpdateWebhooksRequestEventsItem = "payment_pending"
-	UpdateWebhooksRequestEventsItemPaymentRequiresActionUnderscore                 UpdateWebhooksRequestEventsItem = "payment_requires_action"
-	UpdateWebhooksRequestEventsItemDisputeCreatedUnderscore                        UpdateWebhooksRequestEventsItem = "dispute_created"
-	UpdateWebhooksRequestEventsItemDisputeUpdatedUnderscore                        UpdateWebhooksRequestEventsItem = "dispute_updated"
-	UpdateWebhooksRequestEventsItemRefundCreatedUnderscore                         UpdateWebhooksRequestEventsItem = "refund_created"
-	UpdateWebhooksRequestEventsItemRefundUpdatedUnderscore                         UpdateWebhooksRequestEventsItem = "refund_updated"
-	UpdateWebhooksRequestEventsItemDisputeAlertCreatedUnderscore                   UpdateWebhooksRequestEventsItem = "dispute_alert_created"
-	UpdateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChangedUnderscore    UpdateWebhooksRequestEventsItem = "membership_cancel_at_period_end_changed"
-	UpdateWebhooksRequestEventsItemMembershipWentValid                             UpdateWebhooksRequestEventsItem = "membership.went_valid"
-	UpdateWebhooksRequestEventsItemMembershipWentInvalid                           UpdateWebhooksRequestEventsItem = "membership.went_invalid"
-	UpdateWebhooksRequestEventsItemMembershipMetadataUpdated                       UpdateWebhooksRequestEventsItem = "membership.metadata_updated"
-	UpdateWebhooksRequestEventsItemResolutionCreated                               UpdateWebhooksRequestEventsItem = "resolution.created"
-	UpdateWebhooksRequestEventsItemResolutionUpdated                               UpdateWebhooksRequestEventsItem = "resolution.updated"
-	UpdateWebhooksRequestEventsItemResolutionDecided                               UpdateWebhooksRequestEventsItem = "resolution.decided"
-	UpdateWebhooksRequestEventsItemPaymentAffiliateRewardCreated                   UpdateWebhooksRequestEventsItem = "payment.affiliate_reward_created"
-	UpdateWebhooksRequestEventsItemMembershipExperienceClaimed                     UpdateWebhooksRequestEventsItem = "membership.experience_claimed"
-	UpdateWebhooksRequestEventsItemAppMembershipWentValid                          UpdateWebhooksRequestEventsItem = "app_membership.went_valid"
-	UpdateWebhooksRequestEventsItemAppMembershipWentInvalid                        UpdateWebhooksRequestEventsItem = "app_membership.went_invalid"
-	UpdateWebhooksRequestEventsItemAppPaymentCreated                               UpdateWebhooksRequestEventsItem = "app_payment.created"
-	UpdateWebhooksRequestEventsItemAppPaymentSucceeded                             UpdateWebhooksRequestEventsItem = "app_payment.succeeded"
-	UpdateWebhooksRequestEventsItemAppPaymentFailed                                UpdateWebhooksRequestEventsItem = "app_payment.failed"
-	UpdateWebhooksRequestEventsItemAppPaymentPending                               UpdateWebhooksRequestEventsItem = "app_payment.pending"
-	UpdateWebhooksRequestEventsItemAppPaymentRequiresAction                        UpdateWebhooksRequestEventsItem = "app_payment.requires_action"
-	UpdateWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChanged           UpdateWebhooksRequestEventsItem = "app_membership.cancel_at_period_end_changed"
+	UpdateWebhooksRequestEventsItemAccountUpdated                     UpdateWebhooksRequestEventsItem = "account.updated"
+	UpdateWebhooksRequestEventsItemAccountFinancingApproved           UpdateWebhooksRequestEventsItem = "account.financing_approved"
+	UpdateWebhooksRequestEventsItemAccountFinancingDenied             UpdateWebhooksRequestEventsItem = "account.financing_denied"
+	UpdateWebhooksRequestEventsItemInvoiceCreated                     UpdateWebhooksRequestEventsItem = "invoice.created"
+	UpdateWebhooksRequestEventsItemInvoiceMarkedUncollectible         UpdateWebhooksRequestEventsItem = "invoice.marked_uncollectible"
+	UpdateWebhooksRequestEventsItemInvoicePaid                        UpdateWebhooksRequestEventsItem = "invoice.paid"
+	UpdateWebhooksRequestEventsItemInvoicePastDue                     UpdateWebhooksRequestEventsItem = "invoice.past_due"
+	UpdateWebhooksRequestEventsItemInvoiceVoided                      UpdateWebhooksRequestEventsItem = "invoice.voided"
+	UpdateWebhooksRequestEventsItemMembershipActivated                UpdateWebhooksRequestEventsItem = "membership.activated"
+	UpdateWebhooksRequestEventsItemMembershipDeactivated              UpdateWebhooksRequestEventsItem = "membership.deactivated"
+	UpdateWebhooksRequestEventsItemMembershipTrialEndingSoon          UpdateWebhooksRequestEventsItem = "membership.trial_ending_soon"
+	UpdateWebhooksRequestEventsItemEntryCreated                       UpdateWebhooksRequestEventsItem = "entry.created"
+	UpdateWebhooksRequestEventsItemEntryApproved                      UpdateWebhooksRequestEventsItem = "entry.approved"
+	UpdateWebhooksRequestEventsItemEntryDenied                        UpdateWebhooksRequestEventsItem = "entry.denied"
+	UpdateWebhooksRequestEventsItemEntryDeleted                       UpdateWebhooksRequestEventsItem = "entry.deleted"
+	UpdateWebhooksRequestEventsItemExportCompleted                    UpdateWebhooksRequestEventsItem = "export.completed"
+	UpdateWebhooksRequestEventsItemExportFailed                       UpdateWebhooksRequestEventsItem = "export.failed"
+	UpdateWebhooksRequestEventsItemSetupIntentRequiresAction          UpdateWebhooksRequestEventsItem = "setup_intent.requires_action"
+	UpdateWebhooksRequestEventsItemSetupIntentSucceeded               UpdateWebhooksRequestEventsItem = "setup_intent.succeeded"
+	UpdateWebhooksRequestEventsItemSetupIntentCanceled                UpdateWebhooksRequestEventsItem = "setup_intent.canceled"
+	UpdateWebhooksRequestEventsItemLedgerAccountFundsAvailable        UpdateWebhooksRequestEventsItem = "ledger_account.funds_available"
+	UpdateWebhooksRequestEventsItemSwapCompleted                      UpdateWebhooksRequestEventsItem = "swap.completed"
+	UpdateWebhooksRequestEventsItemDepositSucceeded                   UpdateWebhooksRequestEventsItem = "deposit.succeeded"
+	UpdateWebhooksRequestEventsItemFinancialActivityFundsAvailable    UpdateWebhooksRequestEventsItem = "financial_activity.funds_available"
+	UpdateWebhooksRequestEventsItemTransferCreated                    UpdateWebhooksRequestEventsItem = "transfer.created"
+	UpdateWebhooksRequestEventsItemTransferCompleted                  UpdateWebhooksRequestEventsItem = "transfer.completed"
+	UpdateWebhooksRequestEventsItemTransferFailed                     UpdateWebhooksRequestEventsItem = "transfer.failed"
+	UpdateWebhooksRequestEventsItemPayoutCreated                      UpdateWebhooksRequestEventsItem = "payout.created"
+	UpdateWebhooksRequestEventsItemPayoutUpdated                      UpdateWebhooksRequestEventsItem = "payout.updated"
+	UpdateWebhooksRequestEventsItemPayoutReversed                     UpdateWebhooksRequestEventsItem = "payout.reversed"
+	UpdateWebhooksRequestEventsItemCardTransactionCreated             UpdateWebhooksRequestEventsItem = "card_transaction.created"
+	UpdateWebhooksRequestEventsItemCardTransactionUpdated             UpdateWebhooksRequestEventsItem = "card_transaction.updated"
+	UpdateWebhooksRequestEventsItemCardTransactionCompleted           UpdateWebhooksRequestEventsItem = "card_transaction.completed"
+	UpdateWebhooksRequestEventsItemCardTransactionDeclined            UpdateWebhooksRequestEventsItem = "card_transaction.declined"
+	UpdateWebhooksRequestEventsItemCardTransactionReversed            UpdateWebhooksRequestEventsItem = "card_transaction.reversed"
+	UpdateWebhooksRequestEventsItemCardCreated                        UpdateWebhooksRequestEventsItem = "card.created"
+	UpdateWebhooksRequestEventsItemCardUpdated                        UpdateWebhooksRequestEventsItem = "card.updated"
+	UpdateWebhooksRequestEventsItemCardFrozen                         UpdateWebhooksRequestEventsItem = "card.frozen"
+	UpdateWebhooksRequestEventsItemCardCanceled                       UpdateWebhooksRequestEventsItem = "card.canceled"
+	UpdateWebhooksRequestEventsItemCardApplicationCreated             UpdateWebhooksRequestEventsItem = "card_application.created"
+	UpdateWebhooksRequestEventsItemCardApplicationUpdated             UpdateWebhooksRequestEventsItem = "card_application.updated"
+	UpdateWebhooksRequestEventsItemCardApplicationApproved            UpdateWebhooksRequestEventsItem = "card_application.approved"
+	UpdateWebhooksRequestEventsItemCardApplicationDenied              UpdateWebhooksRequestEventsItem = "card_application.denied"
+	UpdateWebhooksRequestEventsItemCourseLessonInteractionCompleted   UpdateWebhooksRequestEventsItem = "course_lesson_interaction.completed"
+	UpdateWebhooksRequestEventsItemPayoutMethodCreated                UpdateWebhooksRequestEventsItem = "payout_method.created"
+	UpdateWebhooksRequestEventsItemVerificationSucceeded              UpdateWebhooksRequestEventsItem = "verification.succeeded"
+	UpdateWebhooksRequestEventsItemIdentityProfileApproved            UpdateWebhooksRequestEventsItem = "identity_profile.approved"
+	UpdateWebhooksRequestEventsItemIdentityProfileRejected            UpdateWebhooksRequestEventsItem = "identity_profile.rejected"
+	UpdateWebhooksRequestEventsItemIdentityProfileNeedsAction         UpdateWebhooksRequestEventsItem = "identity_profile.needs_action"
+	UpdateWebhooksRequestEventsItemIdentityProfileUpdated             UpdateWebhooksRequestEventsItem = "identity_profile.updated"
+	UpdateWebhooksRequestEventsItemPayoutAccountStatusUpdated         UpdateWebhooksRequestEventsItem = "payout_account.status_updated"
+	UpdateWebhooksRequestEventsItemPaymentAuthorized                  UpdateWebhooksRequestEventsItem = "payment.authorized"
+	UpdateWebhooksRequestEventsItemPaymentCanceled                    UpdateWebhooksRequestEventsItem = "payment.canceled"
+	UpdateWebhooksRequestEventsItemResolutionCenterCaseCreated        UpdateWebhooksRequestEventsItem = "resolution_center_case.created"
+	UpdateWebhooksRequestEventsItemResolutionCenterCaseUpdated        UpdateWebhooksRequestEventsItem = "resolution_center_case.updated"
+	UpdateWebhooksRequestEventsItemResolutionCenterCaseDecided        UpdateWebhooksRequestEventsItem = "resolution_center_case.decided"
+	UpdateWebhooksRequestEventsItemProductCreated                     UpdateWebhooksRequestEventsItem = "product.created"
+	UpdateWebhooksRequestEventsItemProductUpdated                     UpdateWebhooksRequestEventsItem = "product.updated"
+	UpdateWebhooksRequestEventsItemProductDeleted                     UpdateWebhooksRequestEventsItem = "product.deleted"
+	UpdateWebhooksRequestEventsItemProductPublished                   UpdateWebhooksRequestEventsItem = "product.published"
+	UpdateWebhooksRequestEventsItemProductUnpublished                 UpdateWebhooksRequestEventsItem = "product.unpublished"
+	UpdateWebhooksRequestEventsItemPlanCreated                        UpdateWebhooksRequestEventsItem = "plan.created"
+	UpdateWebhooksRequestEventsItemPlanUpdated                        UpdateWebhooksRequestEventsItem = "plan.updated"
+	UpdateWebhooksRequestEventsItemPlanDeleted                        UpdateWebhooksRequestEventsItem = "plan.deleted"
+	UpdateWebhooksRequestEventsItemShipmentCreated                    UpdateWebhooksRequestEventsItem = "shipment.created"
+	UpdateWebhooksRequestEventsItemShipmentUpdated                    UpdateWebhooksRequestEventsItem = "shipment.updated"
+	UpdateWebhooksRequestEventsItemMemberCreated                      UpdateWebhooksRequestEventsItem = "member.created"
+	UpdateWebhooksRequestEventsItemMemberUpdated                      UpdateWebhooksRequestEventsItem = "member.updated"
+	UpdateWebhooksRequestEventsItemAdCampaignPaymentFailed            UpdateWebhooksRequestEventsItem = "ad_campaign.payment_failed"
+	UpdateWebhooksRequestEventsItemAdCampaignUpdated                  UpdateWebhooksRequestEventsItem = "ad_campaign.updated"
+	UpdateWebhooksRequestEventsItemAdUpdated                          UpdateWebhooksRequestEventsItem = "ad.updated"
+	UpdateWebhooksRequestEventsItemChatMessageCreated                 UpdateWebhooksRequestEventsItem = "chat.message.created"
+	UpdateWebhooksRequestEventsItemChatReactionCreated                UpdateWebhooksRequestEventsItem = "chat.reaction.created"
+	UpdateWebhooksRequestEventsItemPaymentCreated                     UpdateWebhooksRequestEventsItem = "payment.created"
+	UpdateWebhooksRequestEventsItemPaymentSucceeded                   UpdateWebhooksRequestEventsItem = "payment.succeeded"
+	UpdateWebhooksRequestEventsItemPaymentFailed                      UpdateWebhooksRequestEventsItem = "payment.failed"
+	UpdateWebhooksRequestEventsItemPaymentPending                     UpdateWebhooksRequestEventsItem = "payment.pending"
+	UpdateWebhooksRequestEventsItemPaymentRequiresAction              UpdateWebhooksRequestEventsItem = "payment.requires_action"
+	UpdateWebhooksRequestEventsItemDisputeCreated                     UpdateWebhooksRequestEventsItem = "dispute.created"
+	UpdateWebhooksRequestEventsItemDisputeUpdated                     UpdateWebhooksRequestEventsItem = "dispute.updated"
+	UpdateWebhooksRequestEventsItemRefundCreated                      UpdateWebhooksRequestEventsItem = "refund.created"
+	UpdateWebhooksRequestEventsItemRefundUpdated                      UpdateWebhooksRequestEventsItem = "refund.updated"
+	UpdateWebhooksRequestEventsItemDisputeAlertCreated                UpdateWebhooksRequestEventsItem = "dispute_alert.created"
+	UpdateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged UpdateWebhooksRequestEventsItem = "membership.cancel_at_period_end_changed"
 )
 
 func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksRequestEventsItem, error) {
@@ -4076,92 +3904,6 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemDisputeAlertCreated, nil
 	case "membership.cancel_at_period_end_changed":
 		return UpdateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged, nil
-	case "membership_went_valid":
-		return UpdateWebhooksRequestEventsItemMembershipWentValidUnderscore, nil
-	case "membership_went_invalid":
-		return UpdateWebhooksRequestEventsItemMembershipWentInvalidUnderscore, nil
-	case "membership_metadata_updated":
-		return UpdateWebhooksRequestEventsItemMembershipMetadataUpdatedUnderscore, nil
-	case "resolution_created":
-		return UpdateWebhooksRequestEventsItemResolutionCreatedUnderscore, nil
-	case "resolution_updated":
-		return UpdateWebhooksRequestEventsItemResolutionUpdatedUnderscore, nil
-	case "resolution_decided":
-		return UpdateWebhooksRequestEventsItemResolutionDecidedUnderscore, nil
-	case "payment_affiliate_reward_created":
-		return UpdateWebhooksRequestEventsItemPaymentAffiliateRewardCreatedUnderscore, nil
-	case "membership_experience_claimed":
-		return UpdateWebhooksRequestEventsItemMembershipExperienceClaimedUnderscore, nil
-	case "app_membership_went_valid":
-		return UpdateWebhooksRequestEventsItemAppMembershipWentValidUnderscore, nil
-	case "app_membership_went_invalid":
-		return UpdateWebhooksRequestEventsItemAppMembershipWentInvalidUnderscore, nil
-	case "app_payment_created":
-		return UpdateWebhooksRequestEventsItemAppPaymentCreatedUnderscore, nil
-	case "app_payment_succeeded":
-		return UpdateWebhooksRequestEventsItemAppPaymentSucceededUnderscore, nil
-	case "app_payment_failed":
-		return UpdateWebhooksRequestEventsItemAppPaymentFailedUnderscore, nil
-	case "app_payment_pending":
-		return UpdateWebhooksRequestEventsItemAppPaymentPendingUnderscore, nil
-	case "app_payment_requires_action":
-		return UpdateWebhooksRequestEventsItemAppPaymentRequiresActionUnderscore, nil
-	case "app_membership_cancel_at_period_end_changed":
-		return UpdateWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChangedUnderscore, nil
-	case "payment_created":
-		return UpdateWebhooksRequestEventsItemPaymentCreatedUnderscore, nil
-	case "payment_succeeded":
-		return UpdateWebhooksRequestEventsItemPaymentSucceededUnderscore, nil
-	case "payment_failed":
-		return UpdateWebhooksRequestEventsItemPaymentFailedUnderscore, nil
-	case "payment_pending":
-		return UpdateWebhooksRequestEventsItemPaymentPendingUnderscore, nil
-	case "payment_requires_action":
-		return UpdateWebhooksRequestEventsItemPaymentRequiresActionUnderscore, nil
-	case "dispute_created":
-		return UpdateWebhooksRequestEventsItemDisputeCreatedUnderscore, nil
-	case "dispute_updated":
-		return UpdateWebhooksRequestEventsItemDisputeUpdatedUnderscore, nil
-	case "refund_created":
-		return UpdateWebhooksRequestEventsItemRefundCreatedUnderscore, nil
-	case "refund_updated":
-		return UpdateWebhooksRequestEventsItemRefundUpdatedUnderscore, nil
-	case "dispute_alert_created":
-		return UpdateWebhooksRequestEventsItemDisputeAlertCreatedUnderscore, nil
-	case "membership_cancel_at_period_end_changed":
-		return UpdateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChangedUnderscore, nil
-	case "membership.went_valid":
-		return UpdateWebhooksRequestEventsItemMembershipWentValid, nil
-	case "membership.went_invalid":
-		return UpdateWebhooksRequestEventsItemMembershipWentInvalid, nil
-	case "membership.metadata_updated":
-		return UpdateWebhooksRequestEventsItemMembershipMetadataUpdated, nil
-	case "resolution.created":
-		return UpdateWebhooksRequestEventsItemResolutionCreated, nil
-	case "resolution.updated":
-		return UpdateWebhooksRequestEventsItemResolutionUpdated, nil
-	case "resolution.decided":
-		return UpdateWebhooksRequestEventsItemResolutionDecided, nil
-	case "payment.affiliate_reward_created":
-		return UpdateWebhooksRequestEventsItemPaymentAffiliateRewardCreated, nil
-	case "membership.experience_claimed":
-		return UpdateWebhooksRequestEventsItemMembershipExperienceClaimed, nil
-	case "app_membership.went_valid":
-		return UpdateWebhooksRequestEventsItemAppMembershipWentValid, nil
-	case "app_membership.went_invalid":
-		return UpdateWebhooksRequestEventsItemAppMembershipWentInvalid, nil
-	case "app_payment.created":
-		return UpdateWebhooksRequestEventsItemAppPaymentCreated, nil
-	case "app_payment.succeeded":
-		return UpdateWebhooksRequestEventsItemAppPaymentSucceeded, nil
-	case "app_payment.failed":
-		return UpdateWebhooksRequestEventsItemAppPaymentFailed, nil
-	case "app_payment.pending":
-		return UpdateWebhooksRequestEventsItemAppPaymentPending, nil
-	case "app_payment.requires_action":
-		return UpdateWebhooksRequestEventsItemAppPaymentRequiresAction, nil
-	case "app_membership.cancel_at_period_end_changed":
-		return UpdateWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChanged, nil
 	}
 	var t UpdateWebhooksRequestEventsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
