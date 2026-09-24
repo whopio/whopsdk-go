@@ -1814,6 +1814,7 @@ type AdCampaignPlatform string
 const (
 	AdCampaignPlatformMeta   AdCampaignPlatform = "meta"
 	AdCampaignPlatformTiktok AdCampaignPlatform = "tiktok"
+	AdCampaignPlatformGoogle AdCampaignPlatform = "google"
 )
 
 func NewAdCampaignPlatformFromString(s string) (AdCampaignPlatform, error) {
@@ -1822,6 +1823,8 @@ func NewAdCampaignPlatformFromString(s string) (AdCampaignPlatform, error) {
 		return AdCampaignPlatformMeta, nil
 	case "tiktok":
 		return AdCampaignPlatformTiktok, nil
+	case "google":
+		return AdCampaignPlatformGoogle, nil
 	}
 	var t AdCampaignPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3415,6 +3418,7 @@ type PostAdCampaignPaymentFailedPayloadDataPlatform string
 const (
 	PostAdCampaignPaymentFailedPayloadDataPlatformMeta   PostAdCampaignPaymentFailedPayloadDataPlatform = "meta"
 	PostAdCampaignPaymentFailedPayloadDataPlatformTiktok PostAdCampaignPaymentFailedPayloadDataPlatform = "tiktok"
+	PostAdCampaignPaymentFailedPayloadDataPlatformGoogle PostAdCampaignPaymentFailedPayloadDataPlatform = "google"
 )
 
 func NewPostAdCampaignPaymentFailedPayloadDataPlatformFromString(s string) (PostAdCampaignPaymentFailedPayloadDataPlatform, error) {
@@ -3423,6 +3427,8 @@ func NewPostAdCampaignPaymentFailedPayloadDataPlatformFromString(s string) (Post
 		return PostAdCampaignPaymentFailedPayloadDataPlatformMeta, nil
 	case "tiktok":
 		return PostAdCampaignPaymentFailedPayloadDataPlatformTiktok, nil
+	case "google":
+		return PostAdCampaignPaymentFailedPayloadDataPlatformGoogle, nil
 	}
 	var t PostAdCampaignPaymentFailedPayloadDataPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4286,6 +4292,7 @@ type PostAdCampaignUpdatedPayloadDataPlatform string
 const (
 	PostAdCampaignUpdatedPayloadDataPlatformMeta   PostAdCampaignUpdatedPayloadDataPlatform = "meta"
 	PostAdCampaignUpdatedPayloadDataPlatformTiktok PostAdCampaignUpdatedPayloadDataPlatform = "tiktok"
+	PostAdCampaignUpdatedPayloadDataPlatformGoogle PostAdCampaignUpdatedPayloadDataPlatform = "google"
 )
 
 func NewPostAdCampaignUpdatedPayloadDataPlatformFromString(s string) (PostAdCampaignUpdatedPayloadDataPlatform, error) {
@@ -4294,6 +4301,8 @@ func NewPostAdCampaignUpdatedPayloadDataPlatformFromString(s string) (PostAdCamp
 		return PostAdCampaignUpdatedPayloadDataPlatformMeta, nil
 	case "tiktok":
 		return PostAdCampaignUpdatedPayloadDataPlatformTiktok, nil
+	case "google":
+		return PostAdCampaignUpdatedPayloadDataPlatformGoogle, nil
 	}
 	var t PostAdCampaignUpdatedPayloadDataPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

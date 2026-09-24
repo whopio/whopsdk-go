@@ -5818,6 +5818,7 @@ type AdGroupPlatform string
 const (
 	AdGroupPlatformMeta   AdGroupPlatform = "meta"
 	AdGroupPlatformTiktok AdGroupPlatform = "tiktok"
+	AdGroupPlatformGoogle AdGroupPlatform = "google"
 )
 
 func NewAdGroupPlatformFromString(s string) (AdGroupPlatform, error) {
@@ -5826,6 +5827,8 @@ func NewAdGroupPlatformFromString(s string) (AdGroupPlatform, error) {
 		return AdGroupPlatformMeta, nil
 	case "tiktok":
 		return AdGroupPlatformTiktok, nil
+	case "google":
+		return AdGroupPlatformGoogle, nil
 	}
 	var t AdGroupPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

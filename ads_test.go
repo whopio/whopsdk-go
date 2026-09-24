@@ -21264,6 +21264,13 @@ func TestEnumAdPlatform(t *testing.T) {
 		assert.Equal(t, AdPlatform("tiktok"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_google", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdPlatformFromString("google")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdPlatform("google"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAdPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -22526,6 +22533,13 @@ func TestEnumPostAdUpdatedPayloadDataPlatform(t *testing.T) {
 		val, err := NewPostAdUpdatedPayloadDataPlatformFromString("tiktok")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PostAdUpdatedPayloadDataPlatform("tiktok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostAdUpdatedPayloadDataPlatformFromString("google")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostAdUpdatedPayloadDataPlatform("google"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
