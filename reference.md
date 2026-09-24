@@ -23927,6 +23927,14 @@ client.Partners.ReferredUsers(
 <dl>
 <dd>
 
+**query:** `*string` — Search referred users by name or username.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **hasBusinesses:** `*bool` — When true, only referred users who brought at least one business onto Whop.
     
 </dd>

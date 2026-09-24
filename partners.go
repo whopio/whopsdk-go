@@ -37,15 +37,18 @@ func (l *LeaderboardPartnersRequest) SetPeriod(period *LeaderboardPartnersReques
 }
 
 var (
-	referredUsersPartnersRequestFieldHasBusinesses        = big.NewInt(1 << 0)
-	referredUsersPartnersRequestFieldHasEarningBusinesses = big.NewInt(1 << 1)
-	referredUsersPartnersRequestFieldFirst                = big.NewInt(1 << 2)
-	referredUsersPartnersRequestFieldAfter                = big.NewInt(1 << 3)
-	referredUsersPartnersRequestFieldLast                 = big.NewInt(1 << 4)
-	referredUsersPartnersRequestFieldBefore               = big.NewInt(1 << 5)
+	referredUsersPartnersRequestFieldQuery                = big.NewInt(1 << 0)
+	referredUsersPartnersRequestFieldHasBusinesses        = big.NewInt(1 << 1)
+	referredUsersPartnersRequestFieldHasEarningBusinesses = big.NewInt(1 << 2)
+	referredUsersPartnersRequestFieldFirst                = big.NewInt(1 << 3)
+	referredUsersPartnersRequestFieldAfter                = big.NewInt(1 << 4)
+	referredUsersPartnersRequestFieldLast                 = big.NewInt(1 << 5)
+	referredUsersPartnersRequestFieldBefore               = big.NewInt(1 << 6)
 )
 
 type ReferredUsersPartnersRequest struct {
+	// Search referred users by name or username.
+	Query *string `json:"-" url:"query,omitempty"`
 	// When true, only referred users who brought at least one business onto Whop.
 	HasBusinesses *bool `json:"-" url:"has_businesses,omitempty"`
 	// When true, only referred users with at least one business that has generated earnings.
@@ -68,6 +71,13 @@ func (r *ReferredUsersPartnersRequest) require(field *big.Int) {
 		r.explicitFields = big.NewInt(0)
 	}
 	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersRequest) SetQuery(query *string) {
+	r.Query = query
+	r.require(referredUsersPartnersRequestFieldQuery)
 }
 
 // SetHasBusinesses sets the HasBusinesses field and marks it as non-optional;
@@ -1902,21 +1912,54 @@ func (r *ReferredUsersPartnersResponse) String() string {
 }
 
 var (
-	referredUsersPartnersResponseDataItemFieldTotalEarningsUsd = big.NewInt(1 << 0)
-	referredUsersPartnersResponseDataItemFieldTotalVolumeUsd   = big.NewInt(1 << 1)
-	referredUsersPartnersResponseDataItemFieldUser             = big.NewInt(1 << 2)
+	referredUsersPartnersResponseDataItemFieldBusinessCount    = big.NewInt(1 << 0)
+	referredUsersPartnersResponseDataItemFieldEarnings         = big.NewInt(1 << 1)
+	referredUsersPartnersResponseDataItemFieldJoinedAt         = big.NewInt(1 << 2)
+	referredUsersPartnersResponseDataItemFieldTotalEarningsUsd = big.NewInt(1 << 3)
+	referredUsersPartnersResponseDataItemFieldTotalVolumeUsd   = big.NewInt(1 << 4)
+	referredUsersPartnersResponseDataItemFieldUser             = big.NewInt(1 << 5)
+	referredUsersPartnersResponseDataItemFieldVolume30D        = big.NewInt(1 << 6)
 )
 
 type ReferredUsersPartnersResponseDataItem struct {
+	// Number of active businesses this user referred that credit the caller as a second-tier partner. Excludes deleted businesses.
+	BusinessCount int `json:"business_count" url:"business_count"`
+	// The caller's total earnings across the business referrals included in business_count, in USD.
+	Earnings *Money `json:"earnings" url:"earnings"`
+	// When the referred user joined Whop, as an ISO 8601 timestamp.
+	JoinedAt         time.Time                                  `json:"joined_at" url:"joined_at"`
 	TotalEarningsUsd string                                     `json:"total_earnings_usd" url:"total_earnings_usd"`
 	TotalVolumeUsd   string                                     `json:"total_volume_usd" url:"total_volume_usd"`
 	User             *ReferredUsersPartnersResponseDataItemUser `json:"user" url:"user"`
+	// Attributed volume over the last 30 days across the business referrals included in business_count, in USD.
+	Volume30D *Money `json:"volume_30d" url:"volume_30d"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *ReferredUsersPartnersResponseDataItem) GetBusinessCount() int {
+	if r == nil {
+		return 0
+	}
+	return r.BusinessCount
+}
+
+func (r *ReferredUsersPartnersResponseDataItem) GetEarnings() *Money {
+	if r == nil {
+		return nil
+	}
+	return r.Earnings
+}
+
+func (r *ReferredUsersPartnersResponseDataItem) GetJoinedAt() time.Time {
+	if r == nil {
+		return time.Time{}
+	}
+	return r.JoinedAt
 }
 
 func (r *ReferredUsersPartnersResponseDataItem) GetTotalEarningsUsd() string {
@@ -1940,6 +1983,13 @@ func (r *ReferredUsersPartnersResponseDataItem) GetUser() *ReferredUsersPartners
 	return r.User
 }
 
+func (r *ReferredUsersPartnersResponseDataItem) GetVolume30D() *Money {
+	if r == nil {
+		return nil
+	}
+	return r.Volume30D
+}
+
 func (r *ReferredUsersPartnersResponseDataItem) GetExtraProperties() map[string]interface{} {
 	if r == nil {
 		return nil
@@ -1952,6 +2002,27 @@ func (r *ReferredUsersPartnersResponseDataItem) require(field *big.Int) {
 		r.explicitFields = big.NewInt(0)
 	}
 	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetBusinessCount sets the BusinessCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersResponseDataItem) SetBusinessCount(businessCount int) {
+	r.BusinessCount = businessCount
+	r.require(referredUsersPartnersResponseDataItemFieldBusinessCount)
+}
+
+// SetEarnings sets the Earnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersResponseDataItem) SetEarnings(earnings *Money) {
+	r.Earnings = earnings
+	r.require(referredUsersPartnersResponseDataItemFieldEarnings)
+}
+
+// SetJoinedAt sets the JoinedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersResponseDataItem) SetJoinedAt(joinedAt time.Time) {
+	r.JoinedAt = joinedAt
+	r.require(referredUsersPartnersResponseDataItemFieldJoinedAt)
 }
 
 // SetTotalEarningsUsd sets the TotalEarningsUsd field and marks it as non-optional;
@@ -1975,13 +2046,26 @@ func (r *ReferredUsersPartnersResponseDataItem) SetUser(user *ReferredUsersPartn
 	r.require(referredUsersPartnersResponseDataItemFieldUser)
 }
 
+// SetVolume30D sets the Volume30D field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersResponseDataItem) SetVolume30D(volume30D *Money) {
+	r.Volume30D = volume30D
+	r.require(referredUsersPartnersResponseDataItemFieldVolume30D)
+}
+
 func (r *ReferredUsersPartnersResponseDataItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler ReferredUsersPartnersResponseDataItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed ReferredUsersPartnersResponseDataItem
+	var unmarshaler = struct {
+		embed
+		JoinedAt *internal.DateTime `json:"joined_at"`
+	}{
+		embed: embed(*r),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*r = ReferredUsersPartnersResponseDataItem(value)
+	*r = ReferredUsersPartnersResponseDataItem(unmarshaler.embed)
+	r.JoinedAt = unmarshaler.JoinedAt.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
@@ -1995,8 +2079,10 @@ func (r *ReferredUsersPartnersResponseDataItem) MarshalJSON() ([]byte, error) {
 	type embed ReferredUsersPartnersResponseDataItem
 	var marshaler = struct {
 		embed
+		JoinedAt *internal.DateTime `json:"joined_at"`
 	}{
-		embed: embed(*r),
+		embed:    embed(*r),
+		JoinedAt: internal.NewDateTime(r.JoinedAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
 	return json.Marshal(explicitMarshaler)
