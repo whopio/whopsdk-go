@@ -5,8 +5,8 @@ package preferences
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -367,7 +367,7 @@ var (
 )
 
 type SetNotificationsResponse struct {
-	Data []*whopsdkgo.NotificationPreferenceState `json:"data" url:"data"`
+	Data []*v2.NotificationPreferenceState `json:"data" url:"data"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -376,7 +376,7 @@ type SetNotificationsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (s *SetNotificationsResponse) GetData() []*whopsdkgo.NotificationPreferenceState {
+func (s *SetNotificationsResponse) GetData() []*v2.NotificationPreferenceState {
 	if s == nil {
 		return nil
 	}
@@ -399,7 +399,7 @@ func (s *SetNotificationsResponse) require(field *big.Int) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SetNotificationsResponse) SetData(data []*whopsdkgo.NotificationPreferenceState) {
+func (s *SetNotificationsResponse) SetData(data []*v2.NotificationPreferenceState) {
 	s.Data = data
 	s.require(setNotificationsResponseFieldData)
 }

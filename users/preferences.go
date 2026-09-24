@@ -4,7 +4,7 @@ package users
 
 import (
 	json "encoding/json"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 

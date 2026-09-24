@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/whopio/whopsdk-go/core"
+	"github.com/whopio/whopsdk-go/v2/core"
 )
 
 func TestErrorDecoder(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/whopio/whopsdk-go/core"
+	"github.com/whopio/whopsdk-go/v2/core"
 )
 
 // ErrorCodes maps HTTP status codes to error constructors.

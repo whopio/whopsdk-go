@@ -5,8 +5,8 @@ package affiliates
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -105,8 +105,8 @@ type ListOverridesRequest struct {
 	// Returns the first _n_ elements from the list.
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
-	Last         *int                              `json:"-" url:"last,omitempty"`
-	OverrideType *whopsdkgo.AffiliateOverrideRoles `json:"-" url:"override_type,omitempty"`
+	Last         *int                       `json:"-" url:"last,omitempty"`
+	OverrideType *v2.AffiliateOverrideRoles `json:"-" url:"override_type,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -156,7 +156,7 @@ func (l *ListOverridesRequest) SetLast(last *int) {
 
 // SetOverrideType sets the OverrideType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListOverridesRequest) SetOverrideType(overrideType *whopsdkgo.AffiliateOverrideRoles) {
+func (l *ListOverridesRequest) SetOverrideType(overrideType *v2.AffiliateOverrideRoles) {
 	l.OverrideType = overrideType
 	l.require(listOverridesRequestFieldOverrideType)
 }
@@ -337,7 +337,7 @@ var (
 
 type CreateOverridesRequestBodyRevShare struct {
 	// The commission type (percentage or flat_fee).
-	CommissionType *whopsdkgo.AffiliatePayoutTypes `json:"commission_type,omitempty" url:"commission_type,omitempty"`
+	CommissionType *v2.AffiliatePayoutTypes `json:"commission_type,omitempty" url:"commission_type,omitempty"`
 	// The commission value (percentage 1-100 or flat fee).
 	CommissionValue float64 `json:"commission_value" url:"commission_value"`
 	// The affiliate ID.
@@ -345,7 +345,7 @@ type CreateOverridesRequestBodyRevShare struct {
 	// The product ID (for rev-share overrides, omit for company-wide).
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The revenue calculation basis for rev-share overrides. Defaults to post_fees.
-	RevenueBasis *whopsdkgo.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
+	RevenueBasis *v2.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -354,7 +354,7 @@ type CreateOverridesRequestBodyRevShare struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateOverridesRequestBodyRevShare) GetCommissionType() *whopsdkgo.AffiliatePayoutTypes {
+func (c *CreateOverridesRequestBodyRevShare) GetCommissionType() *v2.AffiliatePayoutTypes {
 	if c == nil {
 		return nil
 	}
@@ -382,7 +382,7 @@ func (c *CreateOverridesRequestBodyRevShare) GetProductID() *string {
 	return c.ProductID
 }
 
-func (c *CreateOverridesRequestBodyRevShare) GetRevenueBasis() *whopsdkgo.AffiliateRevenueBases {
+func (c *CreateOverridesRequestBodyRevShare) GetRevenueBasis() *v2.AffiliateRevenueBases {
 	if c == nil {
 		return nil
 	}
@@ -405,7 +405,7 @@ func (c *CreateOverridesRequestBodyRevShare) require(field *big.Int) {
 
 // SetCommissionType sets the CommissionType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOverridesRequestBodyRevShare) SetCommissionType(commissionType *whopsdkgo.AffiliatePayoutTypes) {
+func (c *CreateOverridesRequestBodyRevShare) SetCommissionType(commissionType *v2.AffiliatePayoutTypes) {
 	c.CommissionType = commissionType
 	c.require(createOverridesRequestBodyRevShareFieldCommissionType)
 }
@@ -433,7 +433,7 @@ func (c *CreateOverridesRequestBodyRevShare) SetProductID(productID *string) {
 
 // SetRevenueBasis sets the RevenueBasis field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOverridesRequestBodyRevShare) SetRevenueBasis(revenueBasis *whopsdkgo.AffiliateRevenueBases) {
+func (c *CreateOverridesRequestBodyRevShare) SetRevenueBasis(revenueBasis *v2.AffiliateRevenueBases) {
 	c.RevenueBasis = revenueBasis
 	c.require(createOverridesRequestBodyRevShareFieldRevenueBasis)
 }
@@ -491,9 +491,9 @@ var (
 
 type CreateOverridesRequestBodyStandard struct {
 	// Whether commission applies to first payment or all payments (standard only).
-	AppliesToPayments *whopsdkgo.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"applies_to_payments,omitempty"`
+	AppliesToPayments *v2.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"applies_to_payments,omitempty"`
 	// The commission type (percentage or flat_fee).
-	CommissionType *whopsdkgo.AffiliatePayoutTypes `json:"commission_type,omitempty" url:"commission_type,omitempty"`
+	CommissionType *v2.AffiliatePayoutTypes `json:"commission_type,omitempty" url:"commission_type,omitempty"`
 	// The commission value (percentage 1-100 or flat fee).
 	CommissionValue float64 `json:"commission_value" url:"commission_value"`
 	// The affiliate ID.
@@ -508,14 +508,14 @@ type CreateOverridesRequestBodyStandard struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateOverridesRequestBodyStandard) GetAppliesToPayments() *whopsdkgo.AffiliateAppliesToPayments {
+func (c *CreateOverridesRequestBodyStandard) GetAppliesToPayments() *v2.AffiliateAppliesToPayments {
 	if c == nil {
 		return nil
 	}
 	return c.AppliesToPayments
 }
 
-func (c *CreateOverridesRequestBodyStandard) GetCommissionType() *whopsdkgo.AffiliatePayoutTypes {
+func (c *CreateOverridesRequestBodyStandard) GetCommissionType() *v2.AffiliatePayoutTypes {
 	if c == nil {
 		return nil
 	}
@@ -559,14 +559,14 @@ func (c *CreateOverridesRequestBodyStandard) require(field *big.Int) {
 
 // SetAppliesToPayments sets the AppliesToPayments field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOverridesRequestBodyStandard) SetAppliesToPayments(appliesToPayments *whopsdkgo.AffiliateAppliesToPayments) {
+func (c *CreateOverridesRequestBodyStandard) SetAppliesToPayments(appliesToPayments *v2.AffiliateAppliesToPayments) {
 	c.AppliesToPayments = appliesToPayments
 	c.require(createOverridesRequestBodyStandardFieldAppliesToPayments)
 }
 
 // SetCommissionType sets the CommissionType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOverridesRequestBodyStandard) SetCommissionType(commissionType *whopsdkgo.AffiliatePayoutTypes) {
+func (c *CreateOverridesRequestBodyStandard) SetCommissionType(commissionType *v2.AffiliatePayoutTypes) {
 	c.CommissionType = commissionType
 	c.require(createOverridesRequestBodyStandardFieldCommissionType)
 }
@@ -652,19 +652,19 @@ var (
 
 type CreateOverridesResponse struct {
 	// Whether the commission applies to the first payment only or all payments (standard overrides only).
-	AppliesToPayments *whopsdkgo.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"applies_to_payments,omitempty"`
+	AppliesToPayments *v2.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"applies_to_payments,omitempty"`
 	// Whether this rev-share override applies to a single product or all products (rev-share only).
-	AppliesToProducts *whopsdkgo.AffiliateAppliesToProducts `json:"applies_to_products,omitempty" url:"applies_to_products,omitempty"`
+	AppliesToProducts *v2.AffiliateAppliesToProducts `json:"applies_to_products,omitempty" url:"applies_to_products,omitempty"`
 	// The checkout direct link for referrals (standard overrides only).
 	CheckoutDirectLink *string `json:"checkout_direct_link,omitempty" url:"checkout_direct_link,omitempty"`
 	// The type of commission (percentage or flat_fee).
-	CommissionType whopsdkgo.AffiliatePayoutTypes `json:"commission_type" url:"commission_type"`
+	CommissionType v2.AffiliatePayoutTypes `json:"commission_type" url:"commission_type"`
 	// The commission amount. A percentage (1-100) when commission_type is percentage, or a dollar amount when flat_fee.
 	CommissionValue float64 `json:"commission_value" url:"commission_value"`
 	// The unique identifier for the affiliate override.
 	ID string `json:"id" url:"id"`
 	// The type of override (standard or rev_share).
-	OverrideType whopsdkgo.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
+	OverrideType v2.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
 	// The plan ID (for standard overrides).
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product page direct link for referrals (standard overrides only).
@@ -672,7 +672,7 @@ type CreateOverridesResponse struct {
 	// The product ID (for rev-share overrides).
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The revenue calculation basis (pre_fees or post_fees).
-	RevenueBasis *whopsdkgo.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
+	RevenueBasis *v2.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
 	// The total earnings paid to this affiliate for referrals to this specific plan, in USD.
 	TotalReferralEarningsUsd float64 `json:"total_referral_earnings_usd" url:"total_referral_earnings_usd"`
 
@@ -683,14 +683,14 @@ type CreateOverridesResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateOverridesResponse) GetAppliesToPayments() *whopsdkgo.AffiliateAppliesToPayments {
+func (c *CreateOverridesResponse) GetAppliesToPayments() *v2.AffiliateAppliesToPayments {
 	if c == nil {
 		return nil
 	}
 	return c.AppliesToPayments
 }
 
-func (c *CreateOverridesResponse) GetAppliesToProducts() *whopsdkgo.AffiliateAppliesToProducts {
+func (c *CreateOverridesResponse) GetAppliesToProducts() *v2.AffiliateAppliesToProducts {
 	if c == nil {
 		return nil
 	}
@@ -704,7 +704,7 @@ func (c *CreateOverridesResponse) GetCheckoutDirectLink() *string {
 	return c.CheckoutDirectLink
 }
 
-func (c *CreateOverridesResponse) GetCommissionType() whopsdkgo.AffiliatePayoutTypes {
+func (c *CreateOverridesResponse) GetCommissionType() v2.AffiliatePayoutTypes {
 	if c == nil {
 		return ""
 	}
@@ -725,7 +725,7 @@ func (c *CreateOverridesResponse) GetID() string {
 	return c.ID
 }
 
-func (c *CreateOverridesResponse) GetOverrideType() whopsdkgo.AffiliateOverrideRoles {
+func (c *CreateOverridesResponse) GetOverrideType() v2.AffiliateOverrideRoles {
 	if c == nil {
 		return ""
 	}
@@ -753,7 +753,7 @@ func (c *CreateOverridesResponse) GetProductID() *string {
 	return c.ProductID
 }
 
-func (c *CreateOverridesResponse) GetRevenueBasis() *whopsdkgo.AffiliateRevenueBases {
+func (c *CreateOverridesResponse) GetRevenueBasis() *v2.AffiliateRevenueBases {
 	if c == nil {
 		return nil
 	}
@@ -783,14 +783,14 @@ func (c *CreateOverridesResponse) require(field *big.Int) {
 
 // SetAppliesToPayments sets the AppliesToPayments field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOverridesResponse) SetAppliesToPayments(appliesToPayments *whopsdkgo.AffiliateAppliesToPayments) {
+func (c *CreateOverridesResponse) SetAppliesToPayments(appliesToPayments *v2.AffiliateAppliesToPayments) {
 	c.AppliesToPayments = appliesToPayments
 	c.require(createOverridesResponseFieldAppliesToPayments)
 }
 
 // SetAppliesToProducts sets the AppliesToProducts field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOverridesResponse) SetAppliesToProducts(appliesToProducts *whopsdkgo.AffiliateAppliesToProducts) {
+func (c *CreateOverridesResponse) SetAppliesToProducts(appliesToProducts *v2.AffiliateAppliesToProducts) {
 	c.AppliesToProducts = appliesToProducts
 	c.require(createOverridesResponseFieldAppliesToProducts)
 }
@@ -804,7 +804,7 @@ func (c *CreateOverridesResponse) SetCheckoutDirectLink(checkoutDirectLink *stri
 
 // SetCommissionType sets the CommissionType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOverridesResponse) SetCommissionType(commissionType whopsdkgo.AffiliatePayoutTypes) {
+func (c *CreateOverridesResponse) SetCommissionType(commissionType v2.AffiliatePayoutTypes) {
 	c.CommissionType = commissionType
 	c.require(createOverridesResponseFieldCommissionType)
 }
@@ -825,7 +825,7 @@ func (c *CreateOverridesResponse) SetID(id string) {
 
 // SetOverrideType sets the OverrideType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOverridesResponse) SetOverrideType(overrideType whopsdkgo.AffiliateOverrideRoles) {
+func (c *CreateOverridesResponse) SetOverrideType(overrideType v2.AffiliateOverrideRoles) {
 	c.OverrideType = overrideType
 	c.require(createOverridesResponseFieldOverrideType)
 }
@@ -853,7 +853,7 @@ func (c *CreateOverridesResponse) SetProductID(productID *string) {
 
 // SetRevenueBasis sets the RevenueBasis field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOverridesResponse) SetRevenueBasis(revenueBasis *whopsdkgo.AffiliateRevenueBases) {
+func (c *CreateOverridesResponse) SetRevenueBasis(revenueBasis *v2.AffiliateRevenueBases) {
 	c.RevenueBasis = revenueBasis
 	c.require(createOverridesResponseFieldRevenueBasis)
 }
@@ -917,7 +917,7 @@ type ListOverridesResponse struct {
 	// A list of nodes.
 	Data []*ListOverridesResponseDataItem `json:"data" url:"data"`
 	// Information to aid in pagination.
-	PageInfo *whopsdkgo.PageInfo `json:"page_info" url:"page_info"`
+	PageInfo *v2.PageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -933,7 +933,7 @@ func (l *ListOverridesResponse) GetData() []*ListOverridesResponseDataItem {
 	return l.Data
 }
 
-func (l *ListOverridesResponse) GetPageInfo() *whopsdkgo.PageInfo {
+func (l *ListOverridesResponse) GetPageInfo() *v2.PageInfo {
 	if l == nil {
 		return nil
 	}
@@ -963,7 +963,7 @@ func (l *ListOverridesResponse) SetData(data []*ListOverridesResponseDataItem) {
 
 // SetPageInfo sets the PageInfo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListOverridesResponse) SetPageInfo(pageInfo *whopsdkgo.PageInfo) {
+func (l *ListOverridesResponse) SetPageInfo(pageInfo *v2.PageInfo) {
 	l.PageInfo = pageInfo
 	l.require(listOverridesResponseFieldPageInfo)
 }
@@ -1028,19 +1028,19 @@ var (
 
 type ListOverridesResponseDataItem struct {
 	// Whether the commission applies to the first payment only or all payments (standard overrides only).
-	AppliesToPayments *whopsdkgo.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"applies_to_payments,omitempty"`
+	AppliesToPayments *v2.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"applies_to_payments,omitempty"`
 	// Whether this rev-share override applies to a single product or all products (rev-share only).
-	AppliesToProducts *whopsdkgo.AffiliateAppliesToProducts `json:"applies_to_products,omitempty" url:"applies_to_products,omitempty"`
+	AppliesToProducts *v2.AffiliateAppliesToProducts `json:"applies_to_products,omitempty" url:"applies_to_products,omitempty"`
 	// The checkout direct link for referrals (standard overrides only).
 	CheckoutDirectLink *string `json:"checkout_direct_link,omitempty" url:"checkout_direct_link,omitempty"`
 	// The type of commission (percentage or flat_fee).
-	CommissionType whopsdkgo.AffiliatePayoutTypes `json:"commission_type" url:"commission_type"`
+	CommissionType v2.AffiliatePayoutTypes `json:"commission_type" url:"commission_type"`
 	// The commission amount. A percentage (1-100) when commission_type is percentage, or a dollar amount when flat_fee.
 	CommissionValue float64 `json:"commission_value" url:"commission_value"`
 	// The unique identifier for the affiliate override.
 	ID string `json:"id" url:"id"`
 	// The type of override (standard or rev_share).
-	OverrideType whopsdkgo.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
+	OverrideType v2.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
 	// The plan ID (for standard overrides).
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product page direct link for referrals (standard overrides only).
@@ -1048,7 +1048,7 @@ type ListOverridesResponseDataItem struct {
 	// The product ID (for rev-share overrides).
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The revenue calculation basis (pre_fees or post_fees).
-	RevenueBasis *whopsdkgo.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
+	RevenueBasis *v2.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
 	// The total earnings paid to this affiliate for referrals to this specific plan, in USD.
 	TotalReferralEarningsUsd float64 `json:"total_referral_earnings_usd" url:"total_referral_earnings_usd"`
 
@@ -1059,14 +1059,14 @@ type ListOverridesResponseDataItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListOverridesResponseDataItem) GetAppliesToPayments() *whopsdkgo.AffiliateAppliesToPayments {
+func (l *ListOverridesResponseDataItem) GetAppliesToPayments() *v2.AffiliateAppliesToPayments {
 	if l == nil {
 		return nil
 	}
 	return l.AppliesToPayments
 }
 
-func (l *ListOverridesResponseDataItem) GetAppliesToProducts() *whopsdkgo.AffiliateAppliesToProducts {
+func (l *ListOverridesResponseDataItem) GetAppliesToProducts() *v2.AffiliateAppliesToProducts {
 	if l == nil {
 		return nil
 	}
@@ -1080,7 +1080,7 @@ func (l *ListOverridesResponseDataItem) GetCheckoutDirectLink() *string {
 	return l.CheckoutDirectLink
 }
 
-func (l *ListOverridesResponseDataItem) GetCommissionType() whopsdkgo.AffiliatePayoutTypes {
+func (l *ListOverridesResponseDataItem) GetCommissionType() v2.AffiliatePayoutTypes {
 	if l == nil {
 		return ""
 	}
@@ -1101,7 +1101,7 @@ func (l *ListOverridesResponseDataItem) GetID() string {
 	return l.ID
 }
 
-func (l *ListOverridesResponseDataItem) GetOverrideType() whopsdkgo.AffiliateOverrideRoles {
+func (l *ListOverridesResponseDataItem) GetOverrideType() v2.AffiliateOverrideRoles {
 	if l == nil {
 		return ""
 	}
@@ -1129,7 +1129,7 @@ func (l *ListOverridesResponseDataItem) GetProductID() *string {
 	return l.ProductID
 }
 
-func (l *ListOverridesResponseDataItem) GetRevenueBasis() *whopsdkgo.AffiliateRevenueBases {
+func (l *ListOverridesResponseDataItem) GetRevenueBasis() *v2.AffiliateRevenueBases {
 	if l == nil {
 		return nil
 	}
@@ -1159,14 +1159,14 @@ func (l *ListOverridesResponseDataItem) require(field *big.Int) {
 
 // SetAppliesToPayments sets the AppliesToPayments field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListOverridesResponseDataItem) SetAppliesToPayments(appliesToPayments *whopsdkgo.AffiliateAppliesToPayments) {
+func (l *ListOverridesResponseDataItem) SetAppliesToPayments(appliesToPayments *v2.AffiliateAppliesToPayments) {
 	l.AppliesToPayments = appliesToPayments
 	l.require(listOverridesResponseDataItemFieldAppliesToPayments)
 }
 
 // SetAppliesToProducts sets the AppliesToProducts field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListOverridesResponseDataItem) SetAppliesToProducts(appliesToProducts *whopsdkgo.AffiliateAppliesToProducts) {
+func (l *ListOverridesResponseDataItem) SetAppliesToProducts(appliesToProducts *v2.AffiliateAppliesToProducts) {
 	l.AppliesToProducts = appliesToProducts
 	l.require(listOverridesResponseDataItemFieldAppliesToProducts)
 }
@@ -1180,7 +1180,7 @@ func (l *ListOverridesResponseDataItem) SetCheckoutDirectLink(checkoutDirectLink
 
 // SetCommissionType sets the CommissionType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListOverridesResponseDataItem) SetCommissionType(commissionType whopsdkgo.AffiliatePayoutTypes) {
+func (l *ListOverridesResponseDataItem) SetCommissionType(commissionType v2.AffiliatePayoutTypes) {
 	l.CommissionType = commissionType
 	l.require(listOverridesResponseDataItemFieldCommissionType)
 }
@@ -1201,7 +1201,7 @@ func (l *ListOverridesResponseDataItem) SetID(id string) {
 
 // SetOverrideType sets the OverrideType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListOverridesResponseDataItem) SetOverrideType(overrideType whopsdkgo.AffiliateOverrideRoles) {
+func (l *ListOverridesResponseDataItem) SetOverrideType(overrideType v2.AffiliateOverrideRoles) {
 	l.OverrideType = overrideType
 	l.require(listOverridesResponseDataItemFieldOverrideType)
 }
@@ -1229,7 +1229,7 @@ func (l *ListOverridesResponseDataItem) SetProductID(productID *string) {
 
 // SetRevenueBasis sets the RevenueBasis field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListOverridesResponseDataItem) SetRevenueBasis(revenueBasis *whopsdkgo.AffiliateRevenueBases) {
+func (l *ListOverridesResponseDataItem) SetRevenueBasis(revenueBasis *v2.AffiliateRevenueBases) {
 	l.RevenueBasis = revenueBasis
 	l.require(listOverridesResponseDataItemFieldRevenueBasis)
 }
@@ -1301,19 +1301,19 @@ var (
 
 type RetrieveOverridesResponse struct {
 	// Whether the commission applies to the first payment only or all payments (standard overrides only).
-	AppliesToPayments *whopsdkgo.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"applies_to_payments,omitempty"`
+	AppliesToPayments *v2.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"applies_to_payments,omitempty"`
 	// Whether this rev-share override applies to a single product or all products (rev-share only).
-	AppliesToProducts *whopsdkgo.AffiliateAppliesToProducts `json:"applies_to_products,omitempty" url:"applies_to_products,omitempty"`
+	AppliesToProducts *v2.AffiliateAppliesToProducts `json:"applies_to_products,omitempty" url:"applies_to_products,omitempty"`
 	// The checkout direct link for referrals (standard overrides only).
 	CheckoutDirectLink *string `json:"checkout_direct_link,omitempty" url:"checkout_direct_link,omitempty"`
 	// The type of commission (percentage or flat_fee).
-	CommissionType whopsdkgo.AffiliatePayoutTypes `json:"commission_type" url:"commission_type"`
+	CommissionType v2.AffiliatePayoutTypes `json:"commission_type" url:"commission_type"`
 	// The commission amount. A percentage (1-100) when commission_type is percentage, or a dollar amount when flat_fee.
 	CommissionValue float64 `json:"commission_value" url:"commission_value"`
 	// The unique identifier for the affiliate override.
 	ID string `json:"id" url:"id"`
 	// The type of override (standard or rev_share).
-	OverrideType whopsdkgo.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
+	OverrideType v2.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
 	// The plan ID (for standard overrides).
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product page direct link for referrals (standard overrides only).
@@ -1321,7 +1321,7 @@ type RetrieveOverridesResponse struct {
 	// The product ID (for rev-share overrides).
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The revenue calculation basis (pre_fees or post_fees).
-	RevenueBasis *whopsdkgo.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
+	RevenueBasis *v2.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
 	// The total earnings paid to this affiliate for referrals to this specific plan, in USD.
 	TotalReferralEarningsUsd float64 `json:"total_referral_earnings_usd" url:"total_referral_earnings_usd"`
 
@@ -1332,14 +1332,14 @@ type RetrieveOverridesResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *RetrieveOverridesResponse) GetAppliesToPayments() *whopsdkgo.AffiliateAppliesToPayments {
+func (r *RetrieveOverridesResponse) GetAppliesToPayments() *v2.AffiliateAppliesToPayments {
 	if r == nil {
 		return nil
 	}
 	return r.AppliesToPayments
 }
 
-func (r *RetrieveOverridesResponse) GetAppliesToProducts() *whopsdkgo.AffiliateAppliesToProducts {
+func (r *RetrieveOverridesResponse) GetAppliesToProducts() *v2.AffiliateAppliesToProducts {
 	if r == nil {
 		return nil
 	}
@@ -1353,7 +1353,7 @@ func (r *RetrieveOverridesResponse) GetCheckoutDirectLink() *string {
 	return r.CheckoutDirectLink
 }
 
-func (r *RetrieveOverridesResponse) GetCommissionType() whopsdkgo.AffiliatePayoutTypes {
+func (r *RetrieveOverridesResponse) GetCommissionType() v2.AffiliatePayoutTypes {
 	if r == nil {
 		return ""
 	}
@@ -1374,7 +1374,7 @@ func (r *RetrieveOverridesResponse) GetID() string {
 	return r.ID
 }
 
-func (r *RetrieveOverridesResponse) GetOverrideType() whopsdkgo.AffiliateOverrideRoles {
+func (r *RetrieveOverridesResponse) GetOverrideType() v2.AffiliateOverrideRoles {
 	if r == nil {
 		return ""
 	}
@@ -1402,7 +1402,7 @@ func (r *RetrieveOverridesResponse) GetProductID() *string {
 	return r.ProductID
 }
 
-func (r *RetrieveOverridesResponse) GetRevenueBasis() *whopsdkgo.AffiliateRevenueBases {
+func (r *RetrieveOverridesResponse) GetRevenueBasis() *v2.AffiliateRevenueBases {
 	if r == nil {
 		return nil
 	}
@@ -1432,14 +1432,14 @@ func (r *RetrieveOverridesResponse) require(field *big.Int) {
 
 // SetAppliesToPayments sets the AppliesToPayments field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveOverridesResponse) SetAppliesToPayments(appliesToPayments *whopsdkgo.AffiliateAppliesToPayments) {
+func (r *RetrieveOverridesResponse) SetAppliesToPayments(appliesToPayments *v2.AffiliateAppliesToPayments) {
 	r.AppliesToPayments = appliesToPayments
 	r.require(retrieveOverridesResponseFieldAppliesToPayments)
 }
 
 // SetAppliesToProducts sets the AppliesToProducts field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveOverridesResponse) SetAppliesToProducts(appliesToProducts *whopsdkgo.AffiliateAppliesToProducts) {
+func (r *RetrieveOverridesResponse) SetAppliesToProducts(appliesToProducts *v2.AffiliateAppliesToProducts) {
 	r.AppliesToProducts = appliesToProducts
 	r.require(retrieveOverridesResponseFieldAppliesToProducts)
 }
@@ -1453,7 +1453,7 @@ func (r *RetrieveOverridesResponse) SetCheckoutDirectLink(checkoutDirectLink *st
 
 // SetCommissionType sets the CommissionType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveOverridesResponse) SetCommissionType(commissionType whopsdkgo.AffiliatePayoutTypes) {
+func (r *RetrieveOverridesResponse) SetCommissionType(commissionType v2.AffiliatePayoutTypes) {
 	r.CommissionType = commissionType
 	r.require(retrieveOverridesResponseFieldCommissionType)
 }
@@ -1474,7 +1474,7 @@ func (r *RetrieveOverridesResponse) SetID(id string) {
 
 // SetOverrideType sets the OverrideType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveOverridesResponse) SetOverrideType(overrideType whopsdkgo.AffiliateOverrideRoles) {
+func (r *RetrieveOverridesResponse) SetOverrideType(overrideType v2.AffiliateOverrideRoles) {
 	r.OverrideType = overrideType
 	r.require(retrieveOverridesResponseFieldOverrideType)
 }
@@ -1502,7 +1502,7 @@ func (r *RetrieveOverridesResponse) SetProductID(productID *string) {
 
 // SetRevenueBasis sets the RevenueBasis field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveOverridesResponse) SetRevenueBasis(revenueBasis *whopsdkgo.AffiliateRevenueBases) {
+func (r *RetrieveOverridesResponse) SetRevenueBasis(revenueBasis *v2.AffiliateRevenueBases) {
 	r.RevenueBasis = revenueBasis
 	r.require(retrieveOverridesResponseFieldRevenueBasis)
 }
@@ -1574,19 +1574,19 @@ var (
 
 type UpdateOverridesResponse struct {
 	// Whether the commission applies to the first payment only or all payments (standard overrides only).
-	AppliesToPayments *whopsdkgo.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"applies_to_payments,omitempty"`
+	AppliesToPayments *v2.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"applies_to_payments,omitempty"`
 	// Whether this rev-share override applies to a single product or all products (rev-share only).
-	AppliesToProducts *whopsdkgo.AffiliateAppliesToProducts `json:"applies_to_products,omitempty" url:"applies_to_products,omitempty"`
+	AppliesToProducts *v2.AffiliateAppliesToProducts `json:"applies_to_products,omitempty" url:"applies_to_products,omitempty"`
 	// The checkout direct link for referrals (standard overrides only).
 	CheckoutDirectLink *string `json:"checkout_direct_link,omitempty" url:"checkout_direct_link,omitempty"`
 	// The type of commission (percentage or flat_fee).
-	CommissionType whopsdkgo.AffiliatePayoutTypes `json:"commission_type" url:"commission_type"`
+	CommissionType v2.AffiliatePayoutTypes `json:"commission_type" url:"commission_type"`
 	// The commission amount. A percentage (1-100) when commission_type is percentage, or a dollar amount when flat_fee.
 	CommissionValue float64 `json:"commission_value" url:"commission_value"`
 	// The unique identifier for the affiliate override.
 	ID string `json:"id" url:"id"`
 	// The type of override (standard or rev_share).
-	OverrideType whopsdkgo.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
+	OverrideType v2.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
 	// The plan ID (for standard overrides).
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product page direct link for referrals (standard overrides only).
@@ -1594,7 +1594,7 @@ type UpdateOverridesResponse struct {
 	// The product ID (for rev-share overrides).
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The revenue calculation basis (pre_fees or post_fees).
-	RevenueBasis *whopsdkgo.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
+	RevenueBasis *v2.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
 	// The total earnings paid to this affiliate for referrals to this specific plan, in USD.
 	TotalReferralEarningsUsd float64 `json:"total_referral_earnings_usd" url:"total_referral_earnings_usd"`
 
@@ -1605,14 +1605,14 @@ type UpdateOverridesResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateOverridesResponse) GetAppliesToPayments() *whopsdkgo.AffiliateAppliesToPayments {
+func (u *UpdateOverridesResponse) GetAppliesToPayments() *v2.AffiliateAppliesToPayments {
 	if u == nil {
 		return nil
 	}
 	return u.AppliesToPayments
 }
 
-func (u *UpdateOverridesResponse) GetAppliesToProducts() *whopsdkgo.AffiliateAppliesToProducts {
+func (u *UpdateOverridesResponse) GetAppliesToProducts() *v2.AffiliateAppliesToProducts {
 	if u == nil {
 		return nil
 	}
@@ -1626,7 +1626,7 @@ func (u *UpdateOverridesResponse) GetCheckoutDirectLink() *string {
 	return u.CheckoutDirectLink
 }
 
-func (u *UpdateOverridesResponse) GetCommissionType() whopsdkgo.AffiliatePayoutTypes {
+func (u *UpdateOverridesResponse) GetCommissionType() v2.AffiliatePayoutTypes {
 	if u == nil {
 		return ""
 	}
@@ -1647,7 +1647,7 @@ func (u *UpdateOverridesResponse) GetID() string {
 	return u.ID
 }
 
-func (u *UpdateOverridesResponse) GetOverrideType() whopsdkgo.AffiliateOverrideRoles {
+func (u *UpdateOverridesResponse) GetOverrideType() v2.AffiliateOverrideRoles {
 	if u == nil {
 		return ""
 	}
@@ -1675,7 +1675,7 @@ func (u *UpdateOverridesResponse) GetProductID() *string {
 	return u.ProductID
 }
 
-func (u *UpdateOverridesResponse) GetRevenueBasis() *whopsdkgo.AffiliateRevenueBases {
+func (u *UpdateOverridesResponse) GetRevenueBasis() *v2.AffiliateRevenueBases {
 	if u == nil {
 		return nil
 	}
@@ -1705,14 +1705,14 @@ func (u *UpdateOverridesResponse) require(field *big.Int) {
 
 // SetAppliesToPayments sets the AppliesToPayments field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateOverridesResponse) SetAppliesToPayments(appliesToPayments *whopsdkgo.AffiliateAppliesToPayments) {
+func (u *UpdateOverridesResponse) SetAppliesToPayments(appliesToPayments *v2.AffiliateAppliesToPayments) {
 	u.AppliesToPayments = appliesToPayments
 	u.require(updateOverridesResponseFieldAppliesToPayments)
 }
 
 // SetAppliesToProducts sets the AppliesToProducts field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateOverridesResponse) SetAppliesToProducts(appliesToProducts *whopsdkgo.AffiliateAppliesToProducts) {
+func (u *UpdateOverridesResponse) SetAppliesToProducts(appliesToProducts *v2.AffiliateAppliesToProducts) {
 	u.AppliesToProducts = appliesToProducts
 	u.require(updateOverridesResponseFieldAppliesToProducts)
 }
@@ -1726,7 +1726,7 @@ func (u *UpdateOverridesResponse) SetCheckoutDirectLink(checkoutDirectLink *stri
 
 // SetCommissionType sets the CommissionType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateOverridesResponse) SetCommissionType(commissionType whopsdkgo.AffiliatePayoutTypes) {
+func (u *UpdateOverridesResponse) SetCommissionType(commissionType v2.AffiliatePayoutTypes) {
 	u.CommissionType = commissionType
 	u.require(updateOverridesResponseFieldCommissionType)
 }
@@ -1747,7 +1747,7 @@ func (u *UpdateOverridesResponse) SetID(id string) {
 
 // SetOverrideType sets the OverrideType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateOverridesResponse) SetOverrideType(overrideType whopsdkgo.AffiliateOverrideRoles) {
+func (u *UpdateOverridesResponse) SetOverrideType(overrideType v2.AffiliateOverrideRoles) {
 	u.OverrideType = overrideType
 	u.require(updateOverridesResponseFieldOverrideType)
 }
@@ -1775,7 +1775,7 @@ func (u *UpdateOverridesResponse) SetProductID(productID *string) {
 
 // SetRevenueBasis sets the RevenueBasis field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateOverridesResponse) SetRevenueBasis(revenueBasis *whopsdkgo.AffiliateRevenueBases) {
+func (u *UpdateOverridesResponse) SetRevenueBasis(revenueBasis *v2.AffiliateRevenueBases) {
 	u.RevenueBasis = revenueBasis
 	u.require(updateOverridesResponseFieldRevenueBasis)
 }
@@ -1844,13 +1844,13 @@ type UpdateOverridesRequest struct {
 	// The override ID.
 	OverrideID string `json:"-" url:"-"`
 	// Whether commission applies to first payment or all payments (standard only).
-	AppliesToPayments *whopsdkgo.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"-"`
+	AppliesToPayments *v2.AffiliateAppliesToPayments `json:"applies_to_payments,omitempty" url:"-"`
 	// The commission type (percentage or flat_fee).
-	CommissionType *whopsdkgo.AffiliatePayoutTypes `json:"commission_type,omitempty" url:"-"`
+	CommissionType *v2.AffiliatePayoutTypes `json:"commission_type,omitempty" url:"-"`
 	// The commission value (percentage 1-100 or flat fee in dollars).
 	CommissionValue *float64 `json:"commission_value,omitempty" url:"-"`
 	// The revenue calculation basis (rev-share only).
-	RevenueBasis *whopsdkgo.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"-"`
+	RevenueBasis *v2.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1879,14 +1879,14 @@ func (u *UpdateOverridesRequest) SetOverrideID(overrideID string) {
 
 // SetAppliesToPayments sets the AppliesToPayments field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateOverridesRequest) SetAppliesToPayments(appliesToPayments *whopsdkgo.AffiliateAppliesToPayments) {
+func (u *UpdateOverridesRequest) SetAppliesToPayments(appliesToPayments *v2.AffiliateAppliesToPayments) {
 	u.AppliesToPayments = appliesToPayments
 	u.require(updateOverridesRequestFieldAppliesToPayments)
 }
 
 // SetCommissionType sets the CommissionType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateOverridesRequest) SetCommissionType(commissionType *whopsdkgo.AffiliatePayoutTypes) {
+func (u *UpdateOverridesRequest) SetCommissionType(commissionType *v2.AffiliatePayoutTypes) {
 	u.CommissionType = commissionType
 	u.require(updateOverridesRequestFieldCommissionType)
 }
@@ -1900,7 +1900,7 @@ func (u *UpdateOverridesRequest) SetCommissionValue(commissionValue *float64) {
 
 // SetRevenueBasis sets the RevenueBasis field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateOverridesRequest) SetRevenueBasis(revenueBasis *whopsdkgo.AffiliateRevenueBases) {
+func (u *UpdateOverridesRequest) SetRevenueBasis(revenueBasis *v2.AffiliateRevenueBases) {
 	u.RevenueBasis = revenueBasis
 	u.require(updateOverridesRequestFieldRevenueBasis)
 }

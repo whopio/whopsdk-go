@@ -5,12 +5,12 @@ package client
 import (
 	context "context"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
-	users "github.com/whopio/whopsdk-go/users"
-	client "github.com/whopio/whopsdk-go/users/preferences/notifications/client"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	users "github.com/whopio/whopsdk-go/v2/users"
+	client "github.com/whopio/whopsdk-go/v2/users/preferences/notifications/client"
 )
 
 type Client struct {

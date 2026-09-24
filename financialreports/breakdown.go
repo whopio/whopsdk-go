@@ -5,8 +5,8 @@ package financialreports
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
@@ -240,7 +240,7 @@ type RetrieveBreakdownResponse struct {
 	Currency        string                                    `json:"currency" url:"currency"`
 	Direction       RetrieveBreakdownResponseDirection        `json:"direction" url:"direction"`
 	Items           []*RetrieveBreakdownResponseItemsItem     `json:"items" url:"items"`
-	OtherAmount     *whopsdkgo.Money                          `json:"other_amount,omitempty" url:"other_amount,omitempty"`
+	OtherAmount     *v2.Money                                 `json:"other_amount,omitempty" url:"other_amount,omitempty"`
 	OtherName       string                                    `json:"other_name" url:"other_name"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -285,7 +285,7 @@ func (r *RetrieveBreakdownResponse) GetItems() []*RetrieveBreakdownResponseItems
 	return r.Items
 }
 
-func (r *RetrieveBreakdownResponse) GetOtherAmount() *whopsdkgo.Money {
+func (r *RetrieveBreakdownResponse) GetOtherAmount() *v2.Money {
 	if r == nil {
 		return nil
 	}
@@ -350,7 +350,7 @@ func (r *RetrieveBreakdownResponse) SetItems(items []*RetrieveBreakdownResponseI
 
 // SetOtherAmount sets the OtherAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveBreakdownResponse) SetOtherAmount(otherAmount *whopsdkgo.Money) {
+func (r *RetrieveBreakdownResponse) SetOtherAmount(otherAmount *v2.Money) {
 	r.OtherAmount = otherAmount
 	r.require(retrieveBreakdownResponseFieldOtherAmount)
 }
@@ -626,7 +626,7 @@ var (
 )
 
 type RetrieveBreakdownResponseItemsItem struct {
-	Amount *whopsdkgo.Money `json:"amount" url:"amount"`
+	Amount *v2.Money `json:"amount" url:"amount"`
 	// How to draw the row's icon. `null` when the row has nothing to show (balances, adjustments, ad campaigns), so clients render no icon rather than a placeholder.
 	Avatar   *RetrieveBreakdownResponseItemsItemAvatar `json:"avatar,omitempty" url:"avatar,omitempty"`
 	ImageURL *string                                   `json:"image_url,omitempty" url:"image_url,omitempty"`
@@ -644,7 +644,7 @@ type RetrieveBreakdownResponseItemsItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *RetrieveBreakdownResponseItemsItem) GetAmount() *whopsdkgo.Money {
+func (r *RetrieveBreakdownResponseItemsItem) GetAmount() *v2.Money {
 	if r == nil {
 		return nil
 	}
@@ -709,7 +709,7 @@ func (r *RetrieveBreakdownResponseItemsItem) require(field *big.Int) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveBreakdownResponseItemsItem) SetAmount(amount *whopsdkgo.Money) {
+func (r *RetrieveBreakdownResponseItemsItem) SetAmount(amount *v2.Money) {
 	r.Amount = amount
 	r.require(retrieveBreakdownResponseItemsItemFieldAmount)
 }

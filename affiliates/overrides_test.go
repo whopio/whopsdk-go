@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 )
 
@@ -182,7 +182,7 @@ func TestSettersListOverridesRequest(t *testing.T) {
 
 	t.Run("SetOverrideType", func(t *testing.T) {
 		obj := &ListOverridesRequest{}
-		var fernTestValueOverrideType *whopsdkgo.AffiliateOverrideRoles
+		var fernTestValueOverrideType *v2.AffiliateOverrideRoles
 		obj.SetOverrideType(fernTestValueOverrideType)
 		assert.Equal(t, fernTestValueOverrideType, obj.OverrideType)
 		assert.NotNil(t, obj.explicitFields)
@@ -350,7 +350,7 @@ func TestSettersMarkExplicitListOverridesRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesRequest{}
-		var fernTestValueOverrideType *whopsdkgo.AffiliateOverrideRoles
+		var fernTestValueOverrideType *v2.AffiliateOverrideRoles
 
 		// Act
 		obj.SetOverrideType(fernTestValueOverrideType)
@@ -558,7 +558,7 @@ func TestGettersCreateOverridesRequestBody(t *testing.T) {
 func TestSettersCreateOverridesRequestBodyRevShare(t *testing.T) {
 	t.Run("SetCommissionType", func(t *testing.T) {
 		obj := &CreateOverridesRequestBodyRevShare{}
-		var fernTestValueCommissionType *whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType *v2.AffiliatePayoutTypes
 		obj.SetCommissionType(fernTestValueCommissionType)
 		assert.Equal(t, fernTestValueCommissionType, obj.CommissionType)
 		assert.NotNil(t, obj.explicitFields)
@@ -590,7 +590,7 @@ func TestSettersCreateOverridesRequestBodyRevShare(t *testing.T) {
 
 	t.Run("SetRevenueBasis", func(t *testing.T) {
 		obj := &CreateOverridesRequestBodyRevShare{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
 		assert.Equal(t, fernTestValueRevenueBasis, obj.RevenueBasis)
 		assert.NotNil(t, obj.explicitFields)
@@ -603,7 +603,7 @@ func TestGettersCreateOverridesRequestBodyRevShare(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesRequestBodyRevShare{}
-		var expected *whopsdkgo.AffiliatePayoutTypes
+		var expected *v2.AffiliatePayoutTypes
 		obj.CommissionType = expected
 
 		// Act & Assert
@@ -715,7 +715,7 @@ func TestGettersCreateOverridesRequestBodyRevShare(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesRequestBodyRevShare{}
-		var expected *whopsdkgo.AffiliateRevenueBases
+		var expected *v2.AffiliateRevenueBases
 		obj.RevenueBasis = expected
 
 		// Act & Assert
@@ -751,7 +751,7 @@ func TestSettersMarkExplicitCreateOverridesRequestBodyRevShare(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesRequestBodyRevShare{}
-		var fernTestValueCommissionType *whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType *v2.AffiliatePayoutTypes
 
 		// Act
 		obj.SetCommissionType(fernTestValueCommissionType)
@@ -875,7 +875,7 @@ func TestSettersMarkExplicitCreateOverridesRequestBodyRevShare(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesRequestBodyRevShare{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 
 		// Act
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
@@ -907,7 +907,7 @@ func TestSettersMarkExplicitCreateOverridesRequestBodyRevShare(t *testing.T) {
 func TestSettersCreateOverridesRequestBodyStandard(t *testing.T) {
 	t.Run("SetAppliesToPayments", func(t *testing.T) {
 		obj := &CreateOverridesRequestBodyStandard{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
 		assert.Equal(t, fernTestValueAppliesToPayments, obj.AppliesToPayments)
 		assert.NotNil(t, obj.explicitFields)
@@ -915,7 +915,7 @@ func TestSettersCreateOverridesRequestBodyStandard(t *testing.T) {
 
 	t.Run("SetCommissionType", func(t *testing.T) {
 		obj := &CreateOverridesRequestBodyStandard{}
-		var fernTestValueCommissionType *whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType *v2.AffiliatePayoutTypes
 		obj.SetCommissionType(fernTestValueCommissionType)
 		assert.Equal(t, fernTestValueCommissionType, obj.CommissionType)
 		assert.NotNil(t, obj.explicitFields)
@@ -952,7 +952,7 @@ func TestGettersCreateOverridesRequestBodyStandard(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesRequestBodyStandard{}
-		var expected *whopsdkgo.AffiliateAppliesToPayments
+		var expected *v2.AffiliateAppliesToPayments
 		obj.AppliesToPayments = expected
 
 		// Act & Assert
@@ -985,7 +985,7 @@ func TestGettersCreateOverridesRequestBodyStandard(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesRequestBodyStandard{}
-		var expected *whopsdkgo.AffiliatePayoutTypes
+		var expected *v2.AffiliatePayoutTypes
 		obj.CommissionType = expected
 
 		// Act & Assert
@@ -1090,7 +1090,7 @@ func TestSettersMarkExplicitCreateOverridesRequestBodyStandard(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesRequestBodyStandard{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 
 		// Act
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
@@ -1121,7 +1121,7 @@ func TestSettersMarkExplicitCreateOverridesRequestBodyStandard(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesRequestBodyStandard{}
-		var fernTestValueCommissionType *whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType *v2.AffiliatePayoutTypes
 
 		// Act
 		obj.SetCommissionType(fernTestValueCommissionType)
@@ -1246,7 +1246,7 @@ func TestSettersMarkExplicitCreateOverridesRequestBodyStandard(t *testing.T) {
 func TestSettersCreateOverridesResponse(t *testing.T) {
 	t.Run("SetAppliesToPayments", func(t *testing.T) {
 		obj := &CreateOverridesResponse{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
 		assert.Equal(t, fernTestValueAppliesToPayments, obj.AppliesToPayments)
 		assert.NotNil(t, obj.explicitFields)
@@ -1254,7 +1254,7 @@ func TestSettersCreateOverridesResponse(t *testing.T) {
 
 	t.Run("SetAppliesToProducts", func(t *testing.T) {
 		obj := &CreateOverridesResponse{}
-		var fernTestValueAppliesToProducts *whopsdkgo.AffiliateAppliesToProducts
+		var fernTestValueAppliesToProducts *v2.AffiliateAppliesToProducts
 		obj.SetAppliesToProducts(fernTestValueAppliesToProducts)
 		assert.Equal(t, fernTestValueAppliesToProducts, obj.AppliesToProducts)
 		assert.NotNil(t, obj.explicitFields)
@@ -1270,7 +1270,7 @@ func TestSettersCreateOverridesResponse(t *testing.T) {
 
 	t.Run("SetCommissionType", func(t *testing.T) {
 		obj := &CreateOverridesResponse{}
-		var fernTestValueCommissionType whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType v2.AffiliatePayoutTypes
 		obj.SetCommissionType(fernTestValueCommissionType)
 		assert.Equal(t, fernTestValueCommissionType, obj.CommissionType)
 		assert.NotNil(t, obj.explicitFields)
@@ -1294,7 +1294,7 @@ func TestSettersCreateOverridesResponse(t *testing.T) {
 
 	t.Run("SetOverrideType", func(t *testing.T) {
 		obj := &CreateOverridesResponse{}
-		var fernTestValueOverrideType whopsdkgo.AffiliateOverrideRoles
+		var fernTestValueOverrideType v2.AffiliateOverrideRoles
 		obj.SetOverrideType(fernTestValueOverrideType)
 		assert.Equal(t, fernTestValueOverrideType, obj.OverrideType)
 		assert.NotNil(t, obj.explicitFields)
@@ -1326,7 +1326,7 @@ func TestSettersCreateOverridesResponse(t *testing.T) {
 
 	t.Run("SetRevenueBasis", func(t *testing.T) {
 		obj := &CreateOverridesResponse{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
 		assert.Equal(t, fernTestValueRevenueBasis, obj.RevenueBasis)
 		assert.NotNil(t, obj.explicitFields)
@@ -1347,7 +1347,7 @@ func TestGettersCreateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesResponse{}
-		var expected *whopsdkgo.AffiliateAppliesToPayments
+		var expected *v2.AffiliateAppliesToPayments
 		obj.AppliesToPayments = expected
 
 		// Act & Assert
@@ -1380,7 +1380,7 @@ func TestGettersCreateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesResponse{}
-		var expected *whopsdkgo.AffiliateAppliesToProducts
+		var expected *v2.AffiliateAppliesToProducts
 		obj.AppliesToProducts = expected
 
 		// Act & Assert
@@ -1446,7 +1446,7 @@ func TestGettersCreateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesResponse{}
-		var expected whopsdkgo.AffiliatePayoutTypes
+		var expected v2.AffiliatePayoutTypes
 		obj.CommissionType = expected
 
 		// Act & Assert
@@ -1515,7 +1515,7 @@ func TestGettersCreateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesResponse{}
-		var expected whopsdkgo.AffiliateOverrideRoles
+		var expected v2.AffiliateOverrideRoles
 		obj.OverrideType = expected
 
 		// Act & Assert
@@ -1637,7 +1637,7 @@ func TestGettersCreateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesResponse{}
-		var expected *whopsdkgo.AffiliateRevenueBases
+		var expected *v2.AffiliateRevenueBases
 		obj.RevenueBasis = expected
 
 		// Act & Assert
@@ -1696,7 +1696,7 @@ func TestSettersMarkExplicitCreateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesResponse{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 
 		// Act
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
@@ -1727,7 +1727,7 @@ func TestSettersMarkExplicitCreateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesResponse{}
-		var fernTestValueAppliesToProducts *whopsdkgo.AffiliateAppliesToProducts
+		var fernTestValueAppliesToProducts *v2.AffiliateAppliesToProducts
 
 		// Act
 		obj.SetAppliesToProducts(fernTestValueAppliesToProducts)
@@ -1789,7 +1789,7 @@ func TestSettersMarkExplicitCreateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesResponse{}
-		var fernTestValueCommissionType whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType v2.AffiliatePayoutTypes
 
 		// Act
 		obj.SetCommissionType(fernTestValueCommissionType)
@@ -1882,7 +1882,7 @@ func TestSettersMarkExplicitCreateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesResponse{}
-		var fernTestValueOverrideType whopsdkgo.AffiliateOverrideRoles
+		var fernTestValueOverrideType v2.AffiliateOverrideRoles
 
 		// Act
 		obj.SetOverrideType(fernTestValueOverrideType)
@@ -2006,7 +2006,7 @@ func TestSettersMarkExplicitCreateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOverridesResponse{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 
 		// Act
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
@@ -2077,7 +2077,7 @@ func TestSettersListOverridesResponse(t *testing.T) {
 
 	t.Run("SetPageInfo", func(t *testing.T) {
 		obj := &ListOverridesResponse{}
-		var fernTestValuePageInfo *whopsdkgo.PageInfo
+		var fernTestValuePageInfo *v2.PageInfo
 		obj.SetPageInfo(fernTestValuePageInfo)
 		assert.Equal(t, fernTestValuePageInfo, obj.PageInfo)
 		assert.NotNil(t, obj.explicitFields)
@@ -2123,7 +2123,7 @@ func TestGettersListOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponse{}
-		var expected *whopsdkgo.PageInfo
+		var expected *v2.PageInfo
 		obj.PageInfo = expected
 
 		// Act & Assert
@@ -2190,7 +2190,7 @@ func TestSettersMarkExplicitListOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponse{}
-		var fernTestValuePageInfo *whopsdkgo.PageInfo
+		var fernTestValuePageInfo *v2.PageInfo
 
 		// Act
 		obj.SetPageInfo(fernTestValuePageInfo)
@@ -2222,7 +2222,7 @@ func TestSettersMarkExplicitListOverridesResponse(t *testing.T) {
 func TestSettersListOverridesResponseDataItem(t *testing.T) {
 	t.Run("SetAppliesToPayments", func(t *testing.T) {
 		obj := &ListOverridesResponseDataItem{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
 		assert.Equal(t, fernTestValueAppliesToPayments, obj.AppliesToPayments)
 		assert.NotNil(t, obj.explicitFields)
@@ -2230,7 +2230,7 @@ func TestSettersListOverridesResponseDataItem(t *testing.T) {
 
 	t.Run("SetAppliesToProducts", func(t *testing.T) {
 		obj := &ListOverridesResponseDataItem{}
-		var fernTestValueAppliesToProducts *whopsdkgo.AffiliateAppliesToProducts
+		var fernTestValueAppliesToProducts *v2.AffiliateAppliesToProducts
 		obj.SetAppliesToProducts(fernTestValueAppliesToProducts)
 		assert.Equal(t, fernTestValueAppliesToProducts, obj.AppliesToProducts)
 		assert.NotNil(t, obj.explicitFields)
@@ -2246,7 +2246,7 @@ func TestSettersListOverridesResponseDataItem(t *testing.T) {
 
 	t.Run("SetCommissionType", func(t *testing.T) {
 		obj := &ListOverridesResponseDataItem{}
-		var fernTestValueCommissionType whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType v2.AffiliatePayoutTypes
 		obj.SetCommissionType(fernTestValueCommissionType)
 		assert.Equal(t, fernTestValueCommissionType, obj.CommissionType)
 		assert.NotNil(t, obj.explicitFields)
@@ -2270,7 +2270,7 @@ func TestSettersListOverridesResponseDataItem(t *testing.T) {
 
 	t.Run("SetOverrideType", func(t *testing.T) {
 		obj := &ListOverridesResponseDataItem{}
-		var fernTestValueOverrideType whopsdkgo.AffiliateOverrideRoles
+		var fernTestValueOverrideType v2.AffiliateOverrideRoles
 		obj.SetOverrideType(fernTestValueOverrideType)
 		assert.Equal(t, fernTestValueOverrideType, obj.OverrideType)
 		assert.NotNil(t, obj.explicitFields)
@@ -2302,7 +2302,7 @@ func TestSettersListOverridesResponseDataItem(t *testing.T) {
 
 	t.Run("SetRevenueBasis", func(t *testing.T) {
 		obj := &ListOverridesResponseDataItem{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
 		assert.Equal(t, fernTestValueRevenueBasis, obj.RevenueBasis)
 		assert.NotNil(t, obj.explicitFields)
@@ -2323,7 +2323,7 @@ func TestGettersListOverridesResponseDataItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponseDataItem{}
-		var expected *whopsdkgo.AffiliateAppliesToPayments
+		var expected *v2.AffiliateAppliesToPayments
 		obj.AppliesToPayments = expected
 
 		// Act & Assert
@@ -2356,7 +2356,7 @@ func TestGettersListOverridesResponseDataItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponseDataItem{}
-		var expected *whopsdkgo.AffiliateAppliesToProducts
+		var expected *v2.AffiliateAppliesToProducts
 		obj.AppliesToProducts = expected
 
 		// Act & Assert
@@ -2422,7 +2422,7 @@ func TestGettersListOverridesResponseDataItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponseDataItem{}
-		var expected whopsdkgo.AffiliatePayoutTypes
+		var expected v2.AffiliatePayoutTypes
 		obj.CommissionType = expected
 
 		// Act & Assert
@@ -2491,7 +2491,7 @@ func TestGettersListOverridesResponseDataItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponseDataItem{}
-		var expected whopsdkgo.AffiliateOverrideRoles
+		var expected v2.AffiliateOverrideRoles
 		obj.OverrideType = expected
 
 		// Act & Assert
@@ -2613,7 +2613,7 @@ func TestGettersListOverridesResponseDataItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponseDataItem{}
-		var expected *whopsdkgo.AffiliateRevenueBases
+		var expected *v2.AffiliateRevenueBases
 		obj.RevenueBasis = expected
 
 		// Act & Assert
@@ -2672,7 +2672,7 @@ func TestSettersMarkExplicitListOverridesResponseDataItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponseDataItem{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 
 		// Act
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
@@ -2703,7 +2703,7 @@ func TestSettersMarkExplicitListOverridesResponseDataItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponseDataItem{}
-		var fernTestValueAppliesToProducts *whopsdkgo.AffiliateAppliesToProducts
+		var fernTestValueAppliesToProducts *v2.AffiliateAppliesToProducts
 
 		// Act
 		obj.SetAppliesToProducts(fernTestValueAppliesToProducts)
@@ -2765,7 +2765,7 @@ func TestSettersMarkExplicitListOverridesResponseDataItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponseDataItem{}
-		var fernTestValueCommissionType whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType v2.AffiliatePayoutTypes
 
 		// Act
 		obj.SetCommissionType(fernTestValueCommissionType)
@@ -2858,7 +2858,7 @@ func TestSettersMarkExplicitListOverridesResponseDataItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponseDataItem{}
-		var fernTestValueOverrideType whopsdkgo.AffiliateOverrideRoles
+		var fernTestValueOverrideType v2.AffiliateOverrideRoles
 
 		// Act
 		obj.SetOverrideType(fernTestValueOverrideType)
@@ -2982,7 +2982,7 @@ func TestSettersMarkExplicitListOverridesResponseDataItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOverridesResponseDataItem{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 
 		// Act
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
@@ -3045,7 +3045,7 @@ func TestSettersMarkExplicitListOverridesResponseDataItem(t *testing.T) {
 func TestSettersRetrieveOverridesResponse(t *testing.T) {
 	t.Run("SetAppliesToPayments", func(t *testing.T) {
 		obj := &RetrieveOverridesResponse{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
 		assert.Equal(t, fernTestValueAppliesToPayments, obj.AppliesToPayments)
 		assert.NotNil(t, obj.explicitFields)
@@ -3053,7 +3053,7 @@ func TestSettersRetrieveOverridesResponse(t *testing.T) {
 
 	t.Run("SetAppliesToProducts", func(t *testing.T) {
 		obj := &RetrieveOverridesResponse{}
-		var fernTestValueAppliesToProducts *whopsdkgo.AffiliateAppliesToProducts
+		var fernTestValueAppliesToProducts *v2.AffiliateAppliesToProducts
 		obj.SetAppliesToProducts(fernTestValueAppliesToProducts)
 		assert.Equal(t, fernTestValueAppliesToProducts, obj.AppliesToProducts)
 		assert.NotNil(t, obj.explicitFields)
@@ -3069,7 +3069,7 @@ func TestSettersRetrieveOverridesResponse(t *testing.T) {
 
 	t.Run("SetCommissionType", func(t *testing.T) {
 		obj := &RetrieveOverridesResponse{}
-		var fernTestValueCommissionType whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType v2.AffiliatePayoutTypes
 		obj.SetCommissionType(fernTestValueCommissionType)
 		assert.Equal(t, fernTestValueCommissionType, obj.CommissionType)
 		assert.NotNil(t, obj.explicitFields)
@@ -3093,7 +3093,7 @@ func TestSettersRetrieveOverridesResponse(t *testing.T) {
 
 	t.Run("SetOverrideType", func(t *testing.T) {
 		obj := &RetrieveOverridesResponse{}
-		var fernTestValueOverrideType whopsdkgo.AffiliateOverrideRoles
+		var fernTestValueOverrideType v2.AffiliateOverrideRoles
 		obj.SetOverrideType(fernTestValueOverrideType)
 		assert.Equal(t, fernTestValueOverrideType, obj.OverrideType)
 		assert.NotNil(t, obj.explicitFields)
@@ -3125,7 +3125,7 @@ func TestSettersRetrieveOverridesResponse(t *testing.T) {
 
 	t.Run("SetRevenueBasis", func(t *testing.T) {
 		obj := &RetrieveOverridesResponse{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
 		assert.Equal(t, fernTestValueRevenueBasis, obj.RevenueBasis)
 		assert.NotNil(t, obj.explicitFields)
@@ -3146,7 +3146,7 @@ func TestGettersRetrieveOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveOverridesResponse{}
-		var expected *whopsdkgo.AffiliateAppliesToPayments
+		var expected *v2.AffiliateAppliesToPayments
 		obj.AppliesToPayments = expected
 
 		// Act & Assert
@@ -3179,7 +3179,7 @@ func TestGettersRetrieveOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveOverridesResponse{}
-		var expected *whopsdkgo.AffiliateAppliesToProducts
+		var expected *v2.AffiliateAppliesToProducts
 		obj.AppliesToProducts = expected
 
 		// Act & Assert
@@ -3245,7 +3245,7 @@ func TestGettersRetrieveOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveOverridesResponse{}
-		var expected whopsdkgo.AffiliatePayoutTypes
+		var expected v2.AffiliatePayoutTypes
 		obj.CommissionType = expected
 
 		// Act & Assert
@@ -3314,7 +3314,7 @@ func TestGettersRetrieveOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveOverridesResponse{}
-		var expected whopsdkgo.AffiliateOverrideRoles
+		var expected v2.AffiliateOverrideRoles
 		obj.OverrideType = expected
 
 		// Act & Assert
@@ -3436,7 +3436,7 @@ func TestGettersRetrieveOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveOverridesResponse{}
-		var expected *whopsdkgo.AffiliateRevenueBases
+		var expected *v2.AffiliateRevenueBases
 		obj.RevenueBasis = expected
 
 		// Act & Assert
@@ -3495,7 +3495,7 @@ func TestSettersMarkExplicitRetrieveOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveOverridesResponse{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 
 		// Act
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
@@ -3526,7 +3526,7 @@ func TestSettersMarkExplicitRetrieveOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveOverridesResponse{}
-		var fernTestValueAppliesToProducts *whopsdkgo.AffiliateAppliesToProducts
+		var fernTestValueAppliesToProducts *v2.AffiliateAppliesToProducts
 
 		// Act
 		obj.SetAppliesToProducts(fernTestValueAppliesToProducts)
@@ -3588,7 +3588,7 @@ func TestSettersMarkExplicitRetrieveOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveOverridesResponse{}
-		var fernTestValueCommissionType whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType v2.AffiliatePayoutTypes
 
 		// Act
 		obj.SetCommissionType(fernTestValueCommissionType)
@@ -3681,7 +3681,7 @@ func TestSettersMarkExplicitRetrieveOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveOverridesResponse{}
-		var fernTestValueOverrideType whopsdkgo.AffiliateOverrideRoles
+		var fernTestValueOverrideType v2.AffiliateOverrideRoles
 
 		// Act
 		obj.SetOverrideType(fernTestValueOverrideType)
@@ -3805,7 +3805,7 @@ func TestSettersMarkExplicitRetrieveOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveOverridesResponse{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 
 		// Act
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
@@ -3868,7 +3868,7 @@ func TestSettersMarkExplicitRetrieveOverridesResponse(t *testing.T) {
 func TestSettersUpdateOverridesResponse(t *testing.T) {
 	t.Run("SetAppliesToPayments", func(t *testing.T) {
 		obj := &UpdateOverridesResponse{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
 		assert.Equal(t, fernTestValueAppliesToPayments, obj.AppliesToPayments)
 		assert.NotNil(t, obj.explicitFields)
@@ -3876,7 +3876,7 @@ func TestSettersUpdateOverridesResponse(t *testing.T) {
 
 	t.Run("SetAppliesToProducts", func(t *testing.T) {
 		obj := &UpdateOverridesResponse{}
-		var fernTestValueAppliesToProducts *whopsdkgo.AffiliateAppliesToProducts
+		var fernTestValueAppliesToProducts *v2.AffiliateAppliesToProducts
 		obj.SetAppliesToProducts(fernTestValueAppliesToProducts)
 		assert.Equal(t, fernTestValueAppliesToProducts, obj.AppliesToProducts)
 		assert.NotNil(t, obj.explicitFields)
@@ -3892,7 +3892,7 @@ func TestSettersUpdateOverridesResponse(t *testing.T) {
 
 	t.Run("SetCommissionType", func(t *testing.T) {
 		obj := &UpdateOverridesResponse{}
-		var fernTestValueCommissionType whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType v2.AffiliatePayoutTypes
 		obj.SetCommissionType(fernTestValueCommissionType)
 		assert.Equal(t, fernTestValueCommissionType, obj.CommissionType)
 		assert.NotNil(t, obj.explicitFields)
@@ -3916,7 +3916,7 @@ func TestSettersUpdateOverridesResponse(t *testing.T) {
 
 	t.Run("SetOverrideType", func(t *testing.T) {
 		obj := &UpdateOverridesResponse{}
-		var fernTestValueOverrideType whopsdkgo.AffiliateOverrideRoles
+		var fernTestValueOverrideType v2.AffiliateOverrideRoles
 		obj.SetOverrideType(fernTestValueOverrideType)
 		assert.Equal(t, fernTestValueOverrideType, obj.OverrideType)
 		assert.NotNil(t, obj.explicitFields)
@@ -3948,7 +3948,7 @@ func TestSettersUpdateOverridesResponse(t *testing.T) {
 
 	t.Run("SetRevenueBasis", func(t *testing.T) {
 		obj := &UpdateOverridesResponse{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
 		assert.Equal(t, fernTestValueRevenueBasis, obj.RevenueBasis)
 		assert.NotNil(t, obj.explicitFields)
@@ -3969,7 +3969,7 @@ func TestGettersUpdateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesResponse{}
-		var expected *whopsdkgo.AffiliateAppliesToPayments
+		var expected *v2.AffiliateAppliesToPayments
 		obj.AppliesToPayments = expected
 
 		// Act & Assert
@@ -4002,7 +4002,7 @@ func TestGettersUpdateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesResponse{}
-		var expected *whopsdkgo.AffiliateAppliesToProducts
+		var expected *v2.AffiliateAppliesToProducts
 		obj.AppliesToProducts = expected
 
 		// Act & Assert
@@ -4068,7 +4068,7 @@ func TestGettersUpdateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesResponse{}
-		var expected whopsdkgo.AffiliatePayoutTypes
+		var expected v2.AffiliatePayoutTypes
 		obj.CommissionType = expected
 
 		// Act & Assert
@@ -4137,7 +4137,7 @@ func TestGettersUpdateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesResponse{}
-		var expected whopsdkgo.AffiliateOverrideRoles
+		var expected v2.AffiliateOverrideRoles
 		obj.OverrideType = expected
 
 		// Act & Assert
@@ -4259,7 +4259,7 @@ func TestGettersUpdateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesResponse{}
-		var expected *whopsdkgo.AffiliateRevenueBases
+		var expected *v2.AffiliateRevenueBases
 		obj.RevenueBasis = expected
 
 		// Act & Assert
@@ -4318,7 +4318,7 @@ func TestSettersMarkExplicitUpdateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesResponse{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 
 		// Act
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
@@ -4349,7 +4349,7 @@ func TestSettersMarkExplicitUpdateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesResponse{}
-		var fernTestValueAppliesToProducts *whopsdkgo.AffiliateAppliesToProducts
+		var fernTestValueAppliesToProducts *v2.AffiliateAppliesToProducts
 
 		// Act
 		obj.SetAppliesToProducts(fernTestValueAppliesToProducts)
@@ -4411,7 +4411,7 @@ func TestSettersMarkExplicitUpdateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesResponse{}
-		var fernTestValueCommissionType whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType v2.AffiliatePayoutTypes
 
 		// Act
 		obj.SetCommissionType(fernTestValueCommissionType)
@@ -4504,7 +4504,7 @@ func TestSettersMarkExplicitUpdateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesResponse{}
-		var fernTestValueOverrideType whopsdkgo.AffiliateOverrideRoles
+		var fernTestValueOverrideType v2.AffiliateOverrideRoles
 
 		// Act
 		obj.SetOverrideType(fernTestValueOverrideType)
@@ -4628,7 +4628,7 @@ func TestSettersMarkExplicitUpdateOverridesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesResponse{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 
 		// Act
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
@@ -4707,7 +4707,7 @@ func TestSettersUpdateOverridesRequest(t *testing.T) {
 
 	t.Run("SetAppliesToPayments", func(t *testing.T) {
 		obj := &UpdateOverridesRequest{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
 		assert.Equal(t, fernTestValueAppliesToPayments, obj.AppliesToPayments)
 		assert.NotNil(t, obj.explicitFields)
@@ -4715,7 +4715,7 @@ func TestSettersUpdateOverridesRequest(t *testing.T) {
 
 	t.Run("SetCommissionType", func(t *testing.T) {
 		obj := &UpdateOverridesRequest{}
-		var fernTestValueCommissionType *whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType *v2.AffiliatePayoutTypes
 		obj.SetCommissionType(fernTestValueCommissionType)
 		assert.Equal(t, fernTestValueCommissionType, obj.CommissionType)
 		assert.NotNil(t, obj.explicitFields)
@@ -4731,7 +4731,7 @@ func TestSettersUpdateOverridesRequest(t *testing.T) {
 
 	t.Run("SetRevenueBasis", func(t *testing.T) {
 		obj := &UpdateOverridesRequest{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)
 		assert.Equal(t, fernTestValueRevenueBasis, obj.RevenueBasis)
 		assert.NotNil(t, obj.explicitFields)
@@ -4806,7 +4806,7 @@ func TestSettersMarkExplicitUpdateOverridesRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesRequest{}
-		var fernTestValueAppliesToPayments *whopsdkgo.AffiliateAppliesToPayments
+		var fernTestValueAppliesToPayments *v2.AffiliateAppliesToPayments
 
 		// Act
 		obj.SetAppliesToPayments(fernTestValueAppliesToPayments)
@@ -4837,7 +4837,7 @@ func TestSettersMarkExplicitUpdateOverridesRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesRequest{}
-		var fernTestValueCommissionType *whopsdkgo.AffiliatePayoutTypes
+		var fernTestValueCommissionType *v2.AffiliatePayoutTypes
 
 		// Act
 		obj.SetCommissionType(fernTestValueCommissionType)
@@ -4899,7 +4899,7 @@ func TestSettersMarkExplicitUpdateOverridesRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateOverridesRequest{}
-		var fernTestValueRevenueBasis *whopsdkgo.AffiliateRevenueBases
+		var fernTestValueRevenueBasis *v2.AffiliateRevenueBases
 
 		// Act
 		obj.SetRevenueBasis(fernTestValueRevenueBasis)

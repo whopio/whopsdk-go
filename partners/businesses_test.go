@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 	time "time"
 )
@@ -5589,7 +5589,7 @@ func TestSettersMarkExplicitRetrieveBusinessesResponse(t *testing.T) {
 func TestSettersRetrieveBusinessesResponseAccount(t *testing.T) {
 	t.Run("SetCapabilities", func(t *testing.T) {
 		obj := &RetrieveBusinessesResponseAccount{}
-		var fernTestValueCapabilities *whopsdkgo.AccountCapabilities
+		var fernTestValueCapabilities *v2.AccountCapabilities
 		obj.SetCapabilities(fernTestValueCapabilities)
 		assert.Equal(t, fernTestValueCapabilities, obj.Capabilities)
 		assert.NotNil(t, obj.explicitFields)
@@ -5613,7 +5613,7 @@ func TestSettersRetrieveBusinessesResponseAccount(t *testing.T) {
 
 	t.Run("SetRecommendedActions", func(t *testing.T) {
 		obj := &RetrieveBusinessesResponseAccount{}
-		var fernTestValueRecommendedActions []*whopsdkgo.AccountRecommendedAction
+		var fernTestValueRecommendedActions []*v2.AccountRecommendedAction
 		obj.SetRecommendedActions(fernTestValueRecommendedActions)
 		assert.Equal(t, fernTestValueRecommendedActions, obj.RecommendedActions)
 		assert.NotNil(t, obj.explicitFields)
@@ -5621,7 +5621,7 @@ func TestSettersRetrieveBusinessesResponseAccount(t *testing.T) {
 
 	t.Run("SetRequiredActions", func(t *testing.T) {
 		obj := &RetrieveBusinessesResponseAccount{}
-		var fernTestValueRequiredActions []*whopsdkgo.AccountRequiredAction
+		var fernTestValueRequiredActions []*v2.AccountRequiredAction
 		obj.SetRequiredActions(fernTestValueRequiredActions)
 		assert.Equal(t, fernTestValueRequiredActions, obj.RequiredActions)
 		assert.NotNil(t, obj.explicitFields)
@@ -5650,7 +5650,7 @@ func TestGettersRetrieveBusinessesResponseAccount(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBusinessesResponseAccount{}
-		var expected *whopsdkgo.AccountCapabilities
+		var expected *v2.AccountCapabilities
 		obj.Capabilities = expected
 
 		// Act & Assert
@@ -5739,7 +5739,7 @@ func TestGettersRetrieveBusinessesResponseAccount(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBusinessesResponseAccount{}
-		var expected []*whopsdkgo.AccountRecommendedAction
+		var expected []*v2.AccountRecommendedAction
 		obj.RecommendedActions = expected
 
 		// Act & Assert
@@ -5772,7 +5772,7 @@ func TestGettersRetrieveBusinessesResponseAccount(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBusinessesResponseAccount{}
-		var expected []*whopsdkgo.AccountRequiredAction
+		var expected []*v2.AccountRequiredAction
 		obj.RequiredActions = expected
 
 		// Act & Assert
@@ -5854,7 +5854,7 @@ func TestSettersMarkExplicitRetrieveBusinessesResponseAccount(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBusinessesResponseAccount{}
-		var fernTestValueCapabilities *whopsdkgo.AccountCapabilities
+		var fernTestValueCapabilities *v2.AccountCapabilities
 
 		// Act
 		obj.SetCapabilities(fernTestValueCapabilities)
@@ -5947,7 +5947,7 @@ func TestSettersMarkExplicitRetrieveBusinessesResponseAccount(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBusinessesResponseAccount{}
-		var fernTestValueRecommendedActions []*whopsdkgo.AccountRecommendedAction
+		var fernTestValueRecommendedActions []*v2.AccountRecommendedAction
 
 		// Act
 		obj.SetRecommendedActions(fernTestValueRecommendedActions)
@@ -5978,7 +5978,7 @@ func TestSettersMarkExplicitRetrieveBusinessesResponseAccount(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBusinessesResponseAccount{}
-		var fernTestValueRequiredActions []*whopsdkgo.AccountRequiredAction
+		var fernTestValueRequiredActions []*v2.AccountRequiredAction
 
 		// Act
 		obj.SetRequiredActions(fernTestValueRequiredActions)

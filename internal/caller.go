@@ -13,7 +13,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/whopio/whopsdk-go/core"
+	"github.com/whopio/whopsdk-go/v2/core"
 )
 
 const (

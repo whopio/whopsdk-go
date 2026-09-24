@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 )
 
@@ -688,7 +688,7 @@ func TestSettersMarkExplicitListOauthGrantsRequest(t *testing.T) {
 func TestSettersListOauthGrantsResponse(t *testing.T) {
 	t.Run("SetData", func(t *testing.T) {
 		obj := &ListOauthGrantsResponse{}
-		var fernTestValueData []*whopsdkgo.OauthGrant
+		var fernTestValueData []*v2.OauthGrant
 		obj.SetData(fernTestValueData)
 		assert.Equal(t, fernTestValueData, obj.Data)
 		assert.NotNil(t, obj.explicitFields)
@@ -709,7 +709,7 @@ func TestGettersListOauthGrantsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOauthGrantsResponse{}
-		var expected []*whopsdkgo.OauthGrant
+		var expected []*v2.OauthGrant
 		obj.Data = expected
 
 		// Act & Assert
@@ -778,7 +778,7 @@ func TestSettersMarkExplicitListOauthGrantsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOauthGrantsResponse{}
-		var fernTestValueData []*whopsdkgo.OauthGrant
+		var fernTestValueData []*v2.OauthGrant
 
 		// Act
 		obj.SetData(fernTestValueData)

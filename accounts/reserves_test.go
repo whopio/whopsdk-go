@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 )
 
@@ -58,7 +58,7 @@ func TestSettersMarkExplicitListReservesRequest(t *testing.T) {
 func TestSettersListReservesResponse(t *testing.T) {
 	t.Run("SetData", func(t *testing.T) {
 		obj := &ListReservesResponse{}
-		var fernTestValueData []*whopsdkgo.AccountReserve
+		var fernTestValueData []*v2.AccountReserve
 		obj.SetData(fernTestValueData)
 		assert.Equal(t, fernTestValueData, obj.Data)
 		assert.NotNil(t, obj.explicitFields)
@@ -71,7 +71,7 @@ func TestGettersListReservesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListReservesResponse{}
-		var expected []*whopsdkgo.AccountReserve
+		var expected []*v2.AccountReserve
 		obj.Data = expected
 
 		// Act & Assert
@@ -107,7 +107,7 @@ func TestSettersMarkExplicitListReservesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListReservesResponse{}
-		var fernTestValueData []*whopsdkgo.AccountReserve
+		var fernTestValueData []*v2.AccountReserve
 
 		// Act
 		obj.SetData(fernTestValueData)

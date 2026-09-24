@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 )
 
@@ -865,7 +865,7 @@ func TestSettersMarkExplicitDeletePasskeysResponse(t *testing.T) {
 func TestSettersListPasskeysResponse(t *testing.T) {
 	t.Run("SetData", func(t *testing.T) {
 		obj := &ListPasskeysResponse{}
-		var fernTestValueData []*whopsdkgo.Passkey
+		var fernTestValueData []*v2.Passkey
 		obj.SetData(fernTestValueData)
 		assert.Equal(t, fernTestValueData, obj.Data)
 		assert.NotNil(t, obj.explicitFields)
@@ -886,7 +886,7 @@ func TestGettersListPasskeysResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListPasskeysResponse{}
-		var expected []*whopsdkgo.Passkey
+		var expected []*v2.Passkey
 		obj.Data = expected
 
 		// Act & Assert
@@ -955,7 +955,7 @@ func TestSettersMarkExplicitListPasskeysResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListPasskeysResponse{}
-		var fernTestValueData []*whopsdkgo.Passkey
+		var fernTestValueData []*v2.Passkey
 
 		// Act
 		obj.SetData(fernTestValueData)
