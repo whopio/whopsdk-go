@@ -285,6 +285,33 @@ func (c *Client) Pause(
 	return response.Body, nil
 }
 
+// Restores access to a `canceled` or `expired` membership that contains only one-time purchases and sets its `status` to `completed`. Lifetime memberships regain lifetime access. For memberships with an expiration, `days` sets `current_period_end` that many days from now; without it the original `current_period_end` is kept, so `days` is required once that has passed. Active and recurring memberships cannot be reactivated.
+//
+// Example:
+//
+//	request := &whopsdk.ReactivateMembershipsRequest{
+//	    ID: "id",
+//	}
+//	client.Memberships.Reactivate(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Reactivate(
+	ctx context.Context,
+	request *whopsdk.ReactivateMembershipsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Membership, error) {
+	response, err := c.WithRawResponse.Reactivate(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Resumes a previously paused membership's recurring payment collection. Billing resumes on the next cycle.
 //
 // Example:
