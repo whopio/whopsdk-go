@@ -749,7 +749,7 @@ type Account struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Account promotional description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// Whether economic intelligence is enabled for the account.
+	// Whether Economic Intelligence is on for the account. It turns off automatically when its committed period ends.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
 	// Account owner email address.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
