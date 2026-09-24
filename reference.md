@@ -466,10 +466,27 @@ Retrieves the account associated with the current Account API key.
 <dd>
 
 ```go
+request := &whopsdk.MeAccountsRequest{}
 client.Accounts.Me(
     context.TODO(),
+    request,
 )
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**includeTrading:** `*bool` — Also retrieve live trading state under `trading`. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise. Provider failures return 503.
+    
 </dd>
 </dl>
 </dd>
@@ -529,6 +546,14 @@ client.Accounts.Retrieve(
 <dd>
 
 **id:** `string` — Account ID, prefixed `biz_`, its public route, or `me` for the account associated with the current API key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeTrading:** `*bool` — Also retrieve live trading state under `trading`. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise. Provider failures return 503.
     
 </dd>
 </dl>
@@ -35358,6 +35383,14 @@ client.Users.Me(
 <dl>
 <dd>
 
+**includeTrading:** `*bool` — Also retrieve live trading state under `trading`. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet. Provider failures return 503.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **accountID:** `*string` — When set, returns your account-specific profile overrides for this account.
     
 </dd>
@@ -35565,6 +35598,14 @@ client.Users.Retrieve(
 <dd>
 
 **id:** `string` — User ID (prefixed `user_`), username, or `me` for the authenticated user.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeTrading:** `*bool` — Also retrieve live trading state under `trading`. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet. Provider failures return 503.
     
 </dd>
 </dl>

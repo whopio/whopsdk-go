@@ -461,12 +461,41 @@ func (l *ListAccountsRequest) SetParentAccountID(parentAccountID *string) {
 }
 
 var (
-	retrieveAccountsRequestFieldID = big.NewInt(1 << 0)
+	meAccountsRequestFieldIncludeTrading = big.NewInt(1 << 0)
+)
+
+type MeAccountsRequest struct {
+	// Also retrieve live trading state under `trading`. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise. Provider failures return 503.
+	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (m *MeAccountsRequest) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetIncludeTrading sets the IncludeTrading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MeAccountsRequest) SetIncludeTrading(includeTrading *bool) {
+	m.IncludeTrading = includeTrading
+	m.require(meAccountsRequestFieldIncludeTrading)
+}
+
+var (
+	retrieveAccountsRequestFieldID             = big.NewInt(1 << 0)
+	retrieveAccountsRequestFieldIncludeTrading = big.NewInt(1 << 1)
 )
 
 type RetrieveAccountsRequest struct {
 	// Account ID, prefixed `biz_`, its public route, or `me` for the account associated with the current API key.
 	ID string `json:"-" url:"-"`
+	// Also retrieve live trading state under `trading`. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise. Provider failures return 503.
+	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -484,6 +513,13 @@ func (r *RetrieveAccountsRequest) require(field *big.Int) {
 func (r *RetrieveAccountsRequest) SetID(id string) {
 	r.ID = id
 	r.require(retrieveAccountsRequestFieldID)
+}
+
+// SetIncludeTrading sets the IncludeTrading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveAccountsRequest) SetIncludeTrading(includeTrading *bool) {
+	r.IncludeTrading = includeTrading
+	r.require(retrieveAccountsRequestFieldIncludeTrading)
 }
 
 var (
@@ -677,11 +713,12 @@ var (
 	accountFieldTitle                               = big.NewInt(1 << 58)
 	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 59)
 	accountFieldTotalUsd                            = big.NewInt(1 << 60)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 61)
-	accountFieldVerification                        = big.NewInt(1 << 62)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldTrading                             = big.NewInt(1 << 61)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 62)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 66)
 )
 
 type Account struct {
@@ -800,6 +837,8 @@ type Account struct {
 	TotalEarnedUsd *float64 `json:"total_earned_usd,omitempty" url:"total_earned_usd,omitempty"`
 	// Total USD value across balances with known exchange rates. Computed only on single-account reads (`retrieve` and `me`); `null` on list responses, writes, missing balance-read permission, or unavailable balance source.
 	TotalUsd *string `json:"total_usd,omitempty" url:"total_usd,omitempty"`
+	// Live trading state. Opt in with `include_trading=true` on single-account reads; `null` otherwise, without trading permission, or without an Ethereum wallet. Provider failures return an error, not a zero balance.
+	Trading *TradingAccount `json:"trading,omitempty" url:"trading,omitempty"`
 	// Whether the account uses its logo as the fallback Open Graph image.
 	UseLogoAsOpengraphImageFallback bool `json:"use_logo_as_opengraph_image_fallback" url:"use_logo_as_opengraph_image_fallback"`
 	// Account identity verification status for the `individual` (KYC) and `business` (KYB) profiles. Each is `null` until created, otherwise a `status` of `not_started`, `pending`, `manual_review`, `approved`, or `rejected`.
@@ -1243,6 +1282,13 @@ func (a *Account) GetTotalUsd() *string {
 		return nil
 	}
 	return a.TotalUsd
+}
+
+func (a *Account) GetTrading() *TradingAccount {
+	if a == nil {
+		return nil
+	}
+	return a.Trading
 }
 
 func (a *Account) GetUseLogoAsOpengraphImageFallback() bool {
@@ -1719,6 +1765,13 @@ func (a *Account) SetTotalEarnedUsd(totalEarnedUsd *float64) {
 func (a *Account) SetTotalUsd(totalUsd *string) {
 	a.TotalUsd = totalUsd
 	a.require(accountFieldTotalUsd)
+}
+
+// SetTrading sets the Trading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetTrading(trading *TradingAccount) {
+	a.Trading = trading
+	a.require(accountFieldTrading)
 }
 
 // SetUseLogoAsOpengraphImageFallback sets the UseLogoAsOpengraphImageFallback field and marks it as non-optional;
