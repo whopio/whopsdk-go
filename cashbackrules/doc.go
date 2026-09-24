@@ -3,4 +3,6 @@
 // Cashback rules designate a funding platform, optional merchant name and category filters, a rate, and an eligibility window. Every supplied merchant filter must match. An account ID limits the rule to one of the platform's direct connected accounts and is required when both merchant filters are omitted or null.
 //
 // Use the Cashback Rules API to create future-dated rules, update their merchant name, MCC, description, or expiration, and list every rule funded by the authenticated platform, including expired and discarded rules. Discarded rules cannot be updated. Creating or updating a rule does not transfer funds.
+//
+// Pay out cashback on demand from the platform's available USD balance with optional rule, account, and transaction filters. Only completed, unpaid, eligible transactions are paid. The response returns status `processing` and echoes supplied filters; `failed` means the queue rejected the request. These statuses describe scheduling, not payment completion.
 package cashbackrules

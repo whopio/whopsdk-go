@@ -198,6 +198,232 @@ func (l *ListCashbackRulesRequest) SetDirection(direction *ListCashbackRulesRequ
 }
 
 var (
+	payoutCashbackRulesRequestFieldAccountID      = big.NewInt(1 << 0)
+	payoutCashbackRulesRequestFieldCashbackRuleID = big.NewInt(1 << 1)
+	payoutCashbackRulesRequestFieldTransactionID  = big.NewInt(1 << 2)
+)
+
+type PayoutCashbackRulesRequest struct {
+	// Pay only this direct connected account.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
+	// Pay only transactions whose winning cashback rule has this ID and is funded by the authenticated platform.
+	CashbackRuleID *string `json:"cashback_rule_id,omitempty" url:"-"`
+	// Pay only this card transaction belonging to a direct connected account.
+	TransactionID *string `json:"transaction_id,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (p *PayoutCashbackRulesRequest) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PayoutCashbackRulesRequest) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(payoutCashbackRulesRequestFieldAccountID)
+}
+
+// SetCashbackRuleID sets the CashbackRuleID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PayoutCashbackRulesRequest) SetCashbackRuleID(cashbackRuleID *string) {
+	p.CashbackRuleID = cashbackRuleID
+	p.require(payoutCashbackRulesRequestFieldCashbackRuleID)
+}
+
+// SetTransactionID sets the TransactionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PayoutCashbackRulesRequest) SetTransactionID(transactionID *string) {
+	p.TransactionID = transactionID
+	p.require(payoutCashbackRulesRequestFieldTransactionID)
+}
+
+func (p *PayoutCashbackRulesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler PayoutCashbackRulesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*p = PayoutCashbackRulesRequest(body)
+	return nil
+}
+
+func (p *PayoutCashbackRulesRequest) MarshalJSON() ([]byte, error) {
+	type embed PayoutCashbackRulesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	cashbackPayoutFieldAccountID      = big.NewInt(1 << 0)
+	cashbackPayoutFieldCashbackRuleID = big.NewInt(1 << 1)
+	cashbackPayoutFieldStatus         = big.NewInt(1 << 2)
+	cashbackPayoutFieldTransactionID  = big.NewInt(1 << 3)
+)
+
+type CashbackPayout struct {
+	// Connected account filter from the request, prefixed `biz_`. Omitted when not supplied.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// Cashback rule filter from the request, prefixed `cicbr_`. Omitted when not supplied.
+	CashbackRuleID *string `json:"cashback_rule_id,omitempty" url:"cashback_rule_id,omitempty"`
+	// Request status. `processing` means background processing was queued, not that payment completed. `failed` means the queue rejected the request. Subsequent transaction failures retry automatically.
+	Status CashbackPayoutStatus `json:"status" url:"status"`
+	// Card transaction filter from the request, prefixed `citx_`. Omitted when not supplied.
+	TransactionID *string `json:"transaction_id,omitempty" url:"transaction_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CashbackPayout) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CashbackPayout) GetCashbackRuleID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.CashbackRuleID
+}
+
+func (c *CashbackPayout) GetStatus() CashbackPayoutStatus {
+	if c == nil {
+		return ""
+	}
+	return c.Status
+}
+
+func (c *CashbackPayout) GetTransactionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.TransactionID
+}
+
+func (c *CashbackPayout) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CashbackPayout) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CashbackPayout) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(cashbackPayoutFieldAccountID)
+}
+
+// SetCashbackRuleID sets the CashbackRuleID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CashbackPayout) SetCashbackRuleID(cashbackRuleID *string) {
+	c.CashbackRuleID = cashbackRuleID
+	c.require(cashbackPayoutFieldCashbackRuleID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CashbackPayout) SetStatus(status CashbackPayoutStatus) {
+	c.Status = status
+	c.require(cashbackPayoutFieldStatus)
+}
+
+// SetTransactionID sets the TransactionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CashbackPayout) SetTransactionID(transactionID *string) {
+	c.TransactionID = transactionID
+	c.require(cashbackPayoutFieldTransactionID)
+}
+
+func (c *CashbackPayout) UnmarshalJSON(data []byte) error {
+	type unmarshaler CashbackPayout
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CashbackPayout(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CashbackPayout) MarshalJSON() ([]byte, error) {
+	type embed CashbackPayout
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CashbackPayout) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Request status. `processing` means background processing was queued, not that payment completed. `failed` means the queue rejected the request. Subsequent transaction failures retry automatically.
+type CashbackPayoutStatus string
+
+const (
+	CashbackPayoutStatusProcessing CashbackPayoutStatus = "processing"
+	CashbackPayoutStatusFailed     CashbackPayoutStatus = "failed"
+)
+
+func NewCashbackPayoutStatusFromString(s string) (CashbackPayoutStatus, error) {
+	switch s {
+	case "processing":
+		return CashbackPayoutStatusProcessing, nil
+	case "failed":
+		return CashbackPayoutStatusFailed, nil
+	}
+	var t CashbackPayoutStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CashbackPayoutStatus) Ptr() *CashbackPayoutStatus {
+	return &c
+}
+
+var (
 	cashbackRuleFieldCreatedAt            = big.NewInt(1 << 0)
 	cashbackRuleFieldDescription          = big.NewInt(1 << 1)
 	cashbackRuleFieldDiscardedAt          = big.NewInt(1 << 2)
