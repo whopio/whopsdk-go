@@ -8208,6 +8208,42 @@
       }
     },
     {
+      "id": "224973e6-aa51-4c2f-8b3f-9673a2c1d11d",
+      "name": "Reactivate Membership - default",
+      "request": {
+        "urlPathTemplate": "/memberships/{id}/reactivate",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"logo_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"route\": \"shine-time-auto-detailing\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"cancel_at_period_end\": false,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"current_period_end\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"mem_xxxxxxxxxxxxxx\",\n  \"license_key\": \"WHOP-XXXX-XXXX-XXXX\",\n  \"member\": {\n    \"access_level\": \"no_access\",\n    \"last_accessed_at\": \"2026-01-01T12:00:00.000Z\",\n    \"position\": 1767268800000\n  },\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"phone_number\": \"+xxxxxxxxxxx\",\n  \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n  \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n  \"status\": \"trialing\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "224973e6-aa51-4c2f-8b3f-9673a2c1d11d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "531fb759-24c7-404e-8e9c-d9c7939d9d78",
       "name": "Resume Membership - default",
       "request": {
@@ -15271,6 +15307,6 @@
     }
   ],
   "meta": {
-    "total": 427
+    "total": 428
   }
 }

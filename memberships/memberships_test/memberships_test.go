@@ -261,6 +261,32 @@ func TestMembershipsPauseWithWireMock(
 	VerifyRequestCount(t, "TestMembershipsPauseWithWireMock", "POST", "/memberships/id/pause", nil, 1)
 }
 
+func TestMembershipsReactivateWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.ReactivateMembershipsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Memberships.Reactivate(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMembershipsReactivateWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMembershipsReactivateWithWireMock", "POST", "/memberships/id/reactivate", nil, 1)
+}
+
 func TestMembershipsResumeWithWireMock(
 	t *testing.T,
 ) {

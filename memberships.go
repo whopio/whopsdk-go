@@ -338,6 +338,63 @@ func (p *PauseMembershipsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	reactivateMembershipsRequestFieldID   = big.NewInt(1 << 0)
+	reactivateMembershipsRequestFieldDays = big.NewInt(1 << 1)
+)
+
+type ReactivateMembershipsRequest struct {
+	// Membership ID (`mem_` tag).
+	ID string `json:"-" url:"-"`
+	// Days of access from now (1-1095), which sets `current_period_end`. Omit to keep the original `current_period_end`; required once it has passed. Ignored for lifetime memberships.
+	Days *int `json:"days,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ReactivateMembershipsRequest) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReactivateMembershipsRequest) SetID(id string) {
+	r.ID = id
+	r.require(reactivateMembershipsRequestFieldID)
+}
+
+// SetDays sets the Days field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReactivateMembershipsRequest) SetDays(days *int) {
+	r.Days = days
+	r.require(reactivateMembershipsRequestFieldDays)
+}
+
+func (r *ReactivateMembershipsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReactivateMembershipsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ReactivateMembershipsRequest(body)
+	return nil
+}
+
+func (r *ReactivateMembershipsRequest) MarshalJSON() ([]byte, error) {
+	type embed ReactivateMembershipsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	resumeMembershipsRequestFieldID = big.NewInt(1 << 0)
 )
 
