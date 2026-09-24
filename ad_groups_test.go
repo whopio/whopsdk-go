@@ -20769,6 +20769,13 @@ func TestEnumAdGroupPlatform(t *testing.T) {
 		assert.Equal(t, AdGroupPlatform("tiktok"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_google", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdGroupPlatformFromString("google")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdGroupPlatform("google"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAdGroupPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)

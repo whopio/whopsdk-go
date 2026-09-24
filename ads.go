@@ -2950,6 +2950,7 @@ type AdPlatform string
 const (
 	AdPlatformMeta   AdPlatform = "meta"
 	AdPlatformTiktok AdPlatform = "tiktok"
+	AdPlatformGoogle AdPlatform = "google"
 )
 
 func NewAdPlatformFromString(s string) (AdPlatform, error) {
@@ -2958,6 +2959,8 @@ func NewAdPlatformFromString(s string) (AdPlatform, error) {
 		return AdPlatformMeta, nil
 	case "tiktok":
 		return AdPlatformTiktok, nil
+	case "google":
+		return AdPlatformGoogle, nil
 	}
 	var t AdPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -6500,6 +6503,7 @@ type PostAdUpdatedPayloadDataPlatform string
 const (
 	PostAdUpdatedPayloadDataPlatformMeta   PostAdUpdatedPayloadDataPlatform = "meta"
 	PostAdUpdatedPayloadDataPlatformTiktok PostAdUpdatedPayloadDataPlatform = "tiktok"
+	PostAdUpdatedPayloadDataPlatformGoogle PostAdUpdatedPayloadDataPlatform = "google"
 )
 
 func NewPostAdUpdatedPayloadDataPlatformFromString(s string) (PostAdUpdatedPayloadDataPlatform, error) {
@@ -6508,6 +6512,8 @@ func NewPostAdUpdatedPayloadDataPlatformFromString(s string) (PostAdUpdatedPaylo
 		return PostAdUpdatedPayloadDataPlatformMeta, nil
 	case "tiktok":
 		return PostAdUpdatedPayloadDataPlatformTiktok, nil
+	case "google":
+		return PostAdUpdatedPayloadDataPlatformGoogle, nil
 	}
 	var t PostAdUpdatedPayloadDataPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
