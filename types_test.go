@@ -9577,6 +9577,14 @@ func TestSettersAdLeadFormCompletion(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetButtonType", func(t *testing.T) {
+		obj := &AdLeadFormCompletion{}
+		var fernTestValueButtonType *AdLeadFormCompletionButtonType
+		obj.SetButtonType(fernTestValueButtonType)
+		assert.Equal(t, fernTestValueButtonType, obj.ButtonType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDescription", func(t *testing.T) {
 		obj := &AdLeadFormCompletion{}
 		var fernTestValueDescription *string
@@ -9585,11 +9593,27 @@ func TestSettersAdLeadFormCompletion(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFileURL", func(t *testing.T) {
+		obj := &AdLeadFormCompletion{}
+		var fernTestValueFileURL *string
+		obj.SetFileURL(fernTestValueFileURL)
+		assert.Equal(t, fernTestValueFileURL, obj.FileURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetHeadline", func(t *testing.T) {
 		obj := &AdLeadFormCompletion{}
 		var fernTestValueHeadline *string
 		obj.SetHeadline(fernTestValueHeadline)
 		assert.Equal(t, fernTestValueHeadline, obj.Headline)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPhoneNumber", func(t *testing.T) {
+		obj := &AdLeadFormCompletion{}
+		var fernTestValuePhoneNumber *string
+		obj.SetPhoneNumber(fernTestValuePhoneNumber)
+		assert.Equal(t, fernTestValuePhoneNumber, obj.PhoneNumber)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -9637,6 +9661,39 @@ func TestGettersAdLeadFormCompletion(t *testing.T) {
 		_ = obj.GetButtonText() // Should return zero value
 	})
 
+	t.Run("GetButtonType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdLeadFormCompletion{}
+		var expected *AdLeadFormCompletionButtonType
+		obj.ButtonType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetButtonType(), "getter should return the property value")
+	})
+
+	t.Run("GetButtonType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdLeadFormCompletion{}
+		obj.ButtonType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetButtonType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetButtonType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdLeadFormCompletion
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetButtonType() // Should return zero value
+	})
+
 	t.Run("GetDescription", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9670,6 +9727,39 @@ func TestGettersAdLeadFormCompletion(t *testing.T) {
 		_ = obj.GetDescription() // Should return zero value
 	})
 
+	t.Run("GetFileURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdLeadFormCompletion{}
+		var expected *string
+		obj.FileURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFileURL(), "getter should return the property value")
+	})
+
+	t.Run("GetFileURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdLeadFormCompletion{}
+		obj.FileURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFileURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFileURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdLeadFormCompletion
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFileURL() // Should return zero value
+	})
+
 	t.Run("GetHeadline", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9701,6 +9791,39 @@ func TestGettersAdLeadFormCompletion(t *testing.T) {
 			}
 		}()
 		_ = obj.GetHeadline() // Should return zero value
+	})
+
+	t.Run("GetPhoneNumber", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdLeadFormCompletion{}
+		var expected *string
+		obj.PhoneNumber = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPhoneNumber(), "getter should return the property value")
+	})
+
+	t.Run("GetPhoneNumber_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdLeadFormCompletion{}
+		obj.PhoneNumber = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPhoneNumber(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPhoneNumber_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdLeadFormCompletion
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPhoneNumber() // Should return zero value
 	})
 
 	t.Run("GetURL", func(t *testing.T) {
@@ -9770,6 +9893,37 @@ func TestSettersMarkExplicitAdLeadFormCompletion(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetButtonType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdLeadFormCompletion{}
+		var fernTestValueButtonType *AdLeadFormCompletionButtonType
+
+		// Act
+		obj.SetButtonType(fernTestValueButtonType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9801,6 +9955,37 @@ func TestSettersMarkExplicitAdLeadFormCompletion(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetFileURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdLeadFormCompletion{}
+		var fernTestValueFileURL *string
+
+		// Act
+		obj.SetFileURL(fernTestValueFileURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetHeadline_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9809,6 +9994,37 @@ func TestSettersMarkExplicitAdLeadFormCompletion(t *testing.T) {
 
 		// Act
 		obj.SetHeadline(fernTestValueHeadline)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPhoneNumber_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdLeadFormCompletion{}
+		var fernTestValuePhoneNumber *string
+
+		// Act
+		obj.SetPhoneNumber(fernTestValuePhoneNumber)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -123927,6 +124143,42 @@ func TestEnumAccountReserveTypeType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAccountReserveTypeTypeFromString("regular")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAdLeadFormCompletionButtonType(t *testing.T) {
+	t.Run("NewFromString_website", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdLeadFormCompletionButtonTypeFromString("website")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdLeadFormCompletionButtonType("website"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_call", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdLeadFormCompletionButtonTypeFromString("call")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdLeadFormCompletionButtonType("call"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_download", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdLeadFormCompletionButtonTypeFromString("download")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdLeadFormCompletionButtonType("download"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAdLeadFormCompletionButtonTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAdLeadFormCompletionButtonTypeFromString("website")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

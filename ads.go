@@ -3441,7 +3441,7 @@ var (
 )
 
 type CreateAdsRequestLeadForm struct {
-	// Optional completion screen shown after submission; url sets the follow-up website button.
+	// Optional completion screen shown after submission. Its button needs a destination: url for button_type website (the default), phone_number for call, file_url for download.
 	Completion *CreateAdsRequestLeadFormCompletion `json:"completion,omitempty" url:"completion,omitempty"`
 	// Optional custom consent disclaimer with checkboxes.
 	Disclaimer *CreateAdsRequestLeadFormDisclaimer `json:"disclaimer,omitempty" url:"disclaimer,omitempty"`
@@ -3633,19 +3633,25 @@ func (c *CreateAdsRequestLeadForm) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Optional completion screen shown after submission; url sets the follow-up website button.
+// Optional completion screen shown after submission. Its button needs a destination: url for button_type website (the default), phone_number for call, file_url for download.
 var (
 	createAdsRequestLeadFormCompletionFieldButtonText  = big.NewInt(1 << 0)
-	createAdsRequestLeadFormCompletionFieldDescription = big.NewInt(1 << 1)
-	createAdsRequestLeadFormCompletionFieldHeadline    = big.NewInt(1 << 2)
-	createAdsRequestLeadFormCompletionFieldURL         = big.NewInt(1 << 3)
+	createAdsRequestLeadFormCompletionFieldButtonType  = big.NewInt(1 << 1)
+	createAdsRequestLeadFormCompletionFieldDescription = big.NewInt(1 << 2)
+	createAdsRequestLeadFormCompletionFieldFileURL     = big.NewInt(1 << 3)
+	createAdsRequestLeadFormCompletionFieldHeadline    = big.NewInt(1 << 4)
+	createAdsRequestLeadFormCompletionFieldPhoneNumber = big.NewInt(1 << 5)
+	createAdsRequestLeadFormCompletionFieldURL         = big.NewInt(1 << 6)
 )
 
 type CreateAdsRequestLeadFormCompletion struct {
-	ButtonText  *string `json:"button_text,omitempty" url:"button_text,omitempty"`
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	Headline    *string `json:"headline,omitempty" url:"headline,omitempty"`
-	URL         *string `json:"url,omitempty" url:"url,omitempty"`
+	ButtonText  *string                                       `json:"button_text,omitempty" url:"button_text,omitempty"`
+	ButtonType  *CreateAdsRequestLeadFormCompletionButtonType `json:"button_type,omitempty" url:"button_type,omitempty"`
+	Description *string                                       `json:"description,omitempty" url:"description,omitempty"`
+	FileURL     *string                                       `json:"file_url,omitempty" url:"file_url,omitempty"`
+	Headline    *string                                       `json:"headline,omitempty" url:"headline,omitempty"`
+	PhoneNumber *string                                       `json:"phone_number,omitempty" url:"phone_number,omitempty"`
+	URL         *string                                       `json:"url,omitempty" url:"url,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3661,6 +3667,13 @@ func (c *CreateAdsRequestLeadFormCompletion) GetButtonText() *string {
 	return c.ButtonText
 }
 
+func (c *CreateAdsRequestLeadFormCompletion) GetButtonType() *CreateAdsRequestLeadFormCompletionButtonType {
+	if c == nil {
+		return nil
+	}
+	return c.ButtonType
+}
+
 func (c *CreateAdsRequestLeadFormCompletion) GetDescription() *string {
 	if c == nil {
 		return nil
@@ -3668,11 +3681,25 @@ func (c *CreateAdsRequestLeadFormCompletion) GetDescription() *string {
 	return c.Description
 }
 
+func (c *CreateAdsRequestLeadFormCompletion) GetFileURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.FileURL
+}
+
 func (c *CreateAdsRequestLeadFormCompletion) GetHeadline() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Headline
+}
+
+func (c *CreateAdsRequestLeadFormCompletion) GetPhoneNumber() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PhoneNumber
 }
 
 func (c *CreateAdsRequestLeadFormCompletion) GetURL() *string {
@@ -3703,6 +3730,13 @@ func (c *CreateAdsRequestLeadFormCompletion) SetButtonText(buttonText *string) {
 	c.require(createAdsRequestLeadFormCompletionFieldButtonText)
 }
 
+// SetButtonType sets the ButtonType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequestLeadFormCompletion) SetButtonType(buttonType *CreateAdsRequestLeadFormCompletionButtonType) {
+	c.ButtonType = buttonType
+	c.require(createAdsRequestLeadFormCompletionFieldButtonType)
+}
+
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAdsRequestLeadFormCompletion) SetDescription(description *string) {
@@ -3710,11 +3744,25 @@ func (c *CreateAdsRequestLeadFormCompletion) SetDescription(description *string)
 	c.require(createAdsRequestLeadFormCompletionFieldDescription)
 }
 
+// SetFileURL sets the FileURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequestLeadFormCompletion) SetFileURL(fileURL *string) {
+	c.FileURL = fileURL
+	c.require(createAdsRequestLeadFormCompletionFieldFileURL)
+}
+
 // SetHeadline sets the Headline field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAdsRequestLeadFormCompletion) SetHeadline(headline *string) {
 	c.Headline = headline
 	c.require(createAdsRequestLeadFormCompletionFieldHeadline)
+}
+
+// SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequestLeadFormCompletion) SetPhoneNumber(phoneNumber *string) {
+	c.PhoneNumber = phoneNumber
+	c.require(createAdsRequestLeadFormCompletionFieldPhoneNumber)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -3764,6 +3812,31 @@ func (c *CreateAdsRequestLeadFormCompletion) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+type CreateAdsRequestLeadFormCompletionButtonType string
+
+const (
+	CreateAdsRequestLeadFormCompletionButtonTypeWebsite  CreateAdsRequestLeadFormCompletionButtonType = "website"
+	CreateAdsRequestLeadFormCompletionButtonTypeCall     CreateAdsRequestLeadFormCompletionButtonType = "call"
+	CreateAdsRequestLeadFormCompletionButtonTypeDownload CreateAdsRequestLeadFormCompletionButtonType = "download"
+)
+
+func NewCreateAdsRequestLeadFormCompletionButtonTypeFromString(s string) (CreateAdsRequestLeadFormCompletionButtonType, error) {
+	switch s {
+	case "website":
+		return CreateAdsRequestLeadFormCompletionButtonTypeWebsite, nil
+	case "call":
+		return CreateAdsRequestLeadFormCompletionButtonTypeCall, nil
+	case "download":
+		return CreateAdsRequestLeadFormCompletionButtonTypeDownload, nil
+	}
+	var t CreateAdsRequestLeadFormCompletionButtonType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateAdsRequestLeadFormCompletionButtonType) Ptr() *CreateAdsRequestLeadFormCompletionButtonType {
+	return &c
 }
 
 // Optional custom consent disclaimer with checkboxes.
@@ -6989,7 +7062,7 @@ var (
 )
 
 type UpdateAdsRequestLeadForm struct {
-	// Optional completion screen shown after submission; url sets the follow-up website button.
+	// Optional completion screen shown after submission. Its button needs a destination: url for button_type website (the default), phone_number for call, file_url for download.
 	Completion *UpdateAdsRequestLeadFormCompletion `json:"completion,omitempty" url:"completion,omitempty"`
 	// Optional custom consent disclaimer with checkboxes.
 	Disclaimer *UpdateAdsRequestLeadFormDisclaimer `json:"disclaimer,omitempty" url:"disclaimer,omitempty"`
@@ -7181,19 +7254,25 @@ func (u *UpdateAdsRequestLeadForm) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Optional completion screen shown after submission; url sets the follow-up website button.
+// Optional completion screen shown after submission. Its button needs a destination: url for button_type website (the default), phone_number for call, file_url for download.
 var (
 	updateAdsRequestLeadFormCompletionFieldButtonText  = big.NewInt(1 << 0)
-	updateAdsRequestLeadFormCompletionFieldDescription = big.NewInt(1 << 1)
-	updateAdsRequestLeadFormCompletionFieldHeadline    = big.NewInt(1 << 2)
-	updateAdsRequestLeadFormCompletionFieldURL         = big.NewInt(1 << 3)
+	updateAdsRequestLeadFormCompletionFieldButtonType  = big.NewInt(1 << 1)
+	updateAdsRequestLeadFormCompletionFieldDescription = big.NewInt(1 << 2)
+	updateAdsRequestLeadFormCompletionFieldFileURL     = big.NewInt(1 << 3)
+	updateAdsRequestLeadFormCompletionFieldHeadline    = big.NewInt(1 << 4)
+	updateAdsRequestLeadFormCompletionFieldPhoneNumber = big.NewInt(1 << 5)
+	updateAdsRequestLeadFormCompletionFieldURL         = big.NewInt(1 << 6)
 )
 
 type UpdateAdsRequestLeadFormCompletion struct {
-	ButtonText  *string `json:"button_text,omitempty" url:"button_text,omitempty"`
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	Headline    *string `json:"headline,omitempty" url:"headline,omitempty"`
-	URL         *string `json:"url,omitempty" url:"url,omitempty"`
+	ButtonText  *string                                       `json:"button_text,omitempty" url:"button_text,omitempty"`
+	ButtonType  *UpdateAdsRequestLeadFormCompletionButtonType `json:"button_type,omitempty" url:"button_type,omitempty"`
+	Description *string                                       `json:"description,omitempty" url:"description,omitempty"`
+	FileURL     *string                                       `json:"file_url,omitempty" url:"file_url,omitempty"`
+	Headline    *string                                       `json:"headline,omitempty" url:"headline,omitempty"`
+	PhoneNumber *string                                       `json:"phone_number,omitempty" url:"phone_number,omitempty"`
+	URL         *string                                       `json:"url,omitempty" url:"url,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7209,6 +7288,13 @@ func (u *UpdateAdsRequestLeadFormCompletion) GetButtonText() *string {
 	return u.ButtonText
 }
 
+func (u *UpdateAdsRequestLeadFormCompletion) GetButtonType() *UpdateAdsRequestLeadFormCompletionButtonType {
+	if u == nil {
+		return nil
+	}
+	return u.ButtonType
+}
+
 func (u *UpdateAdsRequestLeadFormCompletion) GetDescription() *string {
 	if u == nil {
 		return nil
@@ -7216,11 +7302,25 @@ func (u *UpdateAdsRequestLeadFormCompletion) GetDescription() *string {
 	return u.Description
 }
 
+func (u *UpdateAdsRequestLeadFormCompletion) GetFileURL() *string {
+	if u == nil {
+		return nil
+	}
+	return u.FileURL
+}
+
 func (u *UpdateAdsRequestLeadFormCompletion) GetHeadline() *string {
 	if u == nil {
 		return nil
 	}
 	return u.Headline
+}
+
+func (u *UpdateAdsRequestLeadFormCompletion) GetPhoneNumber() *string {
+	if u == nil {
+		return nil
+	}
+	return u.PhoneNumber
 }
 
 func (u *UpdateAdsRequestLeadFormCompletion) GetURL() *string {
@@ -7251,6 +7351,13 @@ func (u *UpdateAdsRequestLeadFormCompletion) SetButtonText(buttonText *string) {
 	u.require(updateAdsRequestLeadFormCompletionFieldButtonText)
 }
 
+// SetButtonType sets the ButtonType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdsRequestLeadFormCompletion) SetButtonType(buttonType *UpdateAdsRequestLeadFormCompletionButtonType) {
+	u.ButtonType = buttonType
+	u.require(updateAdsRequestLeadFormCompletionFieldButtonType)
+}
+
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAdsRequestLeadFormCompletion) SetDescription(description *string) {
@@ -7258,11 +7365,25 @@ func (u *UpdateAdsRequestLeadFormCompletion) SetDescription(description *string)
 	u.require(updateAdsRequestLeadFormCompletionFieldDescription)
 }
 
+// SetFileURL sets the FileURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdsRequestLeadFormCompletion) SetFileURL(fileURL *string) {
+	u.FileURL = fileURL
+	u.require(updateAdsRequestLeadFormCompletionFieldFileURL)
+}
+
 // SetHeadline sets the Headline field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAdsRequestLeadFormCompletion) SetHeadline(headline *string) {
 	u.Headline = headline
 	u.require(updateAdsRequestLeadFormCompletionFieldHeadline)
+}
+
+// SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdsRequestLeadFormCompletion) SetPhoneNumber(phoneNumber *string) {
+	u.PhoneNumber = phoneNumber
+	u.require(updateAdsRequestLeadFormCompletionFieldPhoneNumber)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -7312,6 +7433,31 @@ func (u *UpdateAdsRequestLeadFormCompletion) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+type UpdateAdsRequestLeadFormCompletionButtonType string
+
+const (
+	UpdateAdsRequestLeadFormCompletionButtonTypeWebsite  UpdateAdsRequestLeadFormCompletionButtonType = "website"
+	UpdateAdsRequestLeadFormCompletionButtonTypeCall     UpdateAdsRequestLeadFormCompletionButtonType = "call"
+	UpdateAdsRequestLeadFormCompletionButtonTypeDownload UpdateAdsRequestLeadFormCompletionButtonType = "download"
+)
+
+func NewUpdateAdsRequestLeadFormCompletionButtonTypeFromString(s string) (UpdateAdsRequestLeadFormCompletionButtonType, error) {
+	switch s {
+	case "website":
+		return UpdateAdsRequestLeadFormCompletionButtonTypeWebsite, nil
+	case "call":
+		return UpdateAdsRequestLeadFormCompletionButtonTypeCall, nil
+	case "download":
+		return UpdateAdsRequestLeadFormCompletionButtonTypeDownload, nil
+	}
+	var t UpdateAdsRequestLeadFormCompletionButtonType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateAdsRequestLeadFormCompletionButtonType) Ptr() *UpdateAdsRequestLeadFormCompletionButtonType {
+	return &u
 }
 
 // Optional custom consent disclaimer with checkboxes.
