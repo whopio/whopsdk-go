@@ -312,6 +312,9 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferIncoming           RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_transfer_incoming"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferOutgoing           RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_transfer_outgoing"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformCoveredDispute                    RetrieveFinancialReportsRequestLineTypesItem = "platform_covered_dispute"
+	RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsGranted                    RetrieveFinancialReportsRequestLineTypesItem = "platform_credits_granted"
+	RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsPayment                    RetrieveFinancialReportsRequestLineTypesItem = "platform_credits_payment"
+	RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsPaymentRefund              RetrieveFinancialReportsRequestLineTypesItem = "platform_credits_payment_refund"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformEarning                           RetrieveFinancialReportsRequestLineTypesItem = "platform_earning"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformMarkupFee                         RetrieveFinancialReportsRequestLineTypesItem = "platform_markup_fee"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformMarkupFeePayout                   RetrieveFinancialReportsRequestLineTypesItem = "platform_markup_fee_payout"
@@ -555,6 +558,12 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferOutgoing, nil
 	case "platform_covered_dispute":
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformCoveredDispute, nil
+	case "platform_credits_granted":
+		return RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsGranted, nil
+	case "platform_credits_payment":
+		return RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsPayment, nil
+	case "platform_credits_payment_refund":
+		return RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsPaymentRefund, nil
 	case "platform_earning":
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformEarning, nil
 	case "platform_markup_fee":
@@ -1305,6 +1314,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemGroupingOperationalCosts      RetrieveFinancialReportsResponseRowsItemGrouping = "operational_costs"
 	RetrieveFinancialReportsResponseRowsItemGroupingOther                 RetrieveFinancialReportsResponseRowsItemGrouping = "other"
 	RetrieveFinancialReportsResponseRowsItemGroupingPayments              RetrieveFinancialReportsResponseRowsItemGrouping = "payments"
+	RetrieveFinancialReportsResponseRowsItemGroupingPlatformCredits       RetrieveFinancialReportsResponseRowsItemGrouping = "platform_credits"
 	RetrieveFinancialReportsResponseRowsItemGroupingRefunds               RetrieveFinancialReportsResponseRowsItemGrouping = "refunds"
 	RetrieveFinancialReportsResponseRowsItemGroupingReserves              RetrieveFinancialReportsResponseRowsItemGrouping = "reserves"
 	RetrieveFinancialReportsResponseRowsItemGroupingTransfers             RetrieveFinancialReportsResponseRowsItemGrouping = "transfers"
@@ -1346,6 +1356,8 @@ func NewRetrieveFinancialReportsResponseRowsItemGroupingFromString(s string) (Re
 		return RetrieveFinancialReportsResponseRowsItemGroupingOther, nil
 	case "payments":
 		return RetrieveFinancialReportsResponseRowsItemGroupingPayments, nil
+	case "platform_credits":
+		return RetrieveFinancialReportsResponseRowsItemGroupingPlatformCredits, nil
 	case "refunds":
 		return RetrieveFinancialReportsResponseRowsItemGroupingRefunds, nil
 	case "reserves":
@@ -1538,6 +1550,9 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferIncoming           RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_transfer_incoming"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferOutgoing           RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_transfer_outgoing"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCoveredDispute                    RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_covered_dispute"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCreditsGranted                    RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_credits_granted"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCreditsPayment                    RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_credits_payment"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCreditsPaymentRefund              RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_credits_payment_refund"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarning                           RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_earning"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningSettlement                 RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_earning_settlement"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningUnreconciledClearing       RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_earning_unreconciled_clearing"
@@ -2008,6 +2023,12 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferOutgoing, nil
 	case "platform_covered_dispute":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCoveredDispute, nil
+	case "platform_credits_granted":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCreditsGranted, nil
+	case "platform_credits_payment":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCreditsPayment, nil
+	case "platform_credits_payment_refund":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCreditsPaymentRefund, nil
 	case "platform_earning":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarning, nil
 	case "platform_earning_settlement":

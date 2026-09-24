@@ -2913,6 +2913,27 @@ func TestEnumRetrieveFinancialReportsRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("platform_covered_dispute"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_platform_credits_granted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("platform_credits_granted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("platform_credits_granted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits_payment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("platform_credits_payment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("platform_credits_payment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits_payment_refund", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("platform_credits_payment_refund")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("platform_credits_payment_refund"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_platform_earning", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("platform_earning")
@@ -3440,6 +3461,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemGrouping(t *testing.T) {
 		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("payments")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("payments"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("platform_credits")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("platform_credits"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_refunds", func(t *testing.T) {
@@ -4673,6 +4701,27 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemLineCategory(t *testing.T) 
 		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("platform_covered_dispute")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("platform_covered_dispute"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits_granted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("platform_credits_granted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("platform_credits_granted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits_payment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("platform_credits_payment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("platform_credits_payment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_credits_payment_refund", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("platform_credits_payment_refund")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("platform_credits_payment_refund"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_platform_earning", func(t *testing.T) {
