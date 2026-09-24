@@ -4915,7 +4915,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"amount\": 25,\n      \"card_brand\": \"visa\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"currency\": \"usd\",\n      \"fee_charged\": false,\n      \"id\": \"dspa_xxxxxxxxxxxxxx\",\n      \"issuer\": \"issuer\",\n      \"payment_id\": \"pay_xxxxxxxxxxxxxx\",\n      \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n      \"reported_at\": \"2026-01-01T12:00:00.000Z\",\n      \"transaction_at\": \"2026-01-01T12:00:00.000Z\",\n      \"type\": \"early_fraud_warning\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"amount\": 25,\n      \"auto_refunded\": false,\n      \"card_brand\": \"visa\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"currency\": \"usd\",\n      \"fee_charged\": false,\n      \"id\": \"dspa_xxxxxxxxxxxxxx\",\n      \"issuer\": \"issuer\",\n      \"payment_id\": \"pay_xxxxxxxxxxxxxx\",\n      \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n      \"reported_at\": \"2026-01-01T12:00:00.000Z\",\n      \"transaction_at\": \"2026-01-01T12:00:00.000Z\",\n      \"type\": \"early_fraud_warning\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -4952,7 +4952,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount\": 25,\n  \"card_brand\": \"visa\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"fee_charged\": false,\n  \"id\": \"dspa_xxxxxxxxxxxxxx\",\n  \"issuer\": \"issuer\",\n  \"payment_id\": \"pay_xxxxxxxxxxxxxx\",\n  \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n  \"reported_at\": \"2026-01-01T12:00:00.000Z\",\n  \"transaction_at\": \"2026-01-01T12:00:00.000Z\",\n  \"type\": \"early_fraud_warning\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"amount\": 25,\n  \"auto_refunded\": false,\n  \"card_brand\": \"visa\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"fee_charged\": false,\n  \"id\": \"dspa_xxxxxxxxxxxxxx\",\n  \"issuer\": \"issuer\",\n  \"payment_id\": \"pay_xxxxxxxxxxxxxx\",\n  \"product_id\": \"prod_xxxxxxxxxxxxxx\",\n  \"reported_at\": \"2026-01-01T12:00:00.000Z\",\n  \"transaction_at\": \"2026-01-01T12:00:00.000Z\",\n  \"type\": \"early_fraud_warning\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
