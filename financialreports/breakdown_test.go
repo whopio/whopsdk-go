@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 	time "time"
 )
@@ -372,7 +372,7 @@ func TestSettersRetrieveBreakdownResponse(t *testing.T) {
 
 	t.Run("SetOtherAmount", func(t *testing.T) {
 		obj := &RetrieveBreakdownResponse{}
-		var fernTestValueOtherAmount *whopsdkgo.Money
+		var fernTestValueOtherAmount *v2.Money
 		obj.SetOtherAmount(fernTestValueOtherAmount)
 		assert.Equal(t, fernTestValueOtherAmount, obj.OtherAmount)
 		assert.NotNil(t, obj.explicitFields)
@@ -528,7 +528,7 @@ func TestGettersRetrieveBreakdownResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBreakdownResponse{}
-		var expected *whopsdkgo.Money
+		var expected *v2.Money
 		obj.OtherAmount = expected
 
 		// Act & Assert
@@ -742,7 +742,7 @@ func TestSettersMarkExplicitRetrieveBreakdownResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBreakdownResponse{}
-		var fernTestValueOtherAmount *whopsdkgo.Money
+		var fernTestValueOtherAmount *v2.Money
 
 		// Act
 		obj.SetOtherAmount(fernTestValueOtherAmount)
@@ -948,7 +948,7 @@ func TestSettersMarkExplicitRetrieveBreakdownResponseActivityFilters(t *testing.
 func TestSettersRetrieveBreakdownResponseItemsItem(t *testing.T) {
 	t.Run("SetAmount", func(t *testing.T) {
 		obj := &RetrieveBreakdownResponseItemsItem{}
-		var fernTestValueAmount *whopsdkgo.Money
+		var fernTestValueAmount *v2.Money
 		obj.SetAmount(fernTestValueAmount)
 		assert.Equal(t, fernTestValueAmount, obj.Amount)
 		assert.NotNil(t, obj.explicitFields)
@@ -1009,7 +1009,7 @@ func TestGettersRetrieveBreakdownResponseItemsItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBreakdownResponseItemsItem{}
-		var expected *whopsdkgo.Money
+		var expected *v2.Money
 		obj.Amount = expected
 
 		// Act & Assert
@@ -1213,7 +1213,7 @@ func TestSettersMarkExplicitRetrieveBreakdownResponseItemsItem(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrieveBreakdownResponseItemsItem{}
-		var fernTestValueAmount *whopsdkgo.Money
+		var fernTestValueAmount *v2.Money
 
 		// Act
 		obj.SetAmount(fernTestValueAmount)

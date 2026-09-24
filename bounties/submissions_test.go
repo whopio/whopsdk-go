@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 )
 
@@ -493,7 +493,7 @@ func TestSettersMarkExplicitRetrieveSubmissionsRequest(t *testing.T) {
 func TestSettersListSubmissionsResponse(t *testing.T) {
 	t.Run("SetData", func(t *testing.T) {
 		obj := &ListSubmissionsResponse{}
-		var fernTestValueData []*whopsdkgo.PublicBountySubmission
+		var fernTestValueData []*v2.PublicBountySubmission
 		obj.SetData(fernTestValueData)
 		assert.Equal(t, fernTestValueData, obj.Data)
 		assert.NotNil(t, obj.explicitFields)
@@ -514,7 +514,7 @@ func TestGettersListSubmissionsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListSubmissionsResponse{}
-		var expected []*whopsdkgo.PublicBountySubmission
+		var expected []*v2.PublicBountySubmission
 		obj.Data = expected
 
 		// Act & Assert
@@ -583,7 +583,7 @@ func TestSettersMarkExplicitListSubmissionsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListSubmissionsResponse{}
-		var fernTestValueData []*whopsdkgo.PublicBountySubmission
+		var fernTestValueData []*v2.PublicBountySubmission
 
 		// Act
 		obj.SetData(fernTestValueData)

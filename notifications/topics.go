@@ -5,8 +5,8 @@ package notifications
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -84,8 +84,8 @@ var (
 )
 
 type ListTopicsResponse struct {
-	Data     []*whopsdkgo.NotificationTopic `json:"data" url:"data"`
-	PageInfo *ListTopicsResponsePageInfo    `json:"page_info" url:"page_info"`
+	Data     []*v2.NotificationTopic     `json:"data" url:"data"`
+	PageInfo *ListTopicsResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -94,7 +94,7 @@ type ListTopicsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListTopicsResponse) GetData() []*whopsdkgo.NotificationTopic {
+func (l *ListTopicsResponse) GetData() []*v2.NotificationTopic {
 	if l == nil {
 		return nil
 	}
@@ -124,7 +124,7 @@ func (l *ListTopicsResponse) require(field *big.Int) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTopicsResponse) SetData(data []*whopsdkgo.NotificationTopic) {
+func (l *ListTopicsResponse) SetData(data []*v2.NotificationTopic) {
 	l.Data = data
 	l.require(listTopicsResponseFieldData)
 }

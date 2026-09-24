@@ -1,4 +1,4 @@
-module github.com/whopio/whopsdk-go
+module github.com/whopio/whopsdk-go/v2
 
 go 1.21
 

@@ -3,8 +3,8 @@
 package option
 
 import (
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
 	http "net/http"
 	url "net/url"
 )
@@ -98,7 +98,7 @@ func WithoutRetries() *core.WithoutRetriesOption {
 
 // WithEnvironment sets the environment for the client, which determines
 // the base URL for each endpoint.
-func WithEnvironment(environment whopsdkgo.Environment) *core.EnvironmentOption {
+func WithEnvironment(environment v2.Environment) *core.EnvironmentOption {
 	return &core.EnvironmentOption{
 		Environment: environment,
 	}

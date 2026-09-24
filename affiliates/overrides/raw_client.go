@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	affiliates "github.com/whopio/whopsdk-go/affiliates"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	affiliates "github.com/whopio/whopsdk-go/v2/affiliates"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type RawClient struct {

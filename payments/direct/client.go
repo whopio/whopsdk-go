@@ -5,11 +5,11 @@ package direct
 import (
 	context "context"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
-	payments "github.com/whopio/whopsdk-go/payments"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	payments "github.com/whopio/whopsdk-go/v2/payments"
 )
 
 type Client struct {

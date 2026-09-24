@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 )
 
@@ -136,7 +136,7 @@ func TestSettersMarkExplicitListTopicsRequest(t *testing.T) {
 func TestSettersListTopicsResponse(t *testing.T) {
 	t.Run("SetData", func(t *testing.T) {
 		obj := &ListTopicsResponse{}
-		var fernTestValueData []*whopsdkgo.NotificationTopic
+		var fernTestValueData []*v2.NotificationTopic
 		obj.SetData(fernTestValueData)
 		assert.Equal(t, fernTestValueData, obj.Data)
 		assert.NotNil(t, obj.explicitFields)
@@ -157,7 +157,7 @@ func TestGettersListTopicsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListTopicsResponse{}
-		var expected []*whopsdkgo.NotificationTopic
+		var expected []*v2.NotificationTopic
 		obj.Data = expected
 
 		// Act & Assert
@@ -226,7 +226,7 @@ func TestSettersMarkExplicitListTopicsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListTopicsResponse{}
-		var fernTestValueData []*whopsdkgo.NotificationTopic
+		var fernTestValueData []*v2.NotificationTopic
 
 		// Act
 		obj.SetData(fernTestValueData)

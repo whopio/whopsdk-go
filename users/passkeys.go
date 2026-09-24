@@ -5,8 +5,8 @@ package users
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -554,7 +554,7 @@ var (
 )
 
 type ListPasskeysResponse struct {
-	Data     []*whopsdkgo.Passkey          `json:"data" url:"data"`
+	Data     []*v2.Passkey                 `json:"data" url:"data"`
 	PageInfo *ListPasskeysResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -564,7 +564,7 @@ type ListPasskeysResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListPasskeysResponse) GetData() []*whopsdkgo.Passkey {
+func (l *ListPasskeysResponse) GetData() []*v2.Passkey {
 	if l == nil {
 		return nil
 	}
@@ -594,7 +594,7 @@ func (l *ListPasskeysResponse) require(field *big.Int) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPasskeysResponse) SetData(data []*whopsdkgo.Passkey) {
+func (l *ListPasskeysResponse) SetData(data []*v2.Passkey) {
 	l.Data = data
 	l.require(listPasskeysResponseFieldData)
 }

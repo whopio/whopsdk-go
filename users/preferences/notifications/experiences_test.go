@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 )
 
@@ -97,7 +97,7 @@ func TestSettersMarkExplicitListExperiencesRequest(t *testing.T) {
 func TestSettersListExperiencesResponse(t *testing.T) {
 	t.Run("SetData", func(t *testing.T) {
 		obj := &ListExperiencesResponse{}
-		var fernTestValueData []*whopsdkgo.ExperienceNotificationPreference
+		var fernTestValueData []*v2.ExperienceNotificationPreference
 		obj.SetData(fernTestValueData)
 		assert.Equal(t, fernTestValueData, obj.Data)
 		assert.NotNil(t, obj.explicitFields)
@@ -118,7 +118,7 @@ func TestGettersListExperiencesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListExperiencesResponse{}
-		var expected []*whopsdkgo.ExperienceNotificationPreference
+		var expected []*v2.ExperienceNotificationPreference
 		obj.Data = expected
 
 		// Act & Assert
@@ -187,7 +187,7 @@ func TestSettersMarkExplicitListExperiencesResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListExperiencesResponse{}
-		var fernTestValueData []*whopsdkgo.ExperienceNotificationPreference
+		var fernTestValueData []*v2.ExperienceNotificationPreference
 
 		// Act
 		obj.SetData(fernTestValueData)

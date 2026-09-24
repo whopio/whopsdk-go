@@ -6,11 +6,11 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
-	businesses "github.com/whopio/whopsdk-go/partners/businesses"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	businesses "github.com/whopio/whopsdk-go/v2/partners/businesses"
 )
 
 type Client struct {

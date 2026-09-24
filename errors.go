@@ -4,7 +4,7 @@ package whopsdk
 
 import (
 	json "encoding/json"
-	core "github.com/whopio/whopsdk-go/core"
+	core "github.com/whopio/whopsdk-go/v2/core"
 )
 
 // Bad request

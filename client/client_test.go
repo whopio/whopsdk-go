@@ -4,7 +4,7 @@ package client
 
 import (
 	assert "github.com/stretchr/testify/assert"
-	option "github.com/whopio/whopsdk-go/option"
+	option "github.com/whopio/whopsdk-go/v2/option"
 	http "net/http"
 	testing "testing"
 	time "time"

@@ -11,10 +11,10 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	affiliates "github.com/whopio/whopsdk-go/affiliates"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	affiliates "github.com/whopio/whopsdk-go/v2/affiliates"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(

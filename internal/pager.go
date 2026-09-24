@@ -3,7 +3,7 @@ package internal
 import (
 	"context"
 
-	"github.com/whopio/whopsdk-go/core"
+	"github.com/whopio/whopsdk-go/v2/core"
 )
 
 // PagerMode represents the different types of pagination modes.

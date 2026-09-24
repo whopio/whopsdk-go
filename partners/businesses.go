@@ -5,8 +5,8 @@ package partners
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
@@ -2721,15 +2721,15 @@ var (
 )
 
 type RetrieveBusinessesResponseAccount struct {
-	Capabilities *whopsdkgo.AccountCapabilities `json:"capabilities" url:"capabilities"`
+	Capabilities *v2.AccountCapabilities `json:"capabilities" url:"capabilities"`
 	// Referred account ID.
 	ID string `json:"id" url:"id"`
 	// Referred account logo URL.
 	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
 	// Optional actions that unlock capabilities or grow the referred account.
-	RecommendedActions []*whopsdkgo.AccountRecommendedAction `json:"recommended_actions,omitempty" url:"recommended_actions,omitempty"`
+	RecommendedActions []*v2.AccountRecommendedAction `json:"recommended_actions,omitempty" url:"recommended_actions,omitempty"`
 	// Actions the referred account owner must take to unblock capabilities.
-	RequiredActions []*whopsdkgo.AccountRequiredAction `json:"required_actions,omitempty" url:"required_actions,omitempty"`
+	RequiredActions []*v2.AccountRequiredAction `json:"required_actions,omitempty" url:"required_actions,omitempty"`
 	// Referred account route.
 	Route string `json:"route" url:"route"`
 	// Referred account display name.
@@ -2742,7 +2742,7 @@ type RetrieveBusinessesResponseAccount struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *RetrieveBusinessesResponseAccount) GetCapabilities() *whopsdkgo.AccountCapabilities {
+func (r *RetrieveBusinessesResponseAccount) GetCapabilities() *v2.AccountCapabilities {
 	if r == nil {
 		return nil
 	}
@@ -2763,14 +2763,14 @@ func (r *RetrieveBusinessesResponseAccount) GetLogoURL() *string {
 	return r.LogoURL
 }
 
-func (r *RetrieveBusinessesResponseAccount) GetRecommendedActions() []*whopsdkgo.AccountRecommendedAction {
+func (r *RetrieveBusinessesResponseAccount) GetRecommendedActions() []*v2.AccountRecommendedAction {
 	if r == nil {
 		return nil
 	}
 	return r.RecommendedActions
 }
 
-func (r *RetrieveBusinessesResponseAccount) GetRequiredActions() []*whopsdkgo.AccountRequiredAction {
+func (r *RetrieveBusinessesResponseAccount) GetRequiredActions() []*v2.AccountRequiredAction {
 	if r == nil {
 		return nil
 	}
@@ -2807,7 +2807,7 @@ func (r *RetrieveBusinessesResponseAccount) require(field *big.Int) {
 
 // SetCapabilities sets the Capabilities field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveBusinessesResponseAccount) SetCapabilities(capabilities *whopsdkgo.AccountCapabilities) {
+func (r *RetrieveBusinessesResponseAccount) SetCapabilities(capabilities *v2.AccountCapabilities) {
 	r.Capabilities = capabilities
 	r.require(retrieveBusinessesResponseAccountFieldCapabilities)
 }
@@ -2828,14 +2828,14 @@ func (r *RetrieveBusinessesResponseAccount) SetLogoURL(logoURL *string) {
 
 // SetRecommendedActions sets the RecommendedActions field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveBusinessesResponseAccount) SetRecommendedActions(recommendedActions []*whopsdkgo.AccountRecommendedAction) {
+func (r *RetrieveBusinessesResponseAccount) SetRecommendedActions(recommendedActions []*v2.AccountRecommendedAction) {
 	r.RecommendedActions = recommendedActions
 	r.require(retrieveBusinessesResponseAccountFieldRecommendedActions)
 }
 
 // SetRequiredActions sets the RequiredActions field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveBusinessesResponseAccount) SetRequiredActions(requiredActions []*whopsdkgo.AccountRequiredAction) {
+func (r *RetrieveBusinessesResponseAccount) SetRequiredActions(requiredActions []*v2.AccountRequiredAction) {
 	r.RequiredActions = requiredActions
 	r.require(retrieveBusinessesResponseAccountFieldRequiredActions)
 }

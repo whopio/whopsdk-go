@@ -5,8 +5,8 @@ package accounts
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -41,7 +41,7 @@ var (
 )
 
 type ListReservesResponse struct {
-	Data []*whopsdkgo.AccountReserve `json:"data" url:"data"`
+	Data []*v2.AccountReserve `json:"data" url:"data"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -50,7 +50,7 @@ type ListReservesResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListReservesResponse) GetData() []*whopsdkgo.AccountReserve {
+func (l *ListReservesResponse) GetData() []*v2.AccountReserve {
 	if l == nil {
 		return nil
 	}
@@ -73,7 +73,7 @@ func (l *ListReservesResponse) require(field *big.Int) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListReservesResponse) SetData(data []*whopsdkgo.AccountReserve) {
+func (l *ListReservesResponse) SetData(data []*v2.AccountReserve) {
 	l.Data = data
 	l.require(listReservesResponseFieldData)
 }

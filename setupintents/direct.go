@@ -5,7 +5,7 @@ package setupintents
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 

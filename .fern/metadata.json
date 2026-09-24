@@ -4,15 +4,16 @@
   "generatorVersion": "1.57.3",
   "generatorConfig": {
     "module": {
-      "path": "github.com/whopio/whopsdk-go"
+      "path": "github.com/whopio/whopsdk-go/v2"
     },
+    "user-agent": "github.com/whopio/whopsdk-go/v2/{version}",
     "packageName": "whopsdk",
     "clientName": "Whop"
   },
-  "originGitCommit": "f7130a6681671d922ff53e2cbd6b2d11a57f463e",
+  "originGitCommit": "86fbf95bee4d9ad05d4bc4daa3d81de58a350723",
   "originGitCommitIsDirty": false,
   "invokedBy": "ci",
-  "requestedVersion": "1.1.5",
+  "requestedVersion": "2.0.0",
   "ciProvider": "unknown",
-  "sdkVersion": "v1.1.5"
+  "sdkVersion": "v2.0.0"
 }

@@ -5,8 +5,8 @@ package users
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -320,7 +320,7 @@ var (
 )
 
 type ListOauthGrantsResponse struct {
-	Data     []*whopsdkgo.OauthGrant          `json:"data" url:"data"`
+	Data     []*v2.OauthGrant                 `json:"data" url:"data"`
 	PageInfo *ListOauthGrantsResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -330,7 +330,7 @@ type ListOauthGrantsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListOauthGrantsResponse) GetData() []*whopsdkgo.OauthGrant {
+func (l *ListOauthGrantsResponse) GetData() []*v2.OauthGrant {
 	if l == nil {
 		return nil
 	}
@@ -360,7 +360,7 @@ func (l *ListOauthGrantsResponse) require(field *big.Int) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListOauthGrantsResponse) SetData(data []*whopsdkgo.OauthGrant) {
+func (l *ListOauthGrantsResponse) SetData(data []*v2.OauthGrant) {
 	l.Data = data
 	l.require(listOauthGrantsResponseFieldData)
 }
