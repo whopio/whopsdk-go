@@ -418,6 +418,63 @@ func (p *PostsSocialAccountsRequest) SetAfter(after *string) {
 }
 
 var (
+	refreshSocialAccountsRequestFieldID        = big.NewInt(1 << 0)
+	refreshSocialAccountsRequestFieldAccountID = big.NewInt(1 << 1)
+)
+
+type RefreshSocialAccountsRequest struct {
+	// The social account (a sacc_ identifier) to refresh.
+	ID string `json:"-" url:"-"`
+	// The Account (biz_ identifier) the social account is connected to. An account-scoped API key may omit this to default to its own account.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *RefreshSocialAccountsRequest) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RefreshSocialAccountsRequest) SetID(id string) {
+	r.ID = id
+	r.require(refreshSocialAccountsRequestFieldID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RefreshSocialAccountsRequest) SetAccountID(accountID *string) {
+	r.AccountID = accountID
+	r.require(refreshSocialAccountsRequestFieldAccountID)
+}
+
+func (r *RefreshSocialAccountsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler RefreshSocialAccountsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = RefreshSocialAccountsRequest(body)
+	return nil
+}
+
+func (r *RefreshSocialAccountsRequest) MarshalJSON() ([]byte, error) {
+	type embed RefreshSocialAccountsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	socialAccountLeadFormFieldCompletion            = big.NewInt(1 << 0)
 	socialAccountLeadFormFieldCreatedAt             = big.NewInt(1 << 1)
 	socialAccountLeadFormFieldDisclaimer            = big.NewInt(1 << 2)

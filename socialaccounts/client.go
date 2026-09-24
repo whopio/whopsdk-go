@@ -314,3 +314,30 @@ func (c *Client) Posts(
 	)
 	return pager.GetPage(ctx, request.After)
 }
+
+// Refreshes the state of a social account. Use it to clear an `error` that has been resolved.
+//
+// Example:
+//
+//	request := &whopsdk.RefreshSocialAccountsRequest{
+//	    ID: "id",
+//	}
+//	client.SocialAccounts.Refresh(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Refresh(
+	ctx context.Context,
+	request *whopsdk.RefreshSocialAccountsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.SocialAccount, error) {
+	response, err := c.WithRawResponse.Refresh(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}

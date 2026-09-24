@@ -33009,6 +33009,74 @@ client.SocialAccounts.Posts(
 </dl>
 </details>
 
+<details><summary><code>client.SocialAccounts.Refresh(ID, request) -> *whopsdk.SocialAccount</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Refreshes the state of a social account. Use it to clear an `error` that has been resolved.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RefreshSocialAccountsRequest{
+    ID: "id",
+}
+client.SocialAccounts.Refresh(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The social account (a sacc_ identifier) to refresh.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account (biz_ identifier) the social account is connected to. An account-scoped API key may omit this to default to its own account.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Stats
 <details><summary><code>client.Stats.List() -> *whopsdk.ListStatsResponse</code></summary>
 <dl>
