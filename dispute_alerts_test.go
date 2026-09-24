@@ -507,6 +507,14 @@ func TestSettersDisputeAlert(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAutoRefunded", func(t *testing.T) {
+		obj := &DisputeAlert{}
+		var fernTestValueAutoRefunded bool
+		obj.SetAutoRefunded(fernTestValueAutoRefunded)
+		assert.Equal(t, fernTestValueAutoRefunded, obj.AutoRefunded)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCardBrand", func(t *testing.T) {
 		obj := &DisputeAlert{}
 		var fernTestValueCardBrand *string
@@ -660,6 +668,29 @@ func TestGettersDisputeAlert(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAmount() // Should return zero value
+	})
+
+	t.Run("GetAutoRefunded", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DisputeAlert{}
+		var expected bool
+		obj.AutoRefunded = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAutoRefunded(), "getter should return the property value")
+	})
+
+	t.Run("GetAutoRefunded_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DisputeAlert
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAutoRefunded() // Should return zero value
 	})
 
 	t.Run("GetCardBrand", func(t *testing.T) {
@@ -1030,6 +1061,37 @@ func TestSettersMarkExplicitDisputeAlert(t *testing.T) {
 
 		// Act
 		obj.SetAmount(fernTestValueAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAutoRefunded_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DisputeAlert{}
+		var fernTestValueAutoRefunded bool
+
+		// Act
+		obj.SetAutoRefunded(fernTestValueAutoRefunded)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

@@ -568,6 +568,7 @@ const (
 	RefundReasonFraudulent              RefundReason = "fraudulent"
 	RefundReasonRequestedByCustomer     RefundReason = "requested_by_customer"
 	RefundReasonExpiredUncapturedCharge RefundReason = "expired_uncaptured_charge"
+	RefundReasonDisputeAlert            RefundReason = "dispute_alert"
 )
 
 func NewRefundReasonFromString(s string) (RefundReason, error) {
@@ -580,6 +581,8 @@ func NewRefundReasonFromString(s string) (RefundReason, error) {
 		return RefundReasonRequestedByCustomer, nil
 	case "expired_uncaptured_charge":
 		return RefundReasonExpiredUncapturedCharge, nil
+	case "dispute_alert":
+		return RefundReasonDisputeAlert, nil
 	}
 	var t RefundReason
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

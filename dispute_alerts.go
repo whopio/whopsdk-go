@@ -165,18 +165,19 @@ func (r *RetrieveDisputeAlertsRequest) SetID(id string) {
 var (
 	disputeAlertFieldAccountID     = big.NewInt(1 << 0)
 	disputeAlertFieldAmount        = big.NewInt(1 << 1)
-	disputeAlertFieldCardBrand     = big.NewInt(1 << 2)
-	disputeAlertFieldCreatedAt     = big.NewInt(1 << 3)
-	disputeAlertFieldCurrency      = big.NewInt(1 << 4)
-	disputeAlertFieldFeeCharged    = big.NewInt(1 << 5)
-	disputeAlertFieldID            = big.NewInt(1 << 6)
-	disputeAlertFieldIssuer        = big.NewInt(1 << 7)
-	disputeAlertFieldPaymentID     = big.NewInt(1 << 8)
-	disputeAlertFieldProductID     = big.NewInt(1 << 9)
-	disputeAlertFieldReportedAt    = big.NewInt(1 << 10)
-	disputeAlertFieldTransactionAt = big.NewInt(1 << 11)
-	disputeAlertFieldType          = big.NewInt(1 << 12)
-	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 13)
+	disputeAlertFieldAutoRefunded  = big.NewInt(1 << 2)
+	disputeAlertFieldCardBrand     = big.NewInt(1 << 3)
+	disputeAlertFieldCreatedAt     = big.NewInt(1 << 4)
+	disputeAlertFieldCurrency      = big.NewInt(1 << 5)
+	disputeAlertFieldFeeCharged    = big.NewInt(1 << 6)
+	disputeAlertFieldID            = big.NewInt(1 << 7)
+	disputeAlertFieldIssuer        = big.NewInt(1 << 8)
+	disputeAlertFieldPaymentID     = big.NewInt(1 << 9)
+	disputeAlertFieldProductID     = big.NewInt(1 << 10)
+	disputeAlertFieldReportedAt    = big.NewInt(1 << 11)
+	disputeAlertFieldTransactionAt = big.NewInt(1 << 12)
+	disputeAlertFieldType          = big.NewInt(1 << 13)
+	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 14)
 )
 
 type DisputeAlert struct {
@@ -184,6 +185,8 @@ type DisputeAlert struct {
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// The alerted amount, in whole units of `currency`. This is what the issuer reported, which can differ from the payment's own amount.
 	Amount float64 `json:"amount" url:"amount"`
+	// Whether Whop automatically refunded the alerted payment. Reflects the payment, so it can be `true` for a refund issued by another flow (RDR, resolution) on the same payment.
+	AutoRefunded bool `json:"auto_refunded" url:"auto_refunded"`
 	// The card network as reported by the issuer, lowercased, such as `visa` or `mastercard`. `unknown` when the report carries neither a network nor a recognizable BIN.
 	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
 	// When Whop received the alert, as an ISO 8601 timestamp.
@@ -229,6 +232,13 @@ func (d *DisputeAlert) GetAmount() float64 {
 		return 0
 	}
 	return d.Amount
+}
+
+func (d *DisputeAlert) GetAutoRefunded() bool {
+	if d == nil {
+		return false
+	}
+	return d.AutoRefunded
 }
 
 func (d *DisputeAlert) GetCardBrand() *string {
@@ -341,6 +351,13 @@ func (d *DisputeAlert) SetAccountID(accountID *string) {
 func (d *DisputeAlert) SetAmount(amount float64) {
 	d.Amount = amount
 	d.require(disputeAlertFieldAmount)
+}
+
+// SetAutoRefunded sets the AutoRefunded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeAlert) SetAutoRefunded(autoRefunded bool) {
+	d.AutoRefunded = autoRefunded
+	d.require(disputeAlertFieldAutoRefunded)
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
