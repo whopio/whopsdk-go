@@ -47376,6 +47376,7 @@ const (
 	SocialAccountParentPlatformDiscord   SocialAccountParentPlatform = "discord"
 	SocialAccountParentPlatformTelegram  SocialAccountParentPlatform = "telegram"
 	SocialAccountParentPlatformLinkedin  SocialAccountParentPlatform = "linkedin"
+	SocialAccountParentPlatformSnapchat  SocialAccountParentPlatform = "snapchat"
 )
 
 func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlatform, error) {
@@ -47396,6 +47397,8 @@ func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlat
 		return SocialAccountParentPlatformTelegram, nil
 	case "linkedin":
 		return SocialAccountParentPlatformLinkedin, nil
+	case "snapchat":
+		return SocialAccountParentPlatformSnapchat, nil
 	}
 	var t SocialAccountParentPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -47417,6 +47420,7 @@ const (
 	SocialAccountPlatformDiscord   SocialAccountPlatform = "discord"
 	SocialAccountPlatformTelegram  SocialAccountPlatform = "telegram"
 	SocialAccountPlatformLinkedin  SocialAccountPlatform = "linkedin"
+	SocialAccountPlatformSnapchat  SocialAccountPlatform = "snapchat"
 )
 
 func NewSocialAccountPlatformFromString(s string) (SocialAccountPlatform, error) {
@@ -47437,6 +47441,8 @@ func NewSocialAccountPlatformFromString(s string) (SocialAccountPlatform, error)
 		return SocialAccountPlatformTelegram, nil
 	case "linkedin":
 		return SocialAccountPlatformLinkedin, nil
+	case "snapchat":
+		return SocialAccountPlatformSnapchat, nil
 	}
 	var t SocialAccountPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
