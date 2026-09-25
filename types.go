@@ -34856,6 +34856,7 @@ const (
 	PaymentMethodTypesAffirm                 PaymentMethodTypes = "affirm"
 	PaymentMethodTypesAfterpayClearpay       PaymentMethodTypes = "afterpay_clearpay"
 	PaymentMethodTypesAlipay                 PaymentMethodTypes = "alipay"
+	PaymentMethodTypesAlipayhk               PaymentMethodTypes = "alipayhk"
 	PaymentMethodTypesAlma                   PaymentMethodTypes = "alma"
 	PaymentMethodTypesAmazonPay              PaymentMethodTypes = "amazon_pay"
 	PaymentMethodTypesApple                  PaymentMethodTypes = "apple"
@@ -34993,6 +34994,8 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesAfterpayClearpay, nil
 	case "alipay":
 		return PaymentMethodTypesAlipay, nil
+	case "alipayhk":
+		return PaymentMethodTypesAlipayhk, nil
 	case "alma":
 		return PaymentMethodTypesAlma, nil
 	case "amazon_pay":
