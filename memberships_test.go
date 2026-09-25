@@ -1095,6 +1095,22 @@ func TestSettersMembership(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCanceledAt", func(t *testing.T) {
+		obj := &Membership{}
+		var fernTestValueCanceledAt *string
+		obj.SetCanceledAt(fernTestValueCanceledAt)
+		assert.Equal(t, fernTestValueCanceledAt, obj.CanceledAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCancellationReason", func(t *testing.T) {
+		obj := &Membership{}
+		var fernTestValueCancellationReason *string
+		obj.SetCancellationReason(fernTestValueCancellationReason)
+		assert.Equal(t, fernTestValueCancellationReason, obj.CancellationReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedAt", func(t *testing.T) {
 		obj := &Membership{}
 		var fernTestValueCreatedAt string
@@ -1111,6 +1127,14 @@ func TestSettersMembership(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCurrentPeriodStart", func(t *testing.T) {
+		obj := &Membership{}
+		var fernTestValueCurrentPeriodStart *string
+		obj.SetCurrentPeriodStart(fernTestValueCurrentPeriodStart)
+		assert.Equal(t, fernTestValueCurrentPeriodStart, obj.CurrentPeriodStart)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetID", func(t *testing.T) {
 		obj := &Membership{}
 		var fernTestValueID string
@@ -1124,6 +1148,14 @@ func TestSettersMembership(t *testing.T) {
 		var fernTestValueLicenseKey *string
 		obj.SetLicenseKey(fernTestValueLicenseKey)
 		assert.Equal(t, fernTestValueLicenseKey, obj.LicenseKey)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetManageURL", func(t *testing.T) {
+		obj := &Membership{}
+		var fernTestValueManageURL *string
+		obj.SetManageURL(fernTestValueManageURL)
+		assert.Equal(t, fernTestValueManageURL, obj.ManageURL)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1242,6 +1274,72 @@ func TestGettersMembership(t *testing.T) {
 		_ = obj.GetCancelAtPeriodEnd() // Should return zero value
 	})
 
+	t.Run("GetCanceledAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var expected *string
+		obj.CanceledAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCanceledAt(), "getter should return the property value")
+	})
+
+	t.Run("GetCanceledAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		obj.CanceledAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCanceledAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCanceledAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Membership
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCanceledAt() // Should return zero value
+	})
+
+	t.Run("GetCancellationReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var expected *string
+		obj.CancellationReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCancellationReason(), "getter should return the property value")
+	})
+
+	t.Run("GetCancellationReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		obj.CancellationReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCancellationReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCancellationReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Membership
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCancellationReason() // Should return zero value
+	})
+
 	t.Run("GetCreatedAt", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1298,6 +1396,39 @@ func TestGettersMembership(t *testing.T) {
 		_ = obj.GetCurrentPeriodEnd() // Should return zero value
 	})
 
+	t.Run("GetCurrentPeriodStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var expected *string
+		obj.CurrentPeriodStart = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCurrentPeriodStart(), "getter should return the property value")
+	})
+
+	t.Run("GetCurrentPeriodStart_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		obj.CurrentPeriodStart = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCurrentPeriodStart(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCurrentPeriodStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Membership
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCurrentPeriodStart() // Should return zero value
+	})
+
 	t.Run("GetID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1352,6 +1483,39 @@ func TestGettersMembership(t *testing.T) {
 			}
 		}()
 		_ = obj.GetLicenseKey() // Should return zero value
+	})
+
+	t.Run("GetManageURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var expected *string
+		obj.ManageURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetManageURL(), "getter should return the property value")
+	})
+
+	t.Run("GetManageURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		obj.ManageURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetManageURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetManageURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Membership
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetManageURL() // Should return zero value
 	})
 
 	t.Run("GetMember", func(t *testing.T) {
@@ -1620,6 +1784,68 @@ func TestSettersMarkExplicitMembership(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetCanceledAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var fernTestValueCanceledAt *string
+
+		// Act
+		obj.SetCanceledAt(fernTestValueCanceledAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCancellationReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var fernTestValueCancellationReason *string
+
+		// Act
+		obj.SetCancellationReason(fernTestValueCancellationReason)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCreatedAt_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1682,6 +1908,37 @@ func TestSettersMarkExplicitMembership(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetCurrentPeriodStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var fernTestValueCurrentPeriodStart *string
+
+		// Act
+		obj.SetCurrentPeriodStart(fernTestValueCurrentPeriodStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1721,6 +1978,37 @@ func TestSettersMarkExplicitMembership(t *testing.T) {
 
 		// Act
 		obj.SetLicenseKey(fernTestValueLicenseKey)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetManageURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Membership{}
+		var fernTestValueManageURL *string
+
+		// Act
+		obj.SetManageURL(fernTestValueManageURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

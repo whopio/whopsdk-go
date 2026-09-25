@@ -1291,7 +1291,7 @@ type CreateTransfersResponseTransfer struct {
 	Origin *CreateTransfersResponseTransferOrigin `json:"origin" url:"origin"`
 	// Source ledger account ID.
 	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 	Status CreateTransfersResponseTransferStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2443,7 +2443,7 @@ func (c *CreateTransfersResponseTransferOriginUser) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 type CreateTransfersResponseTransferStatus string
 
 const (
@@ -3291,7 +3291,7 @@ type ListTransfersResponseDataItem struct {
 	Object ListTransfersResponseDataItemObject `json:"object" url:"object"`
 	// Source ledger account ID.
 	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 	Status ListTransfersResponseDataItemStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3719,7 +3719,7 @@ func (l ListTransfersResponseDataItemObject) Ptr() *ListTransfersResponseDataIte
 	return &l
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 type ListTransfersResponseDataItemStatus string
 
 const (
@@ -4163,7 +4163,7 @@ type PostTransferCompletedPayloadData struct {
 	Origin *PostTransferCompletedPayloadDataOrigin `json:"origin" url:"origin"`
 	// Source ledger account ID.
 	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 	Status PostTransferCompletedPayloadDataStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5349,7 +5349,7 @@ func (p *PostTransferCompletedPayloadDataOriginUser) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 type PostTransferCompletedPayloadDataStatus string
 
 const (
@@ -5681,7 +5681,7 @@ type PostTransferCreatedPayloadData struct {
 	Origin *PostTransferCreatedPayloadDataOrigin `json:"origin" url:"origin"`
 	// Source ledger account ID.
 	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 	Status PostTransferCreatedPayloadDataStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -6867,7 +6867,7 @@ func (p *PostTransferCreatedPayloadDataOriginUser) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 type PostTransferCreatedPayloadDataStatus string
 
 const (
@@ -7199,7 +7199,7 @@ type PostTransferFailedPayloadData struct {
 	Origin *PostTransferFailedPayloadDataOrigin `json:"origin" url:"origin"`
 	// Source ledger account ID.
 	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 	Status PostTransferFailedPayloadDataStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -8385,7 +8385,7 @@ func (p *PostTransferFailedPayloadDataOriginUser) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 type PostTransferFailedPayloadDataStatus string
 
 const (
@@ -8485,7 +8485,7 @@ type RetrieveTransfersResponse struct {
 	Origin *RetrieveTransfersResponseOrigin `json:"origin" url:"origin"`
 	// Source ledger account ID.
 	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 	Status RetrieveTransfersResponseStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -9671,7 +9671,7 @@ func (r *RetrieveTransfersResponseOriginUser) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — poll the transfer until it resolves to `succeeded` or `failed`. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
 type RetrieveTransfersResponseStatus string
 
 const (
