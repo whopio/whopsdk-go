@@ -86,6 +86,7 @@ func TestConfirmationTokensRetrieveWithWireMock(
 	}
 	client := client.NewWhop(
 		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
 	)
 	request := &whopsdk.RetrieveConfirmationTokensRequest{
 		ID:        "id",
