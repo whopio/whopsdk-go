@@ -35161,6 +35161,470 @@ client.Topups.Create(
 </dl>
 </details>
 
+## Trades
+<details><summary><code>client.Trades.List() -> *whopsdk.ListTradesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists trades you can access, newest first. User credentials see their own trades and those of accounts they belong to, including connected accounts; account credentials see their account and its connected accounts. These are submission records, not fill or position history.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListTradesRequest{}
+client.Trades.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Only return trades for this account or user, prefixed `biz_` or `user_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.ListTradesRequestStatus` — Only return trades with this submission status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**operationType:** `*whopsdk.ListTradesRequestOperationType` — Only return trades of this kind, such as `create_orders` for order submissions.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListTradesRequestOrder` — Field to sort by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListTradesRequestDirection` — Sort direction.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Trades.Create(request) -> *whopsdk.Trade</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Submits perpetual orders from a funded trading wallet. Send several limit orders for a ladder, or attach `take_profit` and `stop_loss` to a single entry order. Whop's builder fee is approved and attached automatically. The returned `trop_` ID identifies the submission, not a position, and `completed` doesn't mean filled: check each order acknowledgement, and read live orders and positions from the account's `trading` field. Requires an `Idempotency-Key`. Early beta: email support@whop.com for access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateTradesRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    InstrumentType: whopsdk.CreateTradesRequestInstrumentTypePerpetual,
+    Orders: []*whopsdk.CreateTradesRequestOrdersItem{
+        &whopsdk.CreateTradesRequestOrdersItem{
+            Market: "ETH",
+            Side: whopsdk.CreateTradesRequestOrdersItemSideBuy,
+            Size: "0.02",
+        },
+    },
+    Provider: whopsdk.CreateTradesRequestProviderHyperliquid,
+}
+client.Trades.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The account or user that owns the trading wallet, prefixed `biz_` or `user_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**instrumentType:** `*whopsdk.CreateTradesRequestInstrumentType` — The kind of instrument to trade.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]*string` — Free-form string-to-string annotations stored on the trade.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**orders:** `[]*whopsdk.CreateTradesRequestOrdersItem` — Orders to submit together. Attached take-profit and stop-loss are supported only with a single entry order.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provider:** `*whopsdk.CreateTradesRequestProvider` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**slippageBps:** `*int` — Default slippage cap in basis points for market orders and market-triggered take-profit and stop-loss.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Trades.UpdateLeverage(request) -> *whopsdk.Trade</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sets cross or isolated leverage for a perpetual market, up to that market's maximum. Returns a trade recording the submission. Requires an `Idempotency-Key`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateLeverageTradesRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    Leverage: 5,
+    MarginMode: whopsdk.UpdateLeverageTradesRequestMarginModeCross,
+    Market: "ETH",
+    Provider: whopsdk.UpdateLeverageTradesRequestProviderHyperliquid,
+}
+client.Trades.UpdateLeverage(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The account or user that owns the trading wallet, prefixed `biz_` or `user_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**leverage:** `int` — Leverage multiplier, such as `10` for 10x. Capped at the market's maximum.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**marginMode:** `*whopsdk.UpdateLeverageTradesRequestMarginMode` — `cross` shares margin across positions; `isolated` limits margin to this market's position.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**market:** `string` — Perpetual market on the provider, such as `ETH`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]*string` — Free-form string-to-string annotations stored on the trade.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**provider:** `*whopsdk.UpdateLeverageTradesRequestProvider` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Trades.Retrieve(ID) -> *whopsdk.Trade</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a trade. Order acknowledgements don't update as orders fill; read live orders and positions from the account's `trading` field. Never resubmit a `submission_unknown` trade with a new idempotency key.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveTradesRequest{
+    ID: "id",
+}
+client.Trades.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Trade ID, prefixed `trop_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Trades.Cancel(ID, request) -> *whopsdk.Trade</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Cancels every order in an order trade, including attached take-profit and stop-loss. This doesn't close filled positions. Returns a new cancellation trade whose `trade_id` points to the original, which is left unchanged. Cancellation works even while opening new positions is disabled. Requires an `Idempotency-Key`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CancelTradesRequest{
+    ID: "id",
+}
+client.Trades.Cancel(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — ID of the order trade to cancel, prefixed `trop_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]*string` — Free-form string-to-string annotations stored on the trade.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Transfers
 <details><summary><code>client.Transfers.List() -> *whopsdk.ListTransfersResponse</code></summary>
 <dl>

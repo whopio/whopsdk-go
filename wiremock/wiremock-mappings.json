@@ -13028,6 +13028,172 @@
       }
     },
     {
+      "id": "1a3ff3ef-74ad-4f36-91b2-1767bb24ebd2",
+      "name": "List Trades - default",
+      "request": {
+        "urlPathTemplate": "/trades",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"cancellations\": [\n        {\n          \"error\": null,\n          \"id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n          \"status\": \"canceled\"\n        }\n      ],\n      \"completed_at\": \"2026-01-01T12:00:00.000Z\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"failure_code\": \"pre_submission_error\",\n      \"hyperliquid\": {\n        \"builder_fee_bps\": null\n      },\n      \"id\": \"trop_xxxxxxxxxxxxxx\",\n      \"instrument_type\": \"perpetual\",\n      \"leverage\": {\n        \"leverage\": 5,\n        \"margin_mode\": null,\n        \"market\": \"ETH\"\n      },\n      \"metadata\": {\n        \"key\": \"value\"\n      },\n      \"object\": \"trade\",\n      \"operation_type\": \"create_orders\",\n      \"orders\": [\n        {\n          \"average_price\": {\n            \"amount\": \"-2.50\",\n            \"currency\": \"usd\",\n            \"decimals\": 2,\n            \"display_decimals\": 2\n          },\n          \"client_order_id\": \"client_order_id\",\n          \"error\": null,\n          \"filled_size\": null,\n          \"hyperliquid\": {\n            \"reduce_only\": null,\n            \"trigger_price\": {\n              \"amount\": \"-2.50\",\n              \"currency\": \"usd\",\n              \"decimals\": 2,\n              \"display_decimals\": 2\n            }\n          },\n          \"id\": \"id\",\n          \"market\": \"market\",\n          \"object\": \"trading_order\",\n          \"order_type\": \"limit\",\n          \"parent_client_order_id\": null,\n          \"price\": {\n            \"amount\": \"-2.50\",\n            \"currency\": \"usd\",\n            \"decimals\": 2,\n            \"display_decimals\": 2\n          },\n          \"provider_order_id\": null,\n          \"side\": \"buy\",\n          \"size\": \"size\",\n          \"status\": \"open\"\n        }\n      ],\n      \"provider\": \"hyperliquid\",\n      \"requested_orders\": [\n        {\n          \"client_order_id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n          \"market\": \"ETH\",\n          \"order_type\": null,\n          \"parent_client_order_id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n          \"price\": {\n            \"amount\": \"-2.50\",\n            \"currency\": \"usd\",\n            \"decimals\": 2,\n            \"display_decimals\": 2\n          },\n          \"side\": null,\n          \"size\": \"0.02\",\n          \"trigger_price\": {\n            \"amount\": \"-2.50\",\n            \"currency\": \"usd\",\n            \"decimals\": 2,\n            \"display_decimals\": 2\n          }\n        }\n      ],\n      \"status\": \"pending\",\n      \"trade_id\": \"trop_xxxxxxxxxxxxxx\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"user_id\": \"user_id\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "1a3ff3ef-74ad-4f36-91b2-1767bb24ebd2",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "de8ef184-1f6c-4c72-9c7e-bf4909d3f971",
+      "name": "Create Trade - default",
+      "request": {
+        "urlPathTemplate": "/trades",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"cancellations\": [\n    {\n      \"error\": \"error\",\n      \"id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"status\": \"canceled\"\n    }\n  ],\n  \"completed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"failure_code\": \"pre_submission_error\",\n  \"hyperliquid\": {\n    \"builder_fee_bps\": \"builder_fee_bps\"\n  },\n  \"id\": \"trop_xxxxxxxxxxxxxx\",\n  \"instrument_type\": \"perpetual\",\n  \"leverage\": {\n    \"leverage\": 5,\n    \"margin_mode\": \"cross\",\n    \"market\": \"ETH\"\n  },\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"object\": \"trade\",\n  \"operation_type\": \"create_orders\",\n  \"orders\": [\n    {\n      \"average_price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"client_order_id\": \"client_order_id\",\n      \"error\": \"error\",\n      \"filled_size\": \"filled_size\",\n      \"hyperliquid\": {\n        \"reduce_only\": null,\n        \"trigger_price\": {\n          \"amount\": \"-2.50\",\n          \"currency\": \"usd\",\n          \"decimals\": 2,\n          \"display_decimals\": 2\n        }\n      },\n      \"id\": \"id\",\n      \"market\": \"market\",\n      \"object\": \"trading_order\",\n      \"order_type\": \"limit\",\n      \"parent_client_order_id\": \"parent_client_order_id\",\n      \"price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"provider_order_id\": \"provider_order_id\",\n      \"side\": \"buy\",\n      \"size\": \"size\",\n      \"status\": \"open\"\n    }\n  ],\n  \"provider\": \"hyperliquid\",\n  \"requested_orders\": [\n    {\n      \"client_order_id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"market\": \"ETH\",\n      \"order_type\": \"limit\",\n      \"parent_client_order_id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"side\": \"buy\",\n      \"size\": \"0.02\",\n      \"trigger_price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"status\": \"pending\",\n  \"trade_id\": \"trop_xxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_id\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "de8ef184-1f6c-4c72-9c7e-bf4909d3f971",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "a0927b7d-b050-45a3-ad29-7593ab83a36d",
+      "name": "Update Trade Leverage - default",
+      "request": {
+        "urlPathTemplate": "/trades/leverage",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"cancellations\": [\n    {\n      \"error\": \"error\",\n      \"id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"status\": \"canceled\"\n    }\n  ],\n  \"completed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"failure_code\": \"pre_submission_error\",\n  \"hyperliquid\": {\n    \"builder_fee_bps\": \"builder_fee_bps\"\n  },\n  \"id\": \"trop_xxxxxxxxxxxxxx\",\n  \"instrument_type\": \"perpetual\",\n  \"leverage\": {\n    \"leverage\": 5,\n    \"margin_mode\": \"cross\",\n    \"market\": \"ETH\"\n  },\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"object\": \"trade\",\n  \"operation_type\": \"create_orders\",\n  \"orders\": [\n    {\n      \"average_price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"client_order_id\": \"client_order_id\",\n      \"error\": \"error\",\n      \"filled_size\": \"filled_size\",\n      \"hyperliquid\": {\n        \"reduce_only\": null,\n        \"trigger_price\": {\n          \"amount\": \"-2.50\",\n          \"currency\": \"usd\",\n          \"decimals\": 2,\n          \"display_decimals\": 2\n        }\n      },\n      \"id\": \"id\",\n      \"market\": \"market\",\n      \"object\": \"trading_order\",\n      \"order_type\": \"limit\",\n      \"parent_client_order_id\": \"parent_client_order_id\",\n      \"price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"provider_order_id\": \"provider_order_id\",\n      \"side\": \"buy\",\n      \"size\": \"size\",\n      \"status\": \"open\"\n    }\n  ],\n  \"provider\": \"hyperliquid\",\n  \"requested_orders\": [\n    {\n      \"client_order_id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"market\": \"ETH\",\n      \"order_type\": \"limit\",\n      \"parent_client_order_id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"side\": \"buy\",\n      \"size\": \"0.02\",\n      \"trigger_price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"status\": \"pending\",\n  \"trade_id\": \"trop_xxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_id\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "a0927b7d-b050-45a3-ad29-7593ab83a36d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "dd78813c-390d-4256-b70e-94d90cea4024",
+      "name": "Retrieve Trade - default",
+      "request": {
+        "urlPathTemplate": "/trades/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"cancellations\": [\n    {\n      \"error\": \"error\",\n      \"id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"status\": \"canceled\"\n    }\n  ],\n  \"completed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"failure_code\": \"pre_submission_error\",\n  \"hyperliquid\": {\n    \"builder_fee_bps\": \"builder_fee_bps\"\n  },\n  \"id\": \"trop_xxxxxxxxxxxxxx\",\n  \"instrument_type\": \"perpetual\",\n  \"leverage\": {\n    \"leverage\": 5,\n    \"margin_mode\": \"cross\",\n    \"market\": \"ETH\"\n  },\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"object\": \"trade\",\n  \"operation_type\": \"create_orders\",\n  \"orders\": [\n    {\n      \"average_price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"client_order_id\": \"client_order_id\",\n      \"error\": \"error\",\n      \"filled_size\": \"filled_size\",\n      \"hyperliquid\": {\n        \"reduce_only\": null,\n        \"trigger_price\": {\n          \"amount\": \"-2.50\",\n          \"currency\": \"usd\",\n          \"decimals\": 2,\n          \"display_decimals\": 2\n        }\n      },\n      \"id\": \"id\",\n      \"market\": \"market\",\n      \"object\": \"trading_order\",\n      \"order_type\": \"limit\",\n      \"parent_client_order_id\": \"parent_client_order_id\",\n      \"price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"provider_order_id\": \"provider_order_id\",\n      \"side\": \"buy\",\n      \"size\": \"size\",\n      \"status\": \"open\"\n    }\n  ],\n  \"provider\": \"hyperliquid\",\n  \"requested_orders\": [\n    {\n      \"client_order_id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"market\": \"ETH\",\n      \"order_type\": \"limit\",\n      \"parent_client_order_id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"side\": \"buy\",\n      \"size\": \"0.02\",\n      \"trigger_price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"status\": \"pending\",\n  \"trade_id\": \"trop_xxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_id\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "dd78813c-390d-4256-b70e-94d90cea4024",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "c8652ae9-bc6b-4fca-8aa7-49828dd61bd7",
+      "name": "Cancel Trade - default",
+      "request": {
+        "urlPathTemplate": "/trades/{id}/cancel",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"cancellations\": [\n    {\n      \"error\": \"error\",\n      \"id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"status\": \"canceled\"\n    }\n  ],\n  \"completed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"failure_code\": \"pre_submission_error\",\n  \"hyperliquid\": {\n    \"builder_fee_bps\": \"builder_fee_bps\"\n  },\n  \"id\": \"trop_xxxxxxxxxxxxxx\",\n  \"instrument_type\": \"perpetual\",\n  \"leverage\": {\n    \"leverage\": 5,\n    \"margin_mode\": \"cross\",\n    \"market\": \"ETH\"\n  },\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"object\": \"trade\",\n  \"operation_type\": \"create_orders\",\n  \"orders\": [\n    {\n      \"average_price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"client_order_id\": \"client_order_id\",\n      \"error\": \"error\",\n      \"filled_size\": \"filled_size\",\n      \"hyperliquid\": {\n        \"reduce_only\": null,\n        \"trigger_price\": {\n          \"amount\": \"-2.50\",\n          \"currency\": \"usd\",\n          \"decimals\": 2,\n          \"display_decimals\": 2\n        }\n      },\n      \"id\": \"id\",\n      \"market\": \"market\",\n      \"object\": \"trading_order\",\n      \"order_type\": \"limit\",\n      \"parent_client_order_id\": \"parent_client_order_id\",\n      \"price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"provider_order_id\": \"provider_order_id\",\n      \"side\": \"buy\",\n      \"size\": \"size\",\n      \"status\": \"open\"\n    }\n  ],\n  \"provider\": \"hyperliquid\",\n  \"requested_orders\": [\n    {\n      \"client_order_id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"market\": \"ETH\",\n      \"order_type\": \"limit\",\n      \"parent_client_order_id\": \"trdcloid_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n      \"price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"side\": \"buy\",\n      \"size\": \"0.02\",\n      \"trigger_price\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"status\": \"pending\",\n  \"trade_id\": \"trop_xxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_id\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "c8652ae9-bc6b-4fca-8aa7-49828dd61bd7",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "14c19d9e-4f75-4a5a-9c1c-62461106394e",
       "name": "List Transfers - default",
       "request": {
@@ -15359,6 +15525,6 @@
     }
   ],
   "meta": {
-    "total": 430
+    "total": 435
   }
 }
