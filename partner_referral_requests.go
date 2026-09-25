@@ -765,10 +765,10 @@ func (p PartnerReferralRewardRecipient) Ptr() *PartnerReferralRewardRecipient {
 }
 
 type CreatePartnerReferralRequestsRequestBody struct {
-	CreatePartnerReferralRequestsRequestBodyAccountID    *CreatePartnerReferralRequestsRequestBodyAccountID
-	CreatePartnerReferralRequestsRequestBodyAccountURL   *CreatePartnerReferralRequestsRequestBodyAccountURL
-	CreatePartnerReferralRequestsRequestBodyTargetUserID *CreatePartnerReferralRequestsRequestBodyTargetUserID
-	CreatePartnerReferralRequestsRequestBodyUsername     *CreatePartnerReferralRequestsRequestBodyUsername
+	CreatePartnerReferralRequestsRequestBodyAccountID      *CreatePartnerReferralRequestsRequestBodyAccountID
+	CreatePartnerReferralRequestsRequestBodyAccountURL     *CreatePartnerReferralRequestsRequestBodyAccountURL
+	CreatePartnerReferralRequestsRequestBodyTargetUserID   *CreatePartnerReferralRequestsRequestBodyTargetUserID
+	CreatePartnerReferralRequestsRequestBodyTargetUsername *CreatePartnerReferralRequestsRequestBodyTargetUsername
 	// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link or creates one with a random code. Only authorized staff can configure rewards or select another partner.
 	CreatePartnerReferralRequestsRequestBodyCode *CreatePartnerReferralRequestsRequestBodyCode
 
@@ -796,11 +796,11 @@ func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralReque
 	return c.CreatePartnerReferralRequestsRequestBodyTargetUserID
 }
 
-func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralRequestsRequestBodyUsername() *CreatePartnerReferralRequestsRequestBodyUsername {
+func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralRequestsRequestBodyTargetUsername() *CreatePartnerReferralRequestsRequestBodyTargetUsername {
 	if c == nil {
 		return nil
 	}
-	return c.CreatePartnerReferralRequestsRequestBodyUsername
+	return c.CreatePartnerReferralRequestsRequestBodyTargetUsername
 }
 
 func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralRequestsRequestBodyCode() *CreatePartnerReferralRequestsRequestBodyCode {
@@ -829,10 +829,10 @@ func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) er
 		c.CreatePartnerReferralRequestsRequestBodyTargetUserID = valueCreatePartnerReferralRequestsRequestBodyTargetUserID
 		return nil
 	}
-	valueCreatePartnerReferralRequestsRequestBodyUsername := new(CreatePartnerReferralRequestsRequestBodyUsername)
-	if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyUsername); err == nil {
-		c.typ = "CreatePartnerReferralRequestsRequestBodyUsername"
-		c.CreatePartnerReferralRequestsRequestBodyUsername = valueCreatePartnerReferralRequestsRequestBodyUsername
+	valueCreatePartnerReferralRequestsRequestBodyTargetUsername := new(CreatePartnerReferralRequestsRequestBodyTargetUsername)
+	if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetUsername); err == nil {
+		c.typ = "CreatePartnerReferralRequestsRequestBodyTargetUsername"
+		c.CreatePartnerReferralRequestsRequestBodyTargetUsername = valueCreatePartnerReferralRequestsRequestBodyTargetUsername
 		return nil
 	}
 	valueCreatePartnerReferralRequestsRequestBodyCode := new(CreatePartnerReferralRequestsRequestBodyCode)
@@ -854,8 +854,8 @@ func (c CreatePartnerReferralRequestsRequestBody) MarshalJSON() ([]byte, error) 
 	if c.typ == "CreatePartnerReferralRequestsRequestBodyTargetUserID" || c.CreatePartnerReferralRequestsRequestBodyTargetUserID != nil {
 		return json.Marshal(c.CreatePartnerReferralRequestsRequestBodyTargetUserID)
 	}
-	if c.typ == "CreatePartnerReferralRequestsRequestBodyUsername" || c.CreatePartnerReferralRequestsRequestBodyUsername != nil {
-		return json.Marshal(c.CreatePartnerReferralRequestsRequestBodyUsername)
+	if c.typ == "CreatePartnerReferralRequestsRequestBodyTargetUsername" || c.CreatePartnerReferralRequestsRequestBodyTargetUsername != nil {
+		return json.Marshal(c.CreatePartnerReferralRequestsRequestBodyTargetUsername)
 	}
 	if c.typ == "CreatePartnerReferralRequestsRequestBodyCode" || c.CreatePartnerReferralRequestsRequestBodyCode != nil {
 		return json.Marshal(c.CreatePartnerReferralRequestsRequestBodyCode)
@@ -867,7 +867,7 @@ type CreatePartnerReferralRequestsRequestBodyVisitor interface {
 	VisitCreatePartnerReferralRequestsRequestBodyAccountID(*CreatePartnerReferralRequestsRequestBodyAccountID) error
 	VisitCreatePartnerReferralRequestsRequestBodyAccountURL(*CreatePartnerReferralRequestsRequestBodyAccountURL) error
 	VisitCreatePartnerReferralRequestsRequestBodyTargetUserID(*CreatePartnerReferralRequestsRequestBodyTargetUserID) error
-	VisitCreatePartnerReferralRequestsRequestBodyUsername(*CreatePartnerReferralRequestsRequestBodyUsername) error
+	VisitCreatePartnerReferralRequestsRequestBodyTargetUsername(*CreatePartnerReferralRequestsRequestBodyTargetUsername) error
 	VisitCreatePartnerReferralRequestsRequestBodyCode(*CreatePartnerReferralRequestsRequestBodyCode) error
 }
 
@@ -881,8 +881,8 @@ func (c *CreatePartnerReferralRequestsRequestBody) Accept(visitor CreatePartnerR
 	if c.typ == "CreatePartnerReferralRequestsRequestBodyTargetUserID" || c.CreatePartnerReferralRequestsRequestBodyTargetUserID != nil {
 		return visitor.VisitCreatePartnerReferralRequestsRequestBodyTargetUserID(c.CreatePartnerReferralRequestsRequestBodyTargetUserID)
 	}
-	if c.typ == "CreatePartnerReferralRequestsRequestBodyUsername" || c.CreatePartnerReferralRequestsRequestBodyUsername != nil {
-		return visitor.VisitCreatePartnerReferralRequestsRequestBodyUsername(c.CreatePartnerReferralRequestsRequestBodyUsername)
+	if c.typ == "CreatePartnerReferralRequestsRequestBodyTargetUsername" || c.CreatePartnerReferralRequestsRequestBodyTargetUsername != nil {
+		return visitor.VisitCreatePartnerReferralRequestsRequestBodyTargetUsername(c.CreatePartnerReferralRequestsRequestBodyTargetUsername)
 	}
 	if c.typ == "CreatePartnerReferralRequestsRequestBodyCode" || c.CreatePartnerReferralRequestsRequestBodyCode != nil {
 		return visitor.VisitCreatePartnerReferralRequestsRequestBodyCode(c.CreatePartnerReferralRequestsRequestBodyCode)
@@ -1303,12 +1303,12 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetUserID) String() string {
 }
 
 var (
-	createPartnerReferralRequestsRequestBodyUsernameFieldUsername = big.NewInt(1 << 0)
+	createPartnerReferralRequestsRequestBodyTargetUsernameFieldTargetUsername = big.NewInt(1 << 0)
 )
 
-type CreatePartnerReferralRequestsRequestBodyUsername struct {
+type CreatePartnerReferralRequestsRequestBodyTargetUsername struct {
 	// Username of the user to request attribution for, with or without a leading @.
-	Username string `json:"username" url:"username"`
+	TargetUsername string `json:"target_username" url:"target_username"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1317,41 +1317,41 @@ type CreatePartnerReferralRequestsRequestBodyUsername struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreatePartnerReferralRequestsRequestBodyUsername) GetUsername() string {
+func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) GetTargetUsername() string {
 	if c == nil {
 		return ""
 	}
-	return c.Username
+	return c.TargetUsername
 }
 
-func (c *CreatePartnerReferralRequestsRequestBodyUsername) GetExtraProperties() map[string]interface{} {
+func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreatePartnerReferralRequestsRequestBodyUsername) require(field *big.Int) {
+func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) require(field *big.Int) {
 	if c.explicitFields == nil {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetTargetUsername sets the TargetUsername field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePartnerReferralRequestsRequestBodyUsername) SetUsername(username string) {
-	c.Username = username
-	c.require(createPartnerReferralRequestsRequestBodyUsernameFieldUsername)
+func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) SetTargetUsername(targetUsername string) {
+	c.TargetUsername = targetUsername
+	c.require(createPartnerReferralRequestsRequestBodyTargetUsernameFieldTargetUsername)
 }
 
-func (c *CreatePartnerReferralRequestsRequestBodyUsername) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreatePartnerReferralRequestsRequestBodyUsername
+func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePartnerReferralRequestsRequestBodyTargetUsername
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreatePartnerReferralRequestsRequestBodyUsername(value)
+	*c = CreatePartnerReferralRequestsRequestBodyTargetUsername(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -1361,8 +1361,8 @@ func (c *CreatePartnerReferralRequestsRequestBodyUsername) UnmarshalJSON(data []
 	return nil
 }
 
-func (c *CreatePartnerReferralRequestsRequestBodyUsername) MarshalJSON() ([]byte, error) {
-	type embed CreatePartnerReferralRequestsRequestBodyUsername
+func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) MarshalJSON() ([]byte, error) {
+	type embed CreatePartnerReferralRequestsRequestBodyTargetUsername
 	var marshaler = struct {
 		embed
 	}{
@@ -1372,7 +1372,7 @@ func (c *CreatePartnerReferralRequestsRequestBodyUsername) MarshalJSON() ([]byte
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreatePartnerReferralRequestsRequestBodyUsername) String() string {
+func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) String() string {
 	if c == nil {
 		return "<nil>"
 	}
