@@ -499,19 +499,23 @@ func (t *TransferMembershipsRequest) SetID(id string) {
 }
 
 var (
-	membershipFieldAccount           = big.NewInt(1 << 0)
-	membershipFieldCancelAtPeriodEnd = big.NewInt(1 << 1)
-	membershipFieldCreatedAt         = big.NewInt(1 << 2)
-	membershipFieldCurrentPeriodEnd  = big.NewInt(1 << 3)
-	membershipFieldID                = big.NewInt(1 << 4)
-	membershipFieldLicenseKey        = big.NewInt(1 << 5)
-	membershipFieldMember            = big.NewInt(1 << 6)
-	membershipFieldMetadata          = big.NewInt(1 << 7)
-	membershipFieldPhoneNumber       = big.NewInt(1 << 8)
-	membershipFieldPlanID            = big.NewInt(1 << 9)
-	membershipFieldProductID         = big.NewInt(1 << 10)
-	membershipFieldStatus            = big.NewInt(1 << 11)
-	membershipFieldUserID            = big.NewInt(1 << 12)
+	membershipFieldAccount            = big.NewInt(1 << 0)
+	membershipFieldCancelAtPeriodEnd  = big.NewInt(1 << 1)
+	membershipFieldCanceledAt         = big.NewInt(1 << 2)
+	membershipFieldCancellationReason = big.NewInt(1 << 3)
+	membershipFieldCreatedAt          = big.NewInt(1 << 4)
+	membershipFieldCurrentPeriodEnd   = big.NewInt(1 << 5)
+	membershipFieldCurrentPeriodStart = big.NewInt(1 << 6)
+	membershipFieldID                 = big.NewInt(1 << 7)
+	membershipFieldLicenseKey         = big.NewInt(1 << 8)
+	membershipFieldManageURL          = big.NewInt(1 << 9)
+	membershipFieldMember             = big.NewInt(1 << 10)
+	membershipFieldMetadata           = big.NewInt(1 << 11)
+	membershipFieldPhoneNumber        = big.NewInt(1 << 12)
+	membershipFieldPlanID             = big.NewInt(1 << 13)
+	membershipFieldProductID          = big.NewInt(1 << 14)
+	membershipFieldStatus             = big.NewInt(1 << 15)
+	membershipFieldUserID             = big.NewInt(1 << 16)
 )
 
 type Membership struct {
@@ -519,14 +523,22 @@ type Membership struct {
 	Account *StorefrontAccount `json:"account" url:"account"`
 	// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring plans.
 	CancelAtPeriodEnd bool `json:"cancel_at_period_end" url:"cancel_at_period_end"`
+	// When cancellation was requested, or when the membership was canceled if no request time is recorded, as an ISO 8601 timestamp. `null` when neither is recorded.
+	CanceledAt *string `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
+	// Free-text explanation provided when canceling. `null` when no reason was provided.
+	CancellationReason *string `json:"cancellation_reason,omitempty" url:"cancellation_reason,omitempty"`
 	// When the membership was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// When the current billing period renews, or when a non-renewing membership expires, as an ISO 8601 timestamp. `null` for one-time purchases with no expiration.
 	CurrentPeriodEnd *string `json:"current_period_end,omitempty" url:"current_period_end,omitempty"`
+	// When the current billing period started, as an ISO 8601 timestamp. `null` when no billing period is recorded.
+	CurrentPeriodStart *string `json:"current_period_start,omitempty" url:"current_period_start,omitempty"`
 	// Membership ID, prefixed `mem_`.
 	ID string `json:"id" url:"id"`
 	// The software license key for this membership. Only present when the product includes a software licensing experience.
 	LicenseKey *string `json:"license_key,omitempty" url:"license_key,omitempty"`
+	// URL where the buyer can sign in to manage billing. `null` without a member record or unless the caller is the buyer or has `member:manage` on the account.
+	ManageURL *string `json:"manage_url,omitempty" url:"manage_url,omitempty"`
 	// The caller's member row on the account. Present only when the membership belongs to the caller; `null` on seller-side reads.
 	Member *MembershipMember `json:"member,omitempty" url:"member,omitempty"`
 	// Custom key-value pairs stored on the membership, commonly used for software licensing.
@@ -563,6 +575,20 @@ func (m *Membership) GetCancelAtPeriodEnd() bool {
 	return m.CancelAtPeriodEnd
 }
 
+func (m *Membership) GetCanceledAt() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CanceledAt
+}
+
+func (m *Membership) GetCancellationReason() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CancellationReason
+}
+
 func (m *Membership) GetCreatedAt() string {
 	if m == nil {
 		return ""
@@ -577,6 +603,13 @@ func (m *Membership) GetCurrentPeriodEnd() *string {
 	return m.CurrentPeriodEnd
 }
 
+func (m *Membership) GetCurrentPeriodStart() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CurrentPeriodStart
+}
+
 func (m *Membership) GetID() string {
 	if m == nil {
 		return ""
@@ -589,6 +622,13 @@ func (m *Membership) GetLicenseKey() *string {
 		return nil
 	}
 	return m.LicenseKey
+}
+
+func (m *Membership) GetManageURL() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ManageURL
 }
 
 func (m *Membership) GetMember() *MembershipMember {
@@ -668,6 +708,20 @@ func (m *Membership) SetCancelAtPeriodEnd(cancelAtPeriodEnd bool) {
 	m.require(membershipFieldCancelAtPeriodEnd)
 }
 
+// SetCanceledAt sets the CanceledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetCanceledAt(canceledAt *string) {
+	m.CanceledAt = canceledAt
+	m.require(membershipFieldCanceledAt)
+}
+
+// SetCancellationReason sets the CancellationReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetCancellationReason(cancellationReason *string) {
+	m.CancellationReason = cancellationReason
+	m.require(membershipFieldCancellationReason)
+}
+
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetCreatedAt(createdAt string) {
@@ -682,6 +736,13 @@ func (m *Membership) SetCurrentPeriodEnd(currentPeriodEnd *string) {
 	m.require(membershipFieldCurrentPeriodEnd)
 }
 
+// SetCurrentPeriodStart sets the CurrentPeriodStart field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetCurrentPeriodStart(currentPeriodStart *string) {
+	m.CurrentPeriodStart = currentPeriodStart
+	m.require(membershipFieldCurrentPeriodStart)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetID(id string) {
@@ -694,6 +755,13 @@ func (m *Membership) SetID(id string) {
 func (m *Membership) SetLicenseKey(licenseKey *string) {
 	m.LicenseKey = licenseKey
 	m.require(membershipFieldLicenseKey)
+}
+
+// SetManageURL sets the ManageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetManageURL(manageURL *string) {
+	m.ManageURL = manageURL
+	m.require(membershipFieldManageURL)
 }
 
 // SetMember sets the Member field and marks it as non-optional;
