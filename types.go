@@ -4083,6 +4083,7 @@ const (
 	AccountRequiredActionActionSetupApplePayDomains            AccountRequiredActionAction = "setup_apple_pay_domains"
 	AccountRequiredActionActionConfigureTaxRemitter            AccountRequiredActionAction = "configure_tax_remitter"
 	AccountRequiredActionActionAddVatRegistration              AccountRequiredActionAction = "add_vat_registration"
+	AccountRequiredActionActionAcceptPayoutTerms               AccountRequiredActionAction = "accept_payout_terms"
 	AccountRequiredActionActionEnableTwoFactorAuthentication   AccountRequiredActionAction = "enable_two_factor_authentication"
 )
 
@@ -4116,6 +4117,8 @@ func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAc
 		return AccountRequiredActionActionConfigureTaxRemitter, nil
 	case "add_vat_registration":
 		return AccountRequiredActionActionAddVatRegistration, nil
+	case "accept_payout_terms":
+		return AccountRequiredActionActionAcceptPayoutTerms, nil
 	case "enable_two_factor_authentication":
 		return AccountRequiredActionActionEnableTwoFactorAuthentication, nil
 	}
