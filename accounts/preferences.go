@@ -36,19 +36,20 @@ func (r *RetrievePreferencesRequest) SetAccountID(accountID string) {
 }
 
 var (
-	retrievePreferencesResponseFieldAdsAgreement                = big.NewInt(1 << 0)
-	retrievePreferencesResponseFieldAdsCertifications           = big.NewInt(1 << 1)
-	retrievePreferencesResponseFieldAdsPaymentMethods           = big.NewInt(1 << 2)
-	retrievePreferencesResponseFieldAdsReportingCurrency        = big.NewInt(1 << 3)
-	retrievePreferencesResponseFieldAdsSchedulingTimezone       = big.NewInt(1 << 4)
-	retrievePreferencesResponseFieldAdsTripleWhaleIntegration   = big.NewInt(1 << 5)
-	retrievePreferencesResponseFieldCardsAutoTopUp              = big.NewInt(1 << 6)
-	retrievePreferencesResponseFieldCardsNotifications          = big.NewInt(1 << 7)
-	retrievePreferencesResponseFieldDisputeFighterEnabled       = big.NewInt(1 << 8)
-	retrievePreferencesResponseFieldEconomicIntelligence        = big.NewInt(1 << 9)
-	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt  = big.NewInt(1 << 10)
-	retrievePreferencesResponseFieldEconomicIntelligenceOffers  = big.NewInt(1 << 11)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior = big.NewInt(1 << 12)
+	retrievePreferencesResponseFieldAdsAgreement                      = big.NewInt(1 << 0)
+	retrievePreferencesResponseFieldAdsCertifications                 = big.NewInt(1 << 1)
+	retrievePreferencesResponseFieldAdsPaymentMethods                 = big.NewInt(1 << 2)
+	retrievePreferencesResponseFieldAdsReportingCurrency              = big.NewInt(1 << 3)
+	retrievePreferencesResponseFieldAdsSchedulingTimezone             = big.NewInt(1 << 4)
+	retrievePreferencesResponseFieldAdsTripleWhaleIntegration         = big.NewInt(1 << 5)
+	retrievePreferencesResponseFieldCardsAutoTopUp                    = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldCardsNotifications                = big.NewInt(1 << 7)
+	retrievePreferencesResponseFieldDisputeFighterEnabled             = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldEconomicIntelligence              = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt        = big.NewInt(1 << 10)
+	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage = big.NewInt(1 << 11)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers        = big.NewInt(1 << 12)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior       = big.NewInt(1 << 13)
 )
 
 type RetrievePreferencesResponse struct {
@@ -74,7 +75,9 @@ type RetrievePreferencesResponse struct {
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
 	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or has no end date.
 	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
-	// Durations the account can choose from to turn on Economic Intelligence, each with its fee. `null` while Economic Intelligence is on or during a free trial.
+	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
+	EconomicIntelligenceFeePercentage *float64 `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
+	// Durations the account can choose from to turn on Economic Intelligence, each with its fee. `null` while Economic Intelligence is on or the account is still on the Economic Intelligence waitlist.
 	EconomicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers,omitempty" url:"economic_intelligence_offers,omitempty"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
 	SubscriptionFailureBehavior RetrievePreferencesResponseSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
@@ -161,6 +164,13 @@ func (r *RetrievePreferencesResponse) GetEconomicIntelligenceEndsAt() *string {
 		return nil
 	}
 	return r.EconomicIntelligenceEndsAt
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligenceFeePercentage() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.EconomicIntelligenceFeePercentage
 }
 
 func (r *RetrievePreferencesResponse) GetEconomicIntelligenceOffers() []*RetrievePreferencesResponseEconomicIntelligenceOffersItem {
@@ -266,6 +276,13 @@ func (r *RetrievePreferencesResponse) SetEconomicIntelligence(economicIntelligen
 func (r *RetrievePreferencesResponse) SetEconomicIntelligenceEndsAt(economicIntelligenceEndsAt *string) {
 	r.EconomicIntelligenceEndsAt = economicIntelligenceEndsAt
 	r.require(retrievePreferencesResponseFieldEconomicIntelligenceEndsAt)
+}
+
+// SetEconomicIntelligenceFeePercentage sets the EconomicIntelligenceFeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligenceFeePercentage(economicIntelligenceFeePercentage *float64) {
+	r.EconomicIntelligenceFeePercentage = economicIntelligenceFeePercentage
+	r.require(retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage)
 }
 
 // SetEconomicIntelligenceOffers sets the EconomicIntelligenceOffers field and marks it as non-optional;
@@ -1488,16 +1505,22 @@ func (r RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus) Ptr() *Retri
 }
 
 var (
-	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDurationDays  = big.NewInt(1 << 0)
-	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage = big.NewInt(1 << 1)
-	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended   = big.NewInt(1 << 2)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDuration      = big.NewInt(1 << 0)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDurationUnit  = big.NewInt(1 << 1)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage = big.NewInt(1 << 2)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldKey           = big.NewInt(1 << 3)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended   = big.NewInt(1 << 4)
 )
 
 type RetrievePreferencesResponseEconomicIntelligenceOffersItem struct {
-	// How many days Economic Intelligence stays on. Pass this value as `economic_intelligence_duration_days` to turn it on.
-	DurationDays int `json:"duration_days" url:"duration_days"`
+	// What period of time Economic Intelligence stays on.
+	Duration int `json:"duration" url:"duration"`
+	// The unit of time the duration is in (hours or days)
+	DurationUnit RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit `json:"duration_unit" url:"duration_unit"`
 	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
 	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
+	// The unique identifier for this duration. Pass this value as `economic_intelligence_duration_key` to turn it on.
+	Key RetrievePreferencesResponseEconomicIntelligenceOffersItemKey `json:"key" url:"key"`
 	// Whether Whop recommends this duration. Exactly one offer is recommended.
 	Recommended bool `json:"recommended" url:"recommended"`
 
@@ -1508,11 +1531,18 @@ type RetrievePreferencesResponseEconomicIntelligenceOffersItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetDurationDays() int {
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetDuration() int {
 	if r == nil {
 		return 0
 	}
-	return r.DurationDays
+	return r.Duration
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetDurationUnit() RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit {
+	if r == nil {
+		return ""
+	}
+	return r.DurationUnit
 }
 
 func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetFeePercentage() float64 {
@@ -1520,6 +1550,13 @@ func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetFeePercen
 		return 0
 	}
 	return r.FeePercentage
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetKey() RetrievePreferencesResponseEconomicIntelligenceOffersItemKey {
+	if r == nil {
+		return ""
+	}
+	return r.Key
 }
 
 func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetRecommended() bool {
@@ -1543,11 +1580,18 @@ func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) require(fiel
 	r.explicitFields.Or(r.explicitFields, field)
 }
 
-// SetDurationDays sets the DurationDays field and marks it as non-optional;
+// SetDuration sets the Duration field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetDurationDays(durationDays int) {
-	r.DurationDays = durationDays
-	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDurationDays)
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetDuration(duration int) {
+	r.Duration = duration
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDuration)
+}
+
+// SetDurationUnit sets the DurationUnit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetDurationUnit(durationUnit RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit) {
+	r.DurationUnit = durationUnit
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDurationUnit)
 }
 
 // SetFeePercentage sets the FeePercentage field and marks it as non-optional;
@@ -1555,6 +1599,13 @@ func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetDurationD
 func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetFeePercentage(feePercentage float64) {
 	r.FeePercentage = feePercentage
 	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetKey(key RetrievePreferencesResponseEconomicIntelligenceOffersItemKey) {
+	r.Key = key
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldKey)
 }
 
 // SetRecommended sets the Recommended field and marks it as non-optional;
@@ -1604,6 +1655,55 @@ func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) String() str
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+// The unit of time the duration is in (hours or days)
+type RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit string
+
+const (
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnitHours RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit = "hours"
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnitDays  RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit = "days"
+)
+
+func NewRetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnitFromString(s string) (RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit, error) {
+	switch s {
+	case "hours":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnitHours, nil
+	case "days":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnitDays, nil
+	}
+	var t RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit) Ptr() *RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit {
+	return &r
+}
+
+// The unique identifier for this duration. Pass this value as `economic_intelligence_duration_key` to turn it on.
+type RetrievePreferencesResponseEconomicIntelligenceOffersItemKey string
+
+const (
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeySevenDays RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "7_days"
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyOneDay    RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "1_day"
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyOneHour   RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "1_hour"
+)
+
+func NewRetrievePreferencesResponseEconomicIntelligenceOffersItemKeyFromString(s string) (RetrievePreferencesResponseEconomicIntelligenceOffersItemKey, error) {
+	switch s {
+	case "7_days":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemKeySevenDays, nil
+	case "1_day":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyOneDay, nil
+	case "1_hour":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyOneHour, nil
+	}
+	var t RetrievePreferencesResponseEconomicIntelligenceOffersItemKey
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseEconomicIntelligenceOffersItemKey) Ptr() *RetrievePreferencesResponseEconomicIntelligenceOffersItemKey {
+	return &r
 }
 
 // What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
@@ -2190,6 +2290,32 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// Turns on Economic Intelligence for the duration with this `key` in `economic_intelligence_offers`, at that duration's fee. It can't be changed or turned off until `economic_intelligence_ends_at`, and it can only be turned on once the account is off the Economic Intelligence waitlist. Requires the `company:update` scope on your API key.
+type UpdatePreferencesRequestEconomicIntelligenceDurationKey string
+
+const (
+	UpdatePreferencesRequestEconomicIntelligenceDurationKeySevenDays UpdatePreferencesRequestEconomicIntelligenceDurationKey = "7_days"
+	UpdatePreferencesRequestEconomicIntelligenceDurationKeyOneDay    UpdatePreferencesRequestEconomicIntelligenceDurationKey = "1_day"
+	UpdatePreferencesRequestEconomicIntelligenceDurationKeyOneHour   UpdatePreferencesRequestEconomicIntelligenceDurationKey = "1_hour"
+)
+
+func NewUpdatePreferencesRequestEconomicIntelligenceDurationKeyFromString(s string) (UpdatePreferencesRequestEconomicIntelligenceDurationKey, error) {
+	switch s {
+	case "7_days":
+		return UpdatePreferencesRequestEconomicIntelligenceDurationKeySevenDays, nil
+	case "1_day":
+		return UpdatePreferencesRequestEconomicIntelligenceDurationKeyOneDay, nil
+	case "1_hour":
+		return UpdatePreferencesRequestEconomicIntelligenceDurationKeyOneHour, nil
+	}
+	var t UpdatePreferencesRequestEconomicIntelligenceDurationKey
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestEconomicIntelligenceDurationKey) Ptr() *UpdatePreferencesRequestEconomicIntelligenceDurationKey {
+	return &u
+}
+
 // What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting. Requires company:manage_checkout permission.
 type UpdatePreferencesRequestSubscriptionFailureBehavior string
 
@@ -2214,19 +2340,20 @@ func (u UpdatePreferencesRequestSubscriptionFailureBehavior) Ptr() *UpdatePrefer
 }
 
 var (
-	updatePreferencesResponseFieldAdsAgreement                = big.NewInt(1 << 0)
-	updatePreferencesResponseFieldAdsCertifications           = big.NewInt(1 << 1)
-	updatePreferencesResponseFieldAdsPaymentMethods           = big.NewInt(1 << 2)
-	updatePreferencesResponseFieldAdsReportingCurrency        = big.NewInt(1 << 3)
-	updatePreferencesResponseFieldAdsSchedulingTimezone       = big.NewInt(1 << 4)
-	updatePreferencesResponseFieldAdsTripleWhaleIntegration   = big.NewInt(1 << 5)
-	updatePreferencesResponseFieldCardsAutoTopUp              = big.NewInt(1 << 6)
-	updatePreferencesResponseFieldCardsNotifications          = big.NewInt(1 << 7)
-	updatePreferencesResponseFieldDisputeFighterEnabled       = big.NewInt(1 << 8)
-	updatePreferencesResponseFieldEconomicIntelligence        = big.NewInt(1 << 9)
-	updatePreferencesResponseFieldEconomicIntelligenceEndsAt  = big.NewInt(1 << 10)
-	updatePreferencesResponseFieldEconomicIntelligenceOffers  = big.NewInt(1 << 11)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior = big.NewInt(1 << 12)
+	updatePreferencesResponseFieldAdsAgreement                      = big.NewInt(1 << 0)
+	updatePreferencesResponseFieldAdsCertifications                 = big.NewInt(1 << 1)
+	updatePreferencesResponseFieldAdsPaymentMethods                 = big.NewInt(1 << 2)
+	updatePreferencesResponseFieldAdsReportingCurrency              = big.NewInt(1 << 3)
+	updatePreferencesResponseFieldAdsSchedulingTimezone             = big.NewInt(1 << 4)
+	updatePreferencesResponseFieldAdsTripleWhaleIntegration         = big.NewInt(1 << 5)
+	updatePreferencesResponseFieldCardsAutoTopUp                    = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldCardsNotifications                = big.NewInt(1 << 7)
+	updatePreferencesResponseFieldDisputeFighterEnabled             = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldEconomicIntelligence              = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldEconomicIntelligenceEndsAt        = big.NewInt(1 << 10)
+	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage = big.NewInt(1 << 11)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers        = big.NewInt(1 << 12)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior       = big.NewInt(1 << 13)
 )
 
 type UpdatePreferencesResponse struct {
@@ -2252,7 +2379,9 @@ type UpdatePreferencesResponse struct {
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
 	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or has no end date.
 	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
-	// Durations the account can choose from to turn on Economic Intelligence, each with its fee. `null` while Economic Intelligence is on or during a free trial.
+	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
+	EconomicIntelligenceFeePercentage *float64 `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
+	// Durations the account can choose from to turn on Economic Intelligence, each with its fee. `null` while Economic Intelligence is on or the account is still on the Economic Intelligence waitlist.
 	EconomicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers,omitempty" url:"economic_intelligence_offers,omitempty"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
 	SubscriptionFailureBehavior UpdatePreferencesResponseSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
@@ -2339,6 +2468,13 @@ func (u *UpdatePreferencesResponse) GetEconomicIntelligenceEndsAt() *string {
 		return nil
 	}
 	return u.EconomicIntelligenceEndsAt
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligenceFeePercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.EconomicIntelligenceFeePercentage
 }
 
 func (u *UpdatePreferencesResponse) GetEconomicIntelligenceOffers() []*UpdatePreferencesResponseEconomicIntelligenceOffersItem {
@@ -2444,6 +2580,13 @@ func (u *UpdatePreferencesResponse) SetEconomicIntelligence(economicIntelligence
 func (u *UpdatePreferencesResponse) SetEconomicIntelligenceEndsAt(economicIntelligenceEndsAt *string) {
 	u.EconomicIntelligenceEndsAt = economicIntelligenceEndsAt
 	u.require(updatePreferencesResponseFieldEconomicIntelligenceEndsAt)
+}
+
+// SetEconomicIntelligenceFeePercentage sets the EconomicIntelligenceFeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligenceFeePercentage(economicIntelligenceFeePercentage *float64) {
+	u.EconomicIntelligenceFeePercentage = economicIntelligenceFeePercentage
+	u.require(updatePreferencesResponseFieldEconomicIntelligenceFeePercentage)
 }
 
 // SetEconomicIntelligenceOffers sets the EconomicIntelligenceOffers field and marks it as non-optional;
@@ -3666,16 +3809,22 @@ func (u UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus) Ptr() *UpdateP
 }
 
 var (
-	updatePreferencesResponseEconomicIntelligenceOffersItemFieldDurationDays  = big.NewInt(1 << 0)
-	updatePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage = big.NewInt(1 << 1)
-	updatePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended   = big.NewInt(1 << 2)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldDuration      = big.NewInt(1 << 0)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldDurationUnit  = big.NewInt(1 << 1)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage = big.NewInt(1 << 2)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldKey           = big.NewInt(1 << 3)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended   = big.NewInt(1 << 4)
 )
 
 type UpdatePreferencesResponseEconomicIntelligenceOffersItem struct {
-	// How many days Economic Intelligence stays on. Pass this value as `economic_intelligence_duration_days` to turn it on.
-	DurationDays int `json:"duration_days" url:"duration_days"`
+	// What period of time Economic Intelligence stays on.
+	Duration int `json:"duration" url:"duration"`
+	// The unit of time the duration is in (hours or days)
+	DurationUnit UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit `json:"duration_unit" url:"duration_unit"`
 	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
 	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
+	// The unique identifier for this duration. Pass this value as `economic_intelligence_duration_key` to turn it on.
+	Key UpdatePreferencesResponseEconomicIntelligenceOffersItemKey `json:"key" url:"key"`
 	// Whether Whop recommends this duration. Exactly one offer is recommended.
 	Recommended bool `json:"recommended" url:"recommended"`
 
@@ -3686,11 +3835,18 @@ type UpdatePreferencesResponseEconomicIntelligenceOffersItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetDurationDays() int {
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetDuration() int {
 	if u == nil {
 		return 0
 	}
-	return u.DurationDays
+	return u.Duration
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetDurationUnit() UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit {
+	if u == nil {
+		return ""
+	}
+	return u.DurationUnit
 }
 
 func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetFeePercentage() float64 {
@@ -3698,6 +3854,13 @@ func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetFeePercenta
 		return 0
 	}
 	return u.FeePercentage
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetKey() UpdatePreferencesResponseEconomicIntelligenceOffersItemKey {
+	if u == nil {
+		return ""
+	}
+	return u.Key
 }
 
 func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetRecommended() bool {
@@ -3721,11 +3884,18 @@ func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) require(field 
 	u.explicitFields.Or(u.explicitFields, field)
 }
 
-// SetDurationDays sets the DurationDays field and marks it as non-optional;
+// SetDuration sets the Duration field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetDurationDays(durationDays int) {
-	u.DurationDays = durationDays
-	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldDurationDays)
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetDuration(duration int) {
+	u.Duration = duration
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldDuration)
+}
+
+// SetDurationUnit sets the DurationUnit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetDurationUnit(durationUnit UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit) {
+	u.DurationUnit = durationUnit
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldDurationUnit)
 }
 
 // SetFeePercentage sets the FeePercentage field and marks it as non-optional;
@@ -3733,6 +3903,13 @@ func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetDurationDay
 func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetFeePercentage(feePercentage float64) {
 	u.FeePercentage = feePercentage
 	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetKey(key UpdatePreferencesResponseEconomicIntelligenceOffersItemKey) {
+	u.Key = key
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldKey)
 }
 
 // SetRecommended sets the Recommended field and marks it as non-optional;
@@ -3784,6 +3961,55 @@ func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) String() strin
 	return fmt.Sprintf("%#v", u)
 }
 
+// The unit of time the duration is in (hours or days)
+type UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit string
+
+const (
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnitHours UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit = "hours"
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnitDays  UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit = "days"
+)
+
+func NewUpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnitFromString(s string) (UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit, error) {
+	switch s {
+	case "hours":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnitHours, nil
+	case "days":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnitDays, nil
+	}
+	var t UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit) Ptr() *UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit {
+	return &u
+}
+
+// The unique identifier for this duration. Pass this value as `economic_intelligence_duration_key` to turn it on.
+type UpdatePreferencesResponseEconomicIntelligenceOffersItemKey string
+
+const (
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeySevenDays UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "7_days"
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyOneDay    UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "1_day"
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyOneHour   UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "1_hour"
+)
+
+func NewUpdatePreferencesResponseEconomicIntelligenceOffersItemKeyFromString(s string) (UpdatePreferencesResponseEconomicIntelligenceOffersItemKey, error) {
+	switch s {
+	case "7_days":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemKeySevenDays, nil
+	case "1_day":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyOneDay, nil
+	case "1_hour":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyOneHour, nil
+	}
+	var t UpdatePreferencesResponseEconomicIntelligenceOffersItemKey
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseEconomicIntelligenceOffersItemKey) Ptr() *UpdatePreferencesResponseEconomicIntelligenceOffersItemKey {
+	return &u
+}
+
 // What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
 type UpdatePreferencesResponseSubscriptionFailureBehavior string
 
@@ -3808,17 +4034,17 @@ func (u UpdatePreferencesResponseSubscriptionFailureBehavior) Ptr() *UpdatePrefe
 }
 
 var (
-	updatePreferencesRequestFieldAccountID                        = big.NewInt(1 << 0)
-	updatePreferencesRequestFieldAdsCertifications                = big.NewInt(1 << 1)
-	updatePreferencesRequestFieldAdsPaymentMethods                = big.NewInt(1 << 2)
-	updatePreferencesRequestFieldAdsReportingCurrency             = big.NewInt(1 << 3)
-	updatePreferencesRequestFieldAdsSchedulingTimezone            = big.NewInt(1 << 4)
-	updatePreferencesRequestFieldAdsTripleWhaleIntegration        = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldCardsAutoTopUp                   = big.NewInt(1 << 6)
-	updatePreferencesRequestFieldCardsNotifications               = big.NewInt(1 << 7)
-	updatePreferencesRequestFieldDisputeFighterEnabled            = big.NewInt(1 << 8)
-	updatePreferencesRequestFieldEconomicIntelligenceDurationDays = big.NewInt(1 << 9)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 10)
+	updatePreferencesRequestFieldAccountID                       = big.NewInt(1 << 0)
+	updatePreferencesRequestFieldAdsCertifications               = big.NewInt(1 << 1)
+	updatePreferencesRequestFieldAdsPaymentMethods               = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldAdsReportingCurrency            = big.NewInt(1 << 3)
+	updatePreferencesRequestFieldAdsSchedulingTimezone           = big.NewInt(1 << 4)
+	updatePreferencesRequestFieldAdsTripleWhaleIntegration       = big.NewInt(1 << 5)
+	updatePreferencesRequestFieldCardsAutoTopUp                  = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCardsNotifications              = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldDisputeFighterEnabled           = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldEconomicIntelligenceDurationKey = big.NewInt(1 << 9)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior     = big.NewInt(1 << 10)
 )
 
 type UpdatePreferencesRequest struct {
@@ -3840,8 +4066,8 @@ type UpdatePreferencesRequest struct {
 	CardsNotifications *bool `json:"cards_notifications,omitempty" url:"-"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins. Requires the `payment:dispute` scope on your API key.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
-	// Turns on Economic Intelligence for this many days, at the fee listed for that duration in `economic_intelligence_offers`. It can't be changed or turned off until `economic_intelligence_ends_at`, and it can't be turned on during a free trial. Requires the `company:update` scope on your API key.
-	EconomicIntelligenceDurationDays *int `json:"economic_intelligence_duration_days,omitempty" url:"-"`
+	// Turns on Economic Intelligence for the duration with this `key` in `economic_intelligence_offers`, at that duration's fee. It can't be changed or turned off until `economic_intelligence_ends_at`, and it can only be turned on once the account is off the Economic Intelligence waitlist. Requires the `company:update` scope on your API key.
+	EconomicIntelligenceDurationKey *UpdatePreferencesRequestEconomicIntelligenceDurationKey `json:"economic_intelligence_duration_key,omitempty" url:"-"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting. Requires company:manage_checkout permission.
 	SubscriptionFailureBehavior *UpdatePreferencesRequestSubscriptionFailureBehavior `json:"subscription_failure_behavior,omitempty" url:"-"`
 
@@ -3919,11 +4145,11 @@ func (u *UpdatePreferencesRequest) SetDisputeFighterEnabled(disputeFighterEnable
 	u.require(updatePreferencesRequestFieldDisputeFighterEnabled)
 }
 
-// SetEconomicIntelligenceDurationDays sets the EconomicIntelligenceDurationDays field and marks it as non-optional;
+// SetEconomicIntelligenceDurationKey sets the EconomicIntelligenceDurationKey field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePreferencesRequest) SetEconomicIntelligenceDurationDays(economicIntelligenceDurationDays *int) {
-	u.EconomicIntelligenceDurationDays = economicIntelligenceDurationDays
-	u.require(updatePreferencesRequestFieldEconomicIntelligenceDurationDays)
+func (u *UpdatePreferencesRequest) SetEconomicIntelligenceDurationKey(economicIntelligenceDurationKey *UpdatePreferencesRequestEconomicIntelligenceDurationKey) {
+	u.EconomicIntelligenceDurationKey = economicIntelligenceDurationKey
+	u.require(updatePreferencesRequestFieldEconomicIntelligenceDurationKey)
 }
 
 // SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
