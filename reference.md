@@ -14169,7 +14169,7 @@ client.Disputes.List(
 <dl>
 <dd>
 
-**status:** `*whopsdk.ListDisputesRequestStatusItem` — Only disputes in these statuses. Repeat the parameter to pass several — one paginated list covers all of them. Covers both chargebacks and inquiries at each stage. A `needs_response` dispute whose evidence deadline has passed reports and filters as `under_review` instead.
+**status:** `*whopsdk.ListDisputesRequestStatusItem` — Only disputes in these statuses. Repeat the parameter to pass several — one paginated list covers all of them. Inquiries match only the `warning_` statuses. A `needs_response` dispute whose evidence deadline has passed reports and filters as `under_review` instead.
     
 </dd>
 </dl>

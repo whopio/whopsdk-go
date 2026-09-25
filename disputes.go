@@ -39,7 +39,7 @@ type ListDisputesRequest struct {
 	Order *ListDisputesRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListDisputesRequestDirection `json:"-" url:"direction,omitempty"`
-	// Only disputes in these statuses. Repeat the parameter to pass several — one paginated list covers all of them. Covers both chargebacks and inquiries at each stage. A `needs_response` dispute whose evidence deadline has passed reports and filters as `under_review` instead.
+	// Only disputes in these statuses. Repeat the parameter to pass several — one paginated list covers all of them. Inquiries match only the `warning_` statuses. A `needs_response` dispute whose evidence deadline has passed reports and filters as `under_review` instead.
 	Status []*ListDisputesRequestStatusItem `json:"-" url:"status,omitempty"`
 	// Only disputes in this three-letter ISO currency.
 	Currency *string `json:"-" url:"currency,omitempty"`
@@ -325,7 +325,7 @@ type Dispute struct {
 	Reason DisputeReason `json:"reason" url:"reason"`
 	// The raw card-network or processor reason code, such as `10.4`. Informational only — `reason` is not derived from it.
 	ReasonCode *string `json:"reason_code,omitempty" url:"reason_code,omitempty"`
-	// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
+	// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. The `warning_` statuses are the same stages for an inquiry, which moves no funds. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
 	Status DisputeStatus `json:"status" url:"status"`
 	// When the dispute was last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -2177,29 +2177,38 @@ func (d DisputeReason) Ptr() *DisputeReason {
 	return &d
 }
 
-// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
+// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. The `warning_` statuses are the same stages for an inquiry, which moves no funds. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
 type DisputeStatus string
 
 const (
-	DisputeStatusNeedsResponse DisputeStatus = "needs_response"
-	DisputeStatusUnderReview   DisputeStatus = "under_review"
-	DisputeStatusWon           DisputeStatus = "won"
-	DisputeStatusLost          DisputeStatus = "lost"
-	DisputeStatusClosed        DisputeStatus = "closed"
+	DisputeStatusNeedsResponse        DisputeStatus = "needs_response"
+	DisputeStatusWarningNeedsResponse DisputeStatus = "warning_needs_response"
+	DisputeStatusUnderReview          DisputeStatus = "under_review"
+	DisputeStatusWarningUnderReview   DisputeStatus = "warning_under_review"
+	DisputeStatusWon                  DisputeStatus = "won"
+	DisputeStatusLost                 DisputeStatus = "lost"
+	DisputeStatusClosed               DisputeStatus = "closed"
+	DisputeStatusWarningClosed        DisputeStatus = "warning_closed"
 )
 
 func NewDisputeStatusFromString(s string) (DisputeStatus, error) {
 	switch s {
 	case "needs_response":
 		return DisputeStatusNeedsResponse, nil
+	case "warning_needs_response":
+		return DisputeStatusWarningNeedsResponse, nil
 	case "under_review":
 		return DisputeStatusUnderReview, nil
+	case "warning_under_review":
+		return DisputeStatusWarningUnderReview, nil
 	case "won":
 		return DisputeStatusWon, nil
 	case "lost":
 		return DisputeStatusLost, nil
 	case "closed":
 		return DisputeStatusClosed, nil
+	case "warning_closed":
+		return DisputeStatusWarningClosed, nil
 	}
 	var t DisputeStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2259,25 +2268,34 @@ func (l ListDisputesRequestOrder) Ptr() *ListDisputesRequestOrder {
 type ListDisputesRequestStatusItem string
 
 const (
-	ListDisputesRequestStatusItemNeedsResponse ListDisputesRequestStatusItem = "needs_response"
-	ListDisputesRequestStatusItemUnderReview   ListDisputesRequestStatusItem = "under_review"
-	ListDisputesRequestStatusItemWon           ListDisputesRequestStatusItem = "won"
-	ListDisputesRequestStatusItemLost          ListDisputesRequestStatusItem = "lost"
-	ListDisputesRequestStatusItemClosed        ListDisputesRequestStatusItem = "closed"
+	ListDisputesRequestStatusItemNeedsResponse        ListDisputesRequestStatusItem = "needs_response"
+	ListDisputesRequestStatusItemWarningNeedsResponse ListDisputesRequestStatusItem = "warning_needs_response"
+	ListDisputesRequestStatusItemUnderReview          ListDisputesRequestStatusItem = "under_review"
+	ListDisputesRequestStatusItemWarningUnderReview   ListDisputesRequestStatusItem = "warning_under_review"
+	ListDisputesRequestStatusItemWon                  ListDisputesRequestStatusItem = "won"
+	ListDisputesRequestStatusItemLost                 ListDisputesRequestStatusItem = "lost"
+	ListDisputesRequestStatusItemClosed               ListDisputesRequestStatusItem = "closed"
+	ListDisputesRequestStatusItemWarningClosed        ListDisputesRequestStatusItem = "warning_closed"
 )
 
 func NewListDisputesRequestStatusItemFromString(s string) (ListDisputesRequestStatusItem, error) {
 	switch s {
 	case "needs_response":
 		return ListDisputesRequestStatusItemNeedsResponse, nil
+	case "warning_needs_response":
+		return ListDisputesRequestStatusItemWarningNeedsResponse, nil
 	case "under_review":
 		return ListDisputesRequestStatusItemUnderReview, nil
+	case "warning_under_review":
+		return ListDisputesRequestStatusItemWarningUnderReview, nil
 	case "won":
 		return ListDisputesRequestStatusItemWon, nil
 	case "lost":
 		return ListDisputesRequestStatusItemLost, nil
 	case "closed":
 		return ListDisputesRequestStatusItemClosed, nil
+	case "warning_closed":
+		return ListDisputesRequestStatusItemWarningClosed, nil
 	}
 	var t ListDisputesRequestStatusItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3046,25 +3064,34 @@ func (s SummaryDisputesRequestGroupsItem) Ptr() *SummaryDisputesRequestGroupsIte
 type SummaryDisputesRequestStatusItem string
 
 const (
-	SummaryDisputesRequestStatusItemNeedsResponse SummaryDisputesRequestStatusItem = "needs_response"
-	SummaryDisputesRequestStatusItemUnderReview   SummaryDisputesRequestStatusItem = "under_review"
-	SummaryDisputesRequestStatusItemWon           SummaryDisputesRequestStatusItem = "won"
-	SummaryDisputesRequestStatusItemLost          SummaryDisputesRequestStatusItem = "lost"
-	SummaryDisputesRequestStatusItemClosed        SummaryDisputesRequestStatusItem = "closed"
+	SummaryDisputesRequestStatusItemNeedsResponse        SummaryDisputesRequestStatusItem = "needs_response"
+	SummaryDisputesRequestStatusItemWarningNeedsResponse SummaryDisputesRequestStatusItem = "warning_needs_response"
+	SummaryDisputesRequestStatusItemUnderReview          SummaryDisputesRequestStatusItem = "under_review"
+	SummaryDisputesRequestStatusItemWarningUnderReview   SummaryDisputesRequestStatusItem = "warning_under_review"
+	SummaryDisputesRequestStatusItemWon                  SummaryDisputesRequestStatusItem = "won"
+	SummaryDisputesRequestStatusItemLost                 SummaryDisputesRequestStatusItem = "lost"
+	SummaryDisputesRequestStatusItemClosed               SummaryDisputesRequestStatusItem = "closed"
+	SummaryDisputesRequestStatusItemWarningClosed        SummaryDisputesRequestStatusItem = "warning_closed"
 )
 
 func NewSummaryDisputesRequestStatusItemFromString(s string) (SummaryDisputesRequestStatusItem, error) {
 	switch s {
 	case "needs_response":
 		return SummaryDisputesRequestStatusItemNeedsResponse, nil
+	case "warning_needs_response":
+		return SummaryDisputesRequestStatusItemWarningNeedsResponse, nil
 	case "under_review":
 		return SummaryDisputesRequestStatusItemUnderReview, nil
+	case "warning_under_review":
+		return SummaryDisputesRequestStatusItemWarningUnderReview, nil
 	case "won":
 		return SummaryDisputesRequestStatusItemWon, nil
 	case "lost":
 		return SummaryDisputesRequestStatusItemLost, nil
 	case "closed":
 		return SummaryDisputesRequestStatusItemClosed, nil
+	case "warning_closed":
+		return SummaryDisputesRequestStatusItemWarningClosed, nil
 	}
 	var t SummaryDisputesRequestStatusItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3281,19 +3308,25 @@ func (s *SummaryDisputesResponseGroups) String() string {
 
 // How many of the matching disputes are in each status. Every status is present, including those with a count of zero.
 var (
-	summaryDisputesResponseGroupsStatusFieldClosed        = big.NewInt(1 << 0)
-	summaryDisputesResponseGroupsStatusFieldLost          = big.NewInt(1 << 1)
-	summaryDisputesResponseGroupsStatusFieldNeedsResponse = big.NewInt(1 << 2)
-	summaryDisputesResponseGroupsStatusFieldUnderReview   = big.NewInt(1 << 3)
-	summaryDisputesResponseGroupsStatusFieldWon           = big.NewInt(1 << 4)
+	summaryDisputesResponseGroupsStatusFieldClosed               = big.NewInt(1 << 0)
+	summaryDisputesResponseGroupsStatusFieldLost                 = big.NewInt(1 << 1)
+	summaryDisputesResponseGroupsStatusFieldNeedsResponse        = big.NewInt(1 << 2)
+	summaryDisputesResponseGroupsStatusFieldUnderReview          = big.NewInt(1 << 3)
+	summaryDisputesResponseGroupsStatusFieldWarningClosed        = big.NewInt(1 << 4)
+	summaryDisputesResponseGroupsStatusFieldWarningNeedsResponse = big.NewInt(1 << 5)
+	summaryDisputesResponseGroupsStatusFieldWarningUnderReview   = big.NewInt(1 << 6)
+	summaryDisputesResponseGroupsStatusFieldWon                  = big.NewInt(1 << 7)
 )
 
 type SummaryDisputesResponseGroupsStatus struct {
-	Closed        int `json:"closed" url:"closed"`
-	Lost          int `json:"lost" url:"lost"`
-	NeedsResponse int `json:"needs_response" url:"needs_response"`
-	UnderReview   int `json:"under_review" url:"under_review"`
-	Won           int `json:"won" url:"won"`
+	Closed               int `json:"closed" url:"closed"`
+	Lost                 int `json:"lost" url:"lost"`
+	NeedsResponse        int `json:"needs_response" url:"needs_response"`
+	UnderReview          int `json:"under_review" url:"under_review"`
+	WarningClosed        int `json:"warning_closed" url:"warning_closed"`
+	WarningNeedsResponse int `json:"warning_needs_response" url:"warning_needs_response"`
+	WarningUnderReview   int `json:"warning_under_review" url:"warning_under_review"`
+	Won                  int `json:"won" url:"won"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3328,6 +3361,27 @@ func (s *SummaryDisputesResponseGroupsStatus) GetUnderReview() int {
 		return 0
 	}
 	return s.UnderReview
+}
+
+func (s *SummaryDisputesResponseGroupsStatus) GetWarningClosed() int {
+	if s == nil {
+		return 0
+	}
+	return s.WarningClosed
+}
+
+func (s *SummaryDisputesResponseGroupsStatus) GetWarningNeedsResponse() int {
+	if s == nil {
+		return 0
+	}
+	return s.WarningNeedsResponse
+}
+
+func (s *SummaryDisputesResponseGroupsStatus) GetWarningUnderReview() int {
+	if s == nil {
+		return 0
+	}
+	return s.WarningUnderReview
 }
 
 func (s *SummaryDisputesResponseGroupsStatus) GetWon() int {
@@ -3377,6 +3431,27 @@ func (s *SummaryDisputesResponseGroupsStatus) SetNeedsResponse(needsResponse int
 func (s *SummaryDisputesResponseGroupsStatus) SetUnderReview(underReview int) {
 	s.UnderReview = underReview
 	s.require(summaryDisputesResponseGroupsStatusFieldUnderReview)
+}
+
+// SetWarningClosed sets the WarningClosed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesResponseGroupsStatus) SetWarningClosed(warningClosed int) {
+	s.WarningClosed = warningClosed
+	s.require(summaryDisputesResponseGroupsStatusFieldWarningClosed)
+}
+
+// SetWarningNeedsResponse sets the WarningNeedsResponse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesResponseGroupsStatus) SetWarningNeedsResponse(warningNeedsResponse int) {
+	s.WarningNeedsResponse = warningNeedsResponse
+	s.require(summaryDisputesResponseGroupsStatusFieldWarningNeedsResponse)
+}
+
+// SetWarningUnderReview sets the WarningUnderReview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesResponseGroupsStatus) SetWarningUnderReview(warningUnderReview int) {
+	s.WarningUnderReview = warningUnderReview
+	s.require(summaryDisputesResponseGroupsStatusFieldWarningUnderReview)
 }
 
 // SetWon sets the Won field and marks it as non-optional;
