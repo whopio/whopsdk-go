@@ -5051,7 +5051,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"groups\": {\n    \"currency\": {\n      \"usd\": 1\n    },\n    \"status\": {\n      \"closed\": 0,\n      \"lost\": 0,\n      \"needs_response\": 1,\n      \"under_review\": 0,\n      \"won\": 0\n    }\n  },\n  \"total\": 1\n}",
+        "body": "{\n  \"groups\": {\n    \"currency\": {\n      \"usd\": 1\n    },\n    \"status\": {\n      \"closed\": 0,\n      \"lost\": 0,\n      \"needs_response\": 1,\n      \"under_review\": 0,\n      \"warning_closed\": 0,\n      \"warning_needs_response\": 0,\n      \"warning_under_review\": 0,\n      \"won\": 0\n    }\n  },\n  \"total\": 1\n}",
         "headers": {
           "Content-Type": "application/json"
         }
