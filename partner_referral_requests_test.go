@@ -1916,28 +1916,28 @@ func TestGettersCreatePartnerReferralRequestsRequestBody(t *testing.T) {
 		_ = obj.GetCreatePartnerReferralRequestsRequestBodyTargetUserID() // Should return zero value
 	})
 
-	t.Run("GetCreatePartnerReferralRequestsRequestBodyUsername", func(t *testing.T) {
+	t.Run("GetCreatePartnerReferralRequestsRequestBodyTargetUsername", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreatePartnerReferralRequestsRequestBody{}
-		var expected *CreatePartnerReferralRequestsRequestBodyUsername
-		obj.CreatePartnerReferralRequestsRequestBodyUsername = expected
+		var expected *CreatePartnerReferralRequestsRequestBodyTargetUsername
+		obj.CreatePartnerReferralRequestsRequestBodyTargetUsername = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetCreatePartnerReferralRequestsRequestBodyUsername(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetCreatePartnerReferralRequestsRequestBodyTargetUsername(), "getter should return the property value")
 	})
 
-	t.Run("GetCreatePartnerReferralRequestsRequestBodyUsername_NilValue", func(t *testing.T) {
+	t.Run("GetCreatePartnerReferralRequestsRequestBodyTargetUsername_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreatePartnerReferralRequestsRequestBody{}
-		obj.CreatePartnerReferralRequestsRequestBodyUsername = nil
+		obj.CreatePartnerReferralRequestsRequestBodyTargetUsername = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetCreatePartnerReferralRequestsRequestBodyUsername(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetCreatePartnerReferralRequestsRequestBodyTargetUsername(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetCreatePartnerReferralRequestsRequestBodyUsername_NilReceiver", func(t *testing.T) {
+	t.Run("GetCreatePartnerReferralRequestsRequestBodyTargetUsername_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *CreatePartnerReferralRequestsRequestBody
 		// Should not panic - getters should handle nil receiver gracefully
@@ -1946,7 +1946,7 @@ func TestGettersCreatePartnerReferralRequestsRequestBody(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetCreatePartnerReferralRequestsRequestBodyUsername() // Should return zero value
+		_ = obj.GetCreatePartnerReferralRequestsRequestBodyTargetUsername() // Should return zero value
 	})
 
 	t.Run("GetCreatePartnerReferralRequestsRequestBodyCode", func(t *testing.T) {
@@ -2484,52 +2484,52 @@ func TestSettersMarkExplicitCreatePartnerReferralRequestsRequestBodyTargetUserID
 
 }
 
-func TestSettersCreatePartnerReferralRequestsRequestBodyUsername(t *testing.T) {
-	t.Run("SetUsername", func(t *testing.T) {
-		obj := &CreatePartnerReferralRequestsRequestBodyUsername{}
-		var fernTestValueUsername string
-		obj.SetUsername(fernTestValueUsername)
-		assert.Equal(t, fernTestValueUsername, obj.Username)
+func TestSettersCreatePartnerReferralRequestsRequestBodyTargetUsername(t *testing.T) {
+	t.Run("SetTargetUsername", func(t *testing.T) {
+		obj := &CreatePartnerReferralRequestsRequestBodyTargetUsername{}
+		var fernTestValueTargetUsername string
+		obj.SetTargetUsername(fernTestValueTargetUsername)
+		assert.Equal(t, fernTestValueTargetUsername, obj.TargetUsername)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
 }
 
-func TestGettersCreatePartnerReferralRequestsRequestBodyUsername(t *testing.T) {
-	t.Run("GetUsername", func(t *testing.T) {
+func TestGettersCreatePartnerReferralRequestsRequestBodyTargetUsername(t *testing.T) {
+	t.Run("GetTargetUsername", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreatePartnerReferralRequestsRequestBodyUsername{}
+		obj := &CreatePartnerReferralRequestsRequestBodyTargetUsername{}
 		var expected string
-		obj.Username = expected
+		obj.TargetUsername = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetUsername(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetTargetUsername(), "getter should return the property value")
 	})
 
-	t.Run("GetUsername_NilReceiver", func(t *testing.T) {
+	t.Run("GetTargetUsername_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreatePartnerReferralRequestsRequestBodyUsername
+		var obj *CreatePartnerReferralRequestsRequestBodyTargetUsername
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetUsername() // Should return zero value
+		_ = obj.GetTargetUsername() // Should return zero value
 	})
 
 }
 
-func TestSettersMarkExplicitCreatePartnerReferralRequestsRequestBodyUsername(t *testing.T) {
-	t.Run("SetUsername_MarksExplicit", func(t *testing.T) {
+func TestSettersMarkExplicitCreatePartnerReferralRequestsRequestBodyTargetUsername(t *testing.T) {
+	t.Run("SetTargetUsername_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreatePartnerReferralRequestsRequestBodyUsername{}
-		var fernTestValueUsername string
+		obj := &CreatePartnerReferralRequestsRequestBodyTargetUsername{}
+		var fernTestValueTargetUsername string
 
 		// Act
-		obj.SetUsername(fernTestValueUsername)
+		obj.SetTargetUsername(fernTestValueTargetUsername)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3117,11 +3117,11 @@ func TestJSONMarshalingCreatePartnerReferralRequestsRequestBodyTargetUserID(t *t
 	})
 }
 
-func TestJSONMarshalingCreatePartnerReferralRequestsRequestBodyUsername(t *testing.T) {
+func TestJSONMarshalingCreatePartnerReferralRequestsRequestBodyTargetUsername(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreatePartnerReferralRequestsRequestBodyUsername{}
+		obj := &CreatePartnerReferralRequestsRequestBodyTargetUsername{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -3130,21 +3130,21 @@ func TestJSONMarshalingCreatePartnerReferralRequestsRequestBodyUsername(t *testi
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled CreatePartnerReferralRequestsRequestBodyUsername
+		var unmarshaled CreatePartnerReferralRequestsRequestBodyTargetUsername
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj CreatePartnerReferralRequestsRequestBodyUsername
+		var obj CreatePartnerReferralRequestsRequestBodyTargetUsername
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj CreatePartnerReferralRequestsRequestBodyUsername
+		var obj CreatePartnerReferralRequestsRequestBodyTargetUsername
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -3346,17 +3346,17 @@ func TestStringCreatePartnerReferralRequestsRequestBodyTargetUserID(t *testing.T
 	})
 }
 
-func TestStringCreatePartnerReferralRequestsRequestBodyUsername(t *testing.T) {
+func TestStringCreatePartnerReferralRequestsRequestBodyTargetUsername(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreatePartnerReferralRequestsRequestBodyUsername{}
+		obj := &CreatePartnerReferralRequestsRequestBodyTargetUsername{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreatePartnerReferralRequestsRequestBodyUsername
+		var obj *CreatePartnerReferralRequestsRequestBodyTargetUsername
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -3807,10 +3807,10 @@ func TestExtraPropertiesCreatePartnerReferralRequestsRequestBodyTargetUserID(t *
 	})
 }
 
-func TestExtraPropertiesCreatePartnerReferralRequestsRequestBodyUsername(t *testing.T) {
+func TestExtraPropertiesCreatePartnerReferralRequestsRequestBodyTargetUsername(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &CreatePartnerReferralRequestsRequestBodyUsername{}
+		obj := &CreatePartnerReferralRequestsRequestBodyTargetUsername{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -3824,7 +3824,7 @@ func TestExtraPropertiesCreatePartnerReferralRequestsRequestBodyUsername(t *test
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreatePartnerReferralRequestsRequestBodyUsername
+		var obj *CreatePartnerReferralRequestsRequestBodyTargetUsername
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
