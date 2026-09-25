@@ -15,9 +15,10 @@ var (
 	createSetupIntentsRequestFieldConfirmationToken = big.NewInt(1 << 1)
 	createSetupIntentsRequestFieldCurrency          = big.NewInt(1 << 2)
 	createSetupIntentsRequestFieldEmail             = big.NewInt(1 << 3)
-	createSetupIntentsRequestFieldMetadata          = big.NewInt(1 << 4)
-	createSetupIntentsRequestFieldPaymentMethodID   = big.NewInt(1 << 5)
-	createSetupIntentsRequestFieldReturnURL         = big.NewInt(1 << 6)
+	createSetupIntentsRequestFieldForAdsBilling     = big.NewInt(1 << 4)
+	createSetupIntentsRequestFieldMetadata          = big.NewInt(1 << 5)
+	createSetupIntentsRequestFieldPaymentMethodID   = big.NewInt(1 << 6)
+	createSetupIntentsRequestFieldReturnURL         = big.NewInt(1 << 7)
 )
 
 type CreateSetupIntentsRequest struct {
@@ -29,6 +30,8 @@ type CreateSetupIntentsRequest struct {
 	Currency *string `json:"currency,omitempty" url:"-"`
 	// Overrides the buyer email carried on the confirmation token, resolving or creating the user the method belongs to. Ignored unless `confirmation_token` is provided, and when the token was created by a signed-in buyer or the caller is the buyer.
 	Email *string `json:"email,omitempty" url:"-"`
+	// Set to `true` when saving a card to pay for Whop Ads on `account_id`. The card is verified by Whop Ads, the merchant that charges it, which helps minimize security declines on ad payments. Requires `ad_campaign:create` on `account_id`. Defaults to `false`.
+	ForAdsBilling *bool `json:"for_ads_billing,omitempty" url:"-"`
 	// Custom metadata to attach to the setup intent. Returned on the setup intent and its webhooks.
 	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
 	// An existing payment method to re-verify and save, prefixed `payt_`. Provide this or `confirmation_token`, not both. Not available to a buyer credential.
@@ -73,6 +76,13 @@ func (c *CreateSetupIntentsRequest) SetCurrency(currency *string) {
 func (c *CreateSetupIntentsRequest) SetEmail(email *string) {
 	c.Email = email
 	c.require(createSetupIntentsRequestFieldEmail)
+}
+
+// SetForAdsBilling sets the ForAdsBilling field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSetupIntentsRequest) SetForAdsBilling(forAdsBilling *bool) {
+	c.ForAdsBilling = forAdsBilling
+	c.require(createSetupIntentsRequestFieldForAdsBilling)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
