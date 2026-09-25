@@ -194,6 +194,42 @@
       }
     },
     {
+      "id": "2054f10c-7029-4782-8404-bcd8114bba6a",
+      "name": "Delete a Connected Account - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"deleted\": true,\n  \"id\": \"biz_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2054f10c-7029-4782-8404-bcd8114bba6a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "555286aa-0c2a-4185-9f15-b61eac97beef",
       "name": "Update Account - default",
       "request": {
@@ -15323,6 +15359,6 @@
     }
   ],
   "meta": {
-    "total": 429
+    "total": 430
   }
 }

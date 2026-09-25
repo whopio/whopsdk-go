@@ -148,6 +148,32 @@ func (c *CreateAccountsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	deleteAccountsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type DeleteAccountsRequest struct {
+	// Connected account ID, prefixed `biz_`.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DeleteAccountsRequest) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteAccountsRequest) SetID(id string) {
+	d.ID = id
+	d.require(deleteAccountsRequestFieldID)
+}
+
+var (
 	formCompanyAccountsRequestFieldID                 = big.NewInt(1 << 0)
 	formCompanyAccountsRequestFieldBusinessAddress    = big.NewInt(1 << 1)
 	formCompanyAccountsRequestFieldBusinessName       = big.NewInt(1 << 2)
@@ -5270,6 +5296,108 @@ func NewAccountWithdrawalScheduleControlFrequencyFromString(s string) (AccountWi
 
 func (a AccountWithdrawalScheduleControlFrequency) Ptr() *AccountWithdrawalScheduleControlFrequency {
 	return &a
+}
+
+var (
+	deleteAccountsResponseFieldDeleted = big.NewInt(1 << 0)
+	deleteAccountsResponseFieldID      = big.NewInt(1 << 1)
+)
+
+type DeleteAccountsResponse struct {
+	// Always true.
+	Deleted bool `json:"deleted" url:"deleted"`
+	// ID of the deleted connected account.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteAccountsResponse) GetDeleted() bool {
+	if d == nil {
+		return false
+	}
+	return d.Deleted
+}
+
+func (d *DeleteAccountsResponse) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DeleteAccountsResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteAccountsResponse) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetDeleted sets the Deleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteAccountsResponse) SetDeleted(deleted bool) {
+	d.Deleted = deleted
+	d.require(deleteAccountsResponseFieldDeleted)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteAccountsResponse) SetID(id string) {
+	d.ID = id
+	d.require(deleteAccountsResponseFieldID)
+}
+
+func (d *DeleteAccountsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteAccountsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteAccountsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteAccountsResponse) MarshalJSON() ([]byte, error) {
+	type embed DeleteAccountsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteAccountsResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
 }
 
 // Company mailing address. Required unless `use_registered_agent` is `true`.

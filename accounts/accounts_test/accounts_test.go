@@ -175,6 +175,32 @@ func TestAccountsRetrieveWithWireMock(
 	VerifyRequestCount(t, "TestAccountsRetrieveWithWireMock", "GET", "/accounts/id", nil, 1)
 }
 
+func TestAccountsDeleteWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.DeleteAccountsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Accounts.Delete(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAccountsDeleteWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAccountsDeleteWithWireMock", "DELETE", "/accounts/id", nil, 1)
+}
+
 func TestAccountsUpdateWithWireMock(
 	t *testing.T,
 ) {

@@ -205,6 +205,33 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
+// Deletes a connected account directly owned by the authenticated platform account. The account must have no settled, pending, or reserved balance in any currency and no active, trialing, or past-due memberships. The account stops resolving immediately, and its products, plans, and team access are removed in the background; payment history is retained. Deletion cannot be undone through the API. This cannot delete the platform account itself or an account owned by another platform.
+//
+// Example:
+//
+//	request := &whopsdk.DeleteAccountsRequest{
+//	    ID: "id",
+//	}
+//	client.Accounts.Delete(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Delete(
+	ctx context.Context,
+	request *whopsdk.DeleteAccountsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.DeleteAccountsResponse, error) {
+	response, err := c.WithRawResponse.Delete(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Updates an account. User tokens can update business accounts; Account API keys can update connected accounts. The reserved id `me` — accepted on Retrieve Account — resolves to the requesting account, which an Account API key cannot edit, so updates must name the connected account by its `biz_` id.
 //
 // Example:
