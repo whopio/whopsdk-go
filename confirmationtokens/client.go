@@ -38,7 +38,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Retrieves a token's display-safe preview — never the underlying payment credential. Public and rate-limited: the account_id query param must match the account the token was minted for.
+// Retrieves a token's payment method and billing details — never the underlying payment credential. Public and rate-limited: the account_id query param must match the account the token was minted for. A bearer credential with payment:basic:read on that account also receives the collected billing address.
 //
 // Example:
 //

@@ -11763,7 +11763,7 @@ client.CompanyTokenTransactions.Retrieve(
 <dl>
 <dd>
 
-Retrieves a token's display-safe preview — never the underlying payment credential. Public and rate-limited: the account_id query param must match the account the token was minted for.
+Retrieves a token's payment method and billing details — never the underlying payment credential. Public and rate-limited: the account_id query param must match the account the token was minted for. A bearer credential with payment:basic:read on that account also receives the collected billing address.
 </dd>
 </dl>
 </dd>
@@ -32177,14 +32177,6 @@ client.SetupIntents.Create(
 <dl>
 <dd>
 
-**forAdsBilling:** `*bool` — Set to `true` when saving a card to pay for Whop Ads on `account_id`. The card is verified by Whop Ads, the merchant that charges it, which helps minimize security declines on ad payments. Requires `ad_campaign:create` on `account_id`. Defaults to `false`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **metadata:** `map[string]*string` — Custom metadata to attach to the setup intent. Returned on the setup intent and its webhooks.
     
 </dd>
@@ -32194,6 +32186,14 @@ client.SetupIntents.Create(
 <dd>
 
 **paymentMethodID:** `*string` — An existing payment method to re-verify and save, prefixed `payt_`. Provide this or `confirmation_token`, not both. Not available to a buyer credential.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**purpose:** `*whopsdk.CreateSetupIntentsRequestPurpose` — What the saved payment method will pay for. Set to `ads_billing` when saving a card to pay for Whop Ads on `account_id`: the card is verified by Whop Ads, the merchant that charges it, which helps minimize security declines on ad payments, and it requires `ad_campaign:create` on `account_id`. Omit it for any other payment method.
     
 </dd>
 </dl>

@@ -46,18 +46,21 @@ func (r *RetrieveConfirmationTokensRequest) SetAccountID(accountID string) {
 }
 
 var (
-	confirmationTokenFieldBillingDetails       = big.NewInt(1 << 0)
-	confirmationTokenFieldCreatedAt            = big.NewInt(1 << 1)
-	confirmationTokenFieldExpiresAt            = big.NewInt(1 << 2)
-	confirmationTokenFieldID                   = big.NewInt(1 << 3)
-	confirmationTokenFieldObject               = big.NewInt(1 << 4)
-	confirmationTokenFieldPaymentMethodPreview = big.NewInt(1 << 5)
-	confirmationTokenFieldSetupFutureUsage     = big.NewInt(1 << 6)
-	confirmationTokenFieldStatus               = big.NewInt(1 << 7)
+	confirmationTokenFieldBillingAddress       = big.NewInt(1 << 0)
+	confirmationTokenFieldBillingDetails       = big.NewInt(1 << 1)
+	confirmationTokenFieldCreatedAt            = big.NewInt(1 << 2)
+	confirmationTokenFieldExpiresAt            = big.NewInt(1 << 3)
+	confirmationTokenFieldID                   = big.NewInt(1 << 4)
+	confirmationTokenFieldObject               = big.NewInt(1 << 5)
+	confirmationTokenFieldPaymentMethodPreview = big.NewInt(1 << 6)
+	confirmationTokenFieldSetupFutureUsage     = big.NewInt(1 << 7)
+	confirmationTokenFieldStatus               = big.NewInt(1 << 8)
 )
 
 type ConfirmationToken struct {
-	// Enough of the billing details to raise a customer record and recognise the method — email, name, country and postal code. The street address is collected for the charge but never returned; this endpoint is a display-safe preview.
+	// The collected billing address, including the name on the address. Null when not collected or without bearer authentication with payment:basic:read on the token’s account.
+	BillingAddress *PaymentAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
+	// Billing preview supplied at collection: email, name, country and postal code.
 	BillingDetails *PaymentBillingDetailsPreview `json:"billing_details,omitempty" url:"billing_details,omitempty"`
 	// When the token was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
@@ -78,6 +81,13 @@ type ConfirmationToken struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *ConfirmationToken) GetBillingAddress() *PaymentAddress {
+	if c == nil {
+		return nil
+	}
+	return c.BillingAddress
 }
 
 func (c *ConfirmationToken) GetBillingDetails() *PaymentBillingDetailsPreview {
@@ -148,6 +158,13 @@ func (c *ConfirmationToken) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConfirmationToken) SetBillingAddress(billingAddress *PaymentAddress) {
+	c.BillingAddress = billingAddress
+	c.require(confirmationTokenFieldBillingAddress)
 }
 
 // SetBillingDetails sets the BillingDetails field and marks it as non-optional;
