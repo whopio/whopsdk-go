@@ -124529,6 +124529,13 @@ func TestEnumAccountRequiredActionAction(t *testing.T) {
 		assert.Equal(t, AccountRequiredActionAction("add_vat_registration"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_accept_payout_terms", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountRequiredActionActionFromString("accept_payout_terms")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountRequiredActionAction("accept_payout_terms"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_enable_two_factor_authentication", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAccountRequiredActionActionFromString("enable_two_factor_authentication")
