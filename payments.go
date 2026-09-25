@@ -83,7 +83,7 @@ type CreatePaymentsRequest struct {
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
 	// Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
 	ShippingAddress *CreatePaymentsRequestShippingAddress `json:"shipping_address,omitempty" url:"-"`
-	// Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*`, be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
+	// Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*` unless the business processes as the merchant of record. For businesses processing as the merchant of record, omit the `WHOP*` prefix; the descriptor appears as provided. Must be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
