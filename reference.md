@@ -32177,6 +32177,14 @@ client.SetupIntents.Create(
 <dl>
 <dd>
 
+**forAdsBilling:** `*bool` — Set to `true` when saving a card to pay for Whop Ads on `account_id`. The card is verified by Whop Ads, the merchant that charges it, which helps minimize security declines on ad payments. Requires `ad_campaign:create` on `account_id`. Defaults to `false`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **metadata:** `map[string]*string` — Custom metadata to attach to the setup intent. Returned on the setup intent and its webhooks.
     
 </dd>
