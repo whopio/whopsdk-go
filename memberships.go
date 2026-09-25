@@ -2800,6 +2800,7 @@ var (
 	updateMembershipsRequestFieldID                = big.NewInt(1 << 0)
 	updateMembershipsRequestFieldCancelAtPeriodEnd = big.NewInt(1 << 1)
 	updateMembershipsRequestFieldMetadata          = big.NewInt(1 << 2)
+	updateMembershipsRequestFieldPaymentMethodID   = big.NewInt(1 << 3)
 )
 
 type UpdateMembershipsRequest struct {
@@ -2809,6 +2810,8 @@ type UpdateMembershipsRequest struct {
 	CancelAtPeriodEnd *bool `json:"cancel_at_period_end,omitempty" url:"-"`
 	// Key-value pairs to merge into the membership's metadata. Pass an empty object to clear it.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
+	// The ID of a payment method the customer has saved with your account. Future renewals charge it, and an open past-due payment is retried on it right away. Requires the `member:payment_methods:manage` permission.
+	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2840,6 +2843,13 @@ func (u *UpdateMembershipsRequest) SetCancelAtPeriodEnd(cancelAtPeriodEnd *bool)
 func (u *UpdateMembershipsRequest) SetMetadata(metadata map[string]any) {
 	u.Metadata = metadata
 	u.require(updateMembershipsRequestFieldMetadata)
+}
+
+// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembershipsRequest) SetPaymentMethodID(paymentMethodID *string) {
+	u.PaymentMethodID = paymentMethodID
+	u.require(updateMembershipsRequestFieldPaymentMethodID)
 }
 
 func (u *UpdateMembershipsRequest) UnmarshalJSON(data []byte) error {
