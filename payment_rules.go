@@ -766,6 +766,7 @@ const (
 	PaymentRuleConditionFieldRiskScore     PaymentRuleConditionField = "risk_score"
 	PaymentRuleConditionFieldAmountInUsd   PaymentRuleConditionField = "amount_in_usd"
 	PaymentRuleConditionFieldCardCountry   PaymentRuleConditionField = "card_country"
+	PaymentRuleConditionFieldCardBin       PaymentRuleConditionField = "card_bin"
 	PaymentRuleConditionFieldCustomerEmail PaymentRuleConditionField = "customer_email"
 	PaymentRuleConditionFieldIPAddress     PaymentRuleConditionField = "ip_address"
 )
@@ -778,6 +779,8 @@ func NewPaymentRuleConditionFieldFromString(s string) (PaymentRuleConditionField
 		return PaymentRuleConditionFieldAmountInUsd, nil
 	case "card_country":
 		return PaymentRuleConditionFieldCardCountry, nil
+	case "card_bin":
+		return PaymentRuleConditionFieldCardBin, nil
 	case "customer_email":
 		return PaymentRuleConditionFieldCustomerEmail, nil
 	case "ip_address":
@@ -803,8 +806,8 @@ const (
 	PaymentRuleConditionOperatorLte        PaymentRuleConditionOperator = "lte"
 	PaymentRuleConditionOperatorIn         PaymentRuleConditionOperator = "in"
 	PaymentRuleConditionOperatorNotIn      PaymentRuleConditionOperator = "not_in"
-	PaymentRuleConditionOperatorContains   PaymentRuleConditionOperator = "contains"
 	PaymentRuleConditionOperatorStartsWith PaymentRuleConditionOperator = "starts_with"
+	PaymentRuleConditionOperatorContains   PaymentRuleConditionOperator = "contains"
 	PaymentRuleConditionOperatorEndsWith   PaymentRuleConditionOperator = "ends_with"
 	PaymentRuleConditionOperatorInCidr     PaymentRuleConditionOperator = "in_cidr"
 )
@@ -827,10 +830,10 @@ func NewPaymentRuleConditionOperatorFromString(s string) (PaymentRuleConditionOp
 		return PaymentRuleConditionOperatorIn, nil
 	case "not_in":
 		return PaymentRuleConditionOperatorNotIn, nil
-	case "contains":
-		return PaymentRuleConditionOperatorContains, nil
 	case "starts_with":
 		return PaymentRuleConditionOperatorStartsWith, nil
+	case "contains":
+		return PaymentRuleConditionOperatorContains, nil
 	case "ends_with":
 		return PaymentRuleConditionOperatorEndsWith, nil
 	case "in_cidr":
@@ -1187,6 +1190,7 @@ const (
 	PaymentRuleFieldFieldRiskScore     PaymentRuleFieldField = "risk_score"
 	PaymentRuleFieldFieldAmountInUsd   PaymentRuleFieldField = "amount_in_usd"
 	PaymentRuleFieldFieldCardCountry   PaymentRuleFieldField = "card_country"
+	PaymentRuleFieldFieldCardBin       PaymentRuleFieldField = "card_bin"
 	PaymentRuleFieldFieldCustomerEmail PaymentRuleFieldField = "customer_email"
 	PaymentRuleFieldFieldIPAddress     PaymentRuleFieldField = "ip_address"
 )
@@ -1199,6 +1203,8 @@ func NewPaymentRuleFieldFieldFromString(s string) (PaymentRuleFieldField, error)
 		return PaymentRuleFieldFieldAmountInUsd, nil
 	case "card_country":
 		return PaymentRuleFieldFieldCardCountry, nil
+	case "card_bin":
+		return PaymentRuleFieldFieldCardBin, nil
 	case "customer_email":
 		return PaymentRuleFieldFieldCustomerEmail, nil
 	case "ip_address":
@@ -1224,8 +1230,8 @@ const (
 	PaymentRuleFieldOperatorsItemLte        PaymentRuleFieldOperatorsItem = "lte"
 	PaymentRuleFieldOperatorsItemIn         PaymentRuleFieldOperatorsItem = "in"
 	PaymentRuleFieldOperatorsItemNotIn      PaymentRuleFieldOperatorsItem = "not_in"
-	PaymentRuleFieldOperatorsItemContains   PaymentRuleFieldOperatorsItem = "contains"
 	PaymentRuleFieldOperatorsItemStartsWith PaymentRuleFieldOperatorsItem = "starts_with"
+	PaymentRuleFieldOperatorsItemContains   PaymentRuleFieldOperatorsItem = "contains"
 	PaymentRuleFieldOperatorsItemEndsWith   PaymentRuleFieldOperatorsItem = "ends_with"
 	PaymentRuleFieldOperatorsItemInCidr     PaymentRuleFieldOperatorsItem = "in_cidr"
 )
@@ -1248,10 +1254,10 @@ func NewPaymentRuleFieldOperatorsItemFromString(s string) (PaymentRuleFieldOpera
 		return PaymentRuleFieldOperatorsItemIn, nil
 	case "not_in":
 		return PaymentRuleFieldOperatorsItemNotIn, nil
-	case "contains":
-		return PaymentRuleFieldOperatorsItemContains, nil
 	case "starts_with":
 		return PaymentRuleFieldOperatorsItemStartsWith, nil
+	case "contains":
+		return PaymentRuleFieldOperatorsItemContains, nil
 	case "ends_with":
 		return PaymentRuleFieldOperatorsItemEndsWith, nil
 	case "in_cidr":
@@ -1658,6 +1664,7 @@ const (
 	CreatePaymentRulesRequestConditionsAllItemFieldRiskScore     CreatePaymentRulesRequestConditionsAllItemField = "risk_score"
 	CreatePaymentRulesRequestConditionsAllItemFieldAmountInUsd   CreatePaymentRulesRequestConditionsAllItemField = "amount_in_usd"
 	CreatePaymentRulesRequestConditionsAllItemFieldCardCountry   CreatePaymentRulesRequestConditionsAllItemField = "card_country"
+	CreatePaymentRulesRequestConditionsAllItemFieldCardBin       CreatePaymentRulesRequestConditionsAllItemField = "card_bin"
 	CreatePaymentRulesRequestConditionsAllItemFieldCustomerEmail CreatePaymentRulesRequestConditionsAllItemField = "customer_email"
 	CreatePaymentRulesRequestConditionsAllItemFieldIPAddress     CreatePaymentRulesRequestConditionsAllItemField = "ip_address"
 )
@@ -1670,6 +1677,8 @@ func NewCreatePaymentRulesRequestConditionsAllItemFieldFromString(s string) (Cre
 		return CreatePaymentRulesRequestConditionsAllItemFieldAmountInUsd, nil
 	case "card_country":
 		return CreatePaymentRulesRequestConditionsAllItemFieldCardCountry, nil
+	case "card_bin":
+		return CreatePaymentRulesRequestConditionsAllItemFieldCardBin, nil
 	case "customer_email":
 		return CreatePaymentRulesRequestConditionsAllItemFieldCustomerEmail, nil
 	case "ip_address":
@@ -1695,8 +1704,8 @@ const (
 	CreatePaymentRulesRequestConditionsAllItemOperatorLte        CreatePaymentRulesRequestConditionsAllItemOperator = "lte"
 	CreatePaymentRulesRequestConditionsAllItemOperatorIn         CreatePaymentRulesRequestConditionsAllItemOperator = "in"
 	CreatePaymentRulesRequestConditionsAllItemOperatorNotIn      CreatePaymentRulesRequestConditionsAllItemOperator = "not_in"
-	CreatePaymentRulesRequestConditionsAllItemOperatorContains   CreatePaymentRulesRequestConditionsAllItemOperator = "contains"
 	CreatePaymentRulesRequestConditionsAllItemOperatorStartsWith CreatePaymentRulesRequestConditionsAllItemOperator = "starts_with"
+	CreatePaymentRulesRequestConditionsAllItemOperatorContains   CreatePaymentRulesRequestConditionsAllItemOperator = "contains"
 	CreatePaymentRulesRequestConditionsAllItemOperatorEndsWith   CreatePaymentRulesRequestConditionsAllItemOperator = "ends_with"
 	CreatePaymentRulesRequestConditionsAllItemOperatorInCidr     CreatePaymentRulesRequestConditionsAllItemOperator = "in_cidr"
 )
@@ -1719,10 +1728,10 @@ func NewCreatePaymentRulesRequestConditionsAllItemOperatorFromString(s string) (
 		return CreatePaymentRulesRequestConditionsAllItemOperatorIn, nil
 	case "not_in":
 		return CreatePaymentRulesRequestConditionsAllItemOperatorNotIn, nil
-	case "contains":
-		return CreatePaymentRulesRequestConditionsAllItemOperatorContains, nil
 	case "starts_with":
 		return CreatePaymentRulesRequestConditionsAllItemOperatorStartsWith, nil
+	case "contains":
+		return CreatePaymentRulesRequestConditionsAllItemOperatorContains, nil
 	case "ends_with":
 		return CreatePaymentRulesRequestConditionsAllItemOperatorEndsWith, nil
 	case "in_cidr":
@@ -2533,6 +2542,7 @@ const (
 	ReplacePaymentRulesRequestConditionsAllItemFieldRiskScore     ReplacePaymentRulesRequestConditionsAllItemField = "risk_score"
 	ReplacePaymentRulesRequestConditionsAllItemFieldAmountInUsd   ReplacePaymentRulesRequestConditionsAllItemField = "amount_in_usd"
 	ReplacePaymentRulesRequestConditionsAllItemFieldCardCountry   ReplacePaymentRulesRequestConditionsAllItemField = "card_country"
+	ReplacePaymentRulesRequestConditionsAllItemFieldCardBin       ReplacePaymentRulesRequestConditionsAllItemField = "card_bin"
 	ReplacePaymentRulesRequestConditionsAllItemFieldCustomerEmail ReplacePaymentRulesRequestConditionsAllItemField = "customer_email"
 	ReplacePaymentRulesRequestConditionsAllItemFieldIPAddress     ReplacePaymentRulesRequestConditionsAllItemField = "ip_address"
 )
@@ -2545,6 +2555,8 @@ func NewReplacePaymentRulesRequestConditionsAllItemFieldFromString(s string) (Re
 		return ReplacePaymentRulesRequestConditionsAllItemFieldAmountInUsd, nil
 	case "card_country":
 		return ReplacePaymentRulesRequestConditionsAllItemFieldCardCountry, nil
+	case "card_bin":
+		return ReplacePaymentRulesRequestConditionsAllItemFieldCardBin, nil
 	case "customer_email":
 		return ReplacePaymentRulesRequestConditionsAllItemFieldCustomerEmail, nil
 	case "ip_address":
@@ -2570,8 +2582,8 @@ const (
 	ReplacePaymentRulesRequestConditionsAllItemOperatorLte        ReplacePaymentRulesRequestConditionsAllItemOperator = "lte"
 	ReplacePaymentRulesRequestConditionsAllItemOperatorIn         ReplacePaymentRulesRequestConditionsAllItemOperator = "in"
 	ReplacePaymentRulesRequestConditionsAllItemOperatorNotIn      ReplacePaymentRulesRequestConditionsAllItemOperator = "not_in"
-	ReplacePaymentRulesRequestConditionsAllItemOperatorContains   ReplacePaymentRulesRequestConditionsAllItemOperator = "contains"
 	ReplacePaymentRulesRequestConditionsAllItemOperatorStartsWith ReplacePaymentRulesRequestConditionsAllItemOperator = "starts_with"
+	ReplacePaymentRulesRequestConditionsAllItemOperatorContains   ReplacePaymentRulesRequestConditionsAllItemOperator = "contains"
 	ReplacePaymentRulesRequestConditionsAllItemOperatorEndsWith   ReplacePaymentRulesRequestConditionsAllItemOperator = "ends_with"
 	ReplacePaymentRulesRequestConditionsAllItemOperatorInCidr     ReplacePaymentRulesRequestConditionsAllItemOperator = "in_cidr"
 )
@@ -2594,10 +2606,10 @@ func NewReplacePaymentRulesRequestConditionsAllItemOperatorFromString(s string) 
 		return ReplacePaymentRulesRequestConditionsAllItemOperatorIn, nil
 	case "not_in":
 		return ReplacePaymentRulesRequestConditionsAllItemOperatorNotIn, nil
-	case "contains":
-		return ReplacePaymentRulesRequestConditionsAllItemOperatorContains, nil
 	case "starts_with":
 		return ReplacePaymentRulesRequestConditionsAllItemOperatorStartsWith, nil
+	case "contains":
+		return ReplacePaymentRulesRequestConditionsAllItemOperatorContains, nil
 	case "ends_with":
 		return ReplacePaymentRulesRequestConditionsAllItemOperatorEndsWith, nil
 	case "in_cidr":
