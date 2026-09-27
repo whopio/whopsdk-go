@@ -34885,7 +34885,7 @@ client.TeamMembers.Create(
 <dl>
 <dd>
 
-**role:** `*whopsdk.CreateTeamMembersRequestRole` — The system role to grant. Partners must pass all certification quizzes.
+**role:** `*whopsdk.CreateTeamMembersRequestRole` — The system role to grant. The Partner role can only be granted to the account's attached, verified partner.
     
 </dd>
 </dl>
@@ -35082,7 +35082,7 @@ client.TeamMembers.Update(
 <dl>
 <dd>
 
-**role:** `*whopsdk.UpdateTeamMembersRequestRole` — The system role to grant. Partners must pass all certification quizzes.
+**role:** `*whopsdk.UpdateTeamMembersRequestRole` — The system role to grant. The Partner role can only be granted to the account's attached, verified partner.
     
 </dd>
 </dl>

@@ -3048,11 +3048,12 @@ func (a AccountOpengraphImageVariant) Ptr() *AccountOpengraphImageVariant {
 }
 
 var (
-	accountPartnerFieldEmail          = big.NewInt(1 << 0)
-	accountPartnerFieldID             = big.NewInt(1 << 1)
-	accountPartnerFieldName           = big.NewInt(1 << 2)
-	accountPartnerFieldProfilePicture = big.NewInt(1 << 3)
-	accountPartnerFieldUsername       = big.NewInt(1 << 4)
+	accountPartnerFieldEmail                 = big.NewInt(1 << 0)
+	accountPartnerFieldID                    = big.NewInt(1 << 1)
+	accountPartnerFieldName                  = big.NewInt(1 << 2)
+	accountPartnerFieldProfilePicture        = big.NewInt(1 << 3)
+	accountPartnerFieldUsername              = big.NewInt(1 << 4)
+	accountPartnerFieldWhopPartnerVerifiedAt = big.NewInt(1 << 5)
 )
 
 type AccountPartner struct {
@@ -3066,6 +3067,8 @@ type AccountPartner struct {
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
 	// Public username.
 	Username string `json:"username" url:"username"`
+	// When the user became a verified Whop Partner, as an ISO 8601 timestamp. Null if not verified.
+	WhopPartnerVerifiedAt *string `json:"whop_partner_verified_at,omitempty" url:"whop_partner_verified_at,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3107,6 +3110,13 @@ func (a *AccountPartner) GetUsername() string {
 		return ""
 	}
 	return a.Username
+}
+
+func (a *AccountPartner) GetWhopPartnerVerifiedAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.WhopPartnerVerifiedAt
 }
 
 func (a *AccountPartner) GetExtraProperties() map[string]interface{} {
@@ -3156,6 +3166,13 @@ func (a *AccountPartner) SetProfilePicture(profilePicture *UserProfilePicture) {
 func (a *AccountPartner) SetUsername(username string) {
 	a.Username = username
 	a.require(accountPartnerFieldUsername)
+}
+
+// SetWhopPartnerVerifiedAt sets the WhopPartnerVerifiedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetWhopPartnerVerifiedAt(whopPartnerVerifiedAt *string) {
+	a.WhopPartnerVerifiedAt = whopPartnerVerifiedAt
+	a.require(accountPartnerFieldWhopPartnerVerifiedAt)
 }
 
 func (a *AccountPartner) UnmarshalJSON(data []byte) error {
