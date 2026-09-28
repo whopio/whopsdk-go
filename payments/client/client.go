@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-25"
+		apiVersionDateDefault := "2026-09-28"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -176,7 +176,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Changes a payment's shipping address or return URL, such as when a buyer corrects where their order should go before it ships. `shipping_address` is replaced as a whole, never merged: always send the complete address, including fields that are not changing, or they are cleared. Only `shipping_address` and `return_url` can be changed, and any other field is rejected. Omit either one to leave it unchanged.
+// Updates a payment's `shipping_address` or `return_url`. Send the complete `shipping_address`, because it replaces the existing address and any field you leave out is cleared.
 //
 // Example:
 //

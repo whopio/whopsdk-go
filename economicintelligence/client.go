@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-09-25"
+		apiVersionDateDefault := "2026-09-28"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -119,7 +119,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Updates a recommendation status, records feedback, or both. Send `sentiment` to rate it. Include `status: superseded` to retire it and request replacements; a rating alone leaves its status unchanged.
+// Updates a recommendation status, records feedback, or both. Send `sentiment` to rate it. Include `status: superseded` to retire a ready recommendation and request replacements; a rating alone leaves its status unchanged. To run a recommendation yourself, send `status: running` to start, then `status: executed` when it is carried out (with `result_url` when there is a result to view) or `status: incomplete` if the run ended without carrying it out. Whop AI reports its own runs the same way. Send `status: acknowledged` once an executed run's result has been seen.
 //
 // Example:
 //

@@ -97,33 +97,40 @@ func (l *ListEconomicIntelligenceRequest) SetBefore(before *string) {
 
 var (
 	economicIntelligenceFieldAccountID         = big.NewInt(1 << 0)
-	economicIntelligenceFieldActionType        = big.NewInt(1 << 1)
-	economicIntelligenceFieldAiChatID          = big.NewInt(1 << 2)
-	economicIntelligenceFieldCreatedAt         = big.NewInt(1 << 3)
-	economicIntelligenceFieldExecutedAt        = big.NewInt(1 << 4)
-	economicIntelligenceFieldExpectedToolCalls = big.NewInt(1 << 5)
-	economicIntelligenceFieldID                = big.NewInt(1 << 6)
-	economicIntelligenceFieldInput             = big.NewInt(1 << 7)
-	economicIntelligenceFieldPrompt            = big.NewInt(1 << 8)
-	economicIntelligenceFieldReasoning         = big.NewInt(1 << 9)
-	economicIntelligenceFieldSentiment         = big.NewInt(1 << 10)
-	economicIntelligenceFieldStatus            = big.NewInt(1 << 11)
-	economicIntelligenceFieldSupersededAt      = big.NewInt(1 << 12)
-	economicIntelligenceFieldTargetURL         = big.NewInt(1 << 13)
-	economicIntelligenceFieldTitle             = big.NewInt(1 << 14)
-	economicIntelligenceFieldUserFeedback      = big.NewInt(1 << 15)
+	economicIntelligenceFieldAcknowledgedAt    = big.NewInt(1 << 1)
+	economicIntelligenceFieldActionType        = big.NewInt(1 << 2)
+	economicIntelligenceFieldAiChatID          = big.NewInt(1 << 3)
+	economicIntelligenceFieldCreatedAt         = big.NewInt(1 << 4)
+	economicIntelligenceFieldExecutedAt        = big.NewInt(1 << 5)
+	economicIntelligenceFieldExpectedToolCalls = big.NewInt(1 << 6)
+	economicIntelligenceFieldID                = big.NewInt(1 << 7)
+	economicIntelligenceFieldInput             = big.NewInt(1 << 8)
+	economicIntelligenceFieldPrompt            = big.NewInt(1 << 9)
+	economicIntelligenceFieldReasoning         = big.NewInt(1 << 10)
+	economicIntelligenceFieldResultURL         = big.NewInt(1 << 11)
+	economicIntelligenceFieldRunByUserID       = big.NewInt(1 << 12)
+	economicIntelligenceFieldRunEndedAt        = big.NewInt(1 << 13)
+	economicIntelligenceFieldRunStartedAt      = big.NewInt(1 << 14)
+	economicIntelligenceFieldSentiment         = big.NewInt(1 << 15)
+	economicIntelligenceFieldStatus            = big.NewInt(1 << 16)
+	economicIntelligenceFieldSupersededAt      = big.NewInt(1 << 17)
+	economicIntelligenceFieldTargetURL         = big.NewInt(1 << 18)
+	economicIntelligenceFieldTitle             = big.NewInt(1 << 19)
+	economicIntelligenceFieldUserFeedback      = big.NewInt(1 << 20)
 )
 
 type EconomicIntelligence struct {
 	// ID of the account this recommendation is for, prefixed `biz_`, or null for personal onboarding.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// When the executed run was first marked as seen, as an ISO 8601 timestamp, or `null` if it has not been.
+	AcknowledgedAt *string `json:"acknowledged_at,omitempty" url:"acknowledged_at,omitempty"`
 	// Type of action recommended, or `null` when no type is assigned. New values may be added; handle unknown types gracefully.
 	ActionType *string `json:"action_type,omitempty" url:"action_type,omitempty"`
-	// The chat to resume after its initial message is accepted, or null before a chat is ready.
+	// The chat that ran the recommendation, shown only to the user who ran it, or `null` otherwise.
 	AiChatID *string `json:"ai_chat_id,omitempty" url:"ai_chat_id,omitempty"`
 	// When the recommendation was created, as an ISO 8601 timestamp, or null for an unsaved recommendation.
 	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
-	// When the recommendation was approved, as an ISO 8601 timestamp, or `null` if it has not been approved.
+	// When the recommendation was carried out, as an ISO 8601 timestamp, or `null` if it has not been.
 	ExecutedAt        *string                          `json:"executed_at,omitempty" url:"executed_at,omitempty"`
 	ExpectedToolCalls []*EconomicIntelligenceOperation `json:"expected_tool_calls,omitempty" url:"expected_tool_calls,omitempty"`
 	// Recommendation ID, prefixed `reca_`, or `create_business` for an unsaved setup recommendation. Authenticate and list again before executing an unsaved recommendation.
@@ -134,9 +141,17 @@ type EconomicIntelligence struct {
 	Prompt *string `json:"prompt,omitempty" url:"prompt,omitempty"`
 	// Evidence and metrics supporting the recommendation, or `null` when no reasoning was provided.
 	Reasoning *string `json:"reasoning,omitempty" url:"reasoning,omitempty"`
+	// Where to view what the run produced, such as the published website or created product, or `null` when the result is only in the chat.
+	ResultURL *string `json:"result_url,omitempty" url:"result_url,omitempty"`
+	// The user who started the run, prefixed `user_`, or `null` if it has not run or was started without a user, such as with an API key.
+	RunByUserID *string `json:"run_by_user_id,omitempty" url:"run_by_user_id,omitempty"`
+	// When Whop AI's run ended, whether executed or incomplete, as an ISO 8601 timestamp, or `null` if it has not ended.
+	RunEndedAt *string `json:"run_ended_at,omitempty" url:"run_ended_at,omitempty"`
+	// When Whop AI started carrying out the recommendation, as an ISO 8601 timestamp, or `null` if it has not run.
+	RunStartedAt *string `json:"run_started_at,omitempty" url:"run_started_at,omitempty"`
 	// How the user rated this recommendation, or `null` if they have not rated it
 	Sentiment *EconomicIntelligenceSentiment `json:"sentiment,omitempty" url:"sentiment,omitempty"`
-	// `queued` when awaiting generation; `pending` while generating; `ready` when available for approval; `executed` when approved; `superseded` when rejected or replaced.
+	// `queued` when awaiting generation; `pending` while generating; `ready` when available to run; `running` while Whop AI carries it out; `executed` when carried out; `incomplete` when Whop AI's run ended without carrying it out; `superseded` when rejected or replaced.
 	Status EconomicIntelligenceStatus `json:"status" url:"status"`
 	// When the recommendation was rejected or replaced, as an ISO 8601 timestamp, or `null` if neither has occurred.
 	SupersededAt *string `json:"superseded_at,omitempty" url:"superseded_at,omitempty"`
@@ -159,6 +174,13 @@ func (e *EconomicIntelligence) GetAccountID() *string {
 		return nil
 	}
 	return e.AccountID
+}
+
+func (e *EconomicIntelligence) GetAcknowledgedAt() *string {
+	if e == nil {
+		return nil
+	}
+	return e.AcknowledgedAt
 }
 
 func (e *EconomicIntelligence) GetActionType() *string {
@@ -224,6 +246,34 @@ func (e *EconomicIntelligence) GetReasoning() *string {
 	return e.Reasoning
 }
 
+func (e *EconomicIntelligence) GetResultURL() *string {
+	if e == nil {
+		return nil
+	}
+	return e.ResultURL
+}
+
+func (e *EconomicIntelligence) GetRunByUserID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.RunByUserID
+}
+
+func (e *EconomicIntelligence) GetRunEndedAt() *string {
+	if e == nil {
+		return nil
+	}
+	return e.RunEndedAt
+}
+
+func (e *EconomicIntelligence) GetRunStartedAt() *string {
+	if e == nil {
+		return nil
+	}
+	return e.RunStartedAt
+}
+
 func (e *EconomicIntelligence) GetSentiment() *EconomicIntelligenceSentiment {
 	if e == nil {
 		return nil
@@ -287,6 +337,13 @@ func (e *EconomicIntelligence) SetAccountID(accountID *string) {
 	e.require(economicIntelligenceFieldAccountID)
 }
 
+// SetAcknowledgedAt sets the AcknowledgedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetAcknowledgedAt(acknowledgedAt *string) {
+	e.AcknowledgedAt = acknowledgedAt
+	e.require(economicIntelligenceFieldAcknowledgedAt)
+}
+
 // SetActionType sets the ActionType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EconomicIntelligence) SetActionType(actionType *string) {
@@ -348,6 +405,34 @@ func (e *EconomicIntelligence) SetPrompt(prompt *string) {
 func (e *EconomicIntelligence) SetReasoning(reasoning *string) {
 	e.Reasoning = reasoning
 	e.require(economicIntelligenceFieldReasoning)
+}
+
+// SetResultURL sets the ResultURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetResultURL(resultURL *string) {
+	e.ResultURL = resultURL
+	e.require(economicIntelligenceFieldResultURL)
+}
+
+// SetRunByUserID sets the RunByUserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetRunByUserID(runByUserID *string) {
+	e.RunByUserID = runByUserID
+	e.require(economicIntelligenceFieldRunByUserID)
+}
+
+// SetRunEndedAt sets the RunEndedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetRunEndedAt(runEndedAt *string) {
+	e.RunEndedAt = runEndedAt
+	e.require(economicIntelligenceFieldRunEndedAt)
+}
+
+// SetRunStartedAt sets the RunStartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetRunStartedAt(runStartedAt *string) {
+	e.RunStartedAt = runStartedAt
+	e.require(economicIntelligenceFieldRunStartedAt)
 }
 
 // SetSentiment sets the Sentiment field and marks it as non-optional;
@@ -559,14 +644,16 @@ func (e EconomicIntelligenceSentiment) Ptr() *EconomicIntelligenceSentiment {
 	return &e
 }
 
-// `queued` when awaiting generation; `pending` while generating; `ready` when available for approval; `executed` when approved; `superseded` when rejected or replaced.
+// `queued` when awaiting generation; `pending` while generating; `ready` when available to run; `running` while Whop AI carries it out; `executed` when carried out; `incomplete` when Whop AI's run ended without carrying it out; `superseded` when rejected or replaced.
 type EconomicIntelligenceStatus string
 
 const (
 	EconomicIntelligenceStatusQueued     EconomicIntelligenceStatus = "queued"
 	EconomicIntelligenceStatusPending    EconomicIntelligenceStatus = "pending"
 	EconomicIntelligenceStatusReady      EconomicIntelligenceStatus = "ready"
+	EconomicIntelligenceStatusRunning    EconomicIntelligenceStatus = "running"
 	EconomicIntelligenceStatusExecuted   EconomicIntelligenceStatus = "executed"
+	EconomicIntelligenceStatusIncomplete EconomicIntelligenceStatus = "incomplete"
 	EconomicIntelligenceStatusSuperseded EconomicIntelligenceStatus = "superseded"
 )
 
@@ -578,8 +665,12 @@ func NewEconomicIntelligenceStatusFromString(s string) (EconomicIntelligenceStat
 		return EconomicIntelligenceStatusPending, nil
 	case "ready":
 		return EconomicIntelligenceStatusReady, nil
+	case "running":
+		return EconomicIntelligenceStatusRunning, nil
 	case "executed":
 		return EconomicIntelligenceStatusExecuted, nil
+	case "incomplete":
+		return EconomicIntelligenceStatusIncomplete, nil
 	case "superseded":
 		return EconomicIntelligenceStatusSuperseded, nil
 	}
@@ -597,7 +688,9 @@ const (
 	ListEconomicIntelligenceRequestStatusQueued     ListEconomicIntelligenceRequestStatus = "queued"
 	ListEconomicIntelligenceRequestStatusPending    ListEconomicIntelligenceRequestStatus = "pending"
 	ListEconomicIntelligenceRequestStatusReady      ListEconomicIntelligenceRequestStatus = "ready"
+	ListEconomicIntelligenceRequestStatusRunning    ListEconomicIntelligenceRequestStatus = "running"
 	ListEconomicIntelligenceRequestStatusExecuted   ListEconomicIntelligenceRequestStatus = "executed"
+	ListEconomicIntelligenceRequestStatusIncomplete ListEconomicIntelligenceRequestStatus = "incomplete"
 	ListEconomicIntelligenceRequestStatusSuperseded ListEconomicIntelligenceRequestStatus = "superseded"
 )
 
@@ -609,8 +702,12 @@ func NewListEconomicIntelligenceRequestStatusFromString(s string) (ListEconomicI
 		return ListEconomicIntelligenceRequestStatusPending, nil
 	case "ready":
 		return ListEconomicIntelligenceRequestStatusReady, nil
+	case "running":
+		return ListEconomicIntelligenceRequestStatusRunning, nil
 	case "executed":
 		return ListEconomicIntelligenceRequestStatusExecuted, nil
+	case "incomplete":
+		return ListEconomicIntelligenceRequestStatusIncomplete, nil
 	case "superseded":
 		return ListEconomicIntelligenceRequestStatusSuperseded, nil
 	}
@@ -877,20 +974,29 @@ func (u UpdateEconomicIntelligenceRequestSentiment) Ptr() *UpdateEconomicIntelli
 	return &u
 }
 
-// Use `executed` to record approval, or `superseded` to reject the recommendation.
+// Use `running` to start a run of a ready recommendation, `executed` to record that it was carried out, `incomplete` to record that a running recommendation's run ended without carrying it out, `superseded` to reject a ready recommendation, or `acknowledged` to mark an executed run as seen; the recommendation stays `executed` and records `acknowledged_at`.
 type UpdateEconomicIntelligenceRequestStatus string
 
 const (
-	UpdateEconomicIntelligenceRequestStatusExecuted   UpdateEconomicIntelligenceRequestStatus = "executed"
-	UpdateEconomicIntelligenceRequestStatusSuperseded UpdateEconomicIntelligenceRequestStatus = "superseded"
+	UpdateEconomicIntelligenceRequestStatusRunning      UpdateEconomicIntelligenceRequestStatus = "running"
+	UpdateEconomicIntelligenceRequestStatusExecuted     UpdateEconomicIntelligenceRequestStatus = "executed"
+	UpdateEconomicIntelligenceRequestStatusIncomplete   UpdateEconomicIntelligenceRequestStatus = "incomplete"
+	UpdateEconomicIntelligenceRequestStatusSuperseded   UpdateEconomicIntelligenceRequestStatus = "superseded"
+	UpdateEconomicIntelligenceRequestStatusAcknowledged UpdateEconomicIntelligenceRequestStatus = "acknowledged"
 )
 
 func NewUpdateEconomicIntelligenceRequestStatusFromString(s string) (UpdateEconomicIntelligenceRequestStatus, error) {
 	switch s {
+	case "running":
+		return UpdateEconomicIntelligenceRequestStatusRunning, nil
 	case "executed":
 		return UpdateEconomicIntelligenceRequestStatusExecuted, nil
+	case "incomplete":
+		return UpdateEconomicIntelligenceRequestStatusIncomplete, nil
 	case "superseded":
 		return UpdateEconomicIntelligenceRequestStatusSuperseded, nil
+	case "acknowledged":
+		return UpdateEconomicIntelligenceRequestStatusAcknowledged, nil
 	}
 	var t UpdateEconomicIntelligenceRequestStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -904,9 +1010,10 @@ var (
 	updateEconomicIntelligenceRequestFieldID           = big.NewInt(1 << 0)
 	updateEconomicIntelligenceRequestFieldAccountID    = big.NewInt(1 << 1)
 	updateEconomicIntelligenceRequestFieldInput        = big.NewInt(1 << 2)
-	updateEconomicIntelligenceRequestFieldSentiment    = big.NewInt(1 << 3)
-	updateEconomicIntelligenceRequestFieldStatus       = big.NewInt(1 << 4)
-	updateEconomicIntelligenceRequestFieldUserFeedback = big.NewInt(1 << 5)
+	updateEconomicIntelligenceRequestFieldResultURL    = big.NewInt(1 << 3)
+	updateEconomicIntelligenceRequestFieldSentiment    = big.NewInt(1 << 4)
+	updateEconomicIntelligenceRequestFieldStatus       = big.NewInt(1 << 5)
+	updateEconomicIntelligenceRequestFieldUserFeedback = big.NewInt(1 << 6)
 )
 
 type UpdateEconomicIntelligenceRequest struct {
@@ -916,9 +1023,11 @@ type UpdateEconomicIntelligenceRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// What you want the replacement recommendation for, in your own words. Up to 1000 characters. Sent when superseding, it directs the generation that replaces the rejected recommendation.
 	Input *string `json:"input,omitempty" url:"-"`
+	// With `status: executed`, where to view what was produced, such as the published website or created product. An http or https URL.
+	ResultURL *string `json:"result_url,omitempty" url:"-"`
 	// A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
 	Sentiment *UpdateEconomicIntelligenceRequestSentiment `json:"sentiment,omitempty" url:"-"`
-	// Use `executed` to record approval, or `superseded` to reject the recommendation.
+	// Use `running` to start a run of a ready recommendation, `executed` to record that it was carried out, `incomplete` to record that a running recommendation's run ended without carrying it out, `superseded` to reject a ready recommendation, or `acknowledged` to mark an executed run as seen; the recommendation stays `executed` and records `acknowledged_at`.
 	Status *UpdateEconomicIntelligenceRequestStatus `json:"status,omitempty" url:"-"`
 	// An optional explanation of the rating or rejection. Negative feedback informs replacement recommendations.
 	UserFeedback *string `json:"user_feedback,omitempty" url:"-"`
@@ -953,6 +1062,13 @@ func (u *UpdateEconomicIntelligenceRequest) SetAccountID(accountID *string) {
 func (u *UpdateEconomicIntelligenceRequest) SetInput(input *string) {
 	u.Input = input
 	u.require(updateEconomicIntelligenceRequestFieldInput)
+}
+
+// SetResultURL sets the ResultURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateEconomicIntelligenceRequest) SetResultURL(resultURL *string) {
+	u.ResultURL = resultURL
+	u.require(updateEconomicIntelligenceRequestFieldResultURL)
 }
 
 // SetSentiment sets the Sentiment field and marks it as non-optional;
