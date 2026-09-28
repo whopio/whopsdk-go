@@ -300,11 +300,11 @@ type ListProductsRequest struct {
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only return marketplace products assigned to this category route, such as `trading`.
 	MarketplaceCategoryRoute *string `json:"-" url:"marketplace_category_route,omitempty"`
-	// Filter to products with a buyable plan of these billing models, such as `one_time` or `renewal`.
+	// Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`.
 	PlanTypes []*ListProductsRequestPlanTypesItem `json:"-" url:"plan_types,omitempty"`
-	// Only return products whose advertised buyable plan has a displayed price of at least this amount. Recurring plans use renewal price.
+	// Only return products whose advertised buyable variant has a displayed price of at least this amount. Recurring variants use renewal price.
 	PriceMinimum *float64 `json:"-" url:"price_minimum,omitempty"`
-	// Only return products whose advertised buyable plan has a displayed price of at most this amount. Recurring plans use renewal price.
+	// Only return products whose advertised buyable variant has a displayed price of at most this amount. Recurring variants use renewal price.
 	PriceMaximum *float64 `json:"-" url:"price_maximum,omitempty"`
 	// Filter to only products matching these visibility states. Ignored on the public marketplace list, which only returns visible products.
 	Visibilities []*string `json:"-" url:"visibilities,omitempty"`
@@ -557,7 +557,7 @@ type Product struct {
 	CustomCtaURL *string `json:"custom_cta_url,omitempty" url:"custom_cta_url,omitempty"`
 	// Custom text label on customer's bank statement.
 	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"custom_statement_descriptor,omitempty"`
-	// Buyable plan to show and check out with. The configured default when that plan is buyable, otherwise the first buyable plan in product-page order. `null` when none is buyable.
+	// Buyable variant to show and check out with. The configured default when that variant is buyable, otherwise the first buyable variant in product-page order. `null` when none is buyable.
 	DefaultPlan *ProductPublicPlan `json:"default_plan,omitempty" url:"default_plan,omitempty"`
 	// Written description displayed on the product page. `null` if none is set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
@@ -595,9 +595,9 @@ type Product struct {
 	Title string `json:"title" url:"title"`
 	// When the product was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
-	// The option set the product's variants span, as a map of attribute name to the values in use, e.g. `{"color": ["Blue", "Red"], "size": ["S", "M", "L"]}`. Derived from the visible, non-invoice plans that carry `attributes`: keys alphabetical, values in the order the plans were created. Read-only. `null` when the product has no variants.
-	VariantAttributes map[string]any  `json:"variant_attributes,omitempty" url:"variant_attributes,omitempty"`
-	Variants          []*PlanListItem `json:"variants,omitempty" url:"variants,omitempty"`
+	// The option set the product's variants span, as a map of attribute name to the values in use, e.g. `{"color": ["Blue", "Red"], "size": ["S", "M", "L"]}`. Derived from the visible, non-invoice variants that carry `attributes`: keys alphabetical, values in the order the variants were created. Read-only. `null` when the product has no variants.
+	VariantAttributes map[string]any     `json:"variant_attributes,omitempty" url:"variant_attributes,omitempty"`
+	Variants          []*VariantListItem `json:"variants,omitempty" url:"variants,omitempty"`
 	// Whether the product has been verified by Whop.
 	Verified bool `json:"verified" url:"verified"`
 	// Whether the product is publicly visible, hidden, or archived.
@@ -799,7 +799,7 @@ func (p *Product) GetVariantAttributes() map[string]any {
 	return p.VariantAttributes
 }
 
-func (p *Product) GetVariants() []*PlanListItem {
+func (p *Product) GetVariants() []*VariantListItem {
 	if p == nil {
 		return nil
 	}
@@ -1025,7 +1025,7 @@ func (p *Product) SetVariantAttributes(variantAttributes map[string]any) {
 
 // SetVariants sets the Variants field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Product) SetVariants(variants []*PlanListItem) {
+func (p *Product) SetVariants(variants []*VariantListItem) {
 	p.Variants = variants
 	p.require(productFieldVariants)
 }
@@ -1313,7 +1313,7 @@ type ProductListItem struct {
 	AverageReviewRating float64 `json:"average_review_rating" url:"average_review_rating"`
 	// When the product was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Buyable plan to show and check out with. The configured default when that plan is buyable, otherwise the first buyable plan in product-page order. `null` when none is buyable.
+	// Buyable variant to show and check out with. The configured default when that variant is buyable, otherwise the first buyable variant in product-page order. `null` when none is buyable.
 	DefaultPlan *ProductPublicPlan `json:"default_plan,omitempty" url:"default_plan,omitempty"`
 	// Written description displayed on the product page. `null` if none is set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
@@ -1337,7 +1337,7 @@ type ProductListItem struct {
 	Title string `json:"title" url:"title"`
 	// When the product was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
-	// The option set the product's variants span, as a map of attribute name to the values in use, e.g. `{"color": ["Blue", "Red"], "size": ["S", "M", "L"]}`. Derived from the visible, non-invoice plans that carry `attributes`: keys alphabetical, values in the order the plans were created. Read-only. `null` when the product has no variants.
+	// The option set the product's variants span, as a map of attribute name to the values in use, e.g. `{"color": ["Blue", "Red"], "size": ["S", "M", "L"]}`. Derived from the visible, non-invoice variants that carry `attributes`: keys alphabetical, values in the order the variants were created. Read-only. `null` when the product has no variants.
 	VariantAttributes map[string]any `json:"variant_attributes,omitempty" url:"variant_attributes,omitempty"`
 	// Whether the product has been verified by Whop.
 	Verified bool `json:"verified" url:"verified"`
@@ -1735,23 +1735,23 @@ var (
 )
 
 type ProductPublicPlan struct {
-	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Access duration in days for expiration-based plans. `null` for plans without an expiration.
+	// Access duration in days for expiration-based variants. `null` for variants without an expiration.
 	ExpirationDays *float64 `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
 	// What checkout charges up front. `amount` is `"0.00"` when the first charge is free, such as a trial.
 	InitialPrice *Money `json:"initial_price" url:"initial_price"`
-	// Billing model for this plan: `one_time` or `renewal`.
+	// Billing model for this variant: `one_time` or `renewal`.
 	PlanType ProductPublicPlanPlanType `json:"plan_type" url:"plan_type"`
-	// The recurring charge every `billing_period` days. `amount` is `"0.00"` for one-time plans.
+	// The recurring charge every `billing_period` days. `amount` is `"0.00"` for one-time variants.
 	RenewalPrice *Money `json:"renewal_price" url:"renewal_price"`
-	// Plan display name shown to customers. `null` if no title has been set.
+	// Variant display name shown to customers. `null` if no title has been set.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// Whether the plan has unlimited stock.
+	// Whether the variant has unlimited stock.
 	UnlimitedStock bool `json:"unlimited_stock" url:"unlimited_stock"`
-	// Where this plan can be seen. `visible` plans appear on the product page.
+	// Where this variant can be seen. `visible` variants appear on the product page.
 	Visibility ProductPublicPlanVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1943,7 +1943,7 @@ func (p *ProductPublicPlan) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Billing model for this plan: `one_time` or `renewal`.
+// Billing model for this variant: `one_time` or `renewal`.
 type ProductPublicPlanPlanType string
 
 const (
@@ -1966,7 +1966,7 @@ func (p ProductPublicPlanPlanType) Ptr() *ProductPublicPlanPlanType {
 	return &p
 }
 
-// Where this plan can be seen. `visible` plans appear on the product page.
+// Where this variant can be seen. `visible` variants appear on the product page.
 type ProductPublicPlanVisibility string
 
 const (

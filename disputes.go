@@ -317,7 +317,7 @@ type Dispute struct {
 	LineItems      []*ReceiptLineItem      `json:"line_items" url:"line_items"`
 	// The payment being disputed.
 	Payment *DisputePayment `json:"payment" url:"payment"`
-	// The plan the disputed payment was made on, prefixed `plan_`.
+	// The variant the disputed payment was made on, prefixed `plan_`.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product the disputed payment was for, prefixed `prod_`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`

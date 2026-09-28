@@ -306,7 +306,7 @@ type ExposuresExperimentsRequest struct {
 	FlagKey *string `json:"-" url:"flag_key,omitempty"`
 	// Owning account ID or internal. Required when evaluating by flag_key or in a batch; optional for an expt_ ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[plan]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
+	// JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[variant]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
 	Properties *string `json:"-" url:"properties,omitempty"`
 	// Set false to evaluate without recording an exposure. Omitted records it.
 	LogExposure *bool `json:"-" url:"log_exposure,omitempty"`

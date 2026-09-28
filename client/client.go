@@ -90,6 +90,7 @@ import (
 	trades "github.com/whopio/whopsdk-go/v2/trades"
 	transfers "github.com/whopio/whopsdk-go/v2/transfers"
 	usersclient "github.com/whopio/whopsdk-go/v2/users/client"
+	variants "github.com/whopio/whopsdk-go/v2/variants"
 	verifications "github.com/whopio/whopsdk-go/v2/verifications"
 	waitlistentries "github.com/whopio/whopsdk-go/v2/waitlistentries"
 	webhooks "github.com/whopio/whopsdk-go/v2/webhooks"
@@ -180,6 +181,7 @@ type Whop struct {
 	Trades                   *trades.Client
 	Transfers                *transfers.Client
 	Users                    *usersclient.Client
+	Variants                 *variants.Client
 	Verifications            *verifications.Client
 	WaitlistEntries          *waitlistentries.Client
 	Webhooks                 *webhooks.Client
@@ -280,6 +282,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Trades:                   trades.NewClient(options),
 		Transfers:                transfers.NewClient(options),
 		Users:                    usersclient.NewClient(options),
+		Variants:                 variants.NewClient(options),
 		Verifications:            verifications.NewClient(options),
 		WaitlistEntries:          waitlistentries.NewClient(options),
 		Webhooks:                 webhooks.NewClient(options),

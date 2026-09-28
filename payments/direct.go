@@ -43,11 +43,11 @@ type CreateDirectRequest struct {
 	OffSession *bool `json:"off_session,omitempty" url:"-"`
 	// The payment method to charge, as the raw details the caller holds. Raw details are accepted only on the vault host, where Whop's vault tokenizes them in transit; the official SDKs route this operation there. Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.
 	PaymentMethod *CreateDirectRequestPaymentMethod `json:"payment_method" url:"-"`
-	// Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+	// Find or create a variant for this payment through the compatibility input `plan`. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 	Plan *CreateDirectRequestPlan `json:"plan,omitempty" url:"-"`
-	// The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan`.
+	// The variant to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan`.
 	PlanID *string `json:"plan_id,omitempty" url:"-"`
-	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
+	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
@@ -857,7 +857,7 @@ func (c CreateDirectRequestPaymentMethodType) Ptr() *CreateDirectRequestPaymentM
 	return &c
 }
 
-// Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+// Find or create a variant for this payment through the compatibility input `plan`. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 var (
 	createDirectRequestPlanFieldApplicationFeeAmount = big.NewInt(1 << 0)
 	createDirectRequestPlanFieldBillingPeriod        = big.NewInt(1 << 1)
@@ -877,35 +877,35 @@ var (
 )
 
 type CreateDirectRequestPlan struct {
-	// Application fee collected by the platform in the plan currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time plans or renewal price for recurring plans. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring plans. Only valid for connected accounts with a parent account.
+	// Application fee collected by the platform in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
 	// Recurring billing interval in days.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Currency code for the plan prices.
+	// Currency code for the variant prices.
 	Currency CreateDirectRequestPlanCurrency `json:"currency" url:"currency"`
-	// Plan description.
+	// Variant description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// Days until access expires.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Create a new plan instead of reusing a matching plan.
+	// Create a new variant instead of reusing a matching variant.
 	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
-	// Additional amount charged on the first purchase, in the plan currency. For recurring plans without a trial, the first charge includes this amount plus renewal_price.
+	// Additional amount charged on the first purchase, in the variant currency. For recurring variants without a trial, the first charge includes this amount plus renewal_price.
 	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
 	// Internal notes for the account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Billing model for the plan.
+	// Billing model for the variant.
 	PlanType *CreateDirectRequestPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
 	// Find or create a product by external identifier. Mutually exclusive with product_id.
 	Product *CreateDirectRequestPlanProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
-	// Recurring price in the plan currency.
+	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
-	// Plan title.
+	// Variant title.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Free trial days before renewal.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan is visible to customers.
+	// Whether the variant is visible to customers.
 	Visibility *CreateDirectRequestPlanVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1181,7 +1181,7 @@ func (c *CreateDirectRequestPlan) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Currency code for the plan prices.
+// Currency code for the variant prices.
 type CreateDirectRequestPlanCurrency string
 
 const (
@@ -1468,7 +1468,7 @@ func (c CreateDirectRequestPlanCurrency) Ptr() *CreateDirectRequestPlanCurrency 
 	return &c
 }
 
-// Billing model for the plan.
+// Billing model for the variant.
 type CreateDirectRequestPlanPlanType string
 
 const (
@@ -1816,7 +1816,7 @@ func (c CreateDirectRequestPlanProductVisibility) Ptr() *CreateDirectRequestPlan
 	return &c
 }
 
-// Whether the plan is visible to customers.
+// Whether the variant is visible to customers.
 type CreateDirectRequestPlanVisibility string
 
 const (

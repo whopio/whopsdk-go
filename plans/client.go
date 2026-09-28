@@ -39,32 +39,11 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of plans. Omit `account_id` and pass `product_ids` to list a product's public buyable plans.
+// Deprecated compatibility endpoint. List variants with `GET /variants` instead.
 //
 // Example:
 //
-//	request := &whopsdk.ListPlansRequest{
-//	    ReleaseMethods: []*string{
-//	        whopsdk.String(
-//	            "buy_now",
-//	        ),
-//	    },
-//	    Visibilities: []*string{
-//	        whopsdk.String(
-//	            "visible",
-//	        ),
-//	    },
-//	    PlanTypes: []*string{
-//	        whopsdk.String(
-//	            "renewal",
-//	        ),
-//	    },
-//	    ProductIDs: []*string{
-//	        whopsdk.String(
-//	            "prod_xxxxxxxxxxxxxx",
-//	        ),
-//	    },
-//	}
+//	request := &whopsdk.ListPlansRequest{}
 //	client.Plans.List(
 //	    context.TODO(),
 //	    request,
@@ -115,7 +94,6 @@ func (c *Client) List(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
 	readPageResponse := func(response *whopsdk.ListPlansResponse) *core.PageResponse[*string, *whopsdk.PlanListItem, *whopsdk.ListPlansResponse] {
@@ -140,7 +118,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Create a new pricing plan for a product. The plan defines the billing interval, price, and availability for customers.
+// Deprecated compatibility endpoint. Create variants with `POST /variants` instead.
 //
 // Example:
 //
@@ -165,7 +143,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing plan.
+// Deprecated compatibility endpoint. Retrieve variants with `GET /variants/{id}` instead.
 //
 // Example:
 //
@@ -192,7 +170,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Delete a plan from a product. It stops selling immediately; existing memberships on this plan will not be affected.
+// Deprecated compatibility endpoint. Delete variants with `DELETE /variants/{id}` instead.
 //
 // Example:
 //
@@ -219,7 +197,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Update a plan's pricing, billing interval, visibility, stock, and other settings.
+// Deprecated compatibility endpoint. Update variants with `PATCH /variants/{id}` instead.
 //
 // Example:
 //
@@ -246,18 +224,12 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Previews tax for a plan before checkout, based on the buyer's location.
+// Deprecated compatibility endpoint. Preview variant tax with `POST /variants/{id}/calculate_tax` instead.
 //
 // Example:
 //
 //	request := &whopsdk.CalculateTaxPlansRequest{
 //	    ID: "id",
-//	    Address: &whopsdk.CalculateTaxPlansRequestAddress{
-//	        Country: "DE",
-//	        PostalCode: whopsdk.String(
-//	            "10115",
-//	        ),
-//	    },
 //	}
 //	client.Plans.CalculateTax(
 //	    context.TODO(),

@@ -65,7 +65,7 @@ type CreatePaymentsRequest struct {
 	ConfirmationToken *string `json:"confirmation_token,omitempty" url:"-"`
 	// Overrides the buyer email carried on the confirmation token, resolving or creating the user the payment belongs to. Ignored unless `confirmation_token` is provided, and when the token was created by a signed-in buyer.
 	Email *string `json:"email,omitempty" url:"-"`
-	// What the buyer is purchasing. One entry charges that plan; several entries form a cart, which requires every plan to be a compatible plan from this account in the same currency.
+	// What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
 	LineItems []*CreatePaymentsRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
@@ -73,11 +73,11 @@ type CreatePaymentsRequest struct {
 	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
 	// The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
-	// Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+	// Find or create a variant for this payment through the compatibility input `plan`. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 	Plan *CreatePaymentsRequestPlan `json:"plan,omitempty" url:"-"`
-	// The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
+	// The variant to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
 	PlanID *string `json:"plan_id,omitempty" url:"-"`
-	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
+	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
@@ -263,7 +263,7 @@ type ListPaymentsRequest struct {
 	MembershipID *string `json:"-" url:"membership_id,omitempty"`
 	// Only payments for this product, prefixed `prod_`.
 	ProductID *string `json:"-" url:"product_id,omitempty"`
-	// Only payments priced by this plan, prefixed `plan_`.
+	// Only payments priced by this variant, prefixed `plan_`.
 	PlanID *string `json:"-" url:"plan_id,omitempty"`
 	// Only payments created before this ISO 8601 timestamp.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
@@ -1702,9 +1702,9 @@ var (
 )
 
 type CreatePaymentsRequestLineItemsItem struct {
-	// An existing plan to charge for, prefixed `plan_`. Each plan may appear once — use `quantity` for multiple units.
+	// An existing variant to charge for, prefixed `plan_`. Each variant may appear once — use `quantity` for multiple units.
 	PlanID string `json:"plan_id" url:"plan_id"`
-	// How many units of the plan to purchase. Defaults to 1; more than 1 requires the plan to allow multiple quantities.
+	// How many units of the variant to purchase. Defaults to 1; more than 1 requires the variant to allow multiple quantities.
 	Quantity *int `json:"quantity,omitempty" url:"quantity,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1798,7 +1798,7 @@ func (c *CreatePaymentsRequestLineItemsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+// Find or create a variant for this payment through the compatibility input `plan`. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 var (
 	createPaymentsRequestPlanFieldApplicationFeeAmount = big.NewInt(1 << 0)
 	createPaymentsRequestPlanFieldBillingPeriod        = big.NewInt(1 << 1)
@@ -1818,35 +1818,35 @@ var (
 )
 
 type CreatePaymentsRequestPlan struct {
-	// Application fee collected by the platform in the plan currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time plans or renewal price for recurring plans. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring plans. Only valid for connected accounts with a parent account.
+	// Application fee collected by the platform in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
 	// Recurring billing interval in days.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Currency code for the plan prices.
+	// Currency code for the variant prices.
 	Currency CreatePaymentsRequestPlanCurrency `json:"currency" url:"currency"`
-	// Plan description.
+	// Variant description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// Days until access expires.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Create a new plan instead of reusing a matching plan.
+	// Create a new variant instead of reusing a matching variant.
 	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
-	// Additional amount charged on the first purchase, in the plan currency. For recurring plans without a trial, the first charge includes this amount plus renewal_price.
+	// Additional amount charged on the first purchase, in the variant currency. For recurring variants without a trial, the first charge includes this amount plus renewal_price.
 	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
 	// Internal notes for the account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Billing model for the plan.
+	// Billing model for the variant.
 	PlanType *CreatePaymentsRequestPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
 	// Find or create a product by external identifier. Mutually exclusive with product_id.
 	Product *CreatePaymentsRequestPlanProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
-	// Recurring price in the plan currency.
+	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
-	// Plan title.
+	// Variant title.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Free trial days before renewal.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan is visible to customers.
+	// Whether the variant is visible to customers.
 	Visibility *CreatePaymentsRequestPlanVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2122,7 +2122,7 @@ func (c *CreatePaymentsRequestPlan) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Currency code for the plan prices.
+// Currency code for the variant prices.
 type CreatePaymentsRequestPlanCurrency string
 
 const (
@@ -2409,7 +2409,7 @@ func (c CreatePaymentsRequestPlanCurrency) Ptr() *CreatePaymentsRequestPlanCurre
 	return &c
 }
 
-// Billing model for the plan.
+// Billing model for the variant.
 type CreatePaymentsRequestPlanPlanType string
 
 const (
@@ -2757,7 +2757,7 @@ func (c CreatePaymentsRequestPlanProductVisibility) Ptr() *CreatePaymentsRequest
 	return &c
 }
 
-// Whether the plan is visible to customers.
+// Whether the variant is visible to customers.
 type CreatePaymentsRequestPlanVisibility string
 
 const (
