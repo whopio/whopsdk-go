@@ -176,6 +176,33 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
+// Changes a payment's shipping address or return URL, such as when a buyer corrects where their order should go before it ships. `shipping_address` is replaced as a whole, never merged: always send the complete address, including fields that are not changing, or they are cleared. Only `shipping_address` and `return_url` can be changed, and any other field is rejected. Omit either one to leave it unchanged.
+//
+// Example:
+//
+//	request := &whopsdk.UpdatePaymentsRequest{
+//	    ID: "id",
+//	}
+//	client.Payments.Update(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Update(
+	ctx context.Context,
+	request *whopsdk.UpdatePaymentsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Payment, error) {
+	response, err := c.WithRawResponse.Update(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Captures the full amount of a card payment created with `capture: false`. The payment must still be in `requires_capture` before `capture_expires_at`. Partial capture, multiple captures, capturing more than the authorized amount, and tips are not supported.
 //
 // Example:

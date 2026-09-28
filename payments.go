@@ -533,7 +533,7 @@ var (
 )
 
 type RetrievePaymentsRequest struct {
-	// The payment to retrieve, prefixed `pay_`.
+	// The payment, prefixed `pay_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5308,6 +5308,261 @@ func NewPostPaymentSucceededPayloadTypeFromString(s string) (PostPaymentSucceede
 
 func (p PostPaymentSucceededPayloadType) Ptr() *PostPaymentSucceededPayloadType {
 	return &p
+}
+
+// The complete new shipping address. It replaces the current address as a whole and is never merged with it, so send every field the address should have, including the ones that are not changing. Any field you leave out is cleared: sending only `city` leaves an address with nothing but a city. Pass null to remove the address, or omit `shipping_address` to leave it unchanged. It cannot change once a shipment exists for the payment.
+var (
+	updatePaymentsRequestShippingAddressFieldCity       = big.NewInt(1 << 0)
+	updatePaymentsRequestShippingAddressFieldCountry    = big.NewInt(1 << 1)
+	updatePaymentsRequestShippingAddressFieldLine1      = big.NewInt(1 << 2)
+	updatePaymentsRequestShippingAddressFieldLine2      = big.NewInt(1 << 3)
+	updatePaymentsRequestShippingAddressFieldName       = big.NewInt(1 << 4)
+	updatePaymentsRequestShippingAddressFieldPostalCode = big.NewInt(1 << 5)
+	updatePaymentsRequestShippingAddressFieldState      = big.NewInt(1 << 6)
+)
+
+type UpdatePaymentsRequestShippingAddress struct {
+	// City name.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// ISO 3166-1 alpha-2 country code, such as `US`.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// First line of the street address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// Second line of the street address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The recipient's full name, as it should appear on the shipping label.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Postal or ZIP code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// State, province, or region code, such as `CA`.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetCity() *string {
+	if u == nil {
+		return nil
+	}
+	return u.City
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetCountry() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Country
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetLine1() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Line1
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetLine2() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Line2
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Name
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetPostalCode() *string {
+	if u == nil {
+		return nil
+	}
+	return u.PostalCode
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetState() *string {
+	if u == nil {
+		return nil
+	}
+	return u.State
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetCity(city *string) {
+	u.City = city
+	u.require(updatePaymentsRequestShippingAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetCountry(country *string) {
+	u.Country = country
+	u.require(updatePaymentsRequestShippingAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetLine1(line1 *string) {
+	u.Line1 = line1
+	u.require(updatePaymentsRequestShippingAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetLine2(line2 *string) {
+	u.Line2 = line2
+	u.require(updatePaymentsRequestShippingAddressFieldLine2)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetName(name *string) {
+	u.Name = name
+	u.require(updatePaymentsRequestShippingAddressFieldName)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetPostalCode(postalCode *string) {
+	u.PostalCode = postalCode
+	u.require(updatePaymentsRequestShippingAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetState(state *string) {
+	u.State = state
+	u.require(updatePaymentsRequestShippingAddressFieldState)
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePaymentsRequestShippingAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePaymentsRequestShippingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) MarshalJSON() ([]byte, error) {
+	type embed UpdatePaymentsRequestShippingAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updatePaymentsRequestFieldID              = big.NewInt(1 << 0)
+	updatePaymentsRequestFieldReturnURL       = big.NewInt(1 << 1)
+	updatePaymentsRequestFieldShippingAddress = big.NewInt(1 << 2)
+)
+
+type UpdatePaymentsRequest struct {
+	// The payment, prefixed `pay_`.
+	ID string `json:"-" url:"-"`
+	// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Only for payments created with a `confirmation_token`, and only until the buyer has returned. Omit it to leave it unchanged.
+	ReturnURL *string `json:"return_url,omitempty" url:"-"`
+	// The complete new shipping address. It replaces the current address as a whole and is never merged with it, so send every field the address should have, including the ones that are not changing. Any field you leave out is cleared: sending only `city` leaves an address with nothing but a city. Pass null to remove the address, or omit `shipping_address` to leave it unchanged. It cannot change once a shipment exists for the payment.
+	ShippingAddress *UpdatePaymentsRequestShippingAddress `json:"shipping_address,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdatePaymentsRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequest) SetID(id string) {
+	u.ID = id
+	u.require(updatePaymentsRequestFieldID)
+}
+
+// SetReturnURL sets the ReturnURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequest) SetReturnURL(returnURL *string) {
+	u.ReturnURL = returnURL
+	u.require(updatePaymentsRequestFieldReturnURL)
+}
+
+// SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequest) SetShippingAddress(shippingAddress *UpdatePaymentsRequestShippingAddress) {
+	u.ShippingAddress = shippingAddress
+	u.require(updatePaymentsRequestFieldShippingAddress)
+}
+
+func (u *UpdatePaymentsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePaymentsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdatePaymentsRequest(body)
+	return nil
+}
+
+func (u *UpdatePaymentsRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdatePaymentsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
