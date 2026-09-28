@@ -74,6 +74,14 @@ func TestSettersCreateAdGroupsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDeliverySchedule", func(t *testing.T) {
+		obj := &CreateAdGroupsRequest{}
+		var fernTestValueDeliverySchedule *CreateAdGroupsRequestDeliverySchedule
+		obj.SetDeliverySchedule(fernTestValueDeliverySchedule)
+		assert.Equal(t, fernTestValueDeliverySchedule, obj.DeliverySchedule)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDemographics", func(t *testing.T) {
 		obj := &CreateAdGroupsRequest{}
 		var fernTestValueDemographics *AdGroupDemographicsBody
@@ -430,6 +438,37 @@ func TestSettersMarkExplicitCreateAdGroupsRequest(t *testing.T) {
 
 		// Act
 		obj.SetConversionLocation(fernTestValueConversionLocation)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDeliverySchedule_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequest{}
+		var fernTestValueDeliverySchedule *CreateAdGroupsRequestDeliverySchedule
+
+		// Act
+		obj.SetDeliverySchedule(fernTestValueDeliverySchedule)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2974,6 +3013,14 @@ func TestSettersAdGroup(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDeliverySchedule", func(t *testing.T) {
+		obj := &AdGroup{}
+		var fernTestValueDeliverySchedule *AdGroupDeliverySchedule
+		obj.SetDeliverySchedule(fernTestValueDeliverySchedule)
+		assert.Equal(t, fernTestValueDeliverySchedule, obj.DeliverySchedule)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDeliveryStatus", func(t *testing.T) {
 		obj := &AdGroup{}
 		var fernTestValueDeliveryStatus AdGroupDeliveryStatus
@@ -4278,6 +4325,39 @@ func TestGettersAdGroup(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCustomEventValues() // Should return zero value
+	})
+
+	t.Run("GetDeliverySchedule", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroup{}
+		var expected *AdGroupDeliverySchedule
+		obj.DeliverySchedule = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDeliverySchedule(), "getter should return the property value")
+	})
+
+	t.Run("GetDeliverySchedule_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroup{}
+		obj.DeliverySchedule = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDeliverySchedule(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDeliverySchedule_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroup
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDeliverySchedule() // Should return zero value
 	})
 
 	t.Run("GetDeliveryStatus", func(t *testing.T) {
@@ -6492,6 +6572,37 @@ func TestSettersMarkExplicitAdGroup(t *testing.T) {
 
 		// Act
 		obj.SetCustomEventValues(fernTestValueCustomEventValues)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDeliverySchedule_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroup{}
+		var fernTestValueDeliverySchedule *AdGroupDeliverySchedule
+
+		// Act
+		obj.SetDeliverySchedule(fernTestValueDeliverySchedule)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -8962,6 +9073,652 @@ func TestSettersMarkExplicitAdGroupCustomLocation(t *testing.T) {
 
 		// Act
 		obj.SetRadius(fernTestValueRadius)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersAdGroupDeliverySchedule(t *testing.T) {
+	t.Run("SetFriday", func(t *testing.T) {
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueFriday []*AdGroupDeliveryWindow
+		obj.SetFriday(fernTestValueFriday)
+		assert.Equal(t, fernTestValueFriday, obj.Friday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMonday", func(t *testing.T) {
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueMonday []*AdGroupDeliveryWindow
+		obj.SetMonday(fernTestValueMonday)
+		assert.Equal(t, fernTestValueMonday, obj.Monday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSaturday", func(t *testing.T) {
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueSaturday []*AdGroupDeliveryWindow
+		obj.SetSaturday(fernTestValueSaturday)
+		assert.Equal(t, fernTestValueSaturday, obj.Saturday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSunday", func(t *testing.T) {
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueSunday []*AdGroupDeliveryWindow
+		obj.SetSunday(fernTestValueSunday)
+		assert.Equal(t, fernTestValueSunday, obj.Sunday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetThursday", func(t *testing.T) {
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueThursday []*AdGroupDeliveryWindow
+		obj.SetThursday(fernTestValueThursday)
+		assert.Equal(t, fernTestValueThursday, obj.Thursday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTuesday", func(t *testing.T) {
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueTuesday []*AdGroupDeliveryWindow
+		obj.SetTuesday(fernTestValueTuesday)
+		assert.Equal(t, fernTestValueTuesday, obj.Tuesday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetWednesday", func(t *testing.T) {
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueWednesday []*AdGroupDeliveryWindow
+		obj.SetWednesday(fernTestValueWednesday)
+		assert.Equal(t, fernTestValueWednesday, obj.Wednesday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersAdGroupDeliverySchedule(t *testing.T) {
+	t.Run("GetFriday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var expected []*AdGroupDeliveryWindow
+		obj.Friday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFriday(), "getter should return the property value")
+	})
+
+	t.Run("GetFriday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		obj.Friday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFriday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFriday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFriday() // Should return zero value
+	})
+
+	t.Run("GetMonday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var expected []*AdGroupDeliveryWindow
+		obj.Monday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMonday(), "getter should return the property value")
+	})
+
+	t.Run("GetMonday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		obj.Monday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMonday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMonday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMonday() // Should return zero value
+	})
+
+	t.Run("GetSaturday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var expected []*AdGroupDeliveryWindow
+		obj.Saturday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSaturday(), "getter should return the property value")
+	})
+
+	t.Run("GetSaturday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		obj.Saturday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSaturday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSaturday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSaturday() // Should return zero value
+	})
+
+	t.Run("GetSunday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var expected []*AdGroupDeliveryWindow
+		obj.Sunday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSunday(), "getter should return the property value")
+	})
+
+	t.Run("GetSunday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		obj.Sunday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSunday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSunday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSunday() // Should return zero value
+	})
+
+	t.Run("GetThursday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var expected []*AdGroupDeliveryWindow
+		obj.Thursday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetThursday(), "getter should return the property value")
+	})
+
+	t.Run("GetThursday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		obj.Thursday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetThursday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetThursday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetThursday() // Should return zero value
+	})
+
+	t.Run("GetTuesday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var expected []*AdGroupDeliveryWindow
+		obj.Tuesday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTuesday(), "getter should return the property value")
+	})
+
+	t.Run("GetTuesday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		obj.Tuesday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTuesday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTuesday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTuesday() // Should return zero value
+	})
+
+	t.Run("GetWednesday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var expected []*AdGroupDeliveryWindow
+		obj.Wednesday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWednesday(), "getter should return the property value")
+	})
+
+	t.Run("GetWednesday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		obj.Wednesday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWednesday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWednesday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWednesday() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitAdGroupDeliverySchedule(t *testing.T) {
+	t.Run("SetFriday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueFriday []*AdGroupDeliveryWindow
+
+		// Act
+		obj.SetFriday(fernTestValueFriday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMonday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueMonday []*AdGroupDeliveryWindow
+
+		// Act
+		obj.SetMonday(fernTestValueMonday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSaturday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueSaturday []*AdGroupDeliveryWindow
+
+		// Act
+		obj.SetSaturday(fernTestValueSaturday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSunday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueSunday []*AdGroupDeliveryWindow
+
+		// Act
+		obj.SetSunday(fernTestValueSunday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetThursday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueThursday []*AdGroupDeliveryWindow
+
+		// Act
+		obj.SetThursday(fernTestValueThursday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTuesday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueTuesday []*AdGroupDeliveryWindow
+
+		// Act
+		obj.SetTuesday(fernTestValueTuesday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWednesday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+		var fernTestValueWednesday []*AdGroupDeliveryWindow
+
+		// Act
+		obj.SetWednesday(fernTestValueWednesday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersAdGroupDeliveryWindow(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &AdGroupDeliveryWindow{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &AdGroupDeliveryWindow{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersAdGroupDeliveryWindow(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliveryWindow{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliveryWindow
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliveryWindow{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliveryWindow
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitAdGroupDeliveryWindow(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliveryWindow{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliveryWindow{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -15405,6 +16162,1450 @@ func TestGettersTargetingOption(t *testing.T) {
 
 }
 
+func TestSettersCreateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("SetFriday", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueFriday []*CreateAdGroupsRequestDeliveryScheduleFridayItem
+		obj.SetFriday(fernTestValueFriday)
+		assert.Equal(t, fernTestValueFriday, obj.Friday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMonday", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueMonday []*CreateAdGroupsRequestDeliveryScheduleMondayItem
+		obj.SetMonday(fernTestValueMonday)
+		assert.Equal(t, fernTestValueMonday, obj.Monday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSaturday", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueSaturday []*CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+		obj.SetSaturday(fernTestValueSaturday)
+		assert.Equal(t, fernTestValueSaturday, obj.Saturday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSunday", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueSunday []*CreateAdGroupsRequestDeliveryScheduleSundayItem
+		obj.SetSunday(fernTestValueSunday)
+		assert.Equal(t, fernTestValueSunday, obj.Sunday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetThursday", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueThursday []*CreateAdGroupsRequestDeliveryScheduleThursdayItem
+		obj.SetThursday(fernTestValueThursday)
+		assert.Equal(t, fernTestValueThursday, obj.Thursday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTuesday", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueTuesday []*CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+		obj.SetTuesday(fernTestValueTuesday)
+		assert.Equal(t, fernTestValueTuesday, obj.Tuesday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetWednesday", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueWednesday []*CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+		obj.SetWednesday(fernTestValueWednesday)
+		assert.Equal(t, fernTestValueWednesday, obj.Wednesday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("GetFriday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var expected []*CreateAdGroupsRequestDeliveryScheduleFridayItem
+		obj.Friday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFriday(), "getter should return the property value")
+	})
+
+	t.Run("GetFriday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		obj.Friday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFriday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFriday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFriday() // Should return zero value
+	})
+
+	t.Run("GetMonday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var expected []*CreateAdGroupsRequestDeliveryScheduleMondayItem
+		obj.Monday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMonday(), "getter should return the property value")
+	})
+
+	t.Run("GetMonday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		obj.Monday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMonday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMonday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMonday() // Should return zero value
+	})
+
+	t.Run("GetSaturday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var expected []*CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+		obj.Saturday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSaturday(), "getter should return the property value")
+	})
+
+	t.Run("GetSaturday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		obj.Saturday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSaturday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSaturday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSaturday() // Should return zero value
+	})
+
+	t.Run("GetSunday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var expected []*CreateAdGroupsRequestDeliveryScheduleSundayItem
+		obj.Sunday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSunday(), "getter should return the property value")
+	})
+
+	t.Run("GetSunday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		obj.Sunday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSunday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSunday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSunday() // Should return zero value
+	})
+
+	t.Run("GetThursday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var expected []*CreateAdGroupsRequestDeliveryScheduleThursdayItem
+		obj.Thursday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetThursday(), "getter should return the property value")
+	})
+
+	t.Run("GetThursday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		obj.Thursday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetThursday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetThursday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetThursday() // Should return zero value
+	})
+
+	t.Run("GetTuesday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var expected []*CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+		obj.Tuesday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTuesday(), "getter should return the property value")
+	})
+
+	t.Run("GetTuesday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		obj.Tuesday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTuesday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTuesday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTuesday() // Should return zero value
+	})
+
+	t.Run("GetWednesday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var expected []*CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+		obj.Wednesday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWednesday(), "getter should return the property value")
+	})
+
+	t.Run("GetWednesday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		obj.Wednesday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWednesday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWednesday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWednesday() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("SetFriday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueFriday []*CreateAdGroupsRequestDeliveryScheduleFridayItem
+
+		// Act
+		obj.SetFriday(fernTestValueFriday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMonday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueMonday []*CreateAdGroupsRequestDeliveryScheduleMondayItem
+
+		// Act
+		obj.SetMonday(fernTestValueMonday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSaturday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueSaturday []*CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+
+		// Act
+		obj.SetSaturday(fernTestValueSaturday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSunday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueSunday []*CreateAdGroupsRequestDeliveryScheduleSundayItem
+
+		// Act
+		obj.SetSunday(fernTestValueSunday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetThursday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueThursday []*CreateAdGroupsRequestDeliveryScheduleThursdayItem
+
+		// Act
+		obj.SetThursday(fernTestValueThursday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTuesday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueTuesday []*CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+
+		// Act
+		obj.SetTuesday(fernTestValueTuesday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWednesday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueWednesday []*CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+
+		// Act
+		obj.SetWednesday(fernTestValueWednesday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleFridayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleFridayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleMondayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleMondayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleSundayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleSundayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleThursdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleThursdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &CreateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersCreateAdGroupsRequestFrequencyCap(t *testing.T) {
 	t.Run("SetMaximumImpressions", func(t *testing.T) {
 		obj := &CreateAdGroupsRequestFrequencyCap{}
@@ -16485,6 +18686,1450 @@ func TestSettersMarkExplicitSearchTargetingOptionsAdGroupsResponse(t *testing.T)
 
 }
 
+func TestSettersUpdateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("SetFriday", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueFriday []*UpdateAdGroupsRequestDeliveryScheduleFridayItem
+		obj.SetFriday(fernTestValueFriday)
+		assert.Equal(t, fernTestValueFriday, obj.Friday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMonday", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueMonday []*UpdateAdGroupsRequestDeliveryScheduleMondayItem
+		obj.SetMonday(fernTestValueMonday)
+		assert.Equal(t, fernTestValueMonday, obj.Monday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSaturday", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueSaturday []*UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+		obj.SetSaturday(fernTestValueSaturday)
+		assert.Equal(t, fernTestValueSaturday, obj.Saturday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSunday", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueSunday []*UpdateAdGroupsRequestDeliveryScheduleSundayItem
+		obj.SetSunday(fernTestValueSunday)
+		assert.Equal(t, fernTestValueSunday, obj.Sunday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetThursday", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueThursday []*UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+		obj.SetThursday(fernTestValueThursday)
+		assert.Equal(t, fernTestValueThursday, obj.Thursday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTuesday", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueTuesday []*UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+		obj.SetTuesday(fernTestValueTuesday)
+		assert.Equal(t, fernTestValueTuesday, obj.Tuesday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetWednesday", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueWednesday []*UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+		obj.SetWednesday(fernTestValueWednesday)
+		assert.Equal(t, fernTestValueWednesday, obj.Wednesday)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("GetFriday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var expected []*UpdateAdGroupsRequestDeliveryScheduleFridayItem
+		obj.Friday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFriday(), "getter should return the property value")
+	})
+
+	t.Run("GetFriday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		obj.Friday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFriday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFriday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFriday() // Should return zero value
+	})
+
+	t.Run("GetMonday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var expected []*UpdateAdGroupsRequestDeliveryScheduleMondayItem
+		obj.Monday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMonday(), "getter should return the property value")
+	})
+
+	t.Run("GetMonday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		obj.Monday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMonday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMonday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMonday() // Should return zero value
+	})
+
+	t.Run("GetSaturday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var expected []*UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+		obj.Saturday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSaturday(), "getter should return the property value")
+	})
+
+	t.Run("GetSaturday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		obj.Saturday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSaturday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSaturday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSaturday() // Should return zero value
+	})
+
+	t.Run("GetSunday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var expected []*UpdateAdGroupsRequestDeliveryScheduleSundayItem
+		obj.Sunday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSunday(), "getter should return the property value")
+	})
+
+	t.Run("GetSunday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		obj.Sunday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSunday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSunday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSunday() // Should return zero value
+	})
+
+	t.Run("GetThursday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var expected []*UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+		obj.Thursday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetThursday(), "getter should return the property value")
+	})
+
+	t.Run("GetThursday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		obj.Thursday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetThursday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetThursday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetThursday() // Should return zero value
+	})
+
+	t.Run("GetTuesday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var expected []*UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+		obj.Tuesday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTuesday(), "getter should return the property value")
+	})
+
+	t.Run("GetTuesday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		obj.Tuesday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTuesday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTuesday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTuesday() // Should return zero value
+	})
+
+	t.Run("GetWednesday", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var expected []*UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+		obj.Wednesday = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWednesday(), "getter should return the property value")
+	})
+
+	t.Run("GetWednesday_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		obj.Wednesday = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWednesday(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWednesday_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliverySchedule
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWednesday() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("SetFriday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueFriday []*UpdateAdGroupsRequestDeliveryScheduleFridayItem
+
+		// Act
+		obj.SetFriday(fernTestValueFriday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMonday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueMonday []*UpdateAdGroupsRequestDeliveryScheduleMondayItem
+
+		// Act
+		obj.SetMonday(fernTestValueMonday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSaturday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueSaturday []*UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+
+		// Act
+		obj.SetSaturday(fernTestValueSaturday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSunday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueSunday []*UpdateAdGroupsRequestDeliveryScheduleSundayItem
+
+		// Act
+		obj.SetSunday(fernTestValueSunday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetThursday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueThursday []*UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+
+		// Act
+		obj.SetThursday(fernTestValueThursday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTuesday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueTuesday []*UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+
+		// Act
+		obj.SetTuesday(fernTestValueTuesday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWednesday_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		var fernTestValueWednesday []*UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+
+		// Act
+		obj.SetWednesday(fernTestValueWednesday)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersUpdateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleFridayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleFridayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleFridayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersUpdateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleMondayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleMondayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleMondayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersUpdateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersUpdateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleSundayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleSundayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSundayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersUpdateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersUpdateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersUpdateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("SetEnd", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var fernTestValueEnd string
+		obj.SetEnd(fernTestValueEnd)
+		assert.Equal(t, fernTestValueEnd, obj.End)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStart", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var fernTestValueStart string
+		obj.SetStart(fernTestValueStart)
+		assert.Equal(t, fernTestValueStart, obj.Start)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("GetEnd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var expected string
+		obj.End = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnd(), "getter should return the property value")
+	})
+
+	t.Run("GetEnd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnd() // Should return zero value
+	})
+
+	t.Run("GetStart", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var expected string
+		obj.Start = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStart(), "getter should return the property value")
+	})
+
+	t.Run("GetStart_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStart() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("SetEnd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var fernTestValueEnd string
+
+		// Act
+		obj.SetEnd(fernTestValueEnd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStart_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		var fernTestValueStart string
+
+		// Act
+		obj.SetStart(fernTestValueStart)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersUpdateAdGroupsRequestFrequencyCap(t *testing.T) {
 	t.Run("SetMaximumImpressions", func(t *testing.T) {
 		obj := &UpdateAdGroupsRequestFrequencyCap{}
@@ -16950,6 +20595,14 @@ func TestSettersUpdateAdGroupsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDeliverySchedule", func(t *testing.T) {
+		obj := &UpdateAdGroupsRequest{}
+		var fernTestValueDeliverySchedule *UpdateAdGroupsRequestDeliverySchedule
+		obj.SetDeliverySchedule(fernTestValueDeliverySchedule)
+		assert.Equal(t, fernTestValueDeliverySchedule, obj.DeliverySchedule)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDemographics", func(t *testing.T) {
 		obj := &UpdateAdGroupsRequest{}
 		var fernTestValueDemographics *AdGroupDemographicsBody
@@ -17298,6 +20951,37 @@ func TestSettersMarkExplicitUpdateAdGroupsRequest(t *testing.T) {
 
 		// Act
 		obj.SetConversionLocation(fernTestValueConversionLocation)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDeliverySchedule_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequest{}
+		var fernTestValueDeliverySchedule *UpdateAdGroupsRequestDeliverySchedule
+
+		// Act
+		obj.SetDeliverySchedule(fernTestValueDeliverySchedule)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -17981,6 +21665,72 @@ func TestJSONMarshalingAdGroupCustomLocation(t *testing.T) {
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
 		var obj AdGroupCustomLocation
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingAdGroupDeliverySchedule(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliverySchedule{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled AdGroupDeliverySchedule
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj AdGroupDeliverySchedule
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj AdGroupDeliverySchedule
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingAdGroupDeliveryWindow(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdGroupDeliveryWindow{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled AdGroupDeliveryWindow
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj AdGroupDeliveryWindow
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj AdGroupDeliveryWindow
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -18712,6 +22462,270 @@ func TestJSONMarshalingAdGroupTargetingCategory(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingCreateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateAdGroupsRequestDeliverySchedule
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliverySchedule
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliverySchedule
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCreateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleFridayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateAdGroupsRequestDeliveryScheduleFridayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleFridayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleFridayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCreateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleMondayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateAdGroupsRequestDeliveryScheduleMondayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleMondayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleMondayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCreateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCreateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleSundayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateAdGroupsRequestDeliveryScheduleSundayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleSundayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleSundayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCreateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleThursdayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateAdGroupsRequestDeliveryScheduleThursdayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleThursdayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleThursdayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCreateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCreateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingCreateAdGroupsRequestFrequencyCap(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -19075,6 +23089,270 @@ func TestJSONMarshalingSearchTargetingOptionsAdGroupsResponse(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingUpdateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateAdGroupsRequestDeliverySchedule
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliverySchedule
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliverySchedule
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingUpdateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleFridayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateAdGroupsRequestDeliveryScheduleFridayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleFridayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleFridayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingUpdateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleMondayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateAdGroupsRequestDeliveryScheduleMondayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleMondayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleMondayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingUpdateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingUpdateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSundayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateAdGroupsRequestDeliveryScheduleSundayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleSundayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleSundayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingUpdateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleThursdayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingUpdateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingUpdateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUpdateAdGroupsRequestFrequencyCap(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -19232,6 +23510,38 @@ func TestStringAdGroupCustomLocation(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AdGroupCustomLocation
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringAdGroupDeliverySchedule(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &AdGroupDeliverySchedule{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliverySchedule
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringAdGroupDeliveryWindow(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &AdGroupDeliveryWindow{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliveryWindow
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -19589,6 +23899,134 @@ func TestStringAdGroupTargetingCategory(t *testing.T) {
 	})
 }
 
+func TestStringCreateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliverySchedule
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleFridayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleFridayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleMondayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleMondayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleSundayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleSundayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleThursdayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringCreateAdGroupsRequestFrequencyCap(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -19760,6 +24198,134 @@ func TestStringSearchTargetingOptionsAdGroupsResponse(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SearchTargetingOptionsAdGroupsResponse
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliverySchedule
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleFridayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleFridayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleMondayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleMondayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSundayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleSundayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -22653,6 +27219,52 @@ func TestExtraPropertiesAdGroupCustomLocation(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesAdGroupDeliverySchedule(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &AdGroupDeliverySchedule{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliverySchedule
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesAdGroupDeliveryWindow(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &AdGroupDeliveryWindow{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdGroupDeliveryWindow
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesAdGroupDemographicCategory(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -23159,6 +27771,190 @@ func TestExtraPropertiesAdGroupTargetingCategory(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesCreateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliverySchedule{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliverySchedule
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleFridayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleFridayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleMondayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleMondayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleSundayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleSundayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleThursdayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesCreateAdGroupsRequestFrequencyCap(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -23407,6 +28203,190 @@ func TestExtraPropertiesSearchTargetingOptionsAdGroupsResponse(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SearchTargetingOptionsAdGroupsResponse
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateAdGroupsRequestDeliverySchedule(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliverySchedule{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliverySchedule
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateAdGroupsRequestDeliveryScheduleFridayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleFridayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleFridayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateAdGroupsRequestDeliveryScheduleMondayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleMondayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleMondayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateAdGroupsRequestDeliveryScheduleSaturdayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSaturdayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateAdGroupsRequestDeliveryScheduleSundayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleSundayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleSundayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateAdGroupsRequestDeliveryScheduleThursdayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleThursdayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateAdGroupsRequestDeliveryScheduleTuesdayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleTuesdayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateAdGroupsRequestDeliveryScheduleWednesdayItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateAdGroupsRequestDeliveryScheduleWednesdayItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

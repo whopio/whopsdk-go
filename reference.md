@@ -3249,6 +3249,14 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
+**deliverySchedule:** `*whopsdk.CreateAdGroupsRequestDeliverySchedule` — Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **demographics:** `*whopsdk.AdGroupDemographicsBody` — Age, gender, and automatic-audience targeting.
     
 </dd>
@@ -3881,6 +3889,14 @@ client.AdGroups.Update(
 <dd>
 
 **conversionLocation:** `*whopsdk.UpdateAdGroupsRequestConversionLocation` — Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission. The lead form itself is set on the ad.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**deliverySchedule:** `*whopsdk.UpdateAdGroupsRequestDeliverySchedule` — Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
     
 </dd>
 </dl>
