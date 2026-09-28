@@ -18,22 +18,23 @@ var (
 	createAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 5)
 	createAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 6)
 	createAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 7)
-	createAdGroupsRequestFieldDemographics         = big.NewInt(1 << 8)
-	createAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 9)
-	createAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 10)
-	createAdGroupsRequestFieldDevices              = big.NewInt(1 << 11)
-	createAdGroupsRequestFieldDynamicCreative      = big.NewInt(1 << 12)
-	createAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 13)
-	createAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 14)
-	createAdGroupsRequestFieldLanguages            = big.NewInt(1 << 15)
-	createAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 16)
-	createAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 17)
-	createAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 18)
-	createAdGroupsRequestFieldPlacements           = big.NewInt(1 << 19)
-	createAdGroupsRequestFieldRegions              = big.NewInt(1 << 20)
-	createAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 21)
-	createAdGroupsRequestFieldStatus               = big.NewInt(1 << 22)
-	createAdGroupsRequestFieldTitle                = big.NewInt(1 << 23)
+	createAdGroupsRequestFieldDeliverySchedule     = big.NewInt(1 << 8)
+	createAdGroupsRequestFieldDemographics         = big.NewInt(1 << 9)
+	createAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 10)
+	createAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 11)
+	createAdGroupsRequestFieldDevices              = big.NewInt(1 << 12)
+	createAdGroupsRequestFieldDynamicCreative      = big.NewInt(1 << 13)
+	createAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 14)
+	createAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 15)
+	createAdGroupsRequestFieldLanguages            = big.NewInt(1 << 16)
+	createAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 17)
+	createAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 18)
+	createAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 19)
+	createAdGroupsRequestFieldPlacements           = big.NewInt(1 << 20)
+	createAdGroupsRequestFieldRegions              = big.NewInt(1 << 21)
+	createAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 22)
+	createAdGroupsRequestFieldStatus               = big.NewInt(1 << 23)
+	createAdGroupsRequestFieldTitle                = big.NewInt(1 << 24)
 )
 
 type CreateAdGroupsRequest struct {
@@ -52,6 +53,8 @@ type CreateAdGroupsRequest struct {
 	ConversionEvent *ConversionEvent                 `json:"conversion_event,omitempty" url:"-"`
 	// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission. The lead form itself is set on the ad.
 	ConversionLocation *CreateAdGroupsRequestConversionLocation `json:"conversion_location,omitempty" url:"-"`
+	// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	DeliverySchedule *CreateAdGroupsRequestDeliverySchedule `json:"delivery_schedule,omitempty" url:"-"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographicsBody `json:"demographics,omitempty" url:"-"`
 	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`).
@@ -159,6 +162,13 @@ func (c *CreateAdGroupsRequest) SetConversionEvent(conversionEvent *ConversionEv
 func (c *CreateAdGroupsRequest) SetConversionLocation(conversionLocation *CreateAdGroupsRequestConversionLocation) {
 	c.ConversionLocation = conversionLocation
 	c.require(createAdGroupsRequestFieldConversionLocation)
+}
+
+// SetDeliverySchedule sets the DeliverySchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequest) SetDeliverySchedule(deliverySchedule *CreateAdGroupsRequestDeliverySchedule) {
+	c.DeliverySchedule = deliverySchedule
+	c.require(createAdGroupsRequestFieldDeliverySchedule)
 }
 
 // SetDemographics sets the Demographics field and marks it as non-optional;
@@ -922,49 +932,50 @@ var (
 	adGroupFieldCustomConversions            = big.NewInt(1 << 30)
 	adGroupFieldCustomEventCounts            = big.NewInt(1 << 31)
 	adGroupFieldCustomEventValues            = big.NewInt(1 << 32)
-	adGroupFieldDeliveryStatus               = big.NewInt(1 << 33)
-	adGroupFieldDemographics                 = big.NewInt(1 << 34)
-	adGroupFieldDesiredCostPerResult         = big.NewInt(1 << 35)
-	adGroupFieldDetailedTargeting            = big.NewInt(1 << 36)
-	adGroupFieldDevices                      = big.NewInt(1 << 37)
-	adGroupFieldDynamicCreative              = big.NewInt(1 << 38)
-	adGroupFieldEndsAt                       = big.NewInt(1 << 39)
-	adGroupFieldFrequency                    = big.NewInt(1 << 40)
-	adGroupFieldFrequencyCap                 = big.NewInt(1 << 41)
-	adGroupFieldID                           = big.NewInt(1 << 42)
-	adGroupFieldImpressions                  = big.NewInt(1 << 43)
-	adGroupFieldIssues                       = big.NewInt(1 << 44)
-	adGroupFieldLanguages                    = big.NewInt(1 << 45)
-	adGroupFieldLeadValue                    = big.NewInt(1 << 46)
-	adGroupFieldLeads                        = big.NewInt(1 << 47)
-	adGroupFieldLinkClicks                   = big.NewInt(1 << 48)
-	adGroupFieldMessageApps                  = big.NewInt(1 << 49)
-	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 50)
-	adGroupFieldOptimizationGoal             = big.NewInt(1 << 51)
-	adGroupFieldPlacements                   = big.NewInt(1 << 52)
-	adGroupFieldPlatform                     = big.NewInt(1 << 53)
-	adGroupFieldPurchaseValue                = big.NewInt(1 << 54)
-	adGroupFieldPurchases                    = big.NewInt(1 << 55)
-	adGroupFieldReach                        = big.NewInt(1 << 56)
-	adGroupFieldRegions                      = big.NewInt(1 << 57)
-	adGroupFieldResultEvent                  = big.NewInt(1 << 58)
-	adGroupFieldResultEventName              = big.NewInt(1 << 59)
-	adGroupFieldResults                      = big.NewInt(1 << 60)
-	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 61)
-	adGroupFieldScheduleValue                = big.NewInt(1 << 62)
-	adGroupFieldSchedules                    = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adGroupFieldSpend                        = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adGroupFieldSpendCurrency                = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 73)
-	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 74)
-	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	adGroupFieldDeliverySchedule             = big.NewInt(1 << 33)
+	adGroupFieldDeliveryStatus               = big.NewInt(1 << 34)
+	adGroupFieldDemographics                 = big.NewInt(1 << 35)
+	adGroupFieldDesiredCostPerResult         = big.NewInt(1 << 36)
+	adGroupFieldDetailedTargeting            = big.NewInt(1 << 37)
+	adGroupFieldDevices                      = big.NewInt(1 << 38)
+	adGroupFieldDynamicCreative              = big.NewInt(1 << 39)
+	adGroupFieldEndsAt                       = big.NewInt(1 << 40)
+	adGroupFieldFrequency                    = big.NewInt(1 << 41)
+	adGroupFieldFrequencyCap                 = big.NewInt(1 << 42)
+	adGroupFieldID                           = big.NewInt(1 << 43)
+	adGroupFieldImpressions                  = big.NewInt(1 << 44)
+	adGroupFieldIssues                       = big.NewInt(1 << 45)
+	adGroupFieldLanguages                    = big.NewInt(1 << 46)
+	adGroupFieldLeadValue                    = big.NewInt(1 << 47)
+	adGroupFieldLeads                        = big.NewInt(1 << 48)
+	adGroupFieldLinkClicks                   = big.NewInt(1 << 49)
+	adGroupFieldMessageApps                  = big.NewInt(1 << 50)
+	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 51)
+	adGroupFieldOptimizationGoal             = big.NewInt(1 << 52)
+	adGroupFieldPlacements                   = big.NewInt(1 << 53)
+	adGroupFieldPlatform                     = big.NewInt(1 << 54)
+	adGroupFieldPurchaseValue                = big.NewInt(1 << 55)
+	adGroupFieldPurchases                    = big.NewInt(1 << 56)
+	adGroupFieldReach                        = big.NewInt(1 << 57)
+	adGroupFieldRegions                      = big.NewInt(1 << 58)
+	adGroupFieldResultEvent                  = big.NewInt(1 << 59)
+	adGroupFieldResultEventName              = big.NewInt(1 << 60)
+	adGroupFieldResults                      = big.NewInt(1 << 61)
+	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 62)
+	adGroupFieldScheduleValue                = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adGroupFieldSchedules                    = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adGroupFieldSpend                        = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adGroupFieldSpendCurrency                = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 76)
 )
 
 type AdGroup struct {
@@ -1033,6 +1044,8 @@ type AdGroup struct {
 	CustomEventCounts map[string]any `json:"custom_event_counts" url:"custom_event_counts"`
 	// Conversion value attributed to each custom event, keyed by event name like custom_event_counts. Sums the value passed to whop.track, normalized to USD; events fired without a value contribute 0.
 	CustomEventValues map[string]any `json:"custom_event_values" url:"custom_event_values"`
+	// Hours the ad group delivers in each week, keyed by day. Days it doesn't deliver are omitted. `null` when it delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	DeliverySchedule *AdGroupDeliverySchedule `json:"delivery_schedule,omitempty" url:"delivery_schedule,omitempty"`
 	// Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdGroupDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// Age, gender, and automatic-audience targeting.
@@ -1352,6 +1365,13 @@ func (a *AdGroup) GetCustomEventValues() map[string]any {
 		return nil
 	}
 	return a.CustomEventValues
+}
+
+func (a *AdGroup) GetDeliverySchedule() *AdGroupDeliverySchedule {
+	if a == nil {
+		return nil
+	}
+	return a.DeliverySchedule
 }
 
 func (a *AdGroup) GetDeliveryStatus() AdGroupDeliveryStatus {
@@ -1898,6 +1918,13 @@ func (a *AdGroup) SetCustomEventCounts(customEventCounts map[string]any) {
 func (a *AdGroup) SetCustomEventValues(customEventValues map[string]any) {
 	a.CustomEventValues = customEventValues
 	a.require(adGroupFieldCustomEventValues)
+}
+
+// SetDeliverySchedule sets the DeliverySchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetDeliverySchedule(deliverySchedule *AdGroupDeliverySchedule) {
+	a.DeliverySchedule = deliverySchedule
+	a.require(adGroupFieldDeliverySchedule)
 }
 
 // SetDeliveryStatus sets the DeliveryStatus field and marks it as non-optional;
@@ -2996,6 +3023,186 @@ func (a AdGroupCustomLocationDistanceUnit) Ptr() *AdGroupCustomLocationDistanceU
 	return &a
 }
 
+var (
+	adGroupDeliveryScheduleFieldFriday    = big.NewInt(1 << 0)
+	adGroupDeliveryScheduleFieldMonday    = big.NewInt(1 << 1)
+	adGroupDeliveryScheduleFieldSaturday  = big.NewInt(1 << 2)
+	adGroupDeliveryScheduleFieldSunday    = big.NewInt(1 << 3)
+	adGroupDeliveryScheduleFieldThursday  = big.NewInt(1 << 4)
+	adGroupDeliveryScheduleFieldTuesday   = big.NewInt(1 << 5)
+	adGroupDeliveryScheduleFieldWednesday = big.NewInt(1 << 6)
+)
+
+type AdGroupDeliverySchedule struct {
+	Friday    []*AdGroupDeliveryWindow `json:"friday,omitempty" url:"friday,omitempty"`
+	Monday    []*AdGroupDeliveryWindow `json:"monday,omitempty" url:"monday,omitempty"`
+	Saturday  []*AdGroupDeliveryWindow `json:"saturday,omitempty" url:"saturday,omitempty"`
+	Sunday    []*AdGroupDeliveryWindow `json:"sunday,omitempty" url:"sunday,omitempty"`
+	Thursday  []*AdGroupDeliveryWindow `json:"thursday,omitempty" url:"thursday,omitempty"`
+	Tuesday   []*AdGroupDeliveryWindow `json:"tuesday,omitempty" url:"tuesday,omitempty"`
+	Wednesday []*AdGroupDeliveryWindow `json:"wednesday,omitempty" url:"wednesday,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupDeliverySchedule) GetFriday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Friday
+}
+
+func (a *AdGroupDeliverySchedule) GetMonday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Monday
+}
+
+func (a *AdGroupDeliverySchedule) GetSaturday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Saturday
+}
+
+func (a *AdGroupDeliverySchedule) GetSunday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Sunday
+}
+
+func (a *AdGroupDeliverySchedule) GetThursday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Thursday
+}
+
+func (a *AdGroupDeliverySchedule) GetTuesday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Tuesday
+}
+
+func (a *AdGroupDeliverySchedule) GetWednesday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Wednesday
+}
+
+func (a *AdGroupDeliverySchedule) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdGroupDeliverySchedule) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetFriday sets the Friday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetFriday(friday []*AdGroupDeliveryWindow) {
+	a.Friday = friday
+	a.require(adGroupDeliveryScheduleFieldFriday)
+}
+
+// SetMonday sets the Monday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetMonday(monday []*AdGroupDeliveryWindow) {
+	a.Monday = monday
+	a.require(adGroupDeliveryScheduleFieldMonday)
+}
+
+// SetSaturday sets the Saturday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetSaturday(saturday []*AdGroupDeliveryWindow) {
+	a.Saturday = saturday
+	a.require(adGroupDeliveryScheduleFieldSaturday)
+}
+
+// SetSunday sets the Sunday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetSunday(sunday []*AdGroupDeliveryWindow) {
+	a.Sunday = sunday
+	a.require(adGroupDeliveryScheduleFieldSunday)
+}
+
+// SetThursday sets the Thursday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetThursday(thursday []*AdGroupDeliveryWindow) {
+	a.Thursday = thursday
+	a.require(adGroupDeliveryScheduleFieldThursday)
+}
+
+// SetTuesday sets the Tuesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetTuesday(tuesday []*AdGroupDeliveryWindow) {
+	a.Tuesday = tuesday
+	a.require(adGroupDeliveryScheduleFieldTuesday)
+}
+
+// SetWednesday sets the Wednesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetWednesday(wednesday []*AdGroupDeliveryWindow) {
+	a.Wednesday = wednesday
+	a.require(adGroupDeliveryScheduleFieldWednesday)
+}
+
+func (a *AdGroupDeliverySchedule) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdGroupDeliverySchedule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdGroupDeliverySchedule(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdGroupDeliverySchedule) MarshalJSON() ([]byte, error) {
+	type embed AdGroupDeliverySchedule
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdGroupDeliverySchedule) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
 // Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 type AdGroupDeliveryStatus string
 
@@ -3056,6 +3263,108 @@ func NewAdGroupDeliveryStatusFromString(s string) (AdGroupDeliveryStatus, error)
 
 func (a AdGroupDeliveryStatus) Ptr() *AdGroupDeliveryStatus {
 	return &a
+}
+
+var (
+	adGroupDeliveryWindowFieldEnd   = big.NewInt(1 << 0)
+	adGroupDeliveryWindowFieldStart = big.NewInt(1 << 1)
+)
+
+type AdGroupDeliveryWindow struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`; a window past midnight is split across two days.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupDeliveryWindow) GetEnd() string {
+	if a == nil {
+		return ""
+	}
+	return a.End
+}
+
+func (a *AdGroupDeliveryWindow) GetStart() string {
+	if a == nil {
+		return ""
+	}
+	return a.Start
+}
+
+func (a *AdGroupDeliveryWindow) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdGroupDeliveryWindow) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliveryWindow) SetEnd(end string) {
+	a.End = end
+	a.require(adGroupDeliveryWindowFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliveryWindow) SetStart(start string) {
+	a.Start = start
+	a.require(adGroupDeliveryWindowFieldStart)
+}
+
+func (a *AdGroupDeliveryWindow) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdGroupDeliveryWindow
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdGroupDeliveryWindow(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdGroupDeliveryWindow) MarshalJSON() ([]byte, error) {
+	type embed AdGroupDeliveryWindow
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdGroupDeliveryWindow) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
 }
 
 var (
@@ -7439,6 +7748,908 @@ func (c CreateAdGroupsRequestConversionLocation) Ptr() *CreateAdGroupsRequestCon
 	return &c
 }
 
+// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+var (
+	createAdGroupsRequestDeliveryScheduleFieldFriday    = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleFieldMonday    = big.NewInt(1 << 1)
+	createAdGroupsRequestDeliveryScheduleFieldSaturday  = big.NewInt(1 << 2)
+	createAdGroupsRequestDeliveryScheduleFieldSunday    = big.NewInt(1 << 3)
+	createAdGroupsRequestDeliveryScheduleFieldThursday  = big.NewInt(1 << 4)
+	createAdGroupsRequestDeliveryScheduleFieldTuesday   = big.NewInt(1 << 5)
+	createAdGroupsRequestDeliveryScheduleFieldWednesday = big.NewInt(1 << 6)
+)
+
+type CreateAdGroupsRequestDeliverySchedule struct {
+	// Windows the ad group delivers in on Friday.
+	Friday []*CreateAdGroupsRequestDeliveryScheduleFridayItem `json:"friday,omitempty" url:"friday,omitempty"`
+	// Windows the ad group delivers in on Monday.
+	Monday []*CreateAdGroupsRequestDeliveryScheduleMondayItem `json:"monday,omitempty" url:"monday,omitempty"`
+	// Windows the ad group delivers in on Saturday.
+	Saturday []*CreateAdGroupsRequestDeliveryScheduleSaturdayItem `json:"saturday,omitempty" url:"saturday,omitempty"`
+	// Windows the ad group delivers in on Sunday.
+	Sunday []*CreateAdGroupsRequestDeliveryScheduleSundayItem `json:"sunday,omitempty" url:"sunday,omitempty"`
+	// Windows the ad group delivers in on Thursday.
+	Thursday []*CreateAdGroupsRequestDeliveryScheduleThursdayItem `json:"thursday,omitempty" url:"thursday,omitempty"`
+	// Windows the ad group delivers in on Tuesday.
+	Tuesday []*CreateAdGroupsRequestDeliveryScheduleTuesdayItem `json:"tuesday,omitempty" url:"tuesday,omitempty"`
+	// Windows the ad group delivers in on Wednesday.
+	Wednesday []*CreateAdGroupsRequestDeliveryScheduleWednesdayItem `json:"wednesday,omitempty" url:"wednesday,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetFriday() []*CreateAdGroupsRequestDeliveryScheduleFridayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Friday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetMonday() []*CreateAdGroupsRequestDeliveryScheduleMondayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Monday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetSaturday() []*CreateAdGroupsRequestDeliveryScheduleSaturdayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Saturday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetSunday() []*CreateAdGroupsRequestDeliveryScheduleSundayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Sunday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetThursday() []*CreateAdGroupsRequestDeliveryScheduleThursdayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Thursday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetTuesday() []*CreateAdGroupsRequestDeliveryScheduleTuesdayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Tuesday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetWednesday() []*CreateAdGroupsRequestDeliveryScheduleWednesdayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Wednesday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetFriday sets the Friday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetFriday(friday []*CreateAdGroupsRequestDeliveryScheduleFridayItem) {
+	c.Friday = friday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldFriday)
+}
+
+// SetMonday sets the Monday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetMonday(monday []*CreateAdGroupsRequestDeliveryScheduleMondayItem) {
+	c.Monday = monday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldMonday)
+}
+
+// SetSaturday sets the Saturday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetSaturday(saturday []*CreateAdGroupsRequestDeliveryScheduleSaturdayItem) {
+	c.Saturday = saturday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldSaturday)
+}
+
+// SetSunday sets the Sunday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetSunday(sunday []*CreateAdGroupsRequestDeliveryScheduleSundayItem) {
+	c.Sunday = sunday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldSunday)
+}
+
+// SetThursday sets the Thursday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetThursday(thursday []*CreateAdGroupsRequestDeliveryScheduleThursdayItem) {
+	c.Thursday = thursday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldThursday)
+}
+
+// SetTuesday sets the Tuesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetTuesday(tuesday []*CreateAdGroupsRequestDeliveryScheduleTuesdayItem) {
+	c.Tuesday = tuesday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldTuesday)
+}
+
+// SetWednesday sets the Wednesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetWednesday(wednesday []*CreateAdGroupsRequestDeliveryScheduleWednesdayItem) {
+	c.Wednesday = wednesday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldWednesday)
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliverySchedule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliverySchedule(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliverySchedule
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleFridayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleFridayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleFridayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleFridayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleFridayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleFridayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleFridayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleFridayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleMondayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleMondayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleMondayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleMondayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleMondayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleMondayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleMondayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleMondayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleSaturdayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleSaturdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleSaturdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleSaturdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleSaturdayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleSaturdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleSundayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleSundayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleSundayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleSundayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleSundayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleSundayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleSundayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleSundayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleThursdayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleThursdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleThursdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleThursdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleThursdayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleThursdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleThursdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleThursdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleTuesdayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleTuesdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleTuesdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleTuesdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleTuesdayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleTuesdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleWednesdayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleWednesdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleWednesdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleWednesdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleWednesdayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleWednesdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 // Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
 var (
 	createAdGroupsRequestFrequencyCapFieldMaximumImpressions = big.NewInt(1 << 0)
@@ -8795,6 +10006,908 @@ func (u UpdateAdGroupsRequestConversionLocation) Ptr() *UpdateAdGroupsRequestCon
 	return &u
 }
 
+// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+var (
+	updateAdGroupsRequestDeliveryScheduleFieldFriday    = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleFieldMonday    = big.NewInt(1 << 1)
+	updateAdGroupsRequestDeliveryScheduleFieldSaturday  = big.NewInt(1 << 2)
+	updateAdGroupsRequestDeliveryScheduleFieldSunday    = big.NewInt(1 << 3)
+	updateAdGroupsRequestDeliveryScheduleFieldThursday  = big.NewInt(1 << 4)
+	updateAdGroupsRequestDeliveryScheduleFieldTuesday   = big.NewInt(1 << 5)
+	updateAdGroupsRequestDeliveryScheduleFieldWednesday = big.NewInt(1 << 6)
+)
+
+type UpdateAdGroupsRequestDeliverySchedule struct {
+	// Windows the ad group delivers in on Friday.
+	Friday []*UpdateAdGroupsRequestDeliveryScheduleFridayItem `json:"friday,omitempty" url:"friday,omitempty"`
+	// Windows the ad group delivers in on Monday.
+	Monday []*UpdateAdGroupsRequestDeliveryScheduleMondayItem `json:"monday,omitempty" url:"monday,omitempty"`
+	// Windows the ad group delivers in on Saturday.
+	Saturday []*UpdateAdGroupsRequestDeliveryScheduleSaturdayItem `json:"saturday,omitempty" url:"saturday,omitempty"`
+	// Windows the ad group delivers in on Sunday.
+	Sunday []*UpdateAdGroupsRequestDeliveryScheduleSundayItem `json:"sunday,omitempty" url:"sunday,omitempty"`
+	// Windows the ad group delivers in on Thursday.
+	Thursday []*UpdateAdGroupsRequestDeliveryScheduleThursdayItem `json:"thursday,omitempty" url:"thursday,omitempty"`
+	// Windows the ad group delivers in on Tuesday.
+	Tuesday []*UpdateAdGroupsRequestDeliveryScheduleTuesdayItem `json:"tuesday,omitempty" url:"tuesday,omitempty"`
+	// Windows the ad group delivers in on Wednesday.
+	Wednesday []*UpdateAdGroupsRequestDeliveryScheduleWednesdayItem `json:"wednesday,omitempty" url:"wednesday,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetFriday() []*UpdateAdGroupsRequestDeliveryScheduleFridayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Friday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetMonday() []*UpdateAdGroupsRequestDeliveryScheduleMondayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Monday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetSaturday() []*UpdateAdGroupsRequestDeliveryScheduleSaturdayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Saturday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetSunday() []*UpdateAdGroupsRequestDeliveryScheduleSundayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Sunday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetThursday() []*UpdateAdGroupsRequestDeliveryScheduleThursdayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Thursday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetTuesday() []*UpdateAdGroupsRequestDeliveryScheduleTuesdayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Tuesday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetWednesday() []*UpdateAdGroupsRequestDeliveryScheduleWednesdayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Wednesday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetFriday sets the Friday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetFriday(friday []*UpdateAdGroupsRequestDeliveryScheduleFridayItem) {
+	u.Friday = friday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldFriday)
+}
+
+// SetMonday sets the Monday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetMonday(monday []*UpdateAdGroupsRequestDeliveryScheduleMondayItem) {
+	u.Monday = monday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldMonday)
+}
+
+// SetSaturday sets the Saturday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetSaturday(saturday []*UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) {
+	u.Saturday = saturday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldSaturday)
+}
+
+// SetSunday sets the Sunday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetSunday(sunday []*UpdateAdGroupsRequestDeliveryScheduleSundayItem) {
+	u.Sunday = sunday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldSunday)
+}
+
+// SetThursday sets the Thursday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetThursday(thursday []*UpdateAdGroupsRequestDeliveryScheduleThursdayItem) {
+	u.Thursday = thursday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldThursday)
+}
+
+// SetTuesday sets the Tuesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetTuesday(tuesday []*UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) {
+	u.Tuesday = tuesday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldTuesday)
+}
+
+// SetWednesday sets the Wednesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetWednesday(wednesday []*UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) {
+	u.Wednesday = wednesday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldWednesday)
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliverySchedule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliverySchedule(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliverySchedule
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleFridayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleFridayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleFridayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleFridayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleFridayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleFridayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleFridayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleFridayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleMondayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleMondayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleMondayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleMondayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleMondayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleMondayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleMondayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleMondayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleSaturdayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleSaturdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleSaturdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleSaturdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleSaturdayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleSaturdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleSundayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleSundayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleSundayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleSundayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleSundayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleSundayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleSundayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleSundayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleThursdayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleThursdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleThursdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleThursdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleThursdayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleThursdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleTuesdayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleTuesdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleTuesdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleTuesdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleTuesdayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleTuesdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleWednesdayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleWednesdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleWednesdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleWednesdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleWednesdayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleWednesdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 // Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
 var (
 	updateAdGroupsRequestFrequencyCapFieldMaximumImpressions = big.NewInt(1 << 0)
@@ -9280,21 +11393,22 @@ var (
 	updateAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 5)
 	updateAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 6)
 	updateAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 7)
-	updateAdGroupsRequestFieldDemographics         = big.NewInt(1 << 8)
-	updateAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 9)
-	updateAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 10)
-	updateAdGroupsRequestFieldDevices              = big.NewInt(1 << 11)
-	updateAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 12)
-	updateAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 13)
-	updateAdGroupsRequestFieldLanguages            = big.NewInt(1 << 14)
-	updateAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 15)
-	updateAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 16)
-	updateAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 17)
-	updateAdGroupsRequestFieldPlacements           = big.NewInt(1 << 18)
-	updateAdGroupsRequestFieldRegions              = big.NewInt(1 << 19)
-	updateAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 20)
-	updateAdGroupsRequestFieldStatus               = big.NewInt(1 << 21)
-	updateAdGroupsRequestFieldTitle                = big.NewInt(1 << 22)
+	updateAdGroupsRequestFieldDeliverySchedule     = big.NewInt(1 << 8)
+	updateAdGroupsRequestFieldDemographics         = big.NewInt(1 << 9)
+	updateAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 10)
+	updateAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 11)
+	updateAdGroupsRequestFieldDevices              = big.NewInt(1 << 12)
+	updateAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 13)
+	updateAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 14)
+	updateAdGroupsRequestFieldLanguages            = big.NewInt(1 << 15)
+	updateAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 16)
+	updateAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 17)
+	updateAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 18)
+	updateAdGroupsRequestFieldPlacements           = big.NewInt(1 << 19)
+	updateAdGroupsRequestFieldRegions              = big.NewInt(1 << 20)
+	updateAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 21)
+	updateAdGroupsRequestFieldStatus               = big.NewInt(1 << 22)
+	updateAdGroupsRequestFieldTitle                = big.NewInt(1 << 23)
 )
 
 type UpdateAdGroupsRequest struct {
@@ -9313,6 +11427,8 @@ type UpdateAdGroupsRequest struct {
 	ConversionEvent *ConversionEvent                 `json:"conversion_event,omitempty" url:"-"`
 	// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission. The lead form itself is set on the ad.
 	ConversionLocation *UpdateAdGroupsRequestConversionLocation `json:"conversion_location,omitempty" url:"-"`
+	// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	DeliverySchedule *UpdateAdGroupsRequestDeliverySchedule `json:"delivery_schedule,omitempty" url:"-"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographicsBody `json:"demographics,omitempty" url:"-"`
 	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`).
@@ -9418,6 +11534,13 @@ func (u *UpdateAdGroupsRequest) SetConversionEvent(conversionEvent *ConversionEv
 func (u *UpdateAdGroupsRequest) SetConversionLocation(conversionLocation *UpdateAdGroupsRequestConversionLocation) {
 	u.ConversionLocation = conversionLocation
 	u.require(updateAdGroupsRequestFieldConversionLocation)
+}
+
+// SetDeliverySchedule sets the DeliverySchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequest) SetDeliverySchedule(deliverySchedule *UpdateAdGroupsRequestDeliverySchedule) {
+	u.DeliverySchedule = deliverySchedule
+	u.require(updateAdGroupsRequestFieldDeliverySchedule)
 }
 
 // SetDemographics sets the Demographics field and marks it as non-optional;

@@ -348,6 +348,7 @@ func (r *RawClient) Update(
 			Client:          options.HTTPClient,
 			Request:         request,
 			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
