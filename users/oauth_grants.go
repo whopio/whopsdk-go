@@ -28,10 +28,10 @@ type CreateOauthGrantsRequest struct {
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// The app being authorized, prefixed `app_`.
 	ClientID string `json:"client_id" url:"-"`
-	// The PKCE code challenge: the base64url-encoded SHA-256 of your code verifier, without padding.
-	CodeChallenge string `json:"code_challenge" url:"-"`
-	// How `code_challenge` was derived. Only `S256` is accepted.
-	CodeChallengeMethod CreateOauthGrantsRequestCodeChallengeMethod `json:"code_challenge_method" url:"-"`
+	// The PKCE code challenge: the base64url-encoded SHA-256 of your code verifier, without padding. Required unless the app is confidential; a confidential app that leaves it out redeems the code with its secret instead of a verifier.
+	CodeChallenge *string `json:"code_challenge,omitempty" url:"-"`
+	// How `code_challenge` was derived. Only `S256` is accepted. Required with `code_challenge`.
+	CodeChallengeMethod *CreateOauthGrantsRequestCodeChallengeMethod `json:"code_challenge_method,omitempty" url:"-"`
 	// Whether the consent UI listed these scopes for the user. Sending `false` succeeds only when the user has already granted every scope requested.
 	ConsentShown *bool `json:"consent_shown,omitempty" url:"-"`
 	// OIDC nonce, echoed into the resulting ID token. Required when `requested_scopes` includes `openid`.
@@ -72,14 +72,14 @@ func (c *CreateOauthGrantsRequest) SetClientID(clientID string) {
 
 // SetCodeChallenge sets the CodeChallenge field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOauthGrantsRequest) SetCodeChallenge(codeChallenge string) {
+func (c *CreateOauthGrantsRequest) SetCodeChallenge(codeChallenge *string) {
 	c.CodeChallenge = codeChallenge
 	c.require(createOauthGrantsRequestFieldCodeChallenge)
 }
 
 // SetCodeChallengeMethod sets the CodeChallengeMethod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOauthGrantsRequest) SetCodeChallengeMethod(codeChallengeMethod CreateOauthGrantsRequestCodeChallengeMethod) {
+func (c *CreateOauthGrantsRequest) SetCodeChallengeMethod(codeChallengeMethod *CreateOauthGrantsRequestCodeChallengeMethod) {
 	c.CodeChallengeMethod = codeChallengeMethod
 	c.require(createOauthGrantsRequestFieldCodeChallengeMethod)
 }
@@ -233,7 +233,7 @@ func (l *ListOauthGrantsRequest) SetDirection(direction *ListOauthGrantsRequestD
 	l.require(listOauthGrantsRequestFieldDirection)
 }
 
-// How `code_challenge` was derived. Only `S256` is accepted.
+// How `code_challenge` was derived. Only `S256` is accepted. Required with `code_challenge`.
 type CreateOauthGrantsRequestCodeChallengeMethod string
 
 const (

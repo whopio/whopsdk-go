@@ -42418,7 +42418,7 @@ client.Users.OauthGrants.List(
 <dl>
 <dd>
 
-Completes the OAuth authorization step for the authenticated user: records their consent for the scopes an app asked for and mints the authorization code to hand back to it. Returns the grant, plus a `redirect_url` carrying that code — the one and only time it is returned. Exchange the code at `POST /oauth/token` with the verifier for `code_challenge`. Requires a user session, because consent has to come from the account holder: an API key or an OAuth token is refused, so an app can never authorize itself. Send an `Idempotency-Key` to make a retry safe — a replay returns the original `redirect_url` and its code rather than issuing a second one.
+Completes the OAuth authorization step for the authenticated user: records their consent for the scopes an app asked for and mints the authorization code to hand back to it. Returns the grant, plus a `redirect_url` carrying that code — the one and only time it is returned. Exchange the code at `POST /oauth/token` with the verifier for `code_challenge`, or with the app's secret when a confidential app sent none. Requires a user session, because consent has to come from the account holder: an API key or an OAuth token is refused, so an app can never authorize itself. Send an `Idempotency-Key` to make a retry safe — a replay returns the original `redirect_url` and its code rather than issuing a second one.
 </dd>
 </dl>
 </dd>
@@ -42435,8 +42435,6 @@ Completes the OAuth authorization step for the authenticated user: records their
 ```go
 request := &users.CreateOauthGrantsRequest{
     ClientID: "app_xxxxxxxxxxxxxx",
-    CodeChallenge: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    CodeChallengeMethod: users.CreateOauthGrantsRequestCodeChallengeMethodS256,
     RedirectURI: "https://Booking.Shinetime.example:8443/oauth/Callback/",
     RequestedScopes: []string{
         "profile",
@@ -42476,7 +42474,7 @@ client.Users.OauthGrants.Create(
 <dl>
 <dd>
 
-**codeChallenge:** `string` — The PKCE code challenge: the base64url-encoded SHA-256 of your code verifier, without padding.
+**codeChallenge:** `*string` — The PKCE code challenge: the base64url-encoded SHA-256 of your code verifier, without padding. Required unless the app is confidential; a confidential app that leaves it out redeems the code with its secret instead of a verifier.
     
 </dd>
 </dl>
@@ -42484,7 +42482,7 @@ client.Users.OauthGrants.Create(
 <dl>
 <dd>
 
-**codeChallengeMethod:** `*users.CreateOauthGrantsRequestCodeChallengeMethod` — How `code_challenge` was derived. Only `S256` is accepted.
+**codeChallengeMethod:** `*users.CreateOauthGrantsRequestCodeChallengeMethod` — How `code_challenge` was derived. Only `S256` is accepted. Required with `code_challenge`.
     
 </dd>
 </dl>
