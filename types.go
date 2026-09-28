@@ -46513,12 +46513,13 @@ var (
 	socialAccountFieldID                  = big.NewInt(1 << 2)
 	socialAccountFieldName                = big.NewInt(1 << 3)
 	socialAccountFieldParentSocialAccount = big.NewInt(1 << 4)
-	socialAccountFieldPlatform            = big.NewInt(1 << 5)
-	socialAccountFieldProfilePictureURL   = big.NewInt(1 << 6)
-	socialAccountFieldScopes              = big.NewInt(1 << 7)
-	socialAccountFieldURL                 = big.NewInt(1 << 8)
-	socialAccountFieldUsername            = big.NewInt(1 << 9)
-	socialAccountFieldVerified            = big.NewInt(1 << 10)
+	socialAccountFieldPartnershipStatus   = big.NewInt(1 << 5)
+	socialAccountFieldPlatform            = big.NewInt(1 << 6)
+	socialAccountFieldProfilePictureURL   = big.NewInt(1 << 7)
+	socialAccountFieldScopes              = big.NewInt(1 << 8)
+	socialAccountFieldURL                 = big.NewInt(1 << 9)
+	socialAccountFieldUsername            = big.NewInt(1 << 10)
+	socialAccountFieldVerified            = big.NewInt(1 << 11)
 )
 
 type SocialAccount struct {
@@ -46530,8 +46531,10 @@ type SocialAccount struct {
 	ID string `json:"id" url:"id"`
 	// The display name of the social account on the platform.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The social account this one belongs to on the platform, such as the Facebook page that owns an Instagram account. Null when the social account stands on its own.
+	// The social account this one belongs to on the platform, such as the Facebook page that owns an Instagram account. Null when the social account stands on its own, or when it is a partner.
 	ParentSocialAccount *SocialAccountParent `json:"parent_social_account,omitempty" url:"parent_social_account,omitempty"`
+	// Where a partner creator's permission to run partnership ads stands. `pending` until the creator approves it in the Instagram app, `approved` once they have, and `revoked` once it no longer holds. Null when the social account isn't a partner.
+	PartnershipStatus *SocialAccountPartnershipStatus `json:"partnership_status,omitempty" url:"partnership_status,omitempty"`
 	// The platform the social account exists on.
 	Platform SocialAccountPlatform `json:"platform" url:"platform"`
 	// The URL where the profile picture of the social account can be accessed.
@@ -46584,6 +46587,13 @@ func (s *SocialAccount) GetParentSocialAccount() *SocialAccountParent {
 		return nil
 	}
 	return s.ParentSocialAccount
+}
+
+func (s *SocialAccount) GetPartnershipStatus() *SocialAccountPartnershipStatus {
+	if s == nil {
+		return nil
+	}
+	return s.PartnershipStatus
 }
 
 func (s *SocialAccount) GetPlatform() SocialAccountPlatform {
@@ -46675,6 +46685,13 @@ func (s *SocialAccount) SetName(name *string) {
 func (s *SocialAccount) SetParentSocialAccount(parentSocialAccount *SocialAccountParent) {
 	s.ParentSocialAccount = parentSocialAccount
 	s.require(socialAccountFieldParentSocialAccount)
+}
+
+// SetPartnershipStatus sets the PartnershipStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SocialAccount) SetPartnershipStatus(partnershipStatus *SocialAccountPartnershipStatus) {
+	s.PartnershipStatus = partnershipStatus
+	s.require(socialAccountFieldPartnershipStatus)
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -46989,6 +47006,32 @@ func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlat
 }
 
 func (s SocialAccountParentPlatform) Ptr() *SocialAccountParentPlatform {
+	return &s
+}
+
+// Where a partner creator's permission to run partnership ads stands. `pending` until the creator approves it in the Instagram app, `approved` once they have, and `revoked` once it no longer holds. Null when the social account isn't a partner.
+type SocialAccountPartnershipStatus string
+
+const (
+	SocialAccountPartnershipStatusPending  SocialAccountPartnershipStatus = "pending"
+	SocialAccountPartnershipStatusApproved SocialAccountPartnershipStatus = "approved"
+	SocialAccountPartnershipStatusRevoked  SocialAccountPartnershipStatus = "revoked"
+)
+
+func NewSocialAccountPartnershipStatusFromString(s string) (SocialAccountPartnershipStatus, error) {
+	switch s {
+	case "pending":
+		return SocialAccountPartnershipStatusPending, nil
+	case "approved":
+		return SocialAccountPartnershipStatusApproved, nil
+	case "revoked":
+		return SocialAccountPartnershipStatusRevoked, nil
+	}
+	var t SocialAccountPartnershipStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SocialAccountPartnershipStatus) Ptr() *SocialAccountPartnershipStatus {
 	return &s
 }
 

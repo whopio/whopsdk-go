@@ -10,6 +10,73 @@ import (
 )
 
 var (
+	addPartnerSocialAccountsRequestFieldID        = big.NewInt(1 << 0)
+	addPartnerSocialAccountsRequestFieldAccountID = big.NewInt(1 << 1)
+	addPartnerSocialAccountsRequestFieldUsername  = big.NewInt(1 << 2)
+)
+
+type AddPartnerSocialAccountsRequest struct {
+	// The Instagram account (a sacc_ identifier) the partners run partnership ads with.
+	ID string `json:"-" url:"-"`
+	// The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
+	// The creator's Instagram username, with or without the leading `@`. The creator needs a professional (Business or Creator) Instagram account.
+	Username string `json:"username" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (a *AddPartnerSocialAccountsRequest) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddPartnerSocialAccountsRequest) SetID(id string) {
+	a.ID = id
+	a.require(addPartnerSocialAccountsRequestFieldID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddPartnerSocialAccountsRequest) SetAccountID(accountID *string) {
+	a.AccountID = accountID
+	a.require(addPartnerSocialAccountsRequestFieldAccountID)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddPartnerSocialAccountsRequest) SetUsername(username string) {
+	a.Username = username
+	a.require(addPartnerSocialAccountsRequestFieldUsername)
+}
+
+func (a *AddPartnerSocialAccountsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler AddPartnerSocialAccountsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*a = AddPartnerSocialAccountsRequest(body)
+	return nil
+}
+
+func (a *AddPartnerSocialAccountsRequest) MarshalJSON() ([]byte, error) {
+	type embed AddPartnerSocialAccountsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	connectSocialAccountsRequestFieldAccountID   = big.NewInt(1 << 0)
 	connectSocialAccountsRequestFieldPlatform    = big.NewInt(1 << 1)
 	connectSocialAccountsRequestFieldRedirectURL = big.NewInt(1 << 2)
@@ -352,6 +419,62 @@ func (l *ListSocialAccountsRequest) SetDirection(direction *ListSocialAccountsRe
 }
 
 var (
+	partnersSocialAccountsRequestFieldID        = big.NewInt(1 << 0)
+	partnersSocialAccountsRequestFieldAccountID = big.NewInt(1 << 1)
+	partnersSocialAccountsRequestFieldFirst     = big.NewInt(1 << 2)
+	partnersSocialAccountsRequestFieldAfter     = big.NewInt(1 << 3)
+)
+
+type PartnersSocialAccountsRequest struct {
+	// The Instagram account (a sacc_ identifier) the partners run partnership ads with.
+	ID string `json:"-" url:"-"`
+	// The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (p *PartnersSocialAccountsRequest) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnersSocialAccountsRequest) SetID(id string) {
+	p.ID = id
+	p.require(partnersSocialAccountsRequestFieldID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnersSocialAccountsRequest) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(partnersSocialAccountsRequestFieldAccountID)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnersSocialAccountsRequest) SetFirst(first *int) {
+	p.First = first
+	p.require(partnersSocialAccountsRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnersSocialAccountsRequest) SetAfter(after *string) {
+	p.After = after
+	p.require(partnersSocialAccountsRequestFieldAfter)
+}
+
+var (
 	postsSocialAccountsRequestFieldID        = big.NewInt(1 << 0)
 	postsSocialAccountsRequestFieldAccountID = big.NewInt(1 << 1)
 	postsSocialAccountsRequestFieldPostID    = big.NewInt(1 << 2)
@@ -472,6 +595,52 @@ func (r *RefreshSocialAccountsRequest) MarshalJSON() ([]byte, error) {
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
 	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	removePartnerSocialAccountsRequestFieldID        = big.NewInt(1 << 0)
+	removePartnerSocialAccountsRequestFieldPartnerID = big.NewInt(1 << 1)
+	removePartnerSocialAccountsRequestFieldAccountID = big.NewInt(1 << 2)
+)
+
+type RemovePartnerSocialAccountsRequest struct {
+	// The Instagram account (a sacc_ identifier) the partner runs partnership ads with.
+	ID string `json:"-" url:"-"`
+	// The partner creator's social account (a sacc_ identifier).
+	PartnerID string `json:"-" url:"-"`
+	// The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *RemovePartnerSocialAccountsRequest) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RemovePartnerSocialAccountsRequest) SetID(id string) {
+	r.ID = id
+	r.require(removePartnerSocialAccountsRequestFieldID)
+}
+
+// SetPartnerID sets the PartnerID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RemovePartnerSocialAccountsRequest) SetPartnerID(partnerID string) {
+	r.PartnerID = partnerID
+	r.require(removePartnerSocialAccountsRequestFieldPartnerID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RemovePartnerSocialAccountsRequest) SetAccountID(accountID *string) {
+	r.AccountID = accountID
+	r.require(removePartnerSocialAccountsRequestFieldAccountID)
 }
 
 var (
@@ -1813,6 +1982,238 @@ func (l *ListSocialAccountsResponsePageInfo) String() string {
 }
 
 var (
+	partnersSocialAccountsResponseFieldData     = big.NewInt(1 << 0)
+	partnersSocialAccountsResponseFieldPageInfo = big.NewInt(1 << 1)
+)
+
+type PartnersSocialAccountsResponse struct {
+	Data     []*SocialAccount                        `json:"data" url:"data"`
+	PageInfo *PartnersSocialAccountsResponsePageInfo `json:"page_info" url:"page_info"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnersSocialAccountsResponse) GetData() []*SocialAccount {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PartnersSocialAccountsResponse) GetPageInfo() *PartnersSocialAccountsResponsePageInfo {
+	if p == nil {
+		return nil
+	}
+	return p.PageInfo
+}
+
+func (p *PartnersSocialAccountsResponse) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnersSocialAccountsResponse) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnersSocialAccountsResponse) SetData(data []*SocialAccount) {
+	p.Data = data
+	p.require(partnersSocialAccountsResponseFieldData)
+}
+
+// SetPageInfo sets the PageInfo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnersSocialAccountsResponse) SetPageInfo(pageInfo *PartnersSocialAccountsResponsePageInfo) {
+	p.PageInfo = pageInfo
+	p.require(partnersSocialAccountsResponseFieldPageInfo)
+}
+
+func (p *PartnersSocialAccountsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnersSocialAccountsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnersSocialAccountsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnersSocialAccountsResponse) MarshalJSON() ([]byte, error) {
+	type embed PartnersSocialAccountsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnersSocialAccountsResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	partnersSocialAccountsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	partnersSocialAccountsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	partnersSocialAccountsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	partnersSocialAccountsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+type PartnersSocialAccountsResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnersSocialAccountsResponsePageInfo) GetEndCursor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.EndCursor
+}
+
+func (p *PartnersSocialAccountsResponsePageInfo) GetHasNextPage() bool {
+	if p == nil {
+		return false
+	}
+	return p.HasNextPage
+}
+
+func (p *PartnersSocialAccountsResponsePageInfo) GetHasPreviousPage() bool {
+	if p == nil {
+		return false
+	}
+	return p.HasPreviousPage
+}
+
+func (p *PartnersSocialAccountsResponsePageInfo) GetStartCursor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StartCursor
+}
+
+func (p *PartnersSocialAccountsResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnersSocialAccountsResponsePageInfo) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnersSocialAccountsResponsePageInfo) SetEndCursor(endCursor *string) {
+	p.EndCursor = endCursor
+	p.require(partnersSocialAccountsResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnersSocialAccountsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	p.HasNextPage = hasNextPage
+	p.require(partnersSocialAccountsResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnersSocialAccountsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	p.HasPreviousPage = hasPreviousPage
+	p.require(partnersSocialAccountsResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnersSocialAccountsResponsePageInfo) SetStartCursor(startCursor *string) {
+	p.StartCursor = startCursor
+	p.require(partnersSocialAccountsResponsePageInfoFieldStartCursor)
+}
+
+func (p *PartnersSocialAccountsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnersSocialAccountsResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnersSocialAccountsResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnersSocialAccountsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed PartnersSocialAccountsResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnersSocialAccountsResponsePageInfo) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
 	postsSocialAccountsResponseFieldData     = big.NewInt(1 << 0)
 	postsSocialAccountsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
@@ -2010,4 +2411,106 @@ func (p *PostsSocialAccountsResponsePageInfo) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	removePartnerSocialAccountsResponseFieldDeleted = big.NewInt(1 << 0)
+	removePartnerSocialAccountsResponseFieldID      = big.NewInt(1 << 1)
+)
+
+type RemovePartnerSocialAccountsResponse struct {
+	// Always true.
+	Deleted bool `json:"deleted" url:"deleted"`
+	// ID of the removed partner's social account.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RemovePartnerSocialAccountsResponse) GetDeleted() bool {
+	if r == nil {
+		return false
+	}
+	return r.Deleted
+}
+
+func (r *RemovePartnerSocialAccountsResponse) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *RemovePartnerSocialAccountsResponse) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RemovePartnerSocialAccountsResponse) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetDeleted sets the Deleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RemovePartnerSocialAccountsResponse) SetDeleted(deleted bool) {
+	r.Deleted = deleted
+	r.require(removePartnerSocialAccountsResponseFieldDeleted)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RemovePartnerSocialAccountsResponse) SetID(id string) {
+	r.ID = id
+	r.require(removePartnerSocialAccountsResponseFieldID)
+}
+
+func (r *RemovePartnerSocialAccountsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler RemovePartnerSocialAccountsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RemovePartnerSocialAccountsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RemovePartnerSocialAccountsResponse) MarshalJSON() ([]byte, error) {
+	type embed RemovePartnerSocialAccountsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RemovePartnerSocialAccountsResponse) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
 }

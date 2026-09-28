@@ -33187,6 +33187,244 @@ client.SocialAccounts.LeadForms(
 </dl>
 </details>
 
+<details><summary><code>client.SocialAccounts.Partners(ID) -> *whopsdk.PartnersSocialAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the creators an Instagram account runs partnership ads with, and where each creator's permission stands.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.PartnersSocialAccountsRequest{
+    ID: "id",
+}
+client.SocialAccounts.Partners(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The Instagram account (a sacc_ identifier) the partners run partnership ads with.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.SocialAccounts.AddPartner(ID, request) -> *whopsdk.SocialAccount</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Invites an Instagram creator to run partnership ads with an Instagram account. The creator approves the invitation in the Instagram app, and `partnership_status` stays `pending` until they do; [refresh](/api-reference/beta/social-accounts/refresh) the partner to pick up their answer.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.AddPartnerSocialAccountsRequest{
+    ID: "id",
+    Username: "@luverahealth",
+}
+client.SocialAccounts.AddPartner(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The Instagram account (a sacc_ identifier) the partners run partnership ads with.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**username:** `string` — The creator's Instagram username, with or without the leading `@`. The creator needs a professional (Business or Creator) Instagram account.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.SocialAccounts.RemovePartner(ID, PartnerID) -> *whopsdk.RemovePartnerSocialAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Revokes a creator's permission to run partnership ads with an Instagram account. Every account that advertises as the Instagram account loses the partner, since the permission belongs to the Instagram account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RemovePartnerSocialAccountsRequest{
+    ID: "id",
+    PartnerID: "partner_id",
+}
+client.SocialAccounts.RemovePartner(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The Instagram account (a sacc_ identifier) the partner runs partnership ads with.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**partnerID:** `string` — The partner creator's social account (a sacc_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.SocialAccounts.Posts(ID) -> *whopsdk.PostsSocialAccountsResponse</code></summary>
 <dl>
 <dd>
