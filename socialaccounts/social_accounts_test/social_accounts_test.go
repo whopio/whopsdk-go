@@ -207,6 +207,86 @@ func TestSocialAccountsLeadFormsWithWireMock(
 	VerifyRequestCount(t, "TestSocialAccountsLeadFormsWithWireMock", "GET", "/social_accounts/id/lead_forms", map[string]interface{}{"account_id": "account_id"}, 1)
 }
 
+func TestSocialAccountsPartnersWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.PartnersSocialAccountsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.SocialAccounts.Partners(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSocialAccountsPartnersWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSocialAccountsPartnersWithWireMock", "GET", "/social_accounts/id/partners", nil, 1)
+}
+
+func TestSocialAccountsAddPartnerWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.AddPartnerSocialAccountsRequest{
+		ID:       "id",
+		Username: "@luverahealth",
+	}
+	_, invocationErr := client.SocialAccounts.AddPartner(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSocialAccountsAddPartnerWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSocialAccountsAddPartnerWithWireMock", "POST", "/social_accounts/id/partners", nil, 1)
+}
+
+func TestSocialAccountsRemovePartnerWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.RemovePartnerSocialAccountsRequest{
+		ID:        "id",
+		PartnerID: "partner_id",
+	}
+	_, invocationErr := client.SocialAccounts.RemovePartner(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSocialAccountsRemovePartnerWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSocialAccountsRemovePartnerWithWireMock", "DELETE", "/social_accounts/id/partners/partner_id", nil, 1)
+}
+
 func TestSocialAccountsPostsWithWireMock(
 	t *testing.T,
 ) {

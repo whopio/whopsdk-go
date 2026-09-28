@@ -229,6 +229,147 @@ func (c *Client) LeadForms(
 	return response.Body, nil
 }
 
+// Lists the creators an Instagram account runs partnership ads with, and where each creator's permission stands.
+//
+// Example:
+//
+//	request := &whopsdk.PartnersSocialAccountsRequest{
+//	    ID: "id",
+//	}
+//	client.SocialAccounts.Partners(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Partners(
+	ctx context.Context,
+	request *whopsdk.PartnersSocialAccountsRequest,
+	opts ...option.RequestOption,
+) (*core.Page[*string, *whopsdk.SocialAccount, *whopsdk.PartnersSocialAccountsResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/social_accounts/%v/partners",
+		request.ID,
+	)
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	headers := internal.MergeHeaders(
+		c.options.ToHeader(),
+		options.ToHeader(),
+	)
+	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
+		if pageRequest.Cursor != nil {
+			queryParams.Set("after", *pageRequest.Cursor)
+		}
+		nextURL := endpointURL
+		if len(queryParams) > 0 {
+			nextURL += "?" + queryParams.Encode()
+		}
+		return &internal.CallParams{
+			URL:             nextURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        pageRequest.Response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		}
+	}
+	readPageResponse := func(response *whopsdk.PartnersSocialAccountsResponse) *core.PageResponse[*string, *whopsdk.SocialAccount, *whopsdk.PartnersSocialAccountsResponse] {
+		var zeroValue *string
+		var next *string
+		if response.PageInfo != nil {
+			next = response.PageInfo.EndCursor
+		}
+		results := response.GetData()
+		return &core.PageResponse[*string, *whopsdk.SocialAccount, *whopsdk.PartnersSocialAccountsResponse]{
+			Results:  results,
+			Response: response,
+			Next:     next,
+			Done:     next == zeroValue || *next == "",
+		}
+	}
+	pager := internal.NewCursorPager(
+		c.caller,
+		prepareCall,
+		readPageResponse,
+	)
+	return pager.GetPage(ctx, request.After)
+}
+
+// Invites an Instagram creator to run partnership ads with an Instagram account. The creator approves the invitation in the Instagram app, and `partnership_status` stays `pending` until they do; [refresh](/api-reference/beta/social-accounts/refresh) the partner to pick up their answer.
+//
+// Example:
+//
+//	request := &whopsdk.AddPartnerSocialAccountsRequest{
+//	    ID: "id",
+//	    Username: "@luverahealth",
+//	}
+//	client.SocialAccounts.AddPartner(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) AddPartner(
+	ctx context.Context,
+	request *whopsdk.AddPartnerSocialAccountsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.SocialAccount, error) {
+	response, err := c.WithRawResponse.AddPartner(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Revokes a creator's permission to run partnership ads with an Instagram account. Every account that advertises as the Instagram account loses the partner, since the permission belongs to the Instagram account.
+//
+// Example:
+//
+//	request := &whopsdk.RemovePartnerSocialAccountsRequest{
+//	    ID: "id",
+//	    PartnerID: "partner_id",
+//	}
+//	client.SocialAccounts.RemovePartner(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) RemovePartner(
+	ctx context.Context,
+	request *whopsdk.RemovePartnerSocialAccountsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.RemovePartnerSocialAccountsResponse, error) {
+	response, err := c.WithRawResponse.RemovePartner(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Lists the existing posts of a connected Facebook page, Instagram account, or TikTok account.
 //
 // Example:
