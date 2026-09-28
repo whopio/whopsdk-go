@@ -42498,7 +42498,7 @@ client.Users.OauthGrants.Create(
 <dl>
 <dd>
 
-**consentShown:** `*bool` — Whether the consent UI listed these scopes for the user. Sending `false` succeeds only when the user has already granted every scope requested.
+**consentShown:** `*bool` — Whether the consent UI listed these scopes for the user. Sending `false` succeeds only when the user has already granted every scope requested, or when the app is one of Whop's own with the consent skip switched on and asks for `openid` alone.
     
 </dd>
 </dl>
