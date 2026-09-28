@@ -113,10 +113,8 @@ func TestUsersOauthGrantsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &users.CreateOauthGrantsRequest{
-		ClientID:            "app_xxxxxxxxxxxxxx",
-		CodeChallenge:       "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-		CodeChallengeMethod: users.CreateOauthGrantsRequestCodeChallengeMethodS256,
-		RedirectURI:         "https://Booking.Shinetime.example:8443/oauth/Callback/",
+		ClientID:    "app_xxxxxxxxxxxxxx",
+		RedirectURI: "https://Booking.Shinetime.example:8443/oauth/Callback/",
 		RequestedScopes: []string{
 			"profile",
 		},

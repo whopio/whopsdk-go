@@ -29,7 +29,7 @@ func TestSettersCreateOauthGrantsRequest(t *testing.T) {
 
 	t.Run("SetCodeChallenge", func(t *testing.T) {
 		obj := &CreateOauthGrantsRequest{}
-		var fernTestValueCodeChallenge string
+		var fernTestValueCodeChallenge *string
 		obj.SetCodeChallenge(fernTestValueCodeChallenge)
 		assert.Equal(t, fernTestValueCodeChallenge, obj.CodeChallenge)
 		assert.NotNil(t, obj.explicitFields)
@@ -37,7 +37,7 @@ func TestSettersCreateOauthGrantsRequest(t *testing.T) {
 
 	t.Run("SetCodeChallengeMethod", func(t *testing.T) {
 		obj := &CreateOauthGrantsRequest{}
-		var fernTestValueCodeChallengeMethod CreateOauthGrantsRequestCodeChallengeMethod
+		var fernTestValueCodeChallengeMethod *CreateOauthGrantsRequestCodeChallengeMethod
 		obj.SetCodeChallengeMethod(fernTestValueCodeChallengeMethod)
 		assert.Equal(t, fernTestValueCodeChallengeMethod, obj.CodeChallengeMethod)
 		assert.NotNil(t, obj.explicitFields)
@@ -160,7 +160,7 @@ func TestSettersMarkExplicitCreateOauthGrantsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOauthGrantsRequest{}
-		var fernTestValueCodeChallenge string
+		var fernTestValueCodeChallenge *string
 
 		// Act
 		obj.SetCodeChallenge(fernTestValueCodeChallenge)
@@ -191,7 +191,7 @@ func TestSettersMarkExplicitCreateOauthGrantsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOauthGrantsRequest{}
-		var fernTestValueCodeChallengeMethod CreateOauthGrantsRequestCodeChallengeMethod
+		var fernTestValueCodeChallengeMethod *CreateOauthGrantsRequestCodeChallengeMethod
 
 		// Act
 		obj.SetCodeChallengeMethod(fernTestValueCodeChallengeMethod)
