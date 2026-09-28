@@ -121,7 +121,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates a reusable checkout configuration for an existing or inline plan.
+// Creates a reusable checkout configuration for an existing or inline variant.
 //
 // Example:
 //

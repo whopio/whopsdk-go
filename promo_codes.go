@@ -282,7 +282,7 @@ type ListPromoCodesRequest struct {
 	Status *ListPromoCodesRequestStatus `json:"-" url:"status,omitempty"`
 	// Only promo codes scoped to these product IDs.
 	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
-	// Only promo codes scoped to these plan IDs.
+	// Only promo codes scoped to these variant IDs.
 	PlanIDs []*string `json:"-" url:"plan_ids,omitempty"`
 	// Only promo codes created before this ISO 8601 timestamp.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`

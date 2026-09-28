@@ -1099,7 +1099,7 @@ type ResolutionCenterCase struct {
 	Outcome *ResolutionCenterCaseOutcome `json:"outcome,omitempty" url:"outcome,omitempty"`
 	// The payment the case was opened against.
 	Payment *ResolutionPayment `json:"payment" url:"payment"`
-	// The plan the payment was made on, prefixed `plan_`.
+	// The variant the payment was made on, prefixed `plan_`.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product the payment was for, prefixed `prod_`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`

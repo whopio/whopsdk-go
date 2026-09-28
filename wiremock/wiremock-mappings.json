@@ -10535,41 +10535,11 @@
           "Authorization": {
             "matches": "Bearer .+"
           }
-        },
-        "queryParameters": {
-          "release_methods": {
-            "hasExactly": [
-              {
-                "equalTo": "buy_now"
-              }
-            ]
-          },
-          "visibilities": {
-            "hasExactly": [
-              {
-                "equalTo": "visible"
-              }
-            ]
-          },
-          "plan_types": {
-            "hasExactly": [
-              {
-                "equalTo": "renewal"
-              }
-            ]
-          },
-          "product_ids": {
-            "hasExactly": [
-              {
-                "equalTo": "prod_xxxxxxxxxxxxxx"
-              }
-            ]
-          }
         }
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account\": {\n        \"id\": \"biz_xxxxxxxxxxxxxx\",\n        \"title\": \"Shine Time Auto Detailing\"\n      },\n      \"adaptive_pricing_enabled\": true,\n      \"attributes\": {\n        \"color\": \"Blue\",\n        \"size\": \"S\"\n      },\n      \"billing_period\": 30,\n      \"cancel_discount_intervals\": 3,\n      \"cancel_discount_percentage\": 20,\n      \"checkout_styling\": {\n        \"background_color\": \"#0f172a\",\n        \"border_style\": \"rounded\",\n        \"button_color\": \"#f59e0b\",\n        \"font_family\": \"roboto\"\n      },\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"currency\": \"usd\",\n      \"custom_fields\": [\n        {\n          \"field_type\": \"text\",\n          \"id\": \"field_xxxxxxxxxxxxxx\",\n          \"name\": \"Vehicle make and model\",\n          \"order\": 0,\n          \"placeholder\": \"2021 Audi S5\",\n          \"required\": true\n        }\n      ],\n      \"description\": \"Two hand washes a month, interior vacuum, and a quarterly sealant top-up.\",\n      \"expiration_days\": 365,\n      \"formatted_price\": \"$59.00 / month\",\n      \"id\": \"plan_xxxxxxxxxxxxxx\",\n      \"image\": {\n        \"blurhash\": \"LA6bDXT$E3b:R6i+RibEIWbp%ej1\",\n        \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n      },\n      \"initial_price\": 0,\n      \"initial_price_due\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n      \"invoice\": {\n        \"id\": \"inv_xxxxxxxxxxxxxx\"\n      },\n      \"member_count\": 0,\n      \"metadata\": {\n        \"custom_cta\": \"subscribe\",\n        \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n      },\n      \"offer_cancel_discount\": true,\n      \"payment_method_configuration\": {\n        \"disabled\": [\n          \"crypto\"\n        ],\n        \"enabled\": [\n          \"card\"\n        ],\n        \"include_platform_defaults\": true\n      },\n      \"plan_type\": \"renewal\",\n      \"product\": {\n        \"id\": \"prod_xxxxxxxxxxxxxx\",\n        \"title\": \"Ceramic Coating Package\"\n      },\n      \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n      \"release_method\": \"buy_now\",\n      \"renewal_price\": 59,\n      \"sku\": \"CERAMIC-COATING-S-BLUE\",\n      \"split_pay_required_payments\": 4,\n      \"stock\": 0,\n      \"strike_through_initial_price\": 99,\n      \"strike_through_renewal_price\": 79,\n      \"three_ds_level\": \"mandate_challenge\",\n      \"title\": \"Unlimited Wash Club\",\n      \"trial_period_days\": 7,\n      \"unlimited_stock\": false,\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"visibility\": \"visible\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account\": {\n        \"id\": \"biz_xxxxxxxxxxxxxx\",\n        \"title\": \"Shine Time Auto Detailing\"\n      },\n      \"adaptive_pricing_enabled\": true,\n      \"attributes\": {},\n      \"billing_period\": 30,\n      \"cancel_discount_intervals\": 1.1,\n      \"cancel_discount_percentage\": 1.1,\n      \"checkout_styling\": {\n        \"key\": \"value\"\n      },\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"currency\": \"usd\",\n      \"custom_fields\": [\n        {\n          \"field_type\": \"text\",\n          \"id\": \"field_xxxxxxxxxxxxxx\",\n          \"name\": \"Vehicle make and model\",\n          \"order\": 0,\n          \"placeholder\": \"2021 Audi S5\",\n          \"required\": true\n        }\n      ],\n      \"description\": \"description\",\n      \"expiration_days\": 1.1,\n      \"formatted_price\": \"$59.00 / month\",\n      \"id\": \"plan_xxxxxxxxxxxxxx\",\n      \"image\": {\n        \"key\": \"value\"\n      },\n      \"initial_price\": 0,\n      \"initial_price_due\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n      \"invoice\": {\n        \"key\": \"value\"\n      },\n      \"member_count\": 0,\n      \"metadata\": {\n        \"custom_cta\": \"subscribe\",\n        \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n      },\n      \"offer_cancel_discount\": false,\n      \"payment_method_configuration\": {\n        \"key\": \"value\"\n      },\n      \"plan_type\": \"renewal\",\n      \"product\": {\n        \"id\": \"prod_xxxxxxxxxxxxxx\",\n        \"title\": \"Ceramic Coating Package\"\n      },\n      \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n      \"release_method\": \"buy_now\",\n      \"renewal_price\": 59,\n      \"sku\": \"sku\",\n      \"split_pay_required_payments\": 1.1,\n      \"stock\": 0,\n      \"strike_through_initial_price\": 1.1,\n      \"strike_through_renewal_price\": 1.1,\n      \"three_ds_level\": \"mandate_challenge\",\n      \"title\": \"Unlimited Wash Club\",\n      \"trial_period_days\": 1.1,\n      \"unlimited_stock\": false,\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"visibility\": \"visible\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10601,7 +10571,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"adaptive_pricing_enabled\": true,\n  \"attributes\": {\n    \"color\": \"Blue\",\n    \"size\": \"Large\"\n  },\n  \"billing_period\": 30,\n  \"cancel_discount_intervals\": 3,\n  \"cancel_discount_percentage\": 20,\n  \"checkout_styling\": {\n    \"background_color\": \"#0f172a\",\n    \"border_style\": \"rounded\",\n    \"button_color\": \"#f59e0b\",\n    \"font_family\": \"roboto\"\n  },\n  \"collect_tax\": false,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"custom_fields\": [\n    {\n      \"field_type\": \"text\",\n      \"id\": \"field_xxxxxxxxxxxxxx\",\n      \"name\": \"Vehicle make and model\",\n      \"order\": 0,\n      \"placeholder\": \"2021 Audi S5\",\n      \"required\": true\n    }\n  ],\n  \"deletable\": true,\n  \"description\": \"Two hand washes a month, interior vacuum, and a quarterly sealant top-up.\",\n  \"effective_payment_method_configuration\": {\n    \"disabled\": [\n      \"card\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"expiration_days\": 365,\n  \"formatted_price\": \"$59.00 / month\",\n  \"id\": \"plan_xxxxxxxxxxxxxx\",\n  \"image\": {\n    \"blurhash\": \"LA6bDXT$E3b:R6i+RibEIWbp%ej1\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n  },\n  \"initial_price\": 0,\n  \"initial_price_due\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n  \"invoice\": {\n    \"id\": \"inv_xxxxxxxxxxxxxx\"\n  },\n  \"member_count\": 0,\n  \"metadata\": {\n    \"custom_cta\": \"subscribe\",\n    \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n  },\n  \"offer_cancel_discount\": true,\n  \"payment_method_configuration\": {\n    \"disabled\": [\n      \"crypto\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"plan_type\": \"renewal\",\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxxx\",\n    \"title\": \"Ceramic Coating Package\"\n  },\n  \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n  \"release_method\": \"buy_now\",\n  \"renewal_price\": 59,\n  \"sku\": \"WASH-CLUB-TEE-LARGE-BLUE\",\n  \"split_pay_required_payments\": 4,\n  \"stock\": 0,\n  \"strike_through_initial_price\": 99,\n  \"strike_through_renewal_price\": 79,\n  \"tax_type\": \"inclusive\",\n  \"three_ds_level\": \"mandate_challenge\",\n  \"title\": \"Unlimited Wash Club\",\n  \"trial_period_days\": 7,\n  \"unlimited_stock\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"visibility\": \"visible\"\n}",
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"adaptive_pricing_enabled\": true,\n  \"attributes\": {\n    \"key\": \"value\"\n  },\n  \"billing_period\": 30,\n  \"cancel_discount_intervals\": 1.1,\n  \"cancel_discount_percentage\": 1.1,\n  \"checkout_styling\": {\n    \"key\": \"value\"\n  },\n  \"collect_tax\": true,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"custom_fields\": [\n    {\n      \"field_type\": \"text\",\n      \"id\": \"field_xxxxxxxxxxxxxx\",\n      \"name\": \"Vehicle make and model\",\n      \"order\": 0,\n      \"placeholder\": \"2021 Audi S5\",\n      \"required\": true\n    }\n  ],\n  \"deletable\": true,\n  \"description\": \"description\",\n  \"effective_payment_method_configuration\": {\n    \"disabled\": [\n      \"card\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"expiration_days\": 1.1,\n  \"formatted_price\": \"$59.00 / month\",\n  \"id\": \"plan_xxxxxxxxxxxxxx\",\n  \"image\": {\n    \"key\": \"value\"\n  },\n  \"initial_price\": 0,\n  \"initial_price_due\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n  \"invoice\": {\n    \"key\": \"value\"\n  },\n  \"member_count\": 0,\n  \"metadata\": {\n    \"custom_cta\": \"subscribe\",\n    \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n  },\n  \"offer_cancel_discount\": false,\n  \"payment_method_configuration\": {\n    \"key\": \"value\"\n  },\n  \"plan_type\": \"renewal\",\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxxx\",\n    \"title\": \"Ceramic Coating Package\"\n  },\n  \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n  \"release_method\": \"buy_now\",\n  \"renewal_price\": 59,\n  \"sku\": \"sku\",\n  \"split_pay_required_payments\": 1.1,\n  \"stock\": 0,\n  \"strike_through_initial_price\": 1.1,\n  \"strike_through_renewal_price\": 1.1,\n  \"tax_type\": \"inclusive\",\n  \"three_ds_level\": \"mandate_challenge\",\n  \"title\": \"Deprecated plan update\",\n  \"trial_period_days\": 1.1,\n  \"unlimited_stock\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"visibility\": \"visible\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10637,7 +10607,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"adaptive_pricing_enabled\": true,\n  \"attributes\": {\n    \"color\": \"Blue\",\n    \"size\": \"Large\"\n  },\n  \"billing_period\": 30,\n  \"cancel_discount_intervals\": 3,\n  \"cancel_discount_percentage\": 20,\n  \"checkout_styling\": {\n    \"background_color\": \"#0f172a\",\n    \"border_style\": \"rounded\",\n    \"button_color\": \"#f59e0b\",\n    \"font_family\": \"roboto\"\n  },\n  \"collect_tax\": false,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"custom_fields\": [\n    {\n      \"field_type\": \"text\",\n      \"id\": \"field_xxxxxxxxxxxxxx\",\n      \"name\": \"Vehicle make and model\",\n      \"order\": 0,\n      \"placeholder\": \"2021 Audi S5\",\n      \"required\": true\n    }\n  ],\n  \"deletable\": true,\n  \"description\": \"Two hand washes a month, interior vacuum, and a quarterly sealant top-up.\",\n  \"effective_payment_method_configuration\": {\n    \"disabled\": [\n      \"card\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"expiration_days\": 365,\n  \"formatted_price\": \"$59.00 / month\",\n  \"id\": \"plan_xxxxxxxxxxxxxx\",\n  \"image\": {\n    \"blurhash\": \"LA6bDXT$E3b:R6i+RibEIWbp%ej1\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n  },\n  \"initial_price\": 0,\n  \"initial_price_due\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n  \"invoice\": {\n    \"id\": \"inv_xxxxxxxxxxxxxx\"\n  },\n  \"member_count\": 0,\n  \"metadata\": {\n    \"custom_cta\": \"subscribe\",\n    \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n  },\n  \"offer_cancel_discount\": true,\n  \"payment_method_configuration\": {\n    \"disabled\": [\n      \"crypto\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"plan_type\": \"renewal\",\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxxx\",\n    \"title\": \"Ceramic Coating Package\"\n  },\n  \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n  \"release_method\": \"buy_now\",\n  \"renewal_price\": 59,\n  \"sku\": \"WASH-CLUB-TEE-LARGE-BLUE\",\n  \"split_pay_required_payments\": 4,\n  \"stock\": 0,\n  \"strike_through_initial_price\": 99,\n  \"strike_through_renewal_price\": 79,\n  \"tax_type\": \"inclusive\",\n  \"three_ds_level\": \"mandate_challenge\",\n  \"title\": \"Unlimited Wash Club\",\n  \"trial_period_days\": 7,\n  \"unlimited_stock\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"visibility\": \"visible\"\n}",
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"adaptive_pricing_enabled\": true,\n  \"attributes\": {\n    \"key\": \"value\"\n  },\n  \"billing_period\": 30,\n  \"cancel_discount_intervals\": 1.1,\n  \"cancel_discount_percentage\": 1.1,\n  \"checkout_styling\": {\n    \"key\": \"value\"\n  },\n  \"collect_tax\": true,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"custom_fields\": [\n    {\n      \"field_type\": \"text\",\n      \"id\": \"field_xxxxxxxxxxxxxx\",\n      \"name\": \"Vehicle make and model\",\n      \"order\": 0,\n      \"placeholder\": \"2021 Audi S5\",\n      \"required\": true\n    }\n  ],\n  \"deletable\": true,\n  \"description\": \"description\",\n  \"effective_payment_method_configuration\": {\n    \"disabled\": [\n      \"card\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"expiration_days\": 1.1,\n  \"formatted_price\": \"$59.00 / month\",\n  \"id\": \"plan_xxxxxxxxxxxxxx\",\n  \"image\": {\n    \"key\": \"value\"\n  },\n  \"initial_price\": 0,\n  \"initial_price_due\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n  \"invoice\": {\n    \"key\": \"value\"\n  },\n  \"member_count\": 0,\n  \"metadata\": {\n    \"custom_cta\": \"subscribe\",\n    \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n  },\n  \"offer_cancel_discount\": false,\n  \"payment_method_configuration\": {\n    \"key\": \"value\"\n  },\n  \"plan_type\": \"renewal\",\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxxx\",\n    \"title\": \"Ceramic Coating Package\"\n  },\n  \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n  \"release_method\": \"buy_now\",\n  \"renewal_price\": 59,\n  \"sku\": \"sku\",\n  \"split_pay_required_payments\": 1.1,\n  \"stock\": 0,\n  \"strike_through_initial_price\": 1.1,\n  \"strike_through_renewal_price\": 1.1,\n  \"tax_type\": \"inclusive\",\n  \"three_ds_level\": \"mandate_challenge\",\n  \"title\": \"Deprecated plan update\",\n  \"trial_period_days\": 1.1,\n  \"unlimited_stock\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"visibility\": \"visible\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10709,7 +10679,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"adaptive_pricing_enabled\": true,\n  \"attributes\": {\n    \"color\": \"Blue\",\n    \"size\": \"Large\"\n  },\n  \"billing_period\": 30,\n  \"cancel_discount_intervals\": 3,\n  \"cancel_discount_percentage\": 20,\n  \"checkout_styling\": {\n    \"background_color\": \"#0f172a\",\n    \"border_style\": \"rounded\",\n    \"button_color\": \"#f59e0b\",\n    \"font_family\": \"roboto\"\n  },\n  \"collect_tax\": false,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"custom_fields\": [\n    {\n      \"field_type\": \"text\",\n      \"id\": \"field_xxxxxxxxxxxxxx\",\n      \"name\": \"Vehicle make and model\",\n      \"order\": 0,\n      \"placeholder\": \"2021 Audi S5\",\n      \"required\": true\n    }\n  ],\n  \"deletable\": true,\n  \"description\": \"Two hand washes a month, interior vacuum, and a quarterly sealant top-up.\",\n  \"effective_payment_method_configuration\": {\n    \"disabled\": [\n      \"card\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"expiration_days\": 365,\n  \"formatted_price\": \"$59.00 / month\",\n  \"id\": \"plan_xxxxxxxxxxxxxx\",\n  \"image\": {\n    \"blurhash\": \"LA6bDXT$E3b:R6i+RibEIWbp%ej1\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n  },\n  \"initial_price\": 0,\n  \"initial_price_due\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n  \"invoice\": {\n    \"id\": \"inv_xxxxxxxxxxxxxx\"\n  },\n  \"member_count\": 0,\n  \"metadata\": {\n    \"custom_cta\": \"subscribe\",\n    \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n  },\n  \"offer_cancel_discount\": true,\n  \"payment_method_configuration\": {\n    \"disabled\": [\n      \"crypto\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"plan_type\": \"renewal\",\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxxx\",\n    \"title\": \"Ceramic Coating Package\"\n  },\n  \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n  \"release_method\": \"buy_now\",\n  \"renewal_price\": 59,\n  \"sku\": \"WASH-CLUB-TEE-LARGE-BLUE\",\n  \"split_pay_required_payments\": 4,\n  \"stock\": 0,\n  \"strike_through_initial_price\": 99,\n  \"strike_through_renewal_price\": 79,\n  \"tax_type\": \"inclusive\",\n  \"three_ds_level\": \"mandate_challenge\",\n  \"title\": \"Unlimited Wash Club\",\n  \"trial_period_days\": 7,\n  \"unlimited_stock\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"visibility\": \"visible\"\n}",
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"adaptive_pricing_enabled\": true,\n  \"attributes\": {\n    \"key\": \"value\"\n  },\n  \"billing_period\": 30,\n  \"cancel_discount_intervals\": 1.1,\n  \"cancel_discount_percentage\": 1.1,\n  \"checkout_styling\": {\n    \"key\": \"value\"\n  },\n  \"collect_tax\": true,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"custom_fields\": [\n    {\n      \"field_type\": \"text\",\n      \"id\": \"field_xxxxxxxxxxxxxx\",\n      \"name\": \"Vehicle make and model\",\n      \"order\": 0,\n      \"placeholder\": \"2021 Audi S5\",\n      \"required\": true\n    }\n  ],\n  \"deletable\": true,\n  \"description\": \"description\",\n  \"effective_payment_method_configuration\": {\n    \"disabled\": [\n      \"card\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"expiration_days\": 1.1,\n  \"formatted_price\": \"$59.00 / month\",\n  \"id\": \"plan_xxxxxxxxxxxxxx\",\n  \"image\": {\n    \"key\": \"value\"\n  },\n  \"initial_price\": 0,\n  \"initial_price_due\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n  \"invoice\": {\n    \"key\": \"value\"\n  },\n  \"member_count\": 0,\n  \"metadata\": {\n    \"custom_cta\": \"subscribe\",\n    \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n  },\n  \"offer_cancel_discount\": false,\n  \"payment_method_configuration\": {\n    \"key\": \"value\"\n  },\n  \"plan_type\": \"renewal\",\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxxx\",\n    \"title\": \"Ceramic Coating Package\"\n  },\n  \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n  \"release_method\": \"buy_now\",\n  \"renewal_price\": 59,\n  \"sku\": \"sku\",\n  \"split_pay_required_payments\": 1.1,\n  \"stock\": 0,\n  \"strike_through_initial_price\": 1.1,\n  \"strike_through_renewal_price\": 1.1,\n  \"tax_type\": \"inclusive\",\n  \"three_ds_level\": \"mandate_challenge\",\n  \"title\": \"Deprecated plan update\",\n  \"trial_period_days\": 1.1,\n  \"unlimited_stock\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"visibility\": \"visible\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13577,6 +13547,243 @@
       }
     },
     {
+      "id": "e1f4f2ae-0ac9-4e5f-87b6-3e04e7a6392a",
+      "name": "List Variants - default",
+      "request": {
+        "urlPathTemplate": "/variants",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "release_methods": {
+            "hasExactly": [
+              {
+                "equalTo": "buy_now"
+              }
+            ]
+          },
+          "visibilities": {
+            "hasExactly": [
+              {
+                "equalTo": "visible"
+              }
+            ]
+          },
+          "plan_types": {
+            "hasExactly": [
+              {
+                "equalTo": "renewal"
+              }
+            ]
+          },
+          "product_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "prod_xxxxxxxxxxxxxx"
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account\": {\n        \"id\": \"biz_xxxxxxxxxxxxxx\",\n        \"title\": \"Shine Time Auto Detailing\"\n      },\n      \"adaptive_pricing_enabled\": true,\n      \"attributes\": {\n        \"color\": \"Blue\",\n        \"size\": \"S\"\n      },\n      \"billing_period\": 30,\n      \"cancel_discount_intervals\": 3,\n      \"cancel_discount_percentage\": 20,\n      \"checkout_styling\": {\n        \"background_color\": \"#0f172a\",\n        \"border_style\": \"rounded\",\n        \"button_color\": \"#f59e0b\",\n        \"font_family\": \"roboto\"\n      },\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"currency\": \"usd\",\n      \"custom_fields\": [\n        {\n          \"field_type\": \"text\",\n          \"id\": \"field_xxxxxxxxxxxxxx\",\n          \"name\": \"Vehicle make and model\",\n          \"order\": 0,\n          \"placeholder\": \"2021 Audi S5\",\n          \"required\": true\n        }\n      ],\n      \"description\": \"Two hand washes a month, interior vacuum, and a quarterly sealant top-up.\",\n      \"expiration_days\": 365,\n      \"formatted_price\": \"$59.00 / month\",\n      \"id\": \"plan_xxxxxxxxxxxxxx\",\n      \"image\": {\n        \"blurhash\": \"LA6bDXT$E3b:R6i+RibEIWbp%ej1\",\n        \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n      },\n      \"initial_price\": 0,\n      \"initial_price_due\": {\n        \"amount\": \"-2.50\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n      \"invoice\": {\n        \"id\": \"inv_xxxxxxxxxxxxxx\"\n      },\n      \"member_count\": 0,\n      \"metadata\": {\n        \"custom_cta\": \"subscribe\",\n        \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n      },\n      \"offer_cancel_discount\": true,\n      \"payment_method_configuration\": {\n        \"disabled\": [\n          \"crypto\"\n        ],\n        \"enabled\": [\n          \"card\"\n        ],\n        \"include_platform_defaults\": true\n      },\n      \"plan_type\": \"renewal\",\n      \"product\": {\n        \"id\": \"prod_xxxxxxxxxxxxxx\",\n        \"title\": \"Ceramic Coating Package\"\n      },\n      \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n      \"release_method\": \"buy_now\",\n      \"renewal_price\": 59,\n      \"sku\": \"CERAMIC-COATING-S-BLUE\",\n      \"split_pay_required_payments\": 4,\n      \"stock\": 0,\n      \"strike_through_initial_price\": 99,\n      \"strike_through_renewal_price\": 79,\n      \"three_ds_level\": \"mandate_challenge\",\n      \"title\": \"Unlimited Wash Club\",\n      \"trial_period_days\": 7,\n      \"unlimited_stock\": false,\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"visibility\": \"visible\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e1f4f2ae-0ac9-4e5f-87b6-3e04e7a6392a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "006633f5-83d9-4963-a42a-bfcd12744db0",
+      "name": "Create Variant - default",
+      "request": {
+        "urlPathTemplate": "/variants",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"adaptive_pricing_enabled\": true,\n  \"attributes\": {\n    \"color\": \"Blue\",\n    \"size\": \"Large\"\n  },\n  \"billing_period\": 30,\n  \"cancel_discount_intervals\": 3,\n  \"cancel_discount_percentage\": 20,\n  \"checkout_styling\": {\n    \"background_color\": \"#0f172a\",\n    \"border_style\": \"rounded\",\n    \"button_color\": \"#f59e0b\",\n    \"font_family\": \"roboto\"\n  },\n  \"collect_tax\": false,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"custom_fields\": [\n    {\n      \"field_type\": \"text\",\n      \"id\": \"field_xxxxxxxxxxxxxx\",\n      \"name\": \"Vehicle make and model\",\n      \"order\": 0,\n      \"placeholder\": \"2021 Audi S5\",\n      \"required\": true\n    }\n  ],\n  \"deletable\": true,\n  \"description\": \"Two hand washes a month, interior vacuum, and a quarterly sealant top-up.\",\n  \"effective_payment_method_configuration\": {\n    \"disabled\": [\n      \"card\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"expiration_days\": 365,\n  \"formatted_price\": \"$59.00 / month\",\n  \"id\": \"plan_xxxxxxxxxxxxxx\",\n  \"image\": {\n    \"blurhash\": \"LA6bDXT$E3b:R6i+RibEIWbp%ej1\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n  },\n  \"initial_price\": 0,\n  \"initial_price_due\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n  \"invoice\": {\n    \"id\": \"inv_xxxxxxxxxxxxxx\"\n  },\n  \"member_count\": 0,\n  \"metadata\": {\n    \"custom_cta\": \"subscribe\",\n    \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n  },\n  \"offer_cancel_discount\": true,\n  \"payment_method_configuration\": {\n    \"disabled\": [\n      \"crypto\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"plan_type\": \"renewal\",\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxxx\",\n    \"title\": \"Ceramic Coating Package\"\n  },\n  \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n  \"release_method\": \"buy_now\",\n  \"renewal_price\": 59,\n  \"sku\": \"WASH-CLUB-TEE-LARGE-BLUE\",\n  \"split_pay_required_payments\": 4,\n  \"stock\": 0,\n  \"strike_through_initial_price\": 99,\n  \"strike_through_renewal_price\": 79,\n  \"tax_type\": \"inclusive\",\n  \"three_ds_level\": \"mandate_challenge\",\n  \"title\": \"Unlimited Wash Club\",\n  \"trial_period_days\": 7,\n  \"unlimited_stock\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"visibility\": \"visible\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "006633f5-83d9-4963-a42a-bfcd12744db0",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "8ae49d7c-5f9f-4227-9a36-5251f4b17146",
+      "name": "Retrieve Variant - default",
+      "request": {
+        "urlPathTemplate": "/variants/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"adaptive_pricing_enabled\": true,\n  \"attributes\": {\n    \"color\": \"Blue\",\n    \"size\": \"Large\"\n  },\n  \"billing_period\": 30,\n  \"cancel_discount_intervals\": 3,\n  \"cancel_discount_percentage\": 20,\n  \"checkout_styling\": {\n    \"background_color\": \"#0f172a\",\n    \"border_style\": \"rounded\",\n    \"button_color\": \"#f59e0b\",\n    \"font_family\": \"roboto\"\n  },\n  \"collect_tax\": false,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"custom_fields\": [\n    {\n      \"field_type\": \"text\",\n      \"id\": \"field_xxxxxxxxxxxxxx\",\n      \"name\": \"Vehicle make and model\",\n      \"order\": 0,\n      \"placeholder\": \"2021 Audi S5\",\n      \"required\": true\n    }\n  ],\n  \"deletable\": true,\n  \"description\": \"Two hand washes a month, interior vacuum, and a quarterly sealant top-up.\",\n  \"effective_payment_method_configuration\": {\n    \"disabled\": [\n      \"card\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"expiration_days\": 365,\n  \"formatted_price\": \"$59.00 / month\",\n  \"id\": \"plan_xxxxxxxxxxxxxx\",\n  \"image\": {\n    \"blurhash\": \"LA6bDXT$E3b:R6i+RibEIWbp%ej1\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n  },\n  \"initial_price\": 0,\n  \"initial_price_due\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n  \"invoice\": {\n    \"id\": \"inv_xxxxxxxxxxxxxx\"\n  },\n  \"member_count\": 0,\n  \"metadata\": {\n    \"custom_cta\": \"subscribe\",\n    \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n  },\n  \"offer_cancel_discount\": true,\n  \"payment_method_configuration\": {\n    \"disabled\": [\n      \"crypto\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"plan_type\": \"renewal\",\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxxx\",\n    \"title\": \"Ceramic Coating Package\"\n  },\n  \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n  \"release_method\": \"buy_now\",\n  \"renewal_price\": 59,\n  \"sku\": \"WASH-CLUB-TEE-LARGE-BLUE\",\n  \"split_pay_required_payments\": 4,\n  \"stock\": 0,\n  \"strike_through_initial_price\": 99,\n  \"strike_through_renewal_price\": 79,\n  \"tax_type\": \"inclusive\",\n  \"three_ds_level\": \"mandate_challenge\",\n  \"title\": \"Unlimited Wash Club\",\n  \"trial_period_days\": 7,\n  \"unlimited_stock\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"visibility\": \"visible\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "8ae49d7c-5f9f-4227-9a36-5251f4b17146",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "98ff581d-dacd-45f9-bc0f-d4ebb5a94354",
+      "name": "Delete Variant - default",
+      "request": {
+        "urlPathTemplate": "/variants/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"deleted\": true,\n  \"id\": \"plan_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "98ff581d-dacd-45f9-bc0f-d4ebb5a94354",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "d727c072-1f74-4557-b234-3eead173884d",
+      "name": "Update Variant - default",
+      "request": {
+        "urlPathTemplate": "/variants/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"title\": \"Shine Time Auto Detailing\"\n  },\n  \"adaptive_pricing_enabled\": true,\n  \"attributes\": {\n    \"color\": \"Blue\",\n    \"size\": \"Large\"\n  },\n  \"billing_period\": 30,\n  \"cancel_discount_intervals\": 3,\n  \"cancel_discount_percentage\": 20,\n  \"checkout_styling\": {\n    \"background_color\": \"#0f172a\",\n    \"border_style\": \"rounded\",\n    \"button_color\": \"#f59e0b\",\n    \"font_family\": \"roboto\"\n  },\n  \"collect_tax\": false,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"custom_fields\": [\n    {\n      \"field_type\": \"text\",\n      \"id\": \"field_xxxxxxxxxxxxxx\",\n      \"name\": \"Vehicle make and model\",\n      \"order\": 0,\n      \"placeholder\": \"2021 Audi S5\",\n      \"required\": true\n    }\n  ],\n  \"deletable\": true,\n  \"description\": \"Two hand washes a month, interior vacuum, and a quarterly sealant top-up.\",\n  \"effective_payment_method_configuration\": {\n    \"disabled\": [\n      \"card\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"expiration_days\": 365,\n  \"formatted_price\": \"$59.00 / month\",\n  \"id\": \"plan_xxxxxxxxxxxxxx\",\n  \"image\": {\n    \"blurhash\": \"LA6bDXT$E3b:R6i+RibEIWbp%ej1\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/image/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n  },\n  \"initial_price\": 0,\n  \"initial_price_due\": {\n    \"amount\": \"-2.50\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"internal_notes\": \"Maintenance tier. Upsell the interior shampoo add-on at renewal.\",\n  \"invoice\": {\n    \"id\": \"inv_xxxxxxxxxxxxxx\"\n  },\n  \"member_count\": 0,\n  \"metadata\": {\n    \"custom_cta\": \"subscribe\",\n    \"custom_cta_url\": \"https://shinetime.example/wash-club\"\n  },\n  \"offer_cancel_discount\": true,\n  \"payment_method_configuration\": {\n    \"disabled\": [\n      \"crypto\"\n    ],\n    \"enabled\": [\n      \"card\"\n    ],\n    \"include_platform_defaults\": true\n  },\n  \"plan_type\": \"renewal\",\n  \"product\": {\n    \"id\": \"prod_xxxxxxxxxxxxxx\",\n    \"title\": \"Ceramic Coating Package\"\n  },\n  \"purchase_url\": \"https://whop.com/checkout/plan_xxxxxxxxxxxxxx\",\n  \"release_method\": \"buy_now\",\n  \"renewal_price\": 59,\n  \"sku\": \"WASH-CLUB-TEE-LARGE-BLUE\",\n  \"split_pay_required_payments\": 4,\n  \"stock\": 0,\n  \"strike_through_initial_price\": 99,\n  \"strike_through_renewal_price\": 79,\n  \"tax_type\": \"inclusive\",\n  \"three_ds_level\": \"mandate_challenge\",\n  \"title\": \"Unlimited Wash Club\",\n  \"trial_period_days\": 7,\n  \"unlimited_stock\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"visibility\": \"visible\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "d727c072-1f74-4557-b234-3eead173884d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "088430f5-e193-4c3e-b1c0-fde2e26311c6",
+      "name": "Calculate Tax - default",
+      "request": {
+        "urlPathTemplate": "/variants/{id}/calculate_tax",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"currency\": \"usd\",\n  \"status\": \"calculated\",\n  \"subtotal\": 1000,\n  \"tax_amount\": 70,\n  \"tax_behavior\": \"exclusive\",\n  \"total\": 1070\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "088430f5-e193-4c3e-b1c0-fde2e26311c6",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "7940a561-5fd7-4864-9522-c7245245d8d0",
       "name": "List Verifications - default",
       "request": {
@@ -15530,6 +15737,6 @@
     }
   ],
   "meta": {
-    "total": 435
+    "total": 441
   }
 }

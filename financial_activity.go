@@ -230,9 +230,9 @@ type LedgerActivity struct {
 	Payment *LedgerActivityPayment `json:"payment,omitempty" url:"payment,omitempty"`
 	// Payment ID for any payment-related activity, including refunds and disputes.
 	PaymentID *string `json:"payment_id,omitempty" url:"payment_id,omitempty"`
-	// ID of the plan associated with the payment, when applicable.
+	// ID of the variant associated with the payment, when applicable.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
-	// Name of the plan associated with the payment, when applicable.
+	// Name of the variant associated with the payment, when applicable.
 	PlanName *string `json:"plan_name,omitempty" url:"plan_name,omitempty"`
 	// When the activity posted to the ledger.
 	PostedAt time.Time `json:"posted_at" url:"posted_at"`
@@ -1619,7 +1619,7 @@ type LedgerActivityPayment struct {
 	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
 	// Processor that handled the payment, such as `stripe`.
 	PaymentProcessor *string `json:"payment_processor,omitempty" url:"payment_processor,omitempty"`
-	// Plan associated with the payment, when applicable.
+	// Variant associated with the payment, when applicable.
 	Plan *LedgerActivityPaymentPlan `json:"plan,omitempty" url:"plan,omitempty"`
 	// Product associated with the payment, when applicable.
 	Product *LedgerActivityPaymentProduct `json:"product,omitempty" url:"product,omitempty"`
@@ -1870,16 +1870,16 @@ func (l LedgerActivityPaymentObject) Ptr() *LedgerActivityPaymentObject {
 	return &l
 }
 
-// Plan associated with the payment, when applicable.
+// Variant associated with the payment, when applicable.
 var (
 	ledgerActivityPaymentPlanFieldID   = big.NewInt(1 << 0)
 	ledgerActivityPaymentPlanFieldName = big.NewInt(1 << 1)
 )
 
 type LedgerActivityPaymentPlan struct {
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
-	// Plan name.
+	// Variant name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

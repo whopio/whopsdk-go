@@ -43,7 +43,7 @@ var (
 type ApproveAllWaitlistEntriesRequest struct {
 	// The seller account whose pending signups to approve, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
-	// Only approve signups for this plan, prefixed `plan_`. Omit to include every waitlist plan on the account.
+	// Only approve signups for this variant, prefixed `plan_`. Omit to include every waitlist variant on the account.
 	PlanID *string `json:"plan_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -125,11 +125,11 @@ var (
 )
 
 type CreateWaitlistEntriesRequest struct {
-	// Answers to the plan's checkout questions. Every required question must be answered.
+	// Answers to the variant's checkout questions. Every required question must be answered.
 	CustomFieldResponses []*CreateWaitlistEntriesRequestCustomFieldResponsesItem `json:"custom_field_responses,omitempty" url:"-"`
 	// Custom key-value pairs to store on the signup. Max 50 keys, 100 chars per key, 500 chars per string value. Ignored when the request returns an existing signup.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
-	// The free waitlist plan to join, prefixed `plan_`.
+	// The free waitlist variant to join, prefixed `plan_`.
 	PlanID string `json:"plan_id" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -235,11 +235,11 @@ type ListWaitlistEntriesRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
-	// Only return signups for this plan, prefixed `plan_`.
+	// Only return signups for this variant, prefixed `plan_`.
 	PlanID *string `json:"-" url:"plan_id,omitempty"`
 	// Only return signups submitted to this seller account, prefixed `biz_`.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// Only return signups for plans on this product, prefixed `prod_`.
+	// Only return signups for variants on this product, prefixed `prod_`.
 	ProductID *string `json:"-" url:"product_id,omitempty"`
 	// Only return signups in this state. Canceled signups are returned only when `status` is `canceled`.
 	Status *ListWaitlistEntriesRequestStatus `json:"-" url:"status,omitempty"`
@@ -392,7 +392,7 @@ var (
 type WaitlistEntry struct {
 	// The seller account, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
-	// Why the last approval attempt failed, or `null` when none has. `plan_unavailable` — the plan, product, or seller account was deleted. `already_member` — the user already has a membership on a one-per-user product. `checkout_failed` — checkout failed, usually a declined payment, and the signup was denied. `unknown` — another failure; retry. Cleared when approval is requeued.
+	// Why the last approval attempt failed, or `null` when none has. `plan_unavailable` — the variant, product, or seller account was deleted. `already_member` — the user already has a membership on a one-per-user product. `checkout_failed` — checkout failed, usually a declined payment, and the signup was denied. `unknown` — another failure; retry. Cleared when approval is requeued.
 	ApprovalFailureReason *WaitlistEntryApprovalFailureReason `json:"approval_failure_reason,omitempty" url:"approval_failure_reason,omitempty"`
 	// The account the signup was submitted on behalf of, prefixed `biz_`, or `null` when the user signed up for themselves.
 	BuyerAccountID *string `json:"buyer_account_id,omitempty" url:"buyer_account_id,omitempty"`
@@ -405,9 +405,9 @@ type WaitlistEntry struct {
 	MembershipID *string `json:"membership_id,omitempty" url:"membership_id,omitempty"`
 	// Custom key-value metadata associated with this signup.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
-	// The plan this signup belongs to, prefixed `plan_`.
+	// The variant this signup belongs to, prefixed `plan_`.
 	PlanID string `json:"plan_id" url:"plan_id"`
-	// The product this signup belongs to, prefixed `prod_`, or `null` when the plan has no product.
+	// The product this signup belongs to, prefixed `prod_`, or `null` when the variant has no product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The signup's current state. Approval runs asynchronously, so a signup stays `pending` until processing completes. `approved` alone does not prove an active membership; check `membership_id`.
 	Status WaitlistEntryStatus `json:"status" url:"status"`
@@ -661,7 +661,7 @@ func (w *WaitlistEntry) String() string {
 	return fmt.Sprintf("%#v", w)
 }
 
-// Why the last approval attempt failed, or `null` when none has. `plan_unavailable` — the plan, product, or seller account was deleted. `already_member` — the user already has a membership on a one-per-user product. `checkout_failed` — checkout failed, usually a declined payment, and the signup was denied. `unknown` — another failure; retry. Cleared when approval is requeued.
+// Why the last approval attempt failed, or `null` when none has. `plan_unavailable` — the variant, product, or seller account was deleted. `already_member` — the user already has a membership on a one-per-user product. `checkout_failed` — checkout failed, usually a declined payment, and the signup was denied. `unknown` — another failure; retry. Cleared when approval is requeued.
 type WaitlistEntryApprovalFailureReason string
 
 const (
@@ -847,7 +847,7 @@ var (
 type ApproveAllWaitlistEntriesResponse struct {
 	// The seller account whose signups were queued, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
-	// The plan the request was narrowed to, prefixed `plan_`, or `null` when every waitlist plan on the account was included.
+	// The variant the request was narrowed to, prefixed `plan_`, or `null` when every waitlist variant on the account was included.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// Whether any pending signups were queued for approval. `false` when there were none.
 	Queued bool `json:"queued" url:"queued"`

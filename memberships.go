@@ -159,7 +159,7 @@ type ListMembershipsRequest struct {
 	Status *ListMembershipsRequestStatus `json:"-" url:"status,omitempty"`
 	// Filter to memberships of this product (`prod_` tag). Repeat as product_ids[] for several.
 	ProductID *string `json:"-" url:"product_id,omitempty"`
-	// Filter to memberships of this plan (`plan_` tag). Repeat as plan_ids[] for several.
+	// Filter to memberships of this variant (`plan_` tag). Repeat as plan_ids[] for several.
 	PlanID *string `json:"-" url:"plan_id,omitempty"`
 	// Only memberships created after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
@@ -521,7 +521,7 @@ var (
 type Membership struct {
 	// The account (seller) this membership belongs to.
 	Account *StorefrontAccount `json:"account" url:"account"`
-	// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring plans.
+	// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring variants.
 	CancelAtPeriodEnd bool `json:"cancel_at_period_end" url:"cancel_at_period_end"`
 	// When cancellation was requested, or when the membership was canceled if no request time is recorded, as an ISO 8601 timestamp. `null` when neither is recorded.
 	CanceledAt *string `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
@@ -545,7 +545,7 @@ type Membership struct {
 	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// The buyer's phone number recorded for this membership, or `null`. The number collected (or verified) at checkout when the seller's phone collection is on; falls back to the buyer's account number when they have shared one with this seller.
 	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
-	// The plan the buyer purchased, prefixed `plan_`.
+	// The variant the buyer purchased, prefixed `plan_`.
 	PlanID string `json:"plan_id" url:"plan_id"`
 	// The product this membership grants access to, prefixed `prod_`.
 	ProductID string `json:"product_id" url:"product_id"`
@@ -1114,7 +1114,7 @@ var (
 type InviteMembershipsRequestBodyEmail struct {
 	// Recipient email address.
 	Email string `json:"email" url:"email"`
-	// Free plan whose membership the recipient is invited to, prefixed `plan_`.
+	// Free variant whose membership the recipient is invited to, prefixed `plan_`.
 	PlanID string `json:"plan_id" url:"plan_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1214,7 +1214,7 @@ var (
 )
 
 type InviteMembershipsRequestBodyUserID struct {
-	// Free plan whose membership the recipient is invited to, prefixed `plan_`.
+	// Free variant whose membership the recipient is invited to, prefixed `plan_`.
 	PlanID string `json:"plan_id" url:"plan_id"`
 	// Recipient user ID, prefixed `user_`.
 	UserID string `json:"user_id" url:"user_id"`

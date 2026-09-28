@@ -33,15 +33,15 @@ type CreateCheckoutConfigurationsRequest struct {
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
 	// Controls whether checkout charges the buyer immediately or saves payment details for later. Defaults to `payment`.
 	Mode *CreateCheckoutConfigurationsRequestMode `json:"mode,omitempty" url:"-"`
-	// Payment method overrides for this checkout. `null` uses the plan or platform defaults.
+	// Payment method overrides for this checkout. `null` uses the variant or platform defaults.
 	PaymentMethodConfiguration *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
-	// Plan attributes used to create or find a plan for this checkout configuration. Mutually exclusive with `plan_id`.
+	// Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `plan_id`.
 	Plan *CreateCheckoutConfigurationsRequestPlan `json:"plan,omitempty" url:"-"`
-	// Existing plan ID, prefixed `plan_`. Mutually exclusive with `plan`.
+	// Existing variant ID, prefixed `plan_`. Mutually exclusive with `plan`.
 	PlanID *string `json:"plan_id,omitempty" url:"-"`
 	// URL customers are sent to after checkout.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"-"`
-	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 	ThreeDsLevel *CreateCheckoutConfigurationsRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -186,7 +186,7 @@ var (
 type ListCheckoutConfigurationsRequest struct {
 	// Account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"account_id"`
-	// Only return checkout configurations for this plan ID, prefixed `plan_`.
+	// Only return checkout configurations for this variant ID, prefixed `plan_`.
 	PlanID *string `json:"-" url:"plan_id,omitempty"`
 	// Only return checkout configurations created before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
@@ -317,7 +317,7 @@ func (c CreateCheckoutConfigurationsRequestMode) Ptr() *CreateCheckoutConfigurat
 	return &c
 }
 
-// Payment method overrides for this checkout. `null` uses the plan or platform defaults.
+// Payment method overrides for this checkout. `null` uses the variant or platform defaults.
 var (
 	createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -437,7 +437,7 @@ func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) String()
 	return fmt.Sprintf("%#v", c)
 }
 
-// Plan attributes used to create or find a plan for this checkout configuration. Mutually exclusive with `plan_id`.
+// Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `plan_id`.
 var (
 	createCheckoutConfigurationsRequestPlanFieldAccountID                  = big.NewInt(1 << 0)
 	createCheckoutConfigurationsRequestPlanFieldBillingPeriod              = big.NewInt(1 << 1)
@@ -462,31 +462,31 @@ var (
 )
 
 type CreateCheckoutConfigurationsRequestPlan struct {
-	// Account ID for the inline plan, prefixed `biz_`. Defaults to the account resolved from the request.
+	// Account ID for the inline variant, prefixed `biz_`. Defaults to the account resolved from the request.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// Recurring billing interval in days, such as 30 for monthly or 365 for annual.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Three-letter ISO currency code for the plan's prices.
+	// Three-letter ISO currency code for the variant's prices.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
-	// Customer-visible plan description.
+	// Customer-visible variant description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// Access duration in days for expiration-based plans.
+	// Access duration in days for expiration-based variants.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Whether to create a new plan instead of reusing a matching one.
+	// Whether to create a new variant instead of reusing a matching one.
 	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
-	// Initial purchase price in the plan currency.
+	// Initial purchase price in the variant currency.
 	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
-	// Custom key-value metadata stored on the plan.
+	// Custom key-value metadata stored on the variant.
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// Tax classification override for this plan.
+	// Tax classification override for this variant.
 	OverrideTaxType *string `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
-	// Payment method overrides for the inline plan. `null` uses platform defaults.
+	// Payment method overrides for the inline variant. `null` uses platform defaults.
 	PaymentMethodConfiguration *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Billing model for the plan.
+	// Billing model for the variant.
 	PlanType *CreateCheckoutConfigurationsRequestPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
-	// Product ID the inline plan should belong to, prefixed `prod_`.
+	// Product ID the inline variant should belong to, prefixed `prod_`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
-	// Sales method for the plan.
+	// Sales method for the variant.
 	ReleaseMethod *CreateCheckoutConfigurationsRequestPlanReleaseMethod `json:"release_method,omitempty" url:"release_method,omitempty"`
 	// Recurring price charged each billing period.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
@@ -494,13 +494,13 @@ type CreateCheckoutConfigurationsRequestPlan struct {
 	Stock *int `json:"stock,omitempty" url:"stock,omitempty"`
 	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 	ThreeDsLevel *CreateCheckoutConfigurationsRequestPlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
-	// Plan display name shown to customers.
+	// Variant display name shown to customers.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan has unlimited stock.
+	// Whether the variant has unlimited stock.
 	UnlimitedStock *bool `json:"unlimited_stock,omitempty" url:"unlimited_stock,omitempty"`
-	// Whether the plan is visible to customers or hidden from public view.
+	// Whether the variant is visible to customers or hidden from public view.
 	Visibility *CreateCheckoutConfigurationsRequestPlanVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -846,7 +846,7 @@ func (c *CreateCheckoutConfigurationsRequestPlan) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Payment method overrides for the inline plan. `null` uses platform defaults.
+// Payment method overrides for the inline variant. `null` uses platform defaults.
 var (
 	createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -854,9 +854,9 @@ var (
 )
 
 type CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration struct {
-	// Payment method types explicitly disabled for this plan — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	// Payment method types explicitly disabled for this variant — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
 	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
-	// Payment method types explicitly enabled for this plan — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	// Payment method types explicitly enabled for this variant — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
 	Enabled []PaymentMethodTypes `json:"enabled,omitempty" url:"enabled,omitempty"`
 	// Whether platform default payment methods are included.
 	IncludePlatformDefaults *bool `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
@@ -966,7 +966,7 @@ func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) Stri
 	return fmt.Sprintf("%#v", c)
 }
 
-// Billing model for the plan.
+// Billing model for the variant.
 type CreateCheckoutConfigurationsRequestPlanPlanType string
 
 const (
@@ -989,7 +989,7 @@ func (c CreateCheckoutConfigurationsRequestPlanPlanType) Ptr() *CreateCheckoutCo
 	return &c
 }
 
-// Sales method for the plan.
+// Sales method for the variant.
 type CreateCheckoutConfigurationsRequestPlanReleaseMethod string
 
 const (
@@ -1038,7 +1038,7 @@ func (c CreateCheckoutConfigurationsRequestPlanThreeDsLevel) Ptr() *CreateChecko
 	return &c
 }
 
-// Whether the plan is visible to customers or hidden from public view.
+// Whether the variant is visible to customers or hidden from public view.
 type CreateCheckoutConfigurationsRequestPlanVisibility string
 
 const (
@@ -1067,7 +1067,7 @@ func (c CreateCheckoutConfigurationsRequestPlanVisibility) Ptr() *CreateCheckout
 	return &c
 }
 
-// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 type CreateCheckoutConfigurationsRequestThreeDsLevel string
 
 const (
@@ -1119,7 +1119,7 @@ type CreateCheckoutConfigurationsResponse struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Currency used for setup-mode payment method availability; defaults to `usd` when omitted.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
-	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
+	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 	EffectivePaymentMethodConfiguration *CreateCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration `json:"effective_payment_method_configuration,omitempty" url:"effective_payment_method_configuration,omitempty"`
 	// Checkout configuration ID, prefixed `ch_`.
 	ID string `json:"id" url:"id"`
@@ -1127,15 +1127,15 @@ type CreateCheckoutConfigurationsResponse struct {
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// Controls whether checkout charges the buyer immediately or saves payment details for later.
 	Mode CreateCheckoutConfigurationsResponseMode `json:"mode" url:"mode"`
-	// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+	// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 	PaymentMethodConfiguration *CreateCheckoutConfigurationsResponsePaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Plan used for payment checkout. `null` in setup mode.
+	// Variant used for payment checkout. `null` in setup mode.
 	Plan *CreateCheckoutConfigurationsResponsePlan `json:"plan,omitempty" url:"plan,omitempty"`
 	// Checkout URL you can send to customers.
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// URL customers are sent to after checkout, or `null` when no redirect is configured.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
-	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 	ThreeDsLevel *CreateCheckoutConfigurationsResponseThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// When the checkout configuration was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -1399,7 +1399,7 @@ func (c *CreateCheckoutConfigurationsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
+// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 var (
 	createCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -1542,7 +1542,7 @@ func (c CreateCheckoutConfigurationsResponseMode) Ptr() *CreateCheckoutConfigura
 	return &c
 }
 
-// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 var (
 	createCheckoutConfigurationsResponsePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsResponsePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -1662,7 +1662,7 @@ func (c *CreateCheckoutConfigurationsResponsePaymentMethodConfiguration) String(
 	return fmt.Sprintf("%#v", c)
 }
 
-// Plan used for payment checkout. `null` in setup mode.
+// Variant used for payment checkout. `null` in setup mode.
 var (
 	createCheckoutConfigurationsResponsePlanFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
 	createCheckoutConfigurationsResponsePlanFieldBillingPeriod          = big.NewInt(1 << 1)
@@ -1679,21 +1679,21 @@ var (
 )
 
 type CreateCheckoutConfigurationsResponsePlan struct {
-	// Whether this plan accepts local currency payments via adaptive pricing.
+	// Whether this variant accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
-	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Three-letter ISO currency code for the plan's prices.
+	// Three-letter ISO currency code for the variant's prices.
 	Currency string `json:"currency" url:"currency"`
-	// Access duration in days for expiration-based plans.
+	// Access duration in days for expiration-based variants.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
-	// Initial purchase price in the plan currency.
+	// Initial purchase price in the variant currency.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Billing model for the plan.
+	// Billing model for the variant.
 	PlanType CreateCheckoutConfigurationsResponsePlanPlanType `json:"plan_type" url:"plan_type"`
-	// Sales method for the plan.
+	// Sales method for the variant.
 	ReleaseMethod CreateCheckoutConfigurationsResponsePlanReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged each billing period.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
@@ -1701,7 +1701,7 @@ type CreateCheckoutConfigurationsResponsePlan struct {
 	ThreeDsLevel *CreateCheckoutConfigurationsResponsePlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan is visible to customers or hidden from public view.
+	// Whether the variant is visible to customers or hidden from public view.
 	Visibility CreateCheckoutConfigurationsResponsePlanVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1935,7 +1935,7 @@ func (c *CreateCheckoutConfigurationsResponsePlan) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Billing model for the plan.
+// Billing model for the variant.
 type CreateCheckoutConfigurationsResponsePlanPlanType string
 
 const (
@@ -1958,7 +1958,7 @@ func (c CreateCheckoutConfigurationsResponsePlanPlanType) Ptr() *CreateCheckoutC
 	return &c
 }
 
-// Sales method for the plan.
+// Sales method for the variant.
 type CreateCheckoutConfigurationsResponsePlanReleaseMethod string
 
 const (
@@ -2007,7 +2007,7 @@ func (c CreateCheckoutConfigurationsResponsePlanThreeDsLevel) Ptr() *CreateCheck
 	return &c
 }
 
-// Whether the plan is visible to customers or hidden from public view.
+// Whether the variant is visible to customers or hidden from public view.
 type CreateCheckoutConfigurationsResponsePlanVisibility string
 
 const (
@@ -2036,7 +2036,7 @@ func (c CreateCheckoutConfigurationsResponsePlanVisibility) Ptr() *CreateCheckou
 	return &c
 }
 
-// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 type CreateCheckoutConfigurationsResponseThreeDsLevel string
 
 const (
@@ -2331,7 +2331,7 @@ type ListCheckoutConfigurationsResponseDataItem struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Currency used for setup-mode payment method availability; defaults to `usd` when omitted.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
-	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
+	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 	EffectivePaymentMethodConfiguration *ListCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfiguration `json:"effective_payment_method_configuration,omitempty" url:"effective_payment_method_configuration,omitempty"`
 	// Checkout configuration ID, prefixed `ch_`.
 	ID string `json:"id" url:"id"`
@@ -2339,15 +2339,15 @@ type ListCheckoutConfigurationsResponseDataItem struct {
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// Controls whether checkout charges the buyer immediately or saves payment details for later.
 	Mode ListCheckoutConfigurationsResponseDataItemMode `json:"mode" url:"mode"`
-	// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+	// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 	PaymentMethodConfiguration *ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Plan used for payment checkout. `null` in setup mode.
+	// Variant used for payment checkout. `null` in setup mode.
 	Plan *ListCheckoutConfigurationsResponseDataItemPlan `json:"plan,omitempty" url:"plan,omitempty"`
 	// Checkout URL you can send to customers.
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// URL customers are sent to after checkout, or `null` when no redirect is configured.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
-	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 	ThreeDsLevel *ListCheckoutConfigurationsResponseDataItemThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// When the checkout configuration was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -2611,7 +2611,7 @@ func (l *ListCheckoutConfigurationsResponseDataItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
+// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 var (
 	listCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	listCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -2754,7 +2754,7 @@ func (l ListCheckoutConfigurationsResponseDataItemMode) Ptr() *ListCheckoutConfi
 	return &l
 }
 
-// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 var (
 	listCheckoutConfigurationsResponseDataItemPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	listCheckoutConfigurationsResponseDataItemPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -2874,7 +2874,7 @@ func (l *ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration) S
 	return fmt.Sprintf("%#v", l)
 }
 
-// Plan used for payment checkout. `null` in setup mode.
+// Variant used for payment checkout. `null` in setup mode.
 var (
 	listCheckoutConfigurationsResponseDataItemPlanFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
 	listCheckoutConfigurationsResponseDataItemPlanFieldBillingPeriod          = big.NewInt(1 << 1)
@@ -2891,21 +2891,21 @@ var (
 )
 
 type ListCheckoutConfigurationsResponseDataItemPlan struct {
-	// Whether this plan accepts local currency payments via adaptive pricing.
+	// Whether this variant accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
-	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Three-letter ISO currency code for the plan's prices.
+	// Three-letter ISO currency code for the variant's prices.
 	Currency string `json:"currency" url:"currency"`
-	// Access duration in days for expiration-based plans.
+	// Access duration in days for expiration-based variants.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
-	// Initial purchase price in the plan currency.
+	// Initial purchase price in the variant currency.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Billing model for the plan.
+	// Billing model for the variant.
 	PlanType ListCheckoutConfigurationsResponseDataItemPlanPlanType `json:"plan_type" url:"plan_type"`
-	// Sales method for the plan.
+	// Sales method for the variant.
 	ReleaseMethod ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged each billing period.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
@@ -2913,7 +2913,7 @@ type ListCheckoutConfigurationsResponseDataItemPlan struct {
 	ThreeDsLevel *ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan is visible to customers or hidden from public view.
+	// Whether the variant is visible to customers or hidden from public view.
 	Visibility ListCheckoutConfigurationsResponseDataItemPlanVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3147,7 +3147,7 @@ func (l *ListCheckoutConfigurationsResponseDataItemPlan) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Billing model for the plan.
+// Billing model for the variant.
 type ListCheckoutConfigurationsResponseDataItemPlanPlanType string
 
 const (
@@ -3170,7 +3170,7 @@ func (l ListCheckoutConfigurationsResponseDataItemPlanPlanType) Ptr() *ListCheck
 	return &l
 }
 
-// Sales method for the plan.
+// Sales method for the variant.
 type ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod string
 
 const (
@@ -3219,7 +3219,7 @@ func (l ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel) Ptr() *ListC
 	return &l
 }
 
-// Whether the plan is visible to customers or hidden from public view.
+// Whether the variant is visible to customers or hidden from public view.
 type ListCheckoutConfigurationsResponseDataItemPlanVisibility string
 
 const (
@@ -3248,7 +3248,7 @@ func (l ListCheckoutConfigurationsResponseDataItemPlanVisibility) Ptr() *ListChe
 	return &l
 }
 
-// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 type ListCheckoutConfigurationsResponseDataItemThreeDsLevel string
 
 const (
@@ -3432,7 +3432,7 @@ type RetrieveCheckoutConfigurationsResponse struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Currency used for setup-mode payment method availability; defaults to `usd` when omitted.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
-	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
+	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 	EffectivePaymentMethodConfiguration *RetrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration `json:"effective_payment_method_configuration,omitempty" url:"effective_payment_method_configuration,omitempty"`
 	// Checkout configuration ID, prefixed `ch_`.
 	ID string `json:"id" url:"id"`
@@ -3440,15 +3440,15 @@ type RetrieveCheckoutConfigurationsResponse struct {
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// Controls whether checkout charges the buyer immediately or saves payment details for later.
 	Mode RetrieveCheckoutConfigurationsResponseMode `json:"mode" url:"mode"`
-	// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+	// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 	PaymentMethodConfiguration *RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Plan used for payment checkout. `null` in setup mode.
+	// Variant used for payment checkout. `null` in setup mode.
 	Plan *RetrieveCheckoutConfigurationsResponsePlan `json:"plan,omitempty" url:"plan,omitempty"`
 	// Checkout URL you can send to customers.
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// URL customers are sent to after checkout, or `null` when no redirect is configured.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
-	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 	ThreeDsLevel *RetrieveCheckoutConfigurationsResponseThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// When the checkout configuration was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -3712,7 +3712,7 @@ func (r *RetrieveCheckoutConfigurationsResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
+// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 var (
 	retrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	retrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -3855,7 +3855,7 @@ func (r RetrieveCheckoutConfigurationsResponseMode) Ptr() *RetrieveCheckoutConfi
 	return &r
 }
 
-// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 var (
 	retrieveCheckoutConfigurationsResponsePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	retrieveCheckoutConfigurationsResponsePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -3975,7 +3975,7 @@ func (r *RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration) Strin
 	return fmt.Sprintf("%#v", r)
 }
 
-// Plan used for payment checkout. `null` in setup mode.
+// Variant used for payment checkout. `null` in setup mode.
 var (
 	retrieveCheckoutConfigurationsResponsePlanFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
 	retrieveCheckoutConfigurationsResponsePlanFieldBillingPeriod          = big.NewInt(1 << 1)
@@ -3992,21 +3992,21 @@ var (
 )
 
 type RetrieveCheckoutConfigurationsResponsePlan struct {
-	// Whether this plan accepts local currency payments via adaptive pricing.
+	// Whether this variant accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
-	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Three-letter ISO currency code for the plan's prices.
+	// Three-letter ISO currency code for the variant's prices.
 	Currency string `json:"currency" url:"currency"`
-	// Access duration in days for expiration-based plans.
+	// Access duration in days for expiration-based variants.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
-	// Initial purchase price in the plan currency.
+	// Initial purchase price in the variant currency.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Billing model for the plan.
+	// Billing model for the variant.
 	PlanType RetrieveCheckoutConfigurationsResponsePlanPlanType `json:"plan_type" url:"plan_type"`
-	// Sales method for the plan.
+	// Sales method for the variant.
 	ReleaseMethod RetrieveCheckoutConfigurationsResponsePlanReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged each billing period.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
@@ -4014,7 +4014,7 @@ type RetrieveCheckoutConfigurationsResponsePlan struct {
 	ThreeDsLevel *RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan is visible to customers or hidden from public view.
+	// Whether the variant is visible to customers or hidden from public view.
 	Visibility RetrieveCheckoutConfigurationsResponsePlanVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4248,7 +4248,7 @@ func (r *RetrieveCheckoutConfigurationsResponsePlan) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Billing model for the plan.
+// Billing model for the variant.
 type RetrieveCheckoutConfigurationsResponsePlanPlanType string
 
 const (
@@ -4271,7 +4271,7 @@ func (r RetrieveCheckoutConfigurationsResponsePlanPlanType) Ptr() *RetrieveCheck
 	return &r
 }
 
-// Sales method for the plan.
+// Sales method for the variant.
 type RetrieveCheckoutConfigurationsResponsePlanReleaseMethod string
 
 const (
@@ -4320,7 +4320,7 @@ func (r RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel) Ptr() *RetrieveC
 	return &r
 }
 
-// Whether the plan is visible to customers or hidden from public view.
+// Whether the variant is visible to customers or hidden from public view.
 type RetrieveCheckoutConfigurationsResponsePlanVisibility string
 
 const (
@@ -4349,7 +4349,7 @@ func (r RetrieveCheckoutConfigurationsResponsePlanVisibility) Ptr() *RetrieveChe
 	return &r
 }
 
-// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 type RetrieveCheckoutConfigurationsResponseThreeDsLevel string
 
 const (

@@ -11191,7 +11191,7 @@ client.CheckoutConfigurations.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Only return checkout configurations for this plan ID, prefixed `plan_`.
+**planID:** `*string` — Only return checkout configurations for this variant ID, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -11263,7 +11263,7 @@ client.CheckoutConfigurations.List(
 <dl>
 <dd>
 
-Creates a reusable checkout configuration for an existing or inline plan.
+Creates a reusable checkout configuration for an existing or inline variant.
 </dd>
 </dl>
 </dd>
@@ -11344,7 +11344,7 @@ client.CheckoutConfigurations.Create(
 <dl>
 <dd>
 
-**paymentMethodConfiguration:** `*whopsdk.CreateCheckoutConfigurationsRequestPaymentMethodConfiguration` — Payment method overrides for this checkout. `null` uses the plan or platform defaults.
+**paymentMethodConfiguration:** `*whopsdk.CreateCheckoutConfigurationsRequestPaymentMethodConfiguration` — Payment method overrides for this checkout. `null` uses the variant or platform defaults.
     
 </dd>
 </dl>
@@ -11352,7 +11352,7 @@ client.CheckoutConfigurations.Create(
 <dl>
 <dd>
 
-**plan:** `*whopsdk.CreateCheckoutConfigurationsRequestPlan` — Plan attributes used to create or find a plan for this checkout configuration. Mutually exclusive with `plan_id`.
+**plan:** `*whopsdk.CreateCheckoutConfigurationsRequestPlan` — Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `plan_id`.
     
 </dd>
 </dl>
@@ -11360,7 +11360,7 @@ client.CheckoutConfigurations.Create(
 <dl>
 <dd>
 
-**planID:** `*string` — Existing plan ID, prefixed `plan_`. Mutually exclusive with `plan`.
+**planID:** `*string` — Existing variant ID, prefixed `plan_`. Mutually exclusive with `plan`.
     
 </dd>
 </dl>
@@ -11376,7 +11376,7 @@ client.CheckoutConfigurations.Create(
 <dl>
 <dd>
 
-**threeDsLevel:** `*whopsdk.CreateCheckoutConfigurationsRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the plan policy.
+**threeDsLevel:** `*whopsdk.CreateCheckoutConfigurationsRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
     
 </dd>
 </dl>
@@ -16320,7 +16320,7 @@ Use a standard event (lead, submit_application, contact, complete_registration, 
 <dl>
 <dd>
 
-**planID:** `*string` — The plan associated with the event.
+**planID:** `*string` — The variant associated with the event.
     
 </dd>
 </dl>
@@ -17599,7 +17599,7 @@ client.Experiments.Exposures(
 <dl>
 <dd>
 
-**properties:** `*string` — JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[plan]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
+**properties:** `*string` — JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[variant]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
     
 </dd>
 </dl>
@@ -22023,7 +22023,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Filter to memberships of this plan (`plan_` tag). Repeat as plan_ids[] for several.
+**planID:** `*string` — Filter to memberships of this variant (`plan_` tag). Repeat as plan_ids[] for several.
     
 </dd>
 </dl>
@@ -22111,7 +22111,7 @@ client.Memberships.List(
 <dl>
 <dd>
 
-Sends an email inviting one recipient to join the account through a free plan. Identify the recipient by exactly one of `user_id` or `email`. The invitation is bound to that recipient; after signing in, accepting it immediately grants the membership without checkout. This Experimental endpoint is available only to accounts enabled for membership invitations.
+Sends an email inviting one recipient to join the account through a free variant. Identify the recipient by exactly one of `user_id` or `email`. The invitation is bound to that recipient; after signing in, accepting it immediately grants the membership without checkout. This Experimental endpoint is available only to accounts enabled for membership invitations.
 </dd>
 </dl>
 </dd>
@@ -25834,7 +25834,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Only payments priced by this plan, prefixed `plan_`.
+**planID:** `*string` — Only payments priced by this variant, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -25922,7 +25922,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-Charges a buyer for one or more plans. Pass a payment method already on file (`member_id` and `payment_method_id`), or a `confirmation_token` describing a method the buyer just supplied. Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and, for a confirmation-token payment, what the buyer must still do. Pass `line_items` for one or more plans with quantities, `plan_id` for an existing plan, or `plan` to find or create one inline. These inputs are mutually exclusive.
+Charges a buyer for one or more variants. Pass a payment method already on file (`member_id` and `payment_method_id`), or a `confirmation_token` describing a method the buyer just supplied. Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and, for a confirmation-token payment, what the buyer must still do. Pass `line_items` for one or more variants with quantities, `plan_id` for an existing variant, or the compatibility input `plan` to find or create one inline. These inputs are mutually exclusive.
 </dd>
 </dl>
 </dd>
@@ -25998,7 +25998,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**lineItems:** `[]*whopsdk.CreatePaymentsRequestLineItemsItem` — What the buyer is purchasing. One entry charges that plan; several entries form a cart, which requires every plan to be a compatible plan from this account in the same currency.
+**lineItems:** `[]*whopsdk.CreatePaymentsRequestLineItemsItem` — What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
     
 </dd>
 </dl>
@@ -26030,7 +26030,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**plan:** `*whopsdk.CreatePaymentsRequestPlan` — Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+**plan:** `*whopsdk.CreatePaymentsRequestPlan` — Find or create a variant for this payment through the compatibility input `plan`. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
     
 </dd>
 </dl>
@@ -26038,7 +26038,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**planID:** `*string` — The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
+**planID:** `*string` — The variant to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
     
 </dd>
 </dl>
@@ -26046,7 +26046,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**promoCodeID:** `*string` — An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
+**promoCodeID:** `*string` — An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant.
     
 </dd>
 </dl>
@@ -26094,7 +26094,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-Returns one payment, including every purchased line item with its quantity and subtotal. Related records are ids — resolve a plan, membership, member or shipment on its own endpoint, and list this payment's refunds, disputes or Resolution Center cases with `?payment_id=`.
+Returns one payment, including every purchased line item with its quantity and subtotal. Related records are ids — resolve a variant, membership, member or shipment on its own endpoint, and list this payment's refunds, disputes or Resolution Center cases with `?payment_id=`.
 </dd>
 </dl>
 </dd>
@@ -26342,7 +26342,7 @@ client.Payments.Refund(
 <dl>
 <dd>
 
-Retries a failed or pending payment. This re-attempts the charge using the original payment method and plan details.
+Retries a failed or pending payment. This re-attempts the charge using the original payment method and variant details.
 </dd>
 </dl>
 </dd>
@@ -28005,7 +28005,7 @@ client.Permissions.List(
 <dl>
 <dd>
 
-Returns a paginated list of plans. Omit `account_id` and pass `product_ids` to list a product's public buyable plans.
+Deprecated compatibility endpoint. List variants with `GET /variants` instead.
 </dd>
 </dl>
 </dd>
@@ -28020,28 +28020,7 @@ Returns a paginated list of plans. Omit `account_id` and pass `product_ids` to l
 <dd>
 
 ```go
-request := &whopsdk.ListPlansRequest{
-    ReleaseMethods: []*string{
-        whopsdk.String(
-            "buy_now",
-        ),
-    },
-    Visibilities: []*string{
-        whopsdk.String(
-            "visible",
-        ),
-    },
-    PlanTypes: []*string{
-        whopsdk.String(
-            "renewal",
-        ),
-    },
-    ProductIDs: []*string{
-        whopsdk.String(
-            "prod_xxxxxxxxxxxxxx",
-        ),
-    },
-}
+request := &whopsdk.ListPlansRequest{}
 client.Plans.List(
     context.TODO(),
     request,
@@ -28060,7 +28039,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**accountID:** `*string` — The unique identifier of the account to list plans for. Required unless `product_ids` is provided for a public product-plan read.
+**accountID:** `*string` 
     
 </dd>
 </dl>
@@ -28068,7 +28047,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**direction:** `*whopsdk.ListPlansRequestDirection` — The sort direction for results. Defaults to descending.
+**direction:** `*whopsdk.ListPlansRequestDirection` 
     
 </dd>
 </dl>
@@ -28076,7 +28055,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.ListPlansRequestOrder` — The field to sort results by. Defaults to created_at.
+**order:** `*whopsdk.ListPlansRequestOrder` 
     
 </dd>
 </dl>
@@ -28084,7 +28063,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**releaseMethods:** `*string` — Filter to only plans matching these release methods.
+**releaseMethods:** `*string` 
     
 </dd>
 </dl>
@@ -28092,7 +28071,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**visibilities:** `*string` — Filter to only plans matching these visibility states.
+**visibilities:** `*string` 
     
 </dd>
 </dl>
@@ -28100,7 +28079,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**planTypes:** `*string` — Filter to only plans matching these billing types.
+**planTypes:** `*string` 
     
 </dd>
 </dl>
@@ -28108,7 +28087,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**productIDs:** `*string` — Filter to only plans belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice plans are returned.
+**productIDs:** `*string` 
     
 </dd>
 </dl>
@@ -28116,7 +28095,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**createdBefore:** `*string` — Only return plans created before this timestamp.
+**createdBefore:** `*string` 
     
 </dd>
 </dl>
@@ -28124,7 +28103,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-**createdAfter:** `*string` — Only return plans created after this timestamp.
+**createdAfter:** `*string` 
     
 </dd>
 </dl>
@@ -28180,7 +28159,7 @@ client.Plans.List(
 <dl>
 <dd>
 
-Create a new pricing plan for a product. The plan defines the billing interval, price, and availability for customers.
+Deprecated compatibility endpoint. Create variants with `POST /variants` instead.
 </dd>
 </dl>
 </dd>
@@ -28214,7 +28193,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**accountID:** `*string` — The unique identifier of the account to create this plan for. Required when authenticating as a user; an account API key supplies its own account.
+**accountID:** `*string` 
     
 </dd>
 </dl>
@@ -28222,7 +28201,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**adaptivePricingEnabled:** `*bool` — Whether this plan accepts local currency payments via adaptive pricing.
+**adaptivePricingEnabled:** `*bool` 
     
 </dd>
 </dl>
@@ -28230,7 +28209,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**attributes:** `map[string]any` — Attribute values that make this plan one variant of its product, as a map of attribute name to value, e.g. `{"size": "Large", "color": "Blue"}`. Names are normalized to snake_case identifiers (`Ring Size` becomes `ring_size`) and come back in alphabetical order. Every variant plan on a product must carry the same attribute names and a distinct set of values. Send `null` to make the plan an ordinary pricing option again.
+**attributes:** `map[string]any` 
     
 </dd>
 </dl>
@@ -28238,7 +28217,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**billingPeriod:** `*int` — Recurring billing interval in days, such as 30 for monthly or 365 for annual.
+**billingPeriod:** `*int` 
     
 </dd>
 </dl>
@@ -28246,7 +28225,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**checkoutStyling:** `map[string]any` — Checkout styling overrides for this plan.
+**checkoutStyling:** `map[string]any` 
     
 </dd>
 </dl>
@@ -28254,7 +28233,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**currency:** `*string` — The three-letter ISO currency code for the plan's pricing. Defaults to USD.
+**currency:** `*string` 
     
 </dd>
 </dl>
@@ -28262,7 +28241,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**customFields:** `[]*whopsdk.CreatePlansRequestCustomFieldsItem` — An array of custom field definitions to collect from customers at checkout. Omitting this field clears existing custom fields.
+**customFields:** `[]*whopsdk.CreatePlansRequestCustomFieldsItem` 
     
 </dd>
 </dl>
@@ -28270,7 +28249,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**description:** `*string` — A text description of the plan displayed to customers on the product page.
+**description:** `*string` 
     
 </dd>
 </dl>
@@ -28278,7 +28257,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**expirationDays:** `*int` — Access duration in days before the membership expires.
+**expirationDays:** `*int` 
     
 </dd>
 </dl>
@@ -28286,7 +28265,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**image:** `*whopsdk.CreatePlansRequestImage` — An image displayed on the product page to represent this plan.
+**image:** `*whopsdk.CreatePlansRequestImage` 
     
 </dd>
 </dl>
@@ -28294,7 +28273,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**initialPrice:** `*float64` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
+**initialPrice:** `*float64` 
     
 </dd>
 </dl>
@@ -28302,7 +28281,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**internalNotes:** `*string` — Private notes visible only to the account owner. Not shown to customers.
+**internalNotes:** `*string` 
     
 </dd>
 </dl>
@@ -28310,7 +28289,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**metadata:** `map[string]any` — Custom key-value pairs to store on the plan. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` (a checkout call-to-action button label — one of the product custom CTA values, e.g. `subscribe`, `get_offer`) and `custom_cta_url` (a URL the button links to; web or `tel:`) override the product's call to action for this plan and are validated on save.
+**metadata:** `map[string]any` 
     
 </dd>
 </dl>
@@ -28318,7 +28297,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**overrideTaxType:** `*string` — Override the default tax classification for this specific plan.
+**overrideTaxType:** `*string` 
     
 </dd>
 </dl>
@@ -28326,7 +28305,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**paymentMethodConfiguration:** `*whopsdk.CreatePlansRequestPaymentMethodConfiguration` — Explicit payment method configuration for the plan. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
+**paymentMethodConfiguration:** `*whopsdk.CreatePlansRequestPaymentMethodConfiguration` 
     
 </dd>
 </dl>
@@ -28334,7 +28313,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**planType:** `*string` — Plan billing type, such as `one_time` or `renewal`.
+**planType:** `*string` 
     
 </dd>
 </dl>
@@ -28342,7 +28321,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**productID:** `*string` — The unique identifier of the product to attach this plan to.
+**productID:** `*string` 
     
 </dd>
 </dl>
@@ -28350,7 +28329,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**releaseMethod:** `*string` — Sales method for this plan.
+**releaseMethod:** `*string` 
     
 </dd>
 </dl>
@@ -28358,7 +28337,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**renewalPrice:** `*float64` — The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
+**renewalPrice:** `*float64` 
     
 </dd>
 </dl>
@@ -28366,7 +28345,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**sku:** `*string` — Stock keeping unit for this plan. Maximum 100 characters. Free text, not enforced unique.
+**sku:** `*string` 
     
 </dd>
 </dl>
@@ -28374,7 +28353,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**splitPayRequiredPayments:** `*int` — Installment payments required before the subscription pauses.
+**splitPayRequiredPayments:** `*int` 
     
 </dd>
 </dl>
@@ -28382,7 +28361,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**stock:** `*int` — The maximum number of units available for purchase. Ignored when unlimited_stock is true.
+**stock:** `*int` 
     
 </dd>
 </dl>
@@ -28390,7 +28369,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**threeDsLevel:** `*whopsdk.CreatePlansRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
+**threeDsLevel:** `*whopsdk.CreatePlansRequestThreeDsLevel` 
     
 </dd>
 </dl>
@@ -28398,7 +28377,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**title:** `*string` — The display name of the plan shown to customers on the product page. Maximum 30 characters.
+**title:** `*string` 
     
 </dd>
 </dl>
@@ -28406,7 +28385,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**trialPeriodDays:** `*int` — Free trial duration before the first recurring charge.
+**trialPeriodDays:** `*int` 
     
 </dd>
 </dl>
@@ -28414,7 +28393,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**unlimitedStock:** `*bool` — Whether the plan has unlimited stock. When true, the stock field is ignored.
+**unlimitedStock:** `*bool` 
     
 </dd>
 </dl>
@@ -28422,7 +28401,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-**visibility:** `*string` — Whether the plan is visible to customers or hidden from public view.
+**visibility:** `*string` 
     
 </dd>
 </dl>
@@ -28446,7 +28425,7 @@ client.Plans.Create(
 <dl>
 <dd>
 
-Retrieves the details of an existing plan.
+Deprecated compatibility endpoint. Retrieve variants with `GET /variants/{id}` instead.
 </dd>
 </dl>
 </dd>
@@ -28482,7 +28461,7 @@ client.Plans.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — Plan ID, prefixed `plan_`.
+**id:** `string` — Variant ID, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -28506,7 +28485,7 @@ client.Plans.Retrieve(
 <dl>
 <dd>
 
-Delete a plan from a product. It stops selling immediately; existing memberships on this plan will not be affected.
+Deprecated compatibility endpoint. Delete variants with `DELETE /variants/{id}` instead.
 </dd>
 </dl>
 </dd>
@@ -28542,7 +28521,7 @@ client.Plans.Delete(
 <dl>
 <dd>
 
-**id:** `string` — Plan ID, prefixed `plan_`.
+**id:** `string` — Variant ID, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -28566,7 +28545,7 @@ client.Plans.Delete(
 <dl>
 <dd>
 
-Update a plan's pricing, billing interval, visibility, stock, and other settings.
+Deprecated compatibility endpoint. Update variants with `PATCH /variants/{id}` instead.
 </dd>
 </dl>
 </dd>
@@ -28602,7 +28581,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**id:** `string` — Plan ID, prefixed `plan_`.
+**id:** `string` — Variant ID, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -28610,7 +28589,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**adaptivePricingEnabled:** `*bool` — Whether this plan accepts local currency payments via adaptive pricing.
+**adaptivePricingEnabled:** `*bool` 
     
 </dd>
 </dl>
@@ -28618,7 +28597,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**attributes:** `map[string]any` — Attribute values that make this plan one variant of its product, as a map of attribute name to value, e.g. `{"size": "Large", "color": "Blue"}`. Names are normalized to snake_case identifiers (`Ring Size` becomes `ring_size`) and come back in alphabetical order. Every variant plan on a product must carry the same attribute names and a distinct set of values. Send `null` to make the plan an ordinary pricing option again.
+**attributes:** `map[string]any` 
     
 </dd>
 </dl>
@@ -28626,7 +28605,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**billingPeriod:** `*int` — Recurring billing interval in days, such as 30 for monthly or 365 for annual.
+**billingPeriod:** `*int` 
     
 </dd>
 </dl>
@@ -28634,7 +28613,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**cancelDiscountIntervals:** `*int` — How many renewals the retention discount applies to. Required when `offer_cancel_discount` is true.
+**cancelDiscountIntervals:** `*int` 
     
 </dd>
 </dl>
@@ -28642,7 +28621,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**cancelDiscountPercentage:** `*int` — Percentage taken off each discounted renewal. Required when `offer_cancel_discount` is true.
+**cancelDiscountPercentage:** `*int` 
     
 </dd>
 </dl>
@@ -28650,7 +28629,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**checkoutStyling:** `map[string]any` — Checkout styling overrides for this plan.
+**checkoutStyling:** `map[string]any` 
     
 </dd>
 </dl>
@@ -28658,7 +28637,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**currency:** `*string` — The three-letter ISO currency code for the plan's pricing. Defaults to USD.
+**currency:** `*string` 
     
 </dd>
 </dl>
@@ -28666,7 +28645,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**customFields:** `[]*whopsdk.UpdatePlansRequestCustomFieldsItem` — An array of custom field definitions to collect from customers at checkout. Omitting this field clears existing custom fields.
+**customFields:** `[]*whopsdk.UpdatePlansRequestCustomFieldsItem` 
     
 </dd>
 </dl>
@@ -28674,7 +28653,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**description:** `*string` — A text description of the plan displayed to customers on the product page.
+**description:** `*string` 
     
 </dd>
 </dl>
@@ -28682,7 +28661,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**expirationDays:** `*int` — Access duration in days before the membership expires.
+**expirationDays:** `*int` 
     
 </dd>
 </dl>
@@ -28690,7 +28669,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**image:** `*whopsdk.UpdatePlansRequestImage` — An image displayed on the product page to represent this plan.
+**image:** `*whopsdk.UpdatePlansRequestImage` 
     
 </dd>
 </dl>
@@ -28698,7 +28677,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**initialPrice:** `*float64` — Initial amount charged in the plan's currency, e.g. 10.43 for $10.43. A paid fiat plan charges at least 1.00 in its currency; use 0 for free.
+**initialPrice:** `*float64` 
     
 </dd>
 </dl>
@@ -28706,7 +28685,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**internalNotes:** `*string` — Private notes visible only to the account owner. Not shown to customers.
+**internalNotes:** `*string` 
     
 </dd>
 </dl>
@@ -28714,7 +28693,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**metadata:** `map[string]any` — Custom key-value pairs to store on the plan. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` (a checkout call-to-action button label — one of the product custom CTA values, e.g. `subscribe`, `get_offer`) and `custom_cta_url` (a URL the button links to; web or `tel:`) override the product's call to action for this plan and are validated on save.
+**metadata:** `map[string]any` 
     
 </dd>
 </dl>
@@ -28722,7 +28701,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**offerCancelDiscount:** `*bool` — Whether to offer a retention discount when a customer attempts to cancel.
+**offerCancelDiscount:** `*bool` 
     
 </dd>
 </dl>
@@ -28730,7 +28709,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**overrideTaxType:** `*string` — Override the default tax classification for this specific plan.
+**overrideTaxType:** `*string` 
     
 </dd>
 </dl>
@@ -28738,7 +28717,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**paymentMethodConfiguration:** `*whopsdk.UpdatePlansRequestPaymentMethodConfiguration` — Explicit payment method configuration for the plan. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
+**paymentMethodConfiguration:** `*whopsdk.UpdatePlansRequestPaymentMethodConfiguration` 
     
 </dd>
 </dl>
@@ -28746,7 +28725,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**releaseMethod:** `*string` — Sales method for this plan.
+**releaseMethod:** `*string` 
     
 </dd>
 </dl>
@@ -28754,7 +28733,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**renewalPrice:** `*float64` — The amount charged each billing period for recurring plans, in the plan's currency. A paid fiat plan charges at least 1.00 in its currency.
+**renewalPrice:** `*float64` 
     
 </dd>
 </dl>
@@ -28762,7 +28741,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**sku:** `*string` — Stock keeping unit for this plan. Maximum 100 characters. Free text, not enforced unique.
+**sku:** `*string` 
     
 </dd>
 </dl>
@@ -28770,7 +28749,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**stock:** `*int` — The maximum number of units available for purchase. Ignored when unlimited_stock is true.
+**stock:** `*int` 
     
 </dd>
 </dl>
@@ -28778,7 +28757,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**strikeThroughInitialPrice:** `*float64` — A comparison price displayed with a strikethrough for the initial price.
+**strikeThroughInitialPrice:** `*float64` 
     
 </dd>
 </dl>
@@ -28786,7 +28765,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**strikeThroughRenewalPrice:** `*float64` — A comparison price displayed with a strikethrough for the renewal price.
+**strikeThroughRenewalPrice:** `*float64` 
     
 </dd>
 </dl>
@@ -28794,7 +28773,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**threeDsLevel:** `*whopsdk.UpdatePlansRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
+**threeDsLevel:** `*whopsdk.UpdatePlansRequestThreeDsLevel` 
     
 </dd>
 </dl>
@@ -28802,7 +28781,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**title:** `*string` — The display name of the plan shown to customers on the product page. Maximum 30 characters.
+**title:** `*string` 
     
 </dd>
 </dl>
@@ -28810,7 +28789,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**trialPeriodDays:** `*int` — Free trial duration before the first recurring charge.
+**trialPeriodDays:** `*int` 
     
 </dd>
 </dl>
@@ -28818,7 +28797,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**unlimitedStock:** `*bool` — Whether the plan has unlimited stock. When true, the stock field is ignored.
+**unlimitedStock:** `*bool` 
     
 </dd>
 </dl>
@@ -28826,7 +28805,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-**visibility:** `*string` — Whether the plan is visible to customers or hidden from public view.
+**visibility:** `*string` 
     
 </dd>
 </dl>
@@ -28850,7 +28829,7 @@ client.Plans.Update(
 <dl>
 <dd>
 
-Previews tax for a plan before checkout, based on the buyer's location.
+Deprecated compatibility endpoint. Preview variant tax with `POST /variants/{id}/calculate_tax` instead.
 </dd>
 </dl>
 </dd>
@@ -28867,12 +28846,6 @@ Previews tax for a plan before checkout, based on the buyer's location.
 ```go
 request := &whopsdk.CalculateTaxPlansRequest{
     ID: "id",
-    Address: &whopsdk.CalculateTaxPlansRequestAddress{
-        Country: "DE",
-        PostalCode: whopsdk.String(
-            "10115",
-        ),
-    },
 }
 client.Plans.CalculateTax(
     context.TODO(),
@@ -28892,7 +28865,7 @@ client.Plans.CalculateTax(
 <dl>
 <dd>
 
-**id:** `string` — Plan ID, prefixed `plan_`.
+**id:** `string` — Variant ID, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -28900,7 +28873,7 @@ client.Plans.CalculateTax(
 <dl>
 <dd>
 
-**address:** `*whopsdk.CalculateTaxPlansRequestAddress` — Buyer billing address used for tax calculation. Provide either `address.country` or `ip_address`; include state and postal code when available for more accurate results.
+**address:** `*whopsdk.CalculateTaxPlansRequestAddress` 
     
 </dd>
 </dl>
@@ -28908,7 +28881,7 @@ client.Plans.CalculateTax(
 <dl>
 <dd>
 
-**ipAddress:** `*string` — Buyer IP address used to infer location when no billing address is provided.
+**ipAddress:** `*string` 
     
 </dd>
 </dl>
@@ -28916,7 +28889,7 @@ client.Plans.CalculateTax(
 <dl>
 <dd>
 
-**taxIDs:** `[]*whopsdk.CalculateTaxPlansRequestTaxIDsItem` — Optional buyer tax ID for B2B exemptions. At most one entry is supported.
+**taxIDs:** `[]*whopsdk.CalculateTaxPlansRequestTaxIDsItem` 
     
 </dd>
 </dl>
@@ -29010,7 +28983,7 @@ client.Products.List(
 <dl>
 <dd>
 
-**planTypes:** `*whopsdk.ListProductsRequestPlanTypesItem` — Filter to products with a buyable plan of these billing models, such as `one_time` or `renewal`.
+**planTypes:** `*whopsdk.ListProductsRequestPlanTypesItem` — Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`.
     
 </dd>
 </dl>
@@ -29018,7 +28991,7 @@ client.Products.List(
 <dl>
 <dd>
 
-**priceMinimum:** `*float64` — Only return products whose advertised buyable plan has a displayed price of at least this amount. Recurring plans use renewal price.
+**priceMinimum:** `*float64` — Only return products whose advertised buyable variant has a displayed price of at least this amount. Recurring variants use renewal price.
     
 </dd>
 </dl>
@@ -29026,7 +28999,7 @@ client.Products.List(
 <dl>
 <dd>
 
-**priceMaximum:** `*float64` — Only return products whose advertised buyable plan has a displayed price of at most this amount. Recurring plans use renewal price.
+**priceMaximum:** `*float64` — Only return products whose advertised buyable variant has a displayed price of at most this amount. Recurring variants use renewal price.
     
 </dd>
 </dl>
@@ -29801,7 +29774,7 @@ client.PromoCodes.List(
 <dl>
 <dd>
 
-**planIDs:** `*string` — Only promo codes scoped to these plan IDs.
+**planIDs:** `*string` — Only promo codes scoped to these variant IDs.
     
 </dd>
 </dl>
@@ -36753,6 +36726,942 @@ client.Users.RecommendActions(
 </dl>
 </details>
 
+## Variants
+<details><summary><code>client.Variants.List() -> *whopsdk.ListVariantsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a paginated list of variants. Omit `account_id` and pass `product_ids` to list a product's public buyable variants.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListVariantsRequest{
+    ReleaseMethods: []*string{
+        whopsdk.String(
+            "buy_now",
+        ),
+    },
+    Visibilities: []*string{
+        whopsdk.String(
+            "visible",
+        ),
+    },
+    PlanTypes: []*string{
+        whopsdk.String(
+            "renewal",
+        ),
+    },
+    ProductIDs: []*string{
+        whopsdk.String(
+            "prod_xxxxxxxxxxxxxx",
+        ),
+    },
+}
+client.Variants.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The unique identifier of the account to list variants for. Required unless `product_ids` is provided for a public product-variant read.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListVariantsRequestDirection` — The sort direction for results. Defaults to descending.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListVariantsRequestOrder` — The field to sort results by. Defaults to created_at.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**releaseMethods:** `*string` — Filter to only variants matching these release methods.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**visibilities:** `*string` — Filter to only variants matching these visibility states.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planTypes:** `*string` — Filter to only variants matching these billing types.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productIDs:** `*string` — Filter to only variants belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice variants are returned.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdBefore:** `*string` — Only return variants created before this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdAfter:** `*string` — Only return variants created after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Variants.Create(request) -> *whopsdk.Variant</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new pricing variant for a product. The variant defines the billing interval, price, and availability for customers.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateVariantsRequest{}
+client.Variants.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The unique identifier of the account to create this variant for. Required when authenticating as a user; an account API key supplies its own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adaptivePricingEnabled:** `*bool` — Whether this variant accepts local currency payments via adaptive pricing.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**attributes:** `map[string]any` — Attribute values that make this variant one variant of its product, as a map of attribute name to value, e.g. `{"size": "Large", "color": "Blue"}`. Names are normalized to snake_case identifiers (`Ring Size` becomes `ring_size`) and come back in alphabetical order. Every variant on a product must carry the same attribute names and a distinct set of values. Send `null` to make the variant an ordinary pricing option again.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingPeriod:** `*int` — Recurring billing interval in days, such as 30 for monthly or 365 for annual.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**checkoutStyling:** `map[string]any` — Checkout styling overrides for this variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `*string` — The three-letter ISO currency code for the variant's pricing. Defaults to USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customFields:** `[]*whopsdk.CreateVariantsRequestCustomFieldsItem` — An array of custom field definitions to collect from customers at checkout. Omitting this field clears existing custom fields.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `*string` — A text description of the variant displayed to customers on the product page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expirationDays:** `*int` — Access duration in days before the membership expires.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**image:** `*whopsdk.CreateVariantsRequestImage` — An image displayed on the product page to represent this variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**initialPrice:** `*float64` — Initial amount charged in the variant's currency, e.g. 10.43 for $10.43. A paid fiat variant charges at least 1.00 in its currency; use 0 for free.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**internalNotes:** `*string` — Private notes visible only to the account owner. Not shown to customers.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]any` — Custom key-value pairs to store on the variant. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` (a checkout call-to-action button label — one of the product custom CTA values, e.g. `subscribe`, `get_offer`) and `custom_cta_url` (a URL the button links to; web or `tel:`) override the product's call to action for this variant and are validated on save.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**overrideTaxType:** `*string` — Override the default tax classification for this specific variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethodConfiguration:** `*whopsdk.CreateVariantsRequestPaymentMethodConfiguration` — Explicit payment method configuration for the variant. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**planType:** `*string` — Variant billing type, such as `one_time` or `renewal`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productID:** `*string` — The unique identifier of the product to attach this variant to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**releaseMethod:** `*string` — Sales method for this variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**renewalPrice:** `*float64` — The amount charged each billing period for recurring variants, in the variant's currency. A paid fiat variant charges at least 1.00 in its currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sku:** `*string` — Stock keeping unit for this variant. Maximum 100 characters. Free text, not enforced unique.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**splitPayRequiredPayments:** `*int` — Installment payments required before the subscription pauses.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**stock:** `*int` — The maximum number of units available for purchase. Ignored when unlimited_stock is true.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**threeDsLevel:** `*whopsdk.CreateVariantsRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**title:** `*string` — The display name of the variant shown to customers on the product page. Maximum 30 characters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trialPeriodDays:** `*int` — Free trial duration before the first recurring charge.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**unlimitedStock:** `*bool` — Whether the variant has unlimited stock. When true, the stock field is ignored.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**visibility:** `*string` — Whether the variant is visible to customers or hidden from public view.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Variants.Retrieve(ID) -> *whopsdk.Variant</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves the details of an existing variant.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveVariantsRequest{
+    ID: "id",
+}
+client.Variants.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Variant ID, prefixed `plan_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Variants.Delete(ID) -> *whopsdk.DeleteVariantsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Delete a variant from a product. It stops selling immediately; existing memberships on this variant will not be affected.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.DeleteVariantsRequest{
+    ID: "id",
+}
+client.Variants.Delete(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Variant ID, prefixed `plan_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Variants.Update(ID, request) -> *whopsdk.Variant</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update a variant's pricing, billing interval, visibility, stock, and other settings.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateVariantsRequest{
+    ID: "id",
+}
+client.Variants.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Variant ID, prefixed `plan_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adaptivePricingEnabled:** `*bool` — Whether this variant accepts local currency payments via adaptive pricing.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**attributes:** `map[string]any` — Attribute values that make this variant one variant of its product, as a map of attribute name to value, e.g. `{"size": "Large", "color": "Blue"}`. Names are normalized to snake_case identifiers (`Ring Size` becomes `ring_size`) and come back in alphabetical order. Every variant on a product must carry the same attribute names and a distinct set of values. Send `null` to make the variant an ordinary pricing option again.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingPeriod:** `*int` — Recurring billing interval in days, such as 30 for monthly or 365 for annual.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cancelDiscountIntervals:** `*int` — How many renewals the retention discount applies to. Required when `offer_cancel_discount` is true.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cancelDiscountPercentage:** `*int` — Percentage taken off each discounted renewal. Required when `offer_cancel_discount` is true.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**checkoutStyling:** `map[string]any` — Checkout styling overrides for this variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `*string` — The three-letter ISO currency code for the variant's pricing. Defaults to USD.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customFields:** `[]*whopsdk.UpdateVariantsRequestCustomFieldsItem` — An array of custom field definitions to collect from customers at checkout. Omitting this field clears existing custom fields.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `*string` — A text description of the variant displayed to customers on the product page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expirationDays:** `*int` — Access duration in days before the membership expires.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**image:** `*whopsdk.UpdateVariantsRequestImage` — An image displayed on the product page to represent this variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**initialPrice:** `*float64` — Initial amount charged in the variant's currency, e.g. 10.43 for $10.43. A paid fiat variant charges at least 1.00 in its currency; use 0 for free.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**internalNotes:** `*string` — Private notes visible only to the account owner. Not shown to customers.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]any` — Custom key-value pairs to store on the variant. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` (a checkout call-to-action button label — one of the product custom CTA values, e.g. `subscribe`, `get_offer`) and `custom_cta_url` (a URL the button links to; web or `tel:`) override the product's call to action for this variant and are validated on save.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offerCancelDiscount:** `*bool` — Whether to offer a retention discount when a customer attempts to cancel.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**overrideTaxType:** `*string` — Override the default tax classification for this specific variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethodConfiguration:** `*whopsdk.UpdateVariantsRequestPaymentMethodConfiguration` — Explicit payment method configuration for the variant. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**releaseMethod:** `*string` — Sales method for this variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**renewalPrice:** `*float64` — The amount charged each billing period for recurring variants, in the variant's currency. A paid fiat variant charges at least 1.00 in its currency.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sku:** `*string` — Stock keeping unit for this variant. Maximum 100 characters. Free text, not enforced unique.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**stock:** `*int` — The maximum number of units available for purchase. Ignored when unlimited_stock is true.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**strikeThroughInitialPrice:** `*float64` — A comparison price displayed with a strikethrough for the initial price.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**strikeThroughRenewalPrice:** `*float64` — A comparison price displayed with a strikethrough for the renewal price.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**threeDsLevel:** `*whopsdk.UpdateVariantsRequestThreeDsLevel` — 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Send `null` to inherit the account default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**title:** `*string` — The display name of the variant shown to customers on the product page. Maximum 30 characters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trialPeriodDays:** `*int` — Free trial duration before the first recurring charge.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**unlimitedStock:** `*bool` — Whether the variant has unlimited stock. When true, the stock field is ignored.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**visibility:** `*string` — Whether the variant is visible to customers or hidden from public view.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Variants.CalculateTax(ID, request) -> *whopsdk.CalculateTaxVariantsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Previews tax for a variant before checkout, based on the buyer's location.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CalculateTaxVariantsRequest{
+    ID: "id",
+    Address: &whopsdk.CalculateTaxVariantsRequestAddress{
+        Country: "DE",
+        PostalCode: whopsdk.String(
+            "10115",
+        ),
+    },
+}
+client.Variants.CalculateTax(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Variant ID, prefixed `plan_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**address:** `*whopsdk.CalculateTaxVariantsRequestAddress` — Buyer billing address used for tax calculation. Provide either `address.country` or `ip_address`; include state and postal code when available for more accurate results.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ipAddress:** `*string` — Buyer IP address used to infer location when no billing address is provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**taxIDs:** `[]*whopsdk.CalculateTaxVariantsRequestTaxIDsItem` — Optional buyer tax ID for B2B exemptions. At most one entry is supported.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Verifications
 <details><summary><code>client.Verifications.List() -> *whopsdk.ListVerificationsResponse</code></summary>
 <dl>
@@ -37124,7 +38033,7 @@ client.WaitlistEntries.List(
 <dl>
 <dd>
 
-**planID:** `*string` — Only return signups for this plan, prefixed `plan_`.
+**planID:** `*string` — Only return signups for this variant, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -37140,7 +38049,7 @@ client.WaitlistEntries.List(
 <dl>
 <dd>
 
-**productID:** `*string` — Only return signups for plans on this product, prefixed `prod_`.
+**productID:** `*string` — Only return signups for variants on this product, prefixed `prod_`.
     
 </dd>
 </dl>
@@ -37204,7 +38113,7 @@ client.WaitlistEntries.List(
 <dl>
 <dd>
 
-Joins a free waitlist plan as the authenticated user. Requires waitlist_entry:create. Repeated joins return the existing pending entry, or an approved entry with a valid membership. Paid plans are rejected; no payment method is collected and no membership is granted.
+Joins a free waitlist variant as the authenticated user. Requires waitlist_entry:create. Repeated joins return the existing pending entry, or an approved entry with a valid membership. Paid variants are rejected; no payment method is collected and no membership is granted.
 </dd>
 </dl>
 </dd>
@@ -37240,7 +38149,7 @@ client.WaitlistEntries.Create(
 <dl>
 <dd>
 
-**customFieldResponses:** `[]*whopsdk.CreateWaitlistEntriesRequestCustomFieldResponsesItem` — Answers to the plan's checkout questions. Every required question must be answered.
+**customFieldResponses:** `[]*whopsdk.CreateWaitlistEntriesRequestCustomFieldResponsesItem` — Answers to the variant's checkout questions. Every required question must be answered.
     
 </dd>
 </dl>
@@ -37256,7 +38165,7 @@ client.WaitlistEntries.Create(
 <dl>
 <dd>
 
-**planID:** `string` — The free waitlist plan to join, prefixed `plan_`.
+**planID:** `string` — The free waitlist variant to join, prefixed `plan_`.
     
 </dd>
 </dl>
@@ -37280,7 +38189,7 @@ client.WaitlistEntries.Create(
 <dl>
 <dd>
 
-Queues approval of every pending signup for an account, optionally narrowed to a plan. Requires plan:waitlist:manage. Paid signups may charge saved payment methods. Approval runs asynchronously: list signups with `status` set to `pending` to follow progress, and retrieve a signup to read its outcome. Signups created after this request are excluded.
+Queues approval of every pending signup for an account, optionally narrowed to a variant. Requires plan:waitlist:manage. Paid signups may charge saved payment methods. Approval runs asynchronously: list signups with `status` set to `pending` to follow progress, and retrieve a signup to read its outcome. Signups created after this request are excluded.
 </dd>
 </dl>
 </dd>
@@ -37324,7 +38233,7 @@ client.WaitlistEntries.ApproveAll(
 <dl>
 <dd>
 
-**planID:** `*string` — Only approve signups for this plan, prefixed `plan_`. Omit to include every waitlist plan on the account.
+**planID:** `*string` — Only approve signups for this variant, prefixed `plan_`. Omit to include every waitlist variant on the account.
     
 </dd>
 </dl>
@@ -40279,7 +41188,7 @@ client.Partners.Businesses.Earnings.List(
 <dl>
 <dd>
 
-Charges a buyer for a plan from card details the caller holds itself, for integrators whose own systems are PCI compliant. Card details are accepted only on the vault host, where the card is tokenized before it reaches Whop; the official SDKs route this operation there, and raw card details sent to the regular host are refused. (Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.) Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and what the buyer must still do, such as 3D Secure.
+Charges a buyer for a variant from card details the caller holds itself, for integrators whose own systems are PCI compliant. Card details are accepted only on the vault host, where the card is tokenized before it reaches Whop; the official SDKs route this operation there, and raw card details sent to the regular host are refused. (Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.) Collection runs in the background: the response is the payment as created, not its outcome — poll Retrieve status for how far it has got and what the buyer must still do, such as 3D Secure.
 </dd>
 </dl>
 </dd>
@@ -40390,7 +41299,7 @@ client.Payments.Direct.Create(
 <dl>
 <dd>
 
-**plan:** `*payments.CreateDirectRequestPlan` — Find or create a plan for this payment. Mutually exclusive with `plan_id` and `line_items`. Creating a plan requires plan:create; creating or updating a product requires the corresponding product permission.
+**plan:** `*payments.CreateDirectRequestPlan` — Find or create a variant for this payment through the compatibility input `plan`. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
     
 </dd>
 </dl>
@@ -40398,7 +41307,7 @@ client.Payments.Direct.Create(
 <dl>
 <dd>
 
-**planID:** `*string` — The plan to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan`.
+**planID:** `*string` — The variant to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan`.
     
 </dd>
 </dl>
@@ -40406,7 +41315,7 @@ client.Payments.Direct.Create(
 <dl>
 <dd>
 
-**promoCodeID:** `*string` — An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the plan.
+**promoCodeID:** `*string` — An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant.
     
 </dd>
 </dl>

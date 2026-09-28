@@ -58,7 +58,7 @@ type CreateEventsRequest struct {
 	EventName string `json:"event_name" url:"-"`
 	// When the event occurred. Defaults to now.
 	EventTime *time.Time `json:"event_time,omitempty" url:"-"`
-	// The plan associated with the event.
+	// The variant associated with the event.
 	PlanID *string `json:"plan_id,omitempty" url:"-"`
 	// The product associated with the event.
 	ProductID *string `json:"product_id,omitempty" url:"-"`
@@ -4132,7 +4132,7 @@ type ListEventsResponseDataItemRelatedPayment struct {
 	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
 	CardLast4 *string `json:"card_last4,omitempty" url:"card_last4,omitempty"`
 	ID        *string `json:"id,omitempty" url:"id,omitempty"`
-	// Everything this payment charged for, in purchase order, including quantities. Older payments fall back to their original plan.
+	// Everything this payment charged for, in purchase order, including quantities. Older payments fall back to their original variant.
 	LineItems []*ReceiptLineItem `json:"line_items,omitempty" url:"line_items,omitempty"`
 	Provider  *string            `json:"provider,omitempty" url:"provider,omitempty"`
 
