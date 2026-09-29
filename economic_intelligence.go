@@ -105,18 +105,19 @@ var (
 	economicIntelligenceFieldExpectedToolCalls = big.NewInt(1 << 6)
 	economicIntelligenceFieldID                = big.NewInt(1 << 7)
 	economicIntelligenceFieldInput             = big.NewInt(1 << 8)
-	economicIntelligenceFieldPrompt            = big.NewInt(1 << 9)
-	economicIntelligenceFieldReasoning         = big.NewInt(1 << 10)
-	economicIntelligenceFieldResultURL         = big.NewInt(1 << 11)
-	economicIntelligenceFieldRunByUserID       = big.NewInt(1 << 12)
-	economicIntelligenceFieldRunEndedAt        = big.NewInt(1 << 13)
-	economicIntelligenceFieldRunStartedAt      = big.NewInt(1 << 14)
-	economicIntelligenceFieldSentiment         = big.NewInt(1 << 15)
-	economicIntelligenceFieldStatus            = big.NewInt(1 << 16)
-	economicIntelligenceFieldSupersededAt      = big.NewInt(1 << 17)
-	economicIntelligenceFieldTargetURL         = big.NewInt(1 << 18)
-	economicIntelligenceFieldTitle             = big.NewInt(1 << 19)
-	economicIntelligenceFieldUserFeedback      = big.NewInt(1 << 20)
+	economicIntelligenceFieldInputs            = big.NewInt(1 << 9)
+	economicIntelligenceFieldPrompt            = big.NewInt(1 << 10)
+	economicIntelligenceFieldReasoning         = big.NewInt(1 << 11)
+	economicIntelligenceFieldResultURL         = big.NewInt(1 << 12)
+	economicIntelligenceFieldRunByUserID       = big.NewInt(1 << 13)
+	economicIntelligenceFieldRunEndedAt        = big.NewInt(1 << 14)
+	economicIntelligenceFieldRunStartedAt      = big.NewInt(1 << 15)
+	economicIntelligenceFieldSentiment         = big.NewInt(1 << 16)
+	economicIntelligenceFieldStatus            = big.NewInt(1 << 17)
+	economicIntelligenceFieldSupersededAt      = big.NewInt(1 << 18)
+	economicIntelligenceFieldTargetURL         = big.NewInt(1 << 19)
+	economicIntelligenceFieldTitle             = big.NewInt(1 << 20)
+	economicIntelligenceFieldUserFeedback      = big.NewInt(1 << 21)
 )
 
 type EconomicIntelligence struct {
@@ -136,7 +137,8 @@ type EconomicIntelligence struct {
 	// Recommendation ID, prefixed `reca_`, or `create_business` for an unsaved setup recommendation. Authenticate and list again before executing an unsaved recommendation.
 	ID string `json:"id" url:"id"`
 	// What you requested, in your own words, or `null` for recommendations generated without your input.
-	Input *string `json:"input,omitempty" url:"input,omitempty"`
+	Input  *string                      `json:"input,omitempty" url:"input,omitempty"`
+	Inputs []*EconomicIntelligenceInput `json:"inputs" url:"inputs"`
 	// Step-by-step instructions for Whop AI, or `null` when no instructions are available.
 	Prompt *string `json:"prompt,omitempty" url:"prompt,omitempty"`
 	// Evidence and metrics supporting the recommendation, or `null` when no reasoning was provided.
@@ -230,6 +232,13 @@ func (e *EconomicIntelligence) GetInput() *string {
 		return nil
 	}
 	return e.Input
+}
+
+func (e *EconomicIntelligence) GetInputs() []*EconomicIntelligenceInput {
+	if e == nil {
+		return nil
+	}
+	return e.Inputs
 }
 
 func (e *EconomicIntelligence) GetPrompt() *string {
@@ -393,6 +402,13 @@ func (e *EconomicIntelligence) SetInput(input *string) {
 	e.require(economicIntelligenceFieldInput)
 }
 
+// SetInputs sets the Inputs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligence) SetInputs(inputs []*EconomicIntelligenceInput) {
+	e.Inputs = inputs
+	e.require(economicIntelligenceFieldInputs)
+}
+
 // SetPrompt sets the Prompt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EconomicIntelligence) SetPrompt(prompt *string) {
@@ -505,6 +521,141 @@ func (e *EconomicIntelligence) MarshalJSON() ([]byte, error) {
 }
 
 func (e *EconomicIntelligence) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	economicIntelligenceInputFieldAnswer  = big.NewInt(1 << 0)
+	economicIntelligenceInputFieldID      = big.NewInt(1 << 1)
+	economicIntelligenceInputFieldLabel   = big.NewInt(1 << 2)
+	economicIntelligenceInputFieldOptions = big.NewInt(1 << 3)
+)
+
+type EconomicIntelligenceInput struct {
+	// What Whop AI ran with: one of the options or your own text. `null` until a run starts.
+	Answer *string `json:"answer,omitempty" url:"answer,omitempty"`
+	// Identifies the input when you answer it.
+	ID string `json:"id" url:"id"`
+	// What you are choosing, such as the daily ad budget.
+	Label   string   `json:"label" url:"label"`
+	Options []string `json:"options" url:"options"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EconomicIntelligenceInput) GetAnswer() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Answer
+}
+
+func (e *EconomicIntelligenceInput) GetID() string {
+	if e == nil {
+		return ""
+	}
+	return e.ID
+}
+
+func (e *EconomicIntelligenceInput) GetLabel() string {
+	if e == nil {
+		return ""
+	}
+	return e.Label
+}
+
+func (e *EconomicIntelligenceInput) GetOptions() []string {
+	if e == nil {
+		return nil
+	}
+	return e.Options
+}
+
+func (e *EconomicIntelligenceInput) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EconomicIntelligenceInput) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetAnswer sets the Answer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligenceInput) SetAnswer(answer *string) {
+	e.Answer = answer
+	e.require(economicIntelligenceInputFieldAnswer)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligenceInput) SetID(id string) {
+	e.ID = id
+	e.require(economicIntelligenceInputFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligenceInput) SetLabel(label string) {
+	e.Label = label
+	e.require(economicIntelligenceInputFieldLabel)
+}
+
+// SetOptions sets the Options field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligenceInput) SetOptions(options []string) {
+	e.Options = options
+	e.require(economicIntelligenceInputFieldOptions)
+}
+
+func (e *EconomicIntelligenceInput) UnmarshalJSON(data []byte) error {
+	type unmarshaler EconomicIntelligenceInput
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EconomicIntelligenceInput(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EconomicIntelligenceInput) MarshalJSON() ([]byte, error) {
+	type embed EconomicIntelligenceInput
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EconomicIntelligenceInput) String() string {
 	if e == nil {
 		return "<nil>"
 	}
