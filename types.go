@@ -36944,6 +36944,7 @@ const (
 	PaymentTransactionTypesFraudScreening PaymentTransactionTypes = "fraud_screening"
 	PaymentTransactionTypesAuthorization  PaymentTransactionTypes = "authorization"
 	PaymentTransactionTypesInstallment    PaymentTransactionTypes = "installment"
+	PaymentTransactionTypesDeposit        PaymentTransactionTypes = "deposit"
 )
 
 func NewPaymentTransactionTypesFromString(s string) (PaymentTransactionTypes, error) {
@@ -36972,6 +36973,8 @@ func NewPaymentTransactionTypesFromString(s string) (PaymentTransactionTypes, er
 		return PaymentTransactionTypesAuthorization, nil
 	case "installment":
 		return PaymentTransactionTypesInstallment, nil
+	case "deposit":
+		return PaymentTransactionTypesDeposit, nil
 	}
 	var t PaymentTransactionTypes
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
