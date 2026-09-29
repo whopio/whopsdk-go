@@ -895,6 +895,7 @@ func (l LeaderboardPartnersRequestPeriod) Ptr() *LeaderboardPartnersRequestPerio
 var (
 	leaderboardPartnersResponseFieldLeaders = big.NewInt(1 << 0)
 	leaderboardPartnersResponseFieldMe      = big.NewInt(1 << 1)
+	leaderboardPartnersResponseFieldNearby  = big.NewInt(1 << 2)
 )
 
 type LeaderboardPartnersResponse struct {
@@ -902,6 +903,8 @@ type LeaderboardPartnersResponse struct {
 	Leaders []*LeaderboardPartnersResponseLeadersItem `json:"leaders" url:"leaders"`
 	// The caller's own standing; null when the caller has no referral earnings.
 	Me *LeaderboardPartnersResponseMe `json:"me,omitempty" url:"me,omitempty"`
+	// The referrers ranked within five places of the caller, including the caller, best first. Empty when the caller has no referral earnings or is anonymous.
+	Nearby []*LeaderboardPartnersResponseNearbyItem `json:"nearby" url:"nearby"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -922,6 +925,13 @@ func (l *LeaderboardPartnersResponse) GetMe() *LeaderboardPartnersResponseMe {
 		return nil
 	}
 	return l.Me
+}
+
+func (l *LeaderboardPartnersResponse) GetNearby() []*LeaderboardPartnersResponseNearbyItem {
+	if l == nil {
+		return nil
+	}
+	return l.Nearby
 }
 
 func (l *LeaderboardPartnersResponse) GetExtraProperties() map[string]interface{} {
@@ -950,6 +960,13 @@ func (l *LeaderboardPartnersResponse) SetLeaders(leaders []*LeaderboardPartnersR
 func (l *LeaderboardPartnersResponse) SetMe(me *LeaderboardPartnersResponseMe) {
 	l.Me = me
 	l.require(leaderboardPartnersResponseFieldMe)
+}
+
+// SetNearby sets the Nearby field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponse) SetNearby(nearby []*LeaderboardPartnersResponseNearbyItem) {
+	l.Nearby = nearby
+	l.require(leaderboardPartnersResponseFieldNearby)
 }
 
 func (l *LeaderboardPartnersResponse) UnmarshalJSON(data []byte) error {
@@ -1817,6 +1834,424 @@ func (l *LeaderboardPartnersResponseMeUserProfilePicture) MarshalJSON() ([]byte,
 }
 
 func (l *LeaderboardPartnersResponseMeUserProfilePicture) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	leaderboardPartnersResponseNearbyItemFieldFirstReferralStartedAt = big.NewInt(1 << 0)
+	leaderboardPartnersResponseNearbyItemFieldRank                   = big.NewInt(1 << 1)
+	leaderboardPartnersResponseNearbyItemFieldTotalEarningsUsd       = big.NewInt(1 << 2)
+	leaderboardPartnersResponseNearbyItemFieldTotalVolumeUsd         = big.NewInt(1 << 3)
+	leaderboardPartnersResponseNearbyItemFieldUser                   = big.NewInt(1 << 4)
+)
+
+type LeaderboardPartnersResponseNearbyItem struct {
+	// When the referrer's earliest partner business became active.
+	FirstReferralStartedAt time.Time `json:"first_referral_started_at" url:"first_referral_started_at"`
+	// 1-based leaderboard position.
+	Rank int `json:"rank" url:"rank"`
+	// The referrer's pending + completed earnings across all referred businesses, in USD.
+	TotalEarningsUsd string `json:"total_earnings_usd" url:"total_earnings_usd"`
+	// Credited GMV across all the referrer's referred businesses, in USD.
+	TotalVolumeUsd string `json:"total_volume_usd" url:"total_volume_usd"`
+	// The ranked referrer. Identity fields (id, name, username, profile_picture) are returned only on the caller's own entry; other referrers expose coarse location only.
+	User *LeaderboardPartnersResponseNearbyItemUser `json:"user,omitempty" url:"user,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LeaderboardPartnersResponseNearbyItem) GetFirstReferralStartedAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.FirstReferralStartedAt
+}
+
+func (l *LeaderboardPartnersResponseNearbyItem) GetRank() int {
+	if l == nil {
+		return 0
+	}
+	return l.Rank
+}
+
+func (l *LeaderboardPartnersResponseNearbyItem) GetTotalEarningsUsd() string {
+	if l == nil {
+		return ""
+	}
+	return l.TotalEarningsUsd
+}
+
+func (l *LeaderboardPartnersResponseNearbyItem) GetTotalVolumeUsd() string {
+	if l == nil {
+		return ""
+	}
+	return l.TotalVolumeUsd
+}
+
+func (l *LeaderboardPartnersResponseNearbyItem) GetUser() *LeaderboardPartnersResponseNearbyItemUser {
+	if l == nil {
+		return nil
+	}
+	return l.User
+}
+
+func (l *LeaderboardPartnersResponseNearbyItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LeaderboardPartnersResponseNearbyItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetFirstReferralStartedAt sets the FirstReferralStartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItem) SetFirstReferralStartedAt(firstReferralStartedAt time.Time) {
+	l.FirstReferralStartedAt = firstReferralStartedAt
+	l.require(leaderboardPartnersResponseNearbyItemFieldFirstReferralStartedAt)
+}
+
+// SetRank sets the Rank field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItem) SetRank(rank int) {
+	l.Rank = rank
+	l.require(leaderboardPartnersResponseNearbyItemFieldRank)
+}
+
+// SetTotalEarningsUsd sets the TotalEarningsUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItem) SetTotalEarningsUsd(totalEarningsUsd string) {
+	l.TotalEarningsUsd = totalEarningsUsd
+	l.require(leaderboardPartnersResponseNearbyItemFieldTotalEarningsUsd)
+}
+
+// SetTotalVolumeUsd sets the TotalVolumeUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItem) SetTotalVolumeUsd(totalVolumeUsd string) {
+	l.TotalVolumeUsd = totalVolumeUsd
+	l.require(leaderboardPartnersResponseNearbyItemFieldTotalVolumeUsd)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItem) SetUser(user *LeaderboardPartnersResponseNearbyItemUser) {
+	l.User = user
+	l.require(leaderboardPartnersResponseNearbyItemFieldUser)
+}
+
+func (l *LeaderboardPartnersResponseNearbyItem) UnmarshalJSON(data []byte) error {
+	type embed LeaderboardPartnersResponseNearbyItem
+	var unmarshaler = struct {
+		embed
+		FirstReferralStartedAt *internal.DateTime `json:"first_referral_started_at"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = LeaderboardPartnersResponseNearbyItem(unmarshaler.embed)
+	l.FirstReferralStartedAt = unmarshaler.FirstReferralStartedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LeaderboardPartnersResponseNearbyItem) MarshalJSON() ([]byte, error) {
+	type embed LeaderboardPartnersResponseNearbyItem
+	var marshaler = struct {
+		embed
+		FirstReferralStartedAt *internal.DateTime `json:"first_referral_started_at"`
+	}{
+		embed:                  embed(*l),
+		FirstReferralStartedAt: internal.NewDateTime(l.FirstReferralStartedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LeaderboardPartnersResponseNearbyItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// The ranked referrer. Identity fields (id, name, username, profile_picture) are returned only on the caller's own entry; other referrers expose coarse location only.
+var (
+	leaderboardPartnersResponseNearbyItemUserFieldCity           = big.NewInt(1 << 0)
+	leaderboardPartnersResponseNearbyItemUserFieldCountry        = big.NewInt(1 << 1)
+	leaderboardPartnersResponseNearbyItemUserFieldID             = big.NewInt(1 << 2)
+	leaderboardPartnersResponseNearbyItemUserFieldName           = big.NewInt(1 << 3)
+	leaderboardPartnersResponseNearbyItemUserFieldProfilePicture = big.NewInt(1 << 4)
+	leaderboardPartnersResponseNearbyItemUserFieldUsername       = big.NewInt(1 << 5)
+)
+
+type LeaderboardPartnersResponseNearbyItemUser struct {
+	// The city where the referrer is located, derived from their IP address. Null if location sharing is disabled.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// The country where the referrer is located, derived from their IP address. Null if location sharing is disabled.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// User ID, prefixed `user_`. Present only on the caller's own entry.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// The user's display name. Present only on the caller's own entry.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's profile picture. Present only on the caller's own entry.
+	ProfilePicture *LeaderboardPartnersResponseNearbyItemUserProfilePicture `json:"profile_picture,omitempty" url:"profile_picture,omitempty"`
+	// The user's unique username. Present only on the caller's own entry.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) GetCity() *string {
+	if l == nil {
+		return nil
+	}
+	return l.City
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) GetCountry() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Country
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) GetID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ID
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) GetProfilePicture() *LeaderboardPartnersResponseNearbyItemUserProfilePicture {
+	if l == nil {
+		return nil
+	}
+	return l.ProfilePicture
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) GetUsername() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Username
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItemUser) SetCity(city *string) {
+	l.City = city
+	l.require(leaderboardPartnersResponseNearbyItemUserFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItemUser) SetCountry(country *string) {
+	l.Country = country
+	l.require(leaderboardPartnersResponseNearbyItemUserFieldCountry)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItemUser) SetID(id *string) {
+	l.ID = id
+	l.require(leaderboardPartnersResponseNearbyItemUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItemUser) SetName(name *string) {
+	l.Name = name
+	l.require(leaderboardPartnersResponseNearbyItemUserFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItemUser) SetProfilePicture(profilePicture *LeaderboardPartnersResponseNearbyItemUserProfilePicture) {
+	l.ProfilePicture = profilePicture
+	l.require(leaderboardPartnersResponseNearbyItemUserFieldProfilePicture)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItemUser) SetUsername(username *string) {
+	l.Username = username
+	l.require(leaderboardPartnersResponseNearbyItemUserFieldUsername)
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler LeaderboardPartnersResponseNearbyItemUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LeaderboardPartnersResponseNearbyItemUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) MarshalJSON() ([]byte, error) {
+	type embed LeaderboardPartnersResponseNearbyItemUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUser) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// The user's profile picture. Present only on the caller's own entry.
+var (
+	leaderboardPartnersResponseNearbyItemUserProfilePictureFieldURL = big.NewInt(1 << 0)
+)
+
+type LeaderboardPartnersResponseNearbyItemUserProfilePicture struct {
+	// The user's profile picture URL.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUserProfilePicture) GetURL() string {
+	if l == nil {
+		return ""
+	}
+	return l.URL
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUserProfilePicture) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUserProfilePicture) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LeaderboardPartnersResponseNearbyItemUserProfilePicture) SetURL(url string) {
+	l.URL = url
+	l.require(leaderboardPartnersResponseNearbyItemUserProfilePictureFieldURL)
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUserProfilePicture) UnmarshalJSON(data []byte) error {
+	type unmarshaler LeaderboardPartnersResponseNearbyItemUserProfilePicture
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LeaderboardPartnersResponseNearbyItemUserProfilePicture(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUserProfilePicture) MarshalJSON() ([]byte, error) {
+	type embed LeaderboardPartnersResponseNearbyItemUserProfilePicture
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LeaderboardPartnersResponseNearbyItemUserProfilePicture) String() string {
 	if l == nil {
 		return "<nil>"
 	}
