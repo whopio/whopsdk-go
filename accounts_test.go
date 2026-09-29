@@ -2217,6 +2217,14 @@ func TestSettersAccount(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPlatformCredits", func(t *testing.T) {
+		obj := &Account{}
+		var fernTestValuePlatformCredits []*Money
+		obj.SetPlatformCredits(fernTestValuePlatformCredits)
+		assert.Equal(t, fernTestValuePlatformCredits, obj.PlatformCredits)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPrivacyPolicy", func(t *testing.T) {
 		obj := &Account{}
 		var fernTestValuePrivacyPolicy *File
@@ -3575,6 +3583,39 @@ func TestGettersAccount(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPaymentControls() // Should return zero value
+	})
+
+	t.Run("GetPlatformCredits", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var expected []*Money
+		obj.PlatformCredits = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlatformCredits(), "getter should return the property value")
+	})
+
+	t.Run("GetPlatformCredits_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		obj.PlatformCredits = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPlatformCredits(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPlatformCredits_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Account
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlatformCredits() // Should return zero value
 	})
 
 	t.Run("GetPrivacyPolicy", func(t *testing.T) {
@@ -5674,6 +5715,37 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 
 		// Act
 		obj.SetPaymentControls(fernTestValuePaymentControls)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlatformCredits_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var fernTestValuePlatformCredits []*Money
+
+		// Act
+		obj.SetPlatformCredits(fernTestValuePlatformCredits)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

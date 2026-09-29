@@ -733,40 +733,41 @@ var (
 	accountFieldParentAccount                       = big.NewInt(1 << 32)
 	accountFieldPartner                             = big.NewInt(1 << 33)
 	accountFieldPaymentControls                     = big.NewInt(1 << 34)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 35)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 36)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 37)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 38)
-	accountFieldRequiredActions                     = big.NewInt(1 << 39)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 40)
-	accountFieldRewards                             = big.NewInt(1 << 41)
-	accountFieldRoute                               = big.NewInt(1 << 42)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 43)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 44)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 45)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 46)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 47)
-	accountFieldSocialLinks                         = big.NewInt(1 << 48)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 49)
-	accountFieldStatus                              = big.NewInt(1 << 50)
-	accountFieldStatusReason                        = big.NewInt(1 << 51)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 52)
-	accountFieldTargetAudience                      = big.NewInt(1 << 53)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 54)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 55)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 56)
-	accountFieldTaxType                             = big.NewInt(1 << 57)
-	accountFieldTermsOfService                      = big.NewInt(1 << 58)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 59)
-	accountFieldTitle                               = big.NewInt(1 << 60)
-	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 61)
-	accountFieldTotalUsd                            = big.NewInt(1 << 62)
-	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldPlatformCredits                     = big.NewInt(1 << 35)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 36)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 37)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 38)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 39)
+	accountFieldRequiredActions                     = big.NewInt(1 << 40)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 41)
+	accountFieldRewards                             = big.NewInt(1 << 42)
+	accountFieldRoute                               = big.NewInt(1 << 43)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 44)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 45)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 46)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 47)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 48)
+	accountFieldSocialLinks                         = big.NewInt(1 << 49)
+	accountFieldStablecoinRails                     = big.NewInt(1 << 50)
+	accountFieldStatus                              = big.NewInt(1 << 51)
+	accountFieldStatusReason                        = big.NewInt(1 << 52)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 53)
+	accountFieldTargetAudience                      = big.NewInt(1 << 54)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 55)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 56)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 57)
+	accountFieldTaxType                             = big.NewInt(1 << 58)
+	accountFieldTermsOfService                      = big.NewInt(1 << 59)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 60)
+	accountFieldTitle                               = big.NewInt(1 << 61)
+	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 62)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 69)
 )
 
 type Account struct {
@@ -838,6 +839,7 @@ type Account struct {
 	Partner *AccountPartner `json:"partner,omitempty" url:"partner,omitempty"`
 	// Payment health controls currently applied to the account. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
 	PaymentControls *AccountPaymentControls `json:"payment_controls,omitempty" url:"payment_controls,omitempty"`
+	PlatformCredits []*Money                `json:"platform_credits" url:"platform_credits"`
 	// The account's privacy policy document, or `null` if they have not published one.
 	PrivacyPolicy *File `json:"privacy_policy,omitempty" url:"privacy_policy,omitempty"`
 	// Tax classification code applied by default to the account's products, with `id`, `name`, and `product_type`. `null` when no default is set.
@@ -1152,6 +1154,13 @@ func (a *Account) GetPaymentControls() *AccountPaymentControls {
 		return nil
 	}
 	return a.PaymentControls
+}
+
+func (a *Account) GetPlatformCredits() []*Money {
+	if a == nil {
+		return nil
+	}
+	return a.PlatformCredits
 }
 
 func (a *Account) GetPrivacyPolicy() *File {
@@ -1649,6 +1658,13 @@ func (a *Account) SetPartner(partner *AccountPartner) {
 func (a *Account) SetPaymentControls(paymentControls *AccountPaymentControls) {
 	a.PaymentControls = paymentControls
 	a.require(accountFieldPaymentControls)
+}
+
+// SetPlatformCredits sets the PlatformCredits field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetPlatformCredits(platformCredits []*Money) {
+	a.PlatformCredits = platformCredits
+	a.require(accountFieldPlatformCredits)
 }
 
 // SetPrivacyPolicy sets the PrivacyPolicy field and marks it as non-optional;
@@ -3235,7 +3251,7 @@ type AccountPartnerReward struct {
 	QualificationProgress *Money `json:"qualification_progress" url:"qualification_progress"`
 	// Activity that qualifies this account for the reward.
 	QualificationType AccountPartnerRewardQualificationType `json:"qualification_type" url:"qualification_type"`
-	// USD balance credit for this reward. Uses the saved grant amount once fulfillment has started.
+	// USD amount credited for this reward. Uses the saved grant amount once fulfillment has started.
 	RewardAmount *Money `json:"reward_amount" url:"reward_amount"`
 	// This account's reward state. Credited requires a posted ledger entry; processing includes a met requirement awaiting fulfillment. Reversing and reversed reflect a subsequent reward reversal.
 	Status AccountPartnerRewardStatus `json:"status" url:"status"`
