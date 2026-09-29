@@ -19,6 +19,7 @@ var (
 	createSetupIntentsRequestFieldPaymentMethodID   = big.NewInt(1 << 5)
 	createSetupIntentsRequestFieldPurpose           = big.NewInt(1 << 6)
 	createSetupIntentsRequestFieldReturnURL         = big.NewInt(1 << 7)
+	createSetupIntentsRequestFieldThreeDsLevel      = big.NewInt(1 << 8)
 )
 
 type CreateSetupIntentsRequest struct {
@@ -38,6 +39,8 @@ type CreateSetupIntentsRequest struct {
 	Purpose *CreateSetupIntentsRequestPurpose `json:"purpose,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies to this setup only, and only while the buyer is present: ignored with `payment_method_id`, which re-verifies off session. Not available with `purpose: ads_billing`. Defaults to `frictionless_if_required`.
+	ThreeDsLevel *CreateSetupIntentsRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -104,6 +107,13 @@ func (c *CreateSetupIntentsRequest) SetPurpose(purpose *CreateSetupIntentsReques
 func (c *CreateSetupIntentsRequest) SetReturnURL(returnURL *string) {
 	c.ReturnURL = returnURL
 	c.require(createSetupIntentsRequestFieldReturnURL)
+}
+
+// SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSetupIntentsRequest) SetThreeDsLevel(threeDsLevel *CreateSetupIntentsRequestThreeDsLevel) {
+	c.ThreeDsLevel = threeDsLevel
+	c.require(createSetupIntentsRequestFieldThreeDsLevel)
 }
 
 func (c *CreateSetupIntentsRequest) UnmarshalJSON(data []byte) error {
@@ -511,6 +521,32 @@ func NewCreateSetupIntentsRequestPurposeFromString(s string) (CreateSetupIntents
 }
 
 func (c CreateSetupIntentsRequestPurpose) Ptr() *CreateSetupIntentsRequestPurpose {
+	return &c
+}
+
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies to this setup only, and only while the buyer is present: ignored with `payment_method_id`, which re-verifies off session. Not available with `purpose: ads_billing`. Defaults to `frictionless_if_required`.
+type CreateSetupIntentsRequestThreeDsLevel string
+
+const (
+	CreateSetupIntentsRequestThreeDsLevelMandateChallenge       CreateSetupIntentsRequestThreeDsLevel = "mandate_challenge"
+	CreateSetupIntentsRequestThreeDsLevelMandateIfRequired      CreateSetupIntentsRequestThreeDsLevel = "mandate_if_required"
+	CreateSetupIntentsRequestThreeDsLevelFrictionlessIfRequired CreateSetupIntentsRequestThreeDsLevel = "frictionless_if_required"
+)
+
+func NewCreateSetupIntentsRequestThreeDsLevelFromString(s string) (CreateSetupIntentsRequestThreeDsLevel, error) {
+	switch s {
+	case "mandate_challenge":
+		return CreateSetupIntentsRequestThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return CreateSetupIntentsRequestThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreateSetupIntentsRequestThreeDsLevelFrictionlessIfRequired, nil
+	}
+	var t CreateSetupIntentsRequestThreeDsLevel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateSetupIntentsRequestThreeDsLevel) Ptr() *CreateSetupIntentsRequestThreeDsLevel {
 	return &c
 }
 
