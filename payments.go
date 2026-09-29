@@ -1084,6 +1084,7 @@ const (
 	PaymentLastPaymentErrorDeclineCodeRestrictedCard                   PaymentLastPaymentErrorDeclineCode = "restricted_card"
 	PaymentLastPaymentErrorDeclineCodeCardVelocityExceeded             PaymentLastPaymentErrorDeclineCode = "card_velocity_exceeded"
 	PaymentLastPaymentErrorDeclineCodeContactIssuer                    PaymentLastPaymentErrorDeclineCode = "contact_issuer"
+	PaymentLastPaymentErrorDeclineCodeCardDeclinedByIssuer             PaymentLastPaymentErrorDeclineCode = "card_declined_by_issuer"
 	PaymentLastPaymentErrorDeclineCodeBankDeclined                     PaymentLastPaymentErrorDeclineCode = "bank_declined"
 	PaymentLastPaymentErrorDeclineCodeRegulatoryBlocked                PaymentLastPaymentErrorDeclineCode = "regulatory_blocked"
 	PaymentLastPaymentErrorDeclineCodeTransactionNotPermitted          PaymentLastPaymentErrorDeclineCode = "transaction_not_permitted"
@@ -1194,6 +1195,8 @@ func NewPaymentLastPaymentErrorDeclineCodeFromString(s string) (PaymentLastPayme
 		return PaymentLastPaymentErrorDeclineCodeCardVelocityExceeded, nil
 	case "contact_issuer":
 		return PaymentLastPaymentErrorDeclineCodeContactIssuer, nil
+	case "card_declined_by_issuer":
+		return PaymentLastPaymentErrorDeclineCodeCardDeclinedByIssuer, nil
 	case "bank_declined":
 		return PaymentLastPaymentErrorDeclineCodeBankDeclined, nil
 	case "regulatory_blocked":
