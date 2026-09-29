@@ -40,10 +40,12 @@ var (
 	referredUsersPartnersRequestFieldQuery                = big.NewInt(1 << 0)
 	referredUsersPartnersRequestFieldHasBusinesses        = big.NewInt(1 << 1)
 	referredUsersPartnersRequestFieldHasEarningBusinesses = big.NewInt(1 << 2)
-	referredUsersPartnersRequestFieldFirst                = big.NewInt(1 << 3)
-	referredUsersPartnersRequestFieldAfter                = big.NewInt(1 << 4)
-	referredUsersPartnersRequestFieldLast                 = big.NewInt(1 << 5)
-	referredUsersPartnersRequestFieldBefore               = big.NewInt(1 << 6)
+	referredUsersPartnersRequestFieldOrder                = big.NewInt(1 << 3)
+	referredUsersPartnersRequestFieldDirection            = big.NewInt(1 << 4)
+	referredUsersPartnersRequestFieldFirst                = big.NewInt(1 << 5)
+	referredUsersPartnersRequestFieldAfter                = big.NewInt(1 << 6)
+	referredUsersPartnersRequestFieldLast                 = big.NewInt(1 << 7)
+	referredUsersPartnersRequestFieldBefore               = big.NewInt(1 << 8)
 )
 
 type ReferredUsersPartnersRequest struct {
@@ -53,6 +55,10 @@ type ReferredUsersPartnersRequest struct {
 	HasBusinesses *bool `json:"-" url:"has_businesses,omitempty"`
 	// When true, only referred users with at least one business that has generated earnings.
 	HasEarningBusinesses *bool `json:"-" url:"has_earning_businesses,omitempty"`
+	// The field to sort by. created_at uses the user's signup date; earnings_usd uses the caller's cached total affiliate earnings from that user.
+	Order *ReferredUsersPartnersRequestOrder `json:"-" url:"order,omitempty"`
+	// The direction to sort results.
+	Direction *ReferredUsersPartnersRequestDirection `json:"-" url:"direction,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -92,6 +98,20 @@ func (r *ReferredUsersPartnersRequest) SetHasBusinesses(hasBusinesses *bool) {
 func (r *ReferredUsersPartnersRequest) SetHasEarningBusinesses(hasEarningBusinesses *bool) {
 	r.HasEarningBusinesses = hasEarningBusinesses
 	r.require(referredUsersPartnersRequestFieldHasEarningBusinesses)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersRequest) SetOrder(order *ReferredUsersPartnersRequestOrder) {
+	r.Order = order
+	r.require(referredUsersPartnersRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersRequest) SetDirection(direction *ReferredUsersPartnersRequestDirection) {
+	r.Direction = direction
+	r.require(referredUsersPartnersRequestFieldDirection)
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -1811,6 +1831,50 @@ func (l *LeaderboardPartnersResponseMeUserProfilePicture) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+type ReferredUsersPartnersRequestDirection string
+
+const (
+	ReferredUsersPartnersRequestDirectionAsc  ReferredUsersPartnersRequestDirection = "asc"
+	ReferredUsersPartnersRequestDirectionDesc ReferredUsersPartnersRequestDirection = "desc"
+)
+
+func NewReferredUsersPartnersRequestDirectionFromString(s string) (ReferredUsersPartnersRequestDirection, error) {
+	switch s {
+	case "asc":
+		return ReferredUsersPartnersRequestDirectionAsc, nil
+	case "desc":
+		return ReferredUsersPartnersRequestDirectionDesc, nil
+	}
+	var t ReferredUsersPartnersRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ReferredUsersPartnersRequestDirection) Ptr() *ReferredUsersPartnersRequestDirection {
+	return &r
+}
+
+type ReferredUsersPartnersRequestOrder string
+
+const (
+	ReferredUsersPartnersRequestOrderCreatedAt   ReferredUsersPartnersRequestOrder = "created_at"
+	ReferredUsersPartnersRequestOrderEarningsUsd ReferredUsersPartnersRequestOrder = "earnings_usd"
+)
+
+func NewReferredUsersPartnersRequestOrderFromString(s string) (ReferredUsersPartnersRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return ReferredUsersPartnersRequestOrderCreatedAt, nil
+	case "earnings_usd":
+		return ReferredUsersPartnersRequestOrderEarningsUsd, nil
+	}
+	var t ReferredUsersPartnersRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ReferredUsersPartnersRequestOrder) Ptr() *ReferredUsersPartnersRequestOrder {
+	return &r
+}
+
 var (
 	referredUsersPartnersResponseFieldData     = big.NewInt(1 << 0)
 	referredUsersPartnersResponseFieldPageInfo = big.NewInt(1 << 1)
@@ -1924,7 +1988,7 @@ var (
 type ReferredUsersPartnersResponseDataItem struct {
 	// Number of active businesses this user referred that credit the caller as a second-tier partner. Excludes deleted businesses.
 	BusinessCount int `json:"business_count" url:"business_count"`
-	// The caller's total earnings across the business referrals included in business_count, in USD.
+	// The caller's total pending and completed affiliate earnings from this referred user across all tiers, in USD. Includes historical earnings from removed referrals and deleted businesses.
 	Earnings *Money `json:"earnings" url:"earnings"`
 	// When the referred user joined Whop, as an ISO 8601 timestamp.
 	JoinedAt         time.Time                                  `json:"joined_at" url:"joined_at"`
