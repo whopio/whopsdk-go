@@ -37,25 +37,34 @@ func (l *LeaderboardPartnersRequest) SetPeriod(period *LeaderboardPartnersReques
 }
 
 var (
-	referredUsersPartnersRequestFieldQuery                = big.NewInt(1 << 0)
-	referredUsersPartnersRequestFieldHasBusinesses        = big.NewInt(1 << 1)
-	referredUsersPartnersRequestFieldHasEarningBusinesses = big.NewInt(1 << 2)
-	referredUsersPartnersRequestFieldOrder                = big.NewInt(1 << 3)
-	referredUsersPartnersRequestFieldDirection            = big.NewInt(1 << 4)
-	referredUsersPartnersRequestFieldFirst                = big.NewInt(1 << 5)
-	referredUsersPartnersRequestFieldAfter                = big.NewInt(1 << 6)
-	referredUsersPartnersRequestFieldLast                 = big.NewInt(1 << 7)
-	referredUsersPartnersRequestFieldBefore               = big.NewInt(1 << 8)
+	referredUsersPartnersRequestFieldUserID                 = big.NewInt(1 << 0)
+	referredUsersPartnersRequestFieldEarningPartnerID       = big.NewInt(1 << 1)
+	referredUsersPartnersRequestFieldEarningPartnerUsername = big.NewInt(1 << 2)
+	referredUsersPartnersRequestFieldQuery                  = big.NewInt(1 << 3)
+	referredUsersPartnersRequestFieldHasBusinesses          = big.NewInt(1 << 4)
+	referredUsersPartnersRequestFieldHasEarningBusinesses   = big.NewInt(1 << 5)
+	referredUsersPartnersRequestFieldOrder                  = big.NewInt(1 << 6)
+	referredUsersPartnersRequestFieldDirection              = big.NewInt(1 << 7)
+	referredUsersPartnersRequestFieldFirst                  = big.NewInt(1 << 8)
+	referredUsersPartnersRequestFieldAfter                  = big.NewInt(1 << 9)
+	referredUsersPartnersRequestFieldLast                   = big.NewInt(1 << 10)
+	referredUsersPartnersRequestFieldBefore                 = big.NewInt(1 << 11)
 )
 
 type ReferredUsersPartnersRequest struct {
-	// Search referred users by name or username.
+	// Set to global to view referred users across partners with each primary referrer's cached total earnings. Requires an admin or partner manager session; OAuth tokens and company API keys cannot use global mode. Optionally narrow to one earning_partner_id or earning_partner_username.
+	UserID *ReferredUsersPartnersRequestUserID `json:"-" url:"user_id,omitempty"`
+	// The selected referring partner's user_ ID. Requires user_id=global; cannot be combined with earning_partner_username.
+	EarningPartnerID *string `json:"-" url:"earning_partner_id,omitempty"`
+	// The selected referring partner's exact username. Requires user_id=global; cannot be combined with earning_partner_id.
+	EarningPartnerUsername *string `json:"-" url:"earning_partner_username,omitempty"`
+	// Search referred users by name or username. In global mode, matches the beginning of usernames only.
 	Query *string `json:"-" url:"query,omitempty"`
 	// When true, only referred users who brought at least one business onto Whop.
 	HasBusinesses *bool `json:"-" url:"has_businesses,omitempty"`
 	// When true, only referred users with at least one business that has generated earnings.
 	HasEarningBusinesses *bool `json:"-" url:"has_earning_businesses,omitempty"`
-	// The field to sort by. created_at uses the user's signup date; earnings_usd uses the caller's cached total affiliate earnings from that user.
+	// The field to sort by. created_at uses the user's signup date; earnings_usd uses the current primary referrer's cached total affiliate earnings from that user.
 	Order *ReferredUsersPartnersRequestOrder `json:"-" url:"order,omitempty"`
 	// The direction to sort results.
 	Direction *ReferredUsersPartnersRequestDirection `json:"-" url:"direction,omitempty"`
@@ -77,6 +86,27 @@ func (r *ReferredUsersPartnersRequest) require(field *big.Int) {
 		r.explicitFields = big.NewInt(0)
 	}
 	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersRequest) SetUserID(userID *ReferredUsersPartnersRequestUserID) {
+	r.UserID = userID
+	r.require(referredUsersPartnersRequestFieldUserID)
+}
+
+// SetEarningPartnerID sets the EarningPartnerID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersRequest) SetEarningPartnerID(earningPartnerID *string) {
+	r.EarningPartnerID = earningPartnerID
+	r.require(referredUsersPartnersRequestFieldEarningPartnerID)
+}
+
+// SetEarningPartnerUsername sets the EarningPartnerUsername field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersRequest) SetEarningPartnerUsername(earningPartnerUsername *string) {
+	r.EarningPartnerUsername = earningPartnerUsername
+	r.require(referredUsersPartnersRequestFieldEarningPartnerUsername)
 }
 
 // SetQuery sets the Query field and marks it as non-optional;
@@ -2310,6 +2340,25 @@ func (r ReferredUsersPartnersRequestOrder) Ptr() *ReferredUsersPartnersRequestOr
 	return &r
 }
 
+type ReferredUsersPartnersRequestUserID string
+
+const (
+	ReferredUsersPartnersRequestUserIDGlobal ReferredUsersPartnersRequestUserID = "global"
+)
+
+func NewReferredUsersPartnersRequestUserIDFromString(s string) (ReferredUsersPartnersRequestUserID, error) {
+	switch s {
+	case "global":
+		return ReferredUsersPartnersRequestUserIDGlobal, nil
+	}
+	var t ReferredUsersPartnersRequestUserID
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ReferredUsersPartnersRequestUserID) Ptr() *ReferredUsersPartnersRequestUserID {
+	return &r
+}
+
 var (
 	referredUsersPartnersResponseFieldData     = big.NewInt(1 << 0)
 	referredUsersPartnersResponseFieldPageInfo = big.NewInt(1 << 1)
@@ -2421,9 +2470,9 @@ var (
 )
 
 type ReferredUsersPartnersResponseDataItem struct {
-	// Number of active businesses this user referred that credit the caller as a second-tier partner. Excludes deleted businesses.
+	// Number of active businesses this user referred that credit the caller as a second-tier partner, or any earning partner in global mode. An earning-partner filter narrows the count to that partner. Excludes deleted businesses.
 	BusinessCount int `json:"business_count" url:"business_count"`
-	// The caller's total pending and completed affiliate earnings from this referred user across all tiers, in USD. Includes historical earnings from removed referrals and deleted businesses.
+	// Total pending and completed affiliate earnings from this user for their current primary referrer, across all tiers, in USD. Includes historical earnings from removed referrals and deleted businesses.
 	Earnings *Money `json:"earnings" url:"earnings"`
 	// When the referred user joined Whop, as an ISO 8601 timestamp.
 	JoinedAt         time.Time                                  `json:"joined_at" url:"joined_at"`
