@@ -88,7 +88,7 @@ func (c *Client) Leaderboard(
 	return response.Body, nil
 }
 
-// Lists the users the caller referred onto Whop (newest first), each with the second-tier earnings the caller has made from that user's businesses.
+// Lists the users the caller referred onto Whop, newest first by default, each with the caller's total affiliate earnings from that user across all tiers. Earnings sorting uses cached totals.
 //
 // Example:
 //
