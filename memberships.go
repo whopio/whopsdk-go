@@ -500,28 +500,31 @@ func (t *TransferMembershipsRequest) SetID(id string) {
 
 var (
 	membershipFieldAccount            = big.NewInt(1 << 0)
-	membershipFieldCancelAtPeriodEnd  = big.NewInt(1 << 1)
-	membershipFieldCanceledAt         = big.NewInt(1 << 2)
-	membershipFieldCancellationReason = big.NewInt(1 << 3)
-	membershipFieldCreatedAt          = big.NewInt(1 << 4)
-	membershipFieldCurrentPeriodEnd   = big.NewInt(1 << 5)
-	membershipFieldCurrentPeriodStart = big.NewInt(1 << 6)
-	membershipFieldID                 = big.NewInt(1 << 7)
-	membershipFieldLicenseKey         = big.NewInt(1 << 8)
-	membershipFieldManageURL          = big.NewInt(1 << 9)
-	membershipFieldMember             = big.NewInt(1 << 10)
-	membershipFieldMetadata           = big.NewInt(1 << 11)
-	membershipFieldPhoneNumber        = big.NewInt(1 << 12)
-	membershipFieldPlanID             = big.NewInt(1 << 13)
-	membershipFieldProductID          = big.NewInt(1 << 14)
-	membershipFieldStatus             = big.NewInt(1 << 15)
-	membershipFieldUpdatedAt          = big.NewInt(1 << 16)
-	membershipFieldUserID             = big.NewInt(1 << 17)
+	membershipFieldBillingPeriodDays  = big.NewInt(1 << 1)
+	membershipFieldCancelAtPeriodEnd  = big.NewInt(1 << 2)
+	membershipFieldCanceledAt         = big.NewInt(1 << 3)
+	membershipFieldCancellationReason = big.NewInt(1 << 4)
+	membershipFieldCreatedAt          = big.NewInt(1 << 5)
+	membershipFieldCurrentPeriodEnd   = big.NewInt(1 << 6)
+	membershipFieldCurrentPeriodStart = big.NewInt(1 << 7)
+	membershipFieldID                 = big.NewInt(1 << 8)
+	membershipFieldLicenseKey         = big.NewInt(1 << 9)
+	membershipFieldManageURL          = big.NewInt(1 << 10)
+	membershipFieldMember             = big.NewInt(1 << 11)
+	membershipFieldMetadata           = big.NewInt(1 << 12)
+	membershipFieldPhoneNumber        = big.NewInt(1 << 13)
+	membershipFieldPlanID             = big.NewInt(1 << 14)
+	membershipFieldProductID          = big.NewInt(1 << 15)
+	membershipFieldStatus             = big.NewInt(1 << 16)
+	membershipFieldUpdatedAt          = big.NewInt(1 << 17)
+	membershipFieldUserID             = big.NewInt(1 << 18)
 )
 
 type Membership struct {
 	// The account (seller) this membership belongs to.
 	Account *StorefrontAccount `json:"account" url:"account"`
+	// Number of days between recurring charges. `null` for non-renewing memberships or memberships with multiple renewal schedules.
+	BillingPeriodDays *int `json:"billing_period_days,omitempty" url:"billing_period_days,omitempty"`
 	// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring variants.
 	CancelAtPeriodEnd bool `json:"cancel_at_period_end" url:"cancel_at_period_end"`
 	// When cancellation was requested, or when the membership was canceled if no request time is recorded, as an ISO 8601 timestamp. `null` when neither is recorded.
@@ -569,6 +572,13 @@ func (m *Membership) GetAccount() *StorefrontAccount {
 		return nil
 	}
 	return m.Account
+}
+
+func (m *Membership) GetBillingPeriodDays() *int {
+	if m == nil {
+		return nil
+	}
+	return m.BillingPeriodDays
 }
 
 func (m *Membership) GetCancelAtPeriodEnd() bool {
@@ -709,6 +719,13 @@ func (m *Membership) require(field *big.Int) {
 func (m *Membership) SetAccount(account *StorefrontAccount) {
 	m.Account = account
 	m.require(membershipFieldAccount)
+}
+
+// SetBillingPeriodDays sets the BillingPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetBillingPeriodDays(billingPeriodDays *int) {
+	m.BillingPeriodDays = billingPeriodDays
+	m.require(membershipFieldBillingPeriodDays)
 }
 
 // SetCancelAtPeriodEnd sets the CancelAtPeriodEnd field and marks it as non-optional;
@@ -2815,14 +2832,17 @@ func (t *TransferMembershipsResponse) String() string {
 
 var (
 	updateMembershipsRequestFieldID                = big.NewInt(1 << 0)
-	updateMembershipsRequestFieldCancelAtPeriodEnd = big.NewInt(1 << 1)
-	updateMembershipsRequestFieldMetadata          = big.NewInt(1 << 2)
-	updateMembershipsRequestFieldPaymentMethodID   = big.NewInt(1 << 3)
+	updateMembershipsRequestFieldBillingPeriodDays = big.NewInt(1 << 1)
+	updateMembershipsRequestFieldCancelAtPeriodEnd = big.NewInt(1 << 2)
+	updateMembershipsRequestFieldMetadata          = big.NewInt(1 << 3)
+	updateMembershipsRequestFieldPaymentMethodID   = big.NewInt(1 << 4)
 )
 
 type UpdateMembershipsRequest struct {
 	// Membership ID (`mem_` tag), or a software license key.
 	ID string `json:"-" url:"-"`
+	// Number of days between recurring charges. Sets the current period end to the current period start plus this value and applies to every recurring variant. The new period end must remain in the future. Existing non-daily memberships cannot be changed to daily billing.
+	BillingPeriodDays *int `json:"billing_period_days,omitempty" url:"-"`
 	// `true` cancels at the end of the current billing period (the customer keeps access until then); `false` reverses a pending cancellation.
 	CancelAtPeriodEnd *bool `json:"cancel_at_period_end,omitempty" url:"-"`
 	// Key-value pairs to merge into the membership's metadata. Pass an empty object to clear it.
@@ -2846,6 +2866,13 @@ func (u *UpdateMembershipsRequest) require(field *big.Int) {
 func (u *UpdateMembershipsRequest) SetID(id string) {
 	u.ID = id
 	u.require(updateMembershipsRequestFieldID)
+}
+
+// SetBillingPeriodDays sets the BillingPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembershipsRequest) SetBillingPeriodDays(billingPeriodDays *int) {
+	u.BillingPeriodDays = billingPeriodDays
+	u.require(updateMembershipsRequestFieldBillingPeriodDays)
 }
 
 // SetCancelAtPeriodEnd sets the CancelAtPeriodEnd field and marks it as non-optional;
