@@ -2736,6 +2736,22 @@ func TestSettersUpdateEconomicIntelligenceRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetResultID", func(t *testing.T) {
+		obj := &UpdateEconomicIntelligenceRequest{}
+		var fernTestValueResultID *string
+		obj.SetResultID(fernTestValueResultID)
+		assert.Equal(t, fernTestValueResultID, obj.ResultID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetResultPage", func(t *testing.T) {
+		obj := &UpdateEconomicIntelligenceRequest{}
+		var fernTestValueResultPage *UpdateEconomicIntelligenceRequestResultPage
+		obj.SetResultPage(fernTestValueResultPage)
+		assert.Equal(t, fernTestValueResultPage, obj.ResultPage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetResultURL", func(t *testing.T) {
 		obj := &UpdateEconomicIntelligenceRequest{}
 		var fernTestValueResultURL *string
@@ -2841,6 +2857,68 @@ func TestSettersMarkExplicitUpdateEconomicIntelligenceRequest(t *testing.T) {
 
 		// Act
 		obj.SetInput(fernTestValueInput)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetResultID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateEconomicIntelligenceRequest{}
+		var fernTestValueResultID *string
+
+		// Act
+		obj.SetResultID(fernTestValueResultID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetResultPage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateEconomicIntelligenceRequest{}
+		var fernTestValueResultPage *UpdateEconomicIntelligenceRequestResultPage
+
+		// Act
+		obj.SetResultPage(fernTestValueResultPage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3385,6 +3463,105 @@ func TestEnumListEconomicIntelligenceRequestStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewListEconomicIntelligenceRequestStatusFromString("queued")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateEconomicIntelligenceRequestResultPage(t *testing.T) {
+	t.Run("NewFromString_home", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("home")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("home"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_products", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("products")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("products"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ads", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("ads")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("ads"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_websites", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("websites")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("websites"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_checkout_links", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("checkout_links")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("checkout_links"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tracking_links", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("tracking_links")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("tracking_links"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_promo_codes", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("promo_codes")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("promo_codes"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payments", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("payments")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("payments"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_customers", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("customers")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("customers"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_affiliates", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("affiliates")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("affiliates"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_analytics", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("analytics")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("analytics"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_store_page", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("store_page")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateEconomicIntelligenceRequestResultPage("store_page"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateEconomicIntelligenceRequestResultPageFromString("home")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

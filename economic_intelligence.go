@@ -1102,6 +1102,59 @@ func (l *ListEconomicIntelligenceResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+// With `status: executed`, the page where the run's result can be seen when it is not one resource, such as the checkout links list or the store page. The recommendation's `result_url` becomes that page on the account's dashboard, or its store page for `store_page`.
+type UpdateEconomicIntelligenceRequestResultPage string
+
+const (
+	UpdateEconomicIntelligenceRequestResultPageHome          UpdateEconomicIntelligenceRequestResultPage = "home"
+	UpdateEconomicIntelligenceRequestResultPageProducts      UpdateEconomicIntelligenceRequestResultPage = "products"
+	UpdateEconomicIntelligenceRequestResultPageAds           UpdateEconomicIntelligenceRequestResultPage = "ads"
+	UpdateEconomicIntelligenceRequestResultPageWebsites      UpdateEconomicIntelligenceRequestResultPage = "websites"
+	UpdateEconomicIntelligenceRequestResultPageCheckoutLinks UpdateEconomicIntelligenceRequestResultPage = "checkout_links"
+	UpdateEconomicIntelligenceRequestResultPageTrackingLinks UpdateEconomicIntelligenceRequestResultPage = "tracking_links"
+	UpdateEconomicIntelligenceRequestResultPagePromoCodes    UpdateEconomicIntelligenceRequestResultPage = "promo_codes"
+	UpdateEconomicIntelligenceRequestResultPagePayments      UpdateEconomicIntelligenceRequestResultPage = "payments"
+	UpdateEconomicIntelligenceRequestResultPageCustomers     UpdateEconomicIntelligenceRequestResultPage = "customers"
+	UpdateEconomicIntelligenceRequestResultPageAffiliates    UpdateEconomicIntelligenceRequestResultPage = "affiliates"
+	UpdateEconomicIntelligenceRequestResultPageAnalytics     UpdateEconomicIntelligenceRequestResultPage = "analytics"
+	UpdateEconomicIntelligenceRequestResultPageStorePage     UpdateEconomicIntelligenceRequestResultPage = "store_page"
+)
+
+func NewUpdateEconomicIntelligenceRequestResultPageFromString(s string) (UpdateEconomicIntelligenceRequestResultPage, error) {
+	switch s {
+	case "home":
+		return UpdateEconomicIntelligenceRequestResultPageHome, nil
+	case "products":
+		return UpdateEconomicIntelligenceRequestResultPageProducts, nil
+	case "ads":
+		return UpdateEconomicIntelligenceRequestResultPageAds, nil
+	case "websites":
+		return UpdateEconomicIntelligenceRequestResultPageWebsites, nil
+	case "checkout_links":
+		return UpdateEconomicIntelligenceRequestResultPageCheckoutLinks, nil
+	case "tracking_links":
+		return UpdateEconomicIntelligenceRequestResultPageTrackingLinks, nil
+	case "promo_codes":
+		return UpdateEconomicIntelligenceRequestResultPagePromoCodes, nil
+	case "payments":
+		return UpdateEconomicIntelligenceRequestResultPagePayments, nil
+	case "customers":
+		return UpdateEconomicIntelligenceRequestResultPageCustomers, nil
+	case "affiliates":
+		return UpdateEconomicIntelligenceRequestResultPageAffiliates, nil
+	case "analytics":
+		return UpdateEconomicIntelligenceRequestResultPageAnalytics, nil
+	case "store_page":
+		return UpdateEconomicIntelligenceRequestResultPageStorePage, nil
+	}
+	var t UpdateEconomicIntelligenceRequestResultPage
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateEconomicIntelligenceRequestResultPage) Ptr() *UpdateEconomicIntelligenceRequestResultPage {
+	return &u
+}
+
 // A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
 type UpdateEconomicIntelligenceRequestSentiment string
 
@@ -1161,10 +1214,12 @@ var (
 	updateEconomicIntelligenceRequestFieldID           = big.NewInt(1 << 0)
 	updateEconomicIntelligenceRequestFieldAccountID    = big.NewInt(1 << 1)
 	updateEconomicIntelligenceRequestFieldInput        = big.NewInt(1 << 2)
-	updateEconomicIntelligenceRequestFieldResultURL    = big.NewInt(1 << 3)
-	updateEconomicIntelligenceRequestFieldSentiment    = big.NewInt(1 << 4)
-	updateEconomicIntelligenceRequestFieldStatus       = big.NewInt(1 << 5)
-	updateEconomicIntelligenceRequestFieldUserFeedback = big.NewInt(1 << 6)
+	updateEconomicIntelligenceRequestFieldResultID     = big.NewInt(1 << 3)
+	updateEconomicIntelligenceRequestFieldResultPage   = big.NewInt(1 << 4)
+	updateEconomicIntelligenceRequestFieldResultURL    = big.NewInt(1 << 5)
+	updateEconomicIntelligenceRequestFieldSentiment    = big.NewInt(1 << 6)
+	updateEconomicIntelligenceRequestFieldStatus       = big.NewInt(1 << 7)
+	updateEconomicIntelligenceRequestFieldUserFeedback = big.NewInt(1 << 8)
 )
 
 type UpdateEconomicIntelligenceRequest struct {
@@ -1174,7 +1229,11 @@ type UpdateEconomicIntelligenceRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// What you want the replacement recommendation for, in your own words. Up to 1000 characters. Sent when superseding, it directs the generation that replaces the rejected recommendation.
 	Input *string `json:"input,omitempty" url:"-"`
-	// With `status: executed`, where to view what was produced, such as the published website or created product. An http or https URL.
+	// With `status: executed`, the ID of what the run produced or changed, and the recommendation's `result_url` becomes where to view it: an ad (`ad_`), ad group (`adgrp_`) or ad campaign (`adcamp_`), a website (`app_`), a product (`prod_`), a plan (`plan_`), a checkout link (`ch_`), a promo code (`promo_`), or an experience (`exp_`). Without `result_id` or `result_page`, `result_url` links to the resource the recommendation was about, when it names one. Send only one of `result_id`, `result_page` and `result_url`.
+	ResultID *string `json:"result_id,omitempty" url:"-"`
+	// With `status: executed`, the page where the run's result can be seen when it is not one resource, such as the checkout links list or the store page. The recommendation's `result_url` becomes that page on the account's dashboard, or its store page for `store_page`.
+	ResultPage *UpdateEconomicIntelligenceRequestResultPage `json:"result_page,omitempty" url:"-"`
+	// With `status: executed`, where to view what was produced when it is outside Whop. An http or https URL. Prefer `result_id` for anything on Whop.
 	ResultURL *string `json:"result_url,omitempty" url:"-"`
 	// A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
 	Sentiment *UpdateEconomicIntelligenceRequestSentiment `json:"sentiment,omitempty" url:"-"`
@@ -1213,6 +1272,20 @@ func (u *UpdateEconomicIntelligenceRequest) SetAccountID(accountID *string) {
 func (u *UpdateEconomicIntelligenceRequest) SetInput(input *string) {
 	u.Input = input
 	u.require(updateEconomicIntelligenceRequestFieldInput)
+}
+
+// SetResultID sets the ResultID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateEconomicIntelligenceRequest) SetResultID(resultID *string) {
+	u.ResultID = resultID
+	u.require(updateEconomicIntelligenceRequestFieldResultID)
+}
+
+// SetResultPage sets the ResultPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateEconomicIntelligenceRequest) SetResultPage(resultPage *UpdateEconomicIntelligenceRequestResultPage) {
+	u.ResultPage = resultPage
+	u.require(updateEconomicIntelligenceRequestFieldResultPage)
 }
 
 // SetResultURL sets the ResultURL field and marks it as non-optional;
