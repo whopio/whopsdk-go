@@ -25572,19 +25572,20 @@ var (
 	paymentLegacyFieldSettlementTimeAt           = big.NewInt(1 << 48)
 	paymentLegacyFieldShipment                   = big.NewInt(1 << 49)
 	paymentLegacyFieldShippingAddress            = big.NewInt(1 << 50)
-	paymentLegacyFieldStatus                     = big.NewInt(1 << 51)
-	paymentLegacyFieldSubstatus                  = big.NewInt(1 << 52)
-	paymentLegacyFieldSubtotal                   = big.NewInt(1 << 53)
-	paymentLegacyFieldTaxAmount                  = big.NewInt(1 << 54)
-	paymentLegacyFieldTaxBehavior                = big.NewInt(1 << 55)
-	paymentLegacyFieldTaxRefundedAmount          = big.NewInt(1 << 56)
-	paymentLegacyFieldThreeDsVerified            = big.NewInt(1 << 57)
-	paymentLegacyFieldTotal                      = big.NewInt(1 << 58)
-	paymentLegacyFieldUpdatedAt                  = big.NewInt(1 << 59)
-	paymentLegacyFieldUsdTotal                   = big.NewInt(1 << 60)
-	paymentLegacyFieldUser                       = big.NewInt(1 << 61)
-	paymentLegacyFieldVerificationChecks         = big.NewInt(1 << 62)
-	paymentLegacyFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	paymentLegacyFieldSku                        = big.NewInt(1 << 51)
+	paymentLegacyFieldStatus                     = big.NewInt(1 << 52)
+	paymentLegacyFieldSubstatus                  = big.NewInt(1 << 53)
+	paymentLegacyFieldSubtotal                   = big.NewInt(1 << 54)
+	paymentLegacyFieldTaxAmount                  = big.NewInt(1 << 55)
+	paymentLegacyFieldTaxBehavior                = big.NewInt(1 << 56)
+	paymentLegacyFieldTaxRefundedAmount          = big.NewInt(1 << 57)
+	paymentLegacyFieldThreeDsVerified            = big.NewInt(1 << 58)
+	paymentLegacyFieldTotal                      = big.NewInt(1 << 59)
+	paymentLegacyFieldUpdatedAt                  = big.NewInt(1 << 60)
+	paymentLegacyFieldUsdTotal                   = big.NewInt(1 << 61)
+	paymentLegacyFieldUser                       = big.NewInt(1 << 62)
+	paymentLegacyFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	paymentLegacyFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 64)
 )
 
 type PaymentLegacy struct {
@@ -25690,6 +25691,8 @@ type PaymentLegacy struct {
 	Shipment *PaymentLegacyShipment `json:"shipment,omitempty" url:"shipment,omitempty"`
 	// The shipping address provided by the customer for physical goods. Null if no shipping address was collected.
 	ShippingAddress *PaymentLegacyShippingAddress `json:"shipping_address,omitempty" url:"shipping_address,omitempty"`
+	// The stock keeping unit of the variant this payment charged for (the first item, on a cart), as set by the seller. Accounts with billing-reason SKU suffixes enabled receive it stamped with why the charge happened: `-S` for a first subscription charge, `-R` for a renewal, `-C` for a one-time purchase, `-U` when the payment's own metadata carries `upsell: true`, `-F` when nothing was charged. Other billing reasons carry the bare SKU. Null when the variant has no SKU.
+	Sku *string `json:"sku,omitempty" url:"sku,omitempty"`
 	// The current lifecycle state of this payment (e.g., 'draft', 'open', 'paid', 'void').
 	Status *ReceiptStatus `json:"status,omitempty" url:"status,omitempty"`
 	// The friendly status of the payment.
@@ -26079,6 +26082,13 @@ func (p *PaymentLegacy) GetShippingAddress() *PaymentLegacyShippingAddress {
 		return nil
 	}
 	return p.ShippingAddress
+}
+
+func (p *PaymentLegacy) GetSku() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Sku
 }
 
 func (p *PaymentLegacy) GetStatus() *ReceiptStatus {
@@ -26541,6 +26551,13 @@ func (p *PaymentLegacy) SetShipment(shipment *PaymentLegacyShipment) {
 func (p *PaymentLegacy) SetShippingAddress(shippingAddress *PaymentLegacyShippingAddress) {
 	p.ShippingAddress = shippingAddress
 	p.require(paymentLegacyFieldShippingAddress)
+}
+
+// SetSku sets the Sku field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLegacy) SetSku(sku *string) {
+	p.Sku = sku
+	p.require(paymentLegacyFieldSku)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -30839,16 +30856,17 @@ var (
 	paymentListItemFieldSettlementCurrency      = big.NewInt(1 << 34)
 	paymentListItemFieldShipment                = big.NewInt(1 << 35)
 	paymentListItemFieldShippingAddress         = big.NewInt(1 << 36)
-	paymentListItemFieldStatus                  = big.NewInt(1 << 37)
-	paymentListItemFieldSubstatus               = big.NewInt(1 << 38)
-	paymentListItemFieldSubtotal                = big.NewInt(1 << 39)
-	paymentListItemFieldTaxAmount               = big.NewInt(1 << 40)
-	paymentListItemFieldTaxBehavior             = big.NewInt(1 << 41)
-	paymentListItemFieldTotal                   = big.NewInt(1 << 42)
-	paymentListItemFieldUpdatedAt               = big.NewInt(1 << 43)
-	paymentListItemFieldUsdTotal                = big.NewInt(1 << 44)
-	paymentListItemFieldUser                    = big.NewInt(1 << 45)
-	paymentListItemFieldVoidable                = big.NewInt(1 << 46)
+	paymentListItemFieldSku                     = big.NewInt(1 << 37)
+	paymentListItemFieldStatus                  = big.NewInt(1 << 38)
+	paymentListItemFieldSubstatus               = big.NewInt(1 << 39)
+	paymentListItemFieldSubtotal                = big.NewInt(1 << 40)
+	paymentListItemFieldTaxAmount               = big.NewInt(1 << 41)
+	paymentListItemFieldTaxBehavior             = big.NewInt(1 << 42)
+	paymentListItemFieldTotal                   = big.NewInt(1 << 43)
+	paymentListItemFieldUpdatedAt               = big.NewInt(1 << 44)
+	paymentListItemFieldUsdTotal                = big.NewInt(1 << 45)
+	paymentListItemFieldUser                    = big.NewInt(1 << 46)
+	paymentListItemFieldVoidable                = big.NewInt(1 << 47)
 )
 
 type PaymentListItem struct {
@@ -30926,6 +30944,8 @@ type PaymentListItem struct {
 	Shipment *PaymentListItemShipment `json:"shipment,omitempty" url:"shipment,omitempty"`
 	// The shipping address provided by the customer for physical goods. Null if no shipping address was collected.
 	ShippingAddress *PaymentListItemShippingAddress `json:"shipping_address,omitempty" url:"shipping_address,omitempty"`
+	// The stock keeping unit of the variant this payment charged for (the first item, on a cart), as set by the seller. Accounts with billing-reason SKU suffixes enabled receive it stamped with why the charge happened: `-S` for a first subscription charge, `-R` for a renewal, `-C` for a one-time purchase, `-U` when the payment's own metadata carries `upsell: true`, `-F` when nothing was charged. Other billing reasons carry the bare SKU. Null when the variant has no SKU.
+	Sku *string `json:"sku,omitempty" url:"sku,omitempty"`
 	// The current lifecycle state of this payment (e.g., 'draft', 'open', 'paid', 'void').
 	Status *ReceiptStatus `json:"status,omitempty" url:"status,omitempty"`
 	// The friendly status of the payment.
@@ -31211,6 +31231,13 @@ func (p *PaymentListItem) GetShippingAddress() *PaymentListItemShippingAddress {
 		return nil
 	}
 	return p.ShippingAddress
+}
+
+func (p *PaymentListItem) GetSku() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Sku
 }
 
 func (p *PaymentListItem) GetStatus() *ReceiptStatus {
@@ -31554,6 +31581,13 @@ func (p *PaymentListItem) SetShipment(shipment *PaymentListItemShipment) {
 func (p *PaymentListItem) SetShippingAddress(shippingAddress *PaymentListItemShippingAddress) {
 	p.ShippingAddress = shippingAddress
 	p.require(paymentListItemFieldShippingAddress)
+}
+
+// SetSku sets the Sku field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentListItem) SetSku(sku *string) {
+	p.Sku = sku
+	p.require(paymentListItemFieldSku)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -39056,7 +39090,8 @@ var (
 	receiptLineItemFieldProductID    = big.NewInt(1 << 4)
 	receiptLineItemFieldProductTitle = big.NewInt(1 << 5)
 	receiptLineItemFieldQuantity     = big.NewInt(1 << 6)
-	receiptLineItemFieldSubtotal     = big.NewInt(1 << 7)
+	receiptLineItemFieldSku          = big.NewInt(1 << 7)
+	receiptLineItemFieldSubtotal     = big.NewInt(1 << 8)
 )
 
 type ReceiptLineItem struct {
@@ -39074,6 +39109,8 @@ type ReceiptLineItem struct {
 	ProductTitle *string `json:"product_title,omitempty" url:"product_title,omitempty"`
 	// How many units were bought.
 	Quantity float64 `json:"quantity" url:"quantity"`
+	// The variant's stock keeping unit, free text set by the seller (e.g. `TSHIRT-LARGE-BLUE`). Accounts with billing-reason SKU suffixes enabled receive it stamped with why the charge happened: `-S` for a first subscription charge, `-R` for a renewal, `-C` for a one-time purchase, `-U` when the payment's own metadata carries `upsell: true`, `-F` when nothing was charged. Other billing reasons carry the bare SKU. `null` when the variant has no SKU or has been deleted.
+	Sku *string `json:"sku,omitempty" url:"sku,omitempty"`
 	// The recorded amount for this item's full quantity, before discounts, tax, and fees, in its purchase currency. Returns `null` when no item amount was recorded.
 	Subtotal *Money `json:"subtotal,omitempty" url:"subtotal,omitempty"`
 
@@ -39131,6 +39168,13 @@ func (r *ReceiptLineItem) GetQuantity() float64 {
 		return 0
 	}
 	return r.Quantity
+}
+
+func (r *ReceiptLineItem) GetSku() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Sku
 }
 
 func (r *ReceiptLineItem) GetSubtotal() *Money {
@@ -39201,6 +39245,13 @@ func (r *ReceiptLineItem) SetProductTitle(productTitle *string) {
 func (r *ReceiptLineItem) SetQuantity(quantity float64) {
 	r.Quantity = quantity
 	r.require(receiptLineItemFieldQuantity)
+}
+
+// SetSku sets the Sku field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetSku(sku *string) {
+	r.Sku = sku
+	r.require(receiptLineItemFieldSku)
 }
 
 // SetSubtotal sets the Subtotal field and marks it as non-optional;
