@@ -515,7 +515,8 @@ var (
 	membershipFieldPlanID             = big.NewInt(1 << 13)
 	membershipFieldProductID          = big.NewInt(1 << 14)
 	membershipFieldStatus             = big.NewInt(1 << 15)
-	membershipFieldUserID             = big.NewInt(1 << 16)
+	membershipFieldUpdatedAt          = big.NewInt(1 << 16)
+	membershipFieldUserID             = big.NewInt(1 << 17)
 )
 
 type Membership struct {
@@ -551,6 +552,8 @@ type Membership struct {
 	ProductID string `json:"product_id" url:"product_id"`
 	// Billing state of the membership. `active`/`trialing` memberships grant access; `past_due` is the grace period after a failed payment; `completed` one-time purchases keep access; `canceled`/`expired` do not.
 	Status MembershipStatus `json:"status" url:"status"`
+	// When the membership was last changed, as an ISO 8601 timestamp. Reflects the most recent change to the membership itself, so you can reconcile against webhook retries, replays, and backfills.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The buyer, prefixed `user_`. `null` when the buyer is another business or the membership is unclaimed.
 	UserID *string `json:"user_id,omitempty" url:"user_id,omitempty"`
 
@@ -671,6 +674,13 @@ func (m *Membership) GetStatus() MembershipStatus {
 		return ""
 	}
 	return m.Status
+}
+
+func (m *Membership) GetUpdatedAt() string {
+	if m == nil {
+		return ""
+	}
+	return m.UpdatedAt
 }
 
 func (m *Membership) GetUserID() *string {
@@ -804,6 +814,13 @@ func (m *Membership) SetProductID(productID string) {
 func (m *Membership) SetStatus(status MembershipStatus) {
 	m.Status = status
 	m.require(membershipFieldStatus)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetUpdatedAt(updatedAt string) {
+	m.UpdatedAt = updatedAt
+	m.require(membershipFieldUpdatedAt)
 }
 
 // SetUserID sets the UserID field and marks it as non-optional;
