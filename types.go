@@ -24640,6 +24640,7 @@ const (
 	PaymentDeclineCodesRestrictedCard                   PaymentDeclineCodes = "restricted_card"
 	PaymentDeclineCodesCardVelocityExceeded             PaymentDeclineCodes = "card_velocity_exceeded"
 	PaymentDeclineCodesContactIssuer                    PaymentDeclineCodes = "contact_issuer"
+	PaymentDeclineCodesCardDeclinedByIssuer             PaymentDeclineCodes = "card_declined_by_issuer"
 	PaymentDeclineCodesBankDeclined                     PaymentDeclineCodes = "bank_declined"
 	PaymentDeclineCodesRegulatoryBlocked                PaymentDeclineCodes = "regulatory_blocked"
 	PaymentDeclineCodesTransactionNotPermitted          PaymentDeclineCodes = "transaction_not_permitted"
@@ -24750,6 +24751,8 @@ func NewPaymentDeclineCodesFromString(s string) (PaymentDeclineCodes, error) {
 		return PaymentDeclineCodesCardVelocityExceeded, nil
 	case "contact_issuer":
 		return PaymentDeclineCodesContactIssuer, nil
+	case "card_declined_by_issuer":
+		return PaymentDeclineCodesCardDeclinedByIssuer, nil
 	case "bank_declined":
 		return PaymentDeclineCodesBankDeclined, nil
 	case "regulatory_blocked":
