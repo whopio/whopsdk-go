@@ -7649,14 +7649,6 @@ func TestSettersMarkExplicitSummaryDisputesResponseGroups(t *testing.T) {
 }
 
 func TestSettersSummaryDisputesResponseGroupsStatus(t *testing.T) {
-	t.Run("SetClosed", func(t *testing.T) {
-		obj := &SummaryDisputesResponseGroupsStatus{}
-		var fernTestValueClosed int
-		obj.SetClosed(fernTestValueClosed)
-		assert.Equal(t, fernTestValueClosed, obj.Closed)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetLost", func(t *testing.T) {
 		obj := &SummaryDisputesResponseGroupsStatus{}
 		var fernTestValueLost int
@@ -7670,6 +7662,14 @@ func TestSettersSummaryDisputesResponseGroupsStatus(t *testing.T) {
 		var fernTestValueNeedsResponse int
 		obj.SetNeedsResponse(fernTestValueNeedsResponse)
 		assert.Equal(t, fernTestValueNeedsResponse, obj.NeedsResponse)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPrevented", func(t *testing.T) {
+		obj := &SummaryDisputesResponseGroupsStatus{}
+		var fernTestValuePrevented int
+		obj.SetPrevented(fernTestValuePrevented)
+		assert.Equal(t, fernTestValuePrevented, obj.Prevented)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -7716,29 +7716,6 @@ func TestSettersSummaryDisputesResponseGroupsStatus(t *testing.T) {
 }
 
 func TestGettersSummaryDisputesResponseGroupsStatus(t *testing.T) {
-	t.Run("GetClosed", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &SummaryDisputesResponseGroupsStatus{}
-		var expected int
-		obj.Closed = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetClosed(), "getter should return the property value")
-	})
-
-	t.Run("GetClosed_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *SummaryDisputesResponseGroupsStatus
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetClosed() // Should return zero value
-	})
-
 	t.Run("GetLost", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -7783,6 +7760,29 @@ func TestGettersSummaryDisputesResponseGroupsStatus(t *testing.T) {
 			}
 		}()
 		_ = obj.GetNeedsResponse() // Should return zero value
+	})
+
+	t.Run("GetPrevented", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SummaryDisputesResponseGroupsStatus{}
+		var expected int
+		obj.Prevented = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPrevented(), "getter should return the property value")
+	})
+
+	t.Run("GetPrevented_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SummaryDisputesResponseGroupsStatus
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPrevented() // Should return zero value
 	})
 
 	t.Run("GetUnderReview", func(t *testing.T) {
@@ -7903,37 +7903,6 @@ func TestGettersSummaryDisputesResponseGroupsStatus(t *testing.T) {
 }
 
 func TestSettersMarkExplicitSummaryDisputesResponseGroupsStatus(t *testing.T) {
-	t.Run("SetClosed_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &SummaryDisputesResponseGroupsStatus{}
-		var fernTestValueClosed int
-
-		// Act
-		obj.SetClosed(fernTestValueClosed)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetLost_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -7973,6 +7942,37 @@ func TestSettersMarkExplicitSummaryDisputesResponseGroupsStatus(t *testing.T) {
 
 		// Act
 		obj.SetNeedsResponse(fernTestValueNeedsResponse)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPrevented_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SummaryDisputesResponseGroupsStatus{}
+		var fernTestValuePrevented int
+
+		// Act
+		obj.SetPrevented(fernTestValuePrevented)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12024,11 +12024,11 @@ func TestEnumDisputeStatus(t *testing.T) {
 		assert.Equal(t, DisputeStatus("lost"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_closed", func(t *testing.T) {
+	t.Run("NewFromString_prevented", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewDisputeStatusFromString("closed")
+		val, err := NewDisputeStatusFromString("prevented")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, DisputeStatus("closed"), val, "enum value should match expected wire value")
+		assert.Equal(t, DisputeStatus("prevented"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_warning_closed", func(t *testing.T) {
@@ -12160,11 +12160,11 @@ func TestEnumListDisputesRequestStatusItem(t *testing.T) {
 		assert.Equal(t, ListDisputesRequestStatusItem("lost"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_closed", func(t *testing.T) {
+	t.Run("NewFromString_prevented", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewListDisputesRequestStatusItemFromString("closed")
+		val, err := NewListDisputesRequestStatusItemFromString("prevented")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListDisputesRequestStatusItem("closed"), val, "enum value should match expected wire value")
+		assert.Equal(t, ListDisputesRequestStatusItem("prevented"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_warning_closed", func(t *testing.T) {
@@ -12348,11 +12348,11 @@ func TestEnumSummaryDisputesRequestStatusItem(t *testing.T) {
 		assert.Equal(t, SummaryDisputesRequestStatusItem("lost"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_closed", func(t *testing.T) {
+	t.Run("NewFromString_prevented", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewSummaryDisputesRequestStatusItemFromString("closed")
+		val, err := NewSummaryDisputesRequestStatusItemFromString("prevented")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, SummaryDisputesRequestStatusItem("closed"), val, "enum value should match expected wire value")
+		assert.Equal(t, SummaryDisputesRequestStatusItem("prevented"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_warning_closed", func(t *testing.T) {

@@ -325,7 +325,7 @@ type Dispute struct {
 	Reason DisputeReason `json:"reason" url:"reason"`
 	// The raw card-network or processor reason code, such as `10.4`. Informational only — `reason` is not derived from it.
 	ReasonCode *string `json:"reason_code,omitempty" url:"reason_code,omitempty"`
-	// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. The `warning_` statuses are the same stages for an inquiry, which moves no funds. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
+	// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `prevented` means the customer was refunded before any ruling, so it settles like `lost`. The `warning_` statuses are the same stages for an inquiry, which moves no funds. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
 	Status DisputeStatus `json:"status" url:"status"`
 	// When the dispute was last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -2177,7 +2177,7 @@ func (d DisputeReason) Ptr() *DisputeReason {
 	return &d
 }
 
-// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. The `warning_` statuses are the same stages for an inquiry, which moves no funds. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
+// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `prevented` means the customer was refunded before any ruling, so it settles like `lost`. The `warning_` statuses are the same stages for an inquiry, which moves no funds. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
 type DisputeStatus string
 
 const (
@@ -2187,7 +2187,7 @@ const (
 	DisputeStatusWarningUnderReview   DisputeStatus = "warning_under_review"
 	DisputeStatusWon                  DisputeStatus = "won"
 	DisputeStatusLost                 DisputeStatus = "lost"
-	DisputeStatusClosed               DisputeStatus = "closed"
+	DisputeStatusPrevented            DisputeStatus = "prevented"
 	DisputeStatusWarningClosed        DisputeStatus = "warning_closed"
 )
 
@@ -2205,8 +2205,8 @@ func NewDisputeStatusFromString(s string) (DisputeStatus, error) {
 		return DisputeStatusWon, nil
 	case "lost":
 		return DisputeStatusLost, nil
-	case "closed":
-		return DisputeStatusClosed, nil
+	case "prevented":
+		return DisputeStatusPrevented, nil
 	case "warning_closed":
 		return DisputeStatusWarningClosed, nil
 	}
@@ -2274,7 +2274,7 @@ const (
 	ListDisputesRequestStatusItemWarningUnderReview   ListDisputesRequestStatusItem = "warning_under_review"
 	ListDisputesRequestStatusItemWon                  ListDisputesRequestStatusItem = "won"
 	ListDisputesRequestStatusItemLost                 ListDisputesRequestStatusItem = "lost"
-	ListDisputesRequestStatusItemClosed               ListDisputesRequestStatusItem = "closed"
+	ListDisputesRequestStatusItemPrevented            ListDisputesRequestStatusItem = "prevented"
 	ListDisputesRequestStatusItemWarningClosed        ListDisputesRequestStatusItem = "warning_closed"
 )
 
@@ -2292,8 +2292,8 @@ func NewListDisputesRequestStatusItemFromString(s string) (ListDisputesRequestSt
 		return ListDisputesRequestStatusItemWon, nil
 	case "lost":
 		return ListDisputesRequestStatusItemLost, nil
-	case "closed":
-		return ListDisputesRequestStatusItemClosed, nil
+	case "prevented":
+		return ListDisputesRequestStatusItemPrevented, nil
 	case "warning_closed":
 		return ListDisputesRequestStatusItemWarningClosed, nil
 	}
@@ -3070,7 +3070,7 @@ const (
 	SummaryDisputesRequestStatusItemWarningUnderReview   SummaryDisputesRequestStatusItem = "warning_under_review"
 	SummaryDisputesRequestStatusItemWon                  SummaryDisputesRequestStatusItem = "won"
 	SummaryDisputesRequestStatusItemLost                 SummaryDisputesRequestStatusItem = "lost"
-	SummaryDisputesRequestStatusItemClosed               SummaryDisputesRequestStatusItem = "closed"
+	SummaryDisputesRequestStatusItemPrevented            SummaryDisputesRequestStatusItem = "prevented"
 	SummaryDisputesRequestStatusItemWarningClosed        SummaryDisputesRequestStatusItem = "warning_closed"
 )
 
@@ -3088,8 +3088,8 @@ func NewSummaryDisputesRequestStatusItemFromString(s string) (SummaryDisputesReq
 		return SummaryDisputesRequestStatusItemWon, nil
 	case "lost":
 		return SummaryDisputesRequestStatusItemLost, nil
-	case "closed":
-		return SummaryDisputesRequestStatusItemClosed, nil
+	case "prevented":
+		return SummaryDisputesRequestStatusItemPrevented, nil
 	case "warning_closed":
 		return SummaryDisputesRequestStatusItemWarningClosed, nil
 	}
@@ -3308,9 +3308,9 @@ func (s *SummaryDisputesResponseGroups) String() string {
 
 // How many of the matching disputes are in each status. Every status is present, including those with a count of zero.
 var (
-	summaryDisputesResponseGroupsStatusFieldClosed               = big.NewInt(1 << 0)
-	summaryDisputesResponseGroupsStatusFieldLost                 = big.NewInt(1 << 1)
-	summaryDisputesResponseGroupsStatusFieldNeedsResponse        = big.NewInt(1 << 2)
+	summaryDisputesResponseGroupsStatusFieldLost                 = big.NewInt(1 << 0)
+	summaryDisputesResponseGroupsStatusFieldNeedsResponse        = big.NewInt(1 << 1)
+	summaryDisputesResponseGroupsStatusFieldPrevented            = big.NewInt(1 << 2)
 	summaryDisputesResponseGroupsStatusFieldUnderReview          = big.NewInt(1 << 3)
 	summaryDisputesResponseGroupsStatusFieldWarningClosed        = big.NewInt(1 << 4)
 	summaryDisputesResponseGroupsStatusFieldWarningNeedsResponse = big.NewInt(1 << 5)
@@ -3319,9 +3319,9 @@ var (
 )
 
 type SummaryDisputesResponseGroupsStatus struct {
-	Closed               int `json:"closed" url:"closed"`
 	Lost                 int `json:"lost" url:"lost"`
 	NeedsResponse        int `json:"needs_response" url:"needs_response"`
+	Prevented            int `json:"prevented" url:"prevented"`
 	UnderReview          int `json:"under_review" url:"under_review"`
 	WarningClosed        int `json:"warning_closed" url:"warning_closed"`
 	WarningNeedsResponse int `json:"warning_needs_response" url:"warning_needs_response"`
@@ -3333,13 +3333,6 @@ type SummaryDisputesResponseGroupsStatus struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (s *SummaryDisputesResponseGroupsStatus) GetClosed() int {
-	if s == nil {
-		return 0
-	}
-	return s.Closed
 }
 
 func (s *SummaryDisputesResponseGroupsStatus) GetLost() int {
@@ -3354,6 +3347,13 @@ func (s *SummaryDisputesResponseGroupsStatus) GetNeedsResponse() int {
 		return 0
 	}
 	return s.NeedsResponse
+}
+
+func (s *SummaryDisputesResponseGroupsStatus) GetPrevented() int {
+	if s == nil {
+		return 0
+	}
+	return s.Prevented
 }
 
 func (s *SummaryDisputesResponseGroupsStatus) GetUnderReview() int {
@@ -3405,13 +3405,6 @@ func (s *SummaryDisputesResponseGroupsStatus) require(field *big.Int) {
 	s.explicitFields.Or(s.explicitFields, field)
 }
 
-// SetClosed sets the Closed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SummaryDisputesResponseGroupsStatus) SetClosed(closed int) {
-	s.Closed = closed
-	s.require(summaryDisputesResponseGroupsStatusFieldClosed)
-}
-
 // SetLost sets the Lost field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SummaryDisputesResponseGroupsStatus) SetLost(lost int) {
@@ -3424,6 +3417,13 @@ func (s *SummaryDisputesResponseGroupsStatus) SetLost(lost int) {
 func (s *SummaryDisputesResponseGroupsStatus) SetNeedsResponse(needsResponse int) {
 	s.NeedsResponse = needsResponse
 	s.require(summaryDisputesResponseGroupsStatusFieldNeedsResponse)
+}
+
+// SetPrevented sets the Prevented field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesResponseGroupsStatus) SetPrevented(prevented int) {
+	s.Prevented = prevented
+	s.require(summaryDisputesResponseGroupsStatusFieldPrevented)
 }
 
 // SetUnderReview sets the UnderReview field and marks it as non-optional;

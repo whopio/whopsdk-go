@@ -42950,9 +42950,10 @@ var (
 	setupIntentFieldPaymentMethodType       = big.NewInt(1 << 10)
 	setupIntentFieldReturnURL               = big.NewInt(1 << 11)
 	setupIntentFieldStatus                  = big.NewInt(1 << 12)
-	setupIntentFieldThreeDsVerified         = big.NewInt(1 << 13)
-	setupIntentFieldUpdatedAt               = big.NewInt(1 << 14)
-	setupIntentFieldUser                    = big.NewInt(1 << 15)
+	setupIntentFieldThreeDsLevel            = big.NewInt(1 << 13)
+	setupIntentFieldThreeDsVerified         = big.NewInt(1 << 14)
+	setupIntentFieldUpdatedAt               = big.NewInt(1 << 15)
+	setupIntentFieldUser                    = big.NewInt(1 << 16)
 )
 
 type SetupIntent struct {
@@ -42982,6 +42983,8 @@ type SetupIntent struct {
 	ReturnURL *string `json:"return_url,omitempty" url:"return_url,omitempty"`
 	// How far the setup has got. **A 201 or 200 means we answered, not that the method was saved — always branch on this.** `requires_action` — the buyer has a step outstanding; hand `client_secret` to the elements or poll Retrieve setup status. `processing` — the processor is deciding. `succeeded` — the method is saved, and only this one means saved. `canceled` — abandoned or refused; see `last_setup_error`.
 	Status SetupIntentStatus `json:"status" url:"status"`
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. The setting requested for this setup, or `null` when unset.
+	ThreeDsLevel *SetupIntentThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// True when the buyer completed 3D Secure while saving this payment method.
 	ThreeDsVerified bool `json:"three_ds_verified" url:"three_ds_verified"`
 	// When the setup intent was last updated, as an ISO 8601 timestamp.
@@ -43085,6 +43088,13 @@ func (s *SetupIntent) GetStatus() SetupIntentStatus {
 		return ""
 	}
 	return s.Status
+}
+
+func (s *SetupIntent) GetThreeDsLevel() *SetupIntentThreeDsLevel {
+	if s == nil {
+		return nil
+	}
+	return s.ThreeDsLevel
 }
 
 func (s *SetupIntent) GetThreeDsVerified() bool {
@@ -43211,6 +43221,13 @@ func (s *SetupIntent) SetReturnURL(returnURL *string) {
 func (s *SetupIntent) SetStatus(status SetupIntentStatus) {
 	s.Status = status
 	s.require(setupIntentFieldStatus)
+}
+
+// SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetupIntent) SetThreeDsLevel(threeDsLevel *SetupIntentThreeDsLevel) {
+	s.ThreeDsLevel = threeDsLevel
+	s.require(setupIntentFieldThreeDsLevel)
 }
 
 // SetThreeDsVerified sets the ThreeDsVerified field and marks it as non-optional;
@@ -45606,6 +45623,32 @@ func NewSetupIntentStatusesFromString(s string) (SetupIntentStatuses, error) {
 }
 
 func (s SetupIntentStatuses) Ptr() *SetupIntentStatuses {
+	return &s
+}
+
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. The setting requested for this setup, or `null` when unset.
+type SetupIntentThreeDsLevel string
+
+const (
+	SetupIntentThreeDsLevelMandateChallenge       SetupIntentThreeDsLevel = "mandate_challenge"
+	SetupIntentThreeDsLevelMandateIfRequired      SetupIntentThreeDsLevel = "mandate_if_required"
+	SetupIntentThreeDsLevelFrictionlessIfRequired SetupIntentThreeDsLevel = "frictionless_if_required"
+)
+
+func NewSetupIntentThreeDsLevelFromString(s string) (SetupIntentThreeDsLevel, error) {
+	switch s {
+	case "mandate_challenge":
+		return SetupIntentThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return SetupIntentThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return SetupIntentThreeDsLevelFrictionlessIfRequired, nil
+	}
+	var t SetupIntentThreeDsLevel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SetupIntentThreeDsLevel) Ptr() *SetupIntentThreeDsLevel {
 	return &s
 }
 
