@@ -169,6 +169,9 @@ func TestMembershipsUpdateWithWireMock(
 	)
 	request := &whopsdk.UpdateMembershipsRequest{
 		ID: "id",
+		BillingPeriodDays: whopsdk.Int(
+			45,
+		),
 	}
 	_, invocationErr := client.Memberships.Update(
 		context.TODO(),
