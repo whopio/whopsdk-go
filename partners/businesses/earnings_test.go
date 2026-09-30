@@ -6,6 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 	time "time"
 )
@@ -687,6 +688,14 @@ func TestSettersListEarningsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetProjectedCommissionAmountUsd", func(t *testing.T) {
+		obj := &ListEarningsResponseDataItem{}
+		var fernTestValueProjectedCommissionAmountUsd *v2.Money
+		obj.SetProjectedCommissionAmountUsd(fernTestValueProjectedCommissionAmountUsd)
+		assert.Equal(t, fernTestValueProjectedCommissionAmountUsd, obj.ProjectedCommissionAmountUsd)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetResource", func(t *testing.T) {
 		obj := &ListEarningsResponseDataItem{}
 		var fernTestValueResource *ListEarningsResponseDataItemResource
@@ -1053,6 +1062,39 @@ func TestGettersListEarningsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetProduct() // Should return zero value
+	})
+
+	t.Run("GetProjectedCommissionAmountUsd", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItem{}
+		var expected *v2.Money
+		obj.ProjectedCommissionAmountUsd = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProjectedCommissionAmountUsd(), "getter should return the property value")
+	})
+
+	t.Run("GetProjectedCommissionAmountUsd_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItem{}
+		obj.ProjectedCommissionAmountUsd = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProjectedCommissionAmountUsd(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProjectedCommissionAmountUsd_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListEarningsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProjectedCommissionAmountUsd() // Should return zero value
 	})
 
 	t.Run("GetResource", func(t *testing.T) {
@@ -1478,6 +1520,37 @@ func TestSettersMarkExplicitListEarningsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetProduct(fernTestValueProduct)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProjectedCommissionAmountUsd_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItem{}
+		var fernTestValueProjectedCommissionAmountUsd *v2.Money
+
+		// Act
+		obj.SetProjectedCommissionAmountUsd(fernTestValueProjectedCommissionAmountUsd)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
