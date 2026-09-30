@@ -9725,28 +9725,31 @@ var (
 	retrievePayoutsResponseFieldAmount              = big.NewInt(1 << 0)
 	retrievePayoutsResponseFieldCreatedAt           = big.NewInt(1 << 1)
 	retrievePayoutsResponseFieldCurrency            = big.NewInt(1 << 2)
-	retrievePayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 3)
-	retrievePayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 4)
-	retrievePayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 5)
-	retrievePayoutsResponseFieldExchangeRate        = big.NewInt(1 << 6)
-	retrievePayoutsResponseFieldFailure             = big.NewInt(1 << 7)
-	retrievePayoutsResponseFieldFeeAmount           = big.NewInt(1 << 8)
-	retrievePayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 9)
-	retrievePayoutsResponseFieldID                  = big.NewInt(1 << 10)
-	retrievePayoutsResponseFieldMarkupFee           = big.NewInt(1 << 11)
-	retrievePayoutsResponseFieldMetadata            = big.NewInt(1 << 12)
-	retrievePayoutsResponseFieldNetAmount           = big.NewInt(1 << 13)
-	retrievePayoutsResponseFieldNotes               = big.NewInt(1 << 14)
-	retrievePayoutsResponseFieldObject              = big.NewInt(1 << 15)
-	retrievePayoutsResponseFieldPayerName           = big.NewInt(1 << 16)
-	retrievePayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 17)
-	retrievePayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 18)
-	retrievePayoutsResponseFieldSource              = big.NewInt(1 << 19)
-	retrievePayoutsResponseFieldSpeed               = big.NewInt(1 << 20)
-	retrievePayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 21)
-	retrievePayoutsResponseFieldStatus              = big.NewInt(1 << 22)
-	retrievePayoutsResponseFieldStatusDetail        = big.NewInt(1 << 23)
-	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 24)
+	retrievePayoutsResponseFieldDelayed             = big.NewInt(1 << 3)
+	retrievePayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 4)
+	retrievePayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 5)
+	retrievePayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 6)
+	retrievePayoutsResponseFieldEstimatedArrivalEnd = big.NewInt(1 << 7)
+	retrievePayoutsResponseFieldExchangeRate        = big.NewInt(1 << 8)
+	retrievePayoutsResponseFieldFailure             = big.NewInt(1 << 9)
+	retrievePayoutsResponseFieldFeeAmount           = big.NewInt(1 << 10)
+	retrievePayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 11)
+	retrievePayoutsResponseFieldID                  = big.NewInt(1 << 12)
+	retrievePayoutsResponseFieldMarkupFee           = big.NewInt(1 << 13)
+	retrievePayoutsResponseFieldMetadata            = big.NewInt(1 << 14)
+	retrievePayoutsResponseFieldNetAmount           = big.NewInt(1 << 15)
+	retrievePayoutsResponseFieldNotes               = big.NewInt(1 << 16)
+	retrievePayoutsResponseFieldObject              = big.NewInt(1 << 17)
+	retrievePayoutsResponseFieldPayerName           = big.NewInt(1 << 18)
+	retrievePayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 19)
+	retrievePayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 20)
+	retrievePayoutsResponseFieldSource              = big.NewInt(1 << 21)
+	retrievePayoutsResponseFieldSpeed               = big.NewInt(1 << 22)
+	retrievePayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 23)
+	retrievePayoutsResponseFieldStatus              = big.NewInt(1 << 24)
+	retrievePayoutsResponseFieldStatusDetail        = big.NewInt(1 << 25)
+	retrievePayoutsResponseFieldTimeline            = big.NewInt(1 << 26)
+	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 27)
 )
 
 type RetrievePayoutsResponse struct {
@@ -9756,12 +9759,16 @@ type RetrievePayoutsResponse struct {
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
 	Currency string `json:"currency" url:"currency"`
+	// Whether an in-transit withdrawal is past its settlement window.
+	Delayed *bool `json:"delayed,omitempty" url:"delayed,omitempty"`
 	// The amount delivered in the destination currency, as a decimal string. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded conversion.
 	DestinationAmount *string `json:"destination_amount,omitempty" url:"destination_amount,omitempty"`
 	// Currency the funds are delivered in, taken from the payout method when the payout is created. On a stablecoin payout it follows the settlement payout minted alongside it — the `GET /payouts` row carrying this payout's id as `payout_request_id` — and is `null` only when no settlement payout exists.
 	DestinationCurrency *string `json:"destination_currency,omitempty" url:"destination_currency,omitempty"`
 	// Estimated time the funds become available in the destination account.
 	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
+	// End of the expected bank settlement window.
+	EstimatedArrivalEnd *time.Time `json:"estimated_arrival_end,omitempty" url:"estimated_arrival_end,omitempty"`
 	// Exchange rate from the payout currency to the destination currency. Assigned when the payout is processed, so it is `null` before then and on payouts without a recorded rate.
 	ExchangeRate *float64 `json:"exchange_rate,omitempty" url:"exchange_rate,omitempty"`
 	// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
@@ -9797,6 +9804,8 @@ type RetrievePayoutsResponse struct {
 	Status RetrievePayoutsResponseStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
+	// Completed lifecycle events in chronological order. Present when retrieving a withdrawal ID.
+	Timeline []*RetrievePayoutsResponseTimelineItem `json:"timeline,omitempty" url:"timeline,omitempty"`
 	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
 
@@ -9828,6 +9837,13 @@ func (r *RetrievePayoutsResponse) GetCurrency() string {
 	return r.Currency
 }
 
+func (r *RetrievePayoutsResponse) GetDelayed() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.Delayed
+}
+
 func (r *RetrievePayoutsResponse) GetDestinationAmount() *string {
 	if r == nil {
 		return nil
@@ -9847,6 +9863,13 @@ func (r *RetrievePayoutsResponse) GetEstimatedArrival() *time.Time {
 		return nil
 	}
 	return r.EstimatedArrival
+}
+
+func (r *RetrievePayoutsResponse) GetEstimatedArrivalEnd() *time.Time {
+	if r == nil {
+		return nil
+	}
+	return r.EstimatedArrivalEnd
 }
 
 func (r *RetrievePayoutsResponse) GetExchangeRate() *float64 {
@@ -9975,6 +9998,13 @@ func (r *RetrievePayoutsResponse) GetStatusDetail() string {
 	return r.StatusDetail
 }
 
+func (r *RetrievePayoutsResponse) GetTimeline() []*RetrievePayoutsResponseTimelineItem {
+	if r == nil {
+		return nil
+	}
+	return r.Timeline
+}
+
 func (r *RetrievePayoutsResponse) GetTraceCode() *string {
 	if r == nil {
 		return nil
@@ -10017,6 +10047,13 @@ func (r *RetrievePayoutsResponse) SetCurrency(currency string) {
 	r.require(retrievePayoutsResponseFieldCurrency)
 }
 
+// SetDelayed sets the Delayed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponse) SetDelayed(delayed *bool) {
+	r.Delayed = delayed
+	r.require(retrievePayoutsResponseFieldDelayed)
+}
+
 // SetDestinationAmount sets the DestinationAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrievePayoutsResponse) SetDestinationAmount(destinationAmount *string) {
@@ -10036,6 +10073,13 @@ func (r *RetrievePayoutsResponse) SetDestinationCurrency(destinationCurrency *st
 func (r *RetrievePayoutsResponse) SetEstimatedArrival(estimatedArrival *time.Time) {
 	r.EstimatedArrival = estimatedArrival
 	r.require(retrievePayoutsResponseFieldEstimatedArrival)
+}
+
+// SetEstimatedArrivalEnd sets the EstimatedArrivalEnd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponse) SetEstimatedArrivalEnd(estimatedArrivalEnd *time.Time) {
+	r.EstimatedArrivalEnd = estimatedArrivalEnd
+	r.require(retrievePayoutsResponseFieldEstimatedArrivalEnd)
 }
 
 // SetExchangeRate sets the ExchangeRate field and marks it as non-optional;
@@ -10164,6 +10208,13 @@ func (r *RetrievePayoutsResponse) SetStatusDetail(statusDetail string) {
 	r.require(retrievePayoutsResponseFieldStatusDetail)
 }
 
+// SetTimeline sets the Timeline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponse) SetTimeline(timeline []*RetrievePayoutsResponseTimelineItem) {
+	r.Timeline = timeline
+	r.require(retrievePayoutsResponseFieldTimeline)
+}
+
 // SetTraceCode sets the TraceCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrievePayoutsResponse) SetTraceCode(traceCode *string) {
@@ -10175,8 +10226,9 @@ func (r *RetrievePayoutsResponse) UnmarshalJSON(data []byte) error {
 	type embed RetrievePayoutsResponse
 	var unmarshaler = struct {
 		embed
-		CreatedAt        *internal.DateTime `json:"created_at"`
-		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+		CreatedAt           *internal.DateTime `json:"created_at"`
+		EstimatedArrival    *internal.DateTime `json:"estimated_arrival,omitempty"`
+		EstimatedArrivalEnd *internal.DateTime `json:"estimated_arrival_end,omitempty"`
 	}{
 		embed: embed(*r),
 	}
@@ -10186,6 +10238,7 @@ func (r *RetrievePayoutsResponse) UnmarshalJSON(data []byte) error {
 	*r = RetrievePayoutsResponse(unmarshaler.embed)
 	r.CreatedAt = unmarshaler.CreatedAt.Time()
 	r.EstimatedArrival = unmarshaler.EstimatedArrival.TimePtr()
+	r.EstimatedArrivalEnd = unmarshaler.EstimatedArrivalEnd.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
@@ -10199,12 +10252,14 @@ func (r *RetrievePayoutsResponse) MarshalJSON() ([]byte, error) {
 	type embed RetrievePayoutsResponse
 	var marshaler = struct {
 		embed
-		CreatedAt        *internal.DateTime `json:"created_at"`
-		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+		CreatedAt           *internal.DateTime `json:"created_at"`
+		EstimatedArrival    *internal.DateTime `json:"estimated_arrival,omitempty"`
+		EstimatedArrivalEnd *internal.DateTime `json:"estimated_arrival_end,omitempty"`
 	}{
-		embed:            embed(*r),
-		CreatedAt:        internal.NewDateTime(r.CreatedAt),
-		EstimatedArrival: internal.NewOptionalDateTime(r.EstimatedArrival),
+		embed:               embed(*r),
+		CreatedAt:           internal.NewDateTime(r.CreatedAt),
+		EstimatedArrival:    internal.NewOptionalDateTime(r.EstimatedArrival),
+		EstimatedArrivalEnd: internal.NewOptionalDateTime(r.EstimatedArrivalEnd),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -10749,5 +10804,204 @@ func NewRetrievePayoutsResponseStatusFromString(s string) (RetrievePayoutsRespon
 }
 
 func (r RetrievePayoutsResponseStatus) Ptr() *RetrievePayoutsResponseStatus {
+	return &r
+}
+
+var (
+	retrievePayoutsResponseTimelineItemFieldErrorMessage     = big.NewInt(1 << 0)
+	retrievePayoutsResponseTimelineItemFieldEstimatedArrival = big.NewInt(1 << 1)
+	retrievePayoutsResponseTimelineItemFieldStatus           = big.NewInt(1 << 2)
+	retrievePayoutsResponseTimelineItemFieldStatusDetail     = big.NewInt(1 << 3)
+	retrievePayoutsResponseTimelineItemFieldTimestamp        = big.NewInt(1 << 4)
+)
+
+type RetrievePayoutsResponseTimelineItem struct {
+	// Failure message, only with payout:destination:read.
+	ErrorMessage     *string                                   `json:"error_message,omitempty" url:"error_message,omitempty"`
+	EstimatedArrival *time.Time                                `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
+	Status           RetrievePayoutsResponseTimelineItemStatus `json:"status" url:"status"`
+	// Informational event detail; security_review identifies manual review.
+	StatusDetail *string    `json:"status_detail,omitempty" url:"status_detail,omitempty"`
+	Timestamp    *time.Time `json:"timestamp,omitempty" url:"timestamp,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrievePayoutsResponseTimelineItem) GetErrorMessage() *string {
+	if r == nil {
+		return nil
+	}
+	return r.ErrorMessage
+}
+
+func (r *RetrievePayoutsResponseTimelineItem) GetEstimatedArrival() *time.Time {
+	if r == nil {
+		return nil
+	}
+	return r.EstimatedArrival
+}
+
+func (r *RetrievePayoutsResponseTimelineItem) GetStatus() RetrievePayoutsResponseTimelineItemStatus {
+	if r == nil {
+		return ""
+	}
+	return r.Status
+}
+
+func (r *RetrievePayoutsResponseTimelineItem) GetStatusDetail() *string {
+	if r == nil {
+		return nil
+	}
+	return r.StatusDetail
+}
+
+func (r *RetrievePayoutsResponseTimelineItem) GetTimestamp() *time.Time {
+	if r == nil {
+		return nil
+	}
+	return r.Timestamp
+}
+
+func (r *RetrievePayoutsResponseTimelineItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrievePayoutsResponseTimelineItem) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetErrorMessage sets the ErrorMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponseTimelineItem) SetErrorMessage(errorMessage *string) {
+	r.ErrorMessage = errorMessage
+	r.require(retrievePayoutsResponseTimelineItemFieldErrorMessage)
+}
+
+// SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponseTimelineItem) SetEstimatedArrival(estimatedArrival *time.Time) {
+	r.EstimatedArrival = estimatedArrival
+	r.require(retrievePayoutsResponseTimelineItemFieldEstimatedArrival)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponseTimelineItem) SetStatus(status RetrievePayoutsResponseTimelineItemStatus) {
+	r.Status = status
+	r.require(retrievePayoutsResponseTimelineItemFieldStatus)
+}
+
+// SetStatusDetail sets the StatusDetail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponseTimelineItem) SetStatusDetail(statusDetail *string) {
+	r.StatusDetail = statusDetail
+	r.require(retrievePayoutsResponseTimelineItemFieldStatusDetail)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponseTimelineItem) SetTimestamp(timestamp *time.Time) {
+	r.Timestamp = timestamp
+	r.require(retrievePayoutsResponseTimelineItemFieldTimestamp)
+}
+
+func (r *RetrievePayoutsResponseTimelineItem) UnmarshalJSON(data []byte) error {
+	type embed RetrievePayoutsResponseTimelineItem
+	var unmarshaler = struct {
+		embed
+		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+		Timestamp        *internal.DateTime `json:"timestamp,omitempty"`
+	}{
+		embed: embed(*r),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*r = RetrievePayoutsResponseTimelineItem(unmarshaler.embed)
+	r.EstimatedArrival = unmarshaler.EstimatedArrival.TimePtr()
+	r.Timestamp = unmarshaler.Timestamp.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrievePayoutsResponseTimelineItem) MarshalJSON() ([]byte, error) {
+	type embed RetrievePayoutsResponseTimelineItem
+	var marshaler = struct {
+		embed
+		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+		Timestamp        *internal.DateTime `json:"timestamp,omitempty"`
+	}{
+		embed:            embed(*r),
+		EstimatedArrival: internal.NewOptionalDateTime(r.EstimatedArrival),
+		Timestamp:        internal.NewOptionalDateTime(r.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrievePayoutsResponseTimelineItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+type RetrievePayoutsResponseTimelineItemStatus string
+
+const (
+	RetrievePayoutsResponseTimelineItemStatusRequested       RetrievePayoutsResponseTimelineItemStatus = "requested"
+	RetrievePayoutsResponseTimelineItemStatusAwaitingPayment RetrievePayoutsResponseTimelineItemStatus = "awaiting_payment"
+	RetrievePayoutsResponseTimelineItemStatusInTransit       RetrievePayoutsResponseTimelineItemStatus = "in_transit"
+	RetrievePayoutsResponseTimelineItemStatusCompleted       RetrievePayoutsResponseTimelineItemStatus = "completed"
+	RetrievePayoutsResponseTimelineItemStatusFailed          RetrievePayoutsResponseTimelineItemStatus = "failed"
+	RetrievePayoutsResponseTimelineItemStatusCanceled        RetrievePayoutsResponseTimelineItemStatus = "canceled"
+	RetrievePayoutsResponseTimelineItemStatusDenied          RetrievePayoutsResponseTimelineItemStatus = "denied"
+)
+
+func NewRetrievePayoutsResponseTimelineItemStatusFromString(s string) (RetrievePayoutsResponseTimelineItemStatus, error) {
+	switch s {
+	case "requested":
+		return RetrievePayoutsResponseTimelineItemStatusRequested, nil
+	case "awaiting_payment":
+		return RetrievePayoutsResponseTimelineItemStatusAwaitingPayment, nil
+	case "in_transit":
+		return RetrievePayoutsResponseTimelineItemStatusInTransit, nil
+	case "completed":
+		return RetrievePayoutsResponseTimelineItemStatusCompleted, nil
+	case "failed":
+		return RetrievePayoutsResponseTimelineItemStatusFailed, nil
+	case "canceled":
+		return RetrievePayoutsResponseTimelineItemStatusCanceled, nil
+	case "denied":
+		return RetrievePayoutsResponseTimelineItemStatusDenied, nil
+	}
+	var t RetrievePayoutsResponseTimelineItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePayoutsResponseTimelineItemStatus) Ptr() *RetrievePayoutsResponseTimelineItemStatus {
 	return &r
 }
