@@ -536,10 +536,11 @@ func (e *EconomicIntelligence) String() string {
 }
 
 var (
-	economicIntelligenceInputFieldAnswer  = big.NewInt(1 << 0)
-	economicIntelligenceInputFieldID      = big.NewInt(1 << 1)
-	economicIntelligenceInputFieldLabel   = big.NewInt(1 << 2)
-	economicIntelligenceInputFieldOptions = big.NewInt(1 << 3)
+	economicIntelligenceInputFieldAnswer   = big.NewInt(1 << 0)
+	economicIntelligenceInputFieldID       = big.NewInt(1 << 1)
+	economicIntelligenceInputFieldLabel    = big.NewInt(1 << 2)
+	economicIntelligenceInputFieldOptions  = big.NewInt(1 << 3)
+	economicIntelligenceInputFieldTemplate = big.NewInt(1 << 4)
 )
 
 type EconomicIntelligenceInput struct {
@@ -550,6 +551,8 @@ type EconomicIntelligenceInput struct {
 	// What you are choosing, such as the daily ad budget.
 	Label   string   `json:"label" url:"label"`
 	Options []string `json:"options" url:"options"`
+	// A plan sentence with one {answer} blank to fill with the selected answer.
+	Template string `json:"template" url:"template"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -584,6 +587,13 @@ func (e *EconomicIntelligenceInput) GetOptions() []string {
 		return nil
 	}
 	return e.Options
+}
+
+func (e *EconomicIntelligenceInput) GetTemplate() string {
+	if e == nil {
+		return ""
+	}
+	return e.Template
 }
 
 func (e *EconomicIntelligenceInput) GetExtraProperties() map[string]interface{} {
@@ -626,6 +636,13 @@ func (e *EconomicIntelligenceInput) SetLabel(label string) {
 func (e *EconomicIntelligenceInput) SetOptions(options []string) {
 	e.Options = options
 	e.require(economicIntelligenceInputFieldOptions)
+}
+
+// SetTemplate sets the Template field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EconomicIntelligenceInput) SetTemplate(template string) {
+	e.Template = template
+	e.require(economicIntelligenceInputFieldTemplate)
 }
 
 func (e *EconomicIntelligenceInput) UnmarshalJSON(data []byte) error {
