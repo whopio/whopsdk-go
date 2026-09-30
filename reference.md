@@ -40051,6 +40051,431 @@ client.Accounts.Fees.Update(
 </dl>
 </details>
 
+## Accounts FinancingApplications
+<details><summary><code>client.Accounts.FinancingApplications.List(AccountID) -> *accounts.ListFinancingApplicationsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists payment-financing applications for the account in the URL. Account credentials can access their own account and direct sub-accounts, excluding deeper descendants. User credentials require the read permission on each account. Filters only narrow this visibility.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &accounts.ListFinancingApplicationsRequest{
+    AccountID: "account_id",
+}
+client.Accounts.FinancingApplications.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — Merchant account ID, prefixed biz_.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*accounts.ListFinancingApplicationsRequestStatus` — Only applications in this review state.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdBefore:** `*string` — Applications created at or before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdAfter:** `*string` — Applications created at or after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*accounts.ListFinancingApplicationsRequestOrder` — Field to sort by. Defaults to created_at.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*accounts.ListFinancingApplicationsRequestDirection` — Sort direction. Defaults to desc.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.FinancingApplications.Create(AccountID, request) -> *whopsdk.FinancingApplication</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates an application for merchant payment-financing approval. Requires an existing ledger account. Returns an existing application collecting information or awaiting review; applications awaiting review take precedence. Restricted industries cannot apply. Closed applications allow reapplication. This does not submit the application for review. Supports Idempotency-Key replay; open applications are also reused across different keys.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &accounts.CreateFinancingApplicationsRequest{
+    AccountID: "account_id",
+}
+client.Accounts.FinancingApplications.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — Merchant account ID, prefixed biz_.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.FinancingApplications.Retrieve(AccountID, ID) -> *whopsdk.FinancingApplication</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a payment-financing application's review state, requirements, saved answers, documents, current terms, and public review feedback. Requires read access to its owning account. Internal review notes and risk metrics are not exposed.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &accounts.RetrieveFinancingApplicationsRequest{
+    AccountID: "account_id",
+    ID: "id",
+}
+client.Accounts.FinancingApplications.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — Merchant account ID, prefixed biz_.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**id:** `string` — Financing application ID, prefixed inrq_.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.FinancingApplications.Update(AccountID, ID, request) -> *whopsdk.FinancingApplication</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Saves merchant answers while the application requires_collection. The entire batch is atomic. Omitted requirements and answer fields are unchanged; empty arrays clear values or documents, and null money clears a price. Only merchant requirement IDs returned by this application are accepted. Upload documents through the Files API first: new files must belong to the caller, be ready and private, and satisfy the requirement's formats and 20 MB limit. file_ids replaces the requirement's attachments. This does not submit the application.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &accounts.UpdateFinancingApplicationsRequest{
+    AccountID: "account_id",
+    ID: "id",
+    Answers: []*accounts.UpdateFinancingApplicationsRequestAnswersItem{
+        &accounts.UpdateFinancingApplicationsRequestAnswersItem{
+            RequirementID: "inrqi_xxxxxxxxxxxxxx",
+        },
+    },
+}
+client.Accounts.FinancingApplications.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — Merchant account ID, prefixed biz_.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**id:** `string` — Financing application ID, prefixed inrq_.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**answers:** `[]*accounts.UpdateFinancingApplicationsRequestAnswersItem` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.FinancingApplications.Submit(AccountID, ID, request) -> *whopsdk.FinancingApplication</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Submits a complete application for financing review. Present the application's terms.content, policies, and disclosure to the merchant and collect affirmative acceptance before calling this endpoint. Pass the terms.version that was presented; stale versions are rejected. The server records acceptance, submitting actor, and submission time before entering awaiting_review. Only requires_collection applications may submit, including after a reviewer requests more information. Resubmissions require acceptance again. Use Idempotency-Key for retries; submitting an application already in review without replay returns an error. Approval does not itself enable financing payment methods.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &accounts.SubmitFinancingApplicationsRequest{
+    AccountID: "account_id",
+    ID: "id",
+    MerchantAcceptance: &accounts.SubmitFinancingApplicationsRequestMerchantAcceptance{
+        Accepted: true,
+        TermsVersion: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    },
+}
+client.Accounts.FinancingApplications.Submit(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — Merchant account ID, prefixed biz_.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**id:** `string` — Financing application ID, prefixed inrq_.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**merchantAcceptance:** `*accounts.SubmitFinancingApplicationsRequestMerchantAcceptance` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Accounts Preferences
 <details><summary><code>client.Accounts.Preferences.Retrieve(AccountID) -> *accounts.RetrievePreferencesResponse</code></summary>
 <dl>

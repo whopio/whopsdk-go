@@ -17044,6 +17044,785 @@ func (f FileVisibility) Ptr() *FileVisibility {
 }
 
 var (
+	financingApplicationFieldAccountID    = big.NewInt(1 << 0)
+	financingApplicationFieldCreatedAt    = big.NewInt(1 << 1)
+	financingApplicationFieldFeedback     = big.NewInt(1 << 2)
+	financingApplicationFieldID           = big.NewInt(1 << 3)
+	financingApplicationFieldRequirements = big.NewInt(1 << 4)
+	financingApplicationFieldStatus       = big.NewInt(1 << 5)
+	financingApplicationFieldTerms        = big.NewInt(1 << 6)
+	financingApplicationFieldUpdatedAt    = big.NewInt(1 << 7)
+)
+
+type FinancingApplication struct {
+	// The ID of the merchant account applying for payment financing, starting with biz_.
+	AccountID string `json:"account_id" url:"account_id"`
+	// When the application was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// Public review feedback when more information is requested or the application is denied. Internal notes are never included.
+	Feedback *string `json:"feedback,omitempty" url:"feedback,omitempty"`
+	// The financing application ID, starting with inrq_.
+	ID           string                  `json:"id" url:"id"`
+	Requirements []*FinancingRequirement `json:"requirements,omitempty" url:"requirements,omitempty"`
+	// The application's review state. Approval does not by itself indicate that financing payment methods are enabled on the account.
+	Status FinancingApplicationStatus `json:"status" url:"status"`
+	// Current terms to present before submitting. Present on individual application responses.
+	Terms *FinancingTerms `json:"terms,omitempty" url:"terms,omitempty"`
+	// When the application was last updated, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FinancingApplication) GetAccountID() string {
+	if f == nil {
+		return ""
+	}
+	return f.AccountID
+}
+
+func (f *FinancingApplication) GetCreatedAt() string {
+	if f == nil {
+		return ""
+	}
+	return f.CreatedAt
+}
+
+func (f *FinancingApplication) GetFeedback() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Feedback
+}
+
+func (f *FinancingApplication) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FinancingApplication) GetRequirements() []*FinancingRequirement {
+	if f == nil {
+		return nil
+	}
+	return f.Requirements
+}
+
+func (f *FinancingApplication) GetStatus() FinancingApplicationStatus {
+	if f == nil {
+		return ""
+	}
+	return f.Status
+}
+
+func (f *FinancingApplication) GetTerms() *FinancingTerms {
+	if f == nil {
+		return nil
+	}
+	return f.Terms
+}
+
+func (f *FinancingApplication) GetUpdatedAt() string {
+	if f == nil {
+		return ""
+	}
+	return f.UpdatedAt
+}
+
+func (f *FinancingApplication) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FinancingApplication) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingApplication) SetAccountID(accountID string) {
+	f.AccountID = accountID
+	f.require(financingApplicationFieldAccountID)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingApplication) SetCreatedAt(createdAt string) {
+	f.CreatedAt = createdAt
+	f.require(financingApplicationFieldCreatedAt)
+}
+
+// SetFeedback sets the Feedback field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingApplication) SetFeedback(feedback *string) {
+	f.Feedback = feedback
+	f.require(financingApplicationFieldFeedback)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingApplication) SetID(id string) {
+	f.ID = id
+	f.require(financingApplicationFieldID)
+}
+
+// SetRequirements sets the Requirements field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingApplication) SetRequirements(requirements []*FinancingRequirement) {
+	f.Requirements = requirements
+	f.require(financingApplicationFieldRequirements)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingApplication) SetStatus(status FinancingApplicationStatus) {
+	f.Status = status
+	f.require(financingApplicationFieldStatus)
+}
+
+// SetTerms sets the Terms field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingApplication) SetTerms(terms *FinancingTerms) {
+	f.Terms = terms
+	f.require(financingApplicationFieldTerms)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingApplication) SetUpdatedAt(updatedAt string) {
+	f.UpdatedAt = updatedAt
+	f.require(financingApplicationFieldUpdatedAt)
+}
+
+func (f *FinancingApplication) UnmarshalJSON(data []byte) error {
+	type unmarshaler FinancingApplication
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FinancingApplication(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FinancingApplication) MarshalJSON() ([]byte, error) {
+	type embed FinancingApplication
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FinancingApplication) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+// The application's review state. Approval does not by itself indicate that financing payment methods are enabled on the account.
+type FinancingApplicationStatus string
+
+const (
+	FinancingApplicationStatusRequiresCollection FinancingApplicationStatus = "requires_collection"
+	FinancingApplicationStatusAwaitingReview     FinancingApplicationStatus = "awaiting_review"
+	FinancingApplicationStatusCompleted          FinancingApplicationStatus = "completed"
+	FinancingApplicationStatusApproved           FinancingApplicationStatus = "approved"
+	FinancingApplicationStatusDenied             FinancingApplicationStatus = "denied"
+)
+
+func NewFinancingApplicationStatusFromString(s string) (FinancingApplicationStatus, error) {
+	switch s {
+	case "requires_collection":
+		return FinancingApplicationStatusRequiresCollection, nil
+	case "awaiting_review":
+		return FinancingApplicationStatusAwaitingReview, nil
+	case "completed":
+		return FinancingApplicationStatusCompleted, nil
+	case "approved":
+		return FinancingApplicationStatusApproved, nil
+	case "denied":
+		return FinancingApplicationStatusDenied, nil
+	}
+	var t FinancingApplicationStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingApplicationStatus) Ptr() *FinancingApplicationStatus {
+	return &f
+}
+
+var (
+	financingRequirementFieldAcceptedFileFormats = big.NewInt(1 << 0)
+	financingRequirementFieldField               = big.NewInt(1 << 1)
+	financingRequirementFieldFileCollectionType  = big.NewInt(1 << 2)
+	financingRequirementFieldFiles               = big.NewInt(1 << 3)
+	financingRequirementFieldID                  = big.NewInt(1 << 4)
+	financingRequirementFieldMaxFileSize         = big.NewInt(1 << 5)
+	financingRequirementFieldMinimumLength       = big.NewInt(1 << 6)
+	financingRequirementFieldMoney               = big.NewInt(1 << 7)
+	financingRequirementFieldOptions             = big.NewInt(1 << 8)
+	financingRequirementFieldRequired            = big.NewInt(1 << 9)
+	financingRequirementFieldTextCollectionType  = big.NewInt(1 << 10)
+	financingRequirementFieldTextFormat          = big.NewInt(1 << 11)
+	financingRequirementFieldValues              = big.NewInt(1 << 12)
+)
+
+type FinancingRequirement struct {
+	AcceptedFileFormats []string `json:"accepted_file_formats" url:"accepted_file_formats"`
+	// The information requested, such as business_description or processing_statements.
+	Field string `json:"field" url:"field"`
+	// Whether the requirement accepts no file, one file, or multiple files.
+	FileCollectionType FinancingRequirementFileCollectionType `json:"file_collection_type" url:"file_collection_type"`
+	Files              []*File                                `json:"files" url:"files"`
+	// Requirement ID to use when updating this application's answers.
+	ID string `json:"id" url:"id"`
+	// Maximum size in bytes for each uploaded document.
+	MaxFileSize int `json:"max_file_size" url:"max_file_size"`
+	// Minimum characters per text answer, when specified.
+	MinimumLength *int `json:"minimum_length,omitempty" url:"minimum_length,omitempty"`
+	// Saved maximum product price in its original currency. Null when unanswered or the saved legacy answer is invalid.
+	Money   *Money   `json:"money,omitempty" url:"money,omitempty"`
+	Options []string `json:"options" url:"options"`
+	// Whether this requirement must be completed before submission.
+	Required bool `json:"required" url:"required"`
+	// Whether the requirement accepts no text, one value, or multiple values.
+	TextCollectionType FinancingRequirementTextCollectionType `json:"text_collection_type" url:"text_collection_type"`
+	// Expected text format. max_product_price uses money instead of values.
+	TextFormat FinancingRequirementTextFormat `json:"text_format" url:"text_format"`
+	Values     []string                       `json:"values" url:"values"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FinancingRequirement) GetAcceptedFileFormats() []string {
+	if f == nil {
+		return nil
+	}
+	return f.AcceptedFileFormats
+}
+
+func (f *FinancingRequirement) GetField() string {
+	if f == nil {
+		return ""
+	}
+	return f.Field
+}
+
+func (f *FinancingRequirement) GetFileCollectionType() FinancingRequirementFileCollectionType {
+	if f == nil {
+		return ""
+	}
+	return f.FileCollectionType
+}
+
+func (f *FinancingRequirement) GetFiles() []*File {
+	if f == nil {
+		return nil
+	}
+	return f.Files
+}
+
+func (f *FinancingRequirement) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FinancingRequirement) GetMaxFileSize() int {
+	if f == nil {
+		return 0
+	}
+	return f.MaxFileSize
+}
+
+func (f *FinancingRequirement) GetMinimumLength() *int {
+	if f == nil {
+		return nil
+	}
+	return f.MinimumLength
+}
+
+func (f *FinancingRequirement) GetMoney() *Money {
+	if f == nil {
+		return nil
+	}
+	return f.Money
+}
+
+func (f *FinancingRequirement) GetOptions() []string {
+	if f == nil {
+		return nil
+	}
+	return f.Options
+}
+
+func (f *FinancingRequirement) GetRequired() bool {
+	if f == nil {
+		return false
+	}
+	return f.Required
+}
+
+func (f *FinancingRequirement) GetTextCollectionType() FinancingRequirementTextCollectionType {
+	if f == nil {
+		return ""
+	}
+	return f.TextCollectionType
+}
+
+func (f *FinancingRequirement) GetTextFormat() FinancingRequirementTextFormat {
+	if f == nil {
+		return ""
+	}
+	return f.TextFormat
+}
+
+func (f *FinancingRequirement) GetValues() []string {
+	if f == nil {
+		return nil
+	}
+	return f.Values
+}
+
+func (f *FinancingRequirement) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FinancingRequirement) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetAcceptedFileFormats sets the AcceptedFileFormats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetAcceptedFileFormats(acceptedFileFormats []string) {
+	f.AcceptedFileFormats = acceptedFileFormats
+	f.require(financingRequirementFieldAcceptedFileFormats)
+}
+
+// SetField sets the Field field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetField(field string) {
+	f.Field = field
+	f.require(financingRequirementFieldField)
+}
+
+// SetFileCollectionType sets the FileCollectionType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetFileCollectionType(fileCollectionType FinancingRequirementFileCollectionType) {
+	f.FileCollectionType = fileCollectionType
+	f.require(financingRequirementFieldFileCollectionType)
+}
+
+// SetFiles sets the Files field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetFiles(files []*File) {
+	f.Files = files
+	f.require(financingRequirementFieldFiles)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetID(id string) {
+	f.ID = id
+	f.require(financingRequirementFieldID)
+}
+
+// SetMaxFileSize sets the MaxFileSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetMaxFileSize(maxFileSize int) {
+	f.MaxFileSize = maxFileSize
+	f.require(financingRequirementFieldMaxFileSize)
+}
+
+// SetMinimumLength sets the MinimumLength field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetMinimumLength(minimumLength *int) {
+	f.MinimumLength = minimumLength
+	f.require(financingRequirementFieldMinimumLength)
+}
+
+// SetMoney sets the Money field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetMoney(money *Money) {
+	f.Money = money
+	f.require(financingRequirementFieldMoney)
+}
+
+// SetOptions sets the Options field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetOptions(options []string) {
+	f.Options = options
+	f.require(financingRequirementFieldOptions)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetRequired(required bool) {
+	f.Required = required
+	f.require(financingRequirementFieldRequired)
+}
+
+// SetTextCollectionType sets the TextCollectionType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetTextCollectionType(textCollectionType FinancingRequirementTextCollectionType) {
+	f.TextCollectionType = textCollectionType
+	f.require(financingRequirementFieldTextCollectionType)
+}
+
+// SetTextFormat sets the TextFormat field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetTextFormat(textFormat FinancingRequirementTextFormat) {
+	f.TextFormat = textFormat
+	f.require(financingRequirementFieldTextFormat)
+}
+
+// SetValues sets the Values field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingRequirement) SetValues(values []string) {
+	f.Values = values
+	f.require(financingRequirementFieldValues)
+}
+
+func (f *FinancingRequirement) UnmarshalJSON(data []byte) error {
+	type unmarshaler FinancingRequirement
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FinancingRequirement(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FinancingRequirement) MarshalJSON() ([]byte, error) {
+	type embed FinancingRequirement
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FinancingRequirement) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+// Whether the requirement accepts no file, one file, or multiple files.
+type FinancingRequirementFileCollectionType string
+
+const (
+	FinancingRequirementFileCollectionTypeNone   FinancingRequirementFileCollectionType = "none"
+	FinancingRequirementFileCollectionTypeSingle FinancingRequirementFileCollectionType = "single"
+	FinancingRequirementFileCollectionTypeMulti  FinancingRequirementFileCollectionType = "multi"
+)
+
+func NewFinancingRequirementFileCollectionTypeFromString(s string) (FinancingRequirementFileCollectionType, error) {
+	switch s {
+	case "none":
+		return FinancingRequirementFileCollectionTypeNone, nil
+	case "single":
+		return FinancingRequirementFileCollectionTypeSingle, nil
+	case "multi":
+		return FinancingRequirementFileCollectionTypeMulti, nil
+	}
+	var t FinancingRequirementFileCollectionType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingRequirementFileCollectionType) Ptr() *FinancingRequirementFileCollectionType {
+	return &f
+}
+
+// Whether the requirement accepts no text, one value, or multiple values.
+type FinancingRequirementTextCollectionType string
+
+const (
+	FinancingRequirementTextCollectionTypeNone   FinancingRequirementTextCollectionType = "none"
+	FinancingRequirementTextCollectionTypeSingle FinancingRequirementTextCollectionType = "single"
+	FinancingRequirementTextCollectionTypeMulti  FinancingRequirementTextCollectionType = "multi"
+)
+
+func NewFinancingRequirementTextCollectionTypeFromString(s string) (FinancingRequirementTextCollectionType, error) {
+	switch s {
+	case "none":
+		return FinancingRequirementTextCollectionTypeNone, nil
+	case "single":
+		return FinancingRequirementTextCollectionTypeSingle, nil
+	case "multi":
+		return FinancingRequirementTextCollectionTypeMulti, nil
+	}
+	var t FinancingRequirementTextCollectionType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingRequirementTextCollectionType) Ptr() *FinancingRequirementTextCollectionType {
+	return &f
+}
+
+// Expected text format. max_product_price uses money instead of values.
+type FinancingRequirementTextFormat string
+
+const (
+	FinancingRequirementTextFormatPlain    FinancingRequirementTextFormat = "plain"
+	FinancingRequirementTextFormatURL      FinancingRequirementTextFormat = "url"
+	FinancingRequirementTextFormatEmail    FinancingRequirementTextFormat = "email"
+	FinancingRequirementTextFormatPhone    FinancingRequirementTextFormat = "phone"
+	FinancingRequirementTextFormatNumber   FinancingRequirementTextFormat = "number"
+	FinancingRequirementTextFormatCheckbox FinancingRequirementTextFormat = "checkbox"
+	FinancingRequirementTextFormatDropdown FinancingRequirementTextFormat = "dropdown"
+)
+
+func NewFinancingRequirementTextFormatFromString(s string) (FinancingRequirementTextFormat, error) {
+	switch s {
+	case "plain":
+		return FinancingRequirementTextFormatPlain, nil
+	case "url":
+		return FinancingRequirementTextFormatURL, nil
+	case "email":
+		return FinancingRequirementTextFormatEmail, nil
+	case "phone":
+		return FinancingRequirementTextFormatPhone, nil
+	case "number":
+		return FinancingRequirementTextFormatNumber, nil
+	case "checkbox":
+		return FinancingRequirementTextFormatCheckbox, nil
+	case "dropdown":
+		return FinancingRequirementTextFormatDropdown, nil
+	}
+	var t FinancingRequirementTextFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FinancingRequirementTextFormat) Ptr() *FinancingRequirementTextFormat {
+	return &f
+}
+
+var (
+	financingTermsFieldContent    = big.NewInt(1 << 0)
+	financingTermsFieldDisclosure = big.NewInt(1 << 1)
+	financingTermsFieldFeesURL    = big.NewInt(1 << 2)
+	financingTermsFieldPolicies   = big.NewInt(1 << 3)
+	financingTermsFieldURL        = big.NewInt(1 << 4)
+	financingTermsFieldVersion    = big.NewInt(1 << 5)
+)
+
+type FinancingTerms struct {
+	// The exact plain-text contract snapshot covered by this version. Present this content, the policies, and the disclosure before collecting acceptance.
+	Content string `json:"content" url:"content"`
+	// Affirmative acceptance statement to present to the merchant.
+	Disclosure string `json:"disclosure" url:"disclosure"`
+	// Additional financing fee information.
+	FeesURL  string   `json:"fees_url" url:"fees_url"`
+	Policies []string `json:"policies" url:"policies"`
+	// Source URL for the Splitit contract snapshot.
+	URL string `json:"url" url:"url"`
+	// Content fingerprint to pass as merchant_acceptance.terms_version when submitting.
+	Version string `json:"version" url:"version"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FinancingTerms) GetContent() string {
+	if f == nil {
+		return ""
+	}
+	return f.Content
+}
+
+func (f *FinancingTerms) GetDisclosure() string {
+	if f == nil {
+		return ""
+	}
+	return f.Disclosure
+}
+
+func (f *FinancingTerms) GetFeesURL() string {
+	if f == nil {
+		return ""
+	}
+	return f.FeesURL
+}
+
+func (f *FinancingTerms) GetPolicies() []string {
+	if f == nil {
+		return nil
+	}
+	return f.Policies
+}
+
+func (f *FinancingTerms) GetURL() string {
+	if f == nil {
+		return ""
+	}
+	return f.URL
+}
+
+func (f *FinancingTerms) GetVersion() string {
+	if f == nil {
+		return ""
+	}
+	return f.Version
+}
+
+func (f *FinancingTerms) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FinancingTerms) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingTerms) SetContent(content string) {
+	f.Content = content
+	f.require(financingTermsFieldContent)
+}
+
+// SetDisclosure sets the Disclosure field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingTerms) SetDisclosure(disclosure string) {
+	f.Disclosure = disclosure
+	f.require(financingTermsFieldDisclosure)
+}
+
+// SetFeesURL sets the FeesURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingTerms) SetFeesURL(feesURL string) {
+	f.FeesURL = feesURL
+	f.require(financingTermsFieldFeesURL)
+}
+
+// SetPolicies sets the Policies field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingTerms) SetPolicies(policies []string) {
+	f.Policies = policies
+	f.require(financingTermsFieldPolicies)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingTerms) SetURL(url string) {
+	f.URL = url
+	f.require(financingTermsFieldURL)
+}
+
+// SetVersion sets the Version field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FinancingTerms) SetVersion(version string) {
+	f.Version = version
+	f.require(financingTermsFieldVersion)
+}
+
+func (f *FinancingTerms) UnmarshalJSON(data []byte) error {
+	type unmarshaler FinancingTerms
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FinancingTerms(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FinancingTerms) MarshalJSON() ([]byte, error) {
+	type embed FinancingTerms
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FinancingTerms) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
 	forbiddenErrorBodyFieldError = big.NewInt(1 << 0)
 )
 
