@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists an account's recommendations and generation requests, newest first. Without an account, signed-out visitors receive a business-setup template and eligible users receive their saved setup recommendation.
+// Lists an account's recommendations and generation requests, newest first by default. Without an account, signed-out visitors receive a business-setup template and eligible users receive their saved setup recommendation. With `has_run` and no account, users receive the recommendations run on every account they can read.
 //
 // Example:
 //
