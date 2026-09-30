@@ -224,27 +224,30 @@ func (c *CreatePaymentsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	listPaymentsRequestFieldAccountID     = big.NewInt(1 << 0)
-	listPaymentsRequestFieldStatus        = big.NewInt(1 << 1)
-	listPaymentsRequestFieldBillingReason = big.NewInt(1 << 2)
-	listPaymentsRequestFieldCurrency      = big.NewInt(1 << 3)
-	listPaymentsRequestFieldUserID        = big.NewInt(1 << 4)
-	listPaymentsRequestFieldQuery         = big.NewInt(1 << 5)
-	listPaymentsRequestFieldMemberID      = big.NewInt(1 << 6)
-	listPaymentsRequestFieldMembershipID  = big.NewInt(1 << 7)
-	listPaymentsRequestFieldProductID     = big.NewInt(1 << 8)
-	listPaymentsRequestFieldPlanID        = big.NewInt(1 << 9)
-	listPaymentsRequestFieldCreatedBefore = big.NewInt(1 << 10)
-	listPaymentsRequestFieldCreatedAfter  = big.NewInt(1 << 11)
-	listPaymentsRequestFieldOrder         = big.NewInt(1 << 12)
-	listPaymentsRequestFieldDirection     = big.NewInt(1 << 13)
-	listPaymentsRequestFieldFirst         = big.NewInt(1 << 14)
-	listPaymentsRequestFieldAfter         = big.NewInt(1 << 15)
-	listPaymentsRequestFieldLast          = big.NewInt(1 << 16)
-	listPaymentsRequestFieldBefore        = big.NewInt(1 << 17)
+	listPaymentsRequestFieldMode          = big.NewInt(1 << 0)
+	listPaymentsRequestFieldAccountID     = big.NewInt(1 << 1)
+	listPaymentsRequestFieldStatus        = big.NewInt(1 << 2)
+	listPaymentsRequestFieldBillingReason = big.NewInt(1 << 3)
+	listPaymentsRequestFieldCurrency      = big.NewInt(1 << 4)
+	listPaymentsRequestFieldUserID        = big.NewInt(1 << 5)
+	listPaymentsRequestFieldQuery         = big.NewInt(1 << 6)
+	listPaymentsRequestFieldMemberID      = big.NewInt(1 << 7)
+	listPaymentsRequestFieldMembershipID  = big.NewInt(1 << 8)
+	listPaymentsRequestFieldProductID     = big.NewInt(1 << 9)
+	listPaymentsRequestFieldPlanID        = big.NewInt(1 << 10)
+	listPaymentsRequestFieldCreatedBefore = big.NewInt(1 << 11)
+	listPaymentsRequestFieldCreatedAfter  = big.NewInt(1 << 12)
+	listPaymentsRequestFieldOrder         = big.NewInt(1 << 13)
+	listPaymentsRequestFieldDirection     = big.NewInt(1 << 14)
+	listPaymentsRequestFieldFirst         = big.NewInt(1 << 15)
+	listPaymentsRequestFieldAfter         = big.NewInt(1 << 16)
+	listPaymentsRequestFieldLast          = big.NewInt(1 << 17)
+	listPaymentsRequestFieldBefore        = big.NewInt(1 << 18)
 )
 
 type ListPaymentsRequest struct {
+	// Which sales to list. `account_sales` returns sales for the accounts the caller can read. `user_sales` returns only sales received by the signed-in user's primary ledger account, without a company; requires their own Whop login session and cannot be combined with `account_id`.
+	Mode *ListPaymentsRequestMode `json:"-" url:"mode,omitempty"`
 	// Only payments charged by this account, prefixed `biz_`.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only payments in this lifecycle state.
@@ -253,7 +256,7 @@ type ListPaymentsRequest struct {
 	BillingReason *ListPaymentsRequestBillingReason `json:"-" url:"billing_reason,omitempty"`
 	// Only payments presented in this three-letter currency, such as `usd`.
 	Currency *string `json:"-" url:"currency,omitempty"`
-	// Only payments made by this buyer, prefixed `user_`. Payments are listed for the accounts the caller manages, so `me` is not accepted; list the caller's own purchases with `GET /memberships?user_id=me`.
+	// Only payments made by this buyer, prefixed `user_`. This filters sales the caller can read, so `me` is not accepted; list the caller's own purchases with `GET /memberships?user_id=me`.
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Search payments by user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
 	Query *string `json:"-" url:"query,omitempty"`
@@ -291,6 +294,13 @@ func (l *ListPaymentsRequest) require(field *big.Int) {
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetMode sets the Mode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetMode(mode *ListPaymentsRequestMode) {
+	l.Mode = mode
+	l.require(listPaymentsRequestFieldMode)
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3262,6 +3272,28 @@ func NewListPaymentsRequestDirectionFromString(s string) (ListPaymentsRequestDir
 }
 
 func (l ListPaymentsRequestDirection) Ptr() *ListPaymentsRequestDirection {
+	return &l
+}
+
+type ListPaymentsRequestMode string
+
+const (
+	ListPaymentsRequestModeAccountSales ListPaymentsRequestMode = "account_sales"
+	ListPaymentsRequestModeUserSales    ListPaymentsRequestMode = "user_sales"
+)
+
+func NewListPaymentsRequestModeFromString(s string) (ListPaymentsRequestMode, error) {
+	switch s {
+	case "account_sales":
+		return ListPaymentsRequestModeAccountSales, nil
+	case "user_sales":
+		return ListPaymentsRequestModeUserSales, nil
+	}
+	var t ListPaymentsRequestMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestMode) Ptr() *ListPaymentsRequestMode {
 	return &l
 }
 
