@@ -2290,7 +2290,7 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Turns on Economic Intelligence for the duration with this `key` in `economic_intelligence_offers`, at that duration's fee. It can't be changed or turned off until `economic_intelligence_ends_at`, and it can only be turned on once the account is off the Economic Intelligence waitlist. Requires the `company:update` scope on your API key.
+// Turns on Economic Intelligence for the duration with this `key` in `economic_intelligence_offers`, at that duration's fee. It can't be changed or turned off until `economic_intelligence_ends_at`. Requires the `company:update` scope on your API key.
 type UpdatePreferencesRequestEconomicIntelligenceDurationKey string
 
 const (
@@ -4066,7 +4066,7 @@ type UpdatePreferencesRequest struct {
 	CardsNotifications *bool `json:"cards_notifications,omitempty" url:"-"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins. Requires the `payment:dispute` scope on your API key.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
-	// Turns on Economic Intelligence for the duration with this `key` in `economic_intelligence_offers`, at that duration's fee. It can't be changed or turned off until `economic_intelligence_ends_at`, and it can only be turned on once the account is off the Economic Intelligence waitlist. Requires the `company:update` scope on your API key.
+	// Turns on Economic Intelligence for the duration with this `key` in `economic_intelligence_offers`, at that duration's fee. It can't be changed or turned off until `economic_intelligence_ends_at`. Requires the `company:update` scope on your API key.
 	EconomicIntelligenceDurationKey *UpdatePreferencesRequestEconomicIntelligenceDurationKey `json:"economic_intelligence_duration_key,omitempty" url:"-"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting. Requires company:manage_checkout permission.
 	SubscriptionFailureBehavior *UpdatePreferencesRequestSubscriptionFailureBehavior `json:"subscription_failure_behavior,omitempty" url:"-"`
