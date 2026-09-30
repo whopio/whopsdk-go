@@ -5,6 +5,7 @@ package businesses
 import (
 	json "encoding/json"
 	fmt "fmt"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
@@ -352,21 +353,22 @@ func (l *ListEarningsResponse) String() string {
 }
 
 var (
-	listEarningsResponseDataItemFieldAccount              = big.NewInt(1 << 0)
-	listEarningsResponseDataItemFieldCancelationReason    = big.NewInt(1 << 1)
-	listEarningsResponseDataItemFieldCommissionAmountUsd  = big.NewInt(1 << 2)
-	listEarningsResponseDataItemFieldCreatedAt            = big.NewInt(1 << 3)
-	listEarningsResponseDataItemFieldFinancialActivity    = big.NewInt(1 << 4)
-	listEarningsResponseDataItemFieldID                   = big.NewInt(1 << 5)
-	listEarningsResponseDataItemFieldIncomeSource         = big.NewInt(1 << 6)
-	listEarningsResponseDataItemFieldObject               = big.NewInt(1 << 7)
-	listEarningsResponseDataItemFieldPayoutAt             = big.NewInt(1 << 8)
-	listEarningsResponseDataItemFieldPayoutPercentage     = big.NewInt(1 << 9)
-	listEarningsResponseDataItemFieldProduct              = big.NewInt(1 << 10)
-	listEarningsResponseDataItemFieldResource             = big.NewInt(1 << 11)
-	listEarningsResponseDataItemFieldSecondTier           = big.NewInt(1 << 12)
-	listEarningsResponseDataItemFieldStatus               = big.NewInt(1 << 13)
-	listEarningsResponseDataItemFieldTransactionAmountUsd = big.NewInt(1 << 14)
+	listEarningsResponseDataItemFieldAccount                      = big.NewInt(1 << 0)
+	listEarningsResponseDataItemFieldCancelationReason            = big.NewInt(1 << 1)
+	listEarningsResponseDataItemFieldCommissionAmountUsd          = big.NewInt(1 << 2)
+	listEarningsResponseDataItemFieldCreatedAt                    = big.NewInt(1 << 3)
+	listEarningsResponseDataItemFieldFinancialActivity            = big.NewInt(1 << 4)
+	listEarningsResponseDataItemFieldID                           = big.NewInt(1 << 5)
+	listEarningsResponseDataItemFieldIncomeSource                 = big.NewInt(1 << 6)
+	listEarningsResponseDataItemFieldObject                       = big.NewInt(1 << 7)
+	listEarningsResponseDataItemFieldPayoutAt                     = big.NewInt(1 << 8)
+	listEarningsResponseDataItemFieldPayoutPercentage             = big.NewInt(1 << 9)
+	listEarningsResponseDataItemFieldProduct                      = big.NewInt(1 << 10)
+	listEarningsResponseDataItemFieldProjectedCommissionAmountUsd = big.NewInt(1 << 11)
+	listEarningsResponseDataItemFieldResource                     = big.NewInt(1 << 12)
+	listEarningsResponseDataItemFieldSecondTier                   = big.NewInt(1 << 13)
+	listEarningsResponseDataItemFieldStatus                       = big.NewInt(1 << 14)
+	listEarningsResponseDataItemFieldTransactionAmountUsd         = big.NewInt(1 << 15)
 )
 
 type ListEarningsResponseDataItem struct {
@@ -387,6 +389,8 @@ type ListEarningsResponseDataItem struct {
 	// The referrer's share of Whop's gross profit, as a fraction (0.3 = 30%). Null until the earning settles.
 	PayoutPercentage *float64                             `json:"payout_percentage,omitempty" url:"payout_percentage,omitempty"`
 	Product          *ListEarningsResponseDataItemProduct `json:"product,omitempty" url:"product,omitempty"`
+	// Estimated commission while awaiting settlement. Null when no estimate is available or the earning has settled.
+	ProjectedCommissionAmountUsd *v2.Money `json:"projected_commission_amount_usd,omitempty" url:"projected_commission_amount_usd,omitempty"`
 	// The resource that generated the earning: the customer payment receipt for sales and ad spend earnings, the balance transfer for transfer earnings, the card transaction for card interchange earnings, or the qualifying reward for fixed reward earnings.
 	Resource *ListEarningsResponseDataItemResource `json:"resource,omitempty" url:"resource,omitempty"`
 	// Whether this earning is a second-tier (grandparent) commission.
@@ -478,6 +482,13 @@ func (l *ListEarningsResponseDataItem) GetProduct() *ListEarningsResponseDataIte
 		return nil
 	}
 	return l.Product
+}
+
+func (l *ListEarningsResponseDataItem) GetProjectedCommissionAmountUsd() *v2.Money {
+	if l == nil {
+		return nil
+	}
+	return l.ProjectedCommissionAmountUsd
 }
 
 func (l *ListEarningsResponseDataItem) GetResource() *ListEarningsResponseDataItemResource {
@@ -597,6 +608,13 @@ func (l *ListEarningsResponseDataItem) SetPayoutPercentage(payoutPercentage *flo
 func (l *ListEarningsResponseDataItem) SetProduct(product *ListEarningsResponseDataItemProduct) {
 	l.Product = product
 	l.require(listEarningsResponseDataItemFieldProduct)
+}
+
+// SetProjectedCommissionAmountUsd sets the ProjectedCommissionAmountUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEarningsResponseDataItem) SetProjectedCommissionAmountUsd(projectedCommissionAmountUsd *v2.Money) {
+	l.ProjectedCommissionAmountUsd = projectedCommissionAmountUsd
+	l.require(listEarningsResponseDataItemFieldProjectedCommissionAmountUsd)
 }
 
 // SetResource sets the Resource field and marks it as non-optional;
