@@ -203,9 +203,10 @@ var (
 	partnerFieldJoinedAt                   = big.NewInt(1 << 1)
 	partnerFieldPayoutRates                = big.NewInt(1 << 2)
 	partnerFieldReferredBusinessesCount    = big.NewInt(1 << 3)
-	partnerFieldUser                       = big.NewInt(1 << 4)
-	partnerFieldVerificationWaitlistJoined = big.NewInt(1 << 5)
-	partnerFieldWhopPartnerVerifiedAt      = big.NewInt(1 << 6)
+	partnerFieldReferringPartner           = big.NewInt(1 << 4)
+	partnerFieldUser                       = big.NewInt(1 << 5)
+	partnerFieldVerificationWaitlistJoined = big.NewInt(1 << 6)
+	partnerFieldWhopPartnerVerifiedAt      = big.NewInt(1 << 7)
 )
 
 type Partner struct {
@@ -216,6 +217,8 @@ type Partner struct {
 	PayoutRates []*PartnerPayoutTier `json:"payout_rates" url:"payout_rates"`
 	// Number of active first-tier business referrals attributed to the partner, excluding deleted businesses.
 	ReferredBusinessesCount int `json:"referred_businesses_count" url:"referred_businesses_count"`
+	// The user currently attributed as this user's primary referrer. Null when there is no active primary referral.
+	ReferringPartner *UserSummary `json:"referring_partner,omitempty" url:"referring_partner,omitempty"`
 	// The authenticated partner's public profile.
 	User *UserSummary `json:"user" url:"user"`
 	// Whether the user has a pending or approved personal entry on the Verified Partner waitlist.
@@ -256,6 +259,13 @@ func (p *Partner) GetReferredBusinessesCount() int {
 		return 0
 	}
 	return p.ReferredBusinessesCount
+}
+
+func (p *Partner) GetReferringPartner() *UserSummary {
+	if p == nil {
+		return nil
+	}
+	return p.ReferringPartner
 }
 
 func (p *Partner) GetUser() *UserSummary {
@@ -319,6 +329,13 @@ func (p *Partner) SetPayoutRates(payoutRates []*PartnerPayoutTier) {
 func (p *Partner) SetReferredBusinessesCount(referredBusinessesCount int) {
 	p.ReferredBusinessesCount = referredBusinessesCount
 	p.require(partnerFieldReferredBusinessesCount)
+}
+
+// SetReferringPartner sets the ReferringPartner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Partner) SetReferringPartner(referringPartner *UserSummary) {
+	p.ReferringPartner = referringPartner
+	p.require(partnerFieldReferringPartner)
 }
 
 // SetUser sets the User field and marks it as non-optional;
