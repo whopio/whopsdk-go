@@ -26113,7 +26113,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**email:** `*string` — Overrides the buyer email carried on the confirmation token, resolving or creating the user the payment belongs to. Ignored unless `confirmation_token` is provided, and when the token was created by a signed-in buyer.
+**email:** `*string` — The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached. Ignored with `member_id`.
     
 </dd>
 </dl>
@@ -26138,6 +26138,14 @@ client.Payments.Create(
 <dd>
 
 **metadata:** `map[string]*string` — Custom metadata to attach to the payment.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethod:** `*whopsdk.CreatePaymentsRequestPaymentMethod` — A payment method collected on the seller's device rather than described by a confirmation token. `type` names it and the member named after it carries what the device needs. Today only `card_present` (Tap to Pay): nothing is collected on this call, the payment is created first and the reader then collects against it with the client secret the status endpoint serves in `next_action`. Mutually exclusive with `confirmation_token`, `member_id` and `payment_method_id`.
     
 </dd>
 </dl>

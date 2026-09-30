@@ -36294,6 +36294,7 @@ func (p PaymentMethodTypes) Ptr() *PaymentMethodTypes {
 type PaymentNextAction struct {
 	Type                string
 	AwaitConfirmation   *PaymentNextActionAwaitConfirmation
+	CollectCardPresent  *PaymentNextActionCollectCardPresent
 	DisplayInstructions *PaymentNextActionDisplayInstructions
 	Redirect            *PaymentNextActionRedirect
 
@@ -36312,6 +36313,13 @@ func (p *PaymentNextAction) GetAwaitConfirmation() *PaymentNextActionAwaitConfir
 		return nil
 	}
 	return p.AwaitConfirmation
+}
+
+func (p *PaymentNextAction) GetCollectCardPresent() *PaymentNextActionCollectCardPresent {
+	if p == nil {
+		return nil
+	}
+	return p.CollectCardPresent
 }
 
 func (p *PaymentNextAction) GetDisplayInstructions() *PaymentNextActionDisplayInstructions {
@@ -36346,6 +36354,12 @@ func (p *PaymentNextAction) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		p.AwaitConfirmation = value
+	case "collect_card_present":
+		value := new(PaymentNextActionCollectCardPresent)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.CollectCardPresent = value
 	case "display_instructions":
 		value := new(PaymentNextActionDisplayInstructions)
 		if err := json.Unmarshal(data, &value); err != nil {
@@ -36370,6 +36384,9 @@ func (p PaymentNextAction) MarshalJSON() ([]byte, error) {
 	if p.AwaitConfirmation != nil {
 		return internal.MarshalJSONWithExtraProperty(p.AwaitConfirmation, "type", "await_confirmation")
 	}
+	if p.CollectCardPresent != nil {
+		return internal.MarshalJSONWithExtraProperty(p.CollectCardPresent, "type", "collect_card_present")
+	}
 	if p.DisplayInstructions != nil {
 		return internal.MarshalJSONWithExtraProperty(p.DisplayInstructions, "type", "display_instructions")
 	}
@@ -36384,6 +36401,7 @@ func (p PaymentNextAction) MarshalJSON() ([]byte, error) {
 
 type PaymentNextActionVisitor interface {
 	VisitAwaitConfirmation(*PaymentNextActionAwaitConfirmation) error
+	VisitCollectCardPresent(*PaymentNextActionCollectCardPresent) error
 	VisitDisplayInstructions(*PaymentNextActionDisplayInstructions) error
 	VisitRedirect(*PaymentNextActionRedirect) error
 }
@@ -36391,6 +36409,9 @@ type PaymentNextActionVisitor interface {
 func (p *PaymentNextAction) Accept(visitor PaymentNextActionVisitor) error {
 	if p.AwaitConfirmation != nil {
 		return visitor.VisitAwaitConfirmation(p.AwaitConfirmation)
+	}
+	if p.CollectCardPresent != nil {
+		return visitor.VisitCollectCardPresent(p.CollectCardPresent)
 	}
 	if p.DisplayInstructions != nil {
 		return visitor.VisitDisplayInstructions(p.DisplayInstructions)
@@ -36408,6 +36429,9 @@ func (p *PaymentNextAction) validate() error {
 	var fields []string
 	if p.AwaitConfirmation != nil {
 		fields = append(fields, "await_confirmation")
+	}
+	if p.CollectCardPresent != nil {
+		fields = append(fields, "collect_card_present")
 	}
 	if p.DisplayInstructions != nil {
 		fields = append(fields, "display_instructions")
@@ -36648,6 +36672,176 @@ func NewPaymentNextActionAwaitConfirmationRenderItemFromString(s string) (Paymen
 
 func (p PaymentNextActionAwaitConfirmationRenderItem) Ptr() *PaymentNextActionAwaitConfirmationRenderItem {
 	return &p
+}
+
+var (
+	paymentNextActionCollectCardPresentFieldData = big.NewInt(1 << 0)
+)
+
+type PaymentNextActionCollectCardPresent struct {
+	// What the Terminal SDK needs to collect this payment.
+	Data *PaymentNextActionCollectCardPresentData `json:"data" url:"data"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentNextActionCollectCardPresent) GetData() *PaymentNextActionCollectCardPresentData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PaymentNextActionCollectCardPresent) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentNextActionCollectCardPresent) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentNextActionCollectCardPresent) SetData(data *PaymentNextActionCollectCardPresentData) {
+	p.Data = data
+	p.require(paymentNextActionCollectCardPresentFieldData)
+}
+
+func (p *PaymentNextActionCollectCardPresent) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentNextActionCollectCardPresent
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentNextActionCollectCardPresent(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentNextActionCollectCardPresent) MarshalJSON() ([]byte, error) {
+	type embed PaymentNextActionCollectCardPresent
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentNextActionCollectCardPresent) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	paymentNextActionCollectCardPresentDataFieldClientSecret = big.NewInt(1 << 0)
+)
+
+type PaymentNextActionCollectCardPresentData struct {
+	// The Stripe PaymentIntent client secret the Terminal SDK retrieves, collects and confirms this payment with. Treat it as a credential: together with a card-present connection token it is what a device needs to take the payment.
+	ClientSecret string `json:"client_secret" url:"client_secret"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentNextActionCollectCardPresentData) GetClientSecret() string {
+	if p == nil {
+		return ""
+	}
+	return p.ClientSecret
+}
+
+func (p *PaymentNextActionCollectCardPresentData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentNextActionCollectCardPresentData) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetClientSecret sets the ClientSecret field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentNextActionCollectCardPresentData) SetClientSecret(clientSecret string) {
+	p.ClientSecret = clientSecret
+	p.require(paymentNextActionCollectCardPresentDataFieldClientSecret)
+}
+
+func (p *PaymentNextActionCollectCardPresentData) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentNextActionCollectCardPresentData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentNextActionCollectCardPresentData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentNextActionCollectCardPresentData) MarshalJSON() ([]byte, error) {
+	type embed PaymentNextActionCollectCardPresentData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentNextActionCollectCardPresentData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }
 
 var (
