@@ -2073,6 +2073,13 @@ func TestEnumPaymentMethodDisplayCategory(t *testing.T) {
 		assert.Equal(t, PaymentMethodDisplayCategory("in_app_purchase"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_card_present", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentMethodDisplayCategoryFromString("card_present")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentMethodDisplayCategory("card_present"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_saved", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPaymentMethodDisplayCategoryFromString("saved")

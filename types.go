@@ -35131,6 +35131,7 @@ const (
 	PaymentMethodTypesCaBankTransfer         PaymentMethodTypes = "ca_bank_transfer"
 	PaymentMethodTypesCapchasePay            PaymentMethodTypes = "capchase_pay"
 	PaymentMethodTypesCard                   PaymentMethodTypes = "card"
+	PaymentMethodTypesCardPresent            PaymentMethodTypes = "card_present"
 	PaymentMethodTypesCardInstallmentsThree  PaymentMethodTypes = "card_installments_three"
 	PaymentMethodTypesCardInstallmentsSix    PaymentMethodTypes = "card_installments_six"
 	PaymentMethodTypesCardInstallmentsTwelve PaymentMethodTypes = "card_installments_twelve"
@@ -35287,6 +35288,8 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesCapchasePay, nil
 	case "card":
 		return PaymentMethodTypesCard, nil
+	case "card_present":
+		return PaymentMethodTypesCardPresent, nil
 	case "card_installments_three":
 		return PaymentMethodTypesCardInstallmentsThree, nil
 	case "card_installments_six":
