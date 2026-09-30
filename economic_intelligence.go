@@ -13,10 +13,13 @@ var (
 	listEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 0)
 	listEconomicIntelligenceRequestFieldStatus    = big.NewInt(1 << 1)
 	listEconomicIntelligenceRequestFieldInput     = big.NewInt(1 << 2)
-	listEconomicIntelligenceRequestFieldFirst     = big.NewInt(1 << 3)
-	listEconomicIntelligenceRequestFieldAfter     = big.NewInt(1 << 4)
-	listEconomicIntelligenceRequestFieldLast      = big.NewInt(1 << 5)
-	listEconomicIntelligenceRequestFieldBefore    = big.NewInt(1 << 6)
+	listEconomicIntelligenceRequestFieldHasRun    = big.NewInt(1 << 3)
+	listEconomicIntelligenceRequestFieldOrder     = big.NewInt(1 << 4)
+	listEconomicIntelligenceRequestFieldDirection = big.NewInt(1 << 5)
+	listEconomicIntelligenceRequestFieldFirst     = big.NewInt(1 << 6)
+	listEconomicIntelligenceRequestFieldAfter     = big.NewInt(1 << 7)
+	listEconomicIntelligenceRequestFieldLast      = big.NewInt(1 << 8)
+	listEconomicIntelligenceRequestFieldBefore    = big.NewInt(1 << 9)
 )
 
 type ListEconomicIntelligenceRequest struct {
@@ -26,6 +29,12 @@ type ListEconomicIntelligenceRequest struct {
 	Status *ListEconomicIntelligenceRequestStatus `json:"-" url:"status,omitempty"`
 	// What you want recommendations for, in your own words. Up to 1000 characters. Narrows the list to the recommendations that address it.
 	Input *string `json:"-" url:"input,omitempty"`
+	// When true, only recommendations someone has started running, by any user. Without `account_id`, covers every account you can read that has Economic Intelligence. Can't be combined with `input`.
+	HasRun *bool `json:"-" url:"has_run,omitempty"`
+	// Sort field.
+	Order *ListEconomicIntelligenceRequestOrder `json:"-" url:"order,omitempty"`
+	// Sort direction.
+	Direction *ListEconomicIntelligenceRequestDirection `json:"-" url:"direction,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -65,6 +74,27 @@ func (l *ListEconomicIntelligenceRequest) SetStatus(status *ListEconomicIntellig
 func (l *ListEconomicIntelligenceRequest) SetInput(input *string) {
 	l.Input = input
 	l.require(listEconomicIntelligenceRequestFieldInput)
+}
+
+// SetHasRun sets the HasRun field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEconomicIntelligenceRequest) SetHasRun(hasRun *bool) {
+	l.HasRun = hasRun
+	l.require(listEconomicIntelligenceRequestFieldHasRun)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEconomicIntelligenceRequest) SetOrder(order *ListEconomicIntelligenceRequestOrder) {
+	l.Order = order
+	l.require(listEconomicIntelligenceRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEconomicIntelligenceRequest) SetDirection(direction *ListEconomicIntelligenceRequestDirection) {
+	l.Direction = direction
+	l.require(listEconomicIntelligenceRequestFieldDirection)
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -848,6 +878,50 @@ func NewEconomicIntelligenceStatusFromString(s string) (EconomicIntelligenceStat
 
 func (e EconomicIntelligenceStatus) Ptr() *EconomicIntelligenceStatus {
 	return &e
+}
+
+type ListEconomicIntelligenceRequestDirection string
+
+const (
+	ListEconomicIntelligenceRequestDirectionAsc  ListEconomicIntelligenceRequestDirection = "asc"
+	ListEconomicIntelligenceRequestDirectionDesc ListEconomicIntelligenceRequestDirection = "desc"
+)
+
+func NewListEconomicIntelligenceRequestDirectionFromString(s string) (ListEconomicIntelligenceRequestDirection, error) {
+	switch s {
+	case "asc":
+		return ListEconomicIntelligenceRequestDirectionAsc, nil
+	case "desc":
+		return ListEconomicIntelligenceRequestDirectionDesc, nil
+	}
+	var t ListEconomicIntelligenceRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListEconomicIntelligenceRequestDirection) Ptr() *ListEconomicIntelligenceRequestDirection {
+	return &l
+}
+
+type ListEconomicIntelligenceRequestOrder string
+
+const (
+	ListEconomicIntelligenceRequestOrderCreatedAt    ListEconomicIntelligenceRequestOrder = "created_at"
+	ListEconomicIntelligenceRequestOrderRunStartedAt ListEconomicIntelligenceRequestOrder = "run_started_at"
+)
+
+func NewListEconomicIntelligenceRequestOrderFromString(s string) (ListEconomicIntelligenceRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return ListEconomicIntelligenceRequestOrderCreatedAt, nil
+	case "run_started_at":
+		return ListEconomicIntelligenceRequestOrderRunStartedAt, nil
+	}
+	var t ListEconomicIntelligenceRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListEconomicIntelligenceRequestOrder) Ptr() *ListEconomicIntelligenceRequestOrder {
+	return &l
 }
 
 type ListEconomicIntelligenceRequestStatus string
