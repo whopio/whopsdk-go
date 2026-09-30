@@ -644,6 +644,7 @@ const (
 	PaymentMethodDisplayCategoryCrypto        PaymentMethodDisplayCategory = "crypto"
 	PaymentMethodDisplayCategoryBalance       PaymentMethodDisplayCategory = "balance"
 	PaymentMethodDisplayCategoryInAppPurchase PaymentMethodDisplayCategory = "in_app_purchase"
+	PaymentMethodDisplayCategoryCardPresent   PaymentMethodDisplayCategory = "card_present"
 	PaymentMethodDisplayCategorySaved         PaymentMethodDisplayCategory = "saved"
 )
 
@@ -667,6 +668,8 @@ func NewPaymentMethodDisplayCategoryFromString(s string) (PaymentMethodDisplayCa
 		return PaymentMethodDisplayCategoryBalance, nil
 	case "in_app_purchase":
 		return PaymentMethodDisplayCategoryInAppPurchase, nil
+	case "card_present":
+		return PaymentMethodDisplayCategoryCardPresent, nil
 	case "saved":
 		return PaymentMethodDisplayCategorySaved, nil
 	}
