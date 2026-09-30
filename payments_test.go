@@ -120,6 +120,14 @@ func TestSettersCreatePaymentsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPaymentMethod", func(t *testing.T) {
+		obj := &CreatePaymentsRequest{}
+		var fernTestValuePaymentMethod *CreatePaymentsRequestPaymentMethod
+		obj.SetPaymentMethod(fernTestValuePaymentMethod)
+		assert.Equal(t, fernTestValuePaymentMethod, obj.PaymentMethod)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPaymentMethodID", func(t *testing.T) {
 		obj := &CreatePaymentsRequest{}
 		var fernTestValuePaymentMethodID *string
@@ -404,6 +412,37 @@ func TestSettersMarkExplicitCreatePaymentsRequest(t *testing.T) {
 
 		// Act
 		obj.SetMetadata(fernTestValueMetadata)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPaymentMethod_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePaymentsRequest{}
+		var fernTestValuePaymentMethod *CreatePaymentsRequestPaymentMethod
+
+		// Act
+		obj.SetPaymentMethod(fernTestValuePaymentMethod)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3308,6 +3347,220 @@ func TestSettersMarkExplicitCreatePaymentsRequestLineItemsItem(t *testing.T) {
 
 		// Act
 		obj.SetQuantity(fernTestValueQuantity)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreatePaymentsRequestPaymentMethod(t *testing.T) {
+	t.Run("SetCardPresent", func(t *testing.T) {
+		obj := &CreatePaymentsRequestPaymentMethod{}
+		var fernTestValueCardPresent *CreatePaymentsRequestPaymentMethodCardPresent
+		obj.SetCardPresent(fernTestValueCardPresent)
+		assert.Equal(t, fernTestValueCardPresent, obj.CardPresent)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetType", func(t *testing.T) {
+		obj := &CreatePaymentsRequestPaymentMethod{}
+		var fernTestValueType CreatePaymentsRequestPaymentMethodType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreatePaymentsRequestPaymentMethod(t *testing.T) {
+	t.Run("GetCardPresent", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePaymentsRequestPaymentMethod{}
+		var expected *CreatePaymentsRequestPaymentMethodCardPresent
+		obj.CardPresent = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCardPresent(), "getter should return the property value")
+	})
+
+	t.Run("GetCardPresent_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePaymentsRequestPaymentMethod{}
+		obj.CardPresent = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCardPresent(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCardPresent_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreatePaymentsRequestPaymentMethod
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCardPresent() // Should return zero value
+	})
+
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePaymentsRequestPaymentMethod{}
+		var expected CreatePaymentsRequestPaymentMethodType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreatePaymentsRequestPaymentMethod
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreatePaymentsRequestPaymentMethod(t *testing.T) {
+	t.Run("SetCardPresent_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePaymentsRequestPaymentMethod{}
+		var fernTestValueCardPresent *CreatePaymentsRequestPaymentMethodCardPresent
+
+		// Act
+		obj.SetCardPresent(fernTestValueCardPresent)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePaymentsRequestPaymentMethod{}
+		var fernTestValueType CreatePaymentsRequestPaymentMethodType
+
+		// Act
+		obj.SetType(fernTestValueType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreatePaymentsRequestPaymentMethodCardPresent(t *testing.T) {
+	t.Run("SetPlatform", func(t *testing.T) {
+		obj := &CreatePaymentsRequestPaymentMethodCardPresent{}
+		var fernTestValuePlatform CreatePaymentsRequestPaymentMethodCardPresentPlatform
+		obj.SetPlatform(fernTestValuePlatform)
+		assert.Equal(t, fernTestValuePlatform, obj.Platform)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreatePaymentsRequestPaymentMethodCardPresent(t *testing.T) {
+	t.Run("GetPlatform", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePaymentsRequestPaymentMethodCardPresent{}
+		var expected CreatePaymentsRequestPaymentMethodCardPresentPlatform
+		obj.Platform = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
+	})
+
+	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreatePaymentsRequestPaymentMethodCardPresent
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlatform() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreatePaymentsRequestPaymentMethodCardPresent(t *testing.T) {
+	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePaymentsRequestPaymentMethodCardPresent{}
+		var fernTestValuePlatform CreatePaymentsRequestPaymentMethodCardPresentPlatform
+
+		// Act
+		obj.SetPlatform(fernTestValuePlatform)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11251,6 +11504,72 @@ func TestJSONMarshalingCreatePaymentsRequestLineItemsItem(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingCreatePaymentsRequestPaymentMethod(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePaymentsRequestPaymentMethod{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreatePaymentsRequestPaymentMethod
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreatePaymentsRequestPaymentMethod
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreatePaymentsRequestPaymentMethod
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCreatePaymentsRequestPaymentMethodCardPresent(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePaymentsRequestPaymentMethodCardPresent{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreatePaymentsRequestPaymentMethodCardPresent
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreatePaymentsRequestPaymentMethodCardPresent
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreatePaymentsRequestPaymentMethodCardPresent
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingCreatePaymentsRequestPlan(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -11894,6 +12213,38 @@ func TestStringCreatePaymentsRequestLineItemsItem(t *testing.T) {
 	})
 }
 
+func TestStringCreatePaymentsRequestPaymentMethod(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreatePaymentsRequestPaymentMethod{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreatePaymentsRequestPaymentMethod
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreatePaymentsRequestPaymentMethodCardPresent(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreatePaymentsRequestPaymentMethodCardPresent{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreatePaymentsRequestPaymentMethodCardPresent
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringCreatePaymentsRequestPlan(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -12195,6 +12546,57 @@ func TestStringUpdatePaymentsRequestShippingAddress(t *testing.T) {
 		var obj *UpdatePaymentsRequestShippingAddress
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestEnumCreatePaymentsRequestPaymentMethodCardPresentPlatform(t *testing.T) {
+	t.Run("NewFromString_ios", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePaymentsRequestPaymentMethodCardPresentPlatformFromString("ios")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePaymentsRequestPaymentMethodCardPresentPlatform("ios"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_android", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePaymentsRequestPaymentMethodCardPresentPlatformFromString("android")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePaymentsRequestPaymentMethodCardPresentPlatform("android"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreatePaymentsRequestPaymentMethodCardPresentPlatformFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreatePaymentsRequestPaymentMethodCardPresentPlatformFromString("ios")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreatePaymentsRequestPaymentMethodType(t *testing.T) {
+	t.Run("NewFromString_card_present", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePaymentsRequestPaymentMethodTypeFromString("card_present")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePaymentsRequestPaymentMethodType("card_present"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreatePaymentsRequestPaymentMethodTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreatePaymentsRequestPaymentMethodTypeFromString("card_present")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
 	})
 }
 
@@ -14505,6 +14907,52 @@ func TestExtraPropertiesCreatePaymentsRequestLineItemsItem(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *CreatePaymentsRequestLineItemsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreatePaymentsRequestPaymentMethod(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreatePaymentsRequestPaymentMethod{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreatePaymentsRequestPaymentMethod
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreatePaymentsRequestPaymentMethodCardPresent(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreatePaymentsRequestPaymentMethodCardPresent{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreatePaymentsRequestPaymentMethodCardPresent
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
