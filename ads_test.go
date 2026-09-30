@@ -23854,6 +23854,27 @@ func TestEnumAdCallToAction(t *testing.T) {
 		assert.Equal(t, AdCallToAction("view_instagram_profile"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_donate_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdCallToActionFromString("donate_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdCallToAction("donate_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_see_more", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdCallToActionFromString("see_more")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdCallToAction("see_more"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_visit_site", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdCallToActionFromString("visit_site")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdCallToAction("visit_site"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAdCallToActionFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -24261,6 +24282,13 @@ func TestEnumCreateAdsRequestCallToAction(t *testing.T) {
 		assert.Equal(t, CreateAdsRequestCallToAction("contact_us"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_donate_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAdsRequestCallToActionFromString("donate_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAdsRequestCallToAction("donate_now"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_download", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateAdsRequestCallToActionFromString("download")
@@ -24352,6 +24380,13 @@ func TestEnumCreateAdsRequestCallToAction(t *testing.T) {
 		assert.Equal(t, CreateAdsRequestCallToAction("see_menu"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_see_more", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAdsRequestCallToActionFromString("see_more")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAdsRequestCallToAction("see_more"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_send_updates", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateAdsRequestCallToActionFromString("send_updates")
@@ -24378,6 +24413,13 @@ func TestEnumCreateAdsRequestCallToAction(t *testing.T) {
 		val, err := NewCreateAdsRequestCallToActionFromString("subscribe")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateAdsRequestCallToAction("subscribe"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_visit_site", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAdsRequestCallToActionFromString("visit_site")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAdsRequestCallToAction("visit_site"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_watch_more", func(t *testing.T) {
@@ -25226,6 +25268,27 @@ func TestEnumPostAdUpdatedPayloadDataCallToAction(t *testing.T) {
 		assert.Equal(t, PostAdUpdatedPayloadDataCallToAction("view_instagram_profile"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_donate_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostAdUpdatedPayloadDataCallToActionFromString("donate_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostAdUpdatedPayloadDataCallToAction("donate_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_see_more", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostAdUpdatedPayloadDataCallToActionFromString("see_more")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostAdUpdatedPayloadDataCallToAction("see_more"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_visit_site", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostAdUpdatedPayloadDataCallToActionFromString("visit_site")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostAdUpdatedPayloadDataCallToAction("visit_site"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewPostAdUpdatedPayloadDataCallToActionFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -25534,6 +25597,13 @@ func TestEnumUpdateAdsRequestCallToAction(t *testing.T) {
 		assert.Equal(t, UpdateAdsRequestCallToAction("contact_us"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_donate_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAdsRequestCallToActionFromString("donate_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAdsRequestCallToAction("donate_now"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_download", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewUpdateAdsRequestCallToActionFromString("download")
@@ -25625,6 +25695,13 @@ func TestEnumUpdateAdsRequestCallToAction(t *testing.T) {
 		assert.Equal(t, UpdateAdsRequestCallToAction("see_menu"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_see_more", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAdsRequestCallToActionFromString("see_more")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAdsRequestCallToAction("see_more"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_send_updates", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewUpdateAdsRequestCallToActionFromString("send_updates")
@@ -25651,6 +25728,13 @@ func TestEnumUpdateAdsRequestCallToAction(t *testing.T) {
 		val, err := NewUpdateAdsRequestCallToActionFromString("subscribe")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateAdsRequestCallToAction("subscribe"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_visit_site", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAdsRequestCallToActionFromString("visit_site")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAdsRequestCallToAction("visit_site"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_watch_more", func(t *testing.T) {

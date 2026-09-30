@@ -1976,6 +1976,9 @@ const (
 	AdCallToActionEventRsvp            AdCallToAction = "event_rsvp"
 	AdCallToActionSeeDetails           AdCallToAction = "see_details"
 	AdCallToActionViewInstagramProfile AdCallToAction = "view_instagram_profile"
+	AdCallToActionDonateNow            AdCallToAction = "donate_now"
+	AdCallToActionSeeMore              AdCallToAction = "see_more"
+	AdCallToActionVisitSite            AdCallToAction = "visit_site"
 )
 
 func NewAdCallToActionFromString(s string) (AdCallToAction, error) {
@@ -2042,6 +2045,12 @@ func NewAdCallToActionFromString(s string) (AdCallToAction, error) {
 		return AdCallToActionSeeDetails, nil
 	case "view_instagram_profile":
 		return AdCallToActionViewInstagramProfile, nil
+	case "donate_now":
+		return AdCallToActionDonateNow, nil
+	case "see_more":
+		return AdCallToActionSeeMore, nil
+	case "visit_site":
+		return AdCallToActionVisitSite, nil
 	}
 	var t AdCallToAction
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3324,6 +3333,7 @@ const (
 	CreateAdsRequestCallToActionBookNow       CreateAdsRequestCallToAction = "book_now"
 	CreateAdsRequestCallToActionCallNow       CreateAdsRequestCallToAction = "call_now"
 	CreateAdsRequestCallToActionContactUs     CreateAdsRequestCallToAction = "contact_us"
+	CreateAdsRequestCallToActionDonateNow     CreateAdsRequestCallToAction = "donate_now"
 	CreateAdsRequestCallToActionDownload      CreateAdsRequestCallToAction = "download"
 	CreateAdsRequestCallToActionGetDirections CreateAdsRequestCallToAction = "get_directions"
 	CreateAdsRequestCallToActionGetOffer      CreateAdsRequestCallToAction = "get_offer"
@@ -3337,10 +3347,12 @@ const (
 	CreateAdsRequestCallToActionRequestTime   CreateAdsRequestCallToAction = "request_time"
 	CreateAdsRequestCallToActionSeeDetails    CreateAdsRequestCallToAction = "see_details"
 	CreateAdsRequestCallToActionSeeMenu       CreateAdsRequestCallToAction = "see_menu"
+	CreateAdsRequestCallToActionSeeMore       CreateAdsRequestCallToAction = "see_more"
 	CreateAdsRequestCallToActionSendUpdates   CreateAdsRequestCallToAction = "send_updates"
 	CreateAdsRequestCallToActionShopNow       CreateAdsRequestCallToAction = "shop_now"
 	CreateAdsRequestCallToActionSignUp        CreateAdsRequestCallToAction = "sign_up"
 	CreateAdsRequestCallToActionSubscribe     CreateAdsRequestCallToAction = "subscribe"
+	CreateAdsRequestCallToActionVisitSite     CreateAdsRequestCallToAction = "visit_site"
 	CreateAdsRequestCallToActionWatchMore     CreateAdsRequestCallToAction = "watch_more"
 )
 
@@ -3354,6 +3366,8 @@ func NewCreateAdsRequestCallToActionFromString(s string) (CreateAdsRequestCallTo
 		return CreateAdsRequestCallToActionCallNow, nil
 	case "contact_us":
 		return CreateAdsRequestCallToActionContactUs, nil
+	case "donate_now":
+		return CreateAdsRequestCallToActionDonateNow, nil
 	case "download":
 		return CreateAdsRequestCallToActionDownload, nil
 	case "get_directions":
@@ -3380,6 +3394,8 @@ func NewCreateAdsRequestCallToActionFromString(s string) (CreateAdsRequestCallTo
 		return CreateAdsRequestCallToActionSeeDetails, nil
 	case "see_menu":
 		return CreateAdsRequestCallToActionSeeMenu, nil
+	case "see_more":
+		return CreateAdsRequestCallToActionSeeMore, nil
 	case "send_updates":
 		return CreateAdsRequestCallToActionSendUpdates, nil
 	case "shop_now":
@@ -3388,6 +3404,8 @@ func NewCreateAdsRequestCallToActionFromString(s string) (CreateAdsRequestCallTo
 		return CreateAdsRequestCallToActionSignUp, nil
 	case "subscribe":
 		return CreateAdsRequestCallToActionSubscribe, nil
+	case "visit_site":
+		return CreateAdsRequestCallToActionVisitSite, nil
 	case "watch_more":
 		return CreateAdsRequestCallToActionWatchMore, nil
 	}
@@ -7129,6 +7147,9 @@ const (
 	PostAdUpdatedPayloadDataCallToActionEventRsvp            PostAdUpdatedPayloadDataCallToAction = "event_rsvp"
 	PostAdUpdatedPayloadDataCallToActionSeeDetails           PostAdUpdatedPayloadDataCallToAction = "see_details"
 	PostAdUpdatedPayloadDataCallToActionViewInstagramProfile PostAdUpdatedPayloadDataCallToAction = "view_instagram_profile"
+	PostAdUpdatedPayloadDataCallToActionDonateNow            PostAdUpdatedPayloadDataCallToAction = "donate_now"
+	PostAdUpdatedPayloadDataCallToActionSeeMore              PostAdUpdatedPayloadDataCallToAction = "see_more"
+	PostAdUpdatedPayloadDataCallToActionVisitSite            PostAdUpdatedPayloadDataCallToAction = "visit_site"
 )
 
 func NewPostAdUpdatedPayloadDataCallToActionFromString(s string) (PostAdUpdatedPayloadDataCallToAction, error) {
@@ -7195,6 +7216,12 @@ func NewPostAdUpdatedPayloadDataCallToActionFromString(s string) (PostAdUpdatedP
 		return PostAdUpdatedPayloadDataCallToActionSeeDetails, nil
 	case "view_instagram_profile":
 		return PostAdUpdatedPayloadDataCallToActionViewInstagramProfile, nil
+	case "donate_now":
+		return PostAdUpdatedPayloadDataCallToActionDonateNow, nil
+	case "see_more":
+		return PostAdUpdatedPayloadDataCallToActionSeeMore, nil
+	case "visit_site":
+		return PostAdUpdatedPayloadDataCallToActionVisitSite, nil
 	}
 	var t PostAdUpdatedPayloadDataCallToAction
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -7388,6 +7415,7 @@ const (
 	UpdateAdsRequestCallToActionBookNow       UpdateAdsRequestCallToAction = "book_now"
 	UpdateAdsRequestCallToActionCallNow       UpdateAdsRequestCallToAction = "call_now"
 	UpdateAdsRequestCallToActionContactUs     UpdateAdsRequestCallToAction = "contact_us"
+	UpdateAdsRequestCallToActionDonateNow     UpdateAdsRequestCallToAction = "donate_now"
 	UpdateAdsRequestCallToActionDownload      UpdateAdsRequestCallToAction = "download"
 	UpdateAdsRequestCallToActionGetDirections UpdateAdsRequestCallToAction = "get_directions"
 	UpdateAdsRequestCallToActionGetOffer      UpdateAdsRequestCallToAction = "get_offer"
@@ -7401,10 +7429,12 @@ const (
 	UpdateAdsRequestCallToActionRequestTime   UpdateAdsRequestCallToAction = "request_time"
 	UpdateAdsRequestCallToActionSeeDetails    UpdateAdsRequestCallToAction = "see_details"
 	UpdateAdsRequestCallToActionSeeMenu       UpdateAdsRequestCallToAction = "see_menu"
+	UpdateAdsRequestCallToActionSeeMore       UpdateAdsRequestCallToAction = "see_more"
 	UpdateAdsRequestCallToActionSendUpdates   UpdateAdsRequestCallToAction = "send_updates"
 	UpdateAdsRequestCallToActionShopNow       UpdateAdsRequestCallToAction = "shop_now"
 	UpdateAdsRequestCallToActionSignUp        UpdateAdsRequestCallToAction = "sign_up"
 	UpdateAdsRequestCallToActionSubscribe     UpdateAdsRequestCallToAction = "subscribe"
+	UpdateAdsRequestCallToActionVisitSite     UpdateAdsRequestCallToAction = "visit_site"
 	UpdateAdsRequestCallToActionWatchMore     UpdateAdsRequestCallToAction = "watch_more"
 )
 
@@ -7418,6 +7448,8 @@ func NewUpdateAdsRequestCallToActionFromString(s string) (UpdateAdsRequestCallTo
 		return UpdateAdsRequestCallToActionCallNow, nil
 	case "contact_us":
 		return UpdateAdsRequestCallToActionContactUs, nil
+	case "donate_now":
+		return UpdateAdsRequestCallToActionDonateNow, nil
 	case "download":
 		return UpdateAdsRequestCallToActionDownload, nil
 	case "get_directions":
@@ -7444,6 +7476,8 @@ func NewUpdateAdsRequestCallToActionFromString(s string) (UpdateAdsRequestCallTo
 		return UpdateAdsRequestCallToActionSeeDetails, nil
 	case "see_menu":
 		return UpdateAdsRequestCallToActionSeeMenu, nil
+	case "see_more":
+		return UpdateAdsRequestCallToActionSeeMore, nil
 	case "send_updates":
 		return UpdateAdsRequestCallToActionSendUpdates, nil
 	case "shop_now":
@@ -7452,6 +7486,8 @@ func NewUpdateAdsRequestCallToActionFromString(s string) (UpdateAdsRequestCallTo
 		return UpdateAdsRequestCallToActionSignUp, nil
 	case "subscribe":
 		return UpdateAdsRequestCallToActionSubscribe, nil
+	case "visit_site":
+		return UpdateAdsRequestCallToActionVisitSite, nil
 	case "watch_more":
 		return UpdateAdsRequestCallToActionWatchMore, nil
 	}

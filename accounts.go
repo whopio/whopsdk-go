@@ -717,58 +717,59 @@ var (
 	accountFieldEconomicIntelligence                = big.NewInt(1 << 16)
 	accountFieldEmail                               = big.NewInt(1 << 17)
 	accountFieldEula                                = big.NewInt(1 << 18)
-	accountFieldHomePreferences                     = big.NewInt(1 << 19)
-	accountFieldID                                  = big.NewInt(1 << 20)
-	accountFieldIndustryGroup                       = big.NewInt(1 << 21)
-	accountFieldIndustryType                        = big.NewInt(1 << 22)
-	accountFieldInvoicePrefix                       = big.NewInt(1 << 23)
-	accountFieldLogoURL                             = big.NewInt(1 << 24)
-	accountFieldMetadata                            = big.NewInt(1 << 25)
-	accountFieldOnboardingType                      = big.NewInt(1 << 26)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 27)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 28)
-	accountFieldOrchestrationEnabled                = big.NewInt(1 << 29)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 30)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 31)
-	accountFieldOwner                               = big.NewInt(1 << 32)
-	accountFieldParentAccount                       = big.NewInt(1 << 33)
-	accountFieldPartner                             = big.NewInt(1 << 34)
-	accountFieldPaymentControls                     = big.NewInt(1 << 35)
-	accountFieldPlatformCredits                     = big.NewInt(1 << 36)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 37)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 38)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 39)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 40)
-	accountFieldRequiredActions                     = big.NewInt(1 << 41)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 42)
-	accountFieldRewards                             = big.NewInt(1 << 43)
-	accountFieldRoute                               = big.NewInt(1 << 44)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 45)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 46)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 47)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 48)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 49)
-	accountFieldSocialLinks                         = big.NewInt(1 << 50)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 51)
-	accountFieldStatus                              = big.NewInt(1 << 52)
-	accountFieldStatusReason                        = big.NewInt(1 << 53)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 54)
-	accountFieldTargetAudience                      = big.NewInt(1 << 55)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 56)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 57)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 58)
-	accountFieldTaxType                             = big.NewInt(1 << 59)
-	accountFieldTermsOfService                      = big.NewInt(1 << 60)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 61)
-	accountFieldTitle                               = big.NewInt(1 << 62)
-	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldFinancing                           = big.NewInt(1 << 19)
+	accountFieldHomePreferences                     = big.NewInt(1 << 20)
+	accountFieldID                                  = big.NewInt(1 << 21)
+	accountFieldIndustryGroup                       = big.NewInt(1 << 22)
+	accountFieldIndustryType                        = big.NewInt(1 << 23)
+	accountFieldInvoicePrefix                       = big.NewInt(1 << 24)
+	accountFieldLogoURL                             = big.NewInt(1 << 25)
+	accountFieldMetadata                            = big.NewInt(1 << 26)
+	accountFieldOnboardingType                      = big.NewInt(1 << 27)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 28)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 29)
+	accountFieldOrchestrationEnabled                = big.NewInt(1 << 30)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 31)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 32)
+	accountFieldOwner                               = big.NewInt(1 << 33)
+	accountFieldParentAccount                       = big.NewInt(1 << 34)
+	accountFieldPartner                             = big.NewInt(1 << 35)
+	accountFieldPaymentControls                     = big.NewInt(1 << 36)
+	accountFieldPlatformCredits                     = big.NewInt(1 << 37)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 38)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 39)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 40)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 41)
+	accountFieldRequiredActions                     = big.NewInt(1 << 42)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 43)
+	accountFieldRewards                             = big.NewInt(1 << 44)
+	accountFieldRoute                               = big.NewInt(1 << 45)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 46)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 47)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 48)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 49)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 50)
+	accountFieldSocialLinks                         = big.NewInt(1 << 51)
+	accountFieldStablecoinRails                     = big.NewInt(1 << 52)
+	accountFieldStatus                              = big.NewInt(1 << 53)
+	accountFieldStatusReason                        = big.NewInt(1 << 54)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 55)
+	accountFieldTargetAudience                      = big.NewInt(1 << 56)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 57)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 58)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 59)
+	accountFieldTaxType                             = big.NewInt(1 << 60)
+	accountFieldTermsOfService                      = big.NewInt(1 << 61)
+	accountFieldThreeDsLevel                        = big.NewInt(1 << 62)
+	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 71)
 )
 
 type Account struct {
@@ -808,7 +809,9 @@ type Account struct {
 	// Account owner email address.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// The account's end-user license agreement document, or `null` if they have not published one.
-	Eula            *File                        `json:"eula,omitempty" url:"eula,omitempty"`
+	Eula *File `json:"eula,omitempty" url:"eula,omitempty"`
+	// The account's most recent financing application. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise, or when the account has never applied for financing.
+	Financing       *AccountFinancing            `json:"financing,omitempty" url:"financing,omitempty"`
 	HomePreferences []AccountHomePreferencesItem `json:"home_preferences" url:"home_preferences"`
 	// Account ID, prefixed `biz_`.
 	ID string `json:"id" url:"id"`
@@ -1045,6 +1048,13 @@ func (a *Account) GetEula() *File {
 		return nil
 	}
 	return a.Eula
+}
+
+func (a *Account) GetFinancing() *AccountFinancing {
+	if a == nil {
+		return nil
+	}
+	return a.Financing
 }
 
 func (a *Account) GetHomePreferences() []AccountHomePreferencesItem {
@@ -1556,6 +1566,13 @@ func (a *Account) SetEmail(email *string) {
 func (a *Account) SetEula(eula *File) {
 	a.Eula = eula
 	a.require(accountFieldEula)
+}
+
+// SetFinancing sets the Financing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetFinancing(financing *AccountFinancing) {
+	a.Financing = financing
+	a.require(accountFieldFinancing)
 }
 
 // SetHomePreferences sets the HomePreferences field and marks it as non-optional;
@@ -3006,6 +3023,140 @@ func (a *AccountDisputeAlertAutoRefundControl) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	accountFinancingFieldApplicationID = big.NewInt(1 << 0)
+	accountFinancingFieldStatus        = big.NewInt(1 << 1)
+)
+
+type AccountFinancing struct {
+	// The ID of the account's most recent financing application, starting with inrq_. Retrieve it for requirements and review feedback.
+	ApplicationID string `json:"application_id" url:"application_id"`
+	// The most recent financing application's review state: `requires_collection` (waiting on the merchant, including after a request for more information), `awaiting_review`, `approved`, `denied`, or `completed`. Whether financing payment methods are enabled is `capabilities.accept_bnpl_payments`.
+	Status AccountFinancingStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountFinancing) GetApplicationID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ApplicationID
+}
+
+func (a *AccountFinancing) GetStatus() AccountFinancingStatus {
+	if a == nil {
+		return ""
+	}
+	return a.Status
+}
+
+func (a *AccountFinancing) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountFinancing) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetApplicationID sets the ApplicationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFinancing) SetApplicationID(applicationID string) {
+	a.ApplicationID = applicationID
+	a.require(accountFinancingFieldApplicationID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFinancing) SetStatus(status AccountFinancingStatus) {
+	a.Status = status
+	a.require(accountFinancingFieldStatus)
+}
+
+func (a *AccountFinancing) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountFinancing
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountFinancing(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountFinancing) MarshalJSON() ([]byte, error) {
+	type embed AccountFinancing
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountFinancing) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// The most recent financing application's review state: `requires_collection` (waiting on the merchant, including after a request for more information), `awaiting_review`, `approved`, `denied`, or `completed`. Whether financing payment methods are enabled is `capabilities.accept_bnpl_payments`.
+type AccountFinancingStatus string
+
+const (
+	AccountFinancingStatusRequiresCollection AccountFinancingStatus = "requires_collection"
+	AccountFinancingStatusAwaitingReview     AccountFinancingStatus = "awaiting_review"
+	AccountFinancingStatusCompleted          AccountFinancingStatus = "completed"
+	AccountFinancingStatusApproved           AccountFinancingStatus = "approved"
+	AccountFinancingStatusDenied             AccountFinancingStatus = "denied"
+)
+
+func NewAccountFinancingStatusFromString(s string) (AccountFinancingStatus, error) {
+	switch s {
+	case "requires_collection":
+		return AccountFinancingStatusRequiresCollection, nil
+	case "awaiting_review":
+		return AccountFinancingStatusAwaitingReview, nil
+	case "completed":
+		return AccountFinancingStatusCompleted, nil
+	case "approved":
+		return AccountFinancingStatusApproved, nil
+	case "denied":
+		return AccountFinancingStatusDenied, nil
+	}
+	var t AccountFinancingStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountFinancingStatus) Ptr() *AccountFinancingStatus {
+	return &a
 }
 
 // Public account home page preferences.
