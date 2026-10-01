@@ -36126,6 +36126,7 @@ const (
 	PaymentMethodTypesPayco                  PaymentMethodTypes = "payco"
 	PaymentMethodTypesPaynow                 PaymentMethodTypes = "paynow"
 	PaymentMethodTypesPaypal                 PaymentMethodTypes = "paypal"
+	PaymentMethodTypesPaypalExpress          PaymentMethodTypes = "paypal_express"
 	PaymentMethodTypesPaypay                 PaymentMethodTypes = "paypay"
 	PaymentMethodTypesPayto                  PaymentMethodTypes = "payto"
 	PaymentMethodTypesPix                    PaymentMethodTypes = "pix"
@@ -36349,6 +36350,8 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesPaynow, nil
 	case "paypal":
 		return PaymentMethodTypesPaypal, nil
+	case "paypal_express":
+		return PaymentMethodTypesPaypalExpress, nil
 	case "paypay":
 		return PaymentMethodTypesPaypay, nil
 	case "payto":
