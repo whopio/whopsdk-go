@@ -73,6 +73,7 @@ import (
 	people "github.com/whopio/whopsdk-go/v2/people"
 	permissions "github.com/whopio/whopsdk-go/v2/permissions"
 	plans "github.com/whopio/whopsdk-go/v2/plans"
+	productaffiliates "github.com/whopio/whopsdk-go/v2/productaffiliates"
 	products "github.com/whopio/whopsdk-go/v2/products"
 	promocodes "github.com/whopio/whopsdk-go/v2/promocodes"
 	reactions "github.com/whopio/whopsdk-go/v2/reactions"
@@ -164,6 +165,7 @@ type Whop struct {
 	People                   *people.Client
 	Permissions              *permissions.Client
 	Plans                    *plans.Client
+	ProductAffiliates        *productaffiliates.Client
 	Products                 *products.Client
 	PromoCodes               *promocodes.Client
 	Reactions                *reactions.Client
@@ -265,6 +267,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		People:                   people.NewClient(options),
 		Permissions:              permissions.NewClient(options),
 		Plans:                    plans.NewClient(options),
+		ProductAffiliates:        productaffiliates.NewClient(options),
 		Products:                 products.NewClient(options),
 		PromoCodes:               promocodes.NewClient(options),
 		Reactions:                reactions.NewClient(options),
