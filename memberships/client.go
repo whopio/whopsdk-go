@@ -206,6 +206,34 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
+// Applies a promo code to an `active` or `trialing` membership that does not already have one and has exactly one recurring item. The discount lands on the next invoice and follows the code's duration (`once`, `repeating`, or `forever`). Works for Stripe-billed memberships and memberships billed by Whop's billing engine, including payment-element and multi-PSP renewals. Stock, plan eligibility, and expiry are still checked. Memberships with multiple recurring items are rejected.
+//
+// Example:
+//
+//	request := &whopsdk.ApplyPromoCodeMembershipsRequest{
+//	    ID: "id",
+//	    PromoCode: "SAVE20",
+//	}
+//	client.Memberships.ApplyPromoCode(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ApplyPromoCode(
+	ctx context.Context,
+	request *whopsdk.ApplyPromoCodeMembershipsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Membership, error) {
+	response, err := c.WithRawResponse.ApplyPromoCode(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Cancels a membership. Pass `cancel_at_period_end: true` to stop auto-renewal and keep access until the current billing period ends. Omit it (or pass `false`) to revoke access immediately. Buyers cannot cancel buy-now-pay-later (`splitit`, `sezzle`) or non-trial split-pay memberships.
 //
 // Example:

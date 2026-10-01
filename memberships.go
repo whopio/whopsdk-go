@@ -11,6 +11,63 @@ import (
 )
 
 var (
+	applyPromoCodeMembershipsRequestFieldID        = big.NewInt(1 << 0)
+	applyPromoCodeMembershipsRequestFieldPromoCode = big.NewInt(1 << 1)
+)
+
+type ApplyPromoCodeMembershipsRequest struct {
+	// Membership ID (`mem_` tag).
+	ID string `json:"-" url:"-"`
+	// The promo code to apply, as customers enter it at checkout (for example `SAVE20`).
+	PromoCode string `json:"promo_code" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (a *ApplyPromoCodeMembershipsRequest) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *ApplyPromoCodeMembershipsRequest) SetID(id string) {
+	a.ID = id
+	a.require(applyPromoCodeMembershipsRequestFieldID)
+}
+
+// SetPromoCode sets the PromoCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *ApplyPromoCodeMembershipsRequest) SetPromoCode(promoCode string) {
+	a.PromoCode = promoCode
+	a.require(applyPromoCodeMembershipsRequestFieldPromoCode)
+}
+
+func (a *ApplyPromoCodeMembershipsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ApplyPromoCodeMembershipsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*a = ApplyPromoCodeMembershipsRequest(body)
+	return nil
+}
+
+func (a *ApplyPromoCodeMembershipsRequest) MarshalJSON() ([]byte, error) {
+	type embed ApplyPromoCodeMembershipsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	cancelMembershipsRequestFieldID                = big.NewInt(1 << 0)
 	cancelMembershipsRequestFieldCancelAtPeriodEnd = big.NewInt(1 << 1)
 	cancelMembershipsRequestFieldReason            = big.NewInt(1 << 2)
@@ -515,9 +572,10 @@ var (
 	membershipFieldPhoneNumber        = big.NewInt(1 << 13)
 	membershipFieldPlanID             = big.NewInt(1 << 14)
 	membershipFieldProductID          = big.NewInt(1 << 15)
-	membershipFieldStatus             = big.NewInt(1 << 16)
-	membershipFieldUpdatedAt          = big.NewInt(1 << 17)
-	membershipFieldUserID             = big.NewInt(1 << 18)
+	membershipFieldPromoCodeID        = big.NewInt(1 << 16)
+	membershipFieldStatus             = big.NewInt(1 << 17)
+	membershipFieldUpdatedAt          = big.NewInt(1 << 18)
+	membershipFieldUserID             = big.NewInt(1 << 19)
 )
 
 type Membership struct {
@@ -553,6 +611,8 @@ type Membership struct {
 	PlanID string `json:"plan_id" url:"plan_id"`
 	// The product this membership grants access to, prefixed `prod_`.
 	ProductID string `json:"product_id" url:"product_id"`
+	// The promo code discounting this membership, prefixed `promo_`. `null` when none is applied. Set at checkout or by Apply Promo Code to Membership.
+	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
 	// Billing state of the membership. `active`/`trialing` memberships grant access; `past_due` is the grace period after a failed payment; `completed` one-time purchases keep access; `canceled`/`expired` do not.
 	Status MembershipStatus `json:"status" url:"status"`
 	// When the membership was last changed, as an ISO 8601 timestamp. Reflects the most recent change to the membership itself, so you can reconcile against webhook retries, replays, and backfills.
@@ -677,6 +737,13 @@ func (m *Membership) GetProductID() string {
 		return ""
 	}
 	return m.ProductID
+}
+
+func (m *Membership) GetPromoCodeID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.PromoCodeID
 }
 
 func (m *Membership) GetStatus() MembershipStatus {
@@ -824,6 +891,13 @@ func (m *Membership) SetPlanID(planID string) {
 func (m *Membership) SetProductID(productID string) {
 	m.ProductID = productID
 	m.require(membershipFieldProductID)
+}
+
+// SetPromoCodeID sets the PromoCodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetPromoCodeID(promoCodeID *string) {
+	m.PromoCodeID = promoCodeID
+	m.require(membershipFieldPromoCodeID)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
