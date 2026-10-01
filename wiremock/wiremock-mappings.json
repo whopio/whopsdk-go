@@ -15014,7 +15014,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"amount\": \"125.5\",\n      \"by_type\": [\n        {\n          \"amount\": \"100.0\",\n          \"hold_period_days\": 90,\n          \"percentage\": 25,\n          \"type\": \"regular\"\n        }\n      ],\n      \"currency\": \"usd\",\n      \"unlocks_by_date\": [\n        {\n          \"amount\": \"100.0\",\n          \"date\": \"2026-01-01\"\n        }\n      ]\n    }\n  ]\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"amount\": \"125.5\",\n      \"by_type\": [\n        {\n          \"amount\": \"100.0\",\n          \"hold_period_days\": 90,\n          \"percentage\": 25,\n          \"type\": \"regular\"\n        }\n      ],\n      \"currency\": \"usd\",\n      \"unlocks_by_date\": [\n        {\n          \"amount\": \"100.0\",\n          \"by_type\": [\n            {\n              \"amount\": \"100.0\",\n              \"type\": \"regular\"\n            }\n          ],\n          \"date\": \"2026-01-01\"\n        }\n      ]\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }

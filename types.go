@@ -4557,12 +4557,14 @@ func (a AccountReserveTypeType) Ptr() *AccountReserveTypeType {
 
 var (
 	accountReserveUnlockFieldAmount = big.NewInt(1 << 0)
-	accountReserveUnlockFieldDate   = big.NewInt(1 << 1)
+	accountReserveUnlockFieldByType = big.NewInt(1 << 1)
+	accountReserveUnlockFieldDate   = big.NewInt(1 << 2)
 )
 
 type AccountReserveUnlock struct {
 	// Amount unlocking that day across every reason, in native units, as a decimal string.
-	Amount string `json:"amount" url:"amount"`
+	Amount string                      `json:"amount" url:"amount"`
+	ByType []*AccountReserveUnlockType `json:"by_type" url:"by_type"`
 	// The day this money unlocks, as an ISO 8601 date.
 	Date string `json:"date" url:"date"`
 
@@ -4578,6 +4580,13 @@ func (a *AccountReserveUnlock) GetAmount() string {
 		return ""
 	}
 	return a.Amount
+}
+
+func (a *AccountReserveUnlock) GetByType() []*AccountReserveUnlockType {
+	if a == nil {
+		return nil
+	}
+	return a.ByType
 }
 
 func (a *AccountReserveUnlock) GetDate() string {
@@ -4606,6 +4615,13 @@ func (a *AccountReserveUnlock) require(field *big.Int) {
 func (a *AccountReserveUnlock) SetAmount(amount string) {
 	a.Amount = amount
 	a.require(accountReserveUnlockFieldAmount)
+}
+
+// SetByType sets the ByType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountReserveUnlock) SetByType(byType []*AccountReserveUnlockType) {
+	a.ByType = byType
+	a.require(accountReserveUnlockFieldByType)
 }
 
 // SetDate sets the Date field and marks it as non-optional;
@@ -4655,6 +4671,140 @@ func (a *AccountReserveUnlock) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	accountReserveUnlockTypeFieldAmount = big.NewInt(1 << 0)
+	accountReserveUnlockTypeFieldType   = big.NewInt(1 << 1)
+)
+
+type AccountReserveUnlockType struct {
+	// Amount unlocking that day for this reason, in native units, as a decimal string.
+	Amount string `json:"amount" url:"amount"`
+	// Why this part of the day's unlock is held, matching `type` on the reserve's `by_type`.
+	Type AccountReserveUnlockTypeType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountReserveUnlockType) GetAmount() string {
+	if a == nil {
+		return ""
+	}
+	return a.Amount
+}
+
+func (a *AccountReserveUnlockType) GetType() AccountReserveUnlockTypeType {
+	if a == nil {
+		return ""
+	}
+	return a.Type
+}
+
+func (a *AccountReserveUnlockType) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountReserveUnlockType) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountReserveUnlockType) SetAmount(amount string) {
+	a.Amount = amount
+	a.require(accountReserveUnlockTypeFieldAmount)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountReserveUnlockType) SetType(type_ AccountReserveUnlockTypeType) {
+	a.Type = type_
+	a.require(accountReserveUnlockTypeFieldType)
+}
+
+func (a *AccountReserveUnlockType) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountReserveUnlockType
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountReserveUnlockType(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountReserveUnlockType) MarshalJSON() ([]byte, error) {
+	type embed AccountReserveUnlockType
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountReserveUnlockType) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Why this part of the day's unlock is held, matching `type` on the reserve's `by_type`.
+type AccountReserveUnlockTypeType string
+
+const (
+	AccountReserveUnlockTypeTypeRegular         AccountReserveUnlockTypeType = "regular"
+	AccountReserveUnlockTypeTypeBnpl            AccountReserveUnlockTypeType = "bnpl"
+	AccountReserveUnlockTypeTypeSequra          AccountReserveUnlockTypeType = "sequra"
+	AccountReserveUnlockTypeTypeFraudHold       AccountReserveUnlockTypeType = "fraud_hold"
+	AccountReserveUnlockTypeTypePreshipmentHold AccountReserveUnlockTypeType = "preshipment_hold"
+)
+
+func NewAccountReserveUnlockTypeTypeFromString(s string) (AccountReserveUnlockTypeType, error) {
+	switch s {
+	case "regular":
+		return AccountReserveUnlockTypeTypeRegular, nil
+	case "bnpl":
+		return AccountReserveUnlockTypeTypeBnpl, nil
+	case "sequra":
+		return AccountReserveUnlockTypeTypeSequra, nil
+	case "fraud_hold":
+		return AccountReserveUnlockTypeTypeFraudHold, nil
+	case "preshipment_hold":
+		return AccountReserveUnlockTypeTypePreshipmentHold, nil
+	}
+	var t AccountReserveUnlockTypeType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountReserveUnlockTypeType) Ptr() *AccountReserveUnlockTypeType {
+	return &a
 }
 
 var (
