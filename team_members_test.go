@@ -2039,7 +2039,7 @@ func TestSettersUpdateTeamMembersRequest(t *testing.T) {
 
 	t.Run("SetRole", func(t *testing.T) {
 		obj := &UpdateTeamMembersRequest{}
-		var fernTestValueRole UpdateTeamMembersRequestRole
+		var fernTestValueRole *UpdateTeamMembersRequestRole
 		obj.SetRole(fernTestValueRole)
 		assert.Equal(t, fernTestValueRole, obj.Role)
 		assert.NotNil(t, obj.explicitFields)
@@ -2083,7 +2083,7 @@ func TestSettersMarkExplicitUpdateTeamMembersRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateTeamMembersRequest{}
-		var fernTestValueRole UpdateTeamMembersRequestRole
+		var fernTestValueRole *UpdateTeamMembersRequestRole
 
 		// Act
 		obj.SetRole(fernTestValueRole)
