@@ -22381,6 +22381,75 @@ client.Memberships.Update(
 </dl>
 </details>
 
+<details><summary><code>client.Memberships.ApplyPromoCode(ID, request) -> *whopsdk.Membership</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Applies a promo code to an `active` or `trialing` membership that does not already have one and has exactly one recurring item. The discount lands on the next invoice and follows the code's duration (`once`, `repeating`, or `forever`). Works for Stripe-billed memberships and memberships billed by Whop's billing engine, including payment-element and multi-PSP renewals. Stock, plan eligibility, and expiry are still checked. Memberships with multiple recurring items are rejected.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ApplyPromoCodeMembershipsRequest{
+    ID: "id",
+    PromoCode: "SAVE20",
+}
+client.Memberships.ApplyPromoCode(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Membership ID (`mem_` tag).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**promoCode:** `string` — The promo code to apply, as customers enter it at checkout (for example `SAVE20`).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Memberships.Cancel(ID, request) -> *whopsdk.Membership</code></summary>
 <dl>
 <dd>
