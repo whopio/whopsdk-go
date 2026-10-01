@@ -35565,7 +35565,6 @@ Changes a team member's system role. Requires a user session — account API key
 ```go
 request := &whopsdk.UpdateTeamMembersRequest{
     ID: "id",
-    Role: whopsdk.UpdateTeamMembersRequestRoleOwner,
 }
 client.TeamMembers.Update(
     context.TODO(),

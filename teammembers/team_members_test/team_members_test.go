@@ -194,8 +194,7 @@ func TestTeamMembersUpdateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.UpdateTeamMembersRequest{
-		ID:   "id",
-		Role: whopsdk.UpdateTeamMembersRequestRoleOwner,
+		ID: "id",
 	}
 	_, invocationErr := client.TeamMembers.Update(
 		context.TODO(),

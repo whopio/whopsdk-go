@@ -1200,7 +1200,7 @@ type UpdateTeamMembersRequest struct {
 	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
 	ID string `json:"-" url:"-"`
 	// The system role to grant. The Partner role can only be granted to the account's attached, verified partner.
-	Role UpdateTeamMembersRequestRole `json:"role" url:"-"`
+	Role *UpdateTeamMembersRequestRole `json:"role,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1222,7 +1222,7 @@ func (u *UpdateTeamMembersRequest) SetID(id string) {
 
 // SetRole sets the Role field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateTeamMembersRequest) SetRole(role UpdateTeamMembersRequestRole) {
+func (u *UpdateTeamMembersRequest) SetRole(role *UpdateTeamMembersRequestRole) {
 	u.Role = role
 	u.require(updateTeamMembersRequestFieldRole)
 }

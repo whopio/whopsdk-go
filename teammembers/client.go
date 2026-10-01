@@ -209,7 +209,6 @@ func (c *Client) Delete(
 //
 //	request := &whopsdk.UpdateTeamMembersRequest{
 //	    ID: "id",
-//	    Role: whopsdk.UpdateTeamMembersRequestRoleOwner,
 //	}
 //	client.TeamMembers.Update(
 //	    context.TODO(),
