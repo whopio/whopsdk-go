@@ -26150,14 +26150,6 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**accountID:** `string` — The account to charge for, prefixed `biz_`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **autoCaptureAfterMinutes:** `*int` — Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
     
 </dd>
@@ -26183,14 +26175,6 @@ client.Payments.Create(
 <dd>
 
 **email:** `*string` — The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached. Ignored with `member_id`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**lineItems:** `[]*whopsdk.CreatePaymentsRequestLineItemsItem` — What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
     
 </dd>
 </dl>
@@ -26231,22 +26215,6 @@ client.Payments.Create(
 <dd>
 
 **plan:** `*whopsdk.CreatePaymentsRequestPlan` — Find or create a variant for this payment through the compatibility input `plan`. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**planID:** `*string` — The variant to charge for, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**promoCodeID:** `*string` — An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant.
     
 </dd>
 </dl>
