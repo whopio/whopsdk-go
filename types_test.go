@@ -9837,6 +9837,14 @@ func TestSettersAccountReserveUnlock(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetByType", func(t *testing.T) {
+		obj := &AccountReserveUnlock{}
+		var fernTestValueByType []*AccountReserveUnlockType
+		obj.SetByType(fernTestValueByType)
+		assert.Equal(t, fernTestValueByType, obj.ByType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDate", func(t *testing.T) {
 		obj := &AccountReserveUnlock{}
 		var fernTestValueDate string
@@ -9869,6 +9877,39 @@ func TestGettersAccountReserveUnlock(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAmount() // Should return zero value
+	})
+
+	t.Run("GetByType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountReserveUnlock{}
+		var expected []*AccountReserveUnlockType
+		obj.ByType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetByType(), "getter should return the property value")
+	})
+
+	t.Run("GetByType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountReserveUnlock{}
+		obj.ByType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetByType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetByType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountReserveUnlock
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetByType() // Should return zero value
 	})
 
 	t.Run("GetDate", func(t *testing.T) {
@@ -9928,6 +9969,37 @@ func TestSettersMarkExplicitAccountReserveUnlock(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetByType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountReserveUnlock{}
+		var fernTestValueByType []*AccountReserveUnlockType
+
+		// Act
+		obj.SetByType(fernTestValueByType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetDate_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9936,6 +10008,139 @@ func TestSettersMarkExplicitAccountReserveUnlock(t *testing.T) {
 
 		// Act
 		obj.SetDate(fernTestValueDate)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersAccountReserveUnlockType(t *testing.T) {
+	t.Run("SetAmount", func(t *testing.T) {
+		obj := &AccountReserveUnlockType{}
+		var fernTestValueAmount string
+		obj.SetAmount(fernTestValueAmount)
+		assert.Equal(t, fernTestValueAmount, obj.Amount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetType", func(t *testing.T) {
+		obj := &AccountReserveUnlockType{}
+		var fernTestValueType AccountReserveUnlockTypeType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersAccountReserveUnlockType(t *testing.T) {
+	t.Run("GetAmount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountReserveUnlockType{}
+		var expected string
+		obj.Amount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAmount(), "getter should return the property value")
+	})
+
+	t.Run("GetAmount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountReserveUnlockType
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAmount() // Should return zero value
+	})
+
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountReserveUnlockType{}
+		var expected AccountReserveUnlockTypeType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountReserveUnlockType
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitAccountReserveUnlockType(t *testing.T) {
+	t.Run("SetAmount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountReserveUnlockType{}
+		var fernTestValueAmount string
+
+		// Act
+		obj.SetAmount(fernTestValueAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountReserveUnlockType{}
+		var fernTestValueType AccountReserveUnlockTypeType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -113319,6 +113524,39 @@ func TestJSONMarshalingAccountReserveUnlock(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingAccountReserveUnlockType(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountReserveUnlockType{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled AccountReserveUnlockType
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountReserveUnlockType
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountReserveUnlockType
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingAccountSummary(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -122203,6 +122441,22 @@ func TestStringAccountReserveUnlock(t *testing.T) {
 	})
 }
 
+func TestStringAccountReserveUnlockType(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountReserveUnlockType{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountReserveUnlockType
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringAccountSummary(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -127745,6 +127999,56 @@ func TestEnumAccountReserveTypeType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAccountReserveTypeTypeFromString("regular")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAccountReserveUnlockTypeType(t *testing.T) {
+	t.Run("NewFromString_regular", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountReserveUnlockTypeTypeFromString("regular")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountReserveUnlockTypeType("regular"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bnpl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountReserveUnlockTypeTypeFromString("bnpl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountReserveUnlockTypeType("bnpl"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sequra", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountReserveUnlockTypeTypeFromString("sequra")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountReserveUnlockTypeType("sequra"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_fraud_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountReserveUnlockTypeTypeFromString("fraud_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountReserveUnlockTypeType("fraud_hold"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_preshipment_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountReserveUnlockTypeTypeFromString("preshipment_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountReserveUnlockTypeType("preshipment_hold"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAccountReserveUnlockTypeTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAccountReserveUnlockTypeTypeFromString("regular")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -137697,6 +138001,29 @@ func TestExtraPropertiesAccountReserveUnlock(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AccountReserveUnlock
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesAccountReserveUnlockType(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountReserveUnlockType{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountReserveUnlockType
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
