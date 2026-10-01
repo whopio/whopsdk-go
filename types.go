@@ -38146,15 +38146,18 @@ func (p PaymentTransactionTypes) Ptr() *PaymentTransactionTypes {
 
 var (
 	paymentVerificationChecksFieldAddressLine1      = big.NewInt(1 << 0)
-	paymentVerificationChecksFieldAuthorizationCode = big.NewInt(1 << 1)
-	paymentVerificationChecksFieldCardHolderName    = big.NewInt(1 << 2)
-	paymentVerificationChecksFieldCardSecurityCode  = big.NewInt(1 << 3)
-	paymentVerificationChecksFieldZipCode           = big.NewInt(1 << 4)
+	paymentVerificationChecksFieldArn               = big.NewInt(1 << 1)
+	paymentVerificationChecksFieldAuthorizationCode = big.NewInt(1 << 2)
+	paymentVerificationChecksFieldCardHolderName    = big.NewInt(1 << 3)
+	paymentVerificationChecksFieldCardSecurityCode  = big.NewInt(1 << 4)
+	paymentVerificationChecksFieldZipCode           = big.NewInt(1 << 5)
 )
 
 type PaymentVerificationChecks struct {
 	// The Address Verification Service (AVS) result for the billing street address.
 	AddressLine1 *string `json:"address_line1,omitempty" url:"address_line1,omitempty"`
+	// The Acquirer Reference Number (ARN) that traces this charge through the card network, or null when the processor did not return one.
+	Arn *string `json:"arn,omitempty" url:"arn,omitempty"`
 	// The card issuer's authorization code for this charge, or null when the processor did not return one.
 	AuthorizationCode *string `json:"authorization_code,omitempty" url:"authorization_code,omitempty"`
 	// Whether the cardholder name matched the issuer's records.
@@ -38176,6 +38179,13 @@ func (p *PaymentVerificationChecks) GetAddressLine1() *string {
 		return nil
 	}
 	return p.AddressLine1
+}
+
+func (p *PaymentVerificationChecks) GetArn() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Arn
 }
 
 func (p *PaymentVerificationChecks) GetAuthorizationCode() *string {
@@ -38225,6 +38235,13 @@ func (p *PaymentVerificationChecks) require(field *big.Int) {
 func (p *PaymentVerificationChecks) SetAddressLine1(addressLine1 *string) {
 	p.AddressLine1 = addressLine1
 	p.require(paymentVerificationChecksFieldAddressLine1)
+}
+
+// SetArn sets the Arn field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentVerificationChecks) SetArn(arn *string) {
+	p.Arn = arn
+	p.require(paymentVerificationChecksFieldArn)
 }
 
 // SetAuthorizationCode sets the AuthorizationCode field and marks it as non-optional;
