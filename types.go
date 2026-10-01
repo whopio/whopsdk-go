@@ -39875,6 +39875,108 @@ func (p ProductTaxCodeProductTypes) Ptr() *ProductTaxCodeProductTypes {
 	return &p
 }
 
+var (
+	promoCodeProductFieldID    = big.NewInt(1 << 0)
+	promoCodeProductFieldTitle = big.NewInt(1 << 1)
+)
+
+type PromoCodeProduct struct {
+	// Product ID, prefixed `prod_`.
+	ID string `json:"id" url:"id"`
+	// Product display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PromoCodeProduct) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PromoCodeProduct) GetTitle() string {
+	if p == nil {
+		return ""
+	}
+	return p.Title
+}
+
+func (p *PromoCodeProduct) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PromoCodeProduct) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PromoCodeProduct) SetID(id string) {
+	p.ID = id
+	p.require(promoCodeProductFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PromoCodeProduct) SetTitle(title string) {
+	p.Title = title
+	p.require(promoCodeProductFieldTitle)
+}
+
+func (p *PromoCodeProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler PromoCodeProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PromoCodeProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PromoCodeProduct) MarshalJSON() ([]byte, error) {
+	type embed PromoCodeProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PromoCodeProduct) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
 // Statuses that can be applied to promo codes through update operations.
 type PromoCodeUpdateStatus string
 

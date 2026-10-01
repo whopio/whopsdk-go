@@ -29177,6 +29177,144 @@ client.Plans.CalculateTax(
 </dl>
 </details>
 
+## Product Affiliates
+<details><summary><code>client.ProductAffiliates.List() -> *whopsdk.ListProductAffiliatesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists affiliate enrollments for an account's products, newest first, including affiliates who have not made a referral. Requires `affiliate:basic:read` on the account. Email addresses and email search also require `member:email:read`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListProductAffiliatesRequest{
+    AccountID: "account_id",
+    ProductIDs: []*string{
+        whopsdk.String(
+            "prod_xxxxxxxxxxxxxx",
+        ),
+    },
+}
+client.ProductAffiliates.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `string` — Account whose product affiliates are listed (`biz_` tag).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `*string` — Matches the start of the affiliate's username or of any word in their name, or their exact email (with `member:email:read`).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.ListProductAffiliatesRequestStatus` — Only product affiliates with this status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productIDs:** `*string` — Only product affiliates of these products.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdAfter:** `*time.Time` — Only signups at or after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdBefore:** `*time.Time` — Only signups before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Products
 <details><summary><code>client.Products.List() -> *whopsdk.ListProductsResponse</code></summary>
 <dl>
