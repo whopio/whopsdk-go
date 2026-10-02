@@ -19285,6 +19285,14 @@ client.FinancialReports.Retrieve(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**periodOnlyCurrencies:** `*bool` — Account-level balance activity only: return only currencies with cashflow in the exact requested window. Requires `from` and `to`.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
