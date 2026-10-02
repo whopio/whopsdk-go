@@ -41,9 +41,23 @@ func NewClient(options *core.RequestOptions) *Client {
 
 // Lists the caller's domain claims and assignments. Filter by account, app, or lifecycle status.
 //
+// To find a domain to buy instead, pass `search` with a name like `example` or a full domain like `example.com`. The results are then search results, each with a `registrar_quote` saying whether it's available, what it costs, and how desirable it is:
+//
+// - The first result is the exact domain: the one you searched, or your name on `.com`. It's included even when it's taken.
+// - Next is your name on other popular extensions, whether or not they're available.
+// - The rest are more available suggestions, such as your name with a prefix or suffix.
+//
+// To check your name on extensions you choose, also pass `tlds`: the results are then exactly those domains, in that order. Search results come back on one page and aren't reserved. To see who holds a registered domain and its key dates, retrieve it by hostname.
+//
 // Example:
 //
-//	request := &whopsdk.ListDomainsRequest{}
+//	request := &whopsdk.ListDomainsRequest{
+//	    Tlds: []*string{
+//	        whopsdk.String(
+//	            "com",
+//	        ),
+//	    },
+//	}
 //	client.Domains.List(
 //	    context.TODO(),
 //	    request,
@@ -52,7 +66,7 @@ func (c *Client) List(
 	ctx context.Context,
 	request *whopsdk.ListDomainsRequest,
 	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.Domain, *whopsdk.ListDomainsResponse], error) {
+) (*core.Page[*string, *whopsdk.DomainListItem, *whopsdk.ListDomainsResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -94,16 +108,17 @@ func (c *Client) List(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        pageRequest.Response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
-	readPageResponse := func(response *whopsdk.ListDomainsResponse) *core.PageResponse[*string, *whopsdk.Domain, *whopsdk.ListDomainsResponse] {
+	readPageResponse := func(response *whopsdk.ListDomainsResponse) *core.PageResponse[*string, *whopsdk.DomainListItem, *whopsdk.ListDomainsResponse] {
 		var zeroValue *string
 		var next *string
 		if response.PageInfo != nil {
 			next = response.PageInfo.EndCursor
 		}
 		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.Domain, *whopsdk.ListDomainsResponse]{
+		return &core.PageResponse[*string, *whopsdk.DomainListItem, *whopsdk.ListDomainsResponse]{
 			Results:  results,
 			Response: response,
 			Next:     next,
@@ -147,6 +162,8 @@ func (c *Client) Create(
 }
 
 // Retrieves the claim, app assignment, DNS instructions, and the latest hostname and certificate state. For domains still connecting, needing attention, or being deleted, requests an immediate background check.
+//
+// Pass a hostname instead of an ID to look up any domain, yours or not. The result is a search result: its `registrar_quote` says whether it's available, what it costs, and how desirable it is. For a registered domain, `public_record` has its registrar, registrant, and key dates from public registration records, read when you call this.
 //
 // Example:
 //
