@@ -840,11 +840,11 @@ func TestSettersDomain(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetRegistrarQuote", func(t *testing.T) {
+	t.Run("SetRegistrationQuote", func(t *testing.T) {
 		obj := &Domain{}
-		var fernTestValueRegistrarQuote *DomainRegistrarQuote
-		obj.SetRegistrarQuote(fernTestValueRegistrarQuote)
-		assert.Equal(t, fernTestValueRegistrarQuote, obj.RegistrarQuote)
+		var fernTestValueRegistrationQuote *DomainRegistrationQuote
+		obj.SetRegistrationQuote(fernTestValueRegistrationQuote)
+		assert.Equal(t, fernTestValueRegistrationQuote, obj.RegistrationQuote)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1302,28 +1302,28 @@ func TestGettersDomain(t *testing.T) {
 		_ = obj.GetPublicRecord() // Should return zero value
 	})
 
-	t.Run("GetRegistrarQuote", func(t *testing.T) {
+	t.Run("GetRegistrationQuote", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Domain{}
-		var expected *DomainRegistrarQuote
-		obj.RegistrarQuote = expected
+		var expected *DomainRegistrationQuote
+		obj.RegistrationQuote = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetRegistrarQuote(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetRegistrationQuote(), "getter should return the property value")
 	})
 
-	t.Run("GetRegistrarQuote_NilValue", func(t *testing.T) {
+	t.Run("GetRegistrationQuote_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Domain{}
-		obj.RegistrarQuote = nil
+		obj.RegistrationQuote = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetRegistrarQuote(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetRegistrationQuote(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetRegistrarQuote_NilReceiver", func(t *testing.T) {
+	t.Run("GetRegistrationQuote_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *Domain
 		// Should not panic - getters should handle nil receiver gracefully
@@ -1332,7 +1332,7 @@ func TestGettersDomain(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetRegistrarQuote() // Should return zero value
+		_ = obj.GetRegistrationQuote() // Should return zero value
 	})
 
 	t.Run("GetStatus", func(t *testing.T) {
@@ -1873,14 +1873,14 @@ func TestSettersMarkExplicitDomain(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetRegistrarQuote_MarksExplicit", func(t *testing.T) {
+	t.Run("SetRegistrationQuote_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Domain{}
-		var fernTestValueRegistrarQuote *DomainRegistrarQuote
+		var fernTestValueRegistrationQuote *DomainRegistrationQuote
 
 		// Act
-		obj.SetRegistrarQuote(fernTestValueRegistrarQuote)
+		obj.SetRegistrationQuote(fernTestValueRegistrationQuote)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2455,11 +2455,11 @@ func TestSettersDomainListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetRegistrarQuote", func(t *testing.T) {
+	t.Run("SetRegistrationQuote", func(t *testing.T) {
 		obj := &DomainListItem{}
-		var fernTestValueRegistrarQuote *DomainRegistrarQuote
-		obj.SetRegistrarQuote(fernTestValueRegistrarQuote)
-		assert.Equal(t, fernTestValueRegistrarQuote, obj.RegistrarQuote)
+		var fernTestValueRegistrationQuote *DomainRegistrationQuote
+		obj.SetRegistrationQuote(fernTestValueRegistrationQuote)
+		assert.Equal(t, fernTestValueRegistrationQuote, obj.RegistrationQuote)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2884,28 +2884,28 @@ func TestGettersDomainListItem(t *testing.T) {
 		_ = obj.GetMetadata() // Should return zero value
 	})
 
-	t.Run("GetRegistrarQuote", func(t *testing.T) {
+	t.Run("GetRegistrationQuote", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &DomainListItem{}
-		var expected *DomainRegistrarQuote
-		obj.RegistrarQuote = expected
+		var expected *DomainRegistrationQuote
+		obj.RegistrationQuote = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetRegistrarQuote(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetRegistrationQuote(), "getter should return the property value")
 	})
 
-	t.Run("GetRegistrarQuote_NilValue", func(t *testing.T) {
+	t.Run("GetRegistrationQuote_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &DomainListItem{}
-		obj.RegistrarQuote = nil
+		obj.RegistrationQuote = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetRegistrarQuote(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetRegistrationQuote(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetRegistrarQuote_NilReceiver", func(t *testing.T) {
+	t.Run("GetRegistrationQuote_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *DomainListItem
 		// Should not panic - getters should handle nil receiver gracefully
@@ -2914,7 +2914,7 @@ func TestGettersDomainListItem(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetRegistrarQuote() // Should return zero value
+		_ = obj.GetRegistrationQuote() // Should return zero value
 	})
 
 	t.Run("GetStatus", func(t *testing.T) {
@@ -3424,14 +3424,14 @@ func TestSettersMarkExplicitDomainListItem(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetRegistrarQuote_MarksExplicit", func(t *testing.T) {
+	t.Run("SetRegistrationQuote_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &DomainListItem{}
-		var fernTestValueRegistrarQuote *DomainRegistrarQuote
+		var fernTestValueRegistrationQuote *DomainRegistrationQuote
 
 		// Act
-		obj.SetRegistrarQuote(fernTestValueRegistrarQuote)
+		obj.SetRegistrationQuote(fernTestValueRegistrationQuote)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4894,9 +4894,9 @@ func TestSettersMarkExplicitDomainRegistrar(t *testing.T) {
 
 }
 
-func TestSettersDomainRegistrarQuote(t *testing.T) {
+func TestSettersDomainRegistrationQuote(t *testing.T) {
 	t.Run("SetAvailable", func(t *testing.T) {
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValueAvailable bool
 		obj.SetAvailable(fernTestValueAvailable)
 		assert.Equal(t, fernTestValueAvailable, obj.Available)
@@ -4904,7 +4904,7 @@ func TestSettersDomainRegistrarQuote(t *testing.T) {
 	})
 
 	t.Run("SetPremium", func(t *testing.T) {
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValuePremium bool
 		obj.SetPremium(fernTestValuePremium)
 		assert.Equal(t, fernTestValuePremium, obj.Premium)
@@ -4912,7 +4912,7 @@ func TestSettersDomainRegistrarQuote(t *testing.T) {
 	})
 
 	t.Run("SetPrice", func(t *testing.T) {
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValuePrice *Money
 		obj.SetPrice(fernTestValuePrice)
 		assert.Equal(t, fernTestValuePrice, obj.Price)
@@ -4920,7 +4920,7 @@ func TestSettersDomainRegistrarQuote(t *testing.T) {
 	})
 
 	t.Run("SetPurchaseURL", func(t *testing.T) {
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValuePurchaseURL *string
 		obj.SetPurchaseURL(fernTestValuePurchaseURL)
 		assert.Equal(t, fernTestValuePurchaseURL, obj.PurchaseURL)
@@ -4928,7 +4928,7 @@ func TestSettersDomainRegistrarQuote(t *testing.T) {
 	})
 
 	t.Run("SetRenewalPrice", func(t *testing.T) {
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValueRenewalPrice *Money
 		obj.SetRenewalPrice(fernTestValueRenewalPrice)
 		assert.Equal(t, fernTestValueRenewalPrice, obj.RenewalPrice)
@@ -4936,7 +4936,7 @@ func TestSettersDomainRegistrarQuote(t *testing.T) {
 	})
 
 	t.Run("SetScore", func(t *testing.T) {
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValueScore int
 		obj.SetScore(fernTestValueScore)
 		assert.Equal(t, fernTestValueScore, obj.Score)
@@ -4944,7 +4944,7 @@ func TestSettersDomainRegistrarQuote(t *testing.T) {
 	})
 
 	t.Run("SetTransferPrice", func(t *testing.T) {
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValueTransferPrice *Money
 		obj.SetTransferPrice(fernTestValueTransferPrice)
 		assert.Equal(t, fernTestValueTransferPrice, obj.TransferPrice)
@@ -4953,11 +4953,11 @@ func TestSettersDomainRegistrarQuote(t *testing.T) {
 
 }
 
-func TestGettersDomainRegistrarQuote(t *testing.T) {
+func TestGettersDomainRegistrationQuote(t *testing.T) {
 	t.Run("GetAvailable", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var expected bool
 		obj.Available = expected
 
@@ -4967,7 +4967,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 
 	t.Run("GetAvailable_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *DomainRegistrarQuote
+		var obj *DomainRegistrationQuote
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -4980,7 +4980,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 	t.Run("GetPremium", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var expected bool
 		obj.Premium = expected
 
@@ -4990,7 +4990,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 
 	t.Run("GetPremium_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *DomainRegistrarQuote
+		var obj *DomainRegistrationQuote
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5003,7 +5003,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 	t.Run("GetPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var expected *Money
 		obj.Price = expected
 
@@ -5014,7 +5014,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 	t.Run("GetPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		obj.Price = nil
 
 		// Act & Assert
@@ -5023,7 +5023,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 
 	t.Run("GetPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *DomainRegistrarQuote
+		var obj *DomainRegistrationQuote
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5036,7 +5036,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 	t.Run("GetPurchaseURL", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var expected *string
 		obj.PurchaseURL = expected
 
@@ -5047,7 +5047,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 	t.Run("GetPurchaseURL_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		obj.PurchaseURL = nil
 
 		// Act & Assert
@@ -5056,7 +5056,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 
 	t.Run("GetPurchaseURL_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *DomainRegistrarQuote
+		var obj *DomainRegistrationQuote
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5069,7 +5069,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 	t.Run("GetRenewalPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var expected *Money
 		obj.RenewalPrice = expected
 
@@ -5080,7 +5080,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 	t.Run("GetRenewalPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		obj.RenewalPrice = nil
 
 		// Act & Assert
@@ -5089,7 +5089,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 
 	t.Run("GetRenewalPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *DomainRegistrarQuote
+		var obj *DomainRegistrationQuote
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5102,7 +5102,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 	t.Run("GetScore", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var expected int
 		obj.Score = expected
 
@@ -5112,7 +5112,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 
 	t.Run("GetScore_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *DomainRegistrarQuote
+		var obj *DomainRegistrationQuote
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5125,7 +5125,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 	t.Run("GetTransferPrice", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var expected *Money
 		obj.TransferPrice = expected
 
@@ -5136,7 +5136,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 	t.Run("GetTransferPrice_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		obj.TransferPrice = nil
 
 		// Act & Assert
@@ -5145,7 +5145,7 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 
 	t.Run("GetTransferPrice_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *DomainRegistrarQuote
+		var obj *DomainRegistrationQuote
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
@@ -5157,11 +5157,11 @@ func TestGettersDomainRegistrarQuote(t *testing.T) {
 
 }
 
-func TestSettersMarkExplicitDomainRegistrarQuote(t *testing.T) {
+func TestSettersMarkExplicitDomainRegistrationQuote(t *testing.T) {
 	t.Run("SetAvailable_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValueAvailable bool
 
 		// Act
@@ -5192,7 +5192,7 @@ func TestSettersMarkExplicitDomainRegistrarQuote(t *testing.T) {
 	t.Run("SetPremium_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValuePremium bool
 
 		// Act
@@ -5223,7 +5223,7 @@ func TestSettersMarkExplicitDomainRegistrarQuote(t *testing.T) {
 	t.Run("SetPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValuePrice *Money
 
 		// Act
@@ -5254,7 +5254,7 @@ func TestSettersMarkExplicitDomainRegistrarQuote(t *testing.T) {
 	t.Run("SetPurchaseURL_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValuePurchaseURL *string
 
 		// Act
@@ -5285,7 +5285,7 @@ func TestSettersMarkExplicitDomainRegistrarQuote(t *testing.T) {
 	t.Run("SetRenewalPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValueRenewalPrice *Money
 
 		// Act
@@ -5316,7 +5316,7 @@ func TestSettersMarkExplicitDomainRegistrarQuote(t *testing.T) {
 	t.Run("SetScore_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValueScore int
 
 		// Act
@@ -5347,7 +5347,7 @@ func TestSettersMarkExplicitDomainRegistrarQuote(t *testing.T) {
 	t.Run("SetTransferPrice_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		var fernTestValueTransferPrice *Money
 
 		// Act
@@ -6161,11 +6161,11 @@ func TestJSONMarshalingDomainRegistrar(t *testing.T) {
 	})
 }
 
-func TestJSONMarshalingDomainRegistrarQuote(t *testing.T) {
+func TestJSONMarshalingDomainRegistrationQuote(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -6174,21 +6174,21 @@ func TestJSONMarshalingDomainRegistrarQuote(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled DomainRegistrarQuote
+		var unmarshaled DomainRegistrationQuote
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj DomainRegistrarQuote
+		var obj DomainRegistrationQuote
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj DomainRegistrarQuote
+		var obj DomainRegistrationQuote
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -6372,17 +6372,17 @@ func TestStringDomainRegistrar(t *testing.T) {
 	})
 }
 
-func TestStringDomainRegistrarQuote(t *testing.T) {
+func TestStringDomainRegistrationQuote(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *DomainRegistrarQuote
+		var obj *DomainRegistrationQuote
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -6939,10 +6939,10 @@ func TestExtraPropertiesDomainRegistrar(t *testing.T) {
 	})
 }
 
-func TestExtraPropertiesDomainRegistrarQuote(t *testing.T) {
+func TestExtraPropertiesDomainRegistrationQuote(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &DomainRegistrarQuote{}
+		obj := &DomainRegistrationQuote{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -6956,7 +6956,7 @@ func TestExtraPropertiesDomainRegistrarQuote(t *testing.T) {
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *DomainRegistrarQuote
+		var obj *DomainRegistrationQuote
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

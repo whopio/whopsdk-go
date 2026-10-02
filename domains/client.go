@@ -41,7 +41,7 @@ func NewClient(options *core.RequestOptions) *Client {
 
 // Lists the caller's domain claims and assignments. Filter by account, app, or lifecycle status.
 //
-// To find a domain to buy instead, pass `search` with a name like `example` or a full domain like `example.com`. The results are then search results, each with a `registrar_quote` saying whether it's available, what it costs, and how desirable it is:
+// To find a domain to buy instead, pass `search` with a name like `example` or a full domain like `example.com`. The results are then search results, each with a `registration_quote` saying whether it's available, what it costs, and how desirable it is:
 //
 // - The first result is the exact domain: the one you searched, or your name on `.com`. It's included even when it's taken.
 // - Next is your name on other popular extensions, whether or not they're available.
@@ -163,7 +163,7 @@ func (c *Client) Create(
 
 // Retrieves the claim, app assignment, DNS instructions, and the latest hostname and certificate state. For domains still connecting, needing attention, or being deleted, requests an immediate background check.
 //
-// Pass a hostname instead of an ID to look up any domain, yours or not. The result is a search result: its `registrar_quote` says whether it's available, what it costs, and how desirable it is. For a registered domain, `public_record` has its registrar, registrant, and key dates from public registration records, read when you call this.
+// Pass a hostname instead of an ID to look up any domain, yours or not. The result is a search result: its `registration_quote` says whether it's available, what it costs, and how desirable it is. For a registered domain, `public_record` has its registrar, registrant, and key dates from public registration records, read when you call this.
 //
 // Example:
 //
@@ -190,7 +190,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Stops resolving the domain to its app and queues Cloudflare cleanup. The response is deleting; retrieve the resource until it is removed.
+// Stops resolving the domain to its app and queues cleanup. The response is deleting; retrieve the resource until it is removed.
 //
 // Example:
 //
