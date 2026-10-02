@@ -19043,6 +19043,14 @@ client.FinancialActivity.List(
 <dl>
 <dd>
 
+**paymentID:** `*string` — Filter activity by payment ID (pay_), including related refunds, disputes, and fees. Combines with resource_id and other filters within the selected accounts. Unknown payments return an empty list.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **activityID:** `*string` — Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
     
 </dd>

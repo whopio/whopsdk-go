@@ -18,17 +18,18 @@ var (
 	listFinancialActivityRequestFieldLineTypes                = big.NewInt(1 << 4)
 	listFinancialActivityRequestFieldDirection                = big.NewInt(1 << 5)
 	listFinancialActivityRequestFieldResourceID               = big.NewInt(1 << 6)
-	listFinancialActivityRequestFieldActivityID               = big.NewInt(1 << 7)
-	listFinancialActivityRequestFieldExcludeInternalMovements = big.NewInt(1 << 8)
-	listFinancialActivityRequestFieldBalanceType              = big.NewInt(1 << 9)
-	listFinancialActivityRequestFieldWithdrawalID             = big.NewInt(1 << 10)
-	listFinancialActivityRequestFieldCurrency                 = big.NewInt(1 << 11)
-	listFinancialActivityRequestFieldPostedAfter              = big.NewInt(1 << 12)
-	listFinancialActivityRequestFieldPostedBefore             = big.NewInt(1 << 13)
-	listFinancialActivityRequestFieldAvailableAfter           = big.NewInt(1 << 14)
-	listFinancialActivityRequestFieldAvailableBefore          = big.NewInt(1 << 15)
-	listFinancialActivityRequestFieldLimit                    = big.NewInt(1 << 16)
-	listFinancialActivityRequestFieldCursor                   = big.NewInt(1 << 17)
+	listFinancialActivityRequestFieldPaymentID                = big.NewInt(1 << 7)
+	listFinancialActivityRequestFieldActivityID               = big.NewInt(1 << 8)
+	listFinancialActivityRequestFieldExcludeInternalMovements = big.NewInt(1 << 9)
+	listFinancialActivityRequestFieldBalanceType              = big.NewInt(1 << 10)
+	listFinancialActivityRequestFieldWithdrawalID             = big.NewInt(1 << 11)
+	listFinancialActivityRequestFieldCurrency                 = big.NewInt(1 << 12)
+	listFinancialActivityRequestFieldPostedAfter              = big.NewInt(1 << 13)
+	listFinancialActivityRequestFieldPostedBefore             = big.NewInt(1 << 14)
+	listFinancialActivityRequestFieldAvailableAfter           = big.NewInt(1 << 15)
+	listFinancialActivityRequestFieldAvailableBefore          = big.NewInt(1 << 16)
+	listFinancialActivityRequestFieldLimit                    = big.NewInt(1 << 17)
+	listFinancialActivityRequestFieldCursor                   = big.NewInt(1 << 18)
 )
 
 type ListFinancialActivityRequest struct {
@@ -46,6 +47,8 @@ type ListFinancialActivityRequest struct {
 	Direction *ListFinancialActivityRequestDirection `json:"-" url:"direction,omitempty"`
 	// Optional prefixed resource ID. Returns activity associated with that resource.
 	ResourceID *string `json:"-" url:"resource_id,omitempty"`
+	// Filter activity by payment ID (pay_), including related refunds, disputes, and fees. Combines with resource_id and other filters within the selected accounts. Unknown payments return an empty list.
+	PaymentID *string `json:"-" url:"payment_id,omitempty"`
 	// Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
 	ActivityID *string `json:"-" url:"activity_id,omitempty"`
 	// Whether to exclude balance reservations and balanced movements between the account's own balances.
@@ -127,6 +130,13 @@ func (l *ListFinancialActivityRequest) SetDirection(direction *ListFinancialActi
 func (l *ListFinancialActivityRequest) SetResourceID(resourceID *string) {
 	l.ResourceID = resourceID
 	l.require(listFinancialActivityRequestFieldResourceID)
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetPaymentID(paymentID *string) {
+	l.PaymentID = paymentID
+	l.require(listFinancialActivityRequestFieldPaymentID)
 }
 
 // SetActivityID sets the ActivityID field and marks it as non-optional;
