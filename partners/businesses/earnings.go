@@ -162,12 +162,13 @@ func (l ListEarningsRequestDirection) Ptr() *ListEarningsRequestDirection {
 type ListEarningsRequestIncomeSourceItem string
 
 const (
-	ListEarningsRequestIncomeSourceItemSales            ListEarningsRequestIncomeSourceItem = "sales"
-	ListEarningsRequestIncomeSourceItemAdSpend          ListEarningsRequestIncomeSourceItem = "ad_spend"
-	ListEarningsRequestIncomeSourceItemTransfer         ListEarningsRequestIncomeSourceItem = "transfer"
-	ListEarningsRequestIncomeSourceItemCardInterchange  ListEarningsRequestIncomeSourceItem = "card_interchange"
-	ListEarningsRequestIncomeSourceItemOnboardingReward ListEarningsRequestIncomeSourceItem = "onboarding_reward"
-	ListEarningsRequestIncomeSourceItemPartnerReward    ListEarningsRequestIncomeSourceItem = "partner_reward"
+	ListEarningsRequestIncomeSourceItemSales                          ListEarningsRequestIncomeSourceItem = "sales"
+	ListEarningsRequestIncomeSourceItemAdSpend                        ListEarningsRequestIncomeSourceItem = "ad_spend"
+	ListEarningsRequestIncomeSourceItemTransfer                       ListEarningsRequestIncomeSourceItem = "transfer"
+	ListEarningsRequestIncomeSourceItemCardInterchange                ListEarningsRequestIncomeSourceItem = "card_interchange"
+	ListEarningsRequestIncomeSourceItemOnboardingReward               ListEarningsRequestIncomeSourceItem = "onboarding_reward"
+	ListEarningsRequestIncomeSourceItemPartnerReward                  ListEarningsRequestIncomeSourceItem = "partner_reward"
+	ListEarningsRequestIncomeSourceItemVerifiedPartnerReferralPayback ListEarningsRequestIncomeSourceItem = "verified_partner_referral_payback"
 )
 
 func NewListEarningsRequestIncomeSourceItemFromString(s string) (ListEarningsRequestIncomeSourceItem, error) {
@@ -184,6 +185,8 @@ func NewListEarningsRequestIncomeSourceItemFromString(s string) (ListEarningsReq
 		return ListEarningsRequestIncomeSourceItemOnboardingReward, nil
 	case "partner_reward":
 		return ListEarningsRequestIncomeSourceItemPartnerReward, nil
+	case "verified_partner_referral_payback":
+		return ListEarningsRequestIncomeSourceItemVerifiedPartnerReferralPayback, nil
 	}
 	var t ListEarningsRequestIncomeSourceItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1040,12 +1043,13 @@ func (l ListEarningsResponseDataItemFinancialActivityItemType) Ptr() *ListEarnin
 type ListEarningsResponseDataItemIncomeSource string
 
 const (
-	ListEarningsResponseDataItemIncomeSourceSales            ListEarningsResponseDataItemIncomeSource = "sales"
-	ListEarningsResponseDataItemIncomeSourceAdSpend          ListEarningsResponseDataItemIncomeSource = "ad_spend"
-	ListEarningsResponseDataItemIncomeSourceTransfer         ListEarningsResponseDataItemIncomeSource = "transfer"
-	ListEarningsResponseDataItemIncomeSourceCardInterchange  ListEarningsResponseDataItemIncomeSource = "card_interchange"
-	ListEarningsResponseDataItemIncomeSourceOnboardingReward ListEarningsResponseDataItemIncomeSource = "onboarding_reward"
-	ListEarningsResponseDataItemIncomeSourcePartnerReward    ListEarningsResponseDataItemIncomeSource = "partner_reward"
+	ListEarningsResponseDataItemIncomeSourceSales                          ListEarningsResponseDataItemIncomeSource = "sales"
+	ListEarningsResponseDataItemIncomeSourceAdSpend                        ListEarningsResponseDataItemIncomeSource = "ad_spend"
+	ListEarningsResponseDataItemIncomeSourceTransfer                       ListEarningsResponseDataItemIncomeSource = "transfer"
+	ListEarningsResponseDataItemIncomeSourceCardInterchange                ListEarningsResponseDataItemIncomeSource = "card_interchange"
+	ListEarningsResponseDataItemIncomeSourceOnboardingReward               ListEarningsResponseDataItemIncomeSource = "onboarding_reward"
+	ListEarningsResponseDataItemIncomeSourcePartnerReward                  ListEarningsResponseDataItemIncomeSource = "partner_reward"
+	ListEarningsResponseDataItemIncomeSourceVerifiedPartnerReferralPayback ListEarningsResponseDataItemIncomeSource = "verified_partner_referral_payback"
 )
 
 func NewListEarningsResponseDataItemIncomeSourceFromString(s string) (ListEarningsResponseDataItemIncomeSource, error) {
@@ -1062,6 +1066,8 @@ func NewListEarningsResponseDataItemIncomeSourceFromString(s string) (ListEarnin
 		return ListEarningsResponseDataItemIncomeSourceOnboardingReward, nil
 	case "partner_reward":
 		return ListEarningsResponseDataItemIncomeSourcePartnerReward, nil
+	case "verified_partner_referral_payback":
+		return ListEarningsResponseDataItemIncomeSourceVerifiedPartnerReferralPayback, nil
 	}
 	var t ListEarningsResponseDataItemIncomeSource
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
