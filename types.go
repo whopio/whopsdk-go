@@ -53370,6 +53370,7 @@ const (
 	WebhookEventMembershipActivated                WebhookEvent = "membership.activated"
 	WebhookEventMembershipDeactivated              WebhookEvent = "membership.deactivated"
 	WebhookEventMembershipTrialEndingSoon          WebhookEvent = "membership.trial_ending_soon"
+	WebhookEventMembershipUpdated                  WebhookEvent = "membership.updated"
 	WebhookEventEntryCreated                       WebhookEvent = "entry.created"
 	WebhookEventEntryApproved                      WebhookEvent = "entry.approved"
 	WebhookEventEntryDenied                        WebhookEvent = "entry.denied"
@@ -53472,6 +53473,8 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventMembershipDeactivated, nil
 	case "membership.trial_ending_soon":
 		return WebhookEventMembershipTrialEndingSoon, nil
+	case "membership.updated":
+		return WebhookEventMembershipUpdated, nil
 	case "entry.created":
 		return WebhookEventEntryCreated, nil
 	case "entry.approved":
