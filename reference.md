@@ -26192,6 +26192,14 @@ client.Payments.Create(
 <dl>
 <dd>
 
+**affiliateCode:** `*string` — The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters. Not supported with `payment_method`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **autoCaptureAfterMinutes:** `*int` — Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
     
 </dd>
@@ -42330,6 +42338,14 @@ client.Payments.Direct.Create(
 <dd>
 
 **accountID:** `string` — The account to charge for, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**affiliateCode:** `*string` — The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters.
     
 </dd>
 </dl>

@@ -37,17 +37,18 @@ func (c *CapturePaymentsRequest) SetID(id string) {
 }
 
 var (
-	createPaymentsRequestFieldAutoCaptureAfterMinutes = big.NewInt(1 << 0)
-	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 1)
-	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 2)
-	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 3)
-	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 4)
-	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 5)
-	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 6)
-	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 7)
-	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 8)
-	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 9)
-	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 10)
+	createPaymentsRequestFieldAffiliateCode           = big.NewInt(1 << 0)
+	createPaymentsRequestFieldAutoCaptureAfterMinutes = big.NewInt(1 << 1)
+	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 2)
+	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 3)
+	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 4)
+	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 5)
+	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 6)
+	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 7)
+	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 8)
+	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 9)
+	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 10)
+	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 11)
 )
 
 type CreatePaymentsRequest struct {
@@ -61,6 +62,8 @@ type CreatePaymentsRequest struct {
 	PlanID *string `json:"plan_id,omitempty" url:"-"`
 	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
+	// The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters. Not supported with `payment_method`.
+	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
 	// Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
 	AutoCaptureAfterMinutes *int `json:"auto_capture_after_minutes,omitempty" url:"-"`
 	// Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
@@ -93,6 +96,13 @@ func (c *CreatePaymentsRequest) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAffiliateCode sets the AffiliateCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetAffiliateCode(affiliateCode *string) {
+	c.AffiliateCode = affiliateCode
+	c.require(createPaymentsRequestFieldAffiliateCode)
 }
 
 // SetAutoCaptureAfterMinutes sets the AutoCaptureAfterMinutes field and marks it as non-optional;
