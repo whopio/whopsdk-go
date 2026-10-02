@@ -101,7 +101,7 @@ var (
 )
 
 type DeleteDomainsRequest struct {
-	// Domain ID, prefixed dom_. To retrieve, you can instead pass a hostname such as `example.com` to look up any domain; a name without an extension looks up the name on `.com`.
+	// Domain ID, prefixed `dom_`. To retrieve, you can pass a hostname such as `example.com` instead; a bare name looks up `.com`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -155,9 +155,9 @@ type ListDomainsRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
-	// A name or a full domain to find domains to buy, such as `example` or `example.com`. A URL or subdomain searches its registrable domain. When set, the results are search results rather than your domains, and the other filters, sorting, and pagination don't apply.
+	// A name or domain to find domains to buy, such as `example` or `example.com`; a subdomain or URL searches its registrable domain. Returns search results instead of your domains, without other filters or pagination.
 	Search *string `json:"-" url:"search,omitempty"`
-	// With `search`, the extensions to check your name on, such as `com` or `co.uk`, returned in the order you pass them. Repeat the parameter to pass several, up to 100. The results are then exactly your name on these extensions, without suggestions.
+	// With `search`, check only these extensions, such as `com` or `co.uk`, returned in this order. Repeat for several, up to 100.
 	Tlds []*string `json:"-" url:"tlds,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -253,7 +253,7 @@ var (
 )
 
 type RetrieveDomainsRequest struct {
-	// Domain ID, prefixed dom_. To retrieve, you can instead pass a hostname such as `example.com` to look up any domain; a name without an extension looks up the name on `.com`.
+	// Domain ID, prefixed `dom_`. To retrieve, you can pass a hostname such as `example.com` instead; a bare name looks up `.com`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -318,9 +318,9 @@ type Domain struct {
 	LastCheckedAt *string `json:"last_checked_at,omitempty" url:"last_checked_at,omitempty"`
 	// Custom string keys and values attached to this domain. Empty for a search result.
 	Metadata map[string]string `json:"metadata" url:"metadata"`
-	// The domain's public registration record (RDAP): its registrar, registrant, key dates, registry statuses, and name servers, read when you retrieve the domain by hostname. `null` for your own domains, an available domain, or a record that couldn't be read.
+	// The domain's public registration record (RDAP), read when you retrieve it by hostname. `null` for your own domains, available domains, or a record that couldn't be read.
 	PublicRecord *DomainPublicRecord `json:"public_record,omitempty" url:"public_record,omitempty"`
-	// What registering the domain would cost: whether it's available, its first-year, renewal, and transfer prices, a link to buy it, and how desirable it is. Set for a search result: a domain from `search` or retrieved by hostname. `null` for your own domains.
+	// Whether you can register the domain and what it costs. Set for search results and hostname lookups; `null` for your own domains.
 	RegistrationQuote *DomainRegistrationQuote `json:"registration_quote,omitempty" url:"registration_quote,omitempty"`
 	// Domain lifecycle. Only active domains resolve to their app. `null` for a search result.
 	Status *DomainStatus `json:"status,omitempty" url:"status,omitempty"`
@@ -968,7 +968,7 @@ type DomainListItem struct {
 	LastCheckedAt *string `json:"last_checked_at,omitempty" url:"last_checked_at,omitempty"`
 	// Custom string keys and values attached to this domain. Empty for a search result.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
-	// What registering the domain would cost: whether it's available, its first-year, renewal, and transfer prices, a link to buy it, and how desirable it is. Set for a search result: a domain from `search` or retrieved by hostname. `null` for your own domains.
+	// Whether you can register the domain and what it costs. Set for search results and hostname lookups; `null` for your own domains.
 	RegistrationQuote *DomainRegistrationQuote `json:"registration_quote,omitempty" url:"registration_quote,omitempty"`
 	// Domain lifecycle. Only active domains resolve to their app. `null` for a search result.
 	Status *DomainListItemStatus `json:"status,omitempty" url:"status,omitempty"`
@@ -1363,7 +1363,7 @@ type DomainPublicRecord struct {
 	NameServers []string `json:"name_servers" url:"name_servers"`
 	// When the domain was first registered, as an ISO 8601 timestamp, or `null` when the record omits it.
 	RegisteredAt *string `json:"registered_at,omitempty" url:"registered_at,omitempty"`
-	// Who the domain is registered to. Most registrars withhold or replace these details for privacy, so expect privacy services and placeholders such as `Redacted For Privacy`. `null` when the record publishes no registrant.
+	// Who the domain is registered to, often a privacy service or `Redacted For Privacy`. `null` when the record publishes no registrant.
 	Registrant *DomainRegistrant `json:"registrant,omitempty" url:"registrant,omitempty"`
 	// The registrar that manages the domain, or `null` when the record doesn't name one.
 	Registrar *DomainRegistrar `json:"registrar,omitempty" url:"registrar,omitempty"`
@@ -1865,17 +1865,17 @@ var (
 type DomainRegistrationQuote struct {
 	// Whether the domain can be registered now.
 	Available bool `json:"available" url:"available"`
-	// Whether the registry prices this domain above its standard rate. Premium prices are set per domain and can be much higher.
+	// Whether the registry charges more than its standard price for this domain.
 	Premium bool `json:"premium" url:"premium"`
 	// What the first year of registration costs. `null` when the domain is not available.
 	Price *Money `json:"price,omitempty" url:"price,omitempty"`
-	// A link to this domain's page in your account's Whop dashboard, where you can buy it. `null` when the domain is not available, or when the request has no account, such as a user token without an account context.
+	// Link to buy the domain in your Whop dashboard. `null` when it isn't available or the request has no account, such as a user token.
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// What each yearly renewal costs after the first year. `null` when the domain is not available.
 	RenewalPrice *Money `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
-	// How desirable the domain is, from 0 to 100. Short names that read like real words, on well-known extensions, score highest. Hyphens, digits, random-looking letters, and famous brand names score lower.
+	// How desirable the domain is, from 0 to 100. Short, real-word names on well-known extensions score highest.
 	Score int `json:"score" url:"score"`
-	// What transferring the domain to Whop costs if you already own it elsewhere, including one added year of registration. `null` when the domain is available or its extension cannot be transferred.
+	// What moving the domain to Whop costs if you own it elsewhere, including a year of registration. `null` when it's available or can't be transferred.
 	TransferPrice *Money `json:"transfer_price,omitempty" url:"transfer_price,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2391,7 +2391,7 @@ var (
 )
 
 type UpdateDomainsRequest struct {
-	// Domain ID, prefixed dom_. To retrieve, you can instead pass a hostname such as `example.com` to look up any domain; a name without an extension looks up the name on `.com`.
+	// Domain ID, prefixed `dom_`. To retrieve, you can pass a hostname such as `example.com` instead; a bare name looks up `.com`.
 	ID string `json:"-" url:"-"`
 	// App ID, prefixed app_. Must belong to the same account.
 	AppID *string `json:"app_id,omitempty" url:"-"`
