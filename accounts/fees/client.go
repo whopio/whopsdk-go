@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Retrieves the account's fees: a singleton document keyed by fee, with any markups its platform adds. `adjustable` on each fee says what the caller may change.
+// Retrieves the account's fees: a singleton document keyed by fee, with any markups its platform adds. Connected accounts see their effective rates, with covered payouts shown as zero; pricing provenance and comparisons are null without parent-account access. `adjustable` on each fee says what the caller may change.
 //
 // Example:
 //
@@ -66,7 +66,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Updates the account's fees. Each key present in the body is replaced; omitted keys are left untouched. Only fees the document reports as `adjustable` can be changed.
+// Updates the account's fees. The response shows effective rates and hides pricing provenance and comparisons without parent-account access. Each key present in the body is replaced; omitted keys are left untouched. Only fees the document reports as `adjustable` can be changed.
 //
 // Example:
 //

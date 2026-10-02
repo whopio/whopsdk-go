@@ -1344,7 +1344,7 @@ type AccountFee struct {
 	// The rate that takes effect when this account's custom rate is cleared, including inherited pricing.
 	Reset *AccountFeeRate `json:"reset" url:"reset"`
 	// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
-	Source AccountFeeSource `json:"source" url:"source"`
+	Source *AccountFeeSource `json:"source,omitempty" url:"source,omitempty"`
 	// Why the caller may not change this fee, or `null` when `adjustable`. `not_permitted` when the caller has no say over it.
 	UnadjustableReason *AccountFeeUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
 
@@ -1432,9 +1432,9 @@ func (a *AccountFee) GetReset() *AccountFeeRate {
 	return a.Reset
 }
 
-func (a *AccountFee) GetSource() AccountFeeSource {
+func (a *AccountFee) GetSource() *AccountFeeSource {
 	if a == nil {
-		return ""
+		return nil
 	}
 	return a.Source
 }
@@ -1539,7 +1539,7 @@ func (a *AccountFee) SetReset(reset *AccountFeeRate) {
 
 // SetSource sets the Source field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountFee) SetSource(source AccountFeeSource) {
+func (a *AccountFee) SetSource(source *AccountFeeSource) {
 	a.Source = source
 	a.require(accountFeeFieldSource)
 }
@@ -1647,7 +1647,7 @@ type AccountFeeMarkup struct {
 	// The percentage of the transaction the platform adds, where `2` means 2%. `0` when no markup is set.
 	Percentage float64 `json:"percentage" url:"percentage"`
 	// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero.
-	Source AccountFeeMarkupSource `json:"source" url:"source"`
+	Source *AccountFeeMarkupSource `json:"source,omitempty" url:"source,omitempty"`
 	// Why the caller may not change this markup, or `null` when `adjustable`.
 	UnadjustableReason *AccountFeeMarkupUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
 
@@ -1693,9 +1693,9 @@ func (a *AccountFeeMarkup) GetPercentage() float64 {
 	return a.Percentage
 }
 
-func (a *AccountFeeMarkup) GetSource() AccountFeeMarkupSource {
+func (a *AccountFeeMarkup) GetSource() *AccountFeeMarkupSource {
 	if a == nil {
-		return ""
+		return nil
 	}
 	return a.Source
 }
@@ -1758,7 +1758,7 @@ func (a *AccountFeeMarkup) SetPercentage(percentage float64) {
 
 // SetSource sets the Source field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountFeeMarkup) SetSource(source AccountFeeMarkupSource) {
+func (a *AccountFeeMarkup) SetSource(source *AccountFeeMarkupSource) {
 	a.Source = source
 	a.require(accountFeeMarkupFieldSource)
 }
@@ -2031,9 +2031,9 @@ var (
 )
 
 type AccountFeeRate struct {
-	// The amount charged per event. `null` when the fee has no fixed component.
+	// The amount charged per event. `null` when unavailable.
 	Fixed *Money `json:"fixed,omitempty" url:"fixed,omitempty"`
-	// The percentage of the transaction, where `2` means 2%. `null` when the fee has no percentage component.
+	// The percentage of the transaction, where `2` means 2%. `null` when unavailable.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2219,7 +2219,7 @@ type AccountFeeRegionalRate struct {
 	// The regional rate that takes effect when this account's custom rate is cleared, including inherited pricing.
 	Reset *AccountFeeRate `json:"reset" url:"reset"`
 	// Where the regional rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
-	Source AccountFeeRegionalRateSource `json:"source" url:"source"`
+	Source *AccountFeeRegionalRateSource `json:"source,omitempty" url:"source,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2270,9 +2270,9 @@ func (a *AccountFeeRegionalRate) GetReset() *AccountFeeRate {
 	return a.Reset
 }
 
-func (a *AccountFeeRegionalRate) GetSource() AccountFeeRegionalRateSource {
+func (a *AccountFeeRegionalRate) GetSource() *AccountFeeRegionalRateSource {
 	if a == nil {
-		return ""
+		return nil
 	}
 	return a.Source
 }
@@ -2335,7 +2335,7 @@ func (a *AccountFeeRegionalRate) SetReset(reset *AccountFeeRate) {
 
 // SetSource sets the Source field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountFeeRegionalRate) SetSource(source AccountFeeRegionalRateSource) {
+func (a *AccountFeeRegionalRate) SetSource(source *AccountFeeRegionalRateSource) {
 	a.Source = source
 	a.require(accountFeeRegionalRateFieldSource)
 }
