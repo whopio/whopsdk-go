@@ -3305,7 +3305,7 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
-**frequencyCap:** `*whopsdk.CreateAdGroupsRequestFrequencyCap` — Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
+**frequencyCap:** `*whopsdk.CreateAdGroupsRequestFrequencyCap` — Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Once the ad group is live on the ad network, the cap can only be changed before its start date and can't be removed; otherwise `null` clears it.
     
 </dd>
 </dl>
@@ -3944,7 +3944,7 @@ client.AdGroups.Update(
 <dl>
 <dd>
 
-**frequencyCap:** `*whopsdk.UpdateAdGroupsRequestFrequencyCap` — Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
+**frequencyCap:** `*whopsdk.UpdateAdGroupsRequestFrequencyCap` — Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Once the ad group is live on the ad network, the cap can only be changed before its start date and can't be removed; otherwise `null` clears it.
     
 </dd>
 </dl>

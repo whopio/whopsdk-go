@@ -67,7 +67,7 @@ type CreateAdGroupsRequest struct {
 	DynamicCreative *bool `json:"dynamic_creative,omitempty" url:"-"`
 	// When the ad group stops delivering, as an ISO 8601 timestamp. Omit to run until paused.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
-	// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
+	// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Once the ad group is live on the ad network, the cap can only be changed before its start date and can't be removed; otherwise `null` clears it.
 	FrequencyCap *CreateAdGroupsRequestFrequencyCap `json:"frequency_cap,omitempty" url:"-"`
 	// Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
 	Languages []string `json:"languages,omitempty" url:"-"`
@@ -1062,7 +1062,7 @@ type AdGroup struct {
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// Platform-reported impressions divided by reach.
 	Frequency *float64 `json:"frequency,omitempty" url:"frequency,omitempty"`
-	// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective; `null` when uncapped.
+	// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay; `null` when uncapped.
 	FrequencyCap *AdGroupFrequencyCap `json:"frequency_cap,omitempty" url:"frequency_cap,omitempty"`
 	// Unique identifier for the ad group, prefixed `adgrp_`.
 	ID string `json:"id" url:"id"`
@@ -8650,7 +8650,7 @@ func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
+// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Once the ad group is live on the ad network, the cap can only be changed before its start date and can't be removed; otherwise `null` clears it.
 var (
 	createAdGroupsRequestFrequencyCapFieldMaximumImpressions = big.NewInt(1 << 0)
 	createAdGroupsRequestFrequencyCapFieldPerDays            = big.NewInt(1 << 1)
@@ -10908,7 +10908,7 @@ func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
+// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Once the ad group is live on the ad network, the cap can only be changed before its start date and can't be removed; otherwise `null` clears it.
 var (
 	updateAdGroupsRequestFrequencyCapFieldMaximumImpressions = big.NewInt(1 << 0)
 	updateAdGroupsRequestFrequencyCapFieldPerDays            = big.NewInt(1 << 1)
@@ -11439,7 +11439,7 @@ type UpdateAdGroupsRequest struct {
 	Devices *AdGroupDevicesBody `json:"devices,omitempty" url:"-"`
 	// When the ad group stops delivering, as an ISO 8601 timestamp. Omit to run until paused.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
-	// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
+	// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Once the ad group is live on the ad network, the cap can only be changed before its start date and can't be removed; otherwise `null` clears it.
 	FrequencyCap *UpdateAdGroupsRequestFrequencyCap `json:"frequency_cap,omitempty" url:"-"`
 	// Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
 	Languages []string `json:"languages,omitempty" url:"-"`
