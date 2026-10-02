@@ -24,6 +24,7 @@ var (
 	retrieveFinancialReportsRequestFieldCumulative                 = big.NewInt(1 << 10)
 	retrieveFinancialReportsRequestFieldScopeAccountID             = big.NewInt(1 << 11)
 	retrieveFinancialReportsRequestFieldIncludePaymentFeeBreakdown = big.NewInt(1 << 12)
+	retrieveFinancialReportsRequestFieldPeriodOnlyCurrencies       = big.NewInt(1 << 13)
 )
 
 type RetrieveFinancialReportsRequest struct {
@@ -53,6 +54,8 @@ type RetrieveFinancialReportsRequest struct {
 	ScopeAccountID *string `json:"-" url:"scope_account_id,omitempty"`
 	// Balance activity only: include payment costs grouped by payment method and provider.
 	IncludePaymentFeeBreakdown *bool `json:"-" url:"include_payment_fee_breakdown,omitempty"`
+	// Account-level balance activity only: return only currencies with cashflow in the exact requested window. Requires `from` and `to`.
+	PeriodOnlyCurrencies *bool `json:"-" url:"period_only_currencies,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -154,6 +157,13 @@ func (r *RetrieveFinancialReportsRequest) SetScopeAccountID(scopeAccountID *stri
 func (r *RetrieveFinancialReportsRequest) SetIncludePaymentFeeBreakdown(includePaymentFeeBreakdown *bool) {
 	r.IncludePaymentFeeBreakdown = includePaymentFeeBreakdown
 	r.require(retrieveFinancialReportsRequestFieldIncludePaymentFeeBreakdown)
+}
+
+// SetPeriodOnlyCurrencies sets the PeriodOnlyCurrencies field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveFinancialReportsRequest) SetPeriodOnlyCurrencies(periodOnlyCurrencies *bool) {
+	r.PeriodOnlyCurrencies = periodOnlyCurrencies
+	r.require(retrieveFinancialReportsRequestFieldPeriodOnlyCurrencies)
 }
 
 type RetrieveFinancialReportsRequestDirection string
@@ -677,7 +687,7 @@ var (
 
 type RetrieveFinancialReportsResponse struct {
 	BeginningBalance *float64 `json:"beginning_balance,omitempty" url:"beginning_balance,omitempty"`
-	// Every lifetime cashflow currency, ordered by cashflow volume in the requested period.
+	// Cashflow currencies ordered by volume in the requested period. Includes lifetime currencies unless `period_only_currencies` is true.
 	Currencies           []string `json:"currencies,omitempty" url:"currencies,omitempty"`
 	EndingBalance        *float64 `json:"ending_balance,omitempty" url:"ending_balance,omitempty"`
 	FxExcludedCurrencies []string `json:"fx_excluded_currencies,omitempty" url:"fx_excluded_currencies,omitempty"`
