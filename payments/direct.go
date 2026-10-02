@@ -11,24 +11,27 @@ import (
 
 var (
 	createDirectRequestFieldAccountID               = big.NewInt(1 << 0)
-	createDirectRequestFieldAutoCaptureAfterMinutes = big.NewInt(1 << 1)
-	createDirectRequestFieldBillingDetails          = big.NewInt(1 << 2)
-	createDirectRequestFieldCapture                 = big.NewInt(1 << 3)
-	createDirectRequestFieldMemberID                = big.NewInt(1 << 4)
-	createDirectRequestFieldMetadata                = big.NewInt(1 << 5)
-	createDirectRequestFieldOffSession              = big.NewInt(1 << 6)
-	createDirectRequestFieldPaymentMethod           = big.NewInt(1 << 7)
-	createDirectRequestFieldPlan                    = big.NewInt(1 << 8)
-	createDirectRequestFieldPlanID                  = big.NewInt(1 << 9)
-	createDirectRequestFieldPromoCodeID             = big.NewInt(1 << 10)
-	createDirectRequestFieldReturnURL               = big.NewInt(1 << 11)
-	createDirectRequestFieldSetupFutureUsage        = big.NewInt(1 << 12)
-	createDirectRequestFieldStatementDescriptor     = big.NewInt(1 << 13)
+	createDirectRequestFieldAffiliateCode           = big.NewInt(1 << 1)
+	createDirectRequestFieldAutoCaptureAfterMinutes = big.NewInt(1 << 2)
+	createDirectRequestFieldBillingDetails          = big.NewInt(1 << 3)
+	createDirectRequestFieldCapture                 = big.NewInt(1 << 4)
+	createDirectRequestFieldMemberID                = big.NewInt(1 << 5)
+	createDirectRequestFieldMetadata                = big.NewInt(1 << 6)
+	createDirectRequestFieldOffSession              = big.NewInt(1 << 7)
+	createDirectRequestFieldPaymentMethod           = big.NewInt(1 << 8)
+	createDirectRequestFieldPlan                    = big.NewInt(1 << 9)
+	createDirectRequestFieldPlanID                  = big.NewInt(1 << 10)
+	createDirectRequestFieldPromoCodeID             = big.NewInt(1 << 11)
+	createDirectRequestFieldReturnURL               = big.NewInt(1 << 12)
+	createDirectRequestFieldSetupFutureUsage        = big.NewInt(1 << 13)
+	createDirectRequestFieldStatementDescriptor     = big.NewInt(1 << 14)
 )
 
 type CreateDirectRequest struct {
 	// The account to charge for, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
+	// The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters.
+	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
 	// Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
 	AutoCaptureAfterMinutes *int `json:"auto_capture_after_minutes,omitempty" url:"-"`
 	// The buyer's billing details.
@@ -72,6 +75,13 @@ func (c *CreateDirectRequest) require(field *big.Int) {
 func (c *CreateDirectRequest) SetAccountID(accountID string) {
 	c.AccountID = accountID
 	c.require(createDirectRequestFieldAccountID)
+}
+
+// SetAffiliateCode sets the AffiliateCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequest) SetAffiliateCode(affiliateCode *string) {
+	c.AffiliateCode = affiliateCode
+	c.require(createDirectRequestFieldAffiliateCode)
 }
 
 // SetAutoCaptureAfterMinutes sets the AutoCaptureAfterMinutes field and marks it as non-optional;
