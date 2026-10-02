@@ -877,13 +877,14 @@ var (
 	createDirectRequestPlanFieldForceCreateNewPlan   = big.NewInt(1 << 5)
 	createDirectRequestPlanFieldInitialPrice         = big.NewInt(1 << 6)
 	createDirectRequestPlanFieldInternalNotes        = big.NewInt(1 << 7)
-	createDirectRequestPlanFieldPlanType             = big.NewInt(1 << 8)
-	createDirectRequestPlanFieldProduct              = big.NewInt(1 << 9)
-	createDirectRequestPlanFieldProductID            = big.NewInt(1 << 10)
-	createDirectRequestPlanFieldRenewalPrice         = big.NewInt(1 << 11)
-	createDirectRequestPlanFieldTitle                = big.NewInt(1 << 12)
-	createDirectRequestPlanFieldTrialPeriodDays      = big.NewInt(1 << 13)
-	createDirectRequestPlanFieldVisibility           = big.NewInt(1 << 14)
+	createDirectRequestPlanFieldOverrideTaxType      = big.NewInt(1 << 8)
+	createDirectRequestPlanFieldPlanType             = big.NewInt(1 << 9)
+	createDirectRequestPlanFieldProduct              = big.NewInt(1 << 10)
+	createDirectRequestPlanFieldProductID            = big.NewInt(1 << 11)
+	createDirectRequestPlanFieldRenewalPrice         = big.NewInt(1 << 12)
+	createDirectRequestPlanFieldTitle                = big.NewInt(1 << 13)
+	createDirectRequestPlanFieldTrialPeriodDays      = big.NewInt(1 << 14)
+	createDirectRequestPlanFieldVisibility           = big.NewInt(1 << 15)
 )
 
 type CreateDirectRequestPlan struct {
@@ -903,6 +904,8 @@ type CreateDirectRequestPlan struct {
 	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
 	// Internal notes for the account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
+	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+	OverrideTaxType *CreateDirectRequestPlanOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
 	// Billing model for the variant.
 	PlanType *CreateDirectRequestPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
 	// Find or create a product by external identifier. Mutually exclusive with product_id.
@@ -979,6 +982,13 @@ func (c *CreateDirectRequestPlan) GetInternalNotes() *string {
 		return nil
 	}
 	return c.InternalNotes
+}
+
+func (c *CreateDirectRequestPlan) GetOverrideTaxType() *CreateDirectRequestPlanOverrideTaxType {
+	if c == nil {
+		return nil
+	}
+	return c.OverrideTaxType
 }
 
 func (c *CreateDirectRequestPlan) GetPlanType() *CreateDirectRequestPlanPlanType {
@@ -1098,6 +1108,13 @@ func (c *CreateDirectRequestPlan) SetInitialPrice(initialPrice *float64) {
 func (c *CreateDirectRequestPlan) SetInternalNotes(internalNotes *string) {
 	c.InternalNotes = internalNotes
 	c.require(createDirectRequestPlanFieldInternalNotes)
+}
+
+// SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetOverrideTaxType(overrideTaxType *CreateDirectRequestPlanOverrideTaxType) {
+	c.OverrideTaxType = overrideTaxType
+	c.require(createDirectRequestPlanFieldOverrideTaxType)
 }
 
 // SetPlanType sets the PlanType field and marks it as non-optional;
@@ -1475,6 +1492,32 @@ func NewCreateDirectRequestPlanCurrencyFromString(s string) (CreateDirectRequest
 }
 
 func (c CreateDirectRequestPlanCurrency) Ptr() *CreateDirectRequestPlanCurrency {
+	return &c
+}
+
+// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+type CreateDirectRequestPlanOverrideTaxType string
+
+const (
+	CreateDirectRequestPlanOverrideTaxTypeExclusive   CreateDirectRequestPlanOverrideTaxType = "exclusive"
+	CreateDirectRequestPlanOverrideTaxTypeInclusive   CreateDirectRequestPlanOverrideTaxType = "inclusive"
+	CreateDirectRequestPlanOverrideTaxTypeUnspecified CreateDirectRequestPlanOverrideTaxType = "unspecified"
+)
+
+func NewCreateDirectRequestPlanOverrideTaxTypeFromString(s string) (CreateDirectRequestPlanOverrideTaxType, error) {
+	switch s {
+	case "exclusive":
+		return CreateDirectRequestPlanOverrideTaxTypeExclusive, nil
+	case "inclusive":
+		return CreateDirectRequestPlanOverrideTaxTypeInclusive, nil
+	case "unspecified":
+		return CreateDirectRequestPlanOverrideTaxTypeUnspecified, nil
+	}
+	var t CreateDirectRequestPlanOverrideTaxType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateDirectRequestPlanOverrideTaxType) Ptr() *CreateDirectRequestPlanOverrideTaxType {
 	return &c
 }
 

@@ -2635,6 +2635,14 @@ func TestSettersPaymentInputPlan(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetOverrideTaxType", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueOverrideTaxType *PaymentInputPlanOverrideTaxType
+		obj.SetOverrideTaxType(fernTestValueOverrideTaxType)
+		assert.Equal(t, fernTestValueOverrideTaxType, obj.OverrideTaxType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPlanType", func(t *testing.T) {
 		obj := &PaymentInputPlan{}
 		var fernTestValuePlanType *PaymentInputPlanPlanType
@@ -2946,6 +2954,39 @@ func TestGettersPaymentInputPlan(t *testing.T) {
 			}
 		}()
 		_ = obj.GetInternalNotes() // Should return zero value
+	})
+
+	t.Run("GetOverrideTaxType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *PaymentInputPlanOverrideTaxType
+		obj.OverrideTaxType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetOverrideTaxType(), "getter should return the property value")
+	})
+
+	t.Run("GetOverrideTaxType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.OverrideTaxType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetOverrideTaxType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetOverrideTaxType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetOverrideTaxType() // Should return zero value
 	})
 
 	t.Run("GetPlanType", func(t *testing.T) {
@@ -3407,6 +3448,37 @@ func TestSettersMarkExplicitPaymentInputPlan(t *testing.T) {
 
 		// Act
 		obj.SetInternalNotes(fernTestValueInternalNotes)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetOverrideTaxType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueOverrideTaxType *PaymentInputPlanOverrideTaxType
+
+		// Act
+		obj.SetOverrideTaxType(fernTestValueOverrideTaxType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -13994,6 +14066,42 @@ func TestEnumPaymentInputPlanCurrency(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPaymentInputPlanCurrencyFromString("usd")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPaymentInputPlanOverrideTaxType(t *testing.T) {
+	t.Run("NewFromString_exclusive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanOverrideTaxTypeFromString("exclusive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanOverrideTaxType("exclusive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inclusive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanOverrideTaxTypeFromString("inclusive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanOverrideTaxType("inclusive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unspecified", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanOverrideTaxTypeFromString("unspecified")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanOverrideTaxType("unspecified"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentInputPlanOverrideTaxTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentInputPlanOverrideTaxTypeFromString("exclusive")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
