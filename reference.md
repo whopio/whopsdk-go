@@ -26262,14 +26262,6 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**plan:** `*whopsdk.CreatePaymentsRequestPlan` — Find or create a variant for this payment through the compatibility input `plan`. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **returnURL:** `*string` — Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
     
 </dd>
