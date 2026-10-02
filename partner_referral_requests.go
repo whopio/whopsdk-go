@@ -769,6 +769,7 @@ type CreatePartnerReferralRequestsRequestBody struct {
 	CreatePartnerReferralRequestsRequestBodyAccountURL     *CreatePartnerReferralRequestsRequestBodyAccountURL
 	CreatePartnerReferralRequestsRequestBodyTargetUserID   *CreatePartnerReferralRequestsRequestBodyTargetUserID
 	CreatePartnerReferralRequestsRequestBodyTargetUsername *CreatePartnerReferralRequestsRequestBodyTargetUsername
+	CreatePartnerReferralRequestsRequestBodyTargetEmail    *CreatePartnerReferralRequestsRequestBodyTargetEmail
 	// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link or creates one with a random code. Only authorized staff can configure rewards or select another partner.
 	CreatePartnerReferralRequestsRequestBodyCode *CreatePartnerReferralRequestsRequestBodyCode
 
@@ -803,6 +804,13 @@ func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralReque
 	return c.CreatePartnerReferralRequestsRequestBodyTargetUsername
 }
 
+func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralRequestsRequestBodyTargetEmail() *CreatePartnerReferralRequestsRequestBodyTargetEmail {
+	if c == nil {
+		return nil
+	}
+	return c.CreatePartnerReferralRequestsRequestBodyTargetEmail
+}
+
 func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralRequestsRequestBodyCode() *CreatePartnerReferralRequestsRequestBodyCode {
 	if c == nil {
 		return nil
@@ -835,6 +843,12 @@ func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) er
 		c.CreatePartnerReferralRequestsRequestBodyTargetUsername = valueCreatePartnerReferralRequestsRequestBodyTargetUsername
 		return nil
 	}
+	valueCreatePartnerReferralRequestsRequestBodyTargetEmail := new(CreatePartnerReferralRequestsRequestBodyTargetEmail)
+	if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetEmail); err == nil {
+		c.typ = "CreatePartnerReferralRequestsRequestBodyTargetEmail"
+		c.CreatePartnerReferralRequestsRequestBodyTargetEmail = valueCreatePartnerReferralRequestsRequestBodyTargetEmail
+		return nil
+	}
 	valueCreatePartnerReferralRequestsRequestBodyCode := new(CreatePartnerReferralRequestsRequestBodyCode)
 	if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyCode); err == nil {
 		c.typ = "CreatePartnerReferralRequestsRequestBodyCode"
@@ -857,6 +871,9 @@ func (c CreatePartnerReferralRequestsRequestBody) MarshalJSON() ([]byte, error) 
 	if c.typ == "CreatePartnerReferralRequestsRequestBodyTargetUsername" || c.CreatePartnerReferralRequestsRequestBodyTargetUsername != nil {
 		return json.Marshal(c.CreatePartnerReferralRequestsRequestBodyTargetUsername)
 	}
+	if c.typ == "CreatePartnerReferralRequestsRequestBodyTargetEmail" || c.CreatePartnerReferralRequestsRequestBodyTargetEmail != nil {
+		return json.Marshal(c.CreatePartnerReferralRequestsRequestBodyTargetEmail)
+	}
 	if c.typ == "CreatePartnerReferralRequestsRequestBodyCode" || c.CreatePartnerReferralRequestsRequestBodyCode != nil {
 		return json.Marshal(c.CreatePartnerReferralRequestsRequestBodyCode)
 	}
@@ -868,6 +885,7 @@ type CreatePartnerReferralRequestsRequestBodyVisitor interface {
 	VisitCreatePartnerReferralRequestsRequestBodyAccountURL(*CreatePartnerReferralRequestsRequestBodyAccountURL) error
 	VisitCreatePartnerReferralRequestsRequestBodyTargetUserID(*CreatePartnerReferralRequestsRequestBodyTargetUserID) error
 	VisitCreatePartnerReferralRequestsRequestBodyTargetUsername(*CreatePartnerReferralRequestsRequestBodyTargetUsername) error
+	VisitCreatePartnerReferralRequestsRequestBodyTargetEmail(*CreatePartnerReferralRequestsRequestBodyTargetEmail) error
 	VisitCreatePartnerReferralRequestsRequestBodyCode(*CreatePartnerReferralRequestsRequestBodyCode) error
 }
 
@@ -883,6 +901,9 @@ func (c *CreatePartnerReferralRequestsRequestBody) Accept(visitor CreatePartnerR
 	}
 	if c.typ == "CreatePartnerReferralRequestsRequestBodyTargetUsername" || c.CreatePartnerReferralRequestsRequestBodyTargetUsername != nil {
 		return visitor.VisitCreatePartnerReferralRequestsRequestBodyTargetUsername(c.CreatePartnerReferralRequestsRequestBodyTargetUsername)
+	}
+	if c.typ == "CreatePartnerReferralRequestsRequestBodyTargetEmail" || c.CreatePartnerReferralRequestsRequestBodyTargetEmail != nil {
+		return visitor.VisitCreatePartnerReferralRequestsRequestBodyTargetEmail(c.CreatePartnerReferralRequestsRequestBodyTargetEmail)
 	}
 	if c.typ == "CreatePartnerReferralRequestsRequestBodyCode" || c.CreatePartnerReferralRequestsRequestBodyCode != nil {
 		return visitor.VisitCreatePartnerReferralRequestsRequestBodyCode(c.CreatePartnerReferralRequestsRequestBodyCode)
@@ -1218,11 +1239,96 @@ func (c CreatePartnerReferralRequestsRequestBodyCodeRequestType) Ptr() *CreatePa
 }
 
 var (
+	createPartnerReferralRequestsRequestBodyTargetEmailFieldTargetEmail = big.NewInt(1 << 0)
+)
+
+type CreatePartnerReferralRequestsRequestBodyTargetEmail struct {
+	// Email address on an existing user's account. Matching is case-insensitive. The user does not need to be enrolled in the partner program.
+	TargetEmail string `json:"target_email" url:"target_email"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) GetTargetEmail() string {
+	if c == nil {
+		return ""
+	}
+	return c.TargetEmail
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetTargetEmail sets the TargetEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) SetTargetEmail(targetEmail string) {
+	c.TargetEmail = targetEmail
+	c.require(createPartnerReferralRequestsRequestBodyTargetEmailFieldTargetEmail)
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePartnerReferralRequestsRequestBodyTargetEmail
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePartnerReferralRequestsRequestBodyTargetEmail(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) MarshalJSON() ([]byte, error) {
+	type embed CreatePartnerReferralRequestsRequestBodyTargetEmail
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
 	createPartnerReferralRequestsRequestBodyTargetUserIDFieldTargetUserID = big.NewInt(1 << 0)
 )
 
 type CreatePartnerReferralRequestsRequestBodyTargetUserID struct {
-	// Enrolled partner to request attribution for, prefixed `user_`.
+	// User to request attribution for, prefixed `user_`.
 	TargetUserID string `json:"target_user_id" url:"target_user_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
