@@ -2016,7 +2016,7 @@ func TestSettersAccountFee(t *testing.T) {
 
 	t.Run("SetSource", func(t *testing.T) {
 		obj := &AccountFee{}
-		var fernTestValueSource AccountFeeSource
+		var fernTestValueSource *AccountFeeSource
 		obj.SetSource(fernTestValueSource)
 		assert.Equal(t, fernTestValueSource, obj.Source)
 		assert.NotNil(t, obj.explicitFields)
@@ -2380,11 +2380,21 @@ func TestGettersAccountFee(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AccountFee{}
-		var expected AccountFeeSource
+		var expected *AccountFeeSource
 		obj.Source = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetSource(), "getter should return the property value")
+	})
+
+	t.Run("GetSource_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountFee{}
+		obj.Source = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSource(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetSource_NilReceiver", func(t *testing.T) {
@@ -2780,7 +2790,7 @@ func TestSettersMarkExplicitAccountFee(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AccountFee{}
-		var fernTestValueSource AccountFeeSource
+		var fernTestValueSource *AccountFeeSource
 
 		// Act
 		obj.SetSource(fernTestValueSource)
@@ -2883,7 +2893,7 @@ func TestSettersAccountFeeMarkup(t *testing.T) {
 
 	t.Run("SetSource", func(t *testing.T) {
 		obj := &AccountFeeMarkup{}
-		var fernTestValueSource AccountFeeMarkupSource
+		var fernTestValueSource *AccountFeeMarkupSource
 		obj.SetSource(fernTestValueSource)
 		assert.Equal(t, fernTestValueSource, obj.Source)
 		assert.NotNil(t, obj.explicitFields)
@@ -3049,11 +3059,21 @@ func TestGettersAccountFeeMarkup(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AccountFeeMarkup{}
-		var expected AccountFeeMarkupSource
+		var expected *AccountFeeMarkupSource
 		obj.Source = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetSource(), "getter should return the property value")
+	})
+
+	t.Run("GetSource_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountFeeMarkup{}
+		obj.Source = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSource(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetSource_NilReceiver", func(t *testing.T) {
@@ -3263,7 +3283,7 @@ func TestSettersMarkExplicitAccountFeeMarkup(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AccountFeeMarkup{}
-		var fernTestValueSource AccountFeeMarkupSource
+		var fernTestValueSource *AccountFeeMarkupSource
 
 		// Act
 		obj.SetSource(fernTestValueSource)
@@ -3968,7 +3988,7 @@ func TestSettersAccountFeeRegionalRate(t *testing.T) {
 
 	t.Run("SetSource", func(t *testing.T) {
 		obj := &AccountFeeRegionalRate{}
-		var fernTestValueSource AccountFeeRegionalRateSource
+		var fernTestValueSource *AccountFeeRegionalRateSource
 		obj.SetSource(fernTestValueSource)
 		assert.Equal(t, fernTestValueSource, obj.Source)
 		assert.NotNil(t, obj.explicitFields)
@@ -4179,11 +4199,21 @@ func TestGettersAccountFeeRegionalRate(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AccountFeeRegionalRate{}
-		var expected AccountFeeRegionalRateSource
+		var expected *AccountFeeRegionalRateSource
 		obj.Source = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetSource(), "getter should return the property value")
+	})
+
+	t.Run("GetSource_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountFeeRegionalRate{}
+		obj.Source = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSource(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetSource_NilReceiver", func(t *testing.T) {
@@ -4391,7 +4421,7 @@ func TestSettersMarkExplicitAccountFeeRegionalRate(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AccountFeeRegionalRate{}
-		var fernTestValueSource AccountFeeRegionalRateSource
+		var fernTestValueSource *AccountFeeRegionalRateSource
 
 		// Act
 		obj.SetSource(fernTestValueSource)
