@@ -88,7 +88,13 @@ func TestDomainsListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListDomainsRequest{}
+	request := &whopsdk.ListDomainsRequest{
+		Tlds: []*string{
+			whopsdk.String(
+				"com",
+			),
+		},
+	}
 	_, invocationErr := client.Domains.List(
 		context.TODO(),
 		request,
@@ -98,7 +104,7 @@ func TestDomainsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestDomainsListWithWireMock", "GET", "/domains", nil, 1)
+	VerifyRequestCount(t, "TestDomainsListWithWireMock", "GET", "/domains", map[string]interface{}{"tlds": "com"}, 1)
 }
 
 func TestDomainsCreateWithWireMock(

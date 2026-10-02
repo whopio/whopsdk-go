@@ -101,7 +101,7 @@ var (
 )
 
 type DeleteDomainsRequest struct {
-	// Domain ID, prefixed dom_.
+	// Domain ID, prefixed dom_. To retrieve, you can instead pass a hostname such as `example.com` to look up any domain; a name without an extension looks up the name on `.com`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -132,6 +132,8 @@ var (
 	listDomainsRequestFieldAfter     = big.NewInt(1 << 6)
 	listDomainsRequestFieldLast      = big.NewInt(1 << 7)
 	listDomainsRequestFieldBefore    = big.NewInt(1 << 8)
+	listDomainsRequestFieldSearch    = big.NewInt(1 << 9)
+	listDomainsRequestFieldTlds      = big.NewInt(1 << 10)
 )
 
 type ListDomainsRequest struct {
@@ -153,6 +155,10 @@ type ListDomainsRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
+	// A name or a full domain to find domains to buy, such as `example` or `example.com`. A URL or subdomain searches its registrable domain. When set, the results are search results rather than your domains, and the other filters, sorting, and pagination don't apply.
+	Search *string `json:"-" url:"search,omitempty"`
+	// With `search`, the extensions to check your name on, such as `com` or `co.uk`, returned in the order you pass them. Repeat the parameter to pass several, up to 100. The results are then exactly your name on these extensions, without suggestions.
+	Tlds []*string `json:"-" url:"tlds,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -228,12 +234,26 @@ func (l *ListDomainsRequest) SetBefore(before *string) {
 	l.require(listDomainsRequestFieldBefore)
 }
 
+// SetSearch sets the Search field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDomainsRequest) SetSearch(search *string) {
+	l.Search = search
+	l.require(listDomainsRequestFieldSearch)
+}
+
+// SetTlds sets the Tlds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDomainsRequest) SetTlds(tlds []*string) {
+	l.Tlds = tlds
+	l.require(listDomainsRequestFieldTlds)
+}
+
 var (
 	retrieveDomainsRequestFieldID = big.NewInt(1 << 0)
 )
 
 type RetrieveDomainsRequest struct {
-	// Domain ID, prefixed dom_.
+	// Domain ID, prefixed dom_. To retrieve, you can instead pass a hostname such as `example.com` to look up any domain; a name without an extension looks up the name on `.com`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -267,39 +287,45 @@ var (
 	domainFieldIssues                = big.NewInt(1 << 9)
 	domainFieldLastCheckedAt         = big.NewInt(1 << 10)
 	domainFieldMetadata              = big.NewInt(1 << 11)
-	domainFieldStatus                = big.NewInt(1 << 12)
-	domainFieldUpdatedAt             = big.NewInt(1 << 13)
-	domainFieldVerificationExpiresAt = big.NewInt(1 << 14)
-	domainFieldVerifiedAt            = big.NewInt(1 << 15)
+	domainFieldPublicRecord          = big.NewInt(1 << 12)
+	domainFieldRegistrarQuote        = big.NewInt(1 << 13)
+	domainFieldStatus                = big.NewInt(1 << 14)
+	domainFieldUpdatedAt             = big.NewInt(1 << 15)
+	domainFieldVerificationExpiresAt = big.NewInt(1 << 16)
+	domainFieldVerifiedAt            = big.NewInt(1 << 17)
 )
 
 type Domain struct {
-	// ID of the account claiming or owning this domain, prefixed `biz_`.
-	AccountID string `json:"account_id" url:"account_id"`
-	// ID of the app assigned to this domain, prefixed `app_`.
-	AppID string `json:"app_id" url:"app_id"`
+	// ID of the account claiming or owning this domain, prefixed `biz_`. `null` for a search result.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// ID of the app assigned to this domain, prefixed `app_`. `null` for a search result.
+	AppID *string `json:"app_id,omitempty" url:"app_id,omitempty"`
 	// Cloudflare's latest certificate issuance status.
 	CertificateStatus *string `json:"certificate_status,omitempty" url:"certificate_status,omitempty"`
-	// When the domain claim was created, as an ISO 8601 timestamp.
-	CreatedAt  string             `json:"created_at" url:"created_at"`
+	// When the domain claim was created, as an ISO 8601 timestamp. `null` for a search result.
+	CreatedAt  *string            `json:"created_at,omitempty" url:"created_at,omitempty"`
 	DNSRecords []*DomainDNSRecord `json:"dns_records" url:"dns_records"`
-	// Result of the most recent DNS routing check. Ownership is verified separately.
-	DNSStatus DomainDNSStatus `json:"dns_status" url:"dns_status"`
+	// Result of the most recent DNS routing check. Ownership is verified separately. `null` for a search result.
+	DNSStatus *DomainDNSStatus `json:"dns_status,omitempty" url:"dns_status,omitempty"`
 	// Normalized hostname, such as checkout.example.com.
 	Domain string `json:"domain" url:"domain"`
 	// Cloudflare's latest hostname activation status.
 	HostnameStatus *string `json:"hostname_status,omitempty" url:"hostname_status,omitempty"`
-	// Domain ID, prefixed `dom_`.
-	ID     string         `json:"id" url:"id"`
+	// Domain ID, prefixed `dom_`. `null` for a search result.
+	ID     *string        `json:"id,omitempty" url:"id,omitempty"`
 	Issues []*DomainIssue `json:"issues" url:"issues"`
 	// When DNS and provider state were last checked, as an ISO 8601 timestamp.
 	LastCheckedAt *string `json:"last_checked_at,omitempty" url:"last_checked_at,omitempty"`
-	// Custom string keys and values attached to this domain.
+	// Custom string keys and values attached to this domain. Empty for a search result.
 	Metadata map[string]string `json:"metadata" url:"metadata"`
-	// Domain lifecycle. Only active domains resolve to their app.
-	Status DomainStatus `json:"status" url:"status"`
-	// When the domain was last updated, as an ISO 8601 timestamp.
-	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// The domain's public registration record (RDAP): its registrar, registrant, key dates, registry statuses, and name servers, read when you retrieve the domain by hostname. `null` for your own domains, an available domain, or a record that couldn't be read.
+	PublicRecord *DomainPublicRecord `json:"public_record,omitempty" url:"public_record,omitempty"`
+	// What registering the domain would cost: whether it's available, its first-year, renewal, and transfer prices, a link to buy it, and how desirable it is. Set for a search result: a domain from `search` or retrieved by hostname. `null` for your own domains.
+	RegistrarQuote *DomainRegistrarQuote `json:"registrar_quote,omitempty" url:"registrar_quote,omitempty"`
+	// Domain lifecycle. Only active domains resolve to their app. `null` for a search result.
+	Status *DomainStatus `json:"status,omitempty" url:"status,omitempty"`
+	// When the domain was last updated, as an ISO 8601 timestamp. `null` for a search result.
+	UpdatedAt *string `json:"updated_at,omitempty" url:"updated_at,omitempty"`
 	// When an unverified claim is automatically deleted, 48 hours after creation, as an ISO 8601 timestamp.
 	VerificationExpiresAt *string `json:"verification_expires_at,omitempty" url:"verification_expires_at,omitempty"`
 	// When Whop verified the ownership TXT record, as an ISO 8601 timestamp.
@@ -312,16 +338,16 @@ type Domain struct {
 	rawJSON         json.RawMessage
 }
 
-func (d *Domain) GetAccountID() string {
+func (d *Domain) GetAccountID() *string {
 	if d == nil {
-		return ""
+		return nil
 	}
 	return d.AccountID
 }
 
-func (d *Domain) GetAppID() string {
+func (d *Domain) GetAppID() *string {
 	if d == nil {
-		return ""
+		return nil
 	}
 	return d.AppID
 }
@@ -333,9 +359,9 @@ func (d *Domain) GetCertificateStatus() *string {
 	return d.CertificateStatus
 }
 
-func (d *Domain) GetCreatedAt() string {
+func (d *Domain) GetCreatedAt() *string {
 	if d == nil {
-		return ""
+		return nil
 	}
 	return d.CreatedAt
 }
@@ -347,9 +373,9 @@ func (d *Domain) GetDNSRecords() []*DomainDNSRecord {
 	return d.DNSRecords
 }
 
-func (d *Domain) GetDNSStatus() DomainDNSStatus {
+func (d *Domain) GetDNSStatus() *DomainDNSStatus {
 	if d == nil {
-		return ""
+		return nil
 	}
 	return d.DNSStatus
 }
@@ -368,9 +394,9 @@ func (d *Domain) GetHostnameStatus() *string {
 	return d.HostnameStatus
 }
 
-func (d *Domain) GetID() string {
+func (d *Domain) GetID() *string {
 	if d == nil {
-		return ""
+		return nil
 	}
 	return d.ID
 }
@@ -396,16 +422,30 @@ func (d *Domain) GetMetadata() map[string]string {
 	return d.Metadata
 }
 
-func (d *Domain) GetStatus() DomainStatus {
+func (d *Domain) GetPublicRecord() *DomainPublicRecord {
 	if d == nil {
-		return ""
+		return nil
+	}
+	return d.PublicRecord
+}
+
+func (d *Domain) GetRegistrarQuote() *DomainRegistrarQuote {
+	if d == nil {
+		return nil
+	}
+	return d.RegistrarQuote
+}
+
+func (d *Domain) GetStatus() *DomainStatus {
+	if d == nil {
+		return nil
 	}
 	return d.Status
 }
 
-func (d *Domain) GetUpdatedAt() string {
+func (d *Domain) GetUpdatedAt() *string {
 	if d == nil {
-		return ""
+		return nil
 	}
 	return d.UpdatedAt
 }
@@ -440,14 +480,14 @@ func (d *Domain) require(field *big.Int) {
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Domain) SetAccountID(accountID string) {
+func (d *Domain) SetAccountID(accountID *string) {
 	d.AccountID = accountID
 	d.require(domainFieldAccountID)
 }
 
 // SetAppID sets the AppID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Domain) SetAppID(appID string) {
+func (d *Domain) SetAppID(appID *string) {
 	d.AppID = appID
 	d.require(domainFieldAppID)
 }
@@ -461,7 +501,7 @@ func (d *Domain) SetCertificateStatus(certificateStatus *string) {
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Domain) SetCreatedAt(createdAt string) {
+func (d *Domain) SetCreatedAt(createdAt *string) {
 	d.CreatedAt = createdAt
 	d.require(domainFieldCreatedAt)
 }
@@ -475,7 +515,7 @@ func (d *Domain) SetDNSRecords(dnsRecords []*DomainDNSRecord) {
 
 // SetDNSStatus sets the DNSStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Domain) SetDNSStatus(dnsStatus DomainDNSStatus) {
+func (d *Domain) SetDNSStatus(dnsStatus *DomainDNSStatus) {
 	d.DNSStatus = dnsStatus
 	d.require(domainFieldDNSStatus)
 }
@@ -496,7 +536,7 @@ func (d *Domain) SetHostnameStatus(hostnameStatus *string) {
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Domain) SetID(id string) {
+func (d *Domain) SetID(id *string) {
 	d.ID = id
 	d.require(domainFieldID)
 }
@@ -522,16 +562,30 @@ func (d *Domain) SetMetadata(metadata map[string]string) {
 	d.require(domainFieldMetadata)
 }
 
+// SetPublicRecord sets the PublicRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Domain) SetPublicRecord(publicRecord *DomainPublicRecord) {
+	d.PublicRecord = publicRecord
+	d.require(domainFieldPublicRecord)
+}
+
+// SetRegistrarQuote sets the RegistrarQuote field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Domain) SetRegistrarQuote(registrarQuote *DomainRegistrarQuote) {
+	d.RegistrarQuote = registrarQuote
+	d.require(domainFieldRegistrarQuote)
+}
+
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Domain) SetStatus(status DomainStatus) {
+func (d *Domain) SetStatus(status *DomainStatus) {
 	d.Status = status
 	d.require(domainFieldStatus)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Domain) SetUpdatedAt(updatedAt string) {
+func (d *Domain) SetUpdatedAt(updatedAt *string) {
 	d.UpdatedAt = updatedAt
 	d.require(domainFieldUpdatedAt)
 }
@@ -740,7 +794,7 @@ func (d DomainDNSRecordType) Ptr() *DomainDNSRecordType {
 	return &d
 }
 
-// Result of the most recent DNS routing check. Ownership is verified separately.
+// Result of the most recent DNS routing check. Ownership is verified separately. `null` for a search result.
 type DomainDNSStatus string
 
 const (
@@ -871,7 +925,1121 @@ func (d *DomainIssue) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// Domain lifecycle. Only active domains resolve to their app.
+var (
+	domainListItemFieldAccountID             = big.NewInt(1 << 0)
+	domainListItemFieldAppID                 = big.NewInt(1 << 1)
+	domainListItemFieldCertificateStatus     = big.NewInt(1 << 2)
+	domainListItemFieldCreatedAt             = big.NewInt(1 << 3)
+	domainListItemFieldDNSRecords            = big.NewInt(1 << 4)
+	domainListItemFieldDNSStatus             = big.NewInt(1 << 5)
+	domainListItemFieldDomain                = big.NewInt(1 << 6)
+	domainListItemFieldHostnameStatus        = big.NewInt(1 << 7)
+	domainListItemFieldID                    = big.NewInt(1 << 8)
+	domainListItemFieldIssues                = big.NewInt(1 << 9)
+	domainListItemFieldLastCheckedAt         = big.NewInt(1 << 10)
+	domainListItemFieldMetadata              = big.NewInt(1 << 11)
+	domainListItemFieldRegistrarQuote        = big.NewInt(1 << 12)
+	domainListItemFieldStatus                = big.NewInt(1 << 13)
+	domainListItemFieldUpdatedAt             = big.NewInt(1 << 14)
+	domainListItemFieldVerificationExpiresAt = big.NewInt(1 << 15)
+	domainListItemFieldVerifiedAt            = big.NewInt(1 << 16)
+)
+
+type DomainListItem struct {
+	// ID of the account claiming or owning this domain, prefixed `biz_`. `null` for a search result.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// ID of the app assigned to this domain, prefixed `app_`. `null` for a search result.
+	AppID *string `json:"app_id,omitempty" url:"app_id,omitempty"`
+	// Cloudflare's latest certificate issuance status.
+	CertificateStatus *string `json:"certificate_status,omitempty" url:"certificate_status,omitempty"`
+	// When the domain claim was created, as an ISO 8601 timestamp. `null` for a search result.
+	CreatedAt  *string            `json:"created_at,omitempty" url:"created_at,omitempty"`
+	DNSRecords []*DomainDNSRecord `json:"dns_records" url:"dns_records"`
+	// Result of the most recent DNS routing check. Ownership is verified separately. `null` for a search result.
+	DNSStatus *DomainListItemDNSStatus `json:"dns_status,omitempty" url:"dns_status,omitempty"`
+	// Normalized hostname, such as checkout.example.com.
+	Domain string `json:"domain" url:"domain"`
+	// Cloudflare's latest hostname activation status.
+	HostnameStatus *string `json:"hostname_status,omitempty" url:"hostname_status,omitempty"`
+	// Domain ID, prefixed `dom_`. `null` for a search result.
+	ID     *string        `json:"id,omitempty" url:"id,omitempty"`
+	Issues []*DomainIssue `json:"issues" url:"issues"`
+	// When DNS and provider state were last checked, as an ISO 8601 timestamp.
+	LastCheckedAt *string `json:"last_checked_at,omitempty" url:"last_checked_at,omitempty"`
+	// Custom string keys and values attached to this domain. Empty for a search result.
+	Metadata map[string]any `json:"metadata" url:"metadata"`
+	// What registering the domain would cost: whether it's available, its first-year, renewal, and transfer prices, a link to buy it, and how desirable it is. Set for a search result: a domain from `search` or retrieved by hostname. `null` for your own domains.
+	RegistrarQuote *DomainRegistrarQuote `json:"registrar_quote,omitempty" url:"registrar_quote,omitempty"`
+	// Domain lifecycle. Only active domains resolve to their app. `null` for a search result.
+	Status *DomainListItemStatus `json:"status,omitempty" url:"status,omitempty"`
+	// When the domain was last updated, as an ISO 8601 timestamp. `null` for a search result.
+	UpdatedAt *string `json:"updated_at,omitempty" url:"updated_at,omitempty"`
+	// When an unverified claim is automatically deleted, 48 hours after creation, as an ISO 8601 timestamp.
+	VerificationExpiresAt *string `json:"verification_expires_at,omitempty" url:"verification_expires_at,omitempty"`
+	// When Whop verified the ownership TXT record, as an ISO 8601 timestamp.
+	VerifiedAt *string `json:"verified_at,omitempty" url:"verified_at,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainListItem) GetAccountID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.AccountID
+}
+
+func (d *DomainListItem) GetAppID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.AppID
+}
+
+func (d *DomainListItem) GetCertificateStatus() *string {
+	if d == nil {
+		return nil
+	}
+	return d.CertificateStatus
+}
+
+func (d *DomainListItem) GetCreatedAt() *string {
+	if d == nil {
+		return nil
+	}
+	return d.CreatedAt
+}
+
+func (d *DomainListItem) GetDNSRecords() []*DomainDNSRecord {
+	if d == nil {
+		return nil
+	}
+	return d.DNSRecords
+}
+
+func (d *DomainListItem) GetDNSStatus() *DomainListItemDNSStatus {
+	if d == nil {
+		return nil
+	}
+	return d.DNSStatus
+}
+
+func (d *DomainListItem) GetDomain() string {
+	if d == nil {
+		return ""
+	}
+	return d.Domain
+}
+
+func (d *DomainListItem) GetHostnameStatus() *string {
+	if d == nil {
+		return nil
+	}
+	return d.HostnameStatus
+}
+
+func (d *DomainListItem) GetID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ID
+}
+
+func (d *DomainListItem) GetIssues() []*DomainIssue {
+	if d == nil {
+		return nil
+	}
+	return d.Issues
+}
+
+func (d *DomainListItem) GetLastCheckedAt() *string {
+	if d == nil {
+		return nil
+	}
+	return d.LastCheckedAt
+}
+
+func (d *DomainListItem) GetMetadata() map[string]any {
+	if d == nil {
+		return nil
+	}
+	return d.Metadata
+}
+
+func (d *DomainListItem) GetRegistrarQuote() *DomainRegistrarQuote {
+	if d == nil {
+		return nil
+	}
+	return d.RegistrarQuote
+}
+
+func (d *DomainListItem) GetStatus() *DomainListItemStatus {
+	if d == nil {
+		return nil
+	}
+	return d.Status
+}
+
+func (d *DomainListItem) GetUpdatedAt() *string {
+	if d == nil {
+		return nil
+	}
+	return d.UpdatedAt
+}
+
+func (d *DomainListItem) GetVerificationExpiresAt() *string {
+	if d == nil {
+		return nil
+	}
+	return d.VerificationExpiresAt
+}
+
+func (d *DomainListItem) GetVerifiedAt() *string {
+	if d == nil {
+		return nil
+	}
+	return d.VerifiedAt
+}
+
+func (d *DomainListItem) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainListItem) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetAccountID(accountID *string) {
+	d.AccountID = accountID
+	d.require(domainListItemFieldAccountID)
+}
+
+// SetAppID sets the AppID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetAppID(appID *string) {
+	d.AppID = appID
+	d.require(domainListItemFieldAppID)
+}
+
+// SetCertificateStatus sets the CertificateStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetCertificateStatus(certificateStatus *string) {
+	d.CertificateStatus = certificateStatus
+	d.require(domainListItemFieldCertificateStatus)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetCreatedAt(createdAt *string) {
+	d.CreatedAt = createdAt
+	d.require(domainListItemFieldCreatedAt)
+}
+
+// SetDNSRecords sets the DNSRecords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetDNSRecords(dnsRecords []*DomainDNSRecord) {
+	d.DNSRecords = dnsRecords
+	d.require(domainListItemFieldDNSRecords)
+}
+
+// SetDNSStatus sets the DNSStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetDNSStatus(dnsStatus *DomainListItemDNSStatus) {
+	d.DNSStatus = dnsStatus
+	d.require(domainListItemFieldDNSStatus)
+}
+
+// SetDomain sets the Domain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetDomain(domain string) {
+	d.Domain = domain
+	d.require(domainListItemFieldDomain)
+}
+
+// SetHostnameStatus sets the HostnameStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetHostnameStatus(hostnameStatus *string) {
+	d.HostnameStatus = hostnameStatus
+	d.require(domainListItemFieldHostnameStatus)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetID(id *string) {
+	d.ID = id
+	d.require(domainListItemFieldID)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetIssues(issues []*DomainIssue) {
+	d.Issues = issues
+	d.require(domainListItemFieldIssues)
+}
+
+// SetLastCheckedAt sets the LastCheckedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetLastCheckedAt(lastCheckedAt *string) {
+	d.LastCheckedAt = lastCheckedAt
+	d.require(domainListItemFieldLastCheckedAt)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetMetadata(metadata map[string]any) {
+	d.Metadata = metadata
+	d.require(domainListItemFieldMetadata)
+}
+
+// SetRegistrarQuote sets the RegistrarQuote field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetRegistrarQuote(registrarQuote *DomainRegistrarQuote) {
+	d.RegistrarQuote = registrarQuote
+	d.require(domainListItemFieldRegistrarQuote)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetStatus(status *DomainListItemStatus) {
+	d.Status = status
+	d.require(domainListItemFieldStatus)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetUpdatedAt(updatedAt *string) {
+	d.UpdatedAt = updatedAt
+	d.require(domainListItemFieldUpdatedAt)
+}
+
+// SetVerificationExpiresAt sets the VerificationExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetVerificationExpiresAt(verificationExpiresAt *string) {
+	d.VerificationExpiresAt = verificationExpiresAt
+	d.require(domainListItemFieldVerificationExpiresAt)
+}
+
+// SetVerifiedAt sets the VerifiedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetVerifiedAt(verifiedAt *string) {
+	d.VerifiedAt = verifiedAt
+	d.require(domainListItemFieldVerifiedAt)
+}
+
+func (d *DomainListItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainListItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainListItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainListItem) MarshalJSON() ([]byte, error) {
+	type embed DomainListItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainListItem) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// Result of the most recent DNS routing check. Ownership is verified separately. `null` for a search result.
+type DomainListItemDNSStatus string
+
+const (
+	DomainListItemDNSStatusPending DomainListItemDNSStatus = "pending"
+	DomainListItemDNSStatusValid   DomainListItemDNSStatus = "valid"
+	DomainListItemDNSStatusInvalid DomainListItemDNSStatus = "invalid"
+	DomainListItemDNSStatusUnknown DomainListItemDNSStatus = "unknown"
+)
+
+func NewDomainListItemDNSStatusFromString(s string) (DomainListItemDNSStatus, error) {
+	switch s {
+	case "pending":
+		return DomainListItemDNSStatusPending, nil
+	case "valid":
+		return DomainListItemDNSStatusValid, nil
+	case "invalid":
+		return DomainListItemDNSStatusInvalid, nil
+	case "unknown":
+		return DomainListItemDNSStatusUnknown, nil
+	}
+	var t DomainListItemDNSStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DomainListItemDNSStatus) Ptr() *DomainListItemDNSStatus {
+	return &d
+}
+
+// Domain lifecycle. Only active domains resolve to their app. `null` for a search result.
+type DomainListItemStatus string
+
+const (
+	DomainListItemStatusPendingVerification DomainListItemStatus = "pending_verification"
+	DomainListItemStatusProvisioning        DomainListItemStatus = "provisioning"
+	DomainListItemStatusActive              DomainListItemStatus = "active"
+	DomainListItemStatusActionRequired      DomainListItemStatus = "action_required"
+	DomainListItemStatusDeleting            DomainListItemStatus = "deleting"
+	DomainListItemStatusRemoved             DomainListItemStatus = "removed"
+)
+
+func NewDomainListItemStatusFromString(s string) (DomainListItemStatus, error) {
+	switch s {
+	case "pending_verification":
+		return DomainListItemStatusPendingVerification, nil
+	case "provisioning":
+		return DomainListItemStatusProvisioning, nil
+	case "active":
+		return DomainListItemStatusActive, nil
+	case "action_required":
+		return DomainListItemStatusActionRequired, nil
+	case "deleting":
+		return DomainListItemStatusDeleting, nil
+	case "removed":
+		return DomainListItemStatusRemoved, nil
+	}
+	var t DomainListItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DomainListItemStatus) Ptr() *DomainListItemStatus {
+	return &d
+}
+
+var (
+	domainPublicRecordFieldDnssec       = big.NewInt(1 << 0)
+	domainPublicRecordFieldExpiresAt    = big.NewInt(1 << 1)
+	domainPublicRecordFieldNameServers  = big.NewInt(1 << 2)
+	domainPublicRecordFieldRegisteredAt = big.NewInt(1 << 3)
+	domainPublicRecordFieldRegistrant   = big.NewInt(1 << 4)
+	domainPublicRecordFieldRegistrar    = big.NewInt(1 << 5)
+	domainPublicRecordFieldStatuses     = big.NewInt(1 << 6)
+	domainPublicRecordFieldUpdatedAt    = big.NewInt(1 << 7)
+)
+
+type DomainPublicRecord struct {
+	// Whether the domain's delegation is signed with DNSSEC, or `null` when the registry doesn't say.
+	Dnssec *bool `json:"dnssec,omitempty" url:"dnssec,omitempty"`
+	// When the current registration expires, as an ISO 8601 timestamp, or `null` when the record omits it.
+	ExpiresAt   *string  `json:"expires_at,omitempty" url:"expires_at,omitempty"`
+	NameServers []string `json:"name_servers" url:"name_servers"`
+	// When the domain was first registered, as an ISO 8601 timestamp, or `null` when the record omits it.
+	RegisteredAt *string `json:"registered_at,omitempty" url:"registered_at,omitempty"`
+	// Who the domain is registered to. Most registrars withhold or replace these details for privacy, so expect privacy services and placeholders such as `Redacted For Privacy`. `null` when the record publishes no registrant.
+	Registrant *DomainRegistrant `json:"registrant,omitempty" url:"registrant,omitempty"`
+	// The registrar that manages the domain, or `null` when the record doesn't name one.
+	Registrar *DomainRegistrar `json:"registrar,omitempty" url:"registrar,omitempty"`
+	Statuses  []string         `json:"statuses" url:"statuses"`
+	// When the registration record last changed, as an ISO 8601 timestamp, or `null` when the record omits it.
+	UpdatedAt *string `json:"updated_at,omitempty" url:"updated_at,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainPublicRecord) GetDnssec() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Dnssec
+}
+
+func (d *DomainPublicRecord) GetExpiresAt() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ExpiresAt
+}
+
+func (d *DomainPublicRecord) GetNameServers() []string {
+	if d == nil {
+		return nil
+	}
+	return d.NameServers
+}
+
+func (d *DomainPublicRecord) GetRegisteredAt() *string {
+	if d == nil {
+		return nil
+	}
+	return d.RegisteredAt
+}
+
+func (d *DomainPublicRecord) GetRegistrant() *DomainRegistrant {
+	if d == nil {
+		return nil
+	}
+	return d.Registrant
+}
+
+func (d *DomainPublicRecord) GetRegistrar() *DomainRegistrar {
+	if d == nil {
+		return nil
+	}
+	return d.Registrar
+}
+
+func (d *DomainPublicRecord) GetStatuses() []string {
+	if d == nil {
+		return nil
+	}
+	return d.Statuses
+}
+
+func (d *DomainPublicRecord) GetUpdatedAt() *string {
+	if d == nil {
+		return nil
+	}
+	return d.UpdatedAt
+}
+
+func (d *DomainPublicRecord) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainPublicRecord) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetDnssec sets the Dnssec field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainPublicRecord) SetDnssec(dnssec *bool) {
+	d.Dnssec = dnssec
+	d.require(domainPublicRecordFieldDnssec)
+}
+
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainPublicRecord) SetExpiresAt(expiresAt *string) {
+	d.ExpiresAt = expiresAt
+	d.require(domainPublicRecordFieldExpiresAt)
+}
+
+// SetNameServers sets the NameServers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainPublicRecord) SetNameServers(nameServers []string) {
+	d.NameServers = nameServers
+	d.require(domainPublicRecordFieldNameServers)
+}
+
+// SetRegisteredAt sets the RegisteredAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainPublicRecord) SetRegisteredAt(registeredAt *string) {
+	d.RegisteredAt = registeredAt
+	d.require(domainPublicRecordFieldRegisteredAt)
+}
+
+// SetRegistrant sets the Registrant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainPublicRecord) SetRegistrant(registrant *DomainRegistrant) {
+	d.Registrant = registrant
+	d.require(domainPublicRecordFieldRegistrant)
+}
+
+// SetRegistrar sets the Registrar field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainPublicRecord) SetRegistrar(registrar *DomainRegistrar) {
+	d.Registrar = registrar
+	d.require(domainPublicRecordFieldRegistrar)
+}
+
+// SetStatuses sets the Statuses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainPublicRecord) SetStatuses(statuses []string) {
+	d.Statuses = statuses
+	d.require(domainPublicRecordFieldStatuses)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainPublicRecord) SetUpdatedAt(updatedAt *string) {
+	d.UpdatedAt = updatedAt
+	d.require(domainPublicRecordFieldUpdatedAt)
+}
+
+func (d *DomainPublicRecord) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainPublicRecord
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainPublicRecord(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainPublicRecord) MarshalJSON() ([]byte, error) {
+	type embed DomainPublicRecord
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainPublicRecord) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	domainRegistrantFieldAddress      = big.NewInt(1 << 0)
+	domainRegistrantFieldContactURL   = big.NewInt(1 << 1)
+	domainRegistrantFieldCountry      = big.NewInt(1 << 2)
+	domainRegistrantFieldEmail        = big.NewInt(1 << 3)
+	domainRegistrantFieldName         = big.NewInt(1 << 4)
+	domainRegistrantFieldOrganization = big.NewInt(1 << 5)
+	domainRegistrantFieldPhone        = big.NewInt(1 << 6)
+)
+
+type DomainRegistrant struct {
+	// Registrant postal address as published, with lines separated by line breaks. Often only a state or region. `null` when withheld.
+	Address *string `json:"address,omitempty" url:"address,omitempty"`
+	// A web form for contacting the registrant, published when the registrar withholds their email. `null` when there is none.
+	ContactURL *string `json:"contact_url,omitempty" url:"contact_url,omitempty"`
+	// Registrant country as an ISO 3166-1 alpha-2 code, such as `US`, or `null` when withheld.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// Registrant email address, often a privacy forwarding address, or `null` when withheld.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// Registrant name, or `null` when withheld.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Registrant organization, often a privacy service, or `null` when withheld.
+	Organization *string `json:"organization,omitempty" url:"organization,omitempty"`
+	// Registrant phone number, or `null` when withheld.
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainRegistrant) GetAddress() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Address
+}
+
+func (d *DomainRegistrant) GetContactURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ContactURL
+}
+
+func (d *DomainRegistrant) GetCountry() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Country
+}
+
+func (d *DomainRegistrant) GetEmail() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Email
+}
+
+func (d *DomainRegistrant) GetName() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Name
+}
+
+func (d *DomainRegistrant) GetOrganization() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Organization
+}
+
+func (d *DomainRegistrant) GetPhone() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Phone
+}
+
+func (d *DomainRegistrant) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainRegistrant) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetAddress sets the Address field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrant) SetAddress(address *string) {
+	d.Address = address
+	d.require(domainRegistrantFieldAddress)
+}
+
+// SetContactURL sets the ContactURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrant) SetContactURL(contactURL *string) {
+	d.ContactURL = contactURL
+	d.require(domainRegistrantFieldContactURL)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrant) SetCountry(country *string) {
+	d.Country = country
+	d.require(domainRegistrantFieldCountry)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrant) SetEmail(email *string) {
+	d.Email = email
+	d.require(domainRegistrantFieldEmail)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrant) SetName(name *string) {
+	d.Name = name
+	d.require(domainRegistrantFieldName)
+}
+
+// SetOrganization sets the Organization field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrant) SetOrganization(organization *string) {
+	d.Organization = organization
+	d.require(domainRegistrantFieldOrganization)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrant) SetPhone(phone *string) {
+	d.Phone = phone
+	d.require(domainRegistrantFieldPhone)
+}
+
+func (d *DomainRegistrant) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainRegistrant
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainRegistrant(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainRegistrant) MarshalJSON() ([]byte, error) {
+	type embed DomainRegistrant
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainRegistrant) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	domainRegistrarFieldIanaID = big.NewInt(1 << 0)
+	domainRegistrarFieldName   = big.NewInt(1 << 1)
+	domainRegistrarFieldURL    = big.NewInt(1 << 2)
+)
+
+type DomainRegistrar struct {
+	// The registrar's IANA registrar ID, or `null` when the record omits it.
+	IanaID *string `json:"iana_id,omitempty" url:"iana_id,omitempty"`
+	// Registrar name, such as `GoDaddy.com, LLC`.
+	Name string `json:"name" url:"name"`
+	// The registrar's website, or `null` when the record omits it.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainRegistrar) GetIanaID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.IanaID
+}
+
+func (d *DomainRegistrar) GetName() string {
+	if d == nil {
+		return ""
+	}
+	return d.Name
+}
+
+func (d *DomainRegistrar) GetURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.URL
+}
+
+func (d *DomainRegistrar) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainRegistrar) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetIanaID sets the IanaID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrar) SetIanaID(ianaID *string) {
+	d.IanaID = ianaID
+	d.require(domainRegistrarFieldIanaID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrar) SetName(name string) {
+	d.Name = name
+	d.require(domainRegistrarFieldName)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrar) SetURL(url *string) {
+	d.URL = url
+	d.require(domainRegistrarFieldURL)
+}
+
+func (d *DomainRegistrar) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainRegistrar
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainRegistrar(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainRegistrar) MarshalJSON() ([]byte, error) {
+	type embed DomainRegistrar
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainRegistrar) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	domainRegistrarQuoteFieldAvailable     = big.NewInt(1 << 0)
+	domainRegistrarQuoteFieldPremium       = big.NewInt(1 << 1)
+	domainRegistrarQuoteFieldPrice         = big.NewInt(1 << 2)
+	domainRegistrarQuoteFieldPurchaseURL   = big.NewInt(1 << 3)
+	domainRegistrarQuoteFieldRenewalPrice  = big.NewInt(1 << 4)
+	domainRegistrarQuoteFieldScore         = big.NewInt(1 << 5)
+	domainRegistrarQuoteFieldTransferPrice = big.NewInt(1 << 6)
+)
+
+type DomainRegistrarQuote struct {
+	// Whether the domain can be registered now.
+	Available bool `json:"available" url:"available"`
+	// Whether the registry prices this domain above its standard rate. Premium prices are set per domain and can be much higher.
+	Premium bool `json:"premium" url:"premium"`
+	// What the first year of registration costs. `null` when the domain is not available.
+	Price *Money `json:"price,omitempty" url:"price,omitempty"`
+	// A link to this domain's page in your account's Whop dashboard, where you can buy it. `null` when the domain is not available, or when the request has no account, such as a user token without an account context.
+	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
+	// What each yearly renewal costs after the first year. `null` when the domain is not available.
+	RenewalPrice *Money `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// How desirable the domain is, from 0 to 100. Short names that read like real words, on well-known extensions, score highest. Hyphens, digits, random-looking letters, and famous brand names score lower.
+	Score int `json:"score" url:"score"`
+	// What transferring the domain to Whop costs if you already own it elsewhere, including one added year of registration. `null` when the domain is available or its extension cannot be transferred.
+	TransferPrice *Money `json:"transfer_price,omitempty" url:"transfer_price,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainRegistrarQuote) GetAvailable() bool {
+	if d == nil {
+		return false
+	}
+	return d.Available
+}
+
+func (d *DomainRegistrarQuote) GetPremium() bool {
+	if d == nil {
+		return false
+	}
+	return d.Premium
+}
+
+func (d *DomainRegistrarQuote) GetPrice() *Money {
+	if d == nil {
+		return nil
+	}
+	return d.Price
+}
+
+func (d *DomainRegistrarQuote) GetPurchaseURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.PurchaseURL
+}
+
+func (d *DomainRegistrarQuote) GetRenewalPrice() *Money {
+	if d == nil {
+		return nil
+	}
+	return d.RenewalPrice
+}
+
+func (d *DomainRegistrarQuote) GetScore() int {
+	if d == nil {
+		return 0
+	}
+	return d.Score
+}
+
+func (d *DomainRegistrarQuote) GetTransferPrice() *Money {
+	if d == nil {
+		return nil
+	}
+	return d.TransferPrice
+}
+
+func (d *DomainRegistrarQuote) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainRegistrarQuote) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetAvailable sets the Available field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrarQuote) SetAvailable(available bool) {
+	d.Available = available
+	d.require(domainRegistrarQuoteFieldAvailable)
+}
+
+// SetPremium sets the Premium field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrarQuote) SetPremium(premium bool) {
+	d.Premium = premium
+	d.require(domainRegistrarQuoteFieldPremium)
+}
+
+// SetPrice sets the Price field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrarQuote) SetPrice(price *Money) {
+	d.Price = price
+	d.require(domainRegistrarQuoteFieldPrice)
+}
+
+// SetPurchaseURL sets the PurchaseURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrarQuote) SetPurchaseURL(purchaseURL *string) {
+	d.PurchaseURL = purchaseURL
+	d.require(domainRegistrarQuoteFieldPurchaseURL)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrarQuote) SetRenewalPrice(renewalPrice *Money) {
+	d.RenewalPrice = renewalPrice
+	d.require(domainRegistrarQuoteFieldRenewalPrice)
+}
+
+// SetScore sets the Score field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrarQuote) SetScore(score int) {
+	d.Score = score
+	d.require(domainRegistrarQuoteFieldScore)
+}
+
+// SetTransferPrice sets the TransferPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainRegistrarQuote) SetTransferPrice(transferPrice *Money) {
+	d.TransferPrice = transferPrice
+	d.require(domainRegistrarQuoteFieldTransferPrice)
+}
+
+func (d *DomainRegistrarQuote) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainRegistrarQuote
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainRegistrarQuote(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainRegistrarQuote) MarshalJSON() ([]byte, error) {
+	type embed DomainRegistrarQuote
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainRegistrarQuote) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// Domain lifecycle. Only active domains resolve to their app. `null` for a search result.
 type DomainStatus string
 
 const (
@@ -990,7 +2158,7 @@ var (
 )
 
 type ListDomainsResponse struct {
-	Data     []*Domain                    `json:"data" url:"data"`
+	Data     []*DomainListItem            `json:"data" url:"data"`
 	PageInfo *ListDomainsResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1000,7 +2168,7 @@ type ListDomainsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListDomainsResponse) GetData() []*Domain {
+func (l *ListDomainsResponse) GetData() []*DomainListItem {
 	if l == nil {
 		return nil
 	}
@@ -1030,7 +2198,7 @@ func (l *ListDomainsResponse) require(field *big.Int) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListDomainsResponse) SetData(data []*Domain) {
+func (l *ListDomainsResponse) SetData(data []*DomainListItem) {
 	l.Data = data
 	l.require(listDomainsResponseFieldData)
 }
@@ -1223,7 +2391,7 @@ var (
 )
 
 type UpdateDomainsRequest struct {
-	// Domain ID, prefixed dom_.
+	// Domain ID, prefixed dom_. To retrieve, you can instead pass a hostname such as `example.com` to look up any domain; a name without an extension looks up the name on `.com`.
 	ID string `json:"-" url:"-"`
 	// App ID, prefixed app_. Must belong to the same account.
 	AppID *string `json:"app_id,omitempty" url:"-"`
