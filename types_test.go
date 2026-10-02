@@ -127740,6 +127740,13 @@ func TestEnumAccountFeeRegion(t *testing.T) {
 		assert.Equal(t, AccountFeeRegion("ph"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_ng", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountFeeRegionFromString("ng")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountFeeRegion("ng"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAccountFeeRegionFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
