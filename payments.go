@@ -1197,13 +1197,14 @@ var (
 	paymentInputPlanFieldForceCreateNewPlan   = big.NewInt(1 << 5)
 	paymentInputPlanFieldInitialPrice         = big.NewInt(1 << 6)
 	paymentInputPlanFieldInternalNotes        = big.NewInt(1 << 7)
-	paymentInputPlanFieldPlanType             = big.NewInt(1 << 8)
-	paymentInputPlanFieldProduct              = big.NewInt(1 << 9)
-	paymentInputPlanFieldProductID            = big.NewInt(1 << 10)
-	paymentInputPlanFieldRenewalPrice         = big.NewInt(1 << 11)
-	paymentInputPlanFieldTitle                = big.NewInt(1 << 12)
-	paymentInputPlanFieldTrialPeriodDays      = big.NewInt(1 << 13)
-	paymentInputPlanFieldVisibility           = big.NewInt(1 << 14)
+	paymentInputPlanFieldOverrideTaxType      = big.NewInt(1 << 8)
+	paymentInputPlanFieldPlanType             = big.NewInt(1 << 9)
+	paymentInputPlanFieldProduct              = big.NewInt(1 << 10)
+	paymentInputPlanFieldProductID            = big.NewInt(1 << 11)
+	paymentInputPlanFieldRenewalPrice         = big.NewInt(1 << 12)
+	paymentInputPlanFieldTitle                = big.NewInt(1 << 13)
+	paymentInputPlanFieldTrialPeriodDays      = big.NewInt(1 << 14)
+	paymentInputPlanFieldVisibility           = big.NewInt(1 << 15)
 )
 
 type PaymentInputPlan struct {
@@ -1223,6 +1224,8 @@ type PaymentInputPlan struct {
 	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
 	// Internal notes for the account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
+	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+	OverrideTaxType *PaymentInputPlanOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
 	// Billing model for the variant.
 	PlanType *PaymentInputPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
 	// Find or create a product by external identifier. Mutually exclusive with product_id.
@@ -1299,6 +1302,13 @@ func (p *PaymentInputPlan) GetInternalNotes() *string {
 		return nil
 	}
 	return p.InternalNotes
+}
+
+func (p *PaymentInputPlan) GetOverrideTaxType() *PaymentInputPlanOverrideTaxType {
+	if p == nil {
+		return nil
+	}
+	return p.OverrideTaxType
 }
 
 func (p *PaymentInputPlan) GetPlanType() *PaymentInputPlanPlanType {
@@ -1418,6 +1428,13 @@ func (p *PaymentInputPlan) SetInitialPrice(initialPrice *float64) {
 func (p *PaymentInputPlan) SetInternalNotes(internalNotes *string) {
 	p.InternalNotes = internalNotes
 	p.require(paymentInputPlanFieldInternalNotes)
+}
+
+// SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetOverrideTaxType(overrideTaxType *PaymentInputPlanOverrideTaxType) {
+	p.OverrideTaxType = overrideTaxType
+	p.require(paymentInputPlanFieldOverrideTaxType)
 }
 
 // SetPlanType sets the PlanType field and marks it as non-optional;
@@ -1795,6 +1812,32 @@ func NewPaymentInputPlanCurrencyFromString(s string) (PaymentInputPlanCurrency, 
 }
 
 func (p PaymentInputPlanCurrency) Ptr() *PaymentInputPlanCurrency {
+	return &p
+}
+
+// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+type PaymentInputPlanOverrideTaxType string
+
+const (
+	PaymentInputPlanOverrideTaxTypeExclusive   PaymentInputPlanOverrideTaxType = "exclusive"
+	PaymentInputPlanOverrideTaxTypeInclusive   PaymentInputPlanOverrideTaxType = "inclusive"
+	PaymentInputPlanOverrideTaxTypeUnspecified PaymentInputPlanOverrideTaxType = "unspecified"
+)
+
+func NewPaymentInputPlanOverrideTaxTypeFromString(s string) (PaymentInputPlanOverrideTaxType, error) {
+	switch s {
+	case "exclusive":
+		return PaymentInputPlanOverrideTaxTypeExclusive, nil
+	case "inclusive":
+		return PaymentInputPlanOverrideTaxTypeInclusive, nil
+	case "unspecified":
+		return PaymentInputPlanOverrideTaxTypeUnspecified, nil
+	}
+	var t PaymentInputPlanOverrideTaxType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentInputPlanOverrideTaxType) Ptr() *PaymentInputPlanOverrideTaxType {
 	return &p
 }
 
