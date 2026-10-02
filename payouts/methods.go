@@ -16,8 +16,9 @@ var (
 	createMethodsRequestFieldFields                  = big.NewInt(1 << 2)
 	createMethodsRequestFieldIsDefault               = big.NewInt(1 << 3)
 	createMethodsRequestFieldNickname                = big.NewInt(1 << 4)
-	createMethodsRequestFieldSupportedPayoutMethodID = big.NewInt(1 << 5)
-	createMethodsRequestFieldUserID                  = big.NewInt(1 << 6)
+	createMethodsRequestFieldRecipient               = big.NewInt(1 << 5)
+	createMethodsRequestFieldSupportedPayoutMethodID = big.NewInt(1 << 6)
+	createMethodsRequestFieldUserID                  = big.NewInt(1 << 7)
 )
 
 type CreateMethodsRequest struct {
@@ -31,6 +32,8 @@ type CreateMethodsRequest struct {
 	IsDefault *bool `json:"is_default,omitempty" url:"-"`
 	// A label for the payout method, unique per destination.
 	Nickname *string `json:"nickname,omitempty" url:"-"`
+	// Creates an external recipient and saves the bank method on their payout account, bound to the funding account. The MassPay email is generated when omitted; the recipient does not need a Whop login or Sumsub verification. Recipient methods cannot be default or recurring methods and cannot use Plaid.
+	Recipient *CreateMethodsRequestRecipient `json:"recipient,omitempty" url:"-"`
 	// The supported payout method to save (a podst_ identifier from a previous listing).
 	SupportedPayoutMethodID string `json:"supported_payout_method_id" url:"-"`
 	// The user to add the payout method for, prefixed `user_`. Provide this or `account_id`.
@@ -80,6 +83,13 @@ func (c *CreateMethodsRequest) SetIsDefault(isDefault *bool) {
 func (c *CreateMethodsRequest) SetNickname(nickname *string) {
 	c.Nickname = nickname
 	c.require(createMethodsRequestFieldNickname)
+}
+
+// SetRecipient sets the Recipient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequest) SetRecipient(recipient *CreateMethodsRequestRecipient) {
+	c.Recipient = recipient
+	c.require(createMethodsRequestFieldRecipient)
 }
 
 // SetSupportedPayoutMethodID sets the SupportedPayoutMethodID field and marks it as non-optional;
@@ -144,16 +154,17 @@ func (d *DeleteMethodsRequest) SetID(id string) {
 }
 
 var (
-	listMethodsRequestFieldAccountID     = big.NewInt(1 << 0)
-	listMethodsRequestFieldUserID        = big.NewInt(1 << 1)
-	listMethodsRequestFieldStatus        = big.NewInt(1 << 2)
-	listMethodsRequestFieldAmount        = big.NewInt(1 << 3)
-	listMethodsRequestFieldCurrency      = big.NewInt(1 << 4)
-	listMethodsRequestFieldIncludeLimits = big.NewInt(1 << 5)
-	listMethodsRequestFieldFirst         = big.NewInt(1 << 6)
-	listMethodsRequestFieldAfter         = big.NewInt(1 << 7)
-	listMethodsRequestFieldLast          = big.NewInt(1 << 8)
-	listMethodsRequestFieldBefore        = big.NewInt(1 << 9)
+	listMethodsRequestFieldAccountID         = big.NewInt(1 << 0)
+	listMethodsRequestFieldUserID            = big.NewInt(1 << 1)
+	listMethodsRequestFieldStatus            = big.NewInt(1 << 2)
+	listMethodsRequestFieldAmount            = big.NewInt(1 << 3)
+	listMethodsRequestFieldCurrency          = big.NewInt(1 << 4)
+	listMethodsRequestFieldIncludeRecipients = big.NewInt(1 << 5)
+	listMethodsRequestFieldIncludeLimits     = big.NewInt(1 << 6)
+	listMethodsRequestFieldFirst             = big.NewInt(1 << 7)
+	listMethodsRequestFieldAfter             = big.NewInt(1 << 8)
+	listMethodsRequestFieldLast              = big.NewInt(1 << 9)
+	listMethodsRequestFieldBefore            = big.NewInt(1 << 10)
 )
 
 type ListMethodsRequest struct {
@@ -167,6 +178,8 @@ type ListMethodsRequest struct {
 	Amount *float64 `json:"-" url:"amount,omitempty"`
 	// Currency code of the amount, for example `usd`. Only meaningful with amount or include_limits.
 	Currency *string `json:"-" url:"currency,omitempty"`
+	// When true, also includes bill-pay recipient methods tied to this funding account. Defaults to false, returning only the account's own payout methods.
+	IncludeRecipients *bool `json:"-" url:"include_recipients,omitempty"`
 	// When true, the response also carries limits — the live per-speed payout caps the account's payout requests are validated against, in the requested currency. Requires the payout:withdrawal:read scope.
 	IncludeLimits *bool `json:"-" url:"include_limits,omitempty"`
 	// Number of results to return from the start of the range.
@@ -224,6 +237,13 @@ func (l *ListMethodsRequest) SetCurrency(currency *string) {
 	l.require(listMethodsRequestFieldCurrency)
 }
 
+// SetIncludeRecipients sets the IncludeRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsRequest) SetIncludeRecipients(includeRecipients *bool) {
+	l.IncludeRecipients = includeRecipients
+	l.require(listMethodsRequestFieldIncludeRecipients)
+}
+
 // SetIncludeLimits sets the IncludeLimits field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListMethodsRequest) SetIncludeLimits(includeLimits *bool) {
@@ -259,6 +279,143 @@ func (l *ListMethodsRequest) SetBefore(before *string) {
 	l.require(listMethodsRequestFieldBefore)
 }
 
+// Creates an external recipient and saves the bank method on their payout account, bound to the funding account. The MassPay email is generated when omitted; the recipient does not need a Whop login or Sumsub verification. Recipient methods cannot be default or recurring methods and cannot use Plaid.
+var (
+	createMethodsRequestRecipientFieldCountry   = big.NewInt(1 << 0)
+	createMethodsRequestRecipientFieldEmail     = big.NewInt(1 << 1)
+	createMethodsRequestRecipientFieldFirstName = big.NewInt(1 << 2)
+	createMethodsRequestRecipientFieldLastName  = big.NewInt(1 << 3)
+)
+
+type CreateMethodsRequestRecipient struct {
+	// ISO 3166-1 alpha-2 or alpha-3 country code.
+	Country string `json:"country" url:"country"`
+	// Optional email for the recipient's MassPay payout account. Trimmed and lowercased. When omitted or null, generates a random address ending in `_bp@payouts.whop.com`.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// Recipient's first name, at most 120 UTF-8 bytes. The trimmed full name, including a space between the names, must be at most 100 characters and cannot contain angle brackets or double quotes.
+	FirstName string `json:"first_name" url:"first_name"`
+	// Recipient's last name, at most 120 UTF-8 bytes. The combined full name follows the same 100-character limit as a Whop user name.
+	LastName string `json:"last_name" url:"last_name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateMethodsRequestRecipient) GetCountry() string {
+	if c == nil {
+		return ""
+	}
+	return c.Country
+}
+
+func (c *CreateMethodsRequestRecipient) GetEmail() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Email
+}
+
+func (c *CreateMethodsRequestRecipient) GetFirstName() string {
+	if c == nil {
+		return ""
+	}
+	return c.FirstName
+}
+
+func (c *CreateMethodsRequestRecipient) GetLastName() string {
+	if c == nil {
+		return ""
+	}
+	return c.LastName
+}
+
+func (c *CreateMethodsRequestRecipient) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateMethodsRequestRecipient) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequestRecipient) SetCountry(country string) {
+	c.Country = country
+	c.require(createMethodsRequestRecipientFieldCountry)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequestRecipient) SetEmail(email *string) {
+	c.Email = email
+	c.require(createMethodsRequestRecipientFieldEmail)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequestRecipient) SetFirstName(firstName string) {
+	c.FirstName = firstName
+	c.require(createMethodsRequestRecipientFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsRequestRecipient) SetLastName(lastName string) {
+	c.LastName = lastName
+	c.require(createMethodsRequestRecipientFieldLastName)
+}
+
+func (c *CreateMethodsRequestRecipient) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateMethodsRequestRecipient
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateMethodsRequestRecipient(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateMethodsRequestRecipient) MarshalJSON() ([]byte, error) {
+	type embed CreateMethodsRequestRecipient
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateMethodsRequestRecipient) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 var (
 	createMethodsResponseFieldAccountReference      = big.NewInt(1 << 0)
 	createMethodsResponseFieldBankVerificationState = big.NewInt(1 << 1)
@@ -277,10 +434,11 @@ var (
 	createMethodsResponseFieldObject                = big.NewInt(1 << 14)
 	createMethodsResponseFieldPayerName             = big.NewInt(1 << 15)
 	createMethodsResponseFieldQuote                 = big.NewInt(1 << 16)
-	createMethodsResponseFieldStatus                = big.NewInt(1 << 17)
-	createMethodsResponseFieldStatusReason          = big.NewInt(1 << 18)
-	createMethodsResponseFieldSupportedPayoutMethod = big.NewInt(1 << 19)
-	createMethodsResponseFieldUnavailableReason     = big.NewInt(1 << 20)
+	createMethodsResponseFieldRecipient             = big.NewInt(1 << 17)
+	createMethodsResponseFieldStatus                = big.NewInt(1 << 18)
+	createMethodsResponseFieldStatusReason          = big.NewInt(1 << 19)
+	createMethodsResponseFieldSupportedPayoutMethod = big.NewInt(1 << 20)
+	createMethodsResponseFieldUnavailableReason     = big.NewInt(1 << 21)
 )
 
 type CreateMethodsResponse struct {
@@ -312,6 +470,8 @@ type CreateMethodsResponse struct {
 	PayerName *string                     `json:"payer_name,omitempty" url:"payer_name,omitempty"`
 	// Always null on create.
 	Quote map[string]any `json:"quote,omitempty" url:"quote,omitempty"`
+	// The recipient of a third-party payout method. Present only for recipient payout methods.
+	Recipient *CreateMethodsResponseRecipient `json:"recipient,omitempty" url:"recipient,omitempty"`
 	// Always `created` on create — no payout has used the method yet.
 	Status CreateMethodsResponseStatus `json:"status" url:"status"`
 	// Always `null` on create.
@@ -444,6 +604,13 @@ func (c *CreateMethodsResponse) GetQuote() map[string]any {
 		return nil
 	}
 	return c.Quote
+}
+
+func (c *CreateMethodsResponse) GetRecipient() *CreateMethodsResponseRecipient {
+	if c == nil {
+		return nil
+	}
+	return c.Recipient
 }
 
 func (c *CreateMethodsResponse) GetStatus() CreateMethodsResponseStatus {
@@ -607,6 +774,13 @@ func (c *CreateMethodsResponse) SetQuote(quote map[string]any) {
 	c.require(createMethodsResponseFieldQuote)
 }
 
+// SetRecipient sets the Recipient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsResponse) SetRecipient(recipient *CreateMethodsResponseRecipient) {
+	c.Recipient = recipient
+	c.require(createMethodsResponseFieldRecipient)
+}
+
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateMethodsResponse) SetStatus(status CreateMethodsResponseStatus) {
@@ -738,6 +912,141 @@ func NewCreateMethodsResponseObjectFromString(s string) (CreateMethodsResponseOb
 
 func (c CreateMethodsResponseObject) Ptr() *CreateMethodsResponseObject {
 	return &c
+}
+
+// The recipient of a third-party payout method. Present only for recipient payout methods.
+var (
+	createMethodsResponseRecipientFieldCountry   = big.NewInt(1 << 0)
+	createMethodsResponseRecipientFieldFirstName = big.NewInt(1 << 1)
+	createMethodsResponseRecipientFieldLastName  = big.NewInt(1 << 2)
+	createMethodsResponseRecipientFieldUserID    = big.NewInt(1 << 3)
+)
+
+type CreateMethodsResponseRecipient struct {
+	// ISO 3166-1 alpha-3 country code.
+	Country   string `json:"country" url:"country"`
+	FirstName string `json:"first_name" url:"first_name"`
+	LastName  string `json:"last_name" url:"last_name"`
+	// The recipient's Whop user ID, prefixed `user_`.
+	UserID string `json:"user_id" url:"user_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateMethodsResponseRecipient) GetCountry() string {
+	if c == nil {
+		return ""
+	}
+	return c.Country
+}
+
+func (c *CreateMethodsResponseRecipient) GetFirstName() string {
+	if c == nil {
+		return ""
+	}
+	return c.FirstName
+}
+
+func (c *CreateMethodsResponseRecipient) GetLastName() string {
+	if c == nil {
+		return ""
+	}
+	return c.LastName
+}
+
+func (c *CreateMethodsResponseRecipient) GetUserID() string {
+	if c == nil {
+		return ""
+	}
+	return c.UserID
+}
+
+func (c *CreateMethodsResponseRecipient) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateMethodsResponseRecipient) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsResponseRecipient) SetCountry(country string) {
+	c.Country = country
+	c.require(createMethodsResponseRecipientFieldCountry)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsResponseRecipient) SetFirstName(firstName string) {
+	c.FirstName = firstName
+	c.require(createMethodsResponseRecipientFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsResponseRecipient) SetLastName(lastName string) {
+	c.LastName = lastName
+	c.require(createMethodsResponseRecipientFieldLastName)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsResponseRecipient) SetUserID(userID string) {
+	c.UserID = userID
+	c.require(createMethodsResponseRecipientFieldUserID)
+}
+
+func (c *CreateMethodsResponseRecipient) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateMethodsResponseRecipient
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateMethodsResponseRecipient(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateMethodsResponseRecipient) MarshalJSON() ([]byte, error) {
+	type embed CreateMethodsResponseRecipient
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateMethodsResponseRecipient) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 // Always `created` on create — no payout has used the method yet.
@@ -1275,10 +1584,11 @@ var (
 	listMethodsResponseDataItemFieldObject                = big.NewInt(1 << 14)
 	listMethodsResponseDataItemFieldPayerName             = big.NewInt(1 << 15)
 	listMethodsResponseDataItemFieldQuote                 = big.NewInt(1 << 16)
-	listMethodsResponseDataItemFieldStatus                = big.NewInt(1 << 17)
-	listMethodsResponseDataItemFieldStatusReason          = big.NewInt(1 << 18)
-	listMethodsResponseDataItemFieldSupportedPayoutMethod = big.NewInt(1 << 19)
-	listMethodsResponseDataItemFieldUnavailableReason     = big.NewInt(1 << 20)
+	listMethodsResponseDataItemFieldRecipient             = big.NewInt(1 << 17)
+	listMethodsResponseDataItemFieldStatus                = big.NewInt(1 << 18)
+	listMethodsResponseDataItemFieldStatusReason          = big.NewInt(1 << 19)
+	listMethodsResponseDataItemFieldSupportedPayoutMethod = big.NewInt(1 << 20)
+	listMethodsResponseDataItemFieldUnavailableReason     = big.NewInt(1 << 21)
 )
 
 type ListMethodsResponseDataItem struct {
@@ -1315,6 +1625,8 @@ type ListMethodsResponseDataItem struct {
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
 	// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 	Quote *ListMethodsResponseDataItemQuote `json:"quote,omitempty" url:"quote,omitempty"`
+	// The recipient of a third-party payout method. Present only for recipient payout methods.
+	Recipient *ListMethodsResponseDataItemRecipient `json:"recipient,omitempty" url:"recipient,omitempty"`
 	// Lifecycle status: `created` means saved but unused, `active` means a payout succeeded through it, `broken` means a payout failure disabled it; a later successful payout returns it to `active`.
 	Status ListMethodsResponseDataItemStatus `json:"status" url:"status"`
 	// Machine-readable code for why the method is `broken` — the newest disabling failure recorded through it, whether a payout error or a pre-payout rejection. `null` unless the method is broken, or when it was disabled without a recorded failure.
@@ -1448,6 +1760,13 @@ func (l *ListMethodsResponseDataItem) GetQuote() *ListMethodsResponseDataItemQuo
 		return nil
 	}
 	return l.Quote
+}
+
+func (l *ListMethodsResponseDataItem) GetRecipient() *ListMethodsResponseDataItemRecipient {
+	if l == nil {
+		return nil
+	}
+	return l.Recipient
 }
 
 func (l *ListMethodsResponseDataItem) GetStatus() ListMethodsResponseDataItemStatus {
@@ -1609,6 +1928,13 @@ func (l *ListMethodsResponseDataItem) SetPayerName(payerName *string) {
 func (l *ListMethodsResponseDataItem) SetQuote(quote *ListMethodsResponseDataItemQuote) {
 	l.Quote = quote
 	l.require(listMethodsResponseDataItemFieldQuote)
+}
+
+// SetRecipient sets the Recipient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseDataItem) SetRecipient(recipient *ListMethodsResponseDataItemRecipient) {
+	l.Recipient = recipient
+	l.require(listMethodsResponseDataItemFieldRecipient)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -2396,6 +2722,141 @@ func (l *ListMethodsResponseDataItemQuoteStandard) MarshalJSON() ([]byte, error)
 }
 
 func (l *ListMethodsResponseDataItemQuoteStandard) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// The recipient of a third-party payout method. Present only for recipient payout methods.
+var (
+	listMethodsResponseDataItemRecipientFieldCountry   = big.NewInt(1 << 0)
+	listMethodsResponseDataItemRecipientFieldFirstName = big.NewInt(1 << 1)
+	listMethodsResponseDataItemRecipientFieldLastName  = big.NewInt(1 << 2)
+	listMethodsResponseDataItemRecipientFieldUserID    = big.NewInt(1 << 3)
+)
+
+type ListMethodsResponseDataItemRecipient struct {
+	// ISO 3166-1 alpha-3 country code.
+	Country   string `json:"country" url:"country"`
+	FirstName string `json:"first_name" url:"first_name"`
+	LastName  string `json:"last_name" url:"last_name"`
+	// The recipient's Whop user ID, prefixed `user_`.
+	UserID string `json:"user_id" url:"user_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListMethodsResponseDataItemRecipient) GetCountry() string {
+	if l == nil {
+		return ""
+	}
+	return l.Country
+}
+
+func (l *ListMethodsResponseDataItemRecipient) GetFirstName() string {
+	if l == nil {
+		return ""
+	}
+	return l.FirstName
+}
+
+func (l *ListMethodsResponseDataItemRecipient) GetLastName() string {
+	if l == nil {
+		return ""
+	}
+	return l.LastName
+}
+
+func (l *ListMethodsResponseDataItemRecipient) GetUserID() string {
+	if l == nil {
+		return ""
+	}
+	return l.UserID
+}
+
+func (l *ListMethodsResponseDataItemRecipient) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListMethodsResponseDataItemRecipient) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseDataItemRecipient) SetCountry(country string) {
+	l.Country = country
+	l.require(listMethodsResponseDataItemRecipientFieldCountry)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseDataItemRecipient) SetFirstName(firstName string) {
+	l.FirstName = firstName
+	l.require(listMethodsResponseDataItemRecipientFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseDataItemRecipient) SetLastName(lastName string) {
+	l.LastName = lastName
+	l.require(listMethodsResponseDataItemRecipientFieldLastName)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseDataItemRecipient) SetUserID(userID string) {
+	l.UserID = userID
+	l.require(listMethodsResponseDataItemRecipientFieldUserID)
+}
+
+func (l *ListMethodsResponseDataItemRecipient) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListMethodsResponseDataItemRecipient
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListMethodsResponseDataItemRecipient(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListMethodsResponseDataItemRecipient) MarshalJSON() ([]byte, error) {
+	type embed ListMethodsResponseDataItemRecipient
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListMethodsResponseDataItemRecipient) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -3355,10 +3816,11 @@ var (
 	updateMethodsResponseFieldObject                = big.NewInt(1 << 14)
 	updateMethodsResponseFieldPayerName             = big.NewInt(1 << 15)
 	updateMethodsResponseFieldQuote                 = big.NewInt(1 << 16)
-	updateMethodsResponseFieldStatus                = big.NewInt(1 << 17)
-	updateMethodsResponseFieldStatusReason          = big.NewInt(1 << 18)
-	updateMethodsResponseFieldSupportedPayoutMethod = big.NewInt(1 << 19)
-	updateMethodsResponseFieldUnavailableReason     = big.NewInt(1 << 20)
+	updateMethodsResponseFieldRecipient             = big.NewInt(1 << 17)
+	updateMethodsResponseFieldStatus                = big.NewInt(1 << 18)
+	updateMethodsResponseFieldStatusReason          = big.NewInt(1 << 19)
+	updateMethodsResponseFieldSupportedPayoutMethod = big.NewInt(1 << 20)
+	updateMethodsResponseFieldUnavailableReason     = big.NewInt(1 << 21)
 )
 
 type UpdateMethodsResponse struct {
@@ -3390,6 +3852,8 @@ type UpdateMethodsResponse struct {
 	PayerName *string                     `json:"payer_name,omitempty" url:"payer_name,omitempty"`
 	// Always `null` after an update.
 	Quote map[string]any `json:"quote,omitempty" url:"quote,omitempty"`
+	// The recipient of a third-party payout method. Present only for recipient payout methods.
+	Recipient *UpdateMethodsResponseRecipient `json:"recipient,omitempty" url:"recipient,omitempty"`
 	// `created` — saved, no payout has completed through it yet. `active` — a payout through it completed. `broken` — a payout through it failed with an error attributable to the method, and it no longer accepts payouts; a later successful payout returns it to `active`.
 	Status UpdateMethodsResponseStatus `json:"status" url:"status"`
 	// Machine-readable code for why the method is `broken` — the newest failure recorded through it, whether a payout error or a pre-payout rejection. `null` unless the method is broken, or when it was disabled without a recorded failure.
@@ -3522,6 +3986,13 @@ func (u *UpdateMethodsResponse) GetQuote() map[string]any {
 		return nil
 	}
 	return u.Quote
+}
+
+func (u *UpdateMethodsResponse) GetRecipient() *UpdateMethodsResponseRecipient {
+	if u == nil {
+		return nil
+	}
+	return u.Recipient
 }
 
 func (u *UpdateMethodsResponse) GetStatus() UpdateMethodsResponseStatus {
@@ -3685,6 +4156,13 @@ func (u *UpdateMethodsResponse) SetQuote(quote map[string]any) {
 	u.require(updateMethodsResponseFieldQuote)
 }
 
+// SetRecipient sets the Recipient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsResponse) SetRecipient(recipient *UpdateMethodsResponseRecipient) {
+	u.Recipient = recipient
+	u.require(updateMethodsResponseFieldRecipient)
+}
+
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateMethodsResponse) SetStatus(status UpdateMethodsResponseStatus) {
@@ -3816,6 +4294,141 @@ func NewUpdateMethodsResponseObjectFromString(s string) (UpdateMethodsResponseOb
 
 func (u UpdateMethodsResponseObject) Ptr() *UpdateMethodsResponseObject {
 	return &u
+}
+
+// The recipient of a third-party payout method. Present only for recipient payout methods.
+var (
+	updateMethodsResponseRecipientFieldCountry   = big.NewInt(1 << 0)
+	updateMethodsResponseRecipientFieldFirstName = big.NewInt(1 << 1)
+	updateMethodsResponseRecipientFieldLastName  = big.NewInt(1 << 2)
+	updateMethodsResponseRecipientFieldUserID    = big.NewInt(1 << 3)
+)
+
+type UpdateMethodsResponseRecipient struct {
+	// ISO 3166-1 alpha-3 country code.
+	Country   string `json:"country" url:"country"`
+	FirstName string `json:"first_name" url:"first_name"`
+	LastName  string `json:"last_name" url:"last_name"`
+	// The recipient's Whop user ID, prefixed `user_`.
+	UserID string `json:"user_id" url:"user_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateMethodsResponseRecipient) GetCountry() string {
+	if u == nil {
+		return ""
+	}
+	return u.Country
+}
+
+func (u *UpdateMethodsResponseRecipient) GetFirstName() string {
+	if u == nil {
+		return ""
+	}
+	return u.FirstName
+}
+
+func (u *UpdateMethodsResponseRecipient) GetLastName() string {
+	if u == nil {
+		return ""
+	}
+	return u.LastName
+}
+
+func (u *UpdateMethodsResponseRecipient) GetUserID() string {
+	if u == nil {
+		return ""
+	}
+	return u.UserID
+}
+
+func (u *UpdateMethodsResponseRecipient) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateMethodsResponseRecipient) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsResponseRecipient) SetCountry(country string) {
+	u.Country = country
+	u.require(updateMethodsResponseRecipientFieldCountry)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsResponseRecipient) SetFirstName(firstName string) {
+	u.FirstName = firstName
+	u.require(updateMethodsResponseRecipientFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsResponseRecipient) SetLastName(lastName string) {
+	u.LastName = lastName
+	u.require(updateMethodsResponseRecipientFieldLastName)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsResponseRecipient) SetUserID(userID string) {
+	u.UserID = userID
+	u.require(updateMethodsResponseRecipientFieldUserID)
+}
+
+func (u *UpdateMethodsResponseRecipient) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateMethodsResponseRecipient
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateMethodsResponseRecipient(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateMethodsResponseRecipient) MarshalJSON() ([]byte, error) {
+	type embed UpdateMethodsResponseRecipient
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateMethodsResponseRecipient) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
 }
 
 // `created` — saved, no payout has completed through it yet. `active` — a payout through it completed. `broken` — a payout through it failed with an error attributable to the method, and it no longer accepts payouts; a later successful payout returns it to `active`.

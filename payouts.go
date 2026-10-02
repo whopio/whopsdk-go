@@ -5726,10 +5726,11 @@ var (
 	postPayoutMethodCreatedPayloadDataFieldObject                = big.NewInt(1 << 14)
 	postPayoutMethodCreatedPayloadDataFieldPayerName             = big.NewInt(1 << 15)
 	postPayoutMethodCreatedPayloadDataFieldQuote                 = big.NewInt(1 << 16)
-	postPayoutMethodCreatedPayloadDataFieldStatus                = big.NewInt(1 << 17)
-	postPayoutMethodCreatedPayloadDataFieldStatusReason          = big.NewInt(1 << 18)
-	postPayoutMethodCreatedPayloadDataFieldSupportedPayoutMethod = big.NewInt(1 << 19)
-	postPayoutMethodCreatedPayloadDataFieldUnavailableReason     = big.NewInt(1 << 20)
+	postPayoutMethodCreatedPayloadDataFieldRecipient             = big.NewInt(1 << 17)
+	postPayoutMethodCreatedPayloadDataFieldStatus                = big.NewInt(1 << 18)
+	postPayoutMethodCreatedPayloadDataFieldStatusReason          = big.NewInt(1 << 19)
+	postPayoutMethodCreatedPayloadDataFieldSupportedPayoutMethod = big.NewInt(1 << 20)
+	postPayoutMethodCreatedPayloadDataFieldUnavailableReason     = big.NewInt(1 << 21)
 )
 
 type PostPayoutMethodCreatedPayloadData struct {
@@ -5766,6 +5767,8 @@ type PostPayoutMethodCreatedPayloadData struct {
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
 	// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 	Quote *PostPayoutMethodCreatedPayloadDataQuote `json:"quote,omitempty" url:"quote,omitempty"`
+	// The recipient of a third-party payout method. Present only for recipient payout methods.
+	Recipient *PostPayoutMethodCreatedPayloadDataRecipient `json:"recipient,omitempty" url:"recipient,omitempty"`
 	// Lifecycle status: `created` means saved but unused, `active` means a payout succeeded through it, `broken` means a payout failure disabled it; a later successful payout returns it to `active`.
 	Status PostPayoutMethodCreatedPayloadDataStatus `json:"status" url:"status"`
 	// Machine-readable code for why the method is `broken` — the newest disabling failure recorded through it, whether a payout error or a pre-payout rejection. `null` unless the method is broken, or when it was disabled without a recorded failure.
@@ -5899,6 +5902,13 @@ func (p *PostPayoutMethodCreatedPayloadData) GetQuote() *PostPayoutMethodCreated
 		return nil
 	}
 	return p.Quote
+}
+
+func (p *PostPayoutMethodCreatedPayloadData) GetRecipient() *PostPayoutMethodCreatedPayloadDataRecipient {
+	if p == nil {
+		return nil
+	}
+	return p.Recipient
 }
 
 func (p *PostPayoutMethodCreatedPayloadData) GetStatus() PostPayoutMethodCreatedPayloadDataStatus {
@@ -6060,6 +6070,13 @@ func (p *PostPayoutMethodCreatedPayloadData) SetPayerName(payerName *string) {
 func (p *PostPayoutMethodCreatedPayloadData) SetQuote(quote *PostPayoutMethodCreatedPayloadDataQuote) {
 	p.Quote = quote
 	p.require(postPayoutMethodCreatedPayloadDataFieldQuote)
+}
+
+// SetRecipient sets the Recipient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutMethodCreatedPayloadData) SetRecipient(recipient *PostPayoutMethodCreatedPayloadDataRecipient) {
+	p.Recipient = recipient
+	p.require(postPayoutMethodCreatedPayloadDataFieldRecipient)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -6847,6 +6864,141 @@ func (p *PostPayoutMethodCreatedPayloadDataQuoteStandard) MarshalJSON() ([]byte,
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataQuoteStandard) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The recipient of a third-party payout method. Present only for recipient payout methods.
+var (
+	postPayoutMethodCreatedPayloadDataRecipientFieldCountry   = big.NewInt(1 << 0)
+	postPayoutMethodCreatedPayloadDataRecipientFieldFirstName = big.NewInt(1 << 1)
+	postPayoutMethodCreatedPayloadDataRecipientFieldLastName  = big.NewInt(1 << 2)
+	postPayoutMethodCreatedPayloadDataRecipientFieldUserID    = big.NewInt(1 << 3)
+)
+
+type PostPayoutMethodCreatedPayloadDataRecipient struct {
+	// ISO 3166-1 alpha-3 country code.
+	Country   string `json:"country" url:"country"`
+	FirstName string `json:"first_name" url:"first_name"`
+	LastName  string `json:"last_name" url:"last_name"`
+	// The recipient's Whop user ID, prefixed `user_`.
+	UserID string `json:"user_id" url:"user_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetCountry() string {
+	if p == nil {
+		return ""
+	}
+	return p.Country
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetFirstName() string {
+	if p == nil {
+		return ""
+	}
+	return p.FirstName
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetLastName() string {
+	if p == nil {
+		return ""
+	}
+	return p.LastName
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetUserID() string {
+	if p == nil {
+		return ""
+	}
+	return p.UserID
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) SetCountry(country string) {
+	p.Country = country
+	p.require(postPayoutMethodCreatedPayloadDataRecipientFieldCountry)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) SetFirstName(firstName string) {
+	p.FirstName = firstName
+	p.require(postPayoutMethodCreatedPayloadDataRecipientFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) SetLastName(lastName string) {
+	p.LastName = lastName
+	p.require(postPayoutMethodCreatedPayloadDataRecipientFieldLastName)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) SetUserID(userID string) {
+	p.UserID = userID
+	p.require(postPayoutMethodCreatedPayloadDataRecipientFieldUserID)
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostPayoutMethodCreatedPayloadDataRecipient
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostPayoutMethodCreatedPayloadDataRecipient(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutMethodCreatedPayloadDataRecipient
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) String() string {
 	if p == nil {
 		return "<nil>"
 	}
