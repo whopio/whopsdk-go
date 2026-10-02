@@ -137291,6 +137291,13 @@ func TestEnumWebhookEvent(t *testing.T) {
 		assert.Equal(t, WebhookEvent("membership.trial_ending_soon"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_membership_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookEventFromString("membership.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookEvent("membership.updated"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_entry_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewWebhookEventFromString("entry.created")

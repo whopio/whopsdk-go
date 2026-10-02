@@ -1158,6 +1158,7 @@ const (
 	WebhookEventsItemMembershipActivated                   WebhookEventsItem = "membership.activated"
 	WebhookEventsItemMembershipDeactivated                 WebhookEventsItem = "membership.deactivated"
 	WebhookEventsItemMembershipTrialEndingSoon             WebhookEventsItem = "membership.trial_ending_soon"
+	WebhookEventsItemMembershipUpdated                     WebhookEventsItem = "membership.updated"
 	WebhookEventsItemEntryCreated                          WebhookEventsItem = "entry.created"
 	WebhookEventsItemEntryApproved                         WebhookEventsItem = "entry.approved"
 	WebhookEventsItemEntryDenied                           WebhookEventsItem = "entry.denied"
@@ -1276,6 +1277,8 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemMembershipDeactivated, nil
 	case "membership.trial_ending_soon":
 		return WebhookEventsItemMembershipTrialEndingSoon, nil
+	case "membership.updated":
+		return WebhookEventsItemMembershipUpdated, nil
 	case "entry.created":
 		return WebhookEventsItemEntryCreated, nil
 	case "entry.approved":
@@ -1852,6 +1855,7 @@ const (
 	WebhookListItemEventsItemMembershipActivated                   WebhookListItemEventsItem = "membership.activated"
 	WebhookListItemEventsItemMembershipDeactivated                 WebhookListItemEventsItem = "membership.deactivated"
 	WebhookListItemEventsItemMembershipTrialEndingSoon             WebhookListItemEventsItem = "membership.trial_ending_soon"
+	WebhookListItemEventsItemMembershipUpdated                     WebhookListItemEventsItem = "membership.updated"
 	WebhookListItemEventsItemEntryCreated                          WebhookListItemEventsItem = "entry.created"
 	WebhookListItemEventsItemEntryApproved                         WebhookListItemEventsItem = "entry.approved"
 	WebhookListItemEventsItemEntryDenied                           WebhookListItemEventsItem = "entry.denied"
@@ -1970,6 +1974,8 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemMembershipDeactivated, nil
 	case "membership.trial_ending_soon":
 		return WebhookListItemEventsItemMembershipTrialEndingSoon, nil
+	case "membership.updated":
+		return WebhookListItemEventsItemMembershipUpdated, nil
 	case "entry.created":
 		return WebhookListItemEventsItemEntryCreated, nil
 	case "entry.approved":
@@ -2178,6 +2184,7 @@ const (
 	WebhookTestableEventsItemMembershipActivated                   WebhookTestableEventsItem = "membership.activated"
 	WebhookTestableEventsItemMembershipDeactivated                 WebhookTestableEventsItem = "membership.deactivated"
 	WebhookTestableEventsItemMembershipTrialEndingSoon             WebhookTestableEventsItem = "membership.trial_ending_soon"
+	WebhookTestableEventsItemMembershipUpdated                     WebhookTestableEventsItem = "membership.updated"
 	WebhookTestableEventsItemEntryCreated                          WebhookTestableEventsItem = "entry.created"
 	WebhookTestableEventsItemEntryApproved                         WebhookTestableEventsItem = "entry.approved"
 	WebhookTestableEventsItemEntryDenied                           WebhookTestableEventsItem = "entry.denied"
@@ -2296,6 +2303,8 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemMembershipDeactivated, nil
 	case "membership.trial_ending_soon":
 		return WebhookTestableEventsItemMembershipTrialEndingSoon, nil
+	case "membership.updated":
+		return WebhookTestableEventsItemMembershipUpdated, nil
 	case "entry.created":
 		return WebhookTestableEventsItemEntryCreated, nil
 	case "entry.approved":
@@ -2503,6 +2512,7 @@ const (
 	CreateWebhooksRequestEventsItemMembershipActivated                CreateWebhooksRequestEventsItem = "membership.activated"
 	CreateWebhooksRequestEventsItemMembershipDeactivated              CreateWebhooksRequestEventsItem = "membership.deactivated"
 	CreateWebhooksRequestEventsItemMembershipTrialEndingSoon          CreateWebhooksRequestEventsItem = "membership.trial_ending_soon"
+	CreateWebhooksRequestEventsItemMembershipUpdated                  CreateWebhooksRequestEventsItem = "membership.updated"
 	CreateWebhooksRequestEventsItemEntryCreated                       CreateWebhooksRequestEventsItem = "entry.created"
 	CreateWebhooksRequestEventsItemEntryApproved                      CreateWebhooksRequestEventsItem = "entry.approved"
 	CreateWebhooksRequestEventsItemEntryDenied                        CreateWebhooksRequestEventsItem = "entry.denied"
@@ -2602,6 +2612,8 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemMembershipDeactivated, nil
 	case "membership.trial_ending_soon":
 		return CreateWebhooksRequestEventsItemMembershipTrialEndingSoon, nil
+	case "membership.updated":
+		return CreateWebhooksRequestEventsItemMembershipUpdated, nil
 	case "entry.created":
 		return CreateWebhooksRequestEventsItemEntryCreated, nil
 	case "entry.approved":
@@ -3659,6 +3671,7 @@ const (
 	UpdateWebhooksRequestEventsItemMembershipActivated                UpdateWebhooksRequestEventsItem = "membership.activated"
 	UpdateWebhooksRequestEventsItemMembershipDeactivated              UpdateWebhooksRequestEventsItem = "membership.deactivated"
 	UpdateWebhooksRequestEventsItemMembershipTrialEndingSoon          UpdateWebhooksRequestEventsItem = "membership.trial_ending_soon"
+	UpdateWebhooksRequestEventsItemMembershipUpdated                  UpdateWebhooksRequestEventsItem = "membership.updated"
 	UpdateWebhooksRequestEventsItemEntryCreated                       UpdateWebhooksRequestEventsItem = "entry.created"
 	UpdateWebhooksRequestEventsItemEntryApproved                      UpdateWebhooksRequestEventsItem = "entry.approved"
 	UpdateWebhooksRequestEventsItemEntryDenied                        UpdateWebhooksRequestEventsItem = "entry.denied"
@@ -3758,6 +3771,8 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemMembershipDeactivated, nil
 	case "membership.trial_ending_soon":
 		return UpdateWebhooksRequestEventsItemMembershipTrialEndingSoon, nil
+	case "membership.updated":
+		return UpdateWebhooksRequestEventsItemMembershipUpdated, nil
 	case "entry.created":
 		return UpdateWebhooksRequestEventsItemEntryCreated, nil
 	case "entry.approved":

@@ -2067,508 +2067,6 @@ func (p PostMembershipActivatedPayloadType) Ptr() *PostMembershipActivatedPayloa
 }
 
 var (
-	postMembershipCancelAtPeriodEndChangedPayloadFieldAccountID          = big.NewInt(1 << 0)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldData               = big.NewInt(1 << 3)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldID                 = big.NewInt(1 << 4)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldTimestamp          = big.NewInt(1 << 6)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldType               = big.NewInt(1 << 7)
-)
-
-type PostMembershipCancelAtPeriodEndChangedPayload struct {
-	// The account ID that this webhook event is associated with
-	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The API version for this webhook
-	APIVersion PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion `json:"api_version" url:"api_version"`
-	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string     `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Membership `json:"data" url:"data"`
-	// A unique ID for every single webhook request
-	ID string `json:"id" url:"id"`
-	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
-	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
-	// The timestamp in ISO 8601 format that the webhook was sent at on the server
-	Timestamp time.Time `json:"timestamp" url:"timestamp"`
-	// The webhook event type
-	Type PostMembershipCancelAtPeriodEndChangedPayloadType `json:"type" url:"type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetAccountID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.AccountID
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetAPIVersion() PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion {
-	if p == nil {
-		return ""
-	}
-	return p.APIVersion
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetAPIVersionDate() *string {
-	if p == nil {
-		return nil
-	}
-	return p.APIVersionDate
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetData() *Membership {
-	if p == nil {
-		return nil
-	}
-	return p.Data
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetPreviousAttributes() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.PreviousAttributes
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetTimestamp() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.Timestamp
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetType() PostMembershipCancelAtPeriodEndChangedPayloadType {
-	if p == nil {
-		return ""
-	}
-	return p.Type
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetAccountID(accountID *string) {
-	p.AccountID = accountID
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldAccountID)
-}
-
-// SetAPIVersion sets the APIVersion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetAPIVersion(apiVersion PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion) {
-	p.APIVersion = apiVersion
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldAPIVersion)
-}
-
-// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetAPIVersionDate(apiVersionDate *string) {
-	p.APIVersionDate = apiVersionDate
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldAPIVersionDate)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetData(data *Membership) {
-	p.Data = data
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldData)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetID(id string) {
-	p.ID = id
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldID)
-}
-
-// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
-	p.PreviousAttributes = previousAttributes
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldPreviousAttributes)
-}
-
-// SetTimestamp sets the Timestamp field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetTimestamp(timestamp time.Time) {
-	p.Timestamp = timestamp
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldTimestamp)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetType(type_ PostMembershipCancelAtPeriodEndChangedPayloadType) {
-	p.Type = type_
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldType)
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) UnmarshalJSON(data []byte) error {
-	type embed PostMembershipCancelAtPeriodEndChangedPayload
-	var unmarshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PostMembershipCancelAtPeriodEndChangedPayload(unmarshaler.embed)
-	p.Timestamp = unmarshaler.Timestamp.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) MarshalJSON() ([]byte, error) {
-	type embed PostMembershipCancelAtPeriodEndChangedPayload
-	var marshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed:     embed(*p),
-		Timestamp: internal.NewDateTime(p.Timestamp),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The API version for this webhook
-type PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion string
-
-const (
-	PostMembershipCancelAtPeriodEndChangedPayloadAPIVersionV1 PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion = "v1"
-)
-
-func NewPostMembershipCancelAtPeriodEndChangedPayloadAPIVersionFromString(s string) (PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion, error) {
-	switch s {
-	case "v1":
-		return PostMembershipCancelAtPeriodEndChangedPayloadAPIVersionV1, nil
-	}
-	var t PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion) Ptr() *PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion {
-	return &p
-}
-
-// The webhook event type
-type PostMembershipCancelAtPeriodEndChangedPayloadType string
-
-const (
-	PostMembershipCancelAtPeriodEndChangedPayloadTypeMembershipCancelAtPeriodEndChanged PostMembershipCancelAtPeriodEndChangedPayloadType = "membership.cancel_at_period_end_changed"
-)
-
-func NewPostMembershipCancelAtPeriodEndChangedPayloadTypeFromString(s string) (PostMembershipCancelAtPeriodEndChangedPayloadType, error) {
-	switch s {
-	case "membership.cancel_at_period_end_changed":
-		return PostMembershipCancelAtPeriodEndChangedPayloadTypeMembershipCancelAtPeriodEndChanged, nil
-	}
-	var t PostMembershipCancelAtPeriodEndChangedPayloadType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostMembershipCancelAtPeriodEndChangedPayloadType) Ptr() *PostMembershipCancelAtPeriodEndChangedPayloadType {
-	return &p
-}
-
-var (
-	postMembershipDeactivatedPayloadFieldAccountID          = big.NewInt(1 << 0)
-	postMembershipDeactivatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
-	postMembershipDeactivatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
-	postMembershipDeactivatedPayloadFieldData               = big.NewInt(1 << 3)
-	postMembershipDeactivatedPayloadFieldID                 = big.NewInt(1 << 4)
-	postMembershipDeactivatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
-	postMembershipDeactivatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
-	postMembershipDeactivatedPayloadFieldType               = big.NewInt(1 << 7)
-)
-
-type PostMembershipDeactivatedPayload struct {
-	// The account ID that this webhook event is associated with
-	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The API version for this webhook
-	APIVersion PostMembershipDeactivatedPayloadAPIVersion `json:"api_version" url:"api_version"`
-	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string     `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Membership `json:"data" url:"data"`
-	// A unique ID for every single webhook request
-	ID string `json:"id" url:"id"`
-	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
-	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
-	// The timestamp in ISO 8601 format that the webhook was sent at on the server
-	Timestamp time.Time `json:"timestamp" url:"timestamp"`
-	// The webhook event type
-	Type PostMembershipDeactivatedPayloadType `json:"type" url:"type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostMembershipDeactivatedPayload) GetAccountID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.AccountID
-}
-
-func (p *PostMembershipDeactivatedPayload) GetAPIVersion() PostMembershipDeactivatedPayloadAPIVersion {
-	if p == nil {
-		return ""
-	}
-	return p.APIVersion
-}
-
-func (p *PostMembershipDeactivatedPayload) GetAPIVersionDate() *string {
-	if p == nil {
-		return nil
-	}
-	return p.APIVersionDate
-}
-
-func (p *PostMembershipDeactivatedPayload) GetData() *Membership {
-	if p == nil {
-		return nil
-	}
-	return p.Data
-}
-
-func (p *PostMembershipDeactivatedPayload) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostMembershipDeactivatedPayload) GetPreviousAttributes() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.PreviousAttributes
-}
-
-func (p *PostMembershipDeactivatedPayload) GetTimestamp() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.Timestamp
-}
-
-func (p *PostMembershipDeactivatedPayload) GetType() PostMembershipDeactivatedPayloadType {
-	if p == nil {
-		return ""
-	}
-	return p.Type
-}
-
-func (p *PostMembershipDeactivatedPayload) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostMembershipDeactivatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetAccountID(accountID *string) {
-	p.AccountID = accountID
-	p.require(postMembershipDeactivatedPayloadFieldAccountID)
-}
-
-// SetAPIVersion sets the APIVersion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetAPIVersion(apiVersion PostMembershipDeactivatedPayloadAPIVersion) {
-	p.APIVersion = apiVersion
-	p.require(postMembershipDeactivatedPayloadFieldAPIVersion)
-}
-
-// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetAPIVersionDate(apiVersionDate *string) {
-	p.APIVersionDate = apiVersionDate
-	p.require(postMembershipDeactivatedPayloadFieldAPIVersionDate)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetData(data *Membership) {
-	p.Data = data
-	p.require(postMembershipDeactivatedPayloadFieldData)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetID(id string) {
-	p.ID = id
-	p.require(postMembershipDeactivatedPayloadFieldID)
-}
-
-// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
-	p.PreviousAttributes = previousAttributes
-	p.require(postMembershipDeactivatedPayloadFieldPreviousAttributes)
-}
-
-// SetTimestamp sets the Timestamp field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetTimestamp(timestamp time.Time) {
-	p.Timestamp = timestamp
-	p.require(postMembershipDeactivatedPayloadFieldTimestamp)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetType(type_ PostMembershipDeactivatedPayloadType) {
-	p.Type = type_
-	p.require(postMembershipDeactivatedPayloadFieldType)
-}
-
-func (p *PostMembershipDeactivatedPayload) UnmarshalJSON(data []byte) error {
-	type embed PostMembershipDeactivatedPayload
-	var unmarshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PostMembershipDeactivatedPayload(unmarshaler.embed)
-	p.Timestamp = unmarshaler.Timestamp.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostMembershipDeactivatedPayload) MarshalJSON() ([]byte, error) {
-	type embed PostMembershipDeactivatedPayload
-	var marshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed:     embed(*p),
-		Timestamp: internal.NewDateTime(p.Timestamp),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostMembershipDeactivatedPayload) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The API version for this webhook
-type PostMembershipDeactivatedPayloadAPIVersion string
-
-const (
-	PostMembershipDeactivatedPayloadAPIVersionV1 PostMembershipDeactivatedPayloadAPIVersion = "v1"
-)
-
-func NewPostMembershipDeactivatedPayloadAPIVersionFromString(s string) (PostMembershipDeactivatedPayloadAPIVersion, error) {
-	switch s {
-	case "v1":
-		return PostMembershipDeactivatedPayloadAPIVersionV1, nil
-	}
-	var t PostMembershipDeactivatedPayloadAPIVersion
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostMembershipDeactivatedPayloadAPIVersion) Ptr() *PostMembershipDeactivatedPayloadAPIVersion {
-	return &p
-}
-
-// The webhook event type
-type PostMembershipDeactivatedPayloadType string
-
-const (
-	PostMembershipDeactivatedPayloadTypeMembershipDeactivated PostMembershipDeactivatedPayloadType = "membership.deactivated"
-)
-
-func NewPostMembershipDeactivatedPayloadTypeFromString(s string) (PostMembershipDeactivatedPayloadType, error) {
-	switch s {
-	case "membership.deactivated":
-		return PostMembershipDeactivatedPayloadTypeMembershipDeactivated, nil
-	}
-	var t PostMembershipDeactivatedPayloadType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostMembershipDeactivatedPayloadType) Ptr() *PostMembershipDeactivatedPayloadType {
-	return &p
-}
-
-var (
 	postMembershipTrialEndingSoonPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postMembershipTrialEndingSoonPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postMembershipTrialEndingSoonPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
@@ -2816,6 +2314,257 @@ func NewPostMembershipTrialEndingSoonPayloadTypeFromString(s string) (PostMember
 }
 
 func (p PostMembershipTrialEndingSoonPayloadType) Ptr() *PostMembershipTrialEndingSoonPayloadType {
+	return &p
+}
+
+var (
+	postMembershipUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postMembershipUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postMembershipUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postMembershipUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postMembershipUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postMembershipUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postMembershipUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postMembershipUpdatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+type PostMembershipUpdatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostMembershipUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string     `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Membership `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostMembershipUpdatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostMembershipUpdatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostMembershipUpdatedPayload) GetAPIVersion() PostMembershipUpdatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostMembershipUpdatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostMembershipUpdatedPayload) GetData() *Membership {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostMembershipUpdatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostMembershipUpdatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostMembershipUpdatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostMembershipUpdatedPayload) GetType() PostMembershipUpdatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostMembershipUpdatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostMembershipUpdatedPayload) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postMembershipUpdatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetAPIVersion(apiVersion PostMembershipUpdatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postMembershipUpdatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postMembershipUpdatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetData(data *Membership) {
+	p.Data = data
+	p.require(postMembershipUpdatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postMembershipUpdatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postMembershipUpdatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postMembershipUpdatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetType(type_ PostMembershipUpdatedPayloadType) {
+	p.Type = type_
+	p.require(postMembershipUpdatedPayloadFieldType)
+}
+
+func (p *PostMembershipUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostMembershipUpdatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostMembershipUpdatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostMembershipUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostMembershipUpdatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostMembershipUpdatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostMembershipUpdatedPayloadAPIVersion string
+
+const (
+	PostMembershipUpdatedPayloadAPIVersionV1 PostMembershipUpdatedPayloadAPIVersion = "v1"
+)
+
+func NewPostMembershipUpdatedPayloadAPIVersionFromString(s string) (PostMembershipUpdatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostMembershipUpdatedPayloadAPIVersionV1, nil
+	}
+	var t PostMembershipUpdatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostMembershipUpdatedPayloadAPIVersion) Ptr() *PostMembershipUpdatedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostMembershipUpdatedPayloadType string
+
+const (
+	PostMembershipUpdatedPayloadTypeMembershipUpdated PostMembershipUpdatedPayloadType = "membership.updated"
+)
+
+func NewPostMembershipUpdatedPayloadTypeFromString(s string) (PostMembershipUpdatedPayloadType, error) {
+	switch s {
+	case "membership.updated":
+		return PostMembershipUpdatedPayloadTypeMembershipUpdated, nil
+	}
+	var t PostMembershipUpdatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostMembershipUpdatedPayloadType) Ptr() *PostMembershipUpdatedPayloadType {
 	return &p
 }
 
