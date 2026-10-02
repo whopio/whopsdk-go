@@ -293,17 +293,18 @@ func (l *LeadFormsSocialAccountsRequest) SetAccountID(accountID string) {
 }
 
 var (
-	listSocialAccountsRequestFieldAccountID = big.NewInt(1 << 0)
-	listSocialAccountsRequestFieldUserID    = big.NewInt(1 << 1)
-	listSocialAccountsRequestFieldPlatform  = big.NewInt(1 << 2)
-	listSocialAccountsRequestFieldVerified  = big.NewInt(1 << 3)
-	listSocialAccountsRequestFieldScopes    = big.NewInt(1 << 4)
-	listSocialAccountsRequestFieldFirst     = big.NewInt(1 << 5)
-	listSocialAccountsRequestFieldAfter     = big.NewInt(1 << 6)
-	listSocialAccountsRequestFieldLast      = big.NewInt(1 << 7)
-	listSocialAccountsRequestFieldBefore    = big.NewInt(1 << 8)
-	listSocialAccountsRequestFieldOrder     = big.NewInt(1 << 9)
-	listSocialAccountsRequestFieldDirection = big.NewInt(1 << 10)
+	listSocialAccountsRequestFieldAccountID  = big.NewInt(1 << 0)
+	listSocialAccountsRequestFieldUserID     = big.NewInt(1 << 1)
+	listSocialAccountsRequestFieldPlatform   = big.NewInt(1 << 2)
+	listSocialAccountsRequestFieldTrustLevel = big.NewInt(1 << 3)
+	listSocialAccountsRequestFieldVerified   = big.NewInt(1 << 4)
+	listSocialAccountsRequestFieldScopes     = big.NewInt(1 << 5)
+	listSocialAccountsRequestFieldFirst      = big.NewInt(1 << 6)
+	listSocialAccountsRequestFieldAfter      = big.NewInt(1 << 7)
+	listSocialAccountsRequestFieldLast       = big.NewInt(1 << 8)
+	listSocialAccountsRequestFieldBefore     = big.NewInt(1 << 9)
+	listSocialAccountsRequestFieldOrder      = big.NewInt(1 << 10)
+	listSocialAccountsRequestFieldDirection  = big.NewInt(1 << 11)
 )
 
 type ListSocialAccountsRequest struct {
@@ -313,6 +314,8 @@ type ListSocialAccountsRequest struct {
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Only return social accounts for the platform that is specified.
 	Platform *ListSocialAccountsRequestPlatform `json:"-" url:"platform,omitempty"`
+	// Only return social accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
+	TrustLevel *ListSocialAccountsRequestTrustLevel `json:"-" url:"trust_level,omitempty"`
 	// Only return social accounts that are verified on the platform.
 	Verified *bool `json:"-" url:"verified,omitempty"`
 	// Only return social accounts that have these scopes.
@@ -360,6 +363,13 @@ func (l *ListSocialAccountsRequest) SetUserID(userID *string) {
 func (l *ListSocialAccountsRequest) SetPlatform(platform *ListSocialAccountsRequestPlatform) {
 	l.Platform = platform
 	l.require(listSocialAccountsRequestFieldPlatform)
+}
+
+// SetTrustLevel sets the TrustLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSocialAccountsRequest) SetTrustLevel(trustLevel *ListSocialAccountsRequestTrustLevel) {
+	l.TrustLevel = trustLevel
+	l.require(listSocialAccountsRequestFieldTrustLevel)
 }
 
 // SetVerified sets the Verified field and marks it as non-optional;
@@ -1746,6 +1756,37 @@ func NewListSocialAccountsRequestScopesItemFromString(s string) (ListSocialAccou
 }
 
 func (l ListSocialAccountsRequestScopesItem) Ptr() *ListSocialAccountsRequestScopesItem {
+	return &l
+}
+
+type ListSocialAccountsRequestTrustLevel string
+
+const (
+	ListSocialAccountsRequestTrustLevelOauth      ListSocialAccountsRequestTrustLevel = "oauth"
+	ListSocialAccountsRequestTrustLevelVerified   ListSocialAccountsRequestTrustLevel = "verified"
+	ListSocialAccountsRequestTrustLevelAuthorized ListSocialAccountsRequestTrustLevel = "authorized"
+	ListSocialAccountsRequestTrustLevelClaimed    ListSocialAccountsRequestTrustLevel = "claimed"
+	ListSocialAccountsRequestTrustLevelScraped    ListSocialAccountsRequestTrustLevel = "scraped"
+)
+
+func NewListSocialAccountsRequestTrustLevelFromString(s string) (ListSocialAccountsRequestTrustLevel, error) {
+	switch s {
+	case "oauth":
+		return ListSocialAccountsRequestTrustLevelOauth, nil
+	case "verified":
+		return ListSocialAccountsRequestTrustLevelVerified, nil
+	case "authorized":
+		return ListSocialAccountsRequestTrustLevelAuthorized, nil
+	case "claimed":
+		return ListSocialAccountsRequestTrustLevelClaimed, nil
+	case "scraped":
+		return ListSocialAccountsRequestTrustLevelScraped, nil
+	}
+	var t ListSocialAccountsRequestTrustLevel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListSocialAccountsRequestTrustLevel) Ptr() *ListSocialAccountsRequestTrustLevel {
 	return &l
 }
 

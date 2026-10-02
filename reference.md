@@ -33219,6 +33219,14 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
+**trustLevel:** `*whopsdk.ListSocialAccountsRequestTrustLevel` — Only return social accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **verified:** `*bool` — Only return social accounts that are verified on the platform.
     
 </dd>
