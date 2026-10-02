@@ -5620,6 +5620,13 @@ func TestEnumListEarningsRequestIncomeSourceItem(t *testing.T) {
 		assert.Equal(t, ListEarningsRequestIncomeSourceItem("partner_reward"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_verified_partner_referral_payback", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsRequestIncomeSourceItemFromString("verified_partner_referral_payback")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsRequestIncomeSourceItem("verified_partner_referral_payback"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListEarningsRequestIncomeSourceItemFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -5797,6 +5804,13 @@ func TestEnumListEarningsResponseDataItemIncomeSource(t *testing.T) {
 		val, err := NewListEarningsResponseDataItemIncomeSourceFromString("partner_reward")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListEarningsResponseDataItemIncomeSource("partner_reward"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_verified_partner_referral_payback", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemIncomeSourceFromString("verified_partner_referral_payback")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemIncomeSource("verified_partner_referral_payback"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
