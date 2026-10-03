@@ -9471,6 +9471,73 @@
       }
     },
     {
+      "id": "37b78a63-ac42-451c-983b-70409c554d91",
+      "name": "Create Payment Quote - default",
+      "request": {
+        "urlPathTemplate": "/payment_quotes",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"address\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"line1\": \"1114 Bouldin Ave\",\n    \"line2\": \"Unit B\",\n    \"name\": \"Dana Whitfield\",\n    \"postal_code\": \"78704\",\n    \"state\": \"TX\"\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"discount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"pq_xxxxxxxxxxxxxx\",\n  \"line_items\": [\n    {\n      \"discount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n      \"quantity\": 1,\n      \"subtotal\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"tax_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"total\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"located_by\": \"shipping_address\",\n  \"promo_code_id\": \"promo_code_id\",\n  \"shipping_address\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"line1\": \"1114 Bouldin Ave\",\n    \"line2\": \"Unit B\",\n    \"name\": \"Dana Whitfield\",\n    \"postal_code\": \"78704\",\n    \"state\": \"TX\"\n  },\n  \"subtotal\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"tax_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"tax_behavior\": \"inclusive\",\n  \"tax_ids\": [\n    {\n      \"type\": \"ad_nrt\",\n      \"value\": \"12-3456789\"\n    }\n  ],\n  \"tax_status\": \"calculated\",\n  \"total\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "37b78a63-ac42-451c-983b-70409c554d91",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "549fd6d0-0380-46f1-af9a-ab077e58273e",
+      "name": "Retrieve Payment Quote - default",
+      "request": {
+        "urlPathTemplate": "/payment_quotes/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"address\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"line1\": \"1114 Bouldin Ave\",\n    \"line2\": \"Unit B\",\n    \"name\": \"Dana Whitfield\",\n    \"postal_code\": \"78704\",\n    \"state\": \"TX\"\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"currency\": \"usd\",\n  \"discount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"expires_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"pq_xxxxxxxxxxxxxx\",\n  \"line_items\": [\n    {\n      \"discount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"plan_id\": \"plan_xxxxxxxxxxxxxx\",\n      \"quantity\": 1,\n      \"subtotal\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"tax_amount\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"total\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"located_by\": \"shipping_address\",\n  \"promo_code_id\": \"promo_code_id\",\n  \"shipping_address\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"line1\": \"1114 Bouldin Ave\",\n    \"line2\": \"Unit B\",\n    \"name\": \"Dana Whitfield\",\n    \"postal_code\": \"78704\",\n    \"state\": \"TX\"\n  },\n  \"subtotal\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"tax_amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"tax_behavior\": \"inclusive\",\n  \"tax_ids\": [\n    {\n      \"type\": \"ad_nrt\",\n      \"value\": \"12-3456789\"\n    }\n  ],\n  \"tax_status\": \"calculated\",\n  \"total\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "549fd6d0-0380-46f1-af9a-ab077e58273e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "b0f5b654-34bd-41ec-9719-b1951cdad98b",
       "name": "List payment rules - default",
       "request": {
@@ -16162,6 +16229,6 @@
     }
   ],
   "meta": {
-    "total": 452
+    "total": 454
   }
 }
