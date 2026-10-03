@@ -23885,29 +23885,30 @@ var (
 	paymentFieldPresentmentTotal           = big.NewInt(1 << 31)
 	paymentFieldProductID                  = big.NewInt(1 << 32)
 	paymentFieldPromoCodeID                = big.NewInt(1 << 33)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 34)
-	paymentFieldRefundable                 = big.NewInt(1 << 35)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 36)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 37)
-	paymentFieldRetryable                  = big.NewInt(1 << 38)
-	paymentFieldRiskScore                  = big.NewInt(1 << 39)
-	paymentFieldRiskSignals                = big.NewInt(1 << 40)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 41)
-	paymentFieldShipmentID                 = big.NewInt(1 << 42)
-	paymentFieldShippingAddress            = big.NewInt(1 << 43)
-	paymentFieldStatus                     = big.NewInt(1 << 44)
-	paymentFieldSubstatus                  = big.NewInt(1 << 45)
-	paymentFieldSubtotal                   = big.NewInt(1 << 46)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 47)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 48)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 49)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 50)
-	paymentFieldTotal                      = big.NewInt(1 << 51)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 52)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 53)
-	paymentFieldUser                       = big.NewInt(1 << 54)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 55)
-	paymentFieldVoidable                   = big.NewInt(1 << 56)
+	paymentFieldQuoteID                    = big.NewInt(1 << 34)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 35)
+	paymentFieldRefundable                 = big.NewInt(1 << 36)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 37)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 38)
+	paymentFieldRetryable                  = big.NewInt(1 << 39)
+	paymentFieldRiskScore                  = big.NewInt(1 << 40)
+	paymentFieldRiskSignals                = big.NewInt(1 << 41)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 42)
+	paymentFieldShipmentID                 = big.NewInt(1 << 43)
+	paymentFieldShippingAddress            = big.NewInt(1 << 44)
+	paymentFieldStatus                     = big.NewInt(1 << 45)
+	paymentFieldSubstatus                  = big.NewInt(1 << 46)
+	paymentFieldSubtotal                   = big.NewInt(1 << 47)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 48)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 49)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 50)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 51)
+	paymentFieldTotal                      = big.NewInt(1 << 52)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 53)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 54)
+	paymentFieldUser                       = big.NewInt(1 << 55)
+	paymentFieldVerificationChecks         = big.NewInt(1 << 56)
+	paymentFieldVoidable                   = big.NewInt(1 << 57)
 )
 
 type Payment struct {
@@ -23976,6 +23977,8 @@ type Payment struct {
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The promo code applied at checkout, prefixed `promo_`, or null.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
+	// The payment quote this payment charged, prefixed `pq_`: its purchase, promo code and `tax_amount` are the quote's. Null when the payment named no quote and tax was calculated at charge time.
+	QuoteID *string `json:"quote_id,omitempty" url:"quote_id,omitempty"`
 	// Whop-hosted URL where the buyer can sign in and complete 3D Secure for an off-session charge the bank challenged — a subscription renewal or a saved-card payment. Null when recovery is unavailable, you lack `member:basic:read`, or in list responses. Retrieve the payment for it.
 	RecoveryURL *string `json:"recovery_url,omitempty" url:"recovery_url,omitempty"`
 	// True when the payment is `paid`, not yet fully refunded, and its processor supports refunds.
@@ -24267,6 +24270,13 @@ func (p *Payment) GetPromoCodeID() *string {
 		return nil
 	}
 	return p.PromoCodeID
+}
+
+func (p *Payment) GetQuoteID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.QuoteID
 }
 
 func (p *Payment) GetRecoveryURL() *string {
@@ -24680,6 +24690,13 @@ func (p *Payment) SetProductID(productID *string) {
 func (p *Payment) SetPromoCodeID(promoCodeID *string) {
 	p.PromoCodeID = promoCodeID
 	p.require(paymentFieldPromoCodeID)
+}
+
+// SetQuoteID sets the QuoteID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetQuoteID(quoteID *string) {
+	p.QuoteID = quoteID
+	p.require(paymentFieldQuoteID)
 }
 
 // SetRecoveryURL sets the RecoveryURL field and marks it as non-optional;
