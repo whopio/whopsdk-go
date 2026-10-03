@@ -19,9 +19,10 @@ var (
 	createDirectRequestFieldMetadata                = big.NewInt(1 << 5)
 	createDirectRequestFieldOffSession              = big.NewInt(1 << 6)
 	createDirectRequestFieldPaymentMethod           = big.NewInt(1 << 7)
-	createDirectRequestFieldReturnURL               = big.NewInt(1 << 8)
-	createDirectRequestFieldSetupFutureUsage        = big.NewInt(1 << 9)
-	createDirectRequestFieldStatementDescriptor     = big.NewInt(1 << 10)
+	createDirectRequestFieldQuoteID                 = big.NewInt(1 << 8)
+	createDirectRequestFieldReturnURL               = big.NewInt(1 << 9)
+	createDirectRequestFieldSetupFutureUsage        = big.NewInt(1 << 10)
+	createDirectRequestFieldStatementDescriptor     = big.NewInt(1 << 11)
 )
 
 type CreateDirectRequest struct {
@@ -53,6 +54,8 @@ type CreateDirectRequest struct {
 	OffSession *bool `json:"off_session,omitempty" url:"-"`
 	// The payment method to charge, as the raw details the caller holds. Raw details are accepted only on the vault host, where Whop's vault tokenizes them in transit; the official SDKs route this operation there. Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.
 	PaymentMethod *CreateDirectRequestPaymentMethod `json:"payment_method" url:"-"`
+	// A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `plan` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `plan` takes only the same `plan` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `plan_id` or `line_items`, and a quote that priced variants by id never takes `plan`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address (`located_by` is `ip_address`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged through PayPal; such a payment is refused before the payment method is used. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted.
+	QuoteID *string `json:"quote_id,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
 	// Attests that the buyer was told the card will be saved for later charges. `off_session` for merchant-initiated charges, `on_session` for buyer-present ones.
@@ -125,6 +128,13 @@ func (c *CreateDirectRequest) SetOffSession(offSession *bool) {
 func (c *CreateDirectRequest) SetPaymentMethod(paymentMethod *CreateDirectRequestPaymentMethod) {
 	c.PaymentMethod = paymentMethod
 	c.require(createDirectRequestFieldPaymentMethod)
+}
+
+// SetQuoteID sets the QuoteID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequest) SetQuoteID(quoteID *string) {
+	c.QuoteID = quoteID
+	c.require(createDirectRequestFieldQuoteID)
 }
 
 // SetReturnURL sets the ReturnURL field and marks it as non-optional;
