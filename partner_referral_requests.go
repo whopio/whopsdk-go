@@ -22,10 +22,12 @@ type AcceptPartnerReferralRequestsRequest struct {
 }
 
 func (a *AcceptPartnerReferralRequestsRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -48,10 +50,12 @@ type CancelPartnerReferralRequestsRequest struct {
 }
 
 func (c *CancelPartnerReferralRequestsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -74,10 +78,12 @@ type DeclinePartnerReferralRequestsRequest struct {
 }
 
 func (d *DeclinePartnerReferralRequestsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -130,10 +136,12 @@ type ListPartnerReferralRequestsRequest struct {
 }
 
 func (l *ListPartnerReferralRequestsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -226,10 +234,12 @@ type RetrievePartnerReferralRequestsRequest struct {
 }
 
 func (r *RetrievePartnerReferralRequestsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -252,6 +262,15 @@ var (
 	partnerReferralRequestFieldUpdatedAt      = big.NewInt(1 << 9)
 	partnerReferralRequestFieldUser           = big.NewInt(1 << 10)
 )
+
+// partnerReferralRequestNullableFields maps the wire names of PartnerReferralRequest's nullable fields (required or optional) to their field bits.
+var partnerReferralRequestNullableFields = map[string]*big.Int{
+	"account":         partnerReferralRequestFieldAccount,
+	"code":            partnerReferralRequestFieldCode,
+	"max_redemptions": partnerReferralRequestFieldMaxRedemptions,
+	"status":          partnerReferralRequestFieldStatus,
+	"user":            partnerReferralRequestFieldUser,
+}
 
 type PartnerReferralRequest struct {
 	// Business receiving the request, when one is assigned.
@@ -368,10 +387,12 @@ func (p *PartnerReferralRequest) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PartnerReferralRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -463,6 +484,13 @@ func (p *PartnerReferralRequest) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, partnerReferralRequestNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -557,6 +585,13 @@ var (
 	partnerReferralRewardFieldRewardAmount         = big.NewInt(1 << 5)
 )
 
+// partnerReferralRewardNullableFields maps the wire names of PartnerReferralReward's nullable fields (required or optional) to their field bits.
+var partnerReferralRewardNullableFields = map[string]*big.Int{
+	"bot_qualification_type": partnerReferralRewardFieldBotQualificationType,
+	"recipient":              partnerReferralRewardFieldRecipient,
+	"recipient_id":           partnerReferralRewardFieldRecipientID,
+}
+
 type PartnerReferralReward struct {
 	// Activity that qualifies for this reward, when specified.
 	BotQualificationType *PartnerReferralRewardBotQualificationType `json:"bot_qualification_type,omitempty" url:"bot_qualification_type,omitempty"`
@@ -628,10 +663,12 @@ func (p *PartnerReferralReward) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PartnerReferralReward) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBotQualificationType sets the BotQualificationType field and marks it as non-optional;
@@ -688,6 +725,13 @@ func (p *PartnerReferralReward) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, partnerReferralRewardNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -819,6 +863,102 @@ func (c *CreatePartnerReferralRequestsRequestBody) GetCreatePartnerReferralReque
 }
 
 func (c *CreatePartnerReferralRequestsRequestBody) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"account_id"}, []string{"account_id"}) {
+		valueCreatePartnerReferralRequestsRequestBodyAccountID := new(CreatePartnerReferralRequestsRequestBodyAccountID)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyAccountID); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyAccountID"
+			c.CreatePartnerReferralRequestsRequestBodyAccountID = valueCreatePartnerReferralRequestsRequestBodyAccountID
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"account_url"}, []string{"account_url"}) {
+		valueCreatePartnerReferralRequestsRequestBodyAccountURL := new(CreatePartnerReferralRequestsRequestBodyAccountURL)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyAccountURL); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyAccountURL"
+			c.CreatePartnerReferralRequestsRequestBodyAccountURL = valueCreatePartnerReferralRequestsRequestBodyAccountURL
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"target_user_id"}, []string{"target_user_id"}) {
+		valueCreatePartnerReferralRequestsRequestBodyTargetUserID := new(CreatePartnerReferralRequestsRequestBodyTargetUserID)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetUserID); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyTargetUserID"
+			c.CreatePartnerReferralRequestsRequestBodyTargetUserID = valueCreatePartnerReferralRequestsRequestBodyTargetUserID
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"target_username"}, []string{"target_username"}) {
+		valueCreatePartnerReferralRequestsRequestBodyTargetUsername := new(CreatePartnerReferralRequestsRequestBodyTargetUsername)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetUsername); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyTargetUsername"
+			c.CreatePartnerReferralRequestsRequestBodyTargetUsername = valueCreatePartnerReferralRequestsRequestBodyTargetUsername
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"target_email"}, []string{"target_email"}) {
+		valueCreatePartnerReferralRequestsRequestBodyTargetEmail := new(CreatePartnerReferralRequestsRequestBodyTargetEmail)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetEmail); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyTargetEmail"
+			c.CreatePartnerReferralRequestsRequestBodyTargetEmail = valueCreatePartnerReferralRequestsRequestBodyTargetEmail
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"code", "max_redemptions", "partner_id", "request_type"}, []string{"request_type"}) {
+		valueCreatePartnerReferralRequestsRequestBodyCode := new(CreatePartnerReferralRequestsRequestBodyCode)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyCode); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyCode"
+			c.CreatePartnerReferralRequestsRequestBodyCode = valueCreatePartnerReferralRequestsRequestBodyCode
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"account_id"}) {
+		valueCreatePartnerReferralRequestsRequestBodyAccountID := new(CreatePartnerReferralRequestsRequestBodyAccountID)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyAccountID); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyAccountID"
+			c.CreatePartnerReferralRequestsRequestBodyAccountID = valueCreatePartnerReferralRequestsRequestBodyAccountID
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"account_url"}) {
+		valueCreatePartnerReferralRequestsRequestBodyAccountURL := new(CreatePartnerReferralRequestsRequestBodyAccountURL)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyAccountURL); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyAccountURL"
+			c.CreatePartnerReferralRequestsRequestBodyAccountURL = valueCreatePartnerReferralRequestsRequestBodyAccountURL
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"target_user_id"}) {
+		valueCreatePartnerReferralRequestsRequestBodyTargetUserID := new(CreatePartnerReferralRequestsRequestBodyTargetUserID)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetUserID); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyTargetUserID"
+			c.CreatePartnerReferralRequestsRequestBodyTargetUserID = valueCreatePartnerReferralRequestsRequestBodyTargetUserID
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"target_username"}) {
+		valueCreatePartnerReferralRequestsRequestBodyTargetUsername := new(CreatePartnerReferralRequestsRequestBodyTargetUsername)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetUsername); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyTargetUsername"
+			c.CreatePartnerReferralRequestsRequestBodyTargetUsername = valueCreatePartnerReferralRequestsRequestBodyTargetUsername
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"target_email"}) {
+		valueCreatePartnerReferralRequestsRequestBodyTargetEmail := new(CreatePartnerReferralRequestsRequestBodyTargetEmail)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyTargetEmail); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyTargetEmail"
+			c.CreatePartnerReferralRequestsRequestBodyTargetEmail = valueCreatePartnerReferralRequestsRequestBodyTargetEmail
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"request_type"}) {
+		valueCreatePartnerReferralRequestsRequestBodyCode := new(CreatePartnerReferralRequestsRequestBodyCode)
+		if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyCode); err == nil {
+			c.typ = "CreatePartnerReferralRequestsRequestBodyCode"
+			c.CreatePartnerReferralRequestsRequestBodyCode = valueCreatePartnerReferralRequestsRequestBodyCode
+			return nil
+		}
+	}
 	valueCreatePartnerReferralRequestsRequestBodyAccountID := new(CreatePartnerReferralRequestsRequestBodyAccountID)
 	if err := json.Unmarshal(data, &valueCreatePartnerReferralRequestsRequestBodyAccountID); err == nil {
 		c.typ = "CreatePartnerReferralRequestsRequestBodyAccountID"
@@ -941,10 +1081,12 @@ func (c *CreatePartnerReferralRequestsRequestBodyAccountID) GetExtraProperties()
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyAccountID) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1026,10 +1168,12 @@ func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) GetExtraProperties(
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountURL sets the AccountURL field and marks it as non-optional;
@@ -1081,7 +1225,6 @@ func (c *CreatePartnerReferralRequestsRequestBodyAccountURL) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link or creates one with a random code. Only authorized staff can configure rewards or select another partner.
 var (
 	createPartnerReferralRequestsRequestBodyCodeFieldCode           = big.NewInt(1 << 0)
 	createPartnerReferralRequestsRequestBodyCodeFieldMaxRedemptions = big.NewInt(1 << 1)
@@ -1089,6 +1232,12 @@ var (
 	createPartnerReferralRequestsRequestBodyCodeFieldRequestType    = big.NewInt(1 << 3)
 )
 
+// createPartnerReferralRequestsRequestBodyCodeNullableFields maps the wire names of CreatePartnerReferralRequestsRequestBodyCode's nullable fields (required or optional) to their field bits.
+var createPartnerReferralRequestsRequestBodyCodeNullableFields = map[string]*big.Int{
+	"max_redemptions": createPartnerReferralRequestsRequestBodyCodeFieldMaxRedemptions,
+}
+
+// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link or creates one with a random code. Only authorized staff can configure rewards or select another partner.
 type CreatePartnerReferralRequestsRequestBodyCode struct {
 	// Case-insensitive referral code containing letters, numbers, and single hyphens. New codes are stored in lowercase. Omit to generate six random letters, or reuse a saved link when no configuration is supplied.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
@@ -1142,10 +1291,12 @@ func (c *CreatePartnerReferralRequestsRequestBodyCode) GetExtraProperties() map[
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyCode) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -1188,6 +1339,13 @@ func (c *CreatePartnerReferralRequestsRequestBodyCode) UnmarshalJSON(data []byte
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPartnerReferralRequestsRequestBodyCodeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1268,10 +1426,12 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) GetExtraProperties
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyTargetEmail) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetTargetEmail sets the TargetEmail field and marks it as non-optional;
@@ -1353,10 +1513,12 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetUserID) GetExtraPropertie
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyTargetUserID) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetTargetUserID sets the TargetUserID field and marks it as non-optional;
@@ -1438,10 +1600,12 @@ func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) GetExtraPropert
 }
 
 func (c *CreatePartnerReferralRequestsRequestBodyTargetUsername) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetTargetUsername sets the TargetUsername field and marks it as non-optional;
@@ -1625,10 +1789,12 @@ func (l *ListPartnerReferralRequestsResponse) GetExtraProperties() map[string]in
 }
 
 func (l *ListPartnerReferralRequestsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1694,6 +1860,12 @@ var (
 	listPartnerReferralRequestsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPartnerReferralRequestsResponsePageInfoNullableFields maps the wire names of ListPartnerReferralRequestsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPartnerReferralRequestsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPartnerReferralRequestsResponsePageInfoFieldEndCursor,
+	"start_cursor": listPartnerReferralRequestsResponsePageInfoFieldStartCursor,
+}
+
 type ListPartnerReferralRequestsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1743,10 +1915,12 @@ func (l *ListPartnerReferralRequestsResponsePageInfo) GetExtraProperties() map[s
 }
 
 func (l *ListPartnerReferralRequestsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1789,6 +1963,13 @@ func (l *ListPartnerReferralRequestsResponsePageInfo) UnmarshalJSON(data []byte)
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPartnerReferralRequestsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

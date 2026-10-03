@@ -32,10 +32,12 @@ type CreateSupportChannelsRequest struct {
 }
 
 func (c *CreateSupportChannelsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -121,10 +123,12 @@ type ListSupportChannelsRequest struct {
 }
 
 func (l *ListSupportChannelsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -203,10 +207,12 @@ type RetrieveSupportChannelsRequest struct {
 }
 
 func (r *RetrieveSupportChannelsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -239,7 +245,6 @@ func (m MessageChannelOrder) Ptr() *MessageChannelOrder {
 	return &m
 }
 
-// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 var (
 	supportChannelFieldAccountID     = big.NewInt(1 << 0)
 	supportChannelFieldCompanyID     = big.NewInt(1 << 1)
@@ -250,6 +255,17 @@ var (
 	supportChannelFieldResolvedAt    = big.NewInt(1 << 6)
 )
 
+// supportChannelNullableFields maps the wire names of SupportChannel's nullable fields (required or optional) to their field bits.
+var supportChannelNullableFields = map[string]*big.Int{
+	"account_id":      supportChannelFieldAccountID,
+	"company_id":      supportChannelFieldCompanyID,
+	"custom_name":     supportChannelFieldCustomName,
+	"customer_user":   supportChannelFieldCustomerUser,
+	"last_message_at": supportChannelFieldLastMessageAt,
+	"resolved_at":     supportChannelFieldResolvedAt,
+}
+
+// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 type SupportChannel struct {
 	// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -330,10 +346,12 @@ func (s *SupportChannel) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SupportChannel) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -405,6 +423,13 @@ func (s *SupportChannel) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -439,13 +464,18 @@ func (s *SupportChannel) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// The customer who initiated this support conversation. Null if this is not a support chat.
 var (
 	supportChannelCustomerUserFieldID       = big.NewInt(1 << 0)
 	supportChannelCustomerUserFieldName     = big.NewInt(1 << 1)
 	supportChannelCustomerUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// supportChannelCustomerUserNullableFields maps the wire names of SupportChannelCustomerUser's nullable fields (required or optional) to their field bits.
+var supportChannelCustomerUserNullableFields = map[string]*big.Int{
+	"name": supportChannelCustomerUserFieldName,
+}
+
+// The customer who initiated this support conversation. Null if this is not a support chat.
 type SupportChannelCustomerUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -490,10 +520,12 @@ func (s *SupportChannelCustomerUser) GetExtraProperties() map[string]interface{}
 }
 
 func (s *SupportChannelCustomerUser) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -529,6 +561,13 @@ func (s *SupportChannelCustomerUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelCustomerUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -559,7 +598,6 @@ func (s *SupportChannelCustomerUser) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 var (
 	supportChannelListItemFieldAccountID     = big.NewInt(1 << 0)
 	supportChannelListItemFieldCompanyID     = big.NewInt(1 << 1)
@@ -570,6 +608,17 @@ var (
 	supportChannelListItemFieldResolvedAt    = big.NewInt(1 << 6)
 )
 
+// supportChannelListItemNullableFields maps the wire names of SupportChannelListItem's nullable fields (required or optional) to their field bits.
+var supportChannelListItemNullableFields = map[string]*big.Int{
+	"account_id":      supportChannelListItemFieldAccountID,
+	"company_id":      supportChannelListItemFieldCompanyID,
+	"custom_name":     supportChannelListItemFieldCustomName,
+	"customer_user":   supportChannelListItemFieldCustomerUser,
+	"last_message_at": supportChannelListItemFieldLastMessageAt,
+	"resolved_at":     supportChannelListItemFieldResolvedAt,
+}
+
+// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 type SupportChannelListItem struct {
 	// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -650,10 +699,12 @@ func (s *SupportChannelListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SupportChannelListItem) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -725,6 +776,13 @@ func (s *SupportChannelListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -759,13 +817,18 @@ func (s *SupportChannelListItem) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// The customer who initiated this support conversation. Null if this is not a support chat.
 var (
 	supportChannelListItemCustomerUserFieldID       = big.NewInt(1 << 0)
 	supportChannelListItemCustomerUserFieldName     = big.NewInt(1 << 1)
 	supportChannelListItemCustomerUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// supportChannelListItemCustomerUserNullableFields maps the wire names of SupportChannelListItemCustomerUser's nullable fields (required or optional) to their field bits.
+var supportChannelListItemCustomerUserNullableFields = map[string]*big.Int{
+	"name": supportChannelListItemCustomerUserFieldName,
+}
+
+// The customer who initiated this support conversation. Null if this is not a support chat.
 type SupportChannelListItemCustomerUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -810,10 +873,12 @@ func (s *SupportChannelListItemCustomerUser) GetExtraProperties() map[string]int
 }
 
 func (s *SupportChannelListItemCustomerUser) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -849,6 +914,13 @@ func (s *SupportChannelListItemCustomerUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelListItemCustomerUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -905,12 +977,12 @@ func (s SupportChannelView) Ptr() *SupportChannelView {
 	return &s
 }
 
-// The connection type for DmsFeed.
 var (
 	listSupportChannelsResponseFieldData     = big.NewInt(1 << 0)
 	listSupportChannelsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for DmsFeed.
 type ListSupportChannelsResponse struct {
 	// A list of nodes.
 	Data []*SupportChannelListItem `json:"data" url:"data"`
@@ -946,10 +1018,12 @@ func (l *ListSupportChannelsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListSupportChannelsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

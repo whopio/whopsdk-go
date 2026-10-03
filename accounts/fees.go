@@ -22,10 +22,12 @@ type RetrieveFeesRequest struct {
 }
 
 func (r *RetrieveFeesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -35,13 +37,19 @@ func (r *RetrieveFeesRequest) SetAccountID(accountID string) {
 	r.require(retrieveFeesRequestFieldAccountID)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestBankDepositFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestBankDepositFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestBankDepositFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestBankDepositNullableFields maps the wire names of UpdateFeesRequestBankDeposit's nullable fields (required or optional) to their field bits.
+var updateFeesRequestBankDepositNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestBankDepositFieldFixed,
+	"percentage": updateFeesRequestBankDepositFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestBankDeposit struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -86,10 +94,12 @@ func (u *UpdateFeesRequestBankDeposit) GetExtraProperties() map[string]interface
 }
 
 func (u *UpdateFeesRequestBankDeposit) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -125,6 +135,13 @@ func (u *UpdateFeesRequestBankDeposit) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestBankDepositNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -159,6 +176,12 @@ var (
 	updateFeesRequestBankDepositRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestBankDepositRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestBankDepositRegionsValueNullableFields maps the wire names of UpdateFeesRequestBankDepositRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestBankDepositRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestBankDepositRegionsValueFieldFixed,
+	"percentage": updateFeesRequestBankDepositRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestBankDepositRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -195,10 +218,12 @@ func (u *UpdateFeesRequestBankDepositRegionsValue) GetExtraProperties() map[stri
 }
 
 func (u *UpdateFeesRequestBankDepositRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -227,6 +252,13 @@ func (u *UpdateFeesRequestBankDepositRegionsValue) UnmarshalJSON(data []byte) er
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestBankDepositRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -257,13 +289,19 @@ func (u *UpdateFeesRequestBankDepositRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestBillingFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestBillingFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestBillingFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestBillingNullableFields maps the wire names of UpdateFeesRequestBilling's nullable fields (required or optional) to their field bits.
+var updateFeesRequestBillingNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestBillingFieldFixed,
+	"percentage": updateFeesRequestBillingFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestBilling struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -308,10 +346,12 @@ func (u *UpdateFeesRequestBilling) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateFeesRequestBilling) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -347,6 +387,13 @@ func (u *UpdateFeesRequestBilling) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestBillingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -381,6 +428,12 @@ var (
 	updateFeesRequestBillingRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestBillingRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestBillingRegionsValueNullableFields maps the wire names of UpdateFeesRequestBillingRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestBillingRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestBillingRegionsValueFieldFixed,
+	"percentage": updateFeesRequestBillingRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestBillingRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -417,10 +470,12 @@ func (u *UpdateFeesRequestBillingRegionsValue) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateFeesRequestBillingRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -449,6 +504,13 @@ func (u *UpdateFeesRequestBillingRegionsValue) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestBillingRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -479,13 +541,19 @@ func (u *UpdateFeesRequestBillingRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestBuyerFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestBuyerFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestBuyerFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestBuyerNullableFields maps the wire names of UpdateFeesRequestBuyer's nullable fields (required or optional) to their field bits.
+var updateFeesRequestBuyerNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestBuyerFieldFixed,
+	"percentage": updateFeesRequestBuyerFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestBuyer struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -530,10 +598,12 @@ func (u *UpdateFeesRequestBuyer) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateFeesRequestBuyer) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -569,6 +639,13 @@ func (u *UpdateFeesRequestBuyer) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestBuyerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -603,6 +680,12 @@ var (
 	updateFeesRequestBuyerRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestBuyerRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestBuyerRegionsValueNullableFields maps the wire names of UpdateFeesRequestBuyerRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestBuyerRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestBuyerRegionsValueFieldFixed,
+	"percentage": updateFeesRequestBuyerRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestBuyerRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -639,10 +722,12 @@ func (u *UpdateFeesRequestBuyerRegionsValue) GetExtraProperties() map[string]int
 }
 
 func (u *UpdateFeesRequestBuyerRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -671,6 +756,13 @@ func (u *UpdateFeesRequestBuyerRegionsValue) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestBuyerRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -701,13 +793,19 @@ func (u *UpdateFeesRequestBuyerRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestCardProcessingFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestCardProcessingFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestCardProcessingFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestCardProcessingNullableFields maps the wire names of UpdateFeesRequestCardProcessing's nullable fields (required or optional) to their field bits.
+var updateFeesRequestCardProcessingNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestCardProcessingFieldFixed,
+	"percentage": updateFeesRequestCardProcessingFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestCardProcessing struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -752,10 +850,12 @@ func (u *UpdateFeesRequestCardProcessing) GetExtraProperties() map[string]interf
 }
 
 func (u *UpdateFeesRequestCardProcessing) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -791,6 +891,13 @@ func (u *UpdateFeesRequestCardProcessing) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestCardProcessingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -825,6 +932,12 @@ var (
 	updateFeesRequestCardProcessingRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestCardProcessingRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestCardProcessingRegionsValueNullableFields maps the wire names of UpdateFeesRequestCardProcessingRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestCardProcessingRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestCardProcessingRegionsValueFieldFixed,
+	"percentage": updateFeesRequestCardProcessingRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestCardProcessingRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -861,10 +974,12 @@ func (u *UpdateFeesRequestCardProcessingRegionsValue) GetExtraProperties() map[s
 }
 
 func (u *UpdateFeesRequestCardProcessingRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -893,6 +1008,13 @@ func (u *UpdateFeesRequestCardProcessingRegionsValue) UnmarshalJSON(data []byte)
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestCardProcessingRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -923,7 +1045,6 @@ func (u *UpdateFeesRequestCardProcessingRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Default markups for connected accounts. Available on accounts without a parent, even before any accounts connect.
 var (
 	updateFeesRequestChildMarkupsFieldCardSpend   = big.NewInt(1 << 0)
 	updateFeesRequestChildMarkupsFieldCryptoSwaps = big.NewInt(1 << 1)
@@ -933,6 +1054,15 @@ var (
 	updateFeesRequestChildMarkupsFieldTransfers   = big.NewInt(1 << 5)
 )
 
+// updateFeesRequestChildMarkupsNullableFields maps the wire names of UpdateFeesRequestChildMarkups's nullable fields (required or optional) to their field bits.
+var updateFeesRequestChildMarkupsNullableFields = map[string]*big.Int{
+	"card_spend":   updateFeesRequestChildMarkupsFieldCardSpend,
+	"crypto_swaps": updateFeesRequestChildMarkupsFieldCryptoSwaps,
+	"payments":     updateFeesRequestChildMarkupsFieldPayments,
+	"transfers":    updateFeesRequestChildMarkupsFieldTransfers,
+}
+
+// Default markups for connected accounts. Available on accounts without a parent, even before any accounts connect.
 type UpdateFeesRequestChildMarkups struct {
 	// The markup on card purchases settled by the connected account. `null` clears the custom markup.
 	CardSpend *UpdateFeesRequestChildMarkupsCardSpend `json:"card_spend,omitempty" url:"card_spend,omitempty"`
@@ -1004,10 +1134,12 @@ func (u *UpdateFeesRequestChildMarkups) GetExtraProperties() map[string]interfac
 }
 
 func (u *UpdateFeesRequestChildMarkups) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCardSpend sets the CardSpend field and marks it as non-optional;
@@ -1064,6 +1196,13 @@ func (u *UpdateFeesRequestChildMarkups) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestChildMarkupsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1094,12 +1233,12 @@ func (u *UpdateFeesRequestChildMarkups) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The markup on card purchases settled by the connected account. `null` clears the custom markup.
 var (
 	updateFeesRequestChildMarkupsCardSpendFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestChildMarkupsCardSpendFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The markup on card purchases settled by the connected account. `null` clears the custom markup.
 type UpdateFeesRequestChildMarkupsCardSpend struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -1135,10 +1274,12 @@ func (u *UpdateFeesRequestChildMarkupsCardSpend) GetExtraProperties() map[string
 }
 
 func (u *UpdateFeesRequestChildMarkupsCardSpend) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -1197,12 +1338,12 @@ func (u *UpdateFeesRequestChildMarkupsCardSpend) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 var (
 	updateFeesRequestChildMarkupsCryptoSwapsFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestChildMarkupsCryptoSwapsFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestChildMarkupsCryptoSwaps struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -1238,10 +1379,12 @@ func (u *UpdateFeesRequestChildMarkupsCryptoSwaps) GetExtraProperties() map[stri
 }
 
 func (u *UpdateFeesRequestChildMarkupsCryptoSwaps) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -1300,12 +1443,12 @@ func (u *UpdateFeesRequestChildMarkupsCryptoSwaps) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 var (
 	updateFeesRequestChildMarkupsDepositsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestChildMarkupsDepositsValueFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestChildMarkupsDepositsValue struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -1341,10 +1484,12 @@ func (u *UpdateFeesRequestChildMarkupsDepositsValue) GetExtraProperties() map[st
 }
 
 func (u *UpdateFeesRequestChildMarkupsDepositsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -1403,12 +1548,12 @@ func (u *UpdateFeesRequestChildMarkupsDepositsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 var (
 	updateFeesRequestChildMarkupsPaymentsFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestChildMarkupsPaymentsFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestChildMarkupsPayments struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -1444,10 +1589,12 @@ func (u *UpdateFeesRequestChildMarkupsPayments) GetExtraProperties() map[string]
 }
 
 func (u *UpdateFeesRequestChildMarkupsPayments) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -1506,12 +1653,12 @@ func (u *UpdateFeesRequestChildMarkupsPayments) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 var (
 	updateFeesRequestChildMarkupsPayoutsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestChildMarkupsPayoutsValueFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestChildMarkupsPayoutsValue struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -1547,10 +1694,12 @@ func (u *UpdateFeesRequestChildMarkupsPayoutsValue) GetExtraProperties() map[str
 }
 
 func (u *UpdateFeesRequestChildMarkupsPayoutsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -1609,12 +1758,12 @@ func (u *UpdateFeesRequestChildMarkupsPayoutsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 var (
 	updateFeesRequestChildMarkupsTransfersFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestChildMarkupsTransfersFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestChildMarkupsTransfers struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -1650,10 +1799,12 @@ func (u *UpdateFeesRequestChildMarkupsTransfers) GetExtraProperties() map[string
 }
 
 func (u *UpdateFeesRequestChildMarkupsTransfers) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -1712,7 +1863,6 @@ func (u *UpdateFeesRequestChildMarkupsTransfers) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Changes to the payout fees this account covers for connected accounts. Send either all or individual category keys. Omitted categories stay unchanged; category changes have no effect while all is true.
 var (
 	updateFeesRequestCoveredPayoutFeesFieldAll           = big.NewInt(1 << 0)
 	updateFeesRequestCoveredPayoutFeesFieldBankWire      = big.NewInt(1 << 1)
@@ -1722,6 +1872,7 @@ var (
 	updateFeesRequestCoveredPayoutFeesFieldRtp           = big.NewInt(1 << 5)
 )
 
+// Changes to the payout fees this account covers for connected accounts. Send either all or individual category keys. Omitted categories stay unchanged; category changes have no effect while all is true.
 type UpdateFeesRequestCoveredPayoutFees struct {
 	All           *bool `json:"all,omitempty" url:"all,omitempty"`
 	BankWire      *bool `json:"bank_wire,omitempty" url:"bank_wire,omitempty"`
@@ -1787,10 +1938,12 @@ func (u *UpdateFeesRequestCoveredPayoutFees) GetExtraProperties() map[string]int
 }
 
 func (u *UpdateFeesRequestCoveredPayoutFees) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAll sets the All field and marks it as non-optional;
@@ -1877,13 +2030,19 @@ func (u *UpdateFeesRequestCoveredPayoutFees) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestCrossBorderFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestCrossBorderFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestCrossBorderFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestCrossBorderNullableFields maps the wire names of UpdateFeesRequestCrossBorder's nullable fields (required or optional) to their field bits.
+var updateFeesRequestCrossBorderNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestCrossBorderFieldFixed,
+	"percentage": updateFeesRequestCrossBorderFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestCrossBorder struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -1928,10 +2087,12 @@ func (u *UpdateFeesRequestCrossBorder) GetExtraProperties() map[string]interface
 }
 
 func (u *UpdateFeesRequestCrossBorder) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -1967,6 +2128,13 @@ func (u *UpdateFeesRequestCrossBorder) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestCrossBorderNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2001,6 +2169,12 @@ var (
 	updateFeesRequestCrossBorderRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestCrossBorderRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestCrossBorderRegionsValueNullableFields maps the wire names of UpdateFeesRequestCrossBorderRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestCrossBorderRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestCrossBorderRegionsValueFieldFixed,
+	"percentage": updateFeesRequestCrossBorderRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestCrossBorderRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -2037,10 +2211,12 @@ func (u *UpdateFeesRequestCrossBorderRegionsValue) GetExtraProperties() map[stri
 }
 
 func (u *UpdateFeesRequestCrossBorderRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -2069,6 +2245,13 @@ func (u *UpdateFeesRequestCrossBorderRegionsValue) UnmarshalJSON(data []byte) er
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestCrossBorderRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2099,13 +2282,19 @@ func (u *UpdateFeesRequestCrossBorderRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestDisputeFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestDisputeFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestDisputeNullableFields maps the wire names of UpdateFeesRequestDispute's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeFieldFixed,
+	"percentage": updateFeesRequestDisputeFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDispute struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -2150,10 +2339,12 @@ func (u *UpdateFeesRequestDispute) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateFeesRequestDispute) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -2189,6 +2380,13 @@ func (u *UpdateFeesRequestDispute) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2219,13 +2417,19 @@ func (u *UpdateFeesRequestDispute) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestDisputeAlertFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeAlertFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestDisputeAlertFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestDisputeAlertNullableFields maps the wire names of UpdateFeesRequestDisputeAlert's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeAlertNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeAlertFieldFixed,
+	"percentage": updateFeesRequestDisputeAlertFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDisputeAlert struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -2270,10 +2474,12 @@ func (u *UpdateFeesRequestDisputeAlert) GetExtraProperties() map[string]interfac
 }
 
 func (u *UpdateFeesRequestDisputeAlert) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -2309,6 +2515,13 @@ func (u *UpdateFeesRequestDisputeAlert) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeAlertNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2339,13 +2552,19 @@ func (u *UpdateFeesRequestDisputeAlert) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestDisputeAlertCdrnFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeAlertCdrnFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestDisputeAlertCdrnFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestDisputeAlertCdrnNullableFields maps the wire names of UpdateFeesRequestDisputeAlertCdrn's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeAlertCdrnNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeAlertCdrnFieldFixed,
+	"percentage": updateFeesRequestDisputeAlertCdrnFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDisputeAlertCdrn struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -2390,10 +2609,12 @@ func (u *UpdateFeesRequestDisputeAlertCdrn) GetExtraProperties() map[string]inte
 }
 
 func (u *UpdateFeesRequestDisputeAlertCdrn) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -2429,6 +2650,13 @@ func (u *UpdateFeesRequestDisputeAlertCdrn) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeAlertCdrnNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2463,6 +2691,12 @@ var (
 	updateFeesRequestDisputeAlertCdrnRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeAlertCdrnRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestDisputeAlertCdrnRegionsValueNullableFields maps the wire names of UpdateFeesRequestDisputeAlertCdrnRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeAlertCdrnRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeAlertCdrnRegionsValueFieldFixed,
+	"percentage": updateFeesRequestDisputeAlertCdrnRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestDisputeAlertCdrnRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -2499,10 +2733,12 @@ func (u *UpdateFeesRequestDisputeAlertCdrnRegionsValue) GetExtraProperties() map
 }
 
 func (u *UpdateFeesRequestDisputeAlertCdrnRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -2531,6 +2767,13 @@ func (u *UpdateFeesRequestDisputeAlertCdrnRegionsValue) UnmarshalJSON(data []byt
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeAlertCdrnRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2561,13 +2804,19 @@ func (u *UpdateFeesRequestDisputeAlertCdrnRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestDisputeAlertEthocaFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeAlertEthocaFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestDisputeAlertEthocaFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestDisputeAlertEthocaNullableFields maps the wire names of UpdateFeesRequestDisputeAlertEthoca's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeAlertEthocaNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeAlertEthocaFieldFixed,
+	"percentage": updateFeesRequestDisputeAlertEthocaFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDisputeAlertEthoca struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -2612,10 +2861,12 @@ func (u *UpdateFeesRequestDisputeAlertEthoca) GetExtraProperties() map[string]in
 }
 
 func (u *UpdateFeesRequestDisputeAlertEthoca) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -2651,6 +2902,13 @@ func (u *UpdateFeesRequestDisputeAlertEthoca) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeAlertEthocaNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2685,6 +2943,12 @@ var (
 	updateFeesRequestDisputeAlertEthocaRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeAlertEthocaRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestDisputeAlertEthocaRegionsValueNullableFields maps the wire names of UpdateFeesRequestDisputeAlertEthocaRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeAlertEthocaRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeAlertEthocaRegionsValueFieldFixed,
+	"percentage": updateFeesRequestDisputeAlertEthocaRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestDisputeAlertEthocaRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -2721,10 +2985,12 @@ func (u *UpdateFeesRequestDisputeAlertEthocaRegionsValue) GetExtraProperties() m
 }
 
 func (u *UpdateFeesRequestDisputeAlertEthocaRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -2753,6 +3019,13 @@ func (u *UpdateFeesRequestDisputeAlertEthocaRegionsValue) UnmarshalJSON(data []b
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeAlertEthocaRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2783,13 +3056,19 @@ func (u *UpdateFeesRequestDisputeAlertEthocaRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestDisputeAlertRdrFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeAlertRdrFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestDisputeAlertRdrFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestDisputeAlertRdrNullableFields maps the wire names of UpdateFeesRequestDisputeAlertRdr's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeAlertRdrNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeAlertRdrFieldFixed,
+	"percentage": updateFeesRequestDisputeAlertRdrFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDisputeAlertRdr struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -2834,10 +3113,12 @@ func (u *UpdateFeesRequestDisputeAlertRdr) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateFeesRequestDisputeAlertRdr) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -2873,6 +3154,13 @@ func (u *UpdateFeesRequestDisputeAlertRdr) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeAlertRdrNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2907,6 +3195,12 @@ var (
 	updateFeesRequestDisputeAlertRdrRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeAlertRdrRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestDisputeAlertRdrRegionsValueNullableFields maps the wire names of UpdateFeesRequestDisputeAlertRdrRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeAlertRdrRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeAlertRdrRegionsValueFieldFixed,
+	"percentage": updateFeesRequestDisputeAlertRdrRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestDisputeAlertRdrRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -2943,10 +3237,12 @@ func (u *UpdateFeesRequestDisputeAlertRdrRegionsValue) GetExtraProperties() map[
 }
 
 func (u *UpdateFeesRequestDisputeAlertRdrRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -2975,6 +3271,13 @@ func (u *UpdateFeesRequestDisputeAlertRdrRegionsValue) UnmarshalJSON(data []byte
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeAlertRdrRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3009,6 +3312,12 @@ var (
 	updateFeesRequestDisputeAlertRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeAlertRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestDisputeAlertRegionsValueNullableFields maps the wire names of UpdateFeesRequestDisputeAlertRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeAlertRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeAlertRegionsValueFieldFixed,
+	"percentage": updateFeesRequestDisputeAlertRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestDisputeAlertRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -3045,10 +3354,12 @@ func (u *UpdateFeesRequestDisputeAlertRegionsValue) GetExtraProperties() map[str
 }
 
 func (u *UpdateFeesRequestDisputeAlertRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -3077,6 +3388,13 @@ func (u *UpdateFeesRequestDisputeAlertRegionsValue) UnmarshalJSON(data []byte) e
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeAlertRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3111,6 +3429,12 @@ var (
 	updateFeesRequestDisputeRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestDisputeRegionsValueNullableFields maps the wire names of UpdateFeesRequestDisputeRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeRegionsValueFieldFixed,
+	"percentage": updateFeesRequestDisputeRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestDisputeRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -3147,10 +3471,12 @@ func (u *UpdateFeesRequestDisputeRegionsValue) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateFeesRequestDisputeRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -3179,6 +3505,13 @@ func (u *UpdateFeesRequestDisputeRegionsValue) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3209,13 +3542,19 @@ func (u *UpdateFeesRequestDisputeRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestDisputeRepresentmentFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeRepresentmentFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestDisputeRepresentmentFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestDisputeRepresentmentNullableFields maps the wire names of UpdateFeesRequestDisputeRepresentment's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeRepresentmentNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeRepresentmentFieldFixed,
+	"percentage": updateFeesRequestDisputeRepresentmentFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDisputeRepresentment struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -3260,10 +3599,12 @@ func (u *UpdateFeesRequestDisputeRepresentment) GetExtraProperties() map[string]
 }
 
 func (u *UpdateFeesRequestDisputeRepresentment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -3299,6 +3640,13 @@ func (u *UpdateFeesRequestDisputeRepresentment) UnmarshalJSON(data []byte) error
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeRepresentmentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3333,6 +3681,12 @@ var (
 	updateFeesRequestDisputeRepresentmentRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestDisputeRepresentmentRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestDisputeRepresentmentRegionsValueNullableFields maps the wire names of UpdateFeesRequestDisputeRepresentmentRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestDisputeRepresentmentRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestDisputeRepresentmentRegionsValueFieldFixed,
+	"percentage": updateFeesRequestDisputeRepresentmentRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestDisputeRepresentmentRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -3369,10 +3723,12 @@ func (u *UpdateFeesRequestDisputeRepresentmentRegionsValue) GetExtraProperties()
 }
 
 func (u *UpdateFeesRequestDisputeRepresentmentRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -3401,6 +3757,13 @@ func (u *UpdateFeesRequestDisputeRepresentmentRegionsValue) UnmarshalJSON(data [
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestDisputeRepresentmentRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3431,13 +3794,19 @@ func (u *UpdateFeesRequestDisputeRepresentmentRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestForeignExchangeFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestForeignExchangeFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestForeignExchangeFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestForeignExchangeNullableFields maps the wire names of UpdateFeesRequestForeignExchange's nullable fields (required or optional) to their field bits.
+var updateFeesRequestForeignExchangeNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestForeignExchangeFieldFixed,
+	"percentage": updateFeesRequestForeignExchangeFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestForeignExchange struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -3482,10 +3851,12 @@ func (u *UpdateFeesRequestForeignExchange) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateFeesRequestForeignExchange) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -3521,6 +3892,13 @@ func (u *UpdateFeesRequestForeignExchange) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestForeignExchangeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3555,6 +3933,12 @@ var (
 	updateFeesRequestForeignExchangeRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestForeignExchangeRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestForeignExchangeRegionsValueNullableFields maps the wire names of UpdateFeesRequestForeignExchangeRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestForeignExchangeRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestForeignExchangeRegionsValueFieldFixed,
+	"percentage": updateFeesRequestForeignExchangeRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestForeignExchangeRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -3591,10 +3975,12 @@ func (u *UpdateFeesRequestForeignExchangeRegionsValue) GetExtraProperties() map[
 }
 
 func (u *UpdateFeesRequestForeignExchangeRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -3623,6 +4009,13 @@ func (u *UpdateFeesRequestForeignExchangeRegionsValue) UnmarshalJSON(data []byte
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestForeignExchangeRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3653,13 +4046,19 @@ func (u *UpdateFeesRequestForeignExchangeRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestFraudScreeningFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestFraudScreeningFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestFraudScreeningFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestFraudScreeningNullableFields maps the wire names of UpdateFeesRequestFraudScreening's nullable fields (required or optional) to their field bits.
+var updateFeesRequestFraudScreeningNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestFraudScreeningFieldFixed,
+	"percentage": updateFeesRequestFraudScreeningFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestFraudScreening struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -3704,10 +4103,12 @@ func (u *UpdateFeesRequestFraudScreening) GetExtraProperties() map[string]interf
 }
 
 func (u *UpdateFeesRequestFraudScreening) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -3743,6 +4144,13 @@ func (u *UpdateFeesRequestFraudScreening) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestFraudScreeningNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3777,6 +4185,12 @@ var (
 	updateFeesRequestFraudScreeningRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestFraudScreeningRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestFraudScreeningRegionsValueNullableFields maps the wire names of UpdateFeesRequestFraudScreeningRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestFraudScreeningRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestFraudScreeningRegionsValueFieldFixed,
+	"percentage": updateFeesRequestFraudScreeningRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestFraudScreeningRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -3813,10 +4227,12 @@ func (u *UpdateFeesRequestFraudScreeningRegionsValue) GetExtraProperties() map[s
 }
 
 func (u *UpdateFeesRequestFraudScreeningRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -3845,6 +4261,13 @@ func (u *UpdateFeesRequestFraudScreeningRegionsValue) UnmarshalJSON(data []byte)
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestFraudScreeningRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3875,13 +4298,19 @@ func (u *UpdateFeesRequestFraudScreeningRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestHighRiskFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestHighRiskFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestHighRiskFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestHighRiskNullableFields maps the wire names of UpdateFeesRequestHighRisk's nullable fields (required or optional) to their field bits.
+var updateFeesRequestHighRiskNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestHighRiskFieldFixed,
+	"percentage": updateFeesRequestHighRiskFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestHighRisk struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -3926,10 +4355,12 @@ func (u *UpdateFeesRequestHighRisk) GetExtraProperties() map[string]interface{} 
 }
 
 func (u *UpdateFeesRequestHighRisk) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -3965,6 +4396,13 @@ func (u *UpdateFeesRequestHighRisk) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestHighRiskNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3999,6 +4437,12 @@ var (
 	updateFeesRequestHighRiskRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestHighRiskRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestHighRiskRegionsValueNullableFields maps the wire names of UpdateFeesRequestHighRiskRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestHighRiskRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestHighRiskRegionsValueFieldFixed,
+	"percentage": updateFeesRequestHighRiskRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestHighRiskRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -4035,10 +4479,12 @@ func (u *UpdateFeesRequestHighRiskRegionsValue) GetExtraProperties() map[string]
 }
 
 func (u *UpdateFeesRequestHighRiskRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -4067,6 +4513,13 @@ func (u *UpdateFeesRequestHighRiskRegionsValue) UnmarshalJSON(data []byte) error
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestHighRiskRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4097,13 +4550,19 @@ func (u *UpdateFeesRequestHighRiskRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestMarketplaceFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestMarketplaceFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestMarketplaceFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestMarketplaceNullableFields maps the wire names of UpdateFeesRequestMarketplace's nullable fields (required or optional) to their field bits.
+var updateFeesRequestMarketplaceNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestMarketplaceFieldFixed,
+	"percentage": updateFeesRequestMarketplaceFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestMarketplace struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -4148,10 +4607,12 @@ func (u *UpdateFeesRequestMarketplace) GetExtraProperties() map[string]interface
 }
 
 func (u *UpdateFeesRequestMarketplace) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -4187,6 +4648,13 @@ func (u *UpdateFeesRequestMarketplace) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestMarketplaceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4221,6 +4689,12 @@ var (
 	updateFeesRequestMarketplaceRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestMarketplaceRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestMarketplaceRegionsValueNullableFields maps the wire names of UpdateFeesRequestMarketplaceRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestMarketplaceRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestMarketplaceRegionsValueFieldFixed,
+	"percentage": updateFeesRequestMarketplaceRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestMarketplaceRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -4257,10 +4731,12 @@ func (u *UpdateFeesRequestMarketplaceRegionsValue) GetExtraProperties() map[stri
 }
 
 func (u *UpdateFeesRequestMarketplaceRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -4289,6 +4765,13 @@ func (u *UpdateFeesRequestMarketplaceRegionsValue) UnmarshalJSON(data []byte) er
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestMarketplaceRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4319,7 +4802,6 @@ func (u *UpdateFeesRequestMarketplaceRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Markups on this connected account, set by the platform it is connected to.
 var (
 	updateFeesRequestMarkupsFieldCardSpend   = big.NewInt(1 << 0)
 	updateFeesRequestMarkupsFieldCryptoSwaps = big.NewInt(1 << 1)
@@ -4329,6 +4811,15 @@ var (
 	updateFeesRequestMarkupsFieldTransfers   = big.NewInt(1 << 5)
 )
 
+// updateFeesRequestMarkupsNullableFields maps the wire names of UpdateFeesRequestMarkups's nullable fields (required or optional) to their field bits.
+var updateFeesRequestMarkupsNullableFields = map[string]*big.Int{
+	"card_spend":   updateFeesRequestMarkupsFieldCardSpend,
+	"crypto_swaps": updateFeesRequestMarkupsFieldCryptoSwaps,
+	"payments":     updateFeesRequestMarkupsFieldPayments,
+	"transfers":    updateFeesRequestMarkupsFieldTransfers,
+}
+
+// Markups on this connected account, set by the platform it is connected to.
 type UpdateFeesRequestMarkups struct {
 	// The markup on card purchases settled by the connected account. `null` clears the custom markup.
 	CardSpend *UpdateFeesRequestMarkupsCardSpend `json:"card_spend,omitempty" url:"card_spend,omitempty"`
@@ -4400,10 +4891,12 @@ func (u *UpdateFeesRequestMarkups) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateFeesRequestMarkups) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCardSpend sets the CardSpend field and marks it as non-optional;
@@ -4460,6 +4953,13 @@ func (u *UpdateFeesRequestMarkups) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestMarkupsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4490,12 +4990,12 @@ func (u *UpdateFeesRequestMarkups) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The markup on card purchases settled by the connected account. `null` clears the custom markup.
 var (
 	updateFeesRequestMarkupsCardSpendFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestMarkupsCardSpendFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The markup on card purchases settled by the connected account. `null` clears the custom markup.
 type UpdateFeesRequestMarkupsCardSpend struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -4531,10 +5031,12 @@ func (u *UpdateFeesRequestMarkupsCardSpend) GetExtraProperties() map[string]inte
 }
 
 func (u *UpdateFeesRequestMarkupsCardSpend) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -4593,12 +5095,12 @@ func (u *UpdateFeesRequestMarkupsCardSpend) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 var (
 	updateFeesRequestMarkupsCryptoSwapsFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestMarkupsCryptoSwapsFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestMarkupsCryptoSwaps struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -4634,10 +5136,12 @@ func (u *UpdateFeesRequestMarkupsCryptoSwaps) GetExtraProperties() map[string]in
 }
 
 func (u *UpdateFeesRequestMarkupsCryptoSwaps) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -4696,12 +5200,12 @@ func (u *UpdateFeesRequestMarkupsCryptoSwaps) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 var (
 	updateFeesRequestMarkupsDepositsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestMarkupsDepositsValueFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestMarkupsDepositsValue struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -4737,10 +5241,12 @@ func (u *UpdateFeesRequestMarkupsDepositsValue) GetExtraProperties() map[string]
 }
 
 func (u *UpdateFeesRequestMarkupsDepositsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -4799,12 +5305,12 @@ func (u *UpdateFeesRequestMarkupsDepositsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 var (
 	updateFeesRequestMarkupsPaymentsFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestMarkupsPaymentsFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestMarkupsPayments struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -4840,10 +5346,12 @@ func (u *UpdateFeesRequestMarkupsPayments) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateFeesRequestMarkupsPayments) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -4902,12 +5410,12 @@ func (u *UpdateFeesRequestMarkupsPayments) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 var (
 	updateFeesRequestMarkupsPayoutsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestMarkupsPayoutsValueFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestMarkupsPayoutsValue struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -4943,10 +5451,12 @@ func (u *UpdateFeesRequestMarkupsPayoutsValue) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateFeesRequestMarkupsPayoutsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -5005,12 +5515,12 @@ func (u *UpdateFeesRequestMarkupsPayoutsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 var (
 	updateFeesRequestMarkupsTransfersFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestMarkupsTransfersFieldPercentage = big.NewInt(1 << 1)
 )
 
+// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestMarkupsTransfers struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -5046,10 +5556,12 @@ func (u *UpdateFeesRequestMarkupsTransfers) GetExtraProperties() map[string]inte
 }
 
 func (u *UpdateFeesRequestMarkupsTransfers) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -5108,13 +5620,19 @@ func (u *UpdateFeesRequestMarkupsTransfers) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestOrchestrationFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestOrchestrationFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestOrchestrationFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestOrchestrationNullableFields maps the wire names of UpdateFeesRequestOrchestration's nullable fields (required or optional) to their field bits.
+var updateFeesRequestOrchestrationNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestOrchestrationFieldFixed,
+	"percentage": updateFeesRequestOrchestrationFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestOrchestration struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -5159,10 +5677,12 @@ func (u *UpdateFeesRequestOrchestration) GetExtraProperties() map[string]interfa
 }
 
 func (u *UpdateFeesRequestOrchestration) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -5198,6 +5718,13 @@ func (u *UpdateFeesRequestOrchestration) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestOrchestrationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5232,6 +5759,12 @@ var (
 	updateFeesRequestOrchestrationRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestOrchestrationRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestOrchestrationRegionsValueNullableFields maps the wire names of UpdateFeesRequestOrchestrationRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestOrchestrationRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestOrchestrationRegionsValueFieldFixed,
+	"percentage": updateFeesRequestOrchestrationRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestOrchestrationRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -5268,10 +5801,12 @@ func (u *UpdateFeesRequestOrchestrationRegionsValue) GetExtraProperties() map[st
 }
 
 func (u *UpdateFeesRequestOrchestrationRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -5300,6 +5835,13 @@ func (u *UpdateFeesRequestOrchestrationRegionsValue) UnmarshalJSON(data []byte) 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestOrchestrationRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5330,13 +5872,19 @@ func (u *UpdateFeesRequestOrchestrationRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestPaymentMethodsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestPaymentMethodsValueFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestPaymentMethodsValueFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestPaymentMethodsValueNullableFields maps the wire names of UpdateFeesRequestPaymentMethodsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestPaymentMethodsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestPaymentMethodsValueFieldFixed,
+	"percentage": updateFeesRequestPaymentMethodsValueFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestPaymentMethodsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -5381,10 +5929,12 @@ func (u *UpdateFeesRequestPaymentMethodsValue) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateFeesRequestPaymentMethodsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -5420,6 +5970,13 @@ func (u *UpdateFeesRequestPaymentMethodsValue) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestPaymentMethodsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5454,6 +6011,12 @@ var (
 	updateFeesRequestPaymentMethodsValueRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestPaymentMethodsValueRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestPaymentMethodsValueRegionsValueNullableFields maps the wire names of UpdateFeesRequestPaymentMethodsValueRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestPaymentMethodsValueRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestPaymentMethodsValueRegionsValueFieldFixed,
+	"percentage": updateFeesRequestPaymentMethodsValueRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestPaymentMethodsValueRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -5490,10 +6053,12 @@ func (u *UpdateFeesRequestPaymentMethodsValueRegionsValue) GetExtraProperties() 
 }
 
 func (u *UpdateFeesRequestPaymentMethodsValueRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -5522,6 +6087,13 @@ func (u *UpdateFeesRequestPaymentMethodsValueRegionsValue) UnmarshalJSON(data []
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestPaymentMethodsValueRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5552,13 +6124,19 @@ func (u *UpdateFeesRequestPaymentMethodsValueRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestPayoutsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestPayoutsValueFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestPayoutsValueFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestPayoutsValueNullableFields maps the wire names of UpdateFeesRequestPayoutsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestPayoutsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestPayoutsValueFieldFixed,
+	"percentage": updateFeesRequestPayoutsValueFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestPayoutsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -5603,10 +6181,12 @@ func (u *UpdateFeesRequestPayoutsValue) GetExtraProperties() map[string]interfac
 }
 
 func (u *UpdateFeesRequestPayoutsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -5642,6 +6222,13 @@ func (u *UpdateFeesRequestPayoutsValue) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestPayoutsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5676,6 +6263,12 @@ var (
 	updateFeesRequestPayoutsValueRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestPayoutsValueRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestPayoutsValueRegionsValueNullableFields maps the wire names of UpdateFeesRequestPayoutsValueRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestPayoutsValueRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestPayoutsValueRegionsValueFieldFixed,
+	"percentage": updateFeesRequestPayoutsValueRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestPayoutsValueRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -5712,10 +6305,12 @@ func (u *UpdateFeesRequestPayoutsValueRegionsValue) GetExtraProperties() map[str
 }
 
 func (u *UpdateFeesRequestPayoutsValueRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -5744,6 +6339,13 @@ func (u *UpdateFeesRequestPayoutsValueRegionsValue) UnmarshalJSON(data []byte) e
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestPayoutsValueRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5774,13 +6376,19 @@ func (u *UpdateFeesRequestPayoutsValueRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestPendingAutoTopupFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestPendingAutoTopupFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestPendingAutoTopupFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestPendingAutoTopupNullableFields maps the wire names of UpdateFeesRequestPendingAutoTopup's nullable fields (required or optional) to their field bits.
+var updateFeesRequestPendingAutoTopupNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestPendingAutoTopupFieldFixed,
+	"percentage": updateFeesRequestPendingAutoTopupFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestPendingAutoTopup struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -5825,10 +6433,12 @@ func (u *UpdateFeesRequestPendingAutoTopup) GetExtraProperties() map[string]inte
 }
 
 func (u *UpdateFeesRequestPendingAutoTopup) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -5864,6 +6474,13 @@ func (u *UpdateFeesRequestPendingAutoTopup) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestPendingAutoTopupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5898,6 +6515,12 @@ var (
 	updateFeesRequestPendingAutoTopupRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestPendingAutoTopupRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestPendingAutoTopupRegionsValueNullableFields maps the wire names of UpdateFeesRequestPendingAutoTopupRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestPendingAutoTopupRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestPendingAutoTopupRegionsValueFieldFixed,
+	"percentage": updateFeesRequestPendingAutoTopupRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestPendingAutoTopupRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -5934,10 +6557,12 @@ func (u *UpdateFeesRequestPendingAutoTopupRegionsValue) GetExtraProperties() map
 }
 
 func (u *UpdateFeesRequestPendingAutoTopupRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -5966,6 +6591,13 @@ func (u *UpdateFeesRequestPendingAutoTopupRegionsValue) UnmarshalJSON(data []byt
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestPendingAutoTopupRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5996,13 +6628,19 @@ func (u *UpdateFeesRequestPendingAutoTopupRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestPlatformProcessingFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestPlatformProcessingFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestPlatformProcessingFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestPlatformProcessingNullableFields maps the wire names of UpdateFeesRequestPlatformProcessing's nullable fields (required or optional) to their field bits.
+var updateFeesRequestPlatformProcessingNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestPlatformProcessingFieldFixed,
+	"percentage": updateFeesRequestPlatformProcessingFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestPlatformProcessing struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -6047,10 +6685,12 @@ func (u *UpdateFeesRequestPlatformProcessing) GetExtraProperties() map[string]in
 }
 
 func (u *UpdateFeesRequestPlatformProcessing) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -6086,6 +6726,13 @@ func (u *UpdateFeesRequestPlatformProcessing) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestPlatformProcessingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6120,6 +6767,12 @@ var (
 	updateFeesRequestPlatformProcessingRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestPlatformProcessingRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestPlatformProcessingRegionsValueNullableFields maps the wire names of UpdateFeesRequestPlatformProcessingRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestPlatformProcessingRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestPlatformProcessingRegionsValueFieldFixed,
+	"percentage": updateFeesRequestPlatformProcessingRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestPlatformProcessingRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -6156,10 +6809,12 @@ func (u *UpdateFeesRequestPlatformProcessingRegionsValue) GetExtraProperties() m
 }
 
 func (u *UpdateFeesRequestPlatformProcessingRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -6188,6 +6843,13 @@ func (u *UpdateFeesRequestPlatformProcessingRegionsValue) UnmarshalJSON(data []b
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestPlatformProcessingRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6218,13 +6880,19 @@ func (u *UpdateFeesRequestPlatformProcessingRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestPoolPayoutFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestPoolPayoutFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestPoolPayoutFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestPoolPayoutNullableFields maps the wire names of UpdateFeesRequestPoolPayout's nullable fields (required or optional) to their field bits.
+var updateFeesRequestPoolPayoutNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestPoolPayoutFieldFixed,
+	"percentage": updateFeesRequestPoolPayoutFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestPoolPayout struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -6269,10 +6937,12 @@ func (u *UpdateFeesRequestPoolPayout) GetExtraProperties() map[string]interface{
 }
 
 func (u *UpdateFeesRequestPoolPayout) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -6308,6 +6978,13 @@ func (u *UpdateFeesRequestPoolPayout) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestPoolPayoutNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6342,6 +7019,12 @@ var (
 	updateFeesRequestPoolPayoutRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestPoolPayoutRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestPoolPayoutRegionsValueNullableFields maps the wire names of UpdateFeesRequestPoolPayoutRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestPoolPayoutRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestPoolPayoutRegionsValueFieldFixed,
+	"percentage": updateFeesRequestPoolPayoutRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestPoolPayoutRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -6378,10 +7061,12 @@ func (u *UpdateFeesRequestPoolPayoutRegionsValue) GetExtraProperties() map[strin
 }
 
 func (u *UpdateFeesRequestPoolPayoutRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -6410,6 +7095,13 @@ func (u *UpdateFeesRequestPoolPayoutRegionsValue) UnmarshalJSON(data []byte) err
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestPoolPayoutRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6440,13 +7132,19 @@ func (u *UpdateFeesRequestPoolPayoutRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestRevshareFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestRevshareFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestRevshareFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestRevshareNullableFields maps the wire names of UpdateFeesRequestRevshare's nullable fields (required or optional) to their field bits.
+var updateFeesRequestRevshareNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestRevshareFieldFixed,
+	"percentage": updateFeesRequestRevshareFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestRevshare struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -6491,10 +7189,12 @@ func (u *UpdateFeesRequestRevshare) GetExtraProperties() map[string]interface{} 
 }
 
 func (u *UpdateFeesRequestRevshare) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -6530,6 +7230,13 @@ func (u *UpdateFeesRequestRevshare) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestRevshareNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6564,6 +7271,12 @@ var (
 	updateFeesRequestRevshareRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestRevshareRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestRevshareRegionsValueNullableFields maps the wire names of UpdateFeesRequestRevshareRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestRevshareRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestRevshareRegionsValueFieldFixed,
+	"percentage": updateFeesRequestRevshareRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestRevshareRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -6600,10 +7313,12 @@ func (u *UpdateFeesRequestRevshareRegionsValue) GetExtraProperties() map[string]
 }
 
 func (u *UpdateFeesRequestRevshareRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -6632,6 +7347,13 @@ func (u *UpdateFeesRequestRevshareRegionsValue) UnmarshalJSON(data []byte) error
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestRevshareRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6662,13 +7384,19 @@ func (u *UpdateFeesRequestRevshareRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestTaxCalculationFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestTaxCalculationFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestTaxCalculationFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestTaxCalculationNullableFields maps the wire names of UpdateFeesRequestTaxCalculation's nullable fields (required or optional) to their field bits.
+var updateFeesRequestTaxCalculationNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestTaxCalculationFieldFixed,
+	"percentage": updateFeesRequestTaxCalculationFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestTaxCalculation struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -6713,10 +7441,12 @@ func (u *UpdateFeesRequestTaxCalculation) GetExtraProperties() map[string]interf
 }
 
 func (u *UpdateFeesRequestTaxCalculation) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -6752,6 +7482,13 @@ func (u *UpdateFeesRequestTaxCalculation) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestTaxCalculationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6786,6 +7523,12 @@ var (
 	updateFeesRequestTaxCalculationRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestTaxCalculationRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestTaxCalculationRegionsValueNullableFields maps the wire names of UpdateFeesRequestTaxCalculationRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestTaxCalculationRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestTaxCalculationRegionsValueFieldFixed,
+	"percentage": updateFeesRequestTaxCalculationRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestTaxCalculationRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -6822,10 +7565,12 @@ func (u *UpdateFeesRequestTaxCalculationRegionsValue) GetExtraProperties() map[s
 }
 
 func (u *UpdateFeesRequestTaxCalculationRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -6854,6 +7599,13 @@ func (u *UpdateFeesRequestTaxCalculationRegionsValue) UnmarshalJSON(data []byte)
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestTaxCalculationRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6884,13 +7636,19 @@ func (u *UpdateFeesRequestTaxCalculationRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestTaxServiceFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestTaxServiceFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestTaxServiceFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestTaxServiceNullableFields maps the wire names of UpdateFeesRequestTaxService's nullable fields (required or optional) to their field bits.
+var updateFeesRequestTaxServiceNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestTaxServiceFieldFixed,
+	"percentage": updateFeesRequestTaxServiceFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestTaxService struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -6935,10 +7693,12 @@ func (u *UpdateFeesRequestTaxService) GetExtraProperties() map[string]interface{
 }
 
 func (u *UpdateFeesRequestTaxService) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -6974,6 +7734,13 @@ func (u *UpdateFeesRequestTaxService) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestTaxServiceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7008,6 +7775,12 @@ var (
 	updateFeesRequestTaxServiceRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestTaxServiceRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestTaxServiceRegionsValueNullableFields maps the wire names of UpdateFeesRequestTaxServiceRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestTaxServiceRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestTaxServiceRegionsValueFieldFixed,
+	"percentage": updateFeesRequestTaxServiceRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestTaxServiceRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -7044,10 +7817,12 @@ func (u *UpdateFeesRequestTaxServiceRegionsValue) GetExtraProperties() map[strin
 }
 
 func (u *UpdateFeesRequestTaxServiceRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -7076,6 +7851,13 @@ func (u *UpdateFeesRequestTaxServiceRegionsValue) UnmarshalJSON(data []byte) err
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestTaxServiceRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7106,13 +7888,19 @@ func (u *UpdateFeesRequestTaxServiceRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestThreeDsFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestThreeDsFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestThreeDsFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestThreeDsNullableFields maps the wire names of UpdateFeesRequestThreeDs's nullable fields (required or optional) to their field bits.
+var updateFeesRequestThreeDsNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestThreeDsFieldFixed,
+	"percentage": updateFeesRequestThreeDsFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestThreeDs struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -7157,10 +7945,12 @@ func (u *UpdateFeesRequestThreeDs) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateFeesRequestThreeDs) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -7196,6 +7986,13 @@ func (u *UpdateFeesRequestThreeDs) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestThreeDsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7230,6 +8027,12 @@ var (
 	updateFeesRequestThreeDsRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestThreeDsRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestThreeDsRegionsValueNullableFields maps the wire names of UpdateFeesRequestThreeDsRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestThreeDsRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestThreeDsRegionsValueFieldFixed,
+	"percentage": updateFeesRequestThreeDsRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestThreeDsRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -7266,10 +8069,12 @@ func (u *UpdateFeesRequestThreeDsRegionsValue) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateFeesRequestThreeDsRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -7298,6 +8103,13 @@ func (u *UpdateFeesRequestThreeDsRegionsValue) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestThreeDsRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7328,13 +8140,19 @@ func (u *UpdateFeesRequestThreeDsRegionsValue) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The fields of a fee the caller may change. Only the keys sent are replaced.
 var (
 	updateFeesRequestTransfersFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestTransfersFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestTransfersFieldRegions    = big.NewInt(1 << 2)
 )
 
+// updateFeesRequestTransfersNullableFields maps the wire names of UpdateFeesRequestTransfers's nullable fields (required or optional) to their field bits.
+var updateFeesRequestTransfersNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestTransfersFieldFixed,
+	"percentage": updateFeesRequestTransfersFieldPercentage,
+}
+
+// The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestTransfers struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -7379,10 +8197,12 @@ func (u *UpdateFeesRequestTransfers) GetExtraProperties() map[string]interface{}
 }
 
 func (u *UpdateFeesRequestTransfers) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -7418,6 +8238,13 @@ func (u *UpdateFeesRequestTransfers) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestTransfersNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7452,6 +8279,12 @@ var (
 	updateFeesRequestTransfersRegionsValueFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestTransfersRegionsValueFieldPercentage = big.NewInt(1 << 1)
 )
+
+// updateFeesRequestTransfersRegionsValueNullableFields maps the wire names of UpdateFeesRequestTransfersRegionsValue's nullable fields (required or optional) to their field bits.
+var updateFeesRequestTransfersRegionsValueNullableFields = map[string]*big.Int{
+	"fixed":      updateFeesRequestTransfersRegionsValueFieldFixed,
+	"percentage": updateFeesRequestTransfersRegionsValueFieldPercentage,
+}
 
 type UpdateFeesRequestTransfersRegionsValue struct {
 	// The new amount per event in US dollars. `null` clears the custom amount.
@@ -7488,10 +8321,12 @@ func (u *UpdateFeesRequestTransfersRegionsValue) GetExtraProperties() map[string
 }
 
 func (u *UpdateFeesRequestTransfersRegionsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFixed sets the Fixed field and marks it as non-optional;
@@ -7520,6 +8355,13 @@ func (u *UpdateFeesRequestTransfersRegionsValue) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFeesRequestTransfersRegionsValueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7653,10 +8495,12 @@ type UpdateFeesRequest struct {
 }
 
 func (u *UpdateFeesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;

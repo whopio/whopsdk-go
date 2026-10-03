@@ -59,10 +59,12 @@ type CreateAdCampaignsRequest struct {
 }
 
 func (c *CreateAdCampaignsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -190,10 +192,12 @@ type DeleteAdCampaignsRequest struct {
 }
 
 func (d *DeleteAdCampaignsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -222,10 +226,12 @@ type DuplicateAdCampaignsRequest struct {
 }
 
 func (d *DuplicateAdCampaignsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -325,10 +331,12 @@ type ListAdCampaignsRequest struct {
 }
 
 func (l *ListAdCampaignsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -449,10 +457,12 @@ type PauseAdCampaignsRequest struct {
 }
 
 func (p *PauseAdCampaignsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -487,10 +497,12 @@ type RetrieveAdCampaignsRequest struct {
 }
 
 func (r *RetrieveAdCampaignsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -595,6 +607,36 @@ var (
 	adCampaignFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 63)
 	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 64)
 )
+
+// adCampaignNullableFields maps the wire names of AdCampaign's nullable fields (required or optional) to their field bits.
+var adCampaignNullableFields = map[string]*big.Int{
+	"bid_type":                        adCampaignFieldBidType,
+	"budget_amount":                   adCampaignFieldBudgetAmount,
+	"budget_amount_local":             adCampaignFieldBudgetAmountLocal,
+	"budget_optimization":             adCampaignFieldBudgetOptimization,
+	"budget_type":                     adCampaignFieldBudgetType,
+	"cost_per_added_to_cart":          adCampaignFieldCostPerAddedToCart,
+	"cost_per_completed_registration": adCampaignFieldCostPerCompletedRegistration,
+	"cost_per_contact":                adCampaignFieldCostPerContact,
+	"cost_per_lead":                   adCampaignFieldCostPerLead,
+	"cost_per_purchase":               adCampaignFieldCostPerPurchase,
+	"cost_per_result":                 adCampaignFieldCostPerResult,
+	"cost_per_schedule":               adCampaignFieldCostPerSchedule,
+	"cost_per_submitted_application":  adCampaignFieldCostPerSubmittedApplication,
+	"cost_per_unique_click":           adCampaignFieldCostPerUniqueClick,
+	"cost_per_viewed_content":         adCampaignFieldCostPerViewedContent,
+	"desired_cost_per_result":         adCampaignFieldDesiredCostPerResult,
+	"ends_at":                         adCampaignFieldEndsAt,
+	"frequency":                       adCampaignFieldFrequency,
+	"objective":                       adCampaignFieldObjective,
+	"optimization_goal":               adCampaignFieldOptimizationGoal,
+	"result_event":                    adCampaignFieldResultEvent,
+	"result_event_name":               adCampaignFieldResultEventName,
+	"results":                         adCampaignFieldResults,
+	"spend_currency":                  adCampaignFieldSpendCurrency,
+	"starts_at":                       adCampaignFieldStartsAt,
+	"unique_click_through_rate":       adCampaignFieldUniqueClickThroughRate,
+}
 
 type AdCampaign struct {
 	// USD value attributed to add-to-cart events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
@@ -1196,10 +1238,12 @@ func (a *AdCampaign) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdCampaign) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAddedToCartValue sets the AddedToCartValue field and marks it as non-optional;
@@ -1669,6 +1713,13 @@ func (a *AdCampaign) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adCampaignNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2206,10 +2257,12 @@ func (d *DeleteAdCampaignsResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (d *DeleteAdCampaignsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -2297,10 +2350,12 @@ func (d *DuplicateAdCampaignsResponse) GetExtraProperties() map[string]interface
 }
 
 func (d *DuplicateAdCampaignsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2523,10 +2578,12 @@ func (l *ListAdCampaignsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAdCampaignsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2592,6 +2649,12 @@ var (
 	listAdCampaignsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAdCampaignsResponsePageInfoNullableFields maps the wire names of ListAdCampaignsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAdCampaignsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAdCampaignsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAdCampaignsResponsePageInfoFieldStartCursor,
+}
+
 type ListAdCampaignsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2641,10 +2704,12 @@ func (l *ListAdCampaignsResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListAdCampaignsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2687,6 +2752,13 @@ func (l *ListAdCampaignsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAdCampaignsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2727,6 +2799,12 @@ var (
 	postAdCampaignPaymentFailedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postAdCampaignPaymentFailedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postAdCampaignPaymentFailedPayloadNullableFields maps the wire names of PostAdCampaignPaymentFailedPayload's nullable fields (required or optional) to their field bits.
+var postAdCampaignPaymentFailedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAdCampaignPaymentFailedPayloadFieldAccountID,
+	"api_version_date": postAdCampaignPaymentFailedPayloadFieldAPIVersionDate,
+}
 
 type PostAdCampaignPaymentFailedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -2816,10 +2894,12 @@ func (p *PostAdCampaignPaymentFailedPayload) GetExtraProperties() map[string]int
 }
 
 func (p *PostAdCampaignPaymentFailedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2896,6 +2976,13 @@ func (p *PostAdCampaignPaymentFailedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdCampaignPaymentFailedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2970,6 +3057,20 @@ var (
 	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 18)
 	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 19)
 )
+
+// postAdCampaignPaymentFailedPayloadDataNullableFields maps the wire names of PostAdCampaignPaymentFailedPayloadData's nullable fields (required or optional) to their field bits.
+var postAdCampaignPaymentFailedPayloadDataNullableFields = map[string]*big.Int{
+	"bid_type":                postAdCampaignPaymentFailedPayloadDataFieldBidType,
+	"budget_amount":           postAdCampaignPaymentFailedPayloadDataFieldBudgetAmount,
+	"budget_amount_local":     postAdCampaignPaymentFailedPayloadDataFieldBudgetAmountLocal,
+	"budget_optimization":     postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization,
+	"budget_type":             postAdCampaignPaymentFailedPayloadDataFieldBudgetType,
+	"desired_cost_per_result": postAdCampaignPaymentFailedPayloadDataFieldDesiredCostPerResult,
+	"ends_at":                 postAdCampaignPaymentFailedPayloadDataFieldEndsAt,
+	"objective":               postAdCampaignPaymentFailedPayloadDataFieldObjective,
+	"optimization_goal":       postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal,
+	"starts_at":               postAdCampaignPaymentFailedPayloadDataFieldStartsAt,
+}
 
 type PostAdCampaignPaymentFailedPayloadData struct {
 	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
@@ -3166,10 +3267,12 @@ func (p *PostAdCampaignPaymentFailedPayloadData) GetExtraProperties() map[string
 }
 
 func (p *PostAdCampaignPaymentFailedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBidType sets the BidType field and marks it as non-optional;
@@ -3324,6 +3427,13 @@ func (p *PostAdCampaignPaymentFailedPayloadData) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdCampaignPaymentFailedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3653,6 +3763,12 @@ var (
 	postAdCampaignUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postAdCampaignUpdatedPayloadNullableFields maps the wire names of PostAdCampaignUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postAdCampaignUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAdCampaignUpdatedPayloadFieldAccountID,
+	"api_version_date": postAdCampaignUpdatedPayloadFieldAPIVersionDate,
+}
+
 type PostAdCampaignUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -3741,10 +3857,12 @@ func (p *PostAdCampaignUpdatedPayload) GetExtraProperties() map[string]interface
 }
 
 func (p *PostAdCampaignUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3821,6 +3939,13 @@ func (p *PostAdCampaignUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdCampaignUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3895,6 +4020,20 @@ var (
 	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 18)
 	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 19)
 )
+
+// postAdCampaignUpdatedPayloadDataNullableFields maps the wire names of PostAdCampaignUpdatedPayloadData's nullable fields (required or optional) to their field bits.
+var postAdCampaignUpdatedPayloadDataNullableFields = map[string]*big.Int{
+	"bid_type":                postAdCampaignUpdatedPayloadDataFieldBidType,
+	"budget_amount":           postAdCampaignUpdatedPayloadDataFieldBudgetAmount,
+	"budget_amount_local":     postAdCampaignUpdatedPayloadDataFieldBudgetAmountLocal,
+	"budget_optimization":     postAdCampaignUpdatedPayloadDataFieldBudgetOptimization,
+	"budget_type":             postAdCampaignUpdatedPayloadDataFieldBudgetType,
+	"desired_cost_per_result": postAdCampaignUpdatedPayloadDataFieldDesiredCostPerResult,
+	"ends_at":                 postAdCampaignUpdatedPayloadDataFieldEndsAt,
+	"objective":               postAdCampaignUpdatedPayloadDataFieldObjective,
+	"optimization_goal":       postAdCampaignUpdatedPayloadDataFieldOptimizationGoal,
+	"starts_at":               postAdCampaignUpdatedPayloadDataFieldStartsAt,
+}
 
 type PostAdCampaignUpdatedPayloadData struct {
 	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
@@ -4091,10 +4230,12 @@ func (p *PostAdCampaignUpdatedPayloadData) GetExtraProperties() map[string]inter
 }
 
 func (p *PostAdCampaignUpdatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBidType sets the BidType field and marks it as non-optional;
@@ -4249,6 +4390,13 @@ func (p *PostAdCampaignUpdatedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdCampaignUpdatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4722,10 +4870,12 @@ type UnpauseAdCampaignsRequest struct {
 }
 
 func (u *UnpauseAdCampaignsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4778,10 +4928,12 @@ type UpdateAdCampaignsRequest struct {
 }
 
 func (u *UpdateAdCampaignsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

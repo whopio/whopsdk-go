@@ -22,10 +22,12 @@ type ApproveWaitlistEntriesRequest struct {
 }
 
 func (a *ApproveWaitlistEntriesRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -51,10 +53,12 @@ type ApproveAllWaitlistEntriesRequest struct {
 }
 
 func (a *ApproveAllWaitlistEntriesRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -105,10 +109,12 @@ type CancelWaitlistEntriesRequest struct {
 }
 
 func (c *CancelWaitlistEntriesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -137,10 +143,12 @@ type CreateWaitlistEntriesRequest struct {
 }
 
 func (c *CreateWaitlistEntriesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCustomFieldResponses sets the CustomFieldResponses field and marks it as non-optional;
@@ -198,10 +206,12 @@ type DenyWaitlistEntriesRequest struct {
 }
 
 func (d *DenyWaitlistEntriesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -257,10 +267,12 @@ type ListWaitlistEntriesRequest struct {
 }
 
 func (l *ListWaitlistEntriesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -360,10 +372,12 @@ type RetrieveWaitlistEntriesRequest struct {
 }
 
 func (r *RetrieveWaitlistEntriesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -388,6 +402,14 @@ var (
 	waitlistEntryFieldUpdatedAt             = big.NewInt(1 << 11)
 	waitlistEntryFieldUserID                = big.NewInt(1 << 12)
 )
+
+// waitlistEntryNullableFields maps the wire names of WaitlistEntry's nullable fields (required or optional) to their field bits.
+var waitlistEntryNullableFields = map[string]*big.Int{
+	"approval_failure_reason": waitlistEntryFieldApprovalFailureReason,
+	"buyer_account_id":        waitlistEntryFieldBuyerAccountID,
+	"membership_id":           waitlistEntryFieldMembershipID,
+	"product_id":              waitlistEntryFieldProductID,
+}
 
 type WaitlistEntry struct {
 	// The seller account, prefixed `biz_`.
@@ -522,10 +544,12 @@ func (w *WaitlistEntry) GetExtraProperties() map[string]interface{} {
 }
 
 func (w *WaitlistEntry) require(field *big.Int) {
-	if w.explicitFields == nil {
-		w.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if w.explicitFields != nil {
+		next.Set(w.explicitFields)
 	}
-	w.explicitFields.Or(w.explicitFields, field)
+	next.Or(next, field)
+	w.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -631,6 +655,13 @@ func (w *WaitlistEntry) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	w.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, waitlistEntryNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		w.require(presentFields)
+	}
 	w.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -740,10 +771,12 @@ func (w *WaitlistEntryCustomFieldResponse) GetExtraProperties() map[string]inter
 }
 
 func (w *WaitlistEntryCustomFieldResponse) require(field *big.Int) {
-	if w.explicitFields == nil {
-		w.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if w.explicitFields != nil {
+		next.Set(w.explicitFields)
 	}
-	w.explicitFields.Or(w.explicitFields, field)
+	next.Or(next, field)
+	w.explicitFields = next
 }
 
 // SetAnswer sets the Answer field and marks it as non-optional;
@@ -844,6 +877,11 @@ var (
 	approveAllWaitlistEntriesResponseFieldQueued    = big.NewInt(1 << 2)
 )
 
+// approveAllWaitlistEntriesResponseNullableFields maps the wire names of ApproveAllWaitlistEntriesResponse's nullable fields (required or optional) to their field bits.
+var approveAllWaitlistEntriesResponseNullableFields = map[string]*big.Int{
+	"plan_id": approveAllWaitlistEntriesResponseFieldPlanID,
+}
+
 type ApproveAllWaitlistEntriesResponse struct {
 	// The seller account whose signups were queued, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
@@ -888,10 +926,12 @@ func (a *ApproveAllWaitlistEntriesResponse) GetExtraProperties() map[string]inte
 }
 
 func (a *ApproveAllWaitlistEntriesResponse) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -927,6 +967,13 @@ func (a *ApproveAllWaitlistEntriesResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, approveAllWaitlistEntriesResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -997,10 +1044,12 @@ func (c *CreateWaitlistEntriesRequestCustomFieldResponsesItem) GetExtraPropertie
 }
 
 func (c *CreateWaitlistEntriesRequestCustomFieldResponsesItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAnswer sets the Answer field and marks it as non-optional;
@@ -1166,10 +1215,12 @@ func (l *ListWaitlistEntriesResponse) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListWaitlistEntriesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1235,6 +1286,12 @@ var (
 	listWaitlistEntriesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listWaitlistEntriesResponsePageInfoNullableFields maps the wire names of ListWaitlistEntriesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listWaitlistEntriesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listWaitlistEntriesResponsePageInfoFieldEndCursor,
+	"start_cursor": listWaitlistEntriesResponsePageInfoFieldStartCursor,
+}
+
 type ListWaitlistEntriesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1284,10 +1341,12 @@ func (l *ListWaitlistEntriesResponsePageInfo) GetExtraProperties() map[string]in
 }
 
 func (l *ListWaitlistEntriesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1330,6 +1389,13 @@ func (l *ListWaitlistEntriesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listWaitlistEntriesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

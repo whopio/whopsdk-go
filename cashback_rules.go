@@ -41,10 +41,12 @@ type CreateCashbackRulesRequest struct {
 }
 
 func (c *CreateCashbackRulesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -97,12 +99,20 @@ func (c *CreateCashbackRulesRequest) SetStartsAt(startsAt time.Time) {
 }
 
 func (c *CreateCashbackRulesRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateCashbackRulesRequest
-	var body unmarshaler
+	type embed CreateCashbackRulesRequest
+	var body = struct {
+		embed
+		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
+		StartsAt  *internal.DateTime `json:"starts_at"`
+	}{
+		embed: embed(*c),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*c = CreateCashbackRulesRequest(body)
+	*c = CreateCashbackRulesRequest(body.embed)
+	c.ExpiresAt = body.ExpiresAt.TimePtr()
+	c.StartsAt = body.StartsAt.Time()
 	return nil
 }
 
@@ -149,10 +159,12 @@ type ListCashbackRulesRequest struct {
 }
 
 func (l *ListCashbackRulesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -216,10 +228,12 @@ type PayoutCashbackRulesRequest struct {
 }
 
 func (p *PayoutCashbackRulesRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -270,6 +284,13 @@ var (
 	cashbackPayoutFieldStatus         = big.NewInt(1 << 2)
 	cashbackPayoutFieldTransactionID  = big.NewInt(1 << 3)
 )
+
+// cashbackPayoutNullableFields maps the wire names of CashbackPayout's nullable fields (required or optional) to their field bits.
+var cashbackPayoutNullableFields = map[string]*big.Int{
+	"account_id":       cashbackPayoutFieldAccountID,
+	"cashback_rule_id": cashbackPayoutFieldCashbackRuleID,
+	"transaction_id":   cashbackPayoutFieldTransactionID,
+}
 
 type CashbackPayout struct {
 	// Connected account filter from the request, prefixed `biz_`. Omitted when not supplied.
@@ -324,10 +345,12 @@ func (c *CashbackPayout) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CashbackPayout) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -370,6 +393,13 @@ func (c *CashbackPayout) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, cashbackPayoutNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -437,6 +467,16 @@ var (
 	cashbackRuleFieldStartsAt             = big.NewInt(1 << 10)
 	cashbackRuleFieldUpdatedAt            = big.NewInt(1 << 11)
 )
+
+// cashbackRuleNullableFields maps the wire names of CashbackRule's nullable fields (required or optional) to their field bits.
+var cashbackRuleNullableFields = map[string]*big.Int{
+	"description":            cashbackRuleFieldDescription,
+	"discarded_at":           cashbackRuleFieldDiscardedAt,
+	"expires_at":             cashbackRuleFieldExpiresAt,
+	"merchant_category_code": cashbackRuleFieldMerchantCategoryCode,
+	"merchant_name":          cashbackRuleFieldMerchantName,
+	"scoped_account_id":      cashbackRuleFieldScopedAccountID,
+}
 
 type CashbackRule struct {
 	// When the rule was created, as an ISO 8601 timestamp.
@@ -563,10 +603,12 @@ func (c *CashbackRule) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CashbackRule) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -665,6 +707,13 @@ func (c *CashbackRule) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, cashbackRuleNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -774,10 +823,12 @@ func (l *ListCashbackRulesResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListCashbackRulesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -843,6 +894,12 @@ var (
 	listCashbackRulesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listCashbackRulesResponsePageInfoNullableFields maps the wire names of ListCashbackRulesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listCashbackRulesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listCashbackRulesResponsePageInfoFieldEndCursor,
+	"start_cursor": listCashbackRulesResponsePageInfoFieldStartCursor,
+}
+
 type ListCashbackRulesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -892,10 +949,12 @@ func (l *ListCashbackRulesResponsePageInfo) GetExtraProperties() map[string]inte
 }
 
 func (l *ListCashbackRulesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -938,6 +997,13 @@ func (l *ListCashbackRulesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCashbackRulesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -993,10 +1059,12 @@ type UpdateCashbackRulesRequest struct {
 }
 
 func (u *UpdateCashbackRulesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1035,12 +1103,18 @@ func (u *UpdateCashbackRulesRequest) SetMerchantName(merchantName *string) {
 }
 
 func (u *UpdateCashbackRulesRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateCashbackRulesRequest
-	var body unmarshaler
+	type embed UpdateCashbackRulesRequest
+	var body = struct {
+		embed
+		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
+	}{
+		embed: embed(*u),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*u = UpdateCashbackRulesRequest(body)
+	*u = UpdateCashbackRulesRequest(body.embed)
+	u.ExpiresAt = body.ExpiresAt.TimePtr()
 	return nil
 }
 

@@ -23,10 +23,12 @@ type RetrievePayoutAccountsRequest struct {
 }
 
 func (r *RetrievePayoutAccountsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -36,7 +38,6 @@ func (r *RetrievePayoutAccountsRequest) SetID(id string) {
 	r.require(retrievePayoutAccountsRequestFieldID)
 }
 
-// An object representing an account used for payouts.
 var (
 	payoutAccountFieldAddress                = big.NewInt(1 << 0)
 	payoutAccountFieldBusinessName           = big.NewInt(1 << 1)
@@ -48,6 +49,18 @@ var (
 	payoutAccountFieldStatus                 = big.NewInt(1 << 7)
 )
 
+// payoutAccountNullableFields maps the wire names of PayoutAccount's nullable fields (required or optional) to their field bits.
+var payoutAccountNullableFields = map[string]*big.Int{
+	"address":                 payoutAccountFieldAddress,
+	"business_name":           payoutAccountFieldBusinessName,
+	"business_representative": payoutAccountFieldBusinessRepresentative,
+	"email":                   payoutAccountFieldEmail,
+	"latest_verification":     payoutAccountFieldLatestVerification,
+	"phone":                   payoutAccountFieldPhone,
+	"status":                  payoutAccountFieldStatus,
+}
+
+// An object representing an account used for payouts.
 type PayoutAccount struct {
 	// The physical address associated with this payout account
 	Address *PayoutAccountAddress `json:"address,omitempty" url:"address,omitempty"`
@@ -137,10 +150,12 @@ func (p *PayoutAccount) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PayoutAccount) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -211,6 +226,13 @@ func (p *PayoutAccount) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, payoutAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -241,7 +263,6 @@ func (p *PayoutAccount) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The physical address associated with this payout account
 var (
 	payoutAccountAddressFieldCity       = big.NewInt(1 << 0)
 	payoutAccountAddressFieldCountry    = big.NewInt(1 << 1)
@@ -251,6 +272,17 @@ var (
 	payoutAccountAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// payoutAccountAddressNullableFields maps the wire names of PayoutAccountAddress's nullable fields (required or optional) to their field bits.
+var payoutAccountAddressNullableFields = map[string]*big.Int{
+	"city":        payoutAccountAddressFieldCity,
+	"country":     payoutAccountAddressFieldCountry,
+	"line1":       payoutAccountAddressFieldLine1,
+	"line2":       payoutAccountAddressFieldLine2,
+	"postal_code": payoutAccountAddressFieldPostalCode,
+	"state":       payoutAccountAddressFieldState,
+}
+
+// The physical address associated with this payout account
 type PayoutAccountAddress struct {
 	// The city of the address.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -322,10 +354,12 @@ func (p *PayoutAccountAddress) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PayoutAccountAddress) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -382,6 +416,13 @@ func (p *PayoutAccountAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, payoutAccountAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -412,7 +453,6 @@ func (p *PayoutAccountAddress) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The business representative for this payout account
 var (
 	payoutAccountBusinessRepresentativeFieldDateOfBirth = big.NewInt(1 << 0)
 	payoutAccountBusinessRepresentativeFieldFirstName   = big.NewInt(1 << 1)
@@ -420,6 +460,15 @@ var (
 	payoutAccountBusinessRepresentativeFieldMiddleName  = big.NewInt(1 << 3)
 )
 
+// payoutAccountBusinessRepresentativeNullableFields maps the wire names of PayoutAccountBusinessRepresentative's nullable fields (required or optional) to their field bits.
+var payoutAccountBusinessRepresentativeNullableFields = map[string]*big.Int{
+	"date_of_birth": payoutAccountBusinessRepresentativeFieldDateOfBirth,
+	"first_name":    payoutAccountBusinessRepresentativeFieldFirstName,
+	"last_name":     payoutAccountBusinessRepresentativeFieldLastName,
+	"middle_name":   payoutAccountBusinessRepresentativeFieldMiddleName,
+}
+
+// The business representative for this payout account
 type PayoutAccountBusinessRepresentative struct {
 	// The date of birth of the business representative in ISO 8601 format (YYYY-MM-DD).
 	DateOfBirth *string `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty"`
@@ -473,10 +522,12 @@ func (p *PayoutAccountBusinessRepresentative) GetExtraProperties() map[string]in
 }
 
 func (p *PayoutAccountBusinessRepresentative) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
@@ -519,6 +570,13 @@ func (p *PayoutAccountBusinessRepresentative) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, payoutAccountBusinessRepresentativeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -549,7 +607,6 @@ func (p *PayoutAccountBusinessRepresentative) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The latest verification for the connected account.
 var (
 	payoutAccountLatestVerificationFieldID              = big.NewInt(1 << 0)
 	payoutAccountLatestVerificationFieldLastErrorCode   = big.NewInt(1 << 1)
@@ -557,6 +614,13 @@ var (
 	payoutAccountLatestVerificationFieldStatus          = big.NewInt(1 << 3)
 )
 
+// payoutAccountLatestVerificationNullableFields maps the wire names of PayoutAccountLatestVerification's nullable fields (required or optional) to their field bits.
+var payoutAccountLatestVerificationNullableFields = map[string]*big.Int{
+	"last_error_code":   payoutAccountLatestVerificationFieldLastErrorCode,
+	"last_error_reason": payoutAccountLatestVerificationFieldLastErrorReason,
+}
+
+// The latest verification for the connected account.
 type PayoutAccountLatestVerification struct {
 	// The numeric id of the verification record.
 	ID string `json:"id" url:"id"`
@@ -610,10 +674,12 @@ func (p *PayoutAccountLatestVerification) GetExtraProperties() map[string]interf
 }
 
 func (p *PayoutAccountLatestVerification) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -656,6 +722,13 @@ func (p *PayoutAccountLatestVerification) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, payoutAccountLatestVerificationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -696,6 +769,12 @@ var (
 	postPayoutAccountStatusUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postPayoutAccountStatusUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postPayoutAccountStatusUpdatedPayloadNullableFields maps the wire names of PostPayoutAccountStatusUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postPayoutAccountStatusUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPayoutAccountStatusUpdatedPayloadFieldAccountID,
+	"api_version_date": postPayoutAccountStatusUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostPayoutAccountStatusUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -785,10 +864,12 @@ func (p *PostPayoutAccountStatusUpdatedPayload) GetExtraProperties() map[string]
 }
 
 func (p *PostPayoutAccountStatusUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -865,6 +946,13 @@ func (p *PostPayoutAccountStatusUpdatedPayload) UnmarshalJSON(data []byte) error
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutAccountStatusUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

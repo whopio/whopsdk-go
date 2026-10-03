@@ -41,10 +41,12 @@ type CreateAppBuildsRequest struct {
 }
 
 func (c *CreateAppBuildsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAiPromptID sets the AiPromptID field and marks it as non-optional;
@@ -154,10 +156,12 @@ type ListAppBuildsRequest struct {
 }
 
 func (l *ListAppBuildsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAppID sets the AppID field and marks it as non-optional;
@@ -236,10 +240,12 @@ type PromoteAppBuildsRequest struct {
 }
 
 func (p *PromoteAppBuildsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -262,10 +268,12 @@ type RetrieveAppBuildsRequest struct {
 }
 
 func (r *RetrieveAppBuildsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -287,6 +295,13 @@ var (
 	appBuildFieldStatus                = big.NewInt(1 << 8)
 	appBuildFieldSupportedAppViewTypes = big.NewInt(1 << 9)
 )
+
+// appBuildNullableFields maps the wire names of AppBuild's nullable fields (required or optional) to their field bits.
+var appBuildNullableFields = map[string]*big.Int{
+	"file_url":       appBuildFieldFileURL,
+	"review_message": appBuildFieldReviewMessage,
+	"source_url":     appBuildFieldSourceURL,
+}
 
 type AppBuild struct {
 	// Client-generated checksum of the build file, used to verify file integrity.
@@ -394,10 +409,12 @@ func (a *AppBuild) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppBuild) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetChecksum sets the Checksum field and marks it as non-optional;
@@ -482,6 +499,13 @@ func (a *AppBuild) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appBuildNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -759,12 +783,12 @@ func (l *ListAppBuildsRequestCreatedBefore) Accept(visitor ListAppBuildsRequestC
 	return fmt.Errorf("type %T does not include a non-empty union type", l)
 }
 
-// The uploaded build file: `{ id }` for an existing file or `{ direct_upload_id }` for a completed direct upload.
 var (
 	createAppBuildsRequestAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	createAppBuildsRequestAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
+// The uploaded build file: `{ id }` for an existing file or `{ direct_upload_id }` for a completed direct upload.
 type CreateAppBuildsRequestAttachment struct {
 	// The signed id of a completed direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -800,10 +824,12 @@ func (c *CreateAppBuildsRequestAttachment) GetExtraProperties() map[string]inter
 }
 
 func (c *CreateAppBuildsRequestAttachment) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -888,12 +914,12 @@ func (c CreateAppBuildsRequestPlatform) Ptr() *CreateAppBuildsRequestPlatform {
 	return &c
 }
 
-// An optional compressed archive (.zip or .gz) of the source code that produced this build, stored alongside the build so it can be downloaded later. Referenced like `attachment`, and must be a different file.
 var (
 	createAppBuildsRequestSourceAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	createAppBuildsRequestSourceAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
+// An optional compressed archive (.zip or .gz) of the source code that produced this build, stored alongside the build so it can be downloaded later. Referenced like `attachment`, and must be a different file.
 type CreateAppBuildsRequestSourceAttachment struct {
 	// The signed id of a completed direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -929,10 +955,12 @@ func (c *CreateAppBuildsRequestSourceAttachment) GetExtraProperties() map[string
 }
 
 func (c *CreateAppBuildsRequestSourceAttachment) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -1119,10 +1147,12 @@ func (l *ListAppBuildsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAppBuildsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1188,6 +1218,12 @@ var (
 	listAppBuildsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAppBuildsResponsePageInfoNullableFields maps the wire names of ListAppBuildsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAppBuildsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAppBuildsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAppBuildsResponsePageInfoFieldStartCursor,
+}
+
 type ListAppBuildsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1237,10 +1273,12 @@ func (l *ListAppBuildsResponsePageInfo) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListAppBuildsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1283,6 +1321,13 @@ func (l *ListAppBuildsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAppBuildsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

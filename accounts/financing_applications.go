@@ -23,10 +23,12 @@ type CreateFinancingApplicationsRequest struct {
 }
 
 func (c *CreateFinancingApplicationsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -97,10 +99,12 @@ type ListFinancingApplicationsRequest struct {
 }
 
 func (l *ListFinancingApplicationsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -189,10 +193,12 @@ type RetrieveFinancingApplicationsRequest struct {
 }
 
 func (r *RetrieveFinancingApplicationsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -227,10 +233,12 @@ type SubmitFinancingApplicationsRequest struct {
 }
 
 func (s *SubmitFinancingApplicationsRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -388,10 +396,12 @@ func (l *ListFinancingApplicationsResponse) GetExtraProperties() map[string]inte
 }
 
 func (l *ListFinancingApplicationsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -457,6 +467,12 @@ var (
 	listFinancingApplicationsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listFinancingApplicationsResponsePageInfoNullableFields maps the wire names of ListFinancingApplicationsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listFinancingApplicationsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listFinancingApplicationsResponsePageInfoFieldEndCursor,
+	"start_cursor": listFinancingApplicationsResponsePageInfoFieldStartCursor,
+}
+
 type ListFinancingApplicationsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -506,10 +522,12 @@ func (l *ListFinancingApplicationsResponsePageInfo) GetExtraProperties() map[str
 }
 
 func (l *ListFinancingApplicationsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -552,6 +570,13 @@ func (l *ListFinancingApplicationsResponsePageInfo) UnmarshalJSON(data []byte) e
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listFinancingApplicationsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -622,10 +647,12 @@ func (s *SubmitFinancingApplicationsRequestMerchantAcceptance) GetExtraPropertie
 }
 
 func (s *SubmitFinancingApplicationsRequestMerchantAcceptance) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetAccepted sets the Accepted field and marks it as non-optional;
@@ -691,6 +718,11 @@ var (
 	updateFinancingApplicationsRequestAnswersItemFieldValues        = big.NewInt(1 << 3)
 )
 
+// updateFinancingApplicationsRequestAnswersItemNullableFields maps the wire names of UpdateFinancingApplicationsRequestAnswersItem's nullable fields (required or optional) to their field bits.
+var updateFinancingApplicationsRequestAnswersItemNullableFields = map[string]*big.Int{
+	"money": updateFinancingApplicationsRequestAnswersItemFieldMoney,
+}
+
 type UpdateFinancingApplicationsRequestAnswersItem struct {
 	// Complete replacement set of uploaded file IDs for this requirement. Empty removes all files.
 	FileIDs []string                                            `json:"file_ids,omitempty" url:"file_ids,omitempty"`
@@ -743,10 +775,12 @@ func (u *UpdateFinancingApplicationsRequestAnswersItem) GetExtraProperties() map
 }
 
 func (u *UpdateFinancingApplicationsRequestAnswersItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFileIDs sets the FileIDs field and marks it as non-optional;
@@ -789,6 +823,13 @@ func (u *UpdateFinancingApplicationsRequestAnswersItem) UnmarshalJSON(data []byt
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateFinancingApplicationsRequestAnswersItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -859,10 +900,12 @@ func (u *UpdateFinancingApplicationsRequestAnswersItemMoney) GetExtraProperties(
 }
 
 func (u *UpdateFinancingApplicationsRequestAnswersItemMoney) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -1208,10 +1251,12 @@ type UpdateFinancingApplicationsRequest struct {
 }
 
 func (u *UpdateFinancingApplicationsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;

@@ -25,10 +25,12 @@ type CreateDmMembersRequest struct {
 }
 
 func (c *CreateDmMembersRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetChannelID sets the ChannelID field and marks it as non-optional;
@@ -79,10 +81,12 @@ type DeleteDmMembersRequest struct {
 }
 
 func (d *DeleteDmMembersRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -117,10 +121,12 @@ type ListDmMembersRequest struct {
 }
 
 func (l *ListDmMembersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -171,10 +177,12 @@ type RetrieveDmMembersRequest struct {
 }
 
 func (r *RetrieveDmMembersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -184,7 +192,6 @@ func (r *RetrieveDmMembersRequest) SetID(id string) {
 	r.require(retrieveDmMembersRequestFieldID)
 }
 
-// A user's membership record in a messaging channel, including notification preferences and read state.
 var (
 	dmMemberFieldChannelID              = big.NewInt(1 << 0)
 	dmMemberFieldID                     = big.NewInt(1 << 1)
@@ -194,6 +201,12 @@ var (
 	dmMemberFieldUserID                 = big.NewInt(1 << 5)
 )
 
+// dmMemberNullableFields maps the wire names of DmMember's nullable fields (required or optional) to their field bits.
+var dmMemberNullableFields = map[string]*big.Int{
+	"last_viewed_at": dmMemberFieldLastViewedAt,
+}
+
+// A user's membership record in a messaging channel, including notification preferences and read state.
 type DmMember struct {
 	// The unique identifier of the messaging channel this membership belongs to.
 	ChannelID string `json:"channel_id" url:"channel_id"`
@@ -265,10 +278,12 @@ func (d *DmMember) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DmMember) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetChannelID sets the ChannelID field and marks it as non-optional;
@@ -325,6 +340,13 @@ func (d *DmMember) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, dmMemberNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -355,7 +377,6 @@ func (d *DmMember) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// A user's membership record in a messaging channel, including notification preferences and read state.
 var (
 	dmMemberListItemFieldChannelID    = big.NewInt(1 << 0)
 	dmMemberListItemFieldID           = big.NewInt(1 << 1)
@@ -364,6 +385,12 @@ var (
 	dmMemberListItemFieldUserID       = big.NewInt(1 << 4)
 )
 
+// dmMemberListItemNullableFields maps the wire names of DmMemberListItem's nullable fields (required or optional) to their field bits.
+var dmMemberListItemNullableFields = map[string]*big.Int{
+	"last_viewed_at": dmMemberListItemFieldLastViewedAt,
+}
+
+// A user's membership record in a messaging channel, including notification preferences and read state.
 type DmMemberListItem struct {
 	// The unique identifier of the messaging channel this membership belongs to.
 	ChannelID string `json:"channel_id" url:"channel_id"`
@@ -426,10 +453,12 @@ func (d *DmMemberListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DmMemberListItem) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetChannelID sets the ChannelID field and marks it as non-optional;
@@ -479,6 +508,13 @@ func (d *DmMemberListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, dmMemberListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -567,12 +603,12 @@ func (d DmsFeedMemberStatuses) Ptr() *DmsFeedMemberStatuses {
 	return &d
 }
 
-// The connection type for DmsFeedMember.
 var (
 	listDmMembersResponseFieldData     = big.NewInt(1 << 0)
 	listDmMembersResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for DmsFeedMember.
 type ListDmMembersResponse struct {
 	// A list of nodes.
 	Data []*DmMemberListItem `json:"data" url:"data"`
@@ -608,10 +644,12 @@ func (l *ListDmMembersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListDmMembersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -689,10 +727,12 @@ type UpdateDmMembersRequest struct {
 }
 
 func (u *UpdateDmMembersRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

@@ -28,10 +28,12 @@ type AddPartnerSocialAccountsRequest struct {
 }
 
 func (a *AddPartnerSocialAccountsRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -98,10 +100,12 @@ type ConnectSocialAccountsRequest struct {
 }
 
 func (c *ConnectSocialAccountsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -169,10 +173,12 @@ type CreateSocialAccountsRequest struct {
 }
 
 func (c *CreateSocialAccountsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -229,10 +235,12 @@ type DeleteSocialAccountsRequest struct {
 }
 
 func (d *DeleteSocialAccountsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -272,10 +280,12 @@ type LeadFormsSocialAccountsRequest struct {
 }
 
 func (l *LeadFormsSocialAccountsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -338,10 +348,12 @@ type ListSocialAccountsRequest struct {
 }
 
 func (l *ListSocialAccountsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -450,10 +462,12 @@ type PartnersSocialAccountsRequest struct {
 }
 
 func (p *PartnersSocialAccountsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -509,10 +523,12 @@ type PostsSocialAccountsRequest struct {
 }
 
 func (p *PostsSocialAccountsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -566,10 +582,12 @@ type RefreshSocialAccountsRequest struct {
 }
 
 func (r *RefreshSocialAccountsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -626,10 +644,12 @@ type RemovePartnerSocialAccountsRequest struct {
 }
 
 func (r *RemovePartnerSocialAccountsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -667,6 +687,18 @@ var (
 	socialAccountLeadFormFieldQuestionLabels        = big.NewInt(1 << 10)
 	socialAccountLeadFormFieldQuestions             = big.NewInt(1 << 11)
 )
+
+// socialAccountLeadFormNullableFields maps the wire names of SocialAccountLeadForm's nullable fields (required or optional) to their field bits.
+var socialAccountLeadFormNullableFields = map[string]*big.Int{
+	"completion":               socialAccountLeadFormFieldCompletion,
+	"created_at":               socialAccountLeadFormFieldCreatedAt,
+	"disclaimer":               socialAccountLeadFormFieldDisclaimer,
+	"intro":                    socialAccountLeadFormFieldIntro,
+	"locale":                   socialAccountLeadFormFieldLocale,
+	"name":                     socialAccountLeadFormFieldName,
+	"privacy_policy_link_text": socialAccountLeadFormFieldPrivacyPolicyLinkText,
+	"privacy_policy_url":       socialAccountLeadFormFieldPrivacyPolicyURL,
+}
 
 type SocialAccountLeadForm struct {
 	// Screen shown after the form is submitted. `null` when the form has none.
@@ -791,10 +823,12 @@ func (s *SocialAccountLeadForm) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SocialAccountLeadForm) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetCompletion sets the Completion field and marks it as non-optional;
@@ -893,6 +927,13 @@ func (s *SocialAccountLeadForm) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, socialAccountLeadFormNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -957,6 +998,17 @@ var (
 	socialAccountPostFieldThumbnailURL   = big.NewInt(1 << 7)
 	socialAccountPostFieldVideoID        = big.NewInt(1 << 8)
 )
+
+// socialAccountPostNullableFields maps the wire names of SocialAccountPost's nullable fields (required or optional) to their field bits.
+var socialAccountPostNullableFields = map[string]*big.Int{
+	"call_to_action":  socialAccountPostFieldCallToAction,
+	"caption":         socialAccountPostFieldCaption,
+	"destination_url": socialAccountPostFieldDestinationURL,
+	"embed_url":       socialAccountPostFieldEmbedURL,
+	"media_url":       socialAccountPostFieldMediaURL,
+	"thumbnail_url":   socialAccountPostFieldThumbnailURL,
+	"video_id":        socialAccountPostFieldVideoID,
+}
 
 type SocialAccountPost struct {
 	// The post's call-to-action button, for example shop_now (Facebook only; null for Instagram and TikTok).
@@ -1055,10 +1107,12 @@ func (s *SocialAccountPost) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SocialAccountPost) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetCallToAction sets the CallToAction field and marks it as non-optional;
@@ -1136,6 +1190,13 @@ func (s *SocialAccountPost) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, socialAccountPostNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1392,10 +1453,12 @@ func (c *ConnectSocialAccountsResponse) GetExtraProperties() map[string]interfac
 }
 
 func (c *ConnectSocialAccountsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAuthorizeURL sets the AuthorizeURL field and marks it as non-optional;
@@ -1510,10 +1573,12 @@ func (d *DeleteSocialAccountsResponse) GetExtraProperties() map[string]interface
 }
 
 func (d *DeleteSocialAccountsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -1601,10 +1666,12 @@ func (l *LeadFormsSocialAccountsResponse) GetExtraProperties() map[string]interf
 }
 
 func (l *LeadFormsSocialAccountsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1831,10 +1898,12 @@ func (l *ListSocialAccountsResponse) GetExtraProperties() map[string]interface{}
 }
 
 func (l *ListSocialAccountsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1900,6 +1969,12 @@ var (
 	listSocialAccountsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listSocialAccountsResponsePageInfoNullableFields maps the wire names of ListSocialAccountsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listSocialAccountsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listSocialAccountsResponsePageInfoFieldEndCursor,
+	"start_cursor": listSocialAccountsResponsePageInfoFieldStartCursor,
+}
+
 type ListSocialAccountsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1949,10 +2024,12 @@ func (l *ListSocialAccountsResponsePageInfo) GetExtraProperties() map[string]int
 }
 
 func (l *ListSocialAccountsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1995,6 +2072,13 @@ func (l *ListSocialAccountsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSocialAccountsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2063,10 +2147,12 @@ func (p *PartnersSocialAccountsResponse) GetExtraProperties() map[string]interfa
 }
 
 func (p *PartnersSocialAccountsResponse) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2132,6 +2218,12 @@ var (
 	partnersSocialAccountsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// partnersSocialAccountsResponsePageInfoNullableFields maps the wire names of PartnersSocialAccountsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var partnersSocialAccountsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   partnersSocialAccountsResponsePageInfoFieldEndCursor,
+	"start_cursor": partnersSocialAccountsResponsePageInfoFieldStartCursor,
+}
+
 type PartnersSocialAccountsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2181,10 +2273,12 @@ func (p *PartnersSocialAccountsResponsePageInfo) GetExtraProperties() map[string
 }
 
 func (p *PartnersSocialAccountsResponsePageInfo) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2227,6 +2321,13 @@ func (p *PartnersSocialAccountsResponsePageInfo) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, partnersSocialAccountsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2295,10 +2396,12 @@ func (p *PostsSocialAccountsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (p *PostsSocialAccountsResponse) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2362,6 +2465,11 @@ var (
 	postsSocialAccountsResponsePageInfoFieldHasNextPage = big.NewInt(1 << 1)
 )
 
+// postsSocialAccountsResponsePageInfoNullableFields maps the wire names of PostsSocialAccountsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var postsSocialAccountsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor": postsSocialAccountsResponsePageInfoFieldEndCursor,
+}
+
 type PostsSocialAccountsResponsePageInfo struct {
 	EndCursor   *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage bool    `json:"has_next_page" url:"has_next_page"`
@@ -2395,10 +2503,12 @@ func (p *PostsSocialAccountsResponsePageInfo) GetExtraProperties() map[string]in
 }
 
 func (p *PostsSocialAccountsResponsePageInfo) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2427,6 +2537,13 @@ func (p *PostsSocialAccountsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postsSocialAccountsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2497,10 +2614,12 @@ func (r *RemovePartnerSocialAccountsResponse) GetExtraProperties() map[string]in
 }
 
 func (r *RemovePartnerSocialAccountsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;

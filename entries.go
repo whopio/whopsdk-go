@@ -21,6 +21,12 @@ var (
 	postEntryApprovedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postEntryApprovedPayloadNullableFields maps the wire names of PostEntryApprovedPayload's nullable fields (required or optional) to their field bits.
+var postEntryApprovedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postEntryApprovedPayloadFieldAccountID,
+	"api_version_date": postEntryApprovedPayloadFieldAPIVersionDate,
+}
+
 type PostEntryApprovedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -109,10 +115,12 @@ func (p *PostEntryApprovedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostEntryApprovedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -189,6 +197,13 @@ func (p *PostEntryApprovedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postEntryApprovedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -271,6 +286,12 @@ var (
 	postEntryCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postEntryCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postEntryCreatedPayloadNullableFields maps the wire names of PostEntryCreatedPayload's nullable fields (required or optional) to their field bits.
+var postEntryCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postEntryCreatedPayloadFieldAccountID,
+	"api_version_date": postEntryCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostEntryCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -360,10 +381,12 @@ func (p *PostEntryCreatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostEntryCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -440,6 +463,13 @@ func (p *PostEntryCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postEntryCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -522,6 +552,12 @@ var (
 	postEntryDeletedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postEntryDeletedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postEntryDeletedPayloadNullableFields maps the wire names of PostEntryDeletedPayload's nullable fields (required or optional) to their field bits.
+var postEntryDeletedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postEntryDeletedPayloadFieldAccountID,
+	"api_version_date": postEntryDeletedPayloadFieldAPIVersionDate,
+}
 
 type PostEntryDeletedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -611,10 +647,12 @@ func (p *PostEntryDeletedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostEntryDeletedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -691,6 +729,13 @@ func (p *PostEntryDeletedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postEntryDeletedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -773,6 +818,12 @@ var (
 	postEntryDeniedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postEntryDeniedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postEntryDeniedPayloadNullableFields maps the wire names of PostEntryDeniedPayload's nullable fields (required or optional) to their field bits.
+var postEntryDeniedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postEntryDeniedPayloadFieldAccountID,
+	"api_version_date": postEntryDeniedPayloadFieldAPIVersionDate,
+}
 
 type PostEntryDeniedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -862,10 +913,12 @@ func (p *PostEntryDeniedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostEntryDeniedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -942,6 +995,13 @@ func (p *PostEntryDeniedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postEntryDeniedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

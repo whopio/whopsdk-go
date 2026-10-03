@@ -25,10 +25,12 @@ type AddPeopleAudiencesRequest struct {
 }
 
 func (a *AddPeopleAudiencesRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -112,10 +114,12 @@ type CreateAudiencesRequest struct {
 }
 
 func (c *CreateAudiencesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -236,10 +240,12 @@ type DeleteAudiencesRequest struct {
 }
 
 func (d *DeleteAudiencesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -277,10 +283,12 @@ type ListAudiencesRequest struct {
 }
 
 func (l *ListAudiencesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -348,6 +356,17 @@ var (
 	audienceFieldTotalRows              = big.NewInt(1 << 19)
 	audienceFieldUpdatedAt              = big.NewInt(1 << 20)
 )
+
+// audienceNullableFields maps the wire names of Audience's nullable fields (required or optional) to their field bits.
+var audienceNullableFields = map[string]*big.Int{
+	"engagement":               audienceFieldEngagement,
+	"error_message":            audienceFieldErrorMessage,
+	"filters":                  audienceFieldFilters,
+	"last_refreshed_at":        audienceFieldLastRefreshedAt,
+	"lookalike_ratio":          audienceFieldLookalikeRatio,
+	"lookalike_starting_ratio": audienceFieldLookalikeStartingRatio,
+	"source_audience_id":       audienceFieldSourceAudienceID,
+}
 
 type Audience struct {
 	// Whether the audience targets a defined group of people or people similar to an existing audience.
@@ -553,10 +572,12 @@ func (a *Audience) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *Audience) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAudienceType sets the AudienceType field and marks it as non-optional;
@@ -718,6 +739,13 @@ func (a *Audience) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, audienceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -821,10 +849,12 @@ func (a *AudienceEngagement) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AudienceEngagement) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExclude sets the Exclude field and marks it as non-optional;
@@ -940,10 +970,12 @@ func (a *AudienceEngagementFacebookPageRule) GetExtraProperties() map[string]int
 }
 
 func (a *AudienceEngagementFacebookPageRule) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetEvent sets the Event field and marks it as non-optional;
@@ -1097,10 +1129,12 @@ func (a *AudienceEngagementInstagramProfileRule) GetExtraProperties() map[string
 }
 
 func (a *AudienceEngagementInstagramProfileRule) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetEvent sets the Event field and marks it as non-optional;
@@ -1293,10 +1327,12 @@ func (a *AudienceEngagementLeadFormRule) GetExtraProperties() map[string]interfa
 }
 
 func (a *AudienceEngagementLeadFormRule) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetEvent sets the Event field and marks it as non-optional;
@@ -1648,10 +1684,12 @@ func (a *AudienceEngagementVideoRule) GetExtraProperties() map[string]interface{
 }
 
 func (a *AudienceEngagementVideoRule) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetEvent sets the Event field and marks it as non-optional;
@@ -1769,6 +1807,13 @@ var (
 	audienceMatchRateFieldUpperBound = big.NewInt(1 << 3)
 )
 
+// audienceMatchRateNullableFields maps the wire names of AudienceMatchRate's nullable fields (required or optional) to their field bits.
+var audienceMatchRateNullableFields = map[string]*big.Int{
+	"lower_bound": audienceMatchRateFieldLowerBound,
+	"status":      audienceMatchRateFieldStatus,
+	"upper_bound": audienceMatchRateFieldUpperBound,
+}
+
 type AudienceMatchRate struct {
 	// Lower bound of the estimated match rate percentage. `null` until available.
 	LowerBound *float64 `json:"lower_bound,omitempty" url:"lower_bound,omitempty"`
@@ -1822,10 +1867,12 @@ func (a *AudienceMatchRate) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AudienceMatchRate) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetLowerBound sets the LowerBound field and marks it as non-optional;
@@ -1868,6 +1915,13 @@ func (a *AudienceMatchRate) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, audienceMatchRateNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2028,7 +2082,6 @@ func (c CreateAudiencesRequestAudienceType) Ptr() *CreateAudiencesRequestAudienc
 	return &c
 }
 
-// CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
 var (
 	createAudiencesRequestColumnMappingFieldCountry   = big.NewInt(1 << 0)
 	createAudiencesRequestColumnMappingFieldEmail     = big.NewInt(1 << 1)
@@ -2038,6 +2091,7 @@ var (
 	createAudiencesRequestColumnMappingFieldPhone     = big.NewInt(1 << 5)
 )
 
+// CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
 type CreateAudiencesRequestColumnMapping struct {
 	// CSV header for ISO 3166-1 alpha-2 country codes, such as `US`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
@@ -2109,10 +2163,12 @@ func (c *CreateAudiencesRequestColumnMapping) GetExtraProperties() map[string]in
 }
 
 func (c *CreateAudiencesRequestColumnMapping) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCountry sets the Country field and marks it as non-optional;
@@ -2199,13 +2255,13 @@ func (c *CreateAudiencesRequestColumnMapping) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Rules for membership based on social engagement. Requires a connected social account with advertising access.
 var (
 	createAudiencesRequestEngagementFieldExclude  = big.NewInt(1 << 0)
 	createAudiencesRequestEngagementFieldInclude  = big.NewInt(1 << 1)
 	createAudiencesRequestEngagementFieldPlatform = big.NewInt(1 << 2)
 )
 
+// Rules for membership based on social engagement. Requires a connected social account with advertising access.
 type CreateAudiencesRequestEngagement struct {
 	// Exclude anyone matching any exclusion rule. Defaults to an empty array. Video audiences do not support exclusions; use a separate audience in ad-group exclusions.
 	Exclude []*AudienceEngagementRule `json:"exclude,omitempty" url:"exclude,omitempty"`
@@ -2250,10 +2306,12 @@ func (c *CreateAudiencesRequestEngagement) GetExtraProperties() map[string]inter
 }
 
 func (c *CreateAudiencesRequestEngagement) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetExclude sets the Exclude field and marks it as non-optional;
@@ -2387,6 +2445,38 @@ func (c *CreateAudiencesResponse) GetCreateAudiencesResponseData() *CreateAudien
 }
 
 func (c *CreateAudiencesResponse) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"audience_type", "auto_refresh", "created_at", "engagement", "error_message", "filters", "id", "last_refreshed_at", "lookalike_ratio", "lookalike_starting_ratio", "match_rates", "matched_rows", "name", "platform_audience_ids", "processed_rows", "progress_percent", "source_audience_id", "source_type", "status", "total_rows", "updated_at"}, []string{"audience_type", "auto_refresh", "created_at", "id", "match_rates", "matched_rows", "name", "platform_audience_ids", "processed_rows", "progress_percent", "source_type", "status", "total_rows", "updated_at"}) {
+		valueAudience := new(Audience)
+		if err := json.Unmarshal(data, &valueAudience); err == nil {
+			c.typ = "Audience"
+			c.Audience = valueAudience
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"data"}, []string{"data"}) {
+		valueCreateAudiencesResponseData := new(CreateAudiencesResponseData)
+		if err := json.Unmarshal(data, &valueCreateAudiencesResponseData); err == nil {
+			c.typ = "CreateAudiencesResponseData"
+			c.CreateAudiencesResponseData = valueCreateAudiencesResponseData
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"audience_type", "auto_refresh", "created_at", "id", "match_rates", "matched_rows", "name", "platform_audience_ids", "processed_rows", "progress_percent", "source_type", "status", "total_rows", "updated_at"}) {
+		valueAudience := new(Audience)
+		if err := json.Unmarshal(data, &valueAudience); err == nil {
+			c.typ = "Audience"
+			c.Audience = valueAudience
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"data"}) {
+		valueCreateAudiencesResponseData := new(CreateAudiencesResponseData)
+		if err := json.Unmarshal(data, &valueCreateAudiencesResponseData); err == nil {
+			c.typ = "CreateAudiencesResponseData"
+			c.CreateAudiencesResponseData = valueCreateAudiencesResponseData
+			return nil
+		}
+	}
 	valueAudience := new(Audience)
 	if err := json.Unmarshal(data, &valueAudience); err == nil {
 		c.typ = "Audience"
@@ -2456,10 +2546,12 @@ func (c *CreateAudiencesResponseData) GetExtraProperties() map[string]interface{
 }
 
 func (c *CreateAudiencesResponseData) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2540,10 +2632,12 @@ func (d *DeleteAudiencesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAudiencesResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -2680,10 +2774,12 @@ func (l *ListAudiencesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAudiencesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2749,6 +2845,12 @@ var (
 	listAudiencesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAudiencesResponsePageInfoNullableFields maps the wire names of ListAudiencesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAudiencesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAudiencesResponsePageInfoFieldEndCursor,
+	"start_cursor": listAudiencesResponsePageInfoFieldStartCursor,
+}
+
 type ListAudiencesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2798,10 +2900,12 @@ func (l *ListAudiencesResponsePageInfo) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListAudiencesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2844,6 +2948,13 @@ func (l *ListAudiencesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAudiencesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2893,10 +3004,12 @@ type UpdateAudiencesRequest struct {
 }
 
 func (u *UpdateAudiencesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

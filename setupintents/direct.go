@@ -40,10 +40,12 @@ type CreateDirectRequest struct {
 }
 
 func (c *CreateDirectRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -116,7 +118,6 @@ func (c *CreateDirectRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-// The buyer's billing details.
 var (
 	createDirectRequestBillingDetailsFieldAddress = big.NewInt(1 << 0)
 	createDirectRequestBillingDetailsFieldEmail   = big.NewInt(1 << 1)
@@ -124,6 +125,12 @@ var (
 	createDirectRequestBillingDetailsFieldPhone   = big.NewInt(1 << 3)
 )
 
+// createDirectRequestBillingDetailsNullableFields maps the wire names of CreateDirectRequestBillingDetails's nullable fields (required or optional) to their field bits.
+var createDirectRequestBillingDetailsNullableFields = map[string]*big.Int{
+	"phone": createDirectRequestBillingDetailsFieldPhone,
+}
+
+// The buyer's billing details.
 type CreateDirectRequestBillingDetails struct {
 	// The billing address.
 	Address *CreateDirectRequestBillingDetailsAddress `json:"address" url:"address"`
@@ -177,10 +184,12 @@ func (c *CreateDirectRequestBillingDetails) GetExtraProperties() map[string]inte
 }
 
 func (c *CreateDirectRequestBillingDetails) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -223,6 +232,13 @@ func (c *CreateDirectRequestBillingDetails) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDirectRequestBillingDetailsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -253,7 +269,6 @@ func (c *CreateDirectRequestBillingDetails) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The billing address.
 var (
 	createDirectRequestBillingDetailsAddressFieldCity       = big.NewInt(1 << 0)
 	createDirectRequestBillingDetailsAddressFieldCountry    = big.NewInt(1 << 1)
@@ -263,6 +278,13 @@ var (
 	createDirectRequestBillingDetailsAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// createDirectRequestBillingDetailsAddressNullableFields maps the wire names of CreateDirectRequestBillingDetailsAddress's nullable fields (required or optional) to their field bits.
+var createDirectRequestBillingDetailsAddressNullableFields = map[string]*big.Int{
+	"line2": createDirectRequestBillingDetailsAddressFieldLine2,
+	"state": createDirectRequestBillingDetailsAddressFieldState,
+}
+
+// The billing address.
 type CreateDirectRequestBillingDetailsAddress struct {
 	// City.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -334,10 +356,12 @@ func (c *CreateDirectRequestBillingDetailsAddress) GetExtraProperties() map[stri
 }
 
 func (c *CreateDirectRequestBillingDetailsAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -394,6 +418,13 @@ func (c *CreateDirectRequestBillingDetailsAddress) UnmarshalJSON(data []byte) er
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDirectRequestBillingDetailsAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -424,12 +455,12 @@ func (c *CreateDirectRequestBillingDetailsAddress) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The payment method to save, as the raw details the caller holds. Raw details are accepted only on the vault host, where Whop's vault tokenizes them in transit; the official SDKs route this operation there. Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.
 var (
 	createDirectRequestPaymentMethodFieldCard = big.NewInt(1 << 0)
 	createDirectRequestPaymentMethodFieldType = big.NewInt(1 << 1)
 )
 
+// The payment method to save, as the raw details the caller holds. Raw details are accepted only on the vault host, where Whop's vault tokenizes them in transit; the official SDKs route this operation there. Whop's own clients, which tokenize with the Basis Theory SDK, send the resulting token intent id to the regular host.
 type CreateDirectRequestPaymentMethod struct {
 	// The card to save. Present when `type` is `card`.
 	Card *CreateDirectRequestPaymentMethodCard `json:"card,omitempty" url:"card,omitempty"`
@@ -465,10 +496,12 @@ func (c *CreateDirectRequestPaymentMethod) GetExtraProperties() map[string]inter
 }
 
 func (c *CreateDirectRequestPaymentMethod) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -527,12 +560,17 @@ func (c *CreateDirectRequestPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The card to save. Present when `type` is `card`.
 var (
 	createDirectRequestPaymentMethodCardFieldDetails              = big.NewInt(1 << 0)
 	createDirectRequestPaymentMethodCardFieldNetworkTransactionID = big.NewInt(1 << 1)
 )
 
+// createDirectRequestPaymentMethodCardNullableFields maps the wire names of CreateDirectRequestPaymentMethodCard's nullable fields (required or optional) to their field bits.
+var createDirectRequestPaymentMethodCardNullableFields = map[string]*big.Int{
+	"network_transaction_id": createDirectRequestPaymentMethodCardFieldNetworkTransactionID,
+}
+
+// The card to save. Present when `type` is `card`.
 type CreateDirectRequestPaymentMethodCard struct {
 	// The card's raw fields. Sent to the vault host and tokenized before it reaches Whop; Whop's servers never receive the number.
 	Details *CreateDirectRequestPaymentMethodCardDetails `json:"details" url:"details"`
@@ -568,10 +606,12 @@ func (c *CreateDirectRequestPaymentMethodCard) GetExtraProperties() map[string]i
 }
 
 func (c *CreateDirectRequestPaymentMethodCard) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDetails sets the Details field and marks it as non-optional;
@@ -600,6 +640,13 @@ func (c *CreateDirectRequestPaymentMethodCard) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDirectRequestPaymentMethodCardNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -630,7 +677,6 @@ func (c *CreateDirectRequestPaymentMethodCard) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The card's raw fields. Sent to the vault host and tokenized before it reaches Whop; Whop's servers never receive the number.
 var (
 	createDirectRequestPaymentMethodCardDetailsFieldCvc      = big.NewInt(1 << 0)
 	createDirectRequestPaymentMethodCardDetailsFieldExpMonth = big.NewInt(1 << 1)
@@ -638,6 +684,7 @@ var (
 	createDirectRequestPaymentMethodCardDetailsFieldNumber   = big.NewInt(1 << 3)
 )
 
+// The card's raw fields. Sent to the vault host and tokenized before it reaches Whop; Whop's servers never receive the number.
 type CreateDirectRequestPaymentMethodCardDetails struct {
 	// The card security code.
 	Cvc *string `json:"cvc,omitempty" url:"cvc,omitempty"`
@@ -691,10 +738,12 @@ func (c *CreateDirectRequestPaymentMethodCardDetails) GetExtraProperties() map[s
 }
 
 func (c *CreateDirectRequestPaymentMethodCardDetails) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCvc sets the Cvc field and marks it as non-optional;

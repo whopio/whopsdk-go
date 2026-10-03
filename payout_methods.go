@@ -35,10 +35,12 @@ type ListPayoutMethodRequest struct {
 }
 
 func (l *ListPayoutMethodRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -89,10 +91,12 @@ type RetrievePayoutMethodRequest struct {
 }
 
 func (r *RetrievePayoutMethodRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -137,7 +141,6 @@ func (p PayoutDestinationCategory) Ptr() *PayoutDestinationCategory {
 	return &p
 }
 
-// A configured payout destination where a user receives earned funds, such as a bank account or digital wallet.
 var (
 	payoutMethodFieldAccountReference = big.NewInt(1 << 0)
 	payoutMethodFieldCompany          = big.NewInt(1 << 1)
@@ -150,6 +153,16 @@ var (
 	payoutMethodFieldNickname         = big.NewInt(1 << 8)
 )
 
+// payoutMethodNullableFields maps the wire names of PayoutMethod's nullable fields (required or optional) to their field bits.
+var payoutMethodNullableFields = map[string]*big.Int{
+	"account_reference": payoutMethodFieldAccountReference,
+	"company":           payoutMethodFieldCompany,
+	"destination":       payoutMethodFieldDestination,
+	"institution_name":  payoutMethodFieldInstitutionName,
+	"nickname":          payoutMethodFieldNickname,
+}
+
+// A configured payout destination where a user receives earned funds, such as a bank account or digital wallet.
 type PayoutMethod struct {
 	// A masked identifier for the payout destination, such as the last four digits of a bank account or an email address. Null if no reference is available.
 	AccountReference *string `json:"account_reference,omitempty" url:"account_reference,omitempty"`
@@ -248,10 +261,12 @@ func (p *PayoutMethod) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PayoutMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountReference sets the AccountReference field and marks it as non-optional;
@@ -335,6 +350,13 @@ func (p *PayoutMethod) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, payoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -367,11 +389,11 @@ func (p *PayoutMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The company associated with this payout destination. Null if not linked to a specific company.
 var (
 	payoutMethodCompanyFieldID = big.NewInt(1 << 0)
 )
 
+// The company associated with this payout destination. Null if not linked to a specific company.
 type PayoutMethodCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -398,10 +420,12 @@ func (p *PayoutMethodCompany) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PayoutMethodCompany) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -453,13 +477,13 @@ func (p *PayoutMethodCompany) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The payout destination configuration linked to this token. Null if not yet configured.
 var (
 	payoutMethodDestinationFieldCategory    = big.NewInt(1 << 0)
 	payoutMethodDestinationFieldCountryCode = big.NewInt(1 << 1)
 	payoutMethodDestinationFieldName        = big.NewInt(1 << 2)
 )
 
+// The payout destination configuration linked to this token. Null if not yet configured.
 type PayoutMethodDestination struct {
 	// The category of the payout destination
 	Category PayoutDestinationCategory `json:"category" url:"category"`
@@ -504,10 +528,12 @@ func (p *PayoutMethodDestination) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PayoutMethodDestination) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCategory sets the Category field and marks it as non-optional;
@@ -573,7 +599,6 @@ func (p *PayoutMethodDestination) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// A configured payout destination where a user receives earned funds, such as a bank account or digital wallet.
 var (
 	payoutMethodListItemFieldAccountReference = big.NewInt(1 << 0)
 	payoutMethodListItemFieldCompany          = big.NewInt(1 << 1)
@@ -586,6 +611,16 @@ var (
 	payoutMethodListItemFieldNickname         = big.NewInt(1 << 8)
 )
 
+// payoutMethodListItemNullableFields maps the wire names of PayoutMethodListItem's nullable fields (required or optional) to their field bits.
+var payoutMethodListItemNullableFields = map[string]*big.Int{
+	"account_reference": payoutMethodListItemFieldAccountReference,
+	"company":           payoutMethodListItemFieldCompany,
+	"destination":       payoutMethodListItemFieldDestination,
+	"institution_name":  payoutMethodListItemFieldInstitutionName,
+	"nickname":          payoutMethodListItemFieldNickname,
+}
+
+// A configured payout destination where a user receives earned funds, such as a bank account or digital wallet.
 type PayoutMethodListItem struct {
 	// A masked identifier for the payout destination, such as the last four digits of a bank account or an email address. Null if no reference is available.
 	AccountReference *string `json:"account_reference,omitempty" url:"account_reference,omitempty"`
@@ -684,10 +719,12 @@ func (p *PayoutMethodListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PayoutMethodListItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountReference sets the AccountReference field and marks it as non-optional;
@@ -771,6 +808,13 @@ func (p *PayoutMethodListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, payoutMethodListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -803,11 +847,11 @@ func (p *PayoutMethodListItem) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The company associated with this payout destination. Null if not linked to a specific company.
 var (
 	payoutMethodListItemCompanyFieldID = big.NewInt(1 << 0)
 )
 
+// The company associated with this payout destination. Null if not linked to a specific company.
 type PayoutMethodListItemCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -834,10 +878,12 @@ func (p *PayoutMethodListItemCompany) GetExtraProperties() map[string]interface{
 }
 
 func (p *PayoutMethodListItemCompany) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -889,13 +935,13 @@ func (p *PayoutMethodListItemCompany) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The payout destination configuration linked to this token. Null if not yet configured.
 var (
 	payoutMethodListItemDestinationFieldCategory    = big.NewInt(1 << 0)
 	payoutMethodListItemDestinationFieldCountryCode = big.NewInt(1 << 1)
 	payoutMethodListItemDestinationFieldName        = big.NewInt(1 << 2)
 )
 
+// The payout destination configuration linked to this token. Null if not yet configured.
 type PayoutMethodListItemDestination struct {
 	// The category of the payout destination
 	Category PayoutDestinationCategory `json:"category" url:"category"`
@@ -940,10 +986,12 @@ func (p *PayoutMethodListItemDestination) GetExtraProperties() map[string]interf
 }
 
 func (p *PayoutMethodListItemDestination) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCategory sets the Category field and marks it as non-optional;
@@ -1009,12 +1057,12 @@ func (p *PayoutMethodListItemDestination) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The connection type for PayoutToken.
 var (
 	listPayoutMethodResponseFieldData     = big.NewInt(1 << 0)
 	listPayoutMethodResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for PayoutToken.
 type ListPayoutMethodResponse struct {
 	// A list of nodes.
 	Data []*PayoutMethodListItem `json:"data" url:"data"`
@@ -1050,10 +1098,12 @@ func (l *ListPayoutMethodResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPayoutMethodResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

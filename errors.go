@@ -31,6 +31,13 @@ func (b *BadRequestError) Unwrap() error {
 	return b.APIError
 }
 
+func (b *BadRequestError) GetBody() any {
+	if b == nil {
+		return nil
+	}
+	return b.Body
+}
+
 // Conflict
 type ConflictError struct {
 	*core.APIError
@@ -53,6 +60,13 @@ func (c *ConflictError) MarshalJSON() ([]byte, error) {
 
 func (c *ConflictError) Unwrap() error {
 	return c.APIError
+}
+
+func (c *ConflictError) GetBody() *V1ErrorResponse {
+	if c == nil {
+		return nil
+	}
+	return c.Body
 }
 
 // Forbidden
@@ -79,6 +93,13 @@ func (f *ForbiddenError) Unwrap() error {
 	return f.APIError
 }
 
+func (f *ForbiddenError) GetBody() any {
+	if f == nil {
+		return nil
+	}
+	return f.Body
+}
+
 // Internal server error
 type InternalServerError struct {
 	*core.APIError
@@ -101,6 +122,13 @@ func (i *InternalServerError) MarshalJSON() ([]byte, error) {
 
 func (i *InternalServerError) Unwrap() error {
 	return i.APIError
+}
+
+func (i *InternalServerError) GetBody() any {
+	if i == nil {
+		return nil
+	}
+	return i.Body
 }
 
 // Not found
@@ -127,6 +155,13 @@ func (n *NotFoundError) Unwrap() error {
 	return n.APIError
 }
 
+func (n *NotFoundError) GetBody() any {
+	if n == nil {
+		return nil
+	}
+	return n.Body
+}
+
 // Insufficient balance.
 type PaymentRequiredError struct {
 	*core.APIError
@@ -149,6 +184,13 @@ func (p *PaymentRequiredError) MarshalJSON() ([]byte, error) {
 
 func (p *PaymentRequiredError) Unwrap() error {
 	return p.APIError
+}
+
+func (p *PaymentRequiredError) GetBody() *PaymentRequiredErrorBody {
+	if p == nil {
+		return nil
+	}
+	return p.Body
 }
 
 // Service Unavailable
@@ -175,6 +217,13 @@ func (s *ServiceUnavailableError) Unwrap() error {
 	return s.APIError
 }
 
+func (s *ServiceUnavailableError) GetBody() *V1ErrorResponse {
+	if s == nil {
+		return nil
+	}
+	return s.Body
+}
+
 // Too many requests
 type TooManyRequestsError struct {
 	*core.APIError
@@ -197,6 +246,13 @@ func (t *TooManyRequestsError) MarshalJSON() ([]byte, error) {
 
 func (t *TooManyRequestsError) Unwrap() error {
 	return t.APIError
+}
+
+func (t *TooManyRequestsError) GetBody() any {
+	if t == nil {
+		return nil
+	}
+	return t.Body
 }
 
 // Unauthorized
@@ -223,6 +279,13 @@ func (u *UnauthorizedError) Unwrap() error {
 	return u.APIError
 }
 
+func (u *UnauthorizedError) GetBody() any {
+	if u == nil {
+		return nil
+	}
+	return u.Body
+}
+
 // Verification required
 type UnprocessableEntityError struct {
 	*core.APIError
@@ -245,4 +308,11 @@ func (u *UnprocessableEntityError) MarshalJSON() ([]byte, error) {
 
 func (u *UnprocessableEntityError) Unwrap() error {
 	return u.APIError
+}
+
+func (u *UnprocessableEntityError) GetBody() any {
+	if u == nil {
+		return nil
+	}
+	return u.Body
 }

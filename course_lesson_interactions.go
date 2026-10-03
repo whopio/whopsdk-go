@@ -44,10 +44,12 @@ type ListCourseLessonInteractionsRequest struct {
 }
 
 func (l *ListCourseLessonInteractionsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -119,10 +121,12 @@ type RetrieveCourseLessonInteractionsRequest struct {
 }
 
 func (r *RetrieveCourseLessonInteractionsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -132,7 +136,6 @@ func (r *RetrieveCourseLessonInteractionsRequest) SetID(id string) {
 	r.require(retrieveCourseLessonInteractionsRequestFieldID)
 }
 
-// A record of a user's progress on a specific lesson, tracking whether they have completed it.
 var (
 	courseLessonInteractionFieldCompleted = big.NewInt(1 << 0)
 	courseLessonInteractionFieldCourse    = big.NewInt(1 << 1)
@@ -142,6 +145,7 @@ var (
 	courseLessonInteractionFieldUser      = big.NewInt(1 << 5)
 )
 
+// A record of a user's progress on a specific lesson, tracking whether they have completed it.
 type CourseLessonInteraction struct {
 	// Whether the user has finished this lesson.
 	Completed bool `json:"completed" url:"completed"`
@@ -213,10 +217,12 @@ func (c *CourseLessonInteraction) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseLessonInteraction) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCompleted sets the Completed field and marks it as non-optional;
@@ -311,13 +317,18 @@ func (c *CourseLessonInteraction) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The course that contains the tracked lesson.
 var (
 	courseLessonInteractionCourseFieldExperience = big.NewInt(1 << 0)
 	courseLessonInteractionCourseFieldID         = big.NewInt(1 << 1)
 	courseLessonInteractionCourseFieldTitle      = big.NewInt(1 << 2)
 )
 
+// courseLessonInteractionCourseNullableFields maps the wire names of CourseLessonInteractionCourse's nullable fields (required or optional) to their field bits.
+var courseLessonInteractionCourseNullableFields = map[string]*big.Int{
+	"title": courseLessonInteractionCourseFieldTitle,
+}
+
+// The course that contains the tracked lesson.
 type CourseLessonInteractionCourse struct {
 	// The parent experience that this course belongs to.
 	Experience *CourseLessonInteractionCourseExperience `json:"experience" url:"experience"`
@@ -362,10 +373,12 @@ func (c *CourseLessonInteractionCourse) GetExtraProperties() map[string]interfac
 }
 
 func (c *CourseLessonInteractionCourse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetExperience sets the Experience field and marks it as non-optional;
@@ -401,6 +414,13 @@ func (c *CourseLessonInteractionCourse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseLessonInteractionCourseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -431,11 +451,11 @@ func (c *CourseLessonInteractionCourse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The parent experience that this course belongs to.
 var (
 	courseLessonInteractionCourseExperienceFieldID = big.NewInt(1 << 0)
 )
 
+// The parent experience that this course belongs to.
 type CourseLessonInteractionCourseExperience struct {
 	// The unique identifier for the experience.
 	ID string `json:"id" url:"id"`
@@ -462,10 +482,12 @@ func (c *CourseLessonInteractionCourseExperience) GetExtraProperties() map[strin
 }
 
 func (c *CourseLessonInteractionCourseExperience) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -517,13 +539,13 @@ func (c *CourseLessonInteractionCourseExperience) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The lesson that this progress record belongs to.
 var (
 	courseLessonInteractionLessonFieldChapter = big.NewInt(1 << 0)
 	courseLessonInteractionLessonFieldID      = big.NewInt(1 << 1)
 	courseLessonInteractionLessonFieldTitle   = big.NewInt(1 << 2)
 )
 
+// The lesson that this progress record belongs to.
 type CourseLessonInteractionLesson struct {
 	// The parent chapter that contains this lesson.
 	Chapter *CourseLessonInteractionLessonChapter `json:"chapter" url:"chapter"`
@@ -568,10 +590,12 @@ func (c *CourseLessonInteractionLesson) GetExtraProperties() map[string]interfac
 }
 
 func (c *CourseLessonInteractionLesson) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetChapter sets the Chapter field and marks it as non-optional;
@@ -637,11 +661,11 @@ func (c *CourseLessonInteractionLesson) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The parent chapter that contains this lesson.
 var (
 	courseLessonInteractionLessonChapterFieldID = big.NewInt(1 << 0)
 )
 
+// The parent chapter that contains this lesson.
 type CourseLessonInteractionLessonChapter struct {
 	// The unique identifier for the chapter.
 	ID string `json:"id" url:"id"`
@@ -668,10 +692,12 @@ func (c *CourseLessonInteractionLessonChapter) GetExtraProperties() map[string]i
 }
 
 func (c *CourseLessonInteractionLessonChapter) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -723,7 +749,6 @@ func (c *CourseLessonInteractionLessonChapter) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A record of a user's progress on a specific lesson, tracking whether they have completed it.
 var (
 	courseLessonInteractionListItemFieldCompleted = big.NewInt(1 << 0)
 	courseLessonInteractionListItemFieldCreatedAt = big.NewInt(1 << 1)
@@ -732,6 +757,7 @@ var (
 	courseLessonInteractionListItemFieldUser      = big.NewInt(1 << 4)
 )
 
+// A record of a user's progress on a specific lesson, tracking whether they have completed it.
 type CourseLessonInteractionListItem struct {
 	// Whether the user has finished this lesson.
 	Completed bool `json:"completed" url:"completed"`
@@ -794,10 +820,12 @@ func (c *CourseLessonInteractionListItem) GetExtraProperties() map[string]interf
 }
 
 func (c *CourseLessonInteractionListItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCompleted sets the Completed field and marks it as non-optional;
@@ -885,13 +913,13 @@ func (c *CourseLessonInteractionListItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The lesson that this progress record belongs to.
 var (
 	courseLessonInteractionListItemLessonFieldChapter = big.NewInt(1 << 0)
 	courseLessonInteractionListItemLessonFieldID      = big.NewInt(1 << 1)
 	courseLessonInteractionListItemLessonFieldTitle   = big.NewInt(1 << 2)
 )
 
+// The lesson that this progress record belongs to.
 type CourseLessonInteractionListItemLesson struct {
 	// The parent chapter that contains this lesson.
 	Chapter *CourseLessonInteractionListItemLessonChapter `json:"chapter" url:"chapter"`
@@ -936,10 +964,12 @@ func (c *CourseLessonInteractionListItemLesson) GetExtraProperties() map[string]
 }
 
 func (c *CourseLessonInteractionListItemLesson) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetChapter sets the Chapter field and marks it as non-optional;
@@ -1005,11 +1035,11 @@ func (c *CourseLessonInteractionListItemLesson) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The parent chapter that contains this lesson.
 var (
 	courseLessonInteractionListItemLessonChapterFieldID = big.NewInt(1 << 0)
 )
 
+// The parent chapter that contains this lesson.
 type CourseLessonInteractionListItemLessonChapter struct {
 	// The unique identifier for the chapter.
 	ID string `json:"id" url:"id"`
@@ -1036,10 +1066,12 @@ func (c *CourseLessonInteractionListItemLessonChapter) GetExtraProperties() map[
 }
 
 func (c *CourseLessonInteractionListItemLessonChapter) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1091,13 +1123,18 @@ func (c *CourseLessonInteractionListItemLessonChapter) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The user whose progress is being tracked.
 var (
 	courseLessonInteractionListItemUserFieldID       = big.NewInt(1 << 0)
 	courseLessonInteractionListItemUserFieldName     = big.NewInt(1 << 1)
 	courseLessonInteractionListItemUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// courseLessonInteractionListItemUserNullableFields maps the wire names of CourseLessonInteractionListItemUser's nullable fields (required or optional) to their field bits.
+var courseLessonInteractionListItemUserNullableFields = map[string]*big.Int{
+	"name": courseLessonInteractionListItemUserFieldName,
+}
+
+// The user whose progress is being tracked.
 type CourseLessonInteractionListItemUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1142,10 +1179,12 @@ func (c *CourseLessonInteractionListItemUser) GetExtraProperties() map[string]in
 }
 
 func (c *CourseLessonInteractionListItemUser) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1181,6 +1220,13 @@ func (c *CourseLessonInteractionListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseLessonInteractionListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1211,13 +1257,18 @@ func (c *CourseLessonInteractionListItemUser) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The user whose progress is being tracked.
 var (
 	courseLessonInteractionUserFieldID       = big.NewInt(1 << 0)
 	courseLessonInteractionUserFieldName     = big.NewInt(1 << 1)
 	courseLessonInteractionUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// courseLessonInteractionUserNullableFields maps the wire names of CourseLessonInteractionUser's nullable fields (required or optional) to their field bits.
+var courseLessonInteractionUserNullableFields = map[string]*big.Int{
+	"name": courseLessonInteractionUserFieldName,
+}
+
+// The user whose progress is being tracked.
 type CourseLessonInteractionUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1262,10 +1313,12 @@ func (c *CourseLessonInteractionUser) GetExtraProperties() map[string]interface{
 }
 
 func (c *CourseLessonInteractionUser) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1301,6 +1354,13 @@ func (c *CourseLessonInteractionUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseLessonInteractionUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1331,12 +1391,12 @@ func (c *CourseLessonInteractionUser) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for LessonInteraction.
 var (
 	listCourseLessonInteractionsResponseFieldData     = big.NewInt(1 << 0)
 	listCourseLessonInteractionsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for LessonInteraction.
 type ListCourseLessonInteractionsResponse struct {
 	// A list of nodes.
 	Data []*CourseLessonInteractionListItem `json:"data" url:"data"`
@@ -1372,10 +1432,12 @@ func (l *ListCourseLessonInteractionsResponse) GetExtraProperties() map[string]i
 }
 
 func (l *ListCourseLessonInteractionsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1444,6 +1506,12 @@ var (
 	postCourseLessonInteractionCompletedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postCourseLessonInteractionCompletedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postCourseLessonInteractionCompletedPayloadNullableFields maps the wire names of PostCourseLessonInteractionCompletedPayload's nullable fields (required or optional) to their field bits.
+var postCourseLessonInteractionCompletedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCourseLessonInteractionCompletedPayloadFieldAccountID,
+	"api_version_date": postCourseLessonInteractionCompletedPayloadFieldAPIVersionDate,
+}
 
 type PostCourseLessonInteractionCompletedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1533,10 +1601,12 @@ func (p *PostCourseLessonInteractionCompletedPayload) GetExtraProperties() map[s
 }
 
 func (p *PostCourseLessonInteractionCompletedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1613,6 +1683,13 @@ func (p *PostCourseLessonInteractionCompletedPayload) UnmarshalJSON(data []byte)
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCourseLessonInteractionCompletedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

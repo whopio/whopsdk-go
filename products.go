@@ -80,10 +80,12 @@ type CreateProductsRequest struct {
 }
 
 func (c *CreateProductsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -260,10 +262,12 @@ type DeleteProductsRequest struct {
 }
 
 func (d *DeleteProductsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -334,10 +338,12 @@ type ListProductsRequest struct {
 }
 
 func (l *ListProductsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -472,10 +478,12 @@ type PublishProductsRequest struct {
 }
 
 func (p *PublishProductsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -498,10 +506,12 @@ type RetrieveProductsRequest struct {
 }
 
 func (r *RetrieveProductsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -543,6 +553,28 @@ var (
 	productFieldVerified                  = big.NewInt(1 << 28)
 	productFieldVisibility                = big.NewInt(1 << 29)
 )
+
+// productNullableFields maps the wire names of Product's nullable fields (required or optional) to their field bits.
+var productNullableFields = map[string]*big.Int{
+	"account":                     productFieldAccount,
+	"custom_cta":                  productFieldCustomCta,
+	"custom_cta_url":              productFieldCustomCtaURL,
+	"custom_statement_descriptor": productFieldCustomStatementDescriptor,
+	"default_plan":                productFieldDefaultPlan,
+	"description":                 productFieldDescription,
+	"external_identifier":         productFieldExternalIdentifier,
+	"global_affiliate_percentage": productFieldGlobalAffiliatePercentage,
+	"global_affiliate_status":     productFieldGlobalAffiliateStatus,
+	"headline":                    productFieldHeadline,
+	"member_affiliate_percentage": productFieldMemberAffiliatePercentage,
+	"member_affiliate_status":     productFieldMemberAffiliateStatus,
+	"metadata":                    productFieldMetadata,
+	"owner_user":                  productFieldOwnerUser,
+	"product_tax_code":            productFieldProductTaxCode,
+	"variant_attributes":          productFieldVariantAttributes,
+	"variants":                    productFieldVariants,
+	"visibility":                  productFieldVisibility,
+}
 
 type Product struct {
 	// Account that sells this product.
@@ -828,10 +860,12 @@ func (p *Product) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *Product) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -1056,6 +1090,13 @@ func (p *Product) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, productNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1148,6 +1189,12 @@ var (
 	productGalleryImageFieldURL         = big.NewInt(1 << 2)
 )
 
+// productGalleryImageNullableFields maps the wire names of ProductGalleryImage's nullable fields (required or optional) to their field bits.
+var productGalleryImageNullableFields = map[string]*big.Int{
+	"content_type": productGalleryImageFieldContentType,
+	"url":          productGalleryImageFieldURL,
+}
+
 type ProductGalleryImage struct {
 	// Uploaded file MIME type, such as image/jpeg.
 	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
@@ -1192,10 +1239,12 @@ func (p *ProductGalleryImage) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *ProductGalleryImage) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -1231,6 +1280,13 @@ func (p *ProductGalleryImage) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, productGalleryImageNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1305,6 +1361,18 @@ var (
 	productListItemFieldVerified              = big.NewInt(1 << 17)
 	productListItemFieldVisibility            = big.NewInt(1 << 18)
 )
+
+// productListItemNullableFields maps the wire names of ProductListItem's nullable fields (required or optional) to their field bits.
+var productListItemNullableFields = map[string]*big.Int{
+	"account":             productListItemFieldAccount,
+	"default_plan":        productListItemFieldDefaultPlan,
+	"description":         productListItemFieldDescription,
+	"external_identifier": productListItemFieldExternalIdentifier,
+	"headline":            productListItemFieldHeadline,
+	"metadata":            productListItemFieldMetadata,
+	"variant_attributes":  productListItemFieldVariantAttributes,
+	"visibility":          productListItemFieldVisibility,
+}
 
 type ProductListItem struct {
 	// Account that sells this product.
@@ -1492,10 +1560,12 @@ func (p *ProductListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *ProductListItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -1643,6 +1713,13 @@ func (p *ProductListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, productListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1733,6 +1810,13 @@ var (
 	productPublicPlanFieldUnlimitedStock = big.NewInt(1 << 7)
 	productPublicPlanFieldVisibility     = big.NewInt(1 << 8)
 )
+
+// productPublicPlanNullableFields maps the wire names of ProductPublicPlan's nullable fields (required or optional) to their field bits.
+var productPublicPlanNullableFields = map[string]*big.Int{
+	"billing_period":  productPublicPlanFieldBillingPeriod,
+	"expiration_days": productPublicPlanFieldExpirationDays,
+	"title":           productPublicPlanFieldTitle,
+}
 
 type ProductPublicPlan struct {
 	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
@@ -1832,10 +1916,12 @@ func (p *ProductPublicPlan) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *ProductPublicPlan) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
@@ -1913,6 +1999,13 @@ func (p *ProductPublicPlan) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, productPublicPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2091,10 +2184,12 @@ func (c *CreateProductsRequestGalleryImagesItem) GetExtraProperties() map[string
 }
 
 func (c *CreateProductsRequestGalleryImagesItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -2239,10 +2334,12 @@ func (d *DeleteProductsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteProductsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -2383,10 +2480,12 @@ func (l *ListProductsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListProductsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2452,6 +2551,12 @@ var (
 	listProductsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listProductsResponsePageInfoNullableFields maps the wire names of ListProductsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listProductsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listProductsResponsePageInfoFieldEndCursor,
+	"start_cursor": listProductsResponsePageInfoFieldStartCursor,
+}
+
 type ListProductsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2501,10 +2606,12 @@ func (l *ListProductsResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListProductsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2547,6 +2654,13 @@ func (l *ListProductsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listProductsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2587,6 +2701,12 @@ var (
 	postProductCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postProductCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postProductCreatedPayloadNullableFields maps the wire names of PostProductCreatedPayload's nullable fields (required or optional) to their field bits.
+var postProductCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postProductCreatedPayloadFieldAccountID,
+	"api_version_date": postProductCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostProductCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -2676,10 +2796,12 @@ func (p *PostProductCreatedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostProductCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2756,6 +2878,13 @@ func (p *PostProductCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postProductCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2838,6 +2967,12 @@ var (
 	postProductDeletedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postProductDeletedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postProductDeletedPayloadNullableFields maps the wire names of PostProductDeletedPayload's nullable fields (required or optional) to their field bits.
+var postProductDeletedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postProductDeletedPayloadFieldAccountID,
+	"api_version_date": postProductDeletedPayloadFieldAPIVersionDate,
+}
 
 type PostProductDeletedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -2927,10 +3062,12 @@ func (p *PostProductDeletedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostProductDeletedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3007,6 +3144,13 @@ func (p *PostProductDeletedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postProductDeletedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3089,6 +3233,12 @@ var (
 	postProductPublishedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postProductPublishedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postProductPublishedPayloadNullableFields maps the wire names of PostProductPublishedPayload's nullable fields (required or optional) to their field bits.
+var postProductPublishedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postProductPublishedPayloadFieldAccountID,
+	"api_version_date": postProductPublishedPayloadFieldAPIVersionDate,
+}
 
 type PostProductPublishedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3178,10 +3328,12 @@ func (p *PostProductPublishedPayload) GetExtraProperties() map[string]interface{
 }
 
 func (p *PostProductPublishedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3258,6 +3410,13 @@ func (p *PostProductPublishedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postProductPublishedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3340,6 +3499,12 @@ var (
 	postProductUnpublishedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postProductUnpublishedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postProductUnpublishedPayloadNullableFields maps the wire names of PostProductUnpublishedPayload's nullable fields (required or optional) to their field bits.
+var postProductUnpublishedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postProductUnpublishedPayloadFieldAccountID,
+	"api_version_date": postProductUnpublishedPayloadFieldAPIVersionDate,
+}
 
 type PostProductUnpublishedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3429,10 +3594,12 @@ func (p *PostProductUnpublishedPayload) GetExtraProperties() map[string]interfac
 }
 
 func (p *PostProductUnpublishedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3509,6 +3676,13 @@ func (p *PostProductUnpublishedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postProductUnpublishedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3591,6 +3765,12 @@ var (
 	postProductUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postProductUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postProductUpdatedPayloadNullableFields maps the wire names of PostProductUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postProductUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postProductUpdatedPayloadFieldAccountID,
+	"api_version_date": postProductUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostProductUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3680,10 +3860,12 @@ func (p *PostProductUpdatedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostProductUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3760,6 +3942,13 @@ func (p *PostProductUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postProductUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3832,12 +4021,12 @@ func (p PostProductUpdatedPayloadType) Ptr() *PostProductUpdatedPayloadType {
 	return &p
 }
 
-// A wide image for the product, shown on the product page and on listing cards. Pass `{ id }` for an existing attachment or `{ direct_upload_id }` for a completed direct upload; `null` removes it.
 var (
 	updateProductsRequestBannerImageFieldDirectUploadID = big.NewInt(1 << 0)
 	updateProductsRequestBannerImageFieldID             = big.NewInt(1 << 1)
 )
 
+// A wide image for the product, shown on the product page and on listing cards. Pass `{ id }` for an existing attachment or `{ direct_upload_id }` for a completed direct upload; `null` removes it.
 type UpdateProductsRequestBannerImage struct {
 	// The signed id of a completed direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -3873,10 +4062,12 @@ func (u *UpdateProductsRequestBannerImage) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateProductsRequestBannerImage) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3975,10 +4166,12 @@ func (u *UpdateProductsRequestGalleryImagesItem) GetExtraProperties() map[string
 }
 
 func (u *UpdateProductsRequestGalleryImagesItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4050,10 +4243,12 @@ type UnpublishProductsRequest struct {
 }
 
 func (u *UnpublishProductsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4106,10 +4301,12 @@ type UpdateProductsRequest struct {
 }
 
 func (u *UpdateProductsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

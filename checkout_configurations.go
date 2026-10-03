@@ -49,10 +49,12 @@ type CreateCheckoutConfigurationsRequest struct {
 }
 
 func (c *CreateCheckoutConfigurationsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -159,10 +161,12 @@ type DeleteCheckoutConfigurationsRequest struct {
 }
 
 func (d *DeleteCheckoutConfigurationsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -206,10 +210,12 @@ type ListCheckoutConfigurationsRequest struct {
 }
 
 func (l *ListCheckoutConfigurationsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -281,10 +287,12 @@ type RetrieveCheckoutConfigurationsRequest struct {
 }
 
 func (r *RetrieveCheckoutConfigurationsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -317,13 +325,13 @@ func (c CreateCheckoutConfigurationsRequestMode) Ptr() *CreateCheckoutConfigurat
 	return &c
 }
 
-// Payment method overrides for this checkout. `null` uses the variant or platform defaults.
 var (
 	createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Payment method overrides for this checkout. `null` uses the variant or platform defaults.
 type CreateCheckoutConfigurationsRequestPaymentMethodConfiguration struct {
 	// Payment method types explicitly disabled for checkout — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
 	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -368,10 +376,12 @@ func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) GetExtra
 }
 
 func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -437,7 +447,6 @@ func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) String()
 	return fmt.Sprintf("%#v", c)
 }
 
-// Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `plan_id`.
 var (
 	createCheckoutConfigurationsRequestPlanFieldAccountID                  = big.NewInt(1 << 0)
 	createCheckoutConfigurationsRequestPlanFieldBillingPeriod              = big.NewInt(1 << 1)
@@ -461,6 +470,31 @@ var (
 	createCheckoutConfigurationsRequestPlanFieldVisibility                 = big.NewInt(1 << 19)
 )
 
+// createCheckoutConfigurationsRequestPlanNullableFields maps the wire names of CreateCheckoutConfigurationsRequestPlan's nullable fields (required or optional) to their field bits.
+var createCheckoutConfigurationsRequestPlanNullableFields = map[string]*big.Int{
+	"account_id":                   createCheckoutConfigurationsRequestPlanFieldAccountID,
+	"billing_period":               createCheckoutConfigurationsRequestPlanFieldBillingPeriod,
+	"currency":                     createCheckoutConfigurationsRequestPlanFieldCurrency,
+	"description":                  createCheckoutConfigurationsRequestPlanFieldDescription,
+	"expiration_days":              createCheckoutConfigurationsRequestPlanFieldExpirationDays,
+	"force_create_new_plan":        createCheckoutConfigurationsRequestPlanFieldForceCreateNewPlan,
+	"initial_price":                createCheckoutConfigurationsRequestPlanFieldInitialPrice,
+	"metadata":                     createCheckoutConfigurationsRequestPlanFieldMetadata,
+	"override_tax_type":            createCheckoutConfigurationsRequestPlanFieldOverrideTaxType,
+	"payment_method_configuration": createCheckoutConfigurationsRequestPlanFieldPaymentMethodConfiguration,
+	"plan_type":                    createCheckoutConfigurationsRequestPlanFieldPlanType,
+	"product_id":                   createCheckoutConfigurationsRequestPlanFieldProductID,
+	"release_method":               createCheckoutConfigurationsRequestPlanFieldReleaseMethod,
+	"renewal_price":                createCheckoutConfigurationsRequestPlanFieldRenewalPrice,
+	"stock":                        createCheckoutConfigurationsRequestPlanFieldStock,
+	"three_ds_level":               createCheckoutConfigurationsRequestPlanFieldThreeDsLevel,
+	"title":                        createCheckoutConfigurationsRequestPlanFieldTitle,
+	"trial_period_days":            createCheckoutConfigurationsRequestPlanFieldTrialPeriodDays,
+	"unlimited_stock":              createCheckoutConfigurationsRequestPlanFieldUnlimitedStock,
+	"visibility":                   createCheckoutConfigurationsRequestPlanFieldVisibility,
+}
+
+// Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `plan_id`.
 type CreateCheckoutConfigurationsRequestPlan struct {
 	// Account ID for the inline variant, prefixed `biz_`. Defaults to the account resolved from the request.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -658,10 +692,12 @@ func (c *CreateCheckoutConfigurationsRequestPlan) GetExtraProperties() map[strin
 }
 
 func (c *CreateCheckoutConfigurationsRequestPlan) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -816,6 +852,13 @@ func (c *CreateCheckoutConfigurationsRequestPlan) UnmarshalJSON(data []byte) err
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCheckoutConfigurationsRequestPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -846,13 +889,13 @@ func (c *CreateCheckoutConfigurationsRequestPlan) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Payment method overrides for the inline variant. `null` uses platform defaults.
 var (
 	createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Payment method overrides for the inline variant. `null` uses platform defaults.
 type CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration struct {
 	// Payment method types explicitly disabled for this variant — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
 	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -897,10 +940,12 @@ func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) GetE
 }
 
 func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -1110,6 +1155,19 @@ var (
 	createCheckoutConfigurationsResponseFieldUpdatedAt                           = big.NewInt(1 << 13)
 )
 
+// createCheckoutConfigurationsResponseNullableFields maps the wire names of CreateCheckoutConfigurationsResponse's nullable fields (required or optional) to their field bits.
+var createCheckoutConfigurationsResponseNullableFields = map[string]*big.Int{
+	"affiliate_code":                         createCheckoutConfigurationsResponseFieldAffiliateCode,
+	"currency":                               createCheckoutConfigurationsResponseFieldCurrency,
+	"effective_payment_method_configuration": createCheckoutConfigurationsResponseFieldEffectivePaymentMethodConfiguration,
+	"metadata":                               createCheckoutConfigurationsResponseFieldMetadata,
+	"payment_method_configuration":           createCheckoutConfigurationsResponseFieldPaymentMethodConfiguration,
+	"plan":                                   createCheckoutConfigurationsResponseFieldPlan,
+	"purchase_url":                           createCheckoutConfigurationsResponseFieldPurchaseURL,
+	"redirect_url":                           createCheckoutConfigurationsResponseFieldRedirectURL,
+	"three_ds_level":                         createCheckoutConfigurationsResponseFieldThreeDsLevel,
+}
+
 type CreateCheckoutConfigurationsResponse struct {
 	// Account ID, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
@@ -1253,10 +1311,12 @@ func (c *CreateCheckoutConfigurationsResponse) GetExtraProperties() map[string]i
 }
 
 func (c *CreateCheckoutConfigurationsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1369,6 +1429,13 @@ func (c *CreateCheckoutConfigurationsResponse) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCheckoutConfigurationsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1399,13 +1466,13 @@ func (c *CreateCheckoutConfigurationsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 var (
 	createCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	createCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 type CreateCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -1450,10 +1517,12 @@ func (c *CreateCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration
 }
 
 func (c *CreateCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -1542,13 +1611,13 @@ func (c CreateCheckoutConfigurationsResponseMode) Ptr() *CreateCheckoutConfigura
 	return &c
 }
 
-// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 var (
 	createCheckoutConfigurationsResponsePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsResponsePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	createCheckoutConfigurationsResponsePaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 type CreateCheckoutConfigurationsResponsePaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled for checkout.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -1593,10 +1662,12 @@ func (c *CreateCheckoutConfigurationsResponsePaymentMethodConfiguration) GetExtr
 }
 
 func (c *CreateCheckoutConfigurationsResponsePaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -1662,7 +1733,6 @@ func (c *CreateCheckoutConfigurationsResponsePaymentMethodConfiguration) String(
 	return fmt.Sprintf("%#v", c)
 }
 
-// Variant used for payment checkout. `null` in setup mode.
 var (
 	createCheckoutConfigurationsResponsePlanFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
 	createCheckoutConfigurationsResponsePlanFieldBillingPeriod          = big.NewInt(1 << 1)
@@ -1678,6 +1748,15 @@ var (
 	createCheckoutConfigurationsResponsePlanFieldVisibility             = big.NewInt(1 << 11)
 )
 
+// createCheckoutConfigurationsResponsePlanNullableFields maps the wire names of CreateCheckoutConfigurationsResponsePlan's nullable fields (required or optional) to their field bits.
+var createCheckoutConfigurationsResponsePlanNullableFields = map[string]*big.Int{
+	"billing_period":    createCheckoutConfigurationsResponsePlanFieldBillingPeriod,
+	"expiration_days":   createCheckoutConfigurationsResponsePlanFieldExpirationDays,
+	"three_ds_level":    createCheckoutConfigurationsResponsePlanFieldThreeDsLevel,
+	"trial_period_days": createCheckoutConfigurationsResponsePlanFieldTrialPeriodDays,
+}
+
+// Variant used for payment checkout. `null` in setup mode.
 type CreateCheckoutConfigurationsResponsePlan struct {
 	// Whether this variant accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
@@ -1803,10 +1882,12 @@ func (c *CreateCheckoutConfigurationsResponsePlan) GetExtraProperties() map[stri
 }
 
 func (c *CreateCheckoutConfigurationsResponsePlan) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
@@ -1905,6 +1986,13 @@ func (c *CreateCheckoutConfigurationsResponsePlan) UnmarshalJSON(data []byte) er
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCheckoutConfigurationsResponsePlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2102,10 +2190,12 @@ func (d *DeleteCheckoutConfigurationsResponse) GetExtraProperties() map[string]i
 }
 
 func (d *DeleteCheckoutConfigurationsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -2243,10 +2333,12 @@ func (l *ListCheckoutConfigurationsResponse) GetExtraProperties() map[string]int
 }
 
 func (l *ListCheckoutConfigurationsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2321,6 +2413,19 @@ var (
 	listCheckoutConfigurationsResponseDataItemFieldThreeDsLevel                        = big.NewInt(1 << 12)
 	listCheckoutConfigurationsResponseDataItemFieldUpdatedAt                           = big.NewInt(1 << 13)
 )
+
+// listCheckoutConfigurationsResponseDataItemNullableFields maps the wire names of ListCheckoutConfigurationsResponseDataItem's nullable fields (required or optional) to their field bits.
+var listCheckoutConfigurationsResponseDataItemNullableFields = map[string]*big.Int{
+	"affiliate_code":                         listCheckoutConfigurationsResponseDataItemFieldAffiliateCode,
+	"currency":                               listCheckoutConfigurationsResponseDataItemFieldCurrency,
+	"effective_payment_method_configuration": listCheckoutConfigurationsResponseDataItemFieldEffectivePaymentMethodConfiguration,
+	"metadata":                               listCheckoutConfigurationsResponseDataItemFieldMetadata,
+	"payment_method_configuration":           listCheckoutConfigurationsResponseDataItemFieldPaymentMethodConfiguration,
+	"plan":                                   listCheckoutConfigurationsResponseDataItemFieldPlan,
+	"purchase_url":                           listCheckoutConfigurationsResponseDataItemFieldPurchaseURL,
+	"redirect_url":                           listCheckoutConfigurationsResponseDataItemFieldRedirectURL,
+	"three_ds_level":                         listCheckoutConfigurationsResponseDataItemFieldThreeDsLevel,
+}
 
 type ListCheckoutConfigurationsResponseDataItem struct {
 	// Account ID, prefixed `biz_`.
@@ -2465,10 +2570,12 @@ func (l *ListCheckoutConfigurationsResponseDataItem) GetExtraProperties() map[st
 }
 
 func (l *ListCheckoutConfigurationsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2581,6 +2688,13 @@ func (l *ListCheckoutConfigurationsResponseDataItem) UnmarshalJSON(data []byte) 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCheckoutConfigurationsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2611,13 +2725,13 @@ func (l *ListCheckoutConfigurationsResponseDataItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 var (
 	listCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	listCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	listCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 type ListCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -2662,10 +2776,12 @@ func (l *ListCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfigu
 }
 
 func (l *ListCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfiguration) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -2754,13 +2870,13 @@ func (l ListCheckoutConfigurationsResponseDataItemMode) Ptr() *ListCheckoutConfi
 	return &l
 }
 
-// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 var (
 	listCheckoutConfigurationsResponseDataItemPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	listCheckoutConfigurationsResponseDataItemPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	listCheckoutConfigurationsResponseDataItemPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 type ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled for checkout.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -2805,10 +2921,12 @@ func (l *ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration) G
 }
 
 func (l *ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -2874,7 +2992,6 @@ func (l *ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration) S
 	return fmt.Sprintf("%#v", l)
 }
 
-// Variant used for payment checkout. `null` in setup mode.
 var (
 	listCheckoutConfigurationsResponseDataItemPlanFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
 	listCheckoutConfigurationsResponseDataItemPlanFieldBillingPeriod          = big.NewInt(1 << 1)
@@ -2890,6 +3007,15 @@ var (
 	listCheckoutConfigurationsResponseDataItemPlanFieldVisibility             = big.NewInt(1 << 11)
 )
 
+// listCheckoutConfigurationsResponseDataItemPlanNullableFields maps the wire names of ListCheckoutConfigurationsResponseDataItemPlan's nullable fields (required or optional) to their field bits.
+var listCheckoutConfigurationsResponseDataItemPlanNullableFields = map[string]*big.Int{
+	"billing_period":    listCheckoutConfigurationsResponseDataItemPlanFieldBillingPeriod,
+	"expiration_days":   listCheckoutConfigurationsResponseDataItemPlanFieldExpirationDays,
+	"three_ds_level":    listCheckoutConfigurationsResponseDataItemPlanFieldThreeDsLevel,
+	"trial_period_days": listCheckoutConfigurationsResponseDataItemPlanFieldTrialPeriodDays,
+}
+
+// Variant used for payment checkout. `null` in setup mode.
 type ListCheckoutConfigurationsResponseDataItemPlan struct {
 	// Whether this variant accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
@@ -3015,10 +3141,12 @@ func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetExtraProperties() ma
 }
 
 func (l *ListCheckoutConfigurationsResponseDataItemPlan) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
@@ -3117,6 +3245,13 @@ func (l *ListCheckoutConfigurationsResponseDataItemPlan) UnmarshalJSON(data []by
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCheckoutConfigurationsResponseDataItemPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3281,6 +3416,12 @@ var (
 	listCheckoutConfigurationsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listCheckoutConfigurationsResponsePageInfoNullableFields maps the wire names of ListCheckoutConfigurationsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listCheckoutConfigurationsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listCheckoutConfigurationsResponsePageInfoFieldEndCursor,
+	"start_cursor": listCheckoutConfigurationsResponsePageInfoFieldStartCursor,
+}
+
 type ListCheckoutConfigurationsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -3330,10 +3471,12 @@ func (l *ListCheckoutConfigurationsResponsePageInfo) GetExtraProperties() map[st
 }
 
 func (l *ListCheckoutConfigurationsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3376,6 +3519,13 @@ func (l *ListCheckoutConfigurationsResponsePageInfo) UnmarshalJSON(data []byte) 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCheckoutConfigurationsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3422,6 +3572,19 @@ var (
 	retrieveCheckoutConfigurationsResponseFieldThreeDsLevel                        = big.NewInt(1 << 12)
 	retrieveCheckoutConfigurationsResponseFieldUpdatedAt                           = big.NewInt(1 << 13)
 )
+
+// retrieveCheckoutConfigurationsResponseNullableFields maps the wire names of RetrieveCheckoutConfigurationsResponse's nullable fields (required or optional) to their field bits.
+var retrieveCheckoutConfigurationsResponseNullableFields = map[string]*big.Int{
+	"affiliate_code":                         retrieveCheckoutConfigurationsResponseFieldAffiliateCode,
+	"currency":                               retrieveCheckoutConfigurationsResponseFieldCurrency,
+	"effective_payment_method_configuration": retrieveCheckoutConfigurationsResponseFieldEffectivePaymentMethodConfiguration,
+	"metadata":                               retrieveCheckoutConfigurationsResponseFieldMetadata,
+	"payment_method_configuration":           retrieveCheckoutConfigurationsResponseFieldPaymentMethodConfiguration,
+	"plan":                                   retrieveCheckoutConfigurationsResponseFieldPlan,
+	"purchase_url":                           retrieveCheckoutConfigurationsResponseFieldPurchaseURL,
+	"redirect_url":                           retrieveCheckoutConfigurationsResponseFieldRedirectURL,
+	"three_ds_level":                         retrieveCheckoutConfigurationsResponseFieldThreeDsLevel,
+}
 
 type RetrieveCheckoutConfigurationsResponse struct {
 	// Account ID, prefixed `biz_`.
@@ -3566,10 +3729,12 @@ func (r *RetrieveCheckoutConfigurationsResponse) GetExtraProperties() map[string
 }
 
 func (r *RetrieveCheckoutConfigurationsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3682,6 +3847,13 @@ func (r *RetrieveCheckoutConfigurationsResponse) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveCheckoutConfigurationsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3712,13 +3884,13 @@ func (r *RetrieveCheckoutConfigurationsResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 var (
 	retrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	retrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	retrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 type RetrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -3763,10 +3935,12 @@ func (r *RetrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfigurati
 }
 
 func (r *RetrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -3855,13 +4029,13 @@ func (r RetrieveCheckoutConfigurationsResponseMode) Ptr() *RetrieveCheckoutConfi
 	return &r
 }
 
-// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 var (
 	retrieveCheckoutConfigurationsResponsePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	retrieveCheckoutConfigurationsResponsePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	retrieveCheckoutConfigurationsResponsePaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 type RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled for checkout.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -3906,10 +4080,12 @@ func (r *RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration) GetEx
 }
 
 func (r *RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -3975,7 +4151,6 @@ func (r *RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration) Strin
 	return fmt.Sprintf("%#v", r)
 }
 
-// Variant used for payment checkout. `null` in setup mode.
 var (
 	retrieveCheckoutConfigurationsResponsePlanFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
 	retrieveCheckoutConfigurationsResponsePlanFieldBillingPeriod          = big.NewInt(1 << 1)
@@ -3991,6 +4166,15 @@ var (
 	retrieveCheckoutConfigurationsResponsePlanFieldVisibility             = big.NewInt(1 << 11)
 )
 
+// retrieveCheckoutConfigurationsResponsePlanNullableFields maps the wire names of RetrieveCheckoutConfigurationsResponsePlan's nullable fields (required or optional) to their field bits.
+var retrieveCheckoutConfigurationsResponsePlanNullableFields = map[string]*big.Int{
+	"billing_period":    retrieveCheckoutConfigurationsResponsePlanFieldBillingPeriod,
+	"expiration_days":   retrieveCheckoutConfigurationsResponsePlanFieldExpirationDays,
+	"three_ds_level":    retrieveCheckoutConfigurationsResponsePlanFieldThreeDsLevel,
+	"trial_period_days": retrieveCheckoutConfigurationsResponsePlanFieldTrialPeriodDays,
+}
+
+// Variant used for payment checkout. `null` in setup mode.
 type RetrieveCheckoutConfigurationsResponsePlan struct {
 	// Whether this variant accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
@@ -4116,10 +4300,12 @@ func (r *RetrieveCheckoutConfigurationsResponsePlan) GetExtraProperties() map[st
 }
 
 func (r *RetrieveCheckoutConfigurationsResponsePlan) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
@@ -4218,6 +4404,13 @@ func (r *RetrieveCheckoutConfigurationsResponsePlan) UnmarshalJSON(data []byte) 
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveCheckoutConfigurationsResponsePlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }

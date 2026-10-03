@@ -25,10 +25,12 @@ type CheckAccessUsersRequest struct {
 }
 
 func (c *CheckAccessUsersRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -70,10 +72,12 @@ type ListUsersRequest struct {
 }
 
 func (l *ListUsersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetQuery sets the Query field and marks it as non-optional;
@@ -145,10 +149,12 @@ type MeUsersRequest struct {
 }
 
 func (m *MeUsersRequest) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetIncludeTrading sets the IncludeTrading field and marks it as non-optional;
@@ -220,10 +226,12 @@ type RecommendActionsUsersRequest struct {
 }
 
 func (r *RecommendActionsUsersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -270,10 +278,12 @@ type RetrieveUsersRequest struct {
 }
 
 func (r *RetrieveUsersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -357,6 +367,20 @@ var (
 	userFieldVerification         = big.NewInt(1 << 14)
 	userFieldWhopPartnerEnabledAt = big.NewInt(1 << 15)
 )
+
+// userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
+var userNullableFields = map[string]*big.Int{
+	"balance":                 userFieldBalance,
+	"balance_history":         userFieldBalanceHistory,
+	"banner":                  userFieldBanner,
+	"bio":                     userFieldBio,
+	"earnings_usd":            userFieldEarningsUsd,
+	"email":                   userFieldEmail,
+	"name":                    userFieldName,
+	"staff":                   userFieldStaff,
+	"trading":                 userFieldTrading,
+	"whop_partner_enabled_at": userFieldWhopPartnerEnabledAt,
+}
 
 type User struct {
 	// The user's balance: personal cash + crypto + in-flight treasury deposits, plus account balances for accounts they own. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, or when `include_balance=false`.
@@ -518,10 +542,12 @@ func (u *User) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *User) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBalance sets the Balance field and marks it as non-optional;
@@ -648,6 +674,13 @@ func (u *User) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -785,10 +818,12 @@ func (u *UserBalance) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalance) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBusinesses sets the Businesses field and marks it as non-optional;
@@ -903,6 +938,12 @@ var (
 	userBalanceBusinessFieldName       = big.NewInt(1 << 3)
 )
 
+// userBalanceBusinessNullableFields maps the wire names of UserBalanceBusiness's nullable fields (required or optional) to their field bits.
+var userBalanceBusinessNullableFields = map[string]*big.Int{
+	"logo_url": userBalanceBusinessFieldLogoURL,
+	"name":     userBalanceBusinessFieldName,
+}
+
 type UserBalanceBusiness struct {
 	// The account's total balance in USD.
 	BalanceUsd string `json:"balance_usd" url:"balance_usd"`
@@ -956,10 +997,12 @@ func (u *UserBalanceBusiness) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalanceBusiness) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBalanceUsd sets the BalanceUsd field and marks it as non-optional;
@@ -1002,6 +1045,13 @@ func (u *UserBalanceBusiness) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userBalanceBusinessNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1042,6 +1092,11 @@ var (
 	userBalanceCashFieldReserveBalanceUsd        = big.NewInt(1 << 6)
 	userBalanceCashFieldTotalWithdrawableBalance = big.NewInt(1 << 7)
 )
+
+// userBalanceCashNullableFields maps the wire names of UserBalanceCash's nullable fields (required or optional) to their field bits.
+var userBalanceCashNullableFields = map[string]*big.Int{
+	"price_usd": userBalanceCashFieldPriceUsd,
+}
 
 type UserBalanceCash struct {
 	// Available balance in the native currency.
@@ -1132,10 +1187,12 @@ func (u *UserBalanceCash) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalanceCash) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBalance sets the Balance field and marks it as non-optional;
@@ -1206,6 +1263,13 @@ func (u *UserBalanceCash) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userBalanceCashNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1295,10 +1359,12 @@ func (u *UserBalanceHistory) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalanceHistory) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1411,10 +1477,12 @@ func (u *UserBalanceHistoryPoint) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalanceHistoryPoint) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetT sets the T field and marks it as non-optional;
@@ -1482,6 +1550,13 @@ var (
 	userBalanceTokenFieldSymbol    = big.NewInt(1 << 5)
 	userBalanceTokenFieldValueUsd  = big.NewInt(1 << 6)
 )
+
+// userBalanceTokenNullableFields maps the wire names of UserBalanceToken's nullable fields (required or optional) to their field bits.
+var userBalanceTokenNullableFields = map[string]*big.Int{
+	"icon_url":  userBalanceTokenFieldIconURL,
+	"name":      userBalanceTokenFieldName,
+	"price_usd": userBalanceTokenFieldPriceUsd,
+}
 
 type UserBalanceToken struct {
 	// Amount held in native token units, as a decimal string.
@@ -1563,10 +1638,12 @@ func (u *UserBalanceToken) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalanceToken) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBalance sets the Balance field and marks it as non-optional;
@@ -1630,6 +1707,13 @@ func (u *UserBalanceToken) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userBalanceTokenNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1690,10 +1774,12 @@ func (u *UserBanner) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBanner) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1752,6 +1838,11 @@ var (
 	userEarningsFieldPersonal      = big.NewInt(1 << 3)
 	userEarningsFieldTotal         = big.NewInt(1 << 4)
 )
+
+// userEarningsNullableFields maps the wire names of UserEarnings's nullable fields (required or optional) to their field bits.
+var userEarningsNullableFields = map[string]*big.Int{
+	"first_earned_at": userEarningsFieldFirstEarnedAt,
+}
 
 type UserEarnings struct {
 	// The first time the user earned gross income, as an ISO 8601 timestamp.
@@ -1815,10 +1906,12 @@ func (u *UserEarnings) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserEarnings) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFirstEarnedAt sets the FirstEarnedAt field and marks it as non-optional;
@@ -1868,6 +1961,13 @@ func (u *UserEarnings) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userEarningsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1958,10 +2058,12 @@ func (u *UserEarningsAmount) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserEarningsAmount) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetLast24Hours sets the Last24Hours field and marks it as non-optional;
@@ -2048,6 +2150,15 @@ var (
 	userRecommendedActionFieldStatus              = big.NewInt(1 << 10)
 	userRecommendedActionFieldTitle               = big.NewInt(1 << 11)
 )
+
+// userRecommendedActionNullableFields maps the wire names of UserRecommendedAction's nullable fields (required or optional) to their field bits.
+var userRecommendedActionNullableFields = map[string]*big.Int{
+	"account_id":   userRecommendedActionFieldAccountID,
+	"account_name": userRecommendedActionFieldAccountName,
+	"icon_url":     userRecommendedActionFieldIconURL,
+	"impact_score": userRecommendedActionFieldImpactScore,
+	"reasoning":    userRecommendedActionFieldReasoning,
+}
 
 type UserRecommendedAction struct {
 	// The account (`biz_`) a business recommendation is for, or `null` for personal recommendations
@@ -2173,10 +2284,12 @@ func (u *UserRecommendedAction) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserRecommendedAction) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2275,6 +2388,13 @@ func (u *UserRecommendedAction) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userRecommendedActionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2471,10 +2591,12 @@ func (u *UserStaffAccess) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserStaffAccess) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAdmin sets the Admin field and marks it as non-optional;
@@ -2585,10 +2707,12 @@ func (c *CheckAccessUsersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CheckAccessUsersResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccessLevel sets the AccessLevel field and marks it as non-optional;
@@ -2710,10 +2834,12 @@ func (l *ListUsersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListUsersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2779,6 +2905,12 @@ var (
 	listUsersResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listUsersResponsePageInfoNullableFields maps the wire names of ListUsersResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listUsersResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listUsersResponsePageInfoFieldEndCursor,
+	"start_cursor": listUsersResponsePageInfoFieldStartCursor,
+}
+
 type ListUsersResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2828,10 +2960,12 @@ func (l *ListUsersResponsePageInfo) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListUsersResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2874,6 +3008,13 @@ func (l *ListUsersResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listUsersResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2961,10 +3102,12 @@ func (r *RecommendActionsUsersResponse) GetExtraProperties() map[string]interfac
 }
 
 func (r *RecommendActionsUsersResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3082,10 +3225,12 @@ func (u *UpdateMeUsersRequestBanner) GetExtraProperties() map[string]interface{}
 }
 
 func (u *UpdateMeUsersRequestBanner) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3182,10 +3327,12 @@ func (u *UpdateMeUsersRequestProfilePicture) GetExtraProperties() map[string]int
 }
 
 func (u *UpdateMeUsersRequestProfilePicture) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3282,10 +3429,12 @@ func (u *UpdateUsersRequestBanner) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateUsersRequestBanner) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3382,10 +3531,12 @@ func (u *UpdateUsersRequestProfilePicture) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateUsersRequestProfilePicture) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3470,10 +3621,12 @@ type UpdateUsersRequest struct {
 }
 
 func (u *UpdateUsersRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3569,10 +3722,12 @@ type UpdateMeUsersRequest struct {
 }
 
 func (u *UpdateMeUsersRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;

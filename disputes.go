@@ -53,10 +53,12 @@ type ListDisputesRequest struct {
 }
 
 func (l *ListDisputesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -149,10 +151,12 @@ type RetrieveDisputesRequest struct {
 }
 
 func (r *RetrieveDisputesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -175,10 +179,12 @@ type SubmitDisputesRequest struct {
 }
 
 func (s *SubmitDisputesRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -216,10 +222,12 @@ type SummaryDisputesRequest struct {
 }
 
 func (s *SummaryDisputesRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetGroups sets the Groups field and marks it as non-optional;
@@ -287,6 +295,17 @@ var (
 	disputeFieldStatus               = big.NewInt(1 << 19)
 	disputeFieldUpdatedAt            = big.NewInt(1 << 20)
 )
+
+// disputeNullableFields maps the wire names of Dispute's nullable fields (required or optional) to their field bits.
+var disputeNullableFields = map[string]*big.Int{
+	"account_id":             disputeFieldAccountID,
+	"evidence_due_at":        disputeFieldEvidenceDueAt,
+	"evidence_locked_reason": disputeFieldEvidenceLockedReason,
+	"evidence_submitted_at":  disputeFieldEvidenceSubmittedAt,
+	"plan_id":                disputeFieldPlanID,
+	"product_id":             disputeFieldProductID,
+	"reason_code":            disputeFieldReasonCode,
+}
 
 type Dispute struct {
 	// The account the dispute was filed against, prefixed `biz_`.
@@ -492,10 +511,12 @@ func (d *Dispute) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *Dispute) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -657,6 +678,13 @@ func (d *Dispute) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -694,6 +722,14 @@ var (
 	disputeAttachmentFieldPlatform    = big.NewInt(1 << 3)
 	disputeAttachmentFieldURL         = big.NewInt(1 << 4)
 )
+
+// disputeAttachmentNullableFields maps the wire names of DisputeAttachment's nullable fields (required or optional) to their field bits.
+var disputeAttachmentNullableFields = map[string]*big.Int{
+	"content_type": disputeAttachmentFieldContentType,
+	"filename":     disputeAttachmentFieldFilename,
+	"id":           disputeAttachmentFieldID,
+	"url":          disputeAttachmentFieldURL,
+}
 
 type DisputeAttachment struct {
 	// The uploaded file's MIME type.
@@ -757,10 +793,12 @@ func (d *DisputeAttachment) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeAttachment) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -810,6 +848,13 @@ func (d *DisputeAttachment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeAttachmentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -847,6 +892,15 @@ var (
 	disputeBuyerFieldUserID   = big.NewInt(1 << 3)
 	disputeBuyerFieldUsername = big.NewInt(1 << 4)
 )
+
+// disputeBuyerNullableFields maps the wire names of DisputeBuyer's nullable fields (required or optional) to their field bits.
+var disputeBuyerNullableFields = map[string]*big.Int{
+	"email":     disputeBuyerFieldEmail,
+	"member_id": disputeBuyerFieldMemberID,
+	"name":      disputeBuyerFieldName,
+	"user_id":   disputeBuyerFieldUserID,
+	"username":  disputeBuyerFieldUsername,
+}
 
 type DisputeBuyer struct {
 	// The customer's email address. Requires the `member:email:read` scope; `null` without it.
@@ -910,10 +964,12 @@ func (d *DisputeBuyer) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeBuyer) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -963,6 +1019,13 @@ func (d *DisputeBuyer) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeBuyerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1010,6 +1073,24 @@ var (
 	disputeEvidenceFieldServiceDate                     = big.NewInt(1 << 13)
 	disputeEvidenceFieldUncategorizedAttachment         = big.NewInt(1 << 14)
 )
+
+// disputeEvidenceNullableFields maps the wire names of DisputeEvidence's nullable fields (required or optional) to their field bits.
+var disputeEvidenceNullableFields = map[string]*big.Int{
+	"access_activity_log":               disputeEvidenceFieldAccessActivityLog,
+	"billing_address":                   disputeEvidenceFieldBillingAddress,
+	"cancellation_policy_attachment":    disputeEvidenceFieldCancellationPolicyAttachment,
+	"cancellation_policy_disclosure":    disputeEvidenceFieldCancellationPolicyDisclosure,
+	"customer_communication_attachment": disputeEvidenceFieldCustomerCommunicationAttachment,
+	"customer_email_address":            disputeEvidenceFieldCustomerEmailAddress,
+	"customer_name":                     disputeEvidenceFieldCustomerName,
+	"notes":                             disputeEvidenceFieldNotes,
+	"product_description":               disputeEvidenceFieldProductDescription,
+	"refund_policy_attachment":          disputeEvidenceFieldRefundPolicyAttachment,
+	"refund_policy_disclosure":          disputeEvidenceFieldRefundPolicyDisclosure,
+	"refund_refusal_explanation":        disputeEvidenceFieldRefundRefusalExplanation,
+	"service_date":                      disputeEvidenceFieldServiceDate,
+	"uncategorized_attachment":          disputeEvidenceFieldUncategorizedAttachment,
+}
 
 type DisputeEvidence struct {
 	// Log of the customer's access to the product, such as sign-in or download activity.
@@ -1162,10 +1243,12 @@ func (d *DisputeEvidence) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeEvidence) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAccessActivityLog sets the AccessActivityLog field and marks it as non-optional;
@@ -1285,6 +1368,13 @@ func (d *DisputeEvidence) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeEvidenceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1332,6 +1422,18 @@ var (
 	disputeEvidenceDocumentFieldURL                 = big.NewInt(1 << 13)
 	disputeEvidenceDocumentFieldVisibility          = big.NewInt(1 << 14)
 )
+
+// disputeEvidenceDocumentNullableFields maps the wire names of DisputeEvidenceDocument's nullable fields (required or optional) to their field bits.
+var disputeEvidenceDocumentNullableFields = map[string]*big.Int{
+	"content_type":          disputeEvidenceDocumentFieldContentType,
+	"filename":              disputeEvidenceDocumentFieldFilename,
+	"multipart_chunk_size":  disputeEvidenceDocumentFieldMultipartChunkSize,
+	"multipart_upload_id":   disputeEvidenceDocumentFieldMultipartUploadID,
+	"multipart_upload_urls": disputeEvidenceDocumentFieldMultipartUploadURLs,
+	"size":                  disputeEvidenceDocumentFieldSize,
+	"upload_url":            disputeEvidenceDocumentFieldUploadURL,
+	"url":                   disputeEvidenceDocumentFieldURL,
+}
 
 type DisputeEvidenceDocument struct {
 	// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts, and rejected without one — never null.
@@ -1484,10 +1586,12 @@ func (d *DisputeEvidenceDocument) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeEvidenceDocument) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -1607,6 +1711,13 @@ func (d *DisputeEvidenceDocument) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeEvidenceDocumentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1805,6 +1916,11 @@ var (
 	disputeIssuerCommentFieldText       = big.NewInt(1 << 1)
 )
 
+// disputeIssuerCommentNullableFields maps the wire names of DisputeIssuerComment's nullable fields (required or optional) to their field bits.
+var disputeIssuerCommentNullableFields = map[string]*big.Int{
+	"received_at": disputeIssuerCommentFieldReceivedAt,
+}
+
 type DisputeIssuerComment struct {
 	// When the comment was received, as an ISO 8601 timestamp.
 	ReceivedAt *string `json:"received_at,omitempty" url:"received_at,omitempty"`
@@ -1840,10 +1956,12 @@ func (d *DisputeIssuerComment) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeIssuerComment) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetReceivedAt sets the ReceivedAt field and marks it as non-optional;
@@ -1872,6 +1990,13 @@ func (d *DisputeIssuerComment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeIssuerCommentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1913,6 +2038,17 @@ var (
 	disputePaymentFieldPaymentMethodType = big.NewInt(1 << 7)
 	disputePaymentFieldPaymentProcessor  = big.NewInt(1 << 8)
 )
+
+// disputePaymentNullableFields maps the wire names of DisputePayment's nullable fields (required or optional) to their field bits.
+var disputePaymentNullableFields = map[string]*big.Int{
+	"amount":              disputePaymentFieldAmount,
+	"card_brand":          disputePaymentFieldCardBrand,
+	"card_last4":          disputePaymentFieldCardLast4,
+	"currency":            disputePaymentFieldCurrency,
+	"payment_instrument":  disputePaymentFieldPaymentInstrument,
+	"payment_method_type": disputePaymentFieldPaymentMethodType,
+	"payment_processor":   disputePaymentFieldPaymentProcessor,
+}
 
 type DisputePayment struct {
 	// What the customer was charged, in whole units of the payment's currency.
@@ -2013,10 +2149,12 @@ func (d *DisputePayment) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputePayment) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -2094,6 +2232,13 @@ func (d *DisputePayment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputePaymentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2343,10 +2488,12 @@ func (l *ListDisputesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListDisputesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2412,6 +2559,12 @@ var (
 	listDisputesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listDisputesResponsePageInfoNullableFields maps the wire names of ListDisputesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listDisputesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listDisputesResponsePageInfoFieldEndCursor,
+	"start_cursor": listDisputesResponsePageInfoFieldStartCursor,
+}
+
 type ListDisputesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2461,10 +2614,12 @@ func (l *ListDisputesResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListDisputesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2507,6 +2662,13 @@ func (l *ListDisputesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listDisputesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2547,6 +2709,12 @@ var (
 	postDisputeCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postDisputeCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postDisputeCreatedPayloadNullableFields maps the wire names of PostDisputeCreatedPayload's nullable fields (required or optional) to their field bits.
+var postDisputeCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postDisputeCreatedPayloadFieldAccountID,
+	"api_version_date": postDisputeCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostDisputeCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -2636,10 +2804,12 @@ func (p *PostDisputeCreatedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostDisputeCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2716,6 +2886,13 @@ func (p *PostDisputeCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postDisputeCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2798,6 +2975,12 @@ var (
 	postDisputeUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postDisputeUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postDisputeUpdatedPayloadNullableFields maps the wire names of PostDisputeUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postDisputeUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postDisputeUpdatedPayloadFieldAccountID,
+	"api_version_date": postDisputeUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostDisputeUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -2887,10 +3070,12 @@ func (p *PostDisputeUpdatedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostDisputeUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2967,6 +3152,13 @@ func (p *PostDisputeUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postDisputeUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3141,10 +3333,12 @@ func (s *SummaryDisputesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SummaryDisputesResponse) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetGroups sets the Groups field and marks it as non-optional;
@@ -3203,12 +3397,12 @@ func (s *SummaryDisputesResponse) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// One entry per requested breakdown, keyed by the field it groups on. A field you did not ask for is absent.
 var (
 	summaryDisputesResponseGroupsFieldCurrency = big.NewInt(1 << 0)
 	summaryDisputesResponseGroupsFieldStatus   = big.NewInt(1 << 1)
 )
 
+// One entry per requested breakdown, keyed by the field it groups on. A field you did not ask for is absent.
 type SummaryDisputesResponseGroups struct {
 	// How many of the matching disputes are in each currency, keyed by three-letter ISO code. Only currencies with at least one dispute are present.
 	Currency map[string]int `json:"currency,omitempty" url:"currency,omitempty"`
@@ -3244,10 +3438,12 @@ func (s *SummaryDisputesResponseGroups) GetExtraProperties() map[string]interfac
 }
 
 func (s *SummaryDisputesResponseGroups) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -3306,7 +3502,6 @@ func (s *SummaryDisputesResponseGroups) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// How many of the matching disputes are in each status. Every status is present, including those with a count of zero.
 var (
 	summaryDisputesResponseGroupsStatusFieldLost                 = big.NewInt(1 << 0)
 	summaryDisputesResponseGroupsStatusFieldNeedsResponse        = big.NewInt(1 << 1)
@@ -3318,6 +3513,7 @@ var (
 	summaryDisputesResponseGroupsStatusFieldWon                  = big.NewInt(1 << 7)
 )
 
+// How many of the matching disputes are in each status. Every status is present, including those with a count of zero.
 type SummaryDisputesResponseGroupsStatus struct {
 	Lost                 int `json:"lost" url:"lost"`
 	NeedsResponse        int `json:"needs_response" url:"needs_response"`
@@ -3399,10 +3595,12 @@ func (s *SummaryDisputesResponseGroupsStatus) GetExtraProperties() map[string]in
 }
 
 func (s *SummaryDisputesResponseGroupsStatus) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetLost sets the Lost field and marks it as non-optional;
@@ -3503,7 +3701,6 @@ func (s *SummaryDisputesResponseGroupsStatus) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// The evidence packet to send to the processor. Only the fields you provide are changed.
 var (
 	updateDisputesRequestEvidenceFieldAccessActivityLog               = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceFieldBillingAddress                  = big.NewInt(1 << 1)
@@ -3522,6 +3719,25 @@ var (
 	updateDisputesRequestEvidenceFieldUncategorizedAttachment         = big.NewInt(1 << 14)
 )
 
+// updateDisputesRequestEvidenceNullableFields maps the wire names of UpdateDisputesRequestEvidence's nullable fields (required or optional) to their field bits.
+var updateDisputesRequestEvidenceNullableFields = map[string]*big.Int{
+	"access_activity_log":               updateDisputesRequestEvidenceFieldAccessActivityLog,
+	"billing_address":                   updateDisputesRequestEvidenceFieldBillingAddress,
+	"cancellation_policy_attachment":    updateDisputesRequestEvidenceFieldCancellationPolicyAttachment,
+	"cancellation_policy_disclosure":    updateDisputesRequestEvidenceFieldCancellationPolicyDisclosure,
+	"customer_communication_attachment": updateDisputesRequestEvidenceFieldCustomerCommunicationAttachment,
+	"customer_email_address":            updateDisputesRequestEvidenceFieldCustomerEmailAddress,
+	"customer_name":                     updateDisputesRequestEvidenceFieldCustomerName,
+	"notes":                             updateDisputesRequestEvidenceFieldNotes,
+	"product_description":               updateDisputesRequestEvidenceFieldProductDescription,
+	"refund_policy_attachment":          updateDisputesRequestEvidenceFieldRefundPolicyAttachment,
+	"refund_policy_disclosure":          updateDisputesRequestEvidenceFieldRefundPolicyDisclosure,
+	"refund_refusal_explanation":        updateDisputesRequestEvidenceFieldRefundRefusalExplanation,
+	"service_date":                      updateDisputesRequestEvidenceFieldServiceDate,
+	"uncategorized_attachment":          updateDisputesRequestEvidenceFieldUncategorizedAttachment,
+}
+
+// The evidence packet to send to the processor. Only the fields you provide are changed.
 type UpdateDisputesRequestEvidence struct {
 	// Log of the customer's access to the product, such as sign-in or download activity.
 	AccessActivityLog *string `json:"access_activity_log,omitempty" url:"access_activity_log,omitempty"`
@@ -3674,10 +3890,12 @@ func (u *UpdateDisputesRequestEvidence) GetExtraProperties() map[string]interfac
 }
 
 func (u *UpdateDisputesRequestEvidence) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccessActivityLog sets the AccessActivityLog field and marks it as non-optional;
@@ -3797,6 +4015,13 @@ func (u *UpdateDisputesRequestEvidence) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateDisputesRequestEvidenceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3827,12 +4052,12 @@ func (u *UpdateDisputesRequestEvidence) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, when not set.
 var (
 	updateDisputesRequestEvidenceCancellationPolicyAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceCancellationPolicyAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
+// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, when not set.
 type UpdateDisputesRequestEvidenceCancellationPolicyAttachment struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -3868,10 +4093,12 @@ func (u *UpdateDisputesRequestEvidenceCancellationPolicyAttachment) GetExtraProp
 }
 
 func (u *UpdateDisputesRequestEvidenceCancellationPolicyAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3930,12 +4157,12 @@ func (u *UpdateDisputesRequestEvidenceCancellationPolicyAttachment) String() str
 	return fmt.Sprintf("%#v", u)
 }
 
-// Correspondence with the customer, or proof they used the product.
 var (
 	updateDisputesRequestEvidenceCustomerCommunicationAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceCustomerCommunicationAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
+// Correspondence with the customer, or proof they used the product.
 type UpdateDisputesRequestEvidenceCustomerCommunicationAttachment struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -3971,10 +4198,12 @@ func (u *UpdateDisputesRequestEvidenceCustomerCommunicationAttachment) GetExtraP
 }
 
 func (u *UpdateDisputesRequestEvidenceCustomerCommunicationAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4093,10 +4322,12 @@ func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetExtraProperties() map[st
 }
 
 func (u *UpdateDisputesRequestEvidenceDocumentsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4222,12 +4453,12 @@ func (u UpdateDisputesRequestEvidenceDocumentsItemDocumentType) Ptr() *UpdateDis
 	return &u
 }
 
-// The refund policy document. Defaults to the account's return policy when not set.
 var (
 	updateDisputesRequestEvidenceRefundPolicyAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceRefundPolicyAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
+// The refund policy document. Defaults to the account's return policy when not set.
 type UpdateDisputesRequestEvidenceRefundPolicyAttachment struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -4263,10 +4494,12 @@ func (u *UpdateDisputesRequestEvidenceRefundPolicyAttachment) GetExtraProperties
 }
 
 func (u *UpdateDisputesRequestEvidenceRefundPolicyAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4325,12 +4558,12 @@ func (u *UpdateDisputesRequestEvidenceRefundPolicyAttachment) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Supporting evidence that does not fit the other categories.
 var (
 	updateDisputesRequestEvidenceUncategorizedAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceUncategorizedAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
+// Supporting evidence that does not fit the other categories.
 type UpdateDisputesRequestEvidenceUncategorizedAttachment struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -4366,10 +4599,12 @@ func (u *UpdateDisputesRequestEvidenceUncategorizedAttachment) GetExtraPropertie
 }
 
 func (u *UpdateDisputesRequestEvidenceUncategorizedAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4488,10 +4723,12 @@ func (u *UploadEvidenceDisputesRequestDocumentsItem) GetExtraProperties() map[st
 }
 
 func (u *UploadEvidenceDisputesRequestDocumentsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4633,10 +4870,12 @@ type UpdateDisputesRequest struct {
 }
 
 func (u *UpdateDisputesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4690,10 +4929,12 @@ type UploadEvidenceDisputesRequest struct {
 }
 
 func (u *UploadEvidenceDisputesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

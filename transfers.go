@@ -56,10 +56,12 @@ type CreateTransfersRequest struct {
 }
 
 func (c *CreateTransfersRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -147,12 +149,18 @@ func (c *CreateTransfersRequest) SetType(type_ *CreateTransfersRequestType) {
 }
 
 func (c *CreateTransfersRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTransfersRequest
-	var body unmarshaler
+	type embed CreateTransfersRequest
+	var body = struct {
+		embed
+		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
+	}{
+		embed: embed(*c),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*c = CreateTransfersRequest(body)
+	*c = CreateTransfersRequest(body.embed)
+	c.ExpiresAt = body.ExpiresAt.TimePtr()
 	return nil
 }
 
@@ -209,10 +217,12 @@ type ListTransfersRequest struct {
 }
 
 func (l *ListTransfersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetOriginID sets the OriginID field and marks it as non-optional;
@@ -307,10 +317,12 @@ type ListRecipientsTransfersRequest struct {
 }
 
 func (l *ListRecipientsTransfersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetOriginID sets the OriginID field and marks it as non-optional;
@@ -354,10 +366,12 @@ type RetrieveTransfersRequest struct {
 }
 
 func (r *RetrieveTransfersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -581,7 +595,6 @@ func (c *CreateTransfersResponse) validate() error {
 	return nil
 }
 
-// Returned for a claim_link: a shareable URL anyone can open to claim the funds.
 var (
 	createTransfersResponseClaimLinkFieldAmount          = big.NewInt(1 << 0)
 	createTransfersResponseClaimLinkFieldClaimURL        = big.NewInt(1 << 1)
@@ -593,6 +606,12 @@ var (
 	createTransfersResponseClaimLinkFieldStatus          = big.NewInt(1 << 7)
 )
 
+// createTransfersResponseClaimLinkNullableFields maps the wire names of CreateTransfersResponseClaimLink's nullable fields (required or optional) to their field bits.
+var createTransfersResponseClaimLinkNullableFields = map[string]*big.Int{
+	"expires_at": createTransfersResponseClaimLinkFieldExpiresAt,
+}
+
+// Returned for a claim_link: a shareable URL anyone can open to claim the funds.
 type CreateTransfersResponseClaimLink struct {
 	Amount          string                                  `json:"amount" url:"amount"`
 	ClaimURL        string                                  `json:"claim_url" url:"claim_url"`
@@ -675,10 +694,12 @@ func (c *CreateTransfersResponseClaimLink) GetExtraProperties() map[string]inter
 }
 
 func (c *CreateTransfersResponseClaimLink) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -755,6 +776,13 @@ func (c *CreateTransfersResponseClaimLink) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseClaimLinkNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -816,10 +844,12 @@ func (c *CreateTransfersResponseClaimLinkSource) GetExtraProperties() map[string
 }
 
 func (c *CreateTransfersResponseClaimLinkSource) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -891,7 +921,6 @@ func (c CreateTransfersResponseClaimLinkStatus) Ptr() *CreateTransfersResponseCl
 	return &c
 }
 
-// Returned for a wallet_send: an onchain USDT send to a recipient.
 var (
 	createTransfersResponseSendFieldAmount      = big.NewInt(1 << 0)
 	createTransfersResponseSendFieldCurrency    = big.NewInt(1 << 1)
@@ -900,6 +929,7 @@ var (
 	createTransfersResponseSendFieldTxHash      = big.NewInt(1 << 4)
 )
 
+// Returned for a wallet_send: an onchain USDT send to a recipient.
 type CreateTransfersResponseSend struct {
 	Amount      string                                  `json:"amount" url:"amount"`
 	Currency    string                                  `json:"currency" url:"currency"`
@@ -957,10 +987,12 @@ func (c *CreateTransfersResponseSend) GetExtraProperties() map[string]interface{
 }
 
 func (c *CreateTransfersResponseSend) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -1078,10 +1110,12 @@ func (c *CreateTransfersResponseSendDestination) GetExtraProperties() map[string
 }
 
 func (c *CreateTransfersResponseSendDestination) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1178,10 +1212,12 @@ func (c *CreateTransfersResponseSendSource) GetExtraProperties() map[string]inte
 }
 
 func (c *CreateTransfersResponseSendSource) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1240,7 +1276,6 @@ func (c *CreateTransfersResponseSendSource) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A transfer of credit between two ledger accounts.
 var (
 	createTransfersResponseTransferFieldAmount                     = big.NewInt(1 << 0)
 	createTransfersResponseTransferFieldCreatedAt                  = big.NewInt(1 << 1)
@@ -1260,6 +1295,18 @@ var (
 	createTransfersResponseTransferFieldStatus                     = big.NewInt(1 << 15)
 )
 
+// createTransfersResponseTransferNullableFields maps the wire names of CreateTransfersResponseTransfer's nullable fields (required or optional) to their field bits.
+var createTransfersResponseTransferNullableFields = map[string]*big.Int{
+	"created_by_user": createTransfersResponseTransferFieldCreatedByUser,
+	"failed_at":       createTransfersResponseTransferFieldFailedAt,
+	"failure_code":    createTransfersResponseTransferFieldFailureCode,
+	"failure_reason":  createTransfersResponseTransferFieldFailureReason,
+	"fee_amount":      createTransfersResponseTransferFieldFeeAmount,
+	"metadata":        createTransfersResponseTransferFieldMetadata,
+	"notes":           createTransfersResponseTransferFieldNotes,
+}
+
+// A transfer of credit between two ledger accounts.
 type CreateTransfersResponseTransfer struct {
 	// Transfer amount.
 	Amount float64 `json:"amount" url:"amount"`
@@ -1421,10 +1468,12 @@ func (c *CreateTransfersResponseTransfer) GetExtraProperties() map[string]interf
 }
 
 func (c *CreateTransfersResponseTransfer) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -1559,6 +1608,13 @@ func (c *CreateTransfersResponseTransfer) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1593,13 +1649,18 @@ func (c *CreateTransfersResponseTransfer) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 var (
 	createTransfersResponseTransferCreatedByUserFieldID       = big.NewInt(1 << 0)
 	createTransfersResponseTransferCreatedByUserFieldName     = big.NewInt(1 << 1)
 	createTransfersResponseTransferCreatedByUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// createTransfersResponseTransferCreatedByUserNullableFields maps the wire names of CreateTransfersResponseTransferCreatedByUser's nullable fields (required or optional) to their field bits.
+var createTransfersResponseTransferCreatedByUserNullableFields = map[string]*big.Int{
+	"name": createTransfersResponseTransferCreatedByUserFieldName,
+}
+
+// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 type CreateTransfersResponseTransferCreatedByUser struct {
 	// User ID.
 	ID string `json:"id" url:"id"`
@@ -1644,10 +1705,12 @@ func (c *CreateTransfersResponseTransferCreatedByUser) GetExtraProperties() map[
 }
 
 func (c *CreateTransfersResponseTransferCreatedByUser) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1683,6 +1746,13 @@ func (c *CreateTransfersResponseTransferCreatedByUser) UnmarshalJSON(data []byte
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferCreatedByUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1846,6 +1916,12 @@ var (
 	createTransfersResponseTransferDestinationCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// createTransfersResponseTransferDestinationCompanyNullableFields maps the wire names of CreateTransfersResponseTransferDestinationCompany's nullable fields (required or optional) to their field bits.
+var createTransfersResponseTransferDestinationCompanyNullableFields = map[string]*big.Int{
+	"route": createTransfersResponseTransferDestinationCompanyFieldRoute,
+	"title": createTransfersResponseTransferDestinationCompanyFieldTitle,
+}
+
 type CreateTransfersResponseTransferDestinationCompany struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -1890,10 +1966,12 @@ func (c *CreateTransfersResponseTransferDestinationCompany) GetExtraProperties()
 }
 
 func (c *CreateTransfersResponseTransferDestinationCompany) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1929,6 +2007,13 @@ func (c *CreateTransfersResponseTransferDestinationCompany) UnmarshalJSON(data [
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferDestinationCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1964,6 +2049,11 @@ var (
 	createTransfersResponseTransferDestinationUserFieldName     = big.NewInt(1 << 1)
 	createTransfersResponseTransferDestinationUserFieldUsername = big.NewInt(1 << 2)
 )
+
+// createTransfersResponseTransferDestinationUserNullableFields maps the wire names of CreateTransfersResponseTransferDestinationUser's nullable fields (required or optional) to their field bits.
+var createTransfersResponseTransferDestinationUserNullableFields = map[string]*big.Int{
+	"name": createTransfersResponseTransferDestinationUserFieldName,
+}
 
 type CreateTransfersResponseTransferDestinationUser struct {
 	// User ID.
@@ -2009,10 +2099,12 @@ func (c *CreateTransfersResponseTransferDestinationUser) GetExtraProperties() ma
 }
 
 func (c *CreateTransfersResponseTransferDestinationUser) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2048,6 +2140,13 @@ func (c *CreateTransfersResponseTransferDestinationUser) UnmarshalJSON(data []by
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferDestinationUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2211,6 +2310,12 @@ var (
 	createTransfersResponseTransferOriginCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// createTransfersResponseTransferOriginCompanyNullableFields maps the wire names of CreateTransfersResponseTransferOriginCompany's nullable fields (required or optional) to their field bits.
+var createTransfersResponseTransferOriginCompanyNullableFields = map[string]*big.Int{
+	"route": createTransfersResponseTransferOriginCompanyFieldRoute,
+	"title": createTransfersResponseTransferOriginCompanyFieldTitle,
+}
+
 type CreateTransfersResponseTransferOriginCompany struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -2255,10 +2360,12 @@ func (c *CreateTransfersResponseTransferOriginCompany) GetExtraProperties() map[
 }
 
 func (c *CreateTransfersResponseTransferOriginCompany) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2294,6 +2401,13 @@ func (c *CreateTransfersResponseTransferOriginCompany) UnmarshalJSON(data []byte
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferOriginCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2329,6 +2443,11 @@ var (
 	createTransfersResponseTransferOriginUserFieldName     = big.NewInt(1 << 1)
 	createTransfersResponseTransferOriginUserFieldUsername = big.NewInt(1 << 2)
 )
+
+// createTransfersResponseTransferOriginUserNullableFields maps the wire names of CreateTransfersResponseTransferOriginUser's nullable fields (required or optional) to their field bits.
+var createTransfersResponseTransferOriginUserNullableFields = map[string]*big.Int{
+	"name": createTransfersResponseTransferOriginUserFieldName,
+}
 
 type CreateTransfersResponseTransferOriginUser struct {
 	// User ID.
@@ -2374,10 +2493,12 @@ func (c *CreateTransfersResponseTransferOriginUser) GetExtraProperties() map[str
 }
 
 func (c *CreateTransfersResponseTransferOriginUser) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2413,6 +2534,13 @@ func (c *CreateTransfersResponseTransferOriginUser) UnmarshalJSON(data []byte) e
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferOriginUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2507,10 +2635,12 @@ func (l *ListRecipientsTransfersResponse) GetExtraProperties() map[string]interf
 }
 
 func (l *ListRecipientsTransfersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2702,6 +2832,13 @@ var (
 	listRecipientsTransfersResponseDataItemAccountFieldTitle   = big.NewInt(1 << 3)
 )
 
+// listRecipientsTransfersResponseDataItemAccountNullableFields maps the wire names of ListRecipientsTransfersResponseDataItemAccount's nullable fields (required or optional) to their field bits.
+var listRecipientsTransfersResponseDataItemAccountNullableFields = map[string]*big.Int{
+	"logo_url": listRecipientsTransfersResponseDataItemAccountFieldLogoURL,
+	"route":    listRecipientsTransfersResponseDataItemAccountFieldRoute,
+	"title":    listRecipientsTransfersResponseDataItemAccountFieldTitle,
+}
+
 type ListRecipientsTransfersResponseDataItemAccount struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -2755,10 +2892,12 @@ func (l *ListRecipientsTransfersResponseDataItemAccount) GetExtraProperties() ma
 }
 
 func (l *ListRecipientsTransfersResponseDataItemAccount) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2801,6 +2940,13 @@ func (l *ListRecipientsTransfersResponseDataItemAccount) UnmarshalJSON(data []by
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listRecipientsTransfersResponseDataItemAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2837,6 +2983,13 @@ var (
 	listRecipientsTransfersResponseDataItemUserFieldProfilePictureURL = big.NewInt(1 << 2)
 	listRecipientsTransfersResponseDataItemUserFieldUsername          = big.NewInt(1 << 3)
 )
+
+// listRecipientsTransfersResponseDataItemUserNullableFields maps the wire names of ListRecipientsTransfersResponseDataItemUser's nullable fields (required or optional) to their field bits.
+var listRecipientsTransfersResponseDataItemUserNullableFields = map[string]*big.Int{
+	"name":                listRecipientsTransfersResponseDataItemUserFieldName,
+	"profile_picture_url": listRecipientsTransfersResponseDataItemUserFieldProfilePictureURL,
+	"username":            listRecipientsTransfersResponseDataItemUserFieldUsername,
+}
 
 type ListRecipientsTransfersResponseDataItemUser struct {
 	// User ID.
@@ -2891,10 +3044,12 @@ func (l *ListRecipientsTransfersResponseDataItemUser) GetExtraProperties() map[s
 }
 
 func (l *ListRecipientsTransfersResponseDataItemUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2937,6 +3092,13 @@ func (l *ListRecipientsTransfersResponseDataItemUser) UnmarshalJSON(data []byte)
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listRecipientsTransfersResponseDataItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2973,6 +3135,12 @@ var (
 	listRecipientsTransfersResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
 	listRecipientsTransfersResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
+
+// listRecipientsTransfersResponsePageInfoNullableFields maps the wire names of ListRecipientsTransfersResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listRecipientsTransfersResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listRecipientsTransfersResponsePageInfoFieldEndCursor,
+	"start_cursor": listRecipientsTransfersResponsePageInfoFieldStartCursor,
+}
 
 type ListRecipientsTransfersResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
@@ -3023,10 +3191,12 @@ func (l *ListRecipientsTransfersResponsePageInfo) GetExtraProperties() map[strin
 }
 
 func (l *ListRecipientsTransfersResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3069,6 +3239,13 @@ func (l *ListRecipientsTransfersResponsePageInfo) UnmarshalJSON(data []byte) err
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listRecipientsTransfersResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3181,10 +3358,12 @@ func (l *ListTransfersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListTransfersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3243,7 +3422,6 @@ func (l *ListTransfersResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// A transfer of credit between two ledger accounts.
 var (
 	listTransfersResponseDataItemFieldAmount                     = big.NewInt(1 << 0)
 	listTransfersResponseDataItemFieldCreatedAt                  = big.NewInt(1 << 1)
@@ -3262,6 +3440,18 @@ var (
 	listTransfersResponseDataItemFieldStatus                     = big.NewInt(1 << 14)
 )
 
+// listTransfersResponseDataItemNullableFields maps the wire names of ListTransfersResponseDataItem's nullable fields (required or optional) to their field bits.
+var listTransfersResponseDataItemNullableFields = map[string]*big.Int{
+	"created_by_user": listTransfersResponseDataItemFieldCreatedByUser,
+	"failed_at":       listTransfersResponseDataItemFieldFailedAt,
+	"failure_code":    listTransfersResponseDataItemFieldFailureCode,
+	"failure_reason":  listTransfersResponseDataItemFieldFailureReason,
+	"fee_amount":      listTransfersResponseDataItemFieldFeeAmount,
+	"metadata":        listTransfersResponseDataItemFieldMetadata,
+	"notes":           listTransfersResponseDataItemFieldNotes,
+}
+
+// A transfer of credit between two ledger accounts.
 type ListTransfersResponseDataItem struct {
 	// Transfer amount.
 	Amount float64 `json:"amount" url:"amount"`
@@ -3414,10 +3604,12 @@ func (l *ListTransfersResponseDataItem) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListTransfersResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -3545,6 +3737,13 @@ func (l *ListTransfersResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listTransfersResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3579,13 +3778,18 @@ func (l *ListTransfersResponseDataItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 var (
 	listTransfersResponseDataItemCreatedByUserFieldID       = big.NewInt(1 << 0)
 	listTransfersResponseDataItemCreatedByUserFieldName     = big.NewInt(1 << 1)
 	listTransfersResponseDataItemCreatedByUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// listTransfersResponseDataItemCreatedByUserNullableFields maps the wire names of ListTransfersResponseDataItemCreatedByUser's nullable fields (required or optional) to their field bits.
+var listTransfersResponseDataItemCreatedByUserNullableFields = map[string]*big.Int{
+	"name": listTransfersResponseDataItemCreatedByUserFieldName,
+}
+
+// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 type ListTransfersResponseDataItemCreatedByUser struct {
 	// User ID.
 	ID string `json:"id" url:"id"`
@@ -3630,10 +3834,12 @@ func (l *ListTransfersResponseDataItemCreatedByUser) GetExtraProperties() map[st
 }
 
 func (l *ListTransfersResponseDataItemCreatedByUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3669,6 +3875,13 @@ func (l *ListTransfersResponseDataItemCreatedByUser) UnmarshalJSON(data []byte) 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listTransfersResponseDataItemCreatedByUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3752,6 +3965,12 @@ var (
 	listTransfersResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listTransfersResponsePageInfoNullableFields maps the wire names of ListTransfersResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listTransfersResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listTransfersResponsePageInfoFieldEndCursor,
+	"start_cursor": listTransfersResponsePageInfoFieldStartCursor,
+}
+
 type ListTransfersResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -3801,10 +4020,12 @@ func (l *ListTransfersResponsePageInfo) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListTransfersResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3847,6 +4068,13 @@ func (l *ListTransfersResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listTransfersResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3887,6 +4115,12 @@ var (
 	postTransferCompletedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postTransferCompletedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postTransferCompletedPayloadNullableFields maps the wire names of PostTransferCompletedPayload's nullable fields (required or optional) to their field bits.
+var postTransferCompletedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postTransferCompletedPayloadFieldAccountID,
+	"api_version_date": postTransferCompletedPayloadFieldAPIVersionDate,
+}
 
 type PostTransferCompletedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3977,10 +4211,12 @@ func (p *PostTransferCompletedPayload) GetExtraProperties() map[string]interface
 }
 
 func (p *PostTransferCompletedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -4057,6 +4293,13 @@ func (p *PostTransferCompletedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4109,7 +4352,6 @@ func (p PostTransferCompletedPayloadAPIVersion) Ptr() *PostTransferCompletedPayl
 	return &p
 }
 
-// A transfer of credit between two ledger accounts.
 var (
 	postTransferCompletedPayloadDataFieldAmount                     = big.NewInt(1 << 0)
 	postTransferCompletedPayloadDataFieldCreatedAt                  = big.NewInt(1 << 1)
@@ -4130,6 +4372,18 @@ var (
 	postTransferCompletedPayloadDataFieldStatus                     = big.NewInt(1 << 16)
 )
 
+// postTransferCompletedPayloadDataNullableFields maps the wire names of PostTransferCompletedPayloadData's nullable fields (required or optional) to their field bits.
+var postTransferCompletedPayloadDataNullableFields = map[string]*big.Int{
+	"created_by_user": postTransferCompletedPayloadDataFieldCreatedByUser,
+	"failed_at":       postTransferCompletedPayloadDataFieldFailedAt,
+	"failure_code":    postTransferCompletedPayloadDataFieldFailureCode,
+	"failure_reason":  postTransferCompletedPayloadDataFieldFailureReason,
+	"fee_amount":      postTransferCompletedPayloadDataFieldFeeAmount,
+	"metadata":        postTransferCompletedPayloadDataFieldMetadata,
+	"notes":           postTransferCompletedPayloadDataFieldNotes,
+}
+
+// A transfer of credit between two ledger accounts.
 type PostTransferCompletedPayloadData struct {
 	// Transfer amount.
 	Amount float64 `json:"amount" url:"amount"`
@@ -4300,10 +4554,12 @@ func (p *PostTransferCompletedPayloadData) GetExtraProperties() map[string]inter
 }
 
 func (p *PostTransferCompletedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -4445,6 +4701,13 @@ func (p *PostTransferCompletedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4479,13 +4742,18 @@ func (p *PostTransferCompletedPayloadData) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 var (
 	postTransferCompletedPayloadDataCreatedByUserFieldID       = big.NewInt(1 << 0)
 	postTransferCompletedPayloadDataCreatedByUserFieldName     = big.NewInt(1 << 1)
 	postTransferCompletedPayloadDataCreatedByUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// postTransferCompletedPayloadDataCreatedByUserNullableFields maps the wire names of PostTransferCompletedPayloadDataCreatedByUser's nullable fields (required or optional) to their field bits.
+var postTransferCompletedPayloadDataCreatedByUserNullableFields = map[string]*big.Int{
+	"name": postTransferCompletedPayloadDataCreatedByUserFieldName,
+}
+
+// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 type PostTransferCompletedPayloadDataCreatedByUser struct {
 	// User ID.
 	ID string `json:"id" url:"id"`
@@ -4530,10 +4798,12 @@ func (p *PostTransferCompletedPayloadDataCreatedByUser) GetExtraProperties() map
 }
 
 func (p *PostTransferCompletedPayloadDataCreatedByUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4569,6 +4839,13 @@ func (p *PostTransferCompletedPayloadDataCreatedByUser) UnmarshalJSON(data []byt
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataCreatedByUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4732,6 +5009,12 @@ var (
 	postTransferCompletedPayloadDataDestinationCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// postTransferCompletedPayloadDataDestinationCompanyNullableFields maps the wire names of PostTransferCompletedPayloadDataDestinationCompany's nullable fields (required or optional) to their field bits.
+var postTransferCompletedPayloadDataDestinationCompanyNullableFields = map[string]*big.Int{
+	"route": postTransferCompletedPayloadDataDestinationCompanyFieldRoute,
+	"title": postTransferCompletedPayloadDataDestinationCompanyFieldTitle,
+}
+
 type PostTransferCompletedPayloadDataDestinationCompany struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -4776,10 +5059,12 @@ func (p *PostTransferCompletedPayloadDataDestinationCompany) GetExtraProperties(
 }
 
 func (p *PostTransferCompletedPayloadDataDestinationCompany) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4815,6 +5100,13 @@ func (p *PostTransferCompletedPayloadDataDestinationCompany) UnmarshalJSON(data 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataDestinationCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4850,6 +5142,11 @@ var (
 	postTransferCompletedPayloadDataDestinationUserFieldName     = big.NewInt(1 << 1)
 	postTransferCompletedPayloadDataDestinationUserFieldUsername = big.NewInt(1 << 2)
 )
+
+// postTransferCompletedPayloadDataDestinationUserNullableFields maps the wire names of PostTransferCompletedPayloadDataDestinationUser's nullable fields (required or optional) to their field bits.
+var postTransferCompletedPayloadDataDestinationUserNullableFields = map[string]*big.Int{
+	"name": postTransferCompletedPayloadDataDestinationUserFieldName,
+}
 
 type PostTransferCompletedPayloadDataDestinationUser struct {
 	// User ID.
@@ -4895,10 +5192,12 @@ func (p *PostTransferCompletedPayloadDataDestinationUser) GetExtraProperties() m
 }
 
 func (p *PostTransferCompletedPayloadDataDestinationUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4934,6 +5233,13 @@ func (p *PostTransferCompletedPayloadDataDestinationUser) UnmarshalJSON(data []b
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataDestinationUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5117,6 +5423,12 @@ var (
 	postTransferCompletedPayloadDataOriginCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// postTransferCompletedPayloadDataOriginCompanyNullableFields maps the wire names of PostTransferCompletedPayloadDataOriginCompany's nullable fields (required or optional) to their field bits.
+var postTransferCompletedPayloadDataOriginCompanyNullableFields = map[string]*big.Int{
+	"route": postTransferCompletedPayloadDataOriginCompanyFieldRoute,
+	"title": postTransferCompletedPayloadDataOriginCompanyFieldTitle,
+}
+
 type PostTransferCompletedPayloadDataOriginCompany struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -5161,10 +5473,12 @@ func (p *PostTransferCompletedPayloadDataOriginCompany) GetExtraProperties() map
 }
 
 func (p *PostTransferCompletedPayloadDataOriginCompany) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5200,6 +5514,13 @@ func (p *PostTransferCompletedPayloadDataOriginCompany) UnmarshalJSON(data []byt
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataOriginCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5235,6 +5556,11 @@ var (
 	postTransferCompletedPayloadDataOriginUserFieldName     = big.NewInt(1 << 1)
 	postTransferCompletedPayloadDataOriginUserFieldUsername = big.NewInt(1 << 2)
 )
+
+// postTransferCompletedPayloadDataOriginUserNullableFields maps the wire names of PostTransferCompletedPayloadDataOriginUser's nullable fields (required or optional) to their field bits.
+var postTransferCompletedPayloadDataOriginUserNullableFields = map[string]*big.Int{
+	"name": postTransferCompletedPayloadDataOriginUserFieldName,
+}
 
 type PostTransferCompletedPayloadDataOriginUser struct {
 	// User ID.
@@ -5280,10 +5606,12 @@ func (p *PostTransferCompletedPayloadDataOriginUser) GetExtraProperties() map[st
 }
 
 func (p *PostTransferCompletedPayloadDataOriginUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5319,6 +5647,13 @@ func (p *PostTransferCompletedPayloadDataOriginUser) UnmarshalJSON(data []byte) 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataOriginUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5405,6 +5740,12 @@ var (
 	postTransferCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postTransferCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postTransferCreatedPayloadNullableFields maps the wire names of PostTransferCreatedPayload's nullable fields (required or optional) to their field bits.
+var postTransferCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postTransferCreatedPayloadFieldAccountID,
+	"api_version_date": postTransferCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostTransferCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -5495,10 +5836,12 @@ func (p *PostTransferCreatedPayload) GetExtraProperties() map[string]interface{}
 }
 
 func (p *PostTransferCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -5575,6 +5918,13 @@ func (p *PostTransferCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5627,7 +5977,6 @@ func (p PostTransferCreatedPayloadAPIVersion) Ptr() *PostTransferCreatedPayloadA
 	return &p
 }
 
-// A transfer of credit between two ledger accounts.
 var (
 	postTransferCreatedPayloadDataFieldAmount                     = big.NewInt(1 << 0)
 	postTransferCreatedPayloadDataFieldCreatedAt                  = big.NewInt(1 << 1)
@@ -5648,6 +5997,18 @@ var (
 	postTransferCreatedPayloadDataFieldStatus                     = big.NewInt(1 << 16)
 )
 
+// postTransferCreatedPayloadDataNullableFields maps the wire names of PostTransferCreatedPayloadData's nullable fields (required or optional) to their field bits.
+var postTransferCreatedPayloadDataNullableFields = map[string]*big.Int{
+	"created_by_user": postTransferCreatedPayloadDataFieldCreatedByUser,
+	"failed_at":       postTransferCreatedPayloadDataFieldFailedAt,
+	"failure_code":    postTransferCreatedPayloadDataFieldFailureCode,
+	"failure_reason":  postTransferCreatedPayloadDataFieldFailureReason,
+	"fee_amount":      postTransferCreatedPayloadDataFieldFeeAmount,
+	"metadata":        postTransferCreatedPayloadDataFieldMetadata,
+	"notes":           postTransferCreatedPayloadDataFieldNotes,
+}
+
+// A transfer of credit between two ledger accounts.
 type PostTransferCreatedPayloadData struct {
 	// Transfer amount.
 	Amount float64 `json:"amount" url:"amount"`
@@ -5818,10 +6179,12 @@ func (p *PostTransferCreatedPayloadData) GetExtraProperties() map[string]interfa
 }
 
 func (p *PostTransferCreatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -5963,6 +6326,13 @@ func (p *PostTransferCreatedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5997,13 +6367,18 @@ func (p *PostTransferCreatedPayloadData) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 var (
 	postTransferCreatedPayloadDataCreatedByUserFieldID       = big.NewInt(1 << 0)
 	postTransferCreatedPayloadDataCreatedByUserFieldName     = big.NewInt(1 << 1)
 	postTransferCreatedPayloadDataCreatedByUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// postTransferCreatedPayloadDataCreatedByUserNullableFields maps the wire names of PostTransferCreatedPayloadDataCreatedByUser's nullable fields (required or optional) to their field bits.
+var postTransferCreatedPayloadDataCreatedByUserNullableFields = map[string]*big.Int{
+	"name": postTransferCreatedPayloadDataCreatedByUserFieldName,
+}
+
+// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 type PostTransferCreatedPayloadDataCreatedByUser struct {
 	// User ID.
 	ID string `json:"id" url:"id"`
@@ -6048,10 +6423,12 @@ func (p *PostTransferCreatedPayloadDataCreatedByUser) GetExtraProperties() map[s
 }
 
 func (p *PostTransferCreatedPayloadDataCreatedByUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6087,6 +6464,13 @@ func (p *PostTransferCreatedPayloadDataCreatedByUser) UnmarshalJSON(data []byte)
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataCreatedByUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6250,6 +6634,12 @@ var (
 	postTransferCreatedPayloadDataDestinationCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// postTransferCreatedPayloadDataDestinationCompanyNullableFields maps the wire names of PostTransferCreatedPayloadDataDestinationCompany's nullable fields (required or optional) to their field bits.
+var postTransferCreatedPayloadDataDestinationCompanyNullableFields = map[string]*big.Int{
+	"route": postTransferCreatedPayloadDataDestinationCompanyFieldRoute,
+	"title": postTransferCreatedPayloadDataDestinationCompanyFieldTitle,
+}
+
 type PostTransferCreatedPayloadDataDestinationCompany struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -6294,10 +6684,12 @@ func (p *PostTransferCreatedPayloadDataDestinationCompany) GetExtraProperties() 
 }
 
 func (p *PostTransferCreatedPayloadDataDestinationCompany) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6333,6 +6725,13 @@ func (p *PostTransferCreatedPayloadDataDestinationCompany) UnmarshalJSON(data []
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataDestinationCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6368,6 +6767,11 @@ var (
 	postTransferCreatedPayloadDataDestinationUserFieldName     = big.NewInt(1 << 1)
 	postTransferCreatedPayloadDataDestinationUserFieldUsername = big.NewInt(1 << 2)
 )
+
+// postTransferCreatedPayloadDataDestinationUserNullableFields maps the wire names of PostTransferCreatedPayloadDataDestinationUser's nullable fields (required or optional) to their field bits.
+var postTransferCreatedPayloadDataDestinationUserNullableFields = map[string]*big.Int{
+	"name": postTransferCreatedPayloadDataDestinationUserFieldName,
+}
 
 type PostTransferCreatedPayloadDataDestinationUser struct {
 	// User ID.
@@ -6413,10 +6817,12 @@ func (p *PostTransferCreatedPayloadDataDestinationUser) GetExtraProperties() map
 }
 
 func (p *PostTransferCreatedPayloadDataDestinationUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6452,6 +6858,13 @@ func (p *PostTransferCreatedPayloadDataDestinationUser) UnmarshalJSON(data []byt
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataDestinationUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6635,6 +7048,12 @@ var (
 	postTransferCreatedPayloadDataOriginCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// postTransferCreatedPayloadDataOriginCompanyNullableFields maps the wire names of PostTransferCreatedPayloadDataOriginCompany's nullable fields (required or optional) to their field bits.
+var postTransferCreatedPayloadDataOriginCompanyNullableFields = map[string]*big.Int{
+	"route": postTransferCreatedPayloadDataOriginCompanyFieldRoute,
+	"title": postTransferCreatedPayloadDataOriginCompanyFieldTitle,
+}
+
 type PostTransferCreatedPayloadDataOriginCompany struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -6679,10 +7098,12 @@ func (p *PostTransferCreatedPayloadDataOriginCompany) GetExtraProperties() map[s
 }
 
 func (p *PostTransferCreatedPayloadDataOriginCompany) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6718,6 +7139,13 @@ func (p *PostTransferCreatedPayloadDataOriginCompany) UnmarshalJSON(data []byte)
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataOriginCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6753,6 +7181,11 @@ var (
 	postTransferCreatedPayloadDataOriginUserFieldName     = big.NewInt(1 << 1)
 	postTransferCreatedPayloadDataOriginUserFieldUsername = big.NewInt(1 << 2)
 )
+
+// postTransferCreatedPayloadDataOriginUserNullableFields maps the wire names of PostTransferCreatedPayloadDataOriginUser's nullable fields (required or optional) to their field bits.
+var postTransferCreatedPayloadDataOriginUserNullableFields = map[string]*big.Int{
+	"name": postTransferCreatedPayloadDataOriginUserFieldName,
+}
 
 type PostTransferCreatedPayloadDataOriginUser struct {
 	// User ID.
@@ -6798,10 +7231,12 @@ func (p *PostTransferCreatedPayloadDataOriginUser) GetExtraProperties() map[stri
 }
 
 func (p *PostTransferCreatedPayloadDataOriginUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6837,6 +7272,13 @@ func (p *PostTransferCreatedPayloadDataOriginUser) UnmarshalJSON(data []byte) er
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataOriginUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6923,6 +7365,12 @@ var (
 	postTransferFailedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postTransferFailedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postTransferFailedPayloadNullableFields maps the wire names of PostTransferFailedPayload's nullable fields (required or optional) to their field bits.
+var postTransferFailedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postTransferFailedPayloadFieldAccountID,
+	"api_version_date": postTransferFailedPayloadFieldAPIVersionDate,
+}
 
 type PostTransferFailedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -7013,10 +7461,12 @@ func (p *PostTransferFailedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostTransferFailedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -7093,6 +7543,13 @@ func (p *PostTransferFailedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7145,7 +7602,6 @@ func (p PostTransferFailedPayloadAPIVersion) Ptr() *PostTransferFailedPayloadAPI
 	return &p
 }
 
-// A transfer of credit between two ledger accounts.
 var (
 	postTransferFailedPayloadDataFieldAmount                     = big.NewInt(1 << 0)
 	postTransferFailedPayloadDataFieldCreatedAt                  = big.NewInt(1 << 1)
@@ -7166,6 +7622,18 @@ var (
 	postTransferFailedPayloadDataFieldStatus                     = big.NewInt(1 << 16)
 )
 
+// postTransferFailedPayloadDataNullableFields maps the wire names of PostTransferFailedPayloadData's nullable fields (required or optional) to their field bits.
+var postTransferFailedPayloadDataNullableFields = map[string]*big.Int{
+	"created_by_user": postTransferFailedPayloadDataFieldCreatedByUser,
+	"failed_at":       postTransferFailedPayloadDataFieldFailedAt,
+	"failure_code":    postTransferFailedPayloadDataFieldFailureCode,
+	"failure_reason":  postTransferFailedPayloadDataFieldFailureReason,
+	"fee_amount":      postTransferFailedPayloadDataFieldFeeAmount,
+	"metadata":        postTransferFailedPayloadDataFieldMetadata,
+	"notes":           postTransferFailedPayloadDataFieldNotes,
+}
+
+// A transfer of credit between two ledger accounts.
 type PostTransferFailedPayloadData struct {
 	// Transfer amount.
 	Amount float64 `json:"amount" url:"amount"`
@@ -7336,10 +7804,12 @@ func (p *PostTransferFailedPayloadData) GetExtraProperties() map[string]interfac
 }
 
 func (p *PostTransferFailedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -7481,6 +7951,13 @@ func (p *PostTransferFailedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7515,13 +7992,18 @@ func (p *PostTransferFailedPayloadData) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 var (
 	postTransferFailedPayloadDataCreatedByUserFieldID       = big.NewInt(1 << 0)
 	postTransferFailedPayloadDataCreatedByUserFieldName     = big.NewInt(1 << 1)
 	postTransferFailedPayloadDataCreatedByUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// postTransferFailedPayloadDataCreatedByUserNullableFields maps the wire names of PostTransferFailedPayloadDataCreatedByUser's nullable fields (required or optional) to their field bits.
+var postTransferFailedPayloadDataCreatedByUserNullableFields = map[string]*big.Int{
+	"name": postTransferFailedPayloadDataCreatedByUserFieldName,
+}
+
+// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 type PostTransferFailedPayloadDataCreatedByUser struct {
 	// User ID.
 	ID string `json:"id" url:"id"`
@@ -7566,10 +8048,12 @@ func (p *PostTransferFailedPayloadDataCreatedByUser) GetExtraProperties() map[st
 }
 
 func (p *PostTransferFailedPayloadDataCreatedByUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -7605,6 +8089,13 @@ func (p *PostTransferFailedPayloadDataCreatedByUser) UnmarshalJSON(data []byte) 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataCreatedByUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7768,6 +8259,12 @@ var (
 	postTransferFailedPayloadDataDestinationCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// postTransferFailedPayloadDataDestinationCompanyNullableFields maps the wire names of PostTransferFailedPayloadDataDestinationCompany's nullable fields (required or optional) to their field bits.
+var postTransferFailedPayloadDataDestinationCompanyNullableFields = map[string]*big.Int{
+	"route": postTransferFailedPayloadDataDestinationCompanyFieldRoute,
+	"title": postTransferFailedPayloadDataDestinationCompanyFieldTitle,
+}
+
 type PostTransferFailedPayloadDataDestinationCompany struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -7812,10 +8309,12 @@ func (p *PostTransferFailedPayloadDataDestinationCompany) GetExtraProperties() m
 }
 
 func (p *PostTransferFailedPayloadDataDestinationCompany) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -7851,6 +8350,13 @@ func (p *PostTransferFailedPayloadDataDestinationCompany) UnmarshalJSON(data []b
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataDestinationCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7886,6 +8392,11 @@ var (
 	postTransferFailedPayloadDataDestinationUserFieldName     = big.NewInt(1 << 1)
 	postTransferFailedPayloadDataDestinationUserFieldUsername = big.NewInt(1 << 2)
 )
+
+// postTransferFailedPayloadDataDestinationUserNullableFields maps the wire names of PostTransferFailedPayloadDataDestinationUser's nullable fields (required or optional) to their field bits.
+var postTransferFailedPayloadDataDestinationUserNullableFields = map[string]*big.Int{
+	"name": postTransferFailedPayloadDataDestinationUserFieldName,
+}
 
 type PostTransferFailedPayloadDataDestinationUser struct {
 	// User ID.
@@ -7931,10 +8442,12 @@ func (p *PostTransferFailedPayloadDataDestinationUser) GetExtraProperties() map[
 }
 
 func (p *PostTransferFailedPayloadDataDestinationUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -7970,6 +8483,13 @@ func (p *PostTransferFailedPayloadDataDestinationUser) UnmarshalJSON(data []byte
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataDestinationUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8153,6 +8673,12 @@ var (
 	postTransferFailedPayloadDataOriginCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// postTransferFailedPayloadDataOriginCompanyNullableFields maps the wire names of PostTransferFailedPayloadDataOriginCompany's nullable fields (required or optional) to their field bits.
+var postTransferFailedPayloadDataOriginCompanyNullableFields = map[string]*big.Int{
+	"route": postTransferFailedPayloadDataOriginCompanyFieldRoute,
+	"title": postTransferFailedPayloadDataOriginCompanyFieldTitle,
+}
+
 type PostTransferFailedPayloadDataOriginCompany struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -8197,10 +8723,12 @@ func (p *PostTransferFailedPayloadDataOriginCompany) GetExtraProperties() map[st
 }
 
 func (p *PostTransferFailedPayloadDataOriginCompany) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8236,6 +8764,13 @@ func (p *PostTransferFailedPayloadDataOriginCompany) UnmarshalJSON(data []byte) 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataOriginCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8271,6 +8806,11 @@ var (
 	postTransferFailedPayloadDataOriginUserFieldName     = big.NewInt(1 << 1)
 	postTransferFailedPayloadDataOriginUserFieldUsername = big.NewInt(1 << 2)
 )
+
+// postTransferFailedPayloadDataOriginUserNullableFields maps the wire names of PostTransferFailedPayloadDataOriginUser's nullable fields (required or optional) to their field bits.
+var postTransferFailedPayloadDataOriginUserNullableFields = map[string]*big.Int{
+	"name": postTransferFailedPayloadDataOriginUserFieldName,
+}
 
 type PostTransferFailedPayloadDataOriginUser struct {
 	// User ID.
@@ -8316,10 +8856,12 @@ func (p *PostTransferFailedPayloadDataOriginUser) GetExtraProperties() map[strin
 }
 
 func (p *PostTransferFailedPayloadDataOriginUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8355,6 +8897,13 @@ func (p *PostTransferFailedPayloadDataOriginUser) UnmarshalJSON(data []byte) err
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataOriginUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8431,7 +8980,6 @@ func (p PostTransferFailedPayloadType) Ptr() *PostTransferFailedPayloadType {
 	return &p
 }
 
-// A transfer of credit between two ledger accounts.
 var (
 	retrieveTransfersResponseFieldAmount                     = big.NewInt(1 << 0)
 	retrieveTransfersResponseFieldCreatedAt                  = big.NewInt(1 << 1)
@@ -8452,6 +9000,18 @@ var (
 	retrieveTransfersResponseFieldStatus                     = big.NewInt(1 << 16)
 )
 
+// retrieveTransfersResponseNullableFields maps the wire names of RetrieveTransfersResponse's nullable fields (required or optional) to their field bits.
+var retrieveTransfersResponseNullableFields = map[string]*big.Int{
+	"created_by_user": retrieveTransfersResponseFieldCreatedByUser,
+	"failed_at":       retrieveTransfersResponseFieldFailedAt,
+	"failure_code":    retrieveTransfersResponseFieldFailureCode,
+	"failure_reason":  retrieveTransfersResponseFieldFailureReason,
+	"fee_amount":      retrieveTransfersResponseFieldFeeAmount,
+	"metadata":        retrieveTransfersResponseFieldMetadata,
+	"notes":           retrieveTransfersResponseFieldNotes,
+}
+
+// A transfer of credit between two ledger accounts.
 type RetrieveTransfersResponse struct {
 	// Transfer amount.
 	Amount float64 `json:"amount" url:"amount"`
@@ -8622,10 +9182,12 @@ func (r *RetrieveTransfersResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (r *RetrieveTransfersResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -8767,6 +9329,13 @@ func (r *RetrieveTransfersResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8801,13 +9370,18 @@ func (r *RetrieveTransfersResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 var (
 	retrieveTransfersResponseCreatedByUserFieldID       = big.NewInt(1 << 0)
 	retrieveTransfersResponseCreatedByUserFieldName     = big.NewInt(1 << 1)
 	retrieveTransfersResponseCreatedByUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// retrieveTransfersResponseCreatedByUserNullableFields maps the wire names of RetrieveTransfersResponseCreatedByUser's nullable fields (required or optional) to their field bits.
+var retrieveTransfersResponseCreatedByUserNullableFields = map[string]*big.Int{
+	"name": retrieveTransfersResponseCreatedByUserFieldName,
+}
+
+// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
 type RetrieveTransfersResponseCreatedByUser struct {
 	// User ID.
 	ID string `json:"id" url:"id"`
@@ -8852,10 +9426,12 @@ func (r *RetrieveTransfersResponseCreatedByUser) GetExtraProperties() map[string
 }
 
 func (r *RetrieveTransfersResponseCreatedByUser) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8891,6 +9467,13 @@ func (r *RetrieveTransfersResponseCreatedByUser) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseCreatedByUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9054,6 +9637,12 @@ var (
 	retrieveTransfersResponseDestinationCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// retrieveTransfersResponseDestinationCompanyNullableFields maps the wire names of RetrieveTransfersResponseDestinationCompany's nullable fields (required or optional) to their field bits.
+var retrieveTransfersResponseDestinationCompanyNullableFields = map[string]*big.Int{
+	"route": retrieveTransfersResponseDestinationCompanyFieldRoute,
+	"title": retrieveTransfersResponseDestinationCompanyFieldTitle,
+}
+
 type RetrieveTransfersResponseDestinationCompany struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -9098,10 +9687,12 @@ func (r *RetrieveTransfersResponseDestinationCompany) GetExtraProperties() map[s
 }
 
 func (r *RetrieveTransfersResponseDestinationCompany) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -9137,6 +9728,13 @@ func (r *RetrieveTransfersResponseDestinationCompany) UnmarshalJSON(data []byte)
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseDestinationCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9172,6 +9770,11 @@ var (
 	retrieveTransfersResponseDestinationUserFieldName     = big.NewInt(1 << 1)
 	retrieveTransfersResponseDestinationUserFieldUsername = big.NewInt(1 << 2)
 )
+
+// retrieveTransfersResponseDestinationUserNullableFields maps the wire names of RetrieveTransfersResponseDestinationUser's nullable fields (required or optional) to their field bits.
+var retrieveTransfersResponseDestinationUserNullableFields = map[string]*big.Int{
+	"name": retrieveTransfersResponseDestinationUserFieldName,
+}
 
 type RetrieveTransfersResponseDestinationUser struct {
 	// User ID.
@@ -9217,10 +9820,12 @@ func (r *RetrieveTransfersResponseDestinationUser) GetExtraProperties() map[stri
 }
 
 func (r *RetrieveTransfersResponseDestinationUser) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -9256,6 +9861,13 @@ func (r *RetrieveTransfersResponseDestinationUser) UnmarshalJSON(data []byte) er
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseDestinationUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9439,6 +10051,12 @@ var (
 	retrieveTransfersResponseOriginCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// retrieveTransfersResponseOriginCompanyNullableFields maps the wire names of RetrieveTransfersResponseOriginCompany's nullable fields (required or optional) to their field bits.
+var retrieveTransfersResponseOriginCompanyNullableFields = map[string]*big.Int{
+	"route": retrieveTransfersResponseOriginCompanyFieldRoute,
+	"title": retrieveTransfersResponseOriginCompanyFieldTitle,
+}
+
 type RetrieveTransfersResponseOriginCompany struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -9483,10 +10101,12 @@ func (r *RetrieveTransfersResponseOriginCompany) GetExtraProperties() map[string
 }
 
 func (r *RetrieveTransfersResponseOriginCompany) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -9522,6 +10142,13 @@ func (r *RetrieveTransfersResponseOriginCompany) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseOriginCompanyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9557,6 +10184,11 @@ var (
 	retrieveTransfersResponseOriginUserFieldName     = big.NewInt(1 << 1)
 	retrieveTransfersResponseOriginUserFieldUsername = big.NewInt(1 << 2)
 )
+
+// retrieveTransfersResponseOriginUserNullableFields maps the wire names of RetrieveTransfersResponseOriginUser's nullable fields (required or optional) to their field bits.
+var retrieveTransfersResponseOriginUserNullableFields = map[string]*big.Int{
+	"name": retrieveTransfersResponseOriginUserFieldName,
+}
 
 type RetrieveTransfersResponseOriginUser struct {
 	// User ID.
@@ -9602,10 +10234,12 @@ func (r *RetrieveTransfersResponseOriginUser) GetExtraProperties() map[string]in
 }
 
 func (r *RetrieveTransfersResponseOriginUser) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -9641,6 +10275,13 @@ func (r *RetrieveTransfersResponseOriginUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseOriginUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }

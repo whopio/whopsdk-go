@@ -49,10 +49,12 @@ type ListEconomicIntelligenceRequest struct {
 }
 
 func (l *ListEconomicIntelligenceRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -149,6 +151,29 @@ var (
 	economicIntelligenceFieldTitle             = big.NewInt(1 << 20)
 	economicIntelligenceFieldUserFeedback      = big.NewInt(1 << 21)
 )
+
+// economicIntelligenceNullableFields maps the wire names of EconomicIntelligence's nullable fields (required or optional) to their field bits.
+var economicIntelligenceNullableFields = map[string]*big.Int{
+	"account_id":          economicIntelligenceFieldAccountID,
+	"acknowledged_at":     economicIntelligenceFieldAcknowledgedAt,
+	"action_type":         economicIntelligenceFieldActionType,
+	"ai_chat_id":          economicIntelligenceFieldAiChatID,
+	"created_at":          economicIntelligenceFieldCreatedAt,
+	"executed_at":         economicIntelligenceFieldExecutedAt,
+	"expected_tool_calls": economicIntelligenceFieldExpectedToolCalls,
+	"input":               economicIntelligenceFieldInput,
+	"prompt":              economicIntelligenceFieldPrompt,
+	"reasoning":           economicIntelligenceFieldReasoning,
+	"result_url":          economicIntelligenceFieldResultURL,
+	"run_by_user_id":      economicIntelligenceFieldRunByUserID,
+	"run_ended_at":        economicIntelligenceFieldRunEndedAt,
+	"run_started_at":      economicIntelligenceFieldRunStartedAt,
+	"sentiment":           economicIntelligenceFieldSentiment,
+	"superseded_at":       economicIntelligenceFieldSupersededAt,
+	"target_url":          economicIntelligenceFieldTargetURL,
+	"title":               economicIntelligenceFieldTitle,
+	"user_feedback":       economicIntelligenceFieldUserFeedback,
+}
 
 type EconomicIntelligence struct {
 	// ID of the account this recommendation is for, prefixed `biz_`, or null for personal onboarding.
@@ -363,10 +388,12 @@ func (e *EconomicIntelligence) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *EconomicIntelligence) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -535,6 +562,13 @@ func (e *EconomicIntelligence) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, economicIntelligenceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -572,6 +606,11 @@ var (
 	economicIntelligenceInputFieldOptions  = big.NewInt(1 << 3)
 	economicIntelligenceInputFieldTemplate = big.NewInt(1 << 4)
 )
+
+// economicIntelligenceInputNullableFields maps the wire names of EconomicIntelligenceInput's nullable fields (required or optional) to their field bits.
+var economicIntelligenceInputNullableFields = map[string]*big.Int{
+	"answer": economicIntelligenceInputFieldAnswer,
+}
 
 type EconomicIntelligenceInput struct {
 	// What Whop AI ran with: one of the options or your own text. `null` until a run starts.
@@ -634,10 +673,12 @@ func (e *EconomicIntelligenceInput) GetExtraProperties() map[string]interface{} 
 }
 
 func (e *EconomicIntelligenceInput) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetAnswer sets the Answer field and marks it as non-optional;
@@ -687,6 +728,13 @@ func (e *EconomicIntelligenceInput) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, economicIntelligenceInputNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -721,6 +769,11 @@ var (
 	economicIntelligenceOperationFieldDescription = big.NewInt(1 << 0)
 	economicIntelligenceOperationFieldToolName    = big.NewInt(1 << 1)
 )
+
+// economicIntelligenceOperationNullableFields maps the wire names of EconomicIntelligenceOperation's nullable fields (required or optional) to their field bits.
+var economicIntelligenceOperationNullableFields = map[string]*big.Int{
+	"description": economicIntelligenceOperationFieldDescription,
+}
 
 type EconomicIntelligenceOperation struct {
 	// Concise description of the operation and affected resource, or null for older recommendations.
@@ -757,10 +810,12 @@ func (e *EconomicIntelligenceOperation) GetExtraProperties() map[string]interfac
 }
 
 func (e *EconomicIntelligenceOperation) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -789,6 +844,13 @@ func (e *EconomicIntelligenceOperation) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, economicIntelligenceOperationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -999,10 +1061,12 @@ func (l *ListEconomicIntelligenceResponse) GetExtraProperties() map[string]inter
 }
 
 func (l *ListEconomicIntelligenceResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1068,6 +1132,12 @@ var (
 	listEconomicIntelligenceResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listEconomicIntelligenceResponsePageInfoNullableFields maps the wire names of ListEconomicIntelligenceResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listEconomicIntelligenceResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listEconomicIntelligenceResponsePageInfoFieldEndCursor,
+	"start_cursor": listEconomicIntelligenceResponsePageInfoFieldStartCursor,
+}
+
 type ListEconomicIntelligenceResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1117,10 +1187,12 @@ func (l *ListEconomicIntelligenceResponsePageInfo) GetExtraProperties() map[stri
 }
 
 func (l *ListEconomicIntelligenceResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1163,6 +1235,13 @@ func (l *ListEconomicIntelligenceResponsePageInfo) UnmarshalJSON(data []byte) er
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEconomicIntelligenceResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1338,10 +1417,12 @@ type UpdateEconomicIntelligenceRequest struct {
 }
 
 func (u *UpdateEconomicIntelligenceRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

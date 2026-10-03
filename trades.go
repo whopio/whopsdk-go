@@ -25,10 +25,12 @@ type CancelTradesRequest struct {
 }
 
 func (c *CancelTradesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -93,10 +95,12 @@ type CreateTradesRequest struct {
 }
 
 func (c *CreateTradesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -199,10 +203,12 @@ type ListTradesRequest struct {
 }
 
 func (l *ListTradesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -281,10 +287,12 @@ type RetrieveTradesRequest struct {
 }
 
 func (r *RetrieveTradesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -315,6 +323,20 @@ var (
 	tradeFieldUpdatedAt       = big.NewInt(1 << 17)
 	tradeFieldUserID          = big.NewInt(1 << 18)
 )
+
+// tradeNullableFields maps the wire names of Trade's nullable fields (required or optional) to their field bits.
+var tradeNullableFields = map[string]*big.Int{
+	"account_id":       tradeFieldAccountID,
+	"cancellations":    tradeFieldCancellations,
+	"completed_at":     tradeFieldCompletedAt,
+	"failure_code":     tradeFieldFailureCode,
+	"hyperliquid":      tradeFieldHyperliquid,
+	"leverage":         tradeFieldLeverage,
+	"orders":           tradeFieldOrders,
+	"requested_orders": tradeFieldRequestedOrders,
+	"trade_id":         tradeFieldTradeID,
+	"user_id":          tradeFieldUserID,
+}
 
 type Trade struct {
 	// The account that owns the trading wallet, prefixed `biz_`. `null` when a user owns it.
@@ -500,10 +522,12 @@ func (t *Trade) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *Trade) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -651,6 +675,13 @@ func (t *Trade) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -686,6 +717,11 @@ var (
 	tradeCancellationResultFieldID     = big.NewInt(1 << 1)
 	tradeCancellationResultFieldStatus = big.NewInt(1 << 2)
 )
+
+// tradeCancellationResultNullableFields maps the wire names of TradeCancellationResult's nullable fields (required or optional) to their field bits.
+var tradeCancellationResultNullableFields = map[string]*big.Int{
+	"error": tradeCancellationResultFieldError,
+}
 
 type TradeCancellationResult struct {
 	// The provider's rejection reason, or `null` when the order was canceled.
@@ -731,10 +767,12 @@ func (t *TradeCancellationResult) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TradeCancellationResult) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetError sets the Error field and marks it as non-optional;
@@ -770,6 +808,13 @@ func (t *TradeCancellationResult) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradeCancellationResultNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -853,6 +898,11 @@ var (
 	tradeHyperliquidFieldBuilderFeeBps = big.NewInt(1 << 0)
 )
 
+// tradeHyperliquidNullableFields maps the wire names of TradeHyperliquid's nullable fields (required or optional) to their field bits.
+var tradeHyperliquidNullableFields = map[string]*big.Int{
+	"builder_fee_bps": tradeHyperliquidFieldBuilderFeeBps,
+}
+
 type TradeHyperliquid struct {
 	// Builder fee Whop charged on the submitted orders, in basis points as a decimal string, or `null` for trades that place no orders.
 	BuilderFeeBps *string `json:"builder_fee_bps,omitempty" url:"builder_fee_bps,omitempty"`
@@ -879,10 +929,12 @@ func (t *TradeHyperliquid) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TradeHyperliquid) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetBuilderFeeBps sets the BuilderFeeBps field and marks it as non-optional;
@@ -904,6 +956,13 @@ func (t *TradeHyperliquid) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradeHyperliquidNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -960,6 +1019,12 @@ var (
 	tradeLeverageFieldMarket     = big.NewInt(1 << 2)
 )
 
+// tradeLeverageNullableFields maps the wire names of TradeLeverage's nullable fields (required or optional) to their field bits.
+var tradeLeverageNullableFields = map[string]*big.Int{
+	"leverage":    tradeLeverageFieldLeverage,
+	"margin_mode": tradeLeverageFieldMarginMode,
+}
+
 type TradeLeverage struct {
 	// Requested leverage multiplier, such as `10` for 10x, or `null` if the request didn't contain a whole number.
 	Leverage *int `json:"leverage,omitempty" url:"leverage,omitempty"`
@@ -1004,10 +1069,12 @@ func (t *TradeLeverage) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TradeLeverage) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetLeverage sets the Leverage field and marks it as non-optional;
@@ -1043,6 +1110,13 @@ func (t *TradeLeverage) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradeLeverageNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1158,6 +1232,16 @@ var (
 	tradeOrderResultFieldSize                = big.NewInt(1 << 13)
 	tradeOrderResultFieldStatus              = big.NewInt(1 << 14)
 )
+
+// tradeOrderResultNullableFields maps the wire names of TradeOrderResult's nullable fields (required or optional) to their field bits.
+var tradeOrderResultNullableFields = map[string]*big.Int{
+	"average_price":          tradeOrderResultFieldAveragePrice,
+	"error":                  tradeOrderResultFieldError,
+	"filled_size":            tradeOrderResultFieldFilledSize,
+	"hyperliquid":            tradeOrderResultFieldHyperliquid,
+	"parent_client_order_id": tradeOrderResultFieldParentClientOrderID,
+	"provider_order_id":      tradeOrderResultFieldProviderOrderID,
+}
 
 type TradeOrderResult struct {
 	// Average fill price in USD for an immediate fill, or `null` when nothing filled.
@@ -1308,10 +1392,12 @@ func (t *TradeOrderResult) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TradeOrderResult) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetAveragePrice sets the AveragePrice field and marks it as non-optional;
@@ -1431,6 +1517,13 @@ func (t *TradeOrderResult) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradeOrderResultNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1587,6 +1680,15 @@ var (
 	tradeRequestedOrderFieldTriggerPrice        = big.NewInt(1 << 7)
 )
 
+// tradeRequestedOrderNullableFields maps the wire names of TradeRequestedOrder's nullable fields (required or optional) to their field bits.
+var tradeRequestedOrderNullableFields = map[string]*big.Int{
+	"order_type":             tradeRequestedOrderFieldOrderType,
+	"parent_client_order_id": tradeRequestedOrderFieldParentClientOrderID,
+	"price":                  tradeRequestedOrderFieldPrice,
+	"side":                   tradeRequestedOrderFieldSide,
+	"trigger_price":          tradeRequestedOrderFieldTriggerPrice,
+}
+
 type TradeRequestedOrder struct {
 	// Client order ID Whop assigned to the order, prefixed `trdcloid_`. Matches the order in `orders` and on the provider.
 	ClientOrderID string `json:"client_order_id" url:"client_order_id"`
@@ -1676,10 +1778,12 @@ func (t *TradeRequestedOrder) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TradeRequestedOrder) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetClientOrderID sets the ClientOrderID field and marks it as non-optional;
@@ -1750,6 +1854,13 @@ func (t *TradeRequestedOrder) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradeRequestedOrderNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1898,6 +2009,15 @@ var (
 	createTradesRequestOrdersItemFieldTriggerPrice = big.NewInt(1 << 10)
 )
 
+// createTradesRequestOrdersItemNullableFields maps the wire names of CreateTradesRequestOrdersItem's nullable fields (required or optional) to their field bits.
+var createTradesRequestOrdersItemNullableFields = map[string]*big.Int{
+	"price":         createTradesRequestOrdersItemFieldPrice,
+	"slippage_bps":  createTradesRequestOrdersItemFieldSlippageBps,
+	"stop_loss":     createTradesRequestOrdersItemFieldStopLoss,
+	"take_profit":   createTradesRequestOrdersItemFieldTakeProfit,
+	"trigger_price": createTradesRequestOrdersItemFieldTriggerPrice,
+}
+
 type CreateTradesRequestOrdersItem struct {
 	// Perpetual market on the selected provider, such as `ETH`.
 	Market    string                                  `json:"market" url:"market"`
@@ -2012,10 +2132,12 @@ func (c *CreateTradesRequestOrdersItem) GetExtraProperties() map[string]interfac
 }
 
 func (c *CreateTradesRequestOrdersItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetMarket sets the Market field and marks it as non-optional;
@@ -2107,6 +2229,13 @@ func (c *CreateTradesRequestOrdersItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTradesRequestOrdersItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2192,6 +2321,11 @@ var (
 	createTradesRequestOrdersItemStopLossFieldTriggerPrice = big.NewInt(1 << 1)
 )
 
+// createTradesRequestOrdersItemStopLossNullableFields maps the wire names of CreateTradesRequestOrdersItemStopLoss's nullable fields (required or optional) to their field bits.
+var createTradesRequestOrdersItemStopLossNullableFields = map[string]*big.Int{
+	"limit_price": createTradesRequestOrdersItemStopLossFieldLimitPrice,
+}
+
 type CreateTradesRequestOrdersItemStopLoss struct {
 	// Limit price once triggered, as a decimal string. Omit or pass `null` for a market order with the request's slippage cap.
 	LimitPrice *string `json:"limit_price,omitempty" url:"limit_price,omitempty"`
@@ -2227,10 +2361,12 @@ func (c *CreateTradesRequestOrdersItemStopLoss) GetExtraProperties() map[string]
 }
 
 func (c *CreateTradesRequestOrdersItemStopLoss) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetLimitPrice sets the LimitPrice field and marks it as non-optional;
@@ -2259,6 +2395,13 @@ func (c *CreateTradesRequestOrdersItemStopLoss) UnmarshalJSON(data []byte) error
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTradesRequestOrdersItemStopLossNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2293,6 +2436,11 @@ var (
 	createTradesRequestOrdersItemTakeProfitFieldLimitPrice   = big.NewInt(1 << 0)
 	createTradesRequestOrdersItemTakeProfitFieldTriggerPrice = big.NewInt(1 << 1)
 )
+
+// createTradesRequestOrdersItemTakeProfitNullableFields maps the wire names of CreateTradesRequestOrdersItemTakeProfit's nullable fields (required or optional) to their field bits.
+var createTradesRequestOrdersItemTakeProfitNullableFields = map[string]*big.Int{
+	"limit_price": createTradesRequestOrdersItemTakeProfitFieldLimitPrice,
+}
 
 type CreateTradesRequestOrdersItemTakeProfit struct {
 	// Limit price once triggered, as a decimal string. Omit or pass `null` for a market order with the request's slippage cap.
@@ -2329,10 +2477,12 @@ func (c *CreateTradesRequestOrdersItemTakeProfit) GetExtraProperties() map[strin
 }
 
 func (c *CreateTradesRequestOrdersItemTakeProfit) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetLimitPrice sets the LimitPrice field and marks it as non-optional;
@@ -2361,6 +2511,13 @@ func (c *CreateTradesRequestOrdersItemTakeProfit) UnmarshalJSON(data []byte) err
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTradesRequestOrdersItemTakeProfitNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2574,10 +2731,12 @@ func (l *ListTradesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListTradesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2643,6 +2802,12 @@ var (
 	listTradesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listTradesResponsePageInfoNullableFields maps the wire names of ListTradesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listTradesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listTradesResponsePageInfoFieldEndCursor,
+	"start_cursor": listTradesResponsePageInfoFieldStartCursor,
+}
+
 type ListTradesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2692,10 +2857,12 @@ func (l *ListTradesResponsePageInfo) GetExtraProperties() map[string]interface{}
 }
 
 func (l *ListTradesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2738,6 +2905,13 @@ func (l *ListTradesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listTradesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2837,10 +3011,12 @@ type UpdateLeverageTradesRequest struct {
 }
 
 func (u *UpdateLeverageTradesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;

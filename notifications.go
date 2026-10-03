@@ -25,10 +25,12 @@ type BadgesNotificationsRequest struct {
 }
 
 func (b *BadgesNotificationsRequest) require(field *big.Int) {
-	if b.explicitFields == nil {
-		b.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if b.explicitFields != nil {
+		next.Set(b.explicitFields)
 	}
-	b.explicitFields.Or(b.explicitFields, field)
+	next.Or(next, field)
+	b.explicitFields = next
 }
 
 // SetExperienceIDs sets the ExperienceIDs field and marks it as non-optional;
@@ -79,10 +81,12 @@ type CreateNotificationsRequest struct {
 }
 
 func (c *CreateNotificationsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -190,10 +194,12 @@ type ListNotificationsRequest struct {
 }
 
 func (l *ListNotificationsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetUnread sets the Unread field and marks it as non-optional;
@@ -254,10 +260,12 @@ type MarkReadNotificationsRequest struct {
 }
 
 func (m *MarkReadNotificationsRequest) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetAll sets the All field and marks it as non-optional;
@@ -308,10 +316,12 @@ type RetrieveNotificationsRequest struct {
 }
 
 func (r *RetrieveNotificationsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -336,6 +346,17 @@ var (
 	notificationFieldSubject       = big.NewInt(1 << 11)
 	notificationFieldTopic         = big.NewInt(1 << 12)
 )
+
+// notificationNullableFields maps the wire names of Notification's nullable fields (required or optional) to their field bits.
+var notificationNullableFields = map[string]*big.Int{
+	"account":     notificationFieldAccount,
+	"experience":  notificationFieldExperience,
+	"iframe_link": notificationFieldIframeLink,
+	"link":        notificationFieldLink,
+	"rest_path":   notificationFieldRestPath,
+	"sender":      notificationFieldSender,
+	"topic":       notificationFieldTopic,
+}
 
 type Notification struct {
 	// Account the notification belongs to. `null` when the notification is not associated with an account.
@@ -471,10 +492,12 @@ func (n *Notification) GetExtraProperties() map[string]interface{} {
 }
 
 func (n *Notification) require(field *big.Int) {
-	if n.explicitFields == nil {
-		n.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if n.explicitFields != nil {
+		next.Set(n.explicitFields)
 	}
-	n.explicitFields.Or(n.explicitFields, field)
+	next.Or(next, field)
+	n.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -580,6 +603,13 @@ func (n *Notification) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	n.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, notificationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		n.require(presentFields)
+	}
 	n.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -616,6 +646,12 @@ var (
 	notificationAccountFieldRoute   = big.NewInt(1 << 2)
 	notificationAccountFieldTitle   = big.NewInt(1 << 3)
 )
+
+// notificationAccountNullableFields maps the wire names of NotificationAccount's nullable fields (required or optional) to their field bits.
+var notificationAccountNullableFields = map[string]*big.Int{
+	"logo_url": notificationAccountFieldLogoURL,
+	"route":    notificationAccountFieldRoute,
+}
 
 type NotificationAccount struct {
 	// Account ID, prefixed `biz_`.
@@ -670,10 +706,12 @@ func (n *NotificationAccount) GetExtraProperties() map[string]interface{} {
 }
 
 func (n *NotificationAccount) require(field *big.Int) {
-	if n.explicitFields == nil {
-		n.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if n.explicitFields != nil {
+		next.Set(n.explicitFields)
 	}
-	n.explicitFields.Or(n.explicitFields, field)
+	next.Or(next, field)
+	n.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -716,6 +754,13 @@ func (n *NotificationAccount) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	n.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, notificationAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		n.require(presentFields)
+	}
 	n.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -753,6 +798,12 @@ var (
 	notificationBadgeFieldImportantCount = big.NewInt(1 << 3)
 	notificationBadgeFieldLastViewedAt   = big.NewInt(1 << 4)
 )
+
+// notificationBadgeNullableFields maps the wire names of NotificationBadge's nullable fields (required or optional) to their field bits.
+var notificationBadgeNullableFields = map[string]*big.Int{
+	"account_id":     notificationBadgeFieldAccountID,
+	"last_viewed_at": notificationBadgeFieldLastViewedAt,
+}
 
 type NotificationBadge struct {
 	// Account the experience belongs to, prefixed `biz_`.
@@ -816,10 +867,12 @@ func (n *NotificationBadge) GetExtraProperties() map[string]interface{} {
 }
 
 func (n *NotificationBadge) require(field *big.Int) {
-	if n.explicitFields == nil {
-		n.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if n.explicitFields != nil {
+		next.Set(n.explicitFields)
 	}
-	n.explicitFields.Or(n.explicitFields, field)
+	next.Or(next, field)
+	n.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -869,6 +922,13 @@ func (n *NotificationBadge) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	n.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, notificationBadgeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		n.require(presentFields)
+	}
 	n.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -904,6 +964,12 @@ var (
 	notificationExperienceFieldID   = big.NewInt(1 << 1)
 	notificationExperienceFieldName = big.NewInt(1 << 2)
 )
+
+// notificationExperienceNullableFields maps the wire names of NotificationExperience's nullable fields (required or optional) to their field bits.
+var notificationExperienceNullableFields = map[string]*big.Int{
+	"app":  notificationExperienceFieldApp,
+	"name": notificationExperienceFieldName,
+}
 
 type NotificationExperience struct {
 	// App the experience belongs to.
@@ -949,10 +1015,12 @@ func (n *NotificationExperience) GetExtraProperties() map[string]interface{} {
 }
 
 func (n *NotificationExperience) require(field *big.Int) {
-	if n.explicitFields == nil {
-		n.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if n.explicitFields != nil {
+		next.Set(n.explicitFields)
 	}
-	n.explicitFields.Or(n.explicitFields, field)
+	next.Or(next, field)
+	n.explicitFields = next
 }
 
 // SetApp sets the App field and marks it as non-optional;
@@ -988,6 +1056,13 @@ func (n *NotificationExperience) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	n.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, notificationExperienceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		n.require(presentFields)
+	}
 	n.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1058,10 +1133,12 @@ func (n *NotificationExperienceApp) GetExtraProperties() map[string]interface{} 
 }
 
 func (n *NotificationExperienceApp) require(field *big.Int) {
-	if n.explicitFields == nil {
-		n.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if n.explicitFields != nil {
+		next.Set(n.explicitFields)
 	}
-	n.explicitFields.Or(n.explicitFields, field)
+	next.Or(next, field)
+	n.explicitFields = next
 }
 
 // SetIconURL sets the IconURL field and marks it as non-optional;
@@ -1126,6 +1203,11 @@ var (
 	notificationSenderFieldUsername = big.NewInt(1 << 2)
 )
 
+// notificationSenderNullableFields maps the wire names of NotificationSender's nullable fields (required or optional) to their field bits.
+var notificationSenderNullableFields = map[string]*big.Int{
+	"name": notificationSenderFieldName,
+}
+
 type NotificationSender struct {
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
@@ -1170,10 +1252,12 @@ func (n *NotificationSender) GetExtraProperties() map[string]interface{} {
 }
 
 func (n *NotificationSender) require(field *big.Int) {
-	if n.explicitFields == nil {
-		n.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if n.explicitFields != nil {
+		next.Set(n.explicitFields)
 	}
-	n.explicitFields.Or(n.explicitFields, field)
+	next.Or(next, field)
+	n.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1209,6 +1293,13 @@ func (n *NotificationSender) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	n.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, notificationSenderNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		n.require(presentFields)
+	}
 	n.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1299,10 +1390,12 @@ func (n *NotificationTopicSummary) GetExtraProperties() map[string]interface{} {
 }
 
 func (n *NotificationTopicSummary) require(field *big.Int) {
-	if n.explicitFields == nil {
-		n.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if n.explicitFields != nil {
+		next.Set(n.explicitFields)
 	}
-	n.explicitFields.Or(n.explicitFields, field)
+	next.Or(next, field)
+	n.explicitFields = next
 }
 
 // SetDefaultPreferenceValue sets the DefaultPreferenceValue field and marks it as non-optional;
@@ -1430,10 +1523,12 @@ func (b *BadgesNotificationsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (b *BadgesNotificationsResponse) require(field *big.Int) {
-	if b.explicitFields == nil {
-		b.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if b.explicitFields != nil {
+		next.Set(b.explicitFields)
 	}
-	b.explicitFields.Or(b.explicitFields, field)
+	next.Or(next, field)
+	b.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1514,10 +1609,12 @@ func (c *CreateNotificationsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (c *CreateNotificationsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -1607,10 +1704,12 @@ func (l *ListNotificationsResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListNotificationsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1676,6 +1775,12 @@ var (
 	listNotificationsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listNotificationsResponsePageInfoNullableFields maps the wire names of ListNotificationsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listNotificationsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listNotificationsResponsePageInfoFieldEndCursor,
+	"start_cursor": listNotificationsResponsePageInfoFieldStartCursor,
+}
+
 type ListNotificationsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1725,10 +1830,12 @@ func (l *ListNotificationsResponsePageInfo) GetExtraProperties() map[string]inte
 }
 
 func (l *ListNotificationsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1771,6 +1878,13 @@ func (l *ListNotificationsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listNotificationsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1830,10 +1944,12 @@ func (m *MarkReadNotificationsResponse) GetExtraProperties() map[string]interfac
 }
 
 func (m *MarkReadNotificationsResponse) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

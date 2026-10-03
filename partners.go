@@ -23,10 +23,12 @@ type LeaderboardPartnersRequest struct {
 }
 
 func (l *LeaderboardPartnersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetPeriod sets the Period field and marks it as non-optional;
@@ -82,10 +84,12 @@ type ReferredUsersPartnersRequest struct {
 }
 
 func (r *ReferredUsersPartnersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetUserID sets the UserID field and marks it as non-optional;
@@ -185,10 +189,12 @@ type RetrievePartnersRequest struct {
 }
 
 func (r *RetrievePartnersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -208,6 +214,13 @@ var (
 	partnerFieldVerificationWaitlistJoined = big.NewInt(1 << 6)
 	partnerFieldWhopPartnerVerifiedAt      = big.NewInt(1 << 7)
 )
+
+// partnerNullableFields maps the wire names of Partner's nullable fields (required or optional) to their field bits.
+var partnerNullableFields = map[string]*big.Int{
+	"joined_at":                partnerFieldJoinedAt,
+	"referring_partner":        partnerFieldReferringPartner,
+	"whop_partner_verified_at": partnerFieldWhopPartnerVerifiedAt,
+}
 
 type Partner struct {
 	// Whether the user finished the partner certification course: every visible quiz and knowledge check has a passing result, or, when the course has none, every visible lesson is marked completed.
@@ -297,10 +310,12 @@ func (p *Partner) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *Partner) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCertificationComplete sets the CertificationComplete field and marks it as non-optional;
@@ -371,6 +386,13 @@ func (p *Partner) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, partnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -441,10 +463,12 @@ func (p *PartnerPayoutDuration) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PartnerPayoutDuration) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetUnit sets the Unit field and marks it as non-optional;
@@ -566,10 +590,12 @@ func (p *PartnerPayoutRate) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PartnerPayoutRate) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetIncomeSource sets the IncomeSource field and marks it as non-optional;
@@ -706,10 +732,12 @@ func (p *PartnerPayoutTier) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PartnerPayoutTier) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDuration sets the Duration field and marks it as non-optional;
@@ -838,10 +866,12 @@ func (c *CreatePartnersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreatePartnersResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetReferralLink sets the ReferralLink field and marks it as non-optional;
@@ -945,6 +975,11 @@ var (
 	leaderboardPartnersResponseFieldNearby  = big.NewInt(1 << 2)
 )
 
+// leaderboardPartnersResponseNullableFields maps the wire names of LeaderboardPartnersResponse's nullable fields (required or optional) to their field bits.
+var leaderboardPartnersResponseNullableFields = map[string]*big.Int{
+	"me": leaderboardPartnersResponseFieldMe,
+}
+
 type LeaderboardPartnersResponse struct {
 	// The top referrers by total earnings, best first.
 	Leaders []*LeaderboardPartnersResponseLeadersItem `json:"leaders" url:"leaders"`
@@ -989,10 +1024,12 @@ func (l *LeaderboardPartnersResponse) GetExtraProperties() map[string]interface{
 }
 
 func (l *LeaderboardPartnersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetLeaders sets the Leaders field and marks it as non-optional;
@@ -1028,6 +1065,13 @@ func (l *LeaderboardPartnersResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leaderboardPartnersResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1065,6 +1109,11 @@ var (
 	leaderboardPartnersResponseLeadersItemFieldTotalVolumeUsd         = big.NewInt(1 << 3)
 	leaderboardPartnersResponseLeadersItemFieldUser                   = big.NewInt(1 << 4)
 )
+
+// leaderboardPartnersResponseLeadersItemNullableFields maps the wire names of LeaderboardPartnersResponseLeadersItem's nullable fields (required or optional) to their field bits.
+var leaderboardPartnersResponseLeadersItemNullableFields = map[string]*big.Int{
+	"user": leaderboardPartnersResponseLeadersItemFieldUser,
+}
 
 type LeaderboardPartnersResponseLeadersItem struct {
 	// When the referrer's earliest partner business became active.
@@ -1128,10 +1177,12 @@ func (l *LeaderboardPartnersResponseLeadersItem) GetExtraProperties() map[string
 }
 
 func (l *LeaderboardPartnersResponseLeadersItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFirstReferralStartedAt sets the FirstReferralStartedAt field and marks it as non-optional;
@@ -1187,6 +1238,13 @@ func (l *LeaderboardPartnersResponseLeadersItem) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leaderboardPartnersResponseLeadersItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1219,7 +1277,6 @@ func (l *LeaderboardPartnersResponseLeadersItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The ranked referrer. Identity fields (id, name, username, profile_picture) are returned only on the caller's own entry; other referrers expose coarse location only.
 var (
 	leaderboardPartnersResponseLeadersItemUserFieldCity           = big.NewInt(1 << 0)
 	leaderboardPartnersResponseLeadersItemUserFieldCountry        = big.NewInt(1 << 1)
@@ -1229,6 +1286,14 @@ var (
 	leaderboardPartnersResponseLeadersItemUserFieldUsername       = big.NewInt(1 << 5)
 )
 
+// leaderboardPartnersResponseLeadersItemUserNullableFields maps the wire names of LeaderboardPartnersResponseLeadersItemUser's nullable fields (required or optional) to their field bits.
+var leaderboardPartnersResponseLeadersItemUserNullableFields = map[string]*big.Int{
+	"city":    leaderboardPartnersResponseLeadersItemUserFieldCity,
+	"country": leaderboardPartnersResponseLeadersItemUserFieldCountry,
+	"name":    leaderboardPartnersResponseLeadersItemUserFieldName,
+}
+
+// The ranked referrer. Identity fields (id, name, username, profile_picture) are returned only on the caller's own entry; other referrers expose coarse location only.
 type LeaderboardPartnersResponseLeadersItemUser struct {
 	// The city where the referrer is located, derived from their IP address. Null if location sharing is disabled.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1300,10 +1365,12 @@ func (l *LeaderboardPartnersResponseLeadersItemUser) GetExtraProperties() map[st
 }
 
 func (l *LeaderboardPartnersResponseLeadersItemUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1360,6 +1427,13 @@ func (l *LeaderboardPartnersResponseLeadersItemUser) UnmarshalJSON(data []byte) 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leaderboardPartnersResponseLeadersItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1390,11 +1464,11 @@ func (l *LeaderboardPartnersResponseLeadersItemUser) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user's profile picture. Present only on the caller's own entry.
 var (
 	leaderboardPartnersResponseLeadersItemUserProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture. Present only on the caller's own entry.
 type LeaderboardPartnersResponseLeadersItemUserProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -1421,10 +1495,12 @@ func (l *LeaderboardPartnersResponseLeadersItemUserProfilePicture) GetExtraPrope
 }
 
 func (l *LeaderboardPartnersResponseLeadersItemUserProfilePicture) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1476,7 +1552,6 @@ func (l *LeaderboardPartnersResponseLeadersItemUserProfilePicture) String() stri
 	return fmt.Sprintf("%#v", l)
 }
 
-// The caller's own standing; null when the caller has no referral earnings.
 var (
 	leaderboardPartnersResponseMeFieldFirstReferralStartedAt = big.NewInt(1 << 0)
 	leaderboardPartnersResponseMeFieldRank                   = big.NewInt(1 << 1)
@@ -1485,6 +1560,12 @@ var (
 	leaderboardPartnersResponseMeFieldUser                   = big.NewInt(1 << 4)
 )
 
+// leaderboardPartnersResponseMeNullableFields maps the wire names of LeaderboardPartnersResponseMe's nullable fields (required or optional) to their field bits.
+var leaderboardPartnersResponseMeNullableFields = map[string]*big.Int{
+	"user": leaderboardPartnersResponseMeFieldUser,
+}
+
+// The caller's own standing; null when the caller has no referral earnings.
 type LeaderboardPartnersResponseMe struct {
 	// When the referrer's earliest partner business became active.
 	FirstReferralStartedAt time.Time `json:"first_referral_started_at" url:"first_referral_started_at"`
@@ -1547,10 +1628,12 @@ func (l *LeaderboardPartnersResponseMe) GetExtraProperties() map[string]interfac
 }
 
 func (l *LeaderboardPartnersResponseMe) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFirstReferralStartedAt sets the FirstReferralStartedAt field and marks it as non-optional;
@@ -1606,6 +1689,13 @@ func (l *LeaderboardPartnersResponseMe) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leaderboardPartnersResponseMeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1638,7 +1728,6 @@ func (l *LeaderboardPartnersResponseMe) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The ranked referrer. Identity fields (id, name, username, profile_picture) are returned only on the caller's own entry; other referrers expose coarse location only.
 var (
 	leaderboardPartnersResponseMeUserFieldCity           = big.NewInt(1 << 0)
 	leaderboardPartnersResponseMeUserFieldCountry        = big.NewInt(1 << 1)
@@ -1648,6 +1737,14 @@ var (
 	leaderboardPartnersResponseMeUserFieldUsername       = big.NewInt(1 << 5)
 )
 
+// leaderboardPartnersResponseMeUserNullableFields maps the wire names of LeaderboardPartnersResponseMeUser's nullable fields (required or optional) to their field bits.
+var leaderboardPartnersResponseMeUserNullableFields = map[string]*big.Int{
+	"city":    leaderboardPartnersResponseMeUserFieldCity,
+	"country": leaderboardPartnersResponseMeUserFieldCountry,
+	"name":    leaderboardPartnersResponseMeUserFieldName,
+}
+
+// The ranked referrer. Identity fields (id, name, username, profile_picture) are returned only on the caller's own entry; other referrers expose coarse location only.
 type LeaderboardPartnersResponseMeUser struct {
 	// The city where the referrer is located, derived from their IP address. Null if location sharing is disabled.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1719,10 +1816,12 @@ func (l *LeaderboardPartnersResponseMeUser) GetExtraProperties() map[string]inte
 }
 
 func (l *LeaderboardPartnersResponseMeUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1779,6 +1878,13 @@ func (l *LeaderboardPartnersResponseMeUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leaderboardPartnersResponseMeUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1809,11 +1915,11 @@ func (l *LeaderboardPartnersResponseMeUser) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user's profile picture. Present only on the caller's own entry.
 var (
 	leaderboardPartnersResponseMeUserProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture. Present only on the caller's own entry.
 type LeaderboardPartnersResponseMeUserProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -1840,10 +1946,12 @@ func (l *LeaderboardPartnersResponseMeUserProfilePicture) GetExtraProperties() m
 }
 
 func (l *LeaderboardPartnersResponseMeUserProfilePicture) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1902,6 +2010,11 @@ var (
 	leaderboardPartnersResponseNearbyItemFieldTotalVolumeUsd         = big.NewInt(1 << 3)
 	leaderboardPartnersResponseNearbyItemFieldUser                   = big.NewInt(1 << 4)
 )
+
+// leaderboardPartnersResponseNearbyItemNullableFields maps the wire names of LeaderboardPartnersResponseNearbyItem's nullable fields (required or optional) to their field bits.
+var leaderboardPartnersResponseNearbyItemNullableFields = map[string]*big.Int{
+	"user": leaderboardPartnersResponseNearbyItemFieldUser,
+}
 
 type LeaderboardPartnersResponseNearbyItem struct {
 	// When the referrer's earliest partner business became active.
@@ -1965,10 +2078,12 @@ func (l *LeaderboardPartnersResponseNearbyItem) GetExtraProperties() map[string]
 }
 
 func (l *LeaderboardPartnersResponseNearbyItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFirstReferralStartedAt sets the FirstReferralStartedAt field and marks it as non-optional;
@@ -2024,6 +2139,13 @@ func (l *LeaderboardPartnersResponseNearbyItem) UnmarshalJSON(data []byte) error
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leaderboardPartnersResponseNearbyItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2056,7 +2178,6 @@ func (l *LeaderboardPartnersResponseNearbyItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The ranked referrer. Identity fields (id, name, username, profile_picture) are returned only on the caller's own entry; other referrers expose coarse location only.
 var (
 	leaderboardPartnersResponseNearbyItemUserFieldCity           = big.NewInt(1 << 0)
 	leaderboardPartnersResponseNearbyItemUserFieldCountry        = big.NewInt(1 << 1)
@@ -2066,6 +2187,14 @@ var (
 	leaderboardPartnersResponseNearbyItemUserFieldUsername       = big.NewInt(1 << 5)
 )
 
+// leaderboardPartnersResponseNearbyItemUserNullableFields maps the wire names of LeaderboardPartnersResponseNearbyItemUser's nullable fields (required or optional) to their field bits.
+var leaderboardPartnersResponseNearbyItemUserNullableFields = map[string]*big.Int{
+	"city":    leaderboardPartnersResponseNearbyItemUserFieldCity,
+	"country": leaderboardPartnersResponseNearbyItemUserFieldCountry,
+	"name":    leaderboardPartnersResponseNearbyItemUserFieldName,
+}
+
+// The ranked referrer. Identity fields (id, name, username, profile_picture) are returned only on the caller's own entry; other referrers expose coarse location only.
 type LeaderboardPartnersResponseNearbyItemUser struct {
 	// The city where the referrer is located, derived from their IP address. Null if location sharing is disabled.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -2137,10 +2266,12 @@ func (l *LeaderboardPartnersResponseNearbyItemUser) GetExtraProperties() map[str
 }
 
 func (l *LeaderboardPartnersResponseNearbyItemUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -2197,6 +2328,13 @@ func (l *LeaderboardPartnersResponseNearbyItemUser) UnmarshalJSON(data []byte) e
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leaderboardPartnersResponseNearbyItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2227,11 +2365,11 @@ func (l *LeaderboardPartnersResponseNearbyItemUser) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user's profile picture. Present only on the caller's own entry.
 var (
 	leaderboardPartnersResponseNearbyItemUserProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture. Present only on the caller's own entry.
 type LeaderboardPartnersResponseNearbyItemUserProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -2258,10 +2396,12 @@ func (l *LeaderboardPartnersResponseNearbyItemUserProfilePicture) GetExtraProper
 }
 
 func (l *LeaderboardPartnersResponseNearbyItemUserProfilePicture) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -2414,10 +2554,12 @@ func (r *ReferredUsersPartnersResponse) GetExtraProperties() map[string]interfac
 }
 
 func (r *ReferredUsersPartnersResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2563,10 +2705,12 @@ func (r *ReferredUsersPartnersResponseDataItem) GetExtraProperties() map[string]
 }
 
 func (r *ReferredUsersPartnersResponseDataItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBusinessCount sets the BusinessCount field and marks it as non-optional;
@@ -2678,6 +2822,14 @@ var (
 	referredUsersPartnersResponseDataItemUserFieldUsername       = big.NewInt(1 << 6)
 )
 
+// referredUsersPartnersResponseDataItemUserNullableFields maps the wire names of ReferredUsersPartnersResponseDataItemUser's nullable fields (required or optional) to their field bits.
+var referredUsersPartnersResponseDataItemUserNullableFields = map[string]*big.Int{
+	"city":    referredUsersPartnersResponseDataItemUserFieldCity,
+	"country": referredUsersPartnersResponseDataItemUserFieldCountry,
+	"email":   referredUsersPartnersResponseDataItemUserFieldEmail,
+	"name":    referredUsersPartnersResponseDataItemUserFieldName,
+}
+
 type ReferredUsersPartnersResponseDataItemUser struct {
 	City    *string `json:"city,omitempty" url:"city,omitempty"`
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
@@ -2752,10 +2904,12 @@ func (r *ReferredUsersPartnersResponseDataItemUser) GetExtraProperties() map[str
 }
 
 func (r *ReferredUsersPartnersResponseDataItemUser) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -2819,6 +2973,13 @@ func (r *ReferredUsersPartnersResponseDataItemUser) UnmarshalJSON(data []byte) e
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, referredUsersPartnersResponseDataItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2853,6 +3014,11 @@ var (
 	referredUsersPartnersResponseDataItemUserProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// referredUsersPartnersResponseDataItemUserProfilePictureNullableFields maps the wire names of ReferredUsersPartnersResponseDataItemUserProfilePicture's nullable fields (required or optional) to their field bits.
+var referredUsersPartnersResponseDataItemUserProfilePictureNullableFields = map[string]*big.Int{
+	"url": referredUsersPartnersResponseDataItemUserProfilePictureFieldURL,
+}
+
 type ReferredUsersPartnersResponseDataItemUserProfilePicture struct {
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
 
@@ -2878,10 +3044,12 @@ func (r *ReferredUsersPartnersResponseDataItemUserProfilePicture) GetExtraProper
 }
 
 func (r *ReferredUsersPartnersResponseDataItemUserProfilePicture) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -2903,6 +3071,13 @@ func (r *ReferredUsersPartnersResponseDataItemUserProfilePicture) UnmarshalJSON(
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, referredUsersPartnersResponseDataItemUserProfilePictureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2939,6 +3114,12 @@ var (
 	referredUsersPartnersResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
 	referredUsersPartnersResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
+
+// referredUsersPartnersResponsePageInfoNullableFields maps the wire names of ReferredUsersPartnersResponsePageInfo's nullable fields (required or optional) to their field bits.
+var referredUsersPartnersResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   referredUsersPartnersResponsePageInfoFieldEndCursor,
+	"start_cursor": referredUsersPartnersResponsePageInfoFieldStartCursor,
+}
 
 type ReferredUsersPartnersResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
@@ -2989,10 +3170,12 @@ func (r *ReferredUsersPartnersResponsePageInfo) GetExtraProperties() map[string]
 }
 
 func (r *ReferredUsersPartnersResponsePageInfo) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3035,6 +3218,13 @@ func (r *ReferredUsersPartnersResponsePageInfo) UnmarshalJSON(data []byte) error
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, referredUsersPartnersResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }

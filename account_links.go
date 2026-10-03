@@ -32,10 +32,12 @@ type CreateAccountLinksRequest struct {
 }
 
 func (c *CreateAccountLinksRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -87,12 +89,12 @@ func (c *CreateAccountLinksRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-// A temporary, time-limited URL that grants a user access to an external account management page.
 var (
 	accountLinkFieldExpiresAt = big.NewInt(1 << 0)
 	accountLinkFieldURL       = big.NewInt(1 << 1)
 )
 
+// A temporary, time-limited URL that grants a user access to an external account management page.
 type AccountLink struct {
 	// The timestamp after which this account link URL is no longer valid.
 	ExpiresAt time.Time `json:"expires_at" url:"expires_at"`
@@ -128,10 +130,12 @@ func (a *AccountLink) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountLink) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExpiresAt sets the ExpiresAt field and marks it as non-optional;

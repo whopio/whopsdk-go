@@ -38,10 +38,12 @@ type ListCourseStudentsRequest struct {
 }
 
 func (l *ListCourseStudentsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -99,10 +101,12 @@ type RetrieveCourseStudentsRequest struct {
 }
 
 func (r *RetrieveCourseStudentsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -112,7 +116,6 @@ func (r *RetrieveCourseStudentsRequest) SetID(id string) {
 	r.require(retrieveCourseStudentsRequestFieldID)
 }
 
-// An enrollment record for a student in a course, including progress and completion metrics.
 var (
 	courseStudentFieldCompletedLessonsCount = big.NewInt(1 << 0)
 	courseStudentFieldCompletionRate        = big.NewInt(1 << 1)
@@ -124,6 +127,7 @@ var (
 	courseStudentFieldUser                  = big.NewInt(1 << 7)
 )
 
+// An enrollment record for a student in a course, including progress and completion metrics.
 type CourseStudent struct {
 	// The total number of lessons this student has marked as completed in the course.
 	CompletedLessonsCount int `json:"completed_lessons_count" url:"completed_lessons_count"`
@@ -213,10 +217,12 @@ func (c *CourseStudent) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseStudent) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCompletedLessonsCount sets the CompletedLessonsCount field and marks it as non-optional;
@@ -329,13 +335,18 @@ func (c *CourseStudent) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The course this student is enrolled in.
 var (
 	courseStudentCourseFieldExperience = big.NewInt(1 << 0)
 	courseStudentCourseFieldID         = big.NewInt(1 << 1)
 	courseStudentCourseFieldTitle      = big.NewInt(1 << 2)
 )
 
+// courseStudentCourseNullableFields maps the wire names of CourseStudentCourse's nullable fields (required or optional) to their field bits.
+var courseStudentCourseNullableFields = map[string]*big.Int{
+	"title": courseStudentCourseFieldTitle,
+}
+
+// The course this student is enrolled in.
 type CourseStudentCourse struct {
 	// The parent experience that this course belongs to.
 	Experience *CourseStudentCourseExperience `json:"experience" url:"experience"`
@@ -380,10 +391,12 @@ func (c *CourseStudentCourse) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseStudentCourse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetExperience sets the Experience field and marks it as non-optional;
@@ -419,6 +432,13 @@ func (c *CourseStudentCourse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseStudentCourseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -449,11 +469,11 @@ func (c *CourseStudentCourse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The parent experience that this course belongs to.
 var (
 	courseStudentCourseExperienceFieldID = big.NewInt(1 << 0)
 )
 
+// The parent experience that this course belongs to.
 type CourseStudentCourseExperience struct {
 	// The unique identifier for the experience.
 	ID string `json:"id" url:"id"`
@@ -480,10 +500,12 @@ func (c *CourseStudentCourseExperience) GetExtraProperties() map[string]interfac
 }
 
 func (c *CourseStudentCourseExperience) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -535,7 +557,6 @@ func (c *CourseStudentCourseExperience) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// An enrollment record for a student in a course, including progress and completion metrics.
 var (
 	courseStudentListItemFieldCompletedLessonsCount = big.NewInt(1 << 0)
 	courseStudentListItemFieldCompletionRate        = big.NewInt(1 << 1)
@@ -546,6 +567,7 @@ var (
 	courseStudentListItemFieldUser                  = big.NewInt(1 << 6)
 )
 
+// An enrollment record for a student in a course, including progress and completion metrics.
 type CourseStudentListItem struct {
 	// The total number of lessons this student has marked as completed in the course.
 	CompletedLessonsCount int `json:"completed_lessons_count" url:"completed_lessons_count"`
@@ -626,10 +648,12 @@ func (c *CourseStudentListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseStudentListItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCompletedLessonsCount sets the CompletedLessonsCount field and marks it as non-optional;
@@ -735,13 +759,18 @@ func (c *CourseStudentListItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The user profile of the enrolled student.
 var (
 	courseStudentListItemUserFieldID       = big.NewInt(1 << 0)
 	courseStudentListItemUserFieldName     = big.NewInt(1 << 1)
 	courseStudentListItemUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// courseStudentListItemUserNullableFields maps the wire names of CourseStudentListItemUser's nullable fields (required or optional) to their field bits.
+var courseStudentListItemUserNullableFields = map[string]*big.Int{
+	"name": courseStudentListItemUserFieldName,
+}
+
+// The user profile of the enrolled student.
 type CourseStudentListItemUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -786,10 +815,12 @@ func (c *CourseStudentListItemUser) GetExtraProperties() map[string]interface{} 
 }
 
 func (c *CourseStudentListItemUser) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -825,6 +856,13 @@ func (c *CourseStudentListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseStudentListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -855,13 +893,18 @@ func (c *CourseStudentListItemUser) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The user profile of the enrolled student.
 var (
 	courseStudentUserFieldID       = big.NewInt(1 << 0)
 	courseStudentUserFieldName     = big.NewInt(1 << 1)
 	courseStudentUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// courseStudentUserNullableFields maps the wire names of CourseStudentUser's nullable fields (required or optional) to their field bits.
+var courseStudentUserNullableFields = map[string]*big.Int{
+	"name": courseStudentUserFieldName,
+}
+
+// The user profile of the enrolled student.
 type CourseStudentUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -906,10 +949,12 @@ func (c *CourseStudentUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseStudentUser) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -945,6 +990,13 @@ func (c *CourseStudentUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseStudentUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -975,12 +1027,12 @@ func (c *CourseStudentUser) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for CourseStudentType.
 var (
 	listCourseStudentsResponseFieldData     = big.NewInt(1 << 0)
 	listCourseStudentsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for CourseStudentType.
 type ListCourseStudentsResponse struct {
 	// A list of nodes.
 	Data []*CourseStudentListItem `json:"data" url:"data"`
@@ -1016,10 +1068,12 @@ func (l *ListCourseStudentsResponse) GetExtraProperties() map[string]interface{}
 }
 
 func (l *ListCourseStudentsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

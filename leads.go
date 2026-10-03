@@ -35,10 +35,12 @@ type CreateLeadsRequest struct {
 }
 
 func (c *CreateLeadsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -131,10 +133,12 @@ type ListLeadsRequest struct {
 }
 
 func (l *ListLeadsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -206,10 +210,12 @@ type RetrieveLeadsRequest struct {
 }
 
 func (r *RetrieveLeadsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -219,7 +225,6 @@ func (r *RetrieveLeadsRequest) SetID(id string) {
 	r.require(retrieveLeadsRequestFieldID)
 }
 
-// A prospective customer who has expressed interest in a company or product but has not yet purchased.
 var (
 	leadFieldCreatedAt = big.NewInt(1 << 0)
 	leadFieldID        = big.NewInt(1 << 1)
@@ -231,6 +236,15 @@ var (
 	leadFieldUser      = big.NewInt(1 << 7)
 )
 
+// leadNullableFields maps the wire names of Lead's nullable fields (required or optional) to their field bits.
+var leadNullableFields = map[string]*big.Int{
+	"member":   leadFieldMember,
+	"metadata": leadFieldMetadata,
+	"product":  leadFieldProduct,
+	"referrer": leadFieldReferrer,
+}
+
+// A prospective customer who has expressed interest in a company or product but has not yet purchased.
 type Lead struct {
 	// The datetime the lead was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -320,10 +334,12 @@ func (l *Lead) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *Lead) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -402,6 +418,13 @@ func (l *Lead) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -436,7 +459,6 @@ func (l *Lead) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// A prospective customer who has expressed interest in a company or product but has not yet purchased.
 var (
 	leadListItemFieldCreatedAt = big.NewInt(1 << 0)
 	leadListItemFieldID        = big.NewInt(1 << 1)
@@ -448,6 +470,15 @@ var (
 	leadListItemFieldUser      = big.NewInt(1 << 7)
 )
 
+// leadListItemNullableFields maps the wire names of LeadListItem's nullable fields (required or optional) to their field bits.
+var leadListItemNullableFields = map[string]*big.Int{
+	"member":   leadListItemFieldMember,
+	"metadata": leadListItemFieldMetadata,
+	"product":  leadListItemFieldProduct,
+	"referrer": leadListItemFieldReferrer,
+}
+
+// A prospective customer who has expressed interest in a company or product but has not yet purchased.
 type LeadListItem struct {
 	// The datetime the lead was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -537,10 +568,12 @@ func (l *LeadListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LeadListItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -619,6 +652,13 @@ func (l *LeadListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leadListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -653,11 +693,11 @@ func (l *LeadListItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The company member record if this lead has converted into a paying customer. Null if the lead has not converted.
 var (
 	leadListItemMemberFieldID = big.NewInt(1 << 0)
 )
 
+// The company member record if this lead has converted into a paying customer. Null if the lead has not converted.
 type LeadListItemMember struct {
 	// The unique identifier for the company member.
 	ID string `json:"id" url:"id"`
@@ -684,10 +724,12 @@ func (l *LeadListItemMember) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LeadListItemMember) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -739,12 +781,12 @@ func (l *LeadListItemMember) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The product the lead expressed interest in. Null if the lead is not associated with a specific product.
 var (
 	leadListItemProductFieldID    = big.NewInt(1 << 0)
 	leadListItemProductFieldTitle = big.NewInt(1 << 1)
 )
 
+// The product the lead expressed interest in. Null if the lead is not associated with a specific product.
 type LeadListItemProduct struct {
 	// The unique identifier for the product.
 	ID string `json:"id" url:"id"`
@@ -780,10 +822,12 @@ func (l *LeadListItemProduct) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LeadListItemProduct) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -842,7 +886,6 @@ func (l *LeadListItemProduct) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user account associated with this lead.
 var (
 	leadListItemUserFieldEmail    = big.NewInt(1 << 0)
 	leadListItemUserFieldID       = big.NewInt(1 << 1)
@@ -850,6 +893,13 @@ var (
 	leadListItemUserFieldUsername = big.NewInt(1 << 3)
 )
 
+// leadListItemUserNullableFields maps the wire names of LeadListItemUser's nullable fields (required or optional) to their field bits.
+var leadListItemUserNullableFields = map[string]*big.Int{
+	"email": leadListItemUserFieldEmail,
+	"name":  leadListItemUserFieldName,
+}
+
+// The user account associated with this lead.
 type LeadListItemUser struct {
 	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -903,10 +953,12 @@ func (l *LeadListItemUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LeadListItemUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -949,6 +1001,13 @@ func (l *LeadListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leadListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -979,11 +1038,11 @@ func (l *LeadListItemUser) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The company member record if this lead has converted into a paying customer. Null if the lead has not converted.
 var (
 	leadMemberFieldID = big.NewInt(1 << 0)
 )
 
+// The company member record if this lead has converted into a paying customer. Null if the lead has not converted.
 type LeadMember struct {
 	// The unique identifier for the company member.
 	ID string `json:"id" url:"id"`
@@ -1010,10 +1069,12 @@ func (l *LeadMember) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LeadMember) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1065,12 +1126,12 @@ func (l *LeadMember) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The product the lead expressed interest in. Null if the lead is not associated with a specific product.
 var (
 	leadProductFieldID    = big.NewInt(1 << 0)
 	leadProductFieldTitle = big.NewInt(1 << 1)
 )
 
+// The product the lead expressed interest in. Null if the lead is not associated with a specific product.
 type LeadProduct struct {
 	// The unique identifier for the product.
 	ID string `json:"id" url:"id"`
@@ -1106,10 +1167,12 @@ func (l *LeadProduct) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LeadProduct) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1168,7 +1231,6 @@ func (l *LeadProduct) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user account associated with this lead.
 var (
 	leadUserFieldEmail    = big.NewInt(1 << 0)
 	leadUserFieldID       = big.NewInt(1 << 1)
@@ -1176,6 +1238,13 @@ var (
 	leadUserFieldUsername = big.NewInt(1 << 3)
 )
 
+// leadUserNullableFields maps the wire names of LeadUser's nullable fields (required or optional) to their field bits.
+var leadUserNullableFields = map[string]*big.Int{
+	"email": leadUserFieldEmail,
+	"name":  leadUserFieldName,
+}
+
+// The user account associated with this lead.
 type LeadUser struct {
 	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -1229,10 +1298,12 @@ func (l *LeadUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LeadUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -1275,6 +1346,13 @@ func (l *LeadUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, leadUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1305,12 +1383,12 @@ func (l *LeadUser) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The connection type for Lead.
 var (
 	listLeadsResponseFieldData     = big.NewInt(1 << 0)
 	listLeadsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for Lead.
 type ListLeadsResponse struct {
 	// A list of nodes.
 	Data []*LeadListItem `json:"data" url:"data"`
@@ -1346,10 +1424,12 @@ func (l *ListLeadsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListLeadsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1427,10 +1507,12 @@ type UpdateLeadsRequest struct {
 }
 
 func (u *UpdateLeadsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

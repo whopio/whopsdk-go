@@ -41,10 +41,12 @@ type CreateAppsRequest struct {
 }
 
 func (c *CreateAppsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -130,10 +132,12 @@ type DeleteAppsRequest struct {
 }
 
 func (d *DeleteAppsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -159,10 +163,12 @@ type DeployAppsRequest struct {
 }
 
 func (d *DeployAppsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -249,10 +255,12 @@ type ListAppsRequest struct {
 }
 
 func (l *ListAppsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -383,10 +391,12 @@ type LogsAppsRequest struct {
 }
 
 func (l *LogsAppsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -465,10 +475,12 @@ type RetrieveAppsRequest struct {
 }
 
 func (r *RetrieveAppsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -520,6 +532,33 @@ var (
 	appFieldStatus                    = big.NewInt(1 << 38)
 	appFieldVerified                  = big.NewInt(1 << 39)
 )
+
+// appNullableFields maps the wire names of App's nullable fields (required or optional) to their field bits.
+var appNullableFields = map[string]*big.Int{
+	"api_key":                  appFieldAPIKey,
+	"app_store_description":    appFieldAppStoreDescription,
+	"banner_image":             appFieldBannerImage,
+	"base_url":                 appFieldBaseURL,
+	"dashboard_path":           appFieldDashboardPath,
+	"default_api_key":          appFieldDefaultAPIKey,
+	"deployment":               appFieldDeployment,
+	"description":              appFieldDescription,
+	"discover_path":            appFieldDiscoverPath,
+	"domains":                  appFieldDomains,
+	"experience_path":          appFieldExperiencePath,
+	"hosted_url":               appFieldHostedURL,
+	"marketplace_status":       appFieldMarketplaceStatus,
+	"openapi_path":             appFieldOpenapiPath,
+	"origin":                   appFieldOrigin,
+	"preview_token":            appFieldPreviewToken,
+	"product_id":               appFieldProductID,
+	"production_android_build": appFieldProductionAndroidBuild,
+	"production_ios_build":     appFieldProductionIosBuild,
+	"production_web_build":     appFieldProductionWebBuild,
+	"route":                    appFieldRoute,
+	"secrets":                  appFieldSecrets,
+	"skills_path":              appFieldSkillsPath,
+}
 
 type App struct {
 	// The account that owns the app.
@@ -891,10 +930,12 @@ func (a *App) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *App) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -1189,6 +1230,13 @@ func (a *App) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1269,10 +1317,12 @@ func (a *AppAPIKey) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppAPIKey) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -1400,10 +1450,12 @@ func (a *AppBannerImage) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppBannerImage) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1461,6 +1513,11 @@ var (
 	appCreatorFieldUsername = big.NewInt(1 << 2)
 )
 
+// appCreatorNullableFields maps the wire names of AppCreator's nullable fields (required or optional) to their field bits.
+var appCreatorNullableFields = map[string]*big.Int{
+	"name": appCreatorFieldName,
+}
+
 type AppCreator struct {
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
@@ -1505,10 +1562,12 @@ func (a *AppCreator) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppCreator) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1544,6 +1603,13 @@ func (a *AppCreator) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appCreatorNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1580,6 +1646,12 @@ var (
 	appDefaultAPIKeyFieldObfuscatedSecretKey = big.NewInt(1 << 2)
 	appDefaultAPIKeyFieldSecretKey           = big.NewInt(1 << 3)
 )
+
+// appDefaultAPIKeyNullableFields maps the wire names of AppDefaultAPIKey's nullable fields (required or optional) to their field bits.
+var appDefaultAPIKeyNullableFields = map[string]*big.Int{
+	"name":       appDefaultAPIKeyFieldName,
+	"secret_key": appDefaultAPIKeyFieldSecretKey,
+}
 
 type AppDefaultAPIKey struct {
 	// API key ID, prefixed `apik_`.
@@ -1634,10 +1706,12 @@ func (a *AppDefaultAPIKey) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppDefaultAPIKey) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1680,6 +1754,13 @@ func (a *AppDefaultAPIKey) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appDefaultAPIKeyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1724,6 +1805,19 @@ var (
 	appDeploymentFieldStatus               = big.NewInt(1 << 10)
 	appDeploymentFieldURL                  = big.NewInt(1 << 11)
 )
+
+// appDeploymentNullableFields maps the wire names of AppDeployment's nullable fields (required or optional) to their field bits.
+var appDeploymentNullableFields = map[string]*big.Int{
+	"build_id":               appDeploymentFieldBuildID,
+	"error":                  appDeploymentFieldError,
+	"estimated_duration_ms":  appDeploymentFieldEstimatedDurationMs,
+	"estimated_remaining_ms": appDeploymentFieldEstimatedRemainingMs,
+	"finished_at":            appDeploymentFieldFinishedAt,
+	"phase":                  appDeploymentFieldPhase,
+	"progress":               appDeploymentFieldProgress,
+	"started_at":             appDeploymentFieldStartedAt,
+	"url":                    appDeploymentFieldURL,
+}
 
 type AppDeployment struct {
 	// The app being deployed, prefixed `app_`.
@@ -1850,10 +1944,12 @@ func (a *AppDeployment) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppDeployment) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAppID sets the AppID field and marks it as non-optional;
@@ -1952,6 +2048,13 @@ func (a *AppDeployment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appDeploymentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2105,10 +2208,12 @@ func (a *AppDomain) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppDomain) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetDomain sets the Domain field and marks it as non-optional;
@@ -2361,10 +2466,12 @@ func (a *AppIcon) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppIcon) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -2442,6 +2549,22 @@ var (
 	appListItemFieldStatus                    = big.NewInt(1 << 22)
 	appListItemFieldVerified                  = big.NewInt(1 << 23)
 )
+
+// appListItemNullableFields maps the wire names of AppListItem's nullable fields (required or optional) to their field bits.
+var appListItemNullableFields = map[string]*big.Int{
+	"banner_image":    appListItemFieldBannerImage,
+	"base_url":        appListItemFieldBaseURL,
+	"dashboard_path":  appListItemFieldDashboardPath,
+	"description":     appListItemFieldDescription,
+	"discover_path":   appListItemFieldDiscoverPath,
+	"domains":         appListItemFieldDomains,
+	"experience_path": appListItemFieldExperiencePath,
+	"hosted_url":      appListItemFieldHostedURL,
+	"openapi_path":    appListItemFieldOpenapiPath,
+	"origin":          appListItemFieldOrigin,
+	"route":           appListItemFieldRoute,
+	"skills_path":     appListItemFieldSkillsPath,
+}
 
 type AppListItem struct {
 	// The account that owns the app.
@@ -2673,10 +2796,12 @@ func (a *AppListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppListItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -2859,6 +2984,13 @@ func (a *AppListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3004,6 +3136,13 @@ var (
 	appProductionBuildFieldStatus    = big.NewInt(1 << 4)
 )
 
+// appProductionBuildNullableFields maps the wire names of AppProductionBuild's nullable fields (required or optional) to their field bits.
+var appProductionBuildNullableFields = map[string]*big.Int{
+	"checksum":   appProductionBuildFieldChecksum,
+	"file_url":   appProductionBuildFieldFileURL,
+	"source_url": appProductionBuildFieldSourceURL,
+}
+
 type AppProductionBuild struct {
 	// Client-generated checksum of the build file, used to verify file integrity.
 	Checksum *string `json:"checksum,omitempty" url:"checksum,omitempty"`
@@ -3066,10 +3205,12 @@ func (a *AppProductionBuild) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppProductionBuild) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetChecksum sets the Checksum field and marks it as non-optional;
@@ -3119,6 +3260,13 @@ func (a *AppProductionBuild) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appProductionBuildNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3184,6 +3332,11 @@ var (
 	appRequestedPermissionFieldPermissionAction = big.NewInt(1 << 2)
 )
 
+// appRequestedPermissionNullableFields maps the wire names of AppRequestedPermission's nullable fields (required or optional) to their field bits.
+var appRequestedPermissionNullableFields = map[string]*big.Int{
+	"justification": appRequestedPermissionFieldJustification,
+}
+
 type AppRequestedPermission struct {
 	// Whether the app requires the permission to be granted on install, as opposed to requesting it optionally.
 	IsRequired bool `json:"is_required" url:"is_required"`
@@ -3228,10 +3381,12 @@ func (a *AppRequestedPermission) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppRequestedPermission) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetIsRequired sets the IsRequired field and marks it as non-optional;
@@ -3267,6 +3422,13 @@ func (a *AppRequestedPermission) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appRequestedPermissionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3337,10 +3499,12 @@ func (a *AppRequestedPermissionAction) GetExtraProperties() map[string]interface
 }
 
 func (a *AppRequestedPermissionAction) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -3477,12 +3641,12 @@ func (c CreateAppsRequestAppType) Ptr() *CreateAppsRequestAppType {
 	return &c
 }
 
-// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 var (
 	createAppsRequestIconFieldDirectUploadID = big.NewInt(1 << 0)
 	createAppsRequestIconFieldID             = big.NewInt(1 << 1)
 )
 
+// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 type CreateAppsRequestIcon struct {
 	// The signed id of a completed direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -3518,10 +3682,12 @@ func (c *CreateAppsRequestIcon) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreateAppsRequestIcon) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3620,10 +3786,12 @@ func (d *DeleteAppsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAppsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -3841,10 +4009,12 @@ func (l *ListAppsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAppsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3910,6 +4080,12 @@ var (
 	listAppsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAppsResponsePageInfoNullableFields maps the wire names of ListAppsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAppsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAppsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAppsResponsePageInfoFieldStartCursor,
+}
+
 type ListAppsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -3959,10 +4135,12 @@ func (l *ListAppsResponsePageInfo) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAppsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -4005,6 +4183,13 @@ func (l *ListAppsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAppsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4104,10 +4289,12 @@ func (l *LogsAppsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LogsAppsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -4183,6 +4370,15 @@ var (
 	logsAppsResponseDataItemFieldTruncated      = big.NewInt(1 << 13)
 	logsAppsResponseDataItemFieldWallTimeMs     = big.NewInt(1 << 14)
 )
+
+// logsAppsResponseDataItemNullableFields maps the wire names of LogsAppsResponseDataItem's nullable fields (required or optional) to their field bits.
+var logsAppsResponseDataItemNullableFields = map[string]*big.Int{
+	"outcome":         logsAppsResponseDataItemFieldOutcome,
+	"request_method":  logsAppsResponseDataItemFieldRequestMethod,
+	"request_path":    logsAppsResponseDataItemFieldRequestPath,
+	"response_status": logsAppsResponseDataItemFieldResponseStatus,
+	"stack":           logsAppsResponseDataItemFieldStack,
+}
 
 type LogsAppsResponseDataItem struct {
 	AppBuildID     string                         `json:"app_build_id" url:"app_build_id"`
@@ -4321,10 +4517,12 @@ func (l *LogsAppsResponseDataItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LogsAppsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAppBuildID sets the AppBuildID field and marks it as non-optional;
@@ -4450,6 +4648,13 @@ func (l *LogsAppsResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, logsAppsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4545,6 +4750,12 @@ var (
 	logsAppsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// logsAppsResponsePageInfoNullableFields maps the wire names of LogsAppsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var logsAppsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   logsAppsResponsePageInfoFieldEndCursor,
+	"start_cursor": logsAppsResponsePageInfoFieldStartCursor,
+}
+
 type LogsAppsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -4594,10 +4805,12 @@ func (l *LogsAppsResponsePageInfo) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LogsAppsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -4640,6 +4853,13 @@ func (l *LogsAppsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, logsAppsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4702,12 +4922,12 @@ func (u UpdateAppsRequestAppType) Ptr() *UpdateAppsRequestAppType {
 	return &u
 }
 
-// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 var (
 	updateAppsRequestIconFieldDirectUploadID = big.NewInt(1 << 0)
 	updateAppsRequestIconFieldID             = big.NewInt(1 << 1)
 )
 
+// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 type UpdateAppsRequestIcon struct {
 	// The signed id of a completed direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -4743,10 +4963,12 @@ func (u *UpdateAppsRequestIcon) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateAppsRequestIcon) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4904,10 +5126,12 @@ func (u *UpdatePermissionsAppsRequestRequestedPermissionsItem) GetExtraPropertie
 }
 
 func (u *UpdatePermissionsAppsRequestRequestedPermissionsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -5046,10 +5270,12 @@ type UpdateAppsRequest struct {
 }
 
 func (u *UpdateAppsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5236,10 +5462,12 @@ type UpdatePermissionsAppsRequest struct {
 }
 
 func (u *UpdatePermissionsAppsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

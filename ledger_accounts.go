@@ -23,10 +23,12 @@ type RetrieveLedgerAccountsRequest struct {
 }
 
 func (r *RetrieveLedgerAccountsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -36,7 +38,6 @@ func (r *RetrieveLedgerAccountsRequest) SetID(id string) {
 	r.require(retrieveLedgerAccountsRequestFieldID)
 }
 
-// A ledger account represents a financial account on Whop that can hold many balances.
 var (
 	ledgerAccountFieldBalances               = big.NewInt(1 << 0)
 	ledgerAccountFieldID                     = big.NewInt(1 << 1)
@@ -50,6 +51,16 @@ var (
 	ledgerAccountFieldTreasuryBalance        = big.NewInt(1 << 9)
 )
 
+// ledgerAccountNullableFields maps the wire names of LedgerAccount's nullable fields (required or optional) to their field bits.
+var ledgerAccountNullableFields = map[string]*big.Int{
+	"payments_approval_status": ledgerAccountFieldPaymentsApprovalStatus,
+	"payout_account_details":   ledgerAccountFieldPayoutAccountDetails,
+	"settlement_time_at":       ledgerAccountFieldSettlementTimeAt,
+	"transfer_fee":             ledgerAccountFieldTransferFee,
+	"treasury_balance":         ledgerAccountFieldTreasuryBalance,
+}
+
+// A ledger account represents a financial account on Whop that can hold many balances.
 type LedgerAccount struct {
 	// The balances associated with the account.
 	Balances []*LedgerAccountBalancesItem `json:"balances" url:"balances"`
@@ -157,10 +168,12 @@ func (l *LedgerAccount) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LedgerAccount) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBalances sets the Balances field and marks it as non-optional;
@@ -251,6 +264,13 @@ func (l *LedgerAccount) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -283,7 +303,6 @@ func (l *LedgerAccount) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// A cached balance for a LedgerAccount in respect to a currency.
 var (
 	ledgerAccountBalancesItemFieldBalance        = big.NewInt(1 << 0)
 	ledgerAccountBalancesItemFieldCurrency       = big.NewInt(1 << 1)
@@ -291,6 +310,7 @@ var (
 	ledgerAccountBalancesItemFieldReserveBalance = big.NewInt(1 << 3)
 )
 
+// A cached balance for a LedgerAccount in respect to a currency.
 type LedgerAccountBalancesItem struct {
 	// The amount of the balance.
 	Balance float64 `json:"balance" url:"balance"`
@@ -344,10 +364,12 @@ func (l *LedgerAccountBalancesItem) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *LedgerAccountBalancesItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBalance sets the Balance field and marks it as non-optional;
@@ -549,13 +571,13 @@ func (l *LedgerAccountOwner) validate() error {
 	return nil
 }
 
-// A company on Whop.
 var (
 	ledgerAccountOwnerCompanyFieldID    = big.NewInt(1 << 0)
 	ledgerAccountOwnerCompanyFieldRoute = big.NewInt(1 << 1)
 	ledgerAccountOwnerCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// A company on Whop.
 type LedgerAccountOwnerCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -600,10 +622,12 @@ func (l *LedgerAccountOwnerCompany) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *LedgerAccountOwnerCompany) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -669,13 +693,18 @@ func (l *LedgerAccountOwnerCompany) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// A user account on Whop.
 var (
 	ledgerAccountOwnerUserFieldID       = big.NewInt(1 << 0)
 	ledgerAccountOwnerUserFieldName     = big.NewInt(1 << 1)
 	ledgerAccountOwnerUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// ledgerAccountOwnerUserNullableFields maps the wire names of LedgerAccountOwnerUser's nullable fields (required or optional) to their field bits.
+var ledgerAccountOwnerUserNullableFields = map[string]*big.Int{
+	"name": ledgerAccountOwnerUserFieldName,
+}
+
+// A user account on Whop.
 type LedgerAccountOwnerUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -720,10 +749,12 @@ func (l *LedgerAccountOwnerUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LedgerAccountOwnerUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -759,6 +790,13 @@ func (l *LedgerAccountOwnerUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerAccountOwnerUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -789,7 +827,6 @@ func (l *LedgerAccountOwnerUser) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The payout account associated with the LedgerAccount, if any.
 var (
 	ledgerAccountPayoutAccountDetailsFieldAddress                = big.NewInt(1 << 0)
 	ledgerAccountPayoutAccountDetailsFieldBusinessName           = big.NewInt(1 << 1)
@@ -801,6 +838,18 @@ var (
 	ledgerAccountPayoutAccountDetailsFieldStatus                 = big.NewInt(1 << 7)
 )
 
+// ledgerAccountPayoutAccountDetailsNullableFields maps the wire names of LedgerAccountPayoutAccountDetails's nullable fields (required or optional) to their field bits.
+var ledgerAccountPayoutAccountDetailsNullableFields = map[string]*big.Int{
+	"address":                 ledgerAccountPayoutAccountDetailsFieldAddress,
+	"business_name":           ledgerAccountPayoutAccountDetailsFieldBusinessName,
+	"business_representative": ledgerAccountPayoutAccountDetailsFieldBusinessRepresentative,
+	"email":                   ledgerAccountPayoutAccountDetailsFieldEmail,
+	"latest_verification":     ledgerAccountPayoutAccountDetailsFieldLatestVerification,
+	"phone":                   ledgerAccountPayoutAccountDetailsFieldPhone,
+	"status":                  ledgerAccountPayoutAccountDetailsFieldStatus,
+}
+
+// The payout account associated with the LedgerAccount, if any.
 type LedgerAccountPayoutAccountDetails struct {
 	// The physical address associated with this payout account
 	Address *LedgerAccountPayoutAccountDetailsAddress `json:"address,omitempty" url:"address,omitempty"`
@@ -890,10 +939,12 @@ func (l *LedgerAccountPayoutAccountDetails) GetExtraProperties() map[string]inte
 }
 
 func (l *LedgerAccountPayoutAccountDetails) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -964,6 +1015,13 @@ func (l *LedgerAccountPayoutAccountDetails) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerAccountPayoutAccountDetailsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -994,7 +1052,6 @@ func (l *LedgerAccountPayoutAccountDetails) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The physical address associated with this payout account
 var (
 	ledgerAccountPayoutAccountDetailsAddressFieldCity       = big.NewInt(1 << 0)
 	ledgerAccountPayoutAccountDetailsAddressFieldCountry    = big.NewInt(1 << 1)
@@ -1004,6 +1061,17 @@ var (
 	ledgerAccountPayoutAccountDetailsAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// ledgerAccountPayoutAccountDetailsAddressNullableFields maps the wire names of LedgerAccountPayoutAccountDetailsAddress's nullable fields (required or optional) to their field bits.
+var ledgerAccountPayoutAccountDetailsAddressNullableFields = map[string]*big.Int{
+	"city":        ledgerAccountPayoutAccountDetailsAddressFieldCity,
+	"country":     ledgerAccountPayoutAccountDetailsAddressFieldCountry,
+	"line1":       ledgerAccountPayoutAccountDetailsAddressFieldLine1,
+	"line2":       ledgerAccountPayoutAccountDetailsAddressFieldLine2,
+	"postal_code": ledgerAccountPayoutAccountDetailsAddressFieldPostalCode,
+	"state":       ledgerAccountPayoutAccountDetailsAddressFieldState,
+}
+
+// The physical address associated with this payout account
 type LedgerAccountPayoutAccountDetailsAddress struct {
 	// The city of the address.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1075,10 +1143,12 @@ func (l *LedgerAccountPayoutAccountDetailsAddress) GetExtraProperties() map[stri
 }
 
 func (l *LedgerAccountPayoutAccountDetailsAddress) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1135,6 +1205,13 @@ func (l *LedgerAccountPayoutAccountDetailsAddress) UnmarshalJSON(data []byte) er
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerAccountPayoutAccountDetailsAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1165,7 +1242,6 @@ func (l *LedgerAccountPayoutAccountDetailsAddress) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The business representative for this payout account
 var (
 	ledgerAccountPayoutAccountDetailsBusinessRepresentativeFieldDateOfBirth = big.NewInt(1 << 0)
 	ledgerAccountPayoutAccountDetailsBusinessRepresentativeFieldFirstName   = big.NewInt(1 << 1)
@@ -1173,6 +1249,15 @@ var (
 	ledgerAccountPayoutAccountDetailsBusinessRepresentativeFieldMiddleName  = big.NewInt(1 << 3)
 )
 
+// ledgerAccountPayoutAccountDetailsBusinessRepresentativeNullableFields maps the wire names of LedgerAccountPayoutAccountDetailsBusinessRepresentative's nullable fields (required or optional) to their field bits.
+var ledgerAccountPayoutAccountDetailsBusinessRepresentativeNullableFields = map[string]*big.Int{
+	"date_of_birth": ledgerAccountPayoutAccountDetailsBusinessRepresentativeFieldDateOfBirth,
+	"first_name":    ledgerAccountPayoutAccountDetailsBusinessRepresentativeFieldFirstName,
+	"last_name":     ledgerAccountPayoutAccountDetailsBusinessRepresentativeFieldLastName,
+	"middle_name":   ledgerAccountPayoutAccountDetailsBusinessRepresentativeFieldMiddleName,
+}
+
+// The business representative for this payout account
 type LedgerAccountPayoutAccountDetailsBusinessRepresentative struct {
 	// The date of birth of the business representative in ISO 8601 format (YYYY-MM-DD).
 	DateOfBirth *string `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty"`
@@ -1226,10 +1311,12 @@ func (l *LedgerAccountPayoutAccountDetailsBusinessRepresentative) GetExtraProper
 }
 
 func (l *LedgerAccountPayoutAccountDetailsBusinessRepresentative) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
@@ -1272,6 +1359,13 @@ func (l *LedgerAccountPayoutAccountDetailsBusinessRepresentative) UnmarshalJSON(
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerAccountPayoutAccountDetailsBusinessRepresentativeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1302,7 +1396,6 @@ func (l *LedgerAccountPayoutAccountDetailsBusinessRepresentative) String() strin
 	return fmt.Sprintf("%#v", l)
 }
 
-// The latest verification for the connected account.
 var (
 	ledgerAccountPayoutAccountDetailsLatestVerificationFieldID              = big.NewInt(1 << 0)
 	ledgerAccountPayoutAccountDetailsLatestVerificationFieldLastErrorCode   = big.NewInt(1 << 1)
@@ -1310,6 +1403,13 @@ var (
 	ledgerAccountPayoutAccountDetailsLatestVerificationFieldStatus          = big.NewInt(1 << 3)
 )
 
+// ledgerAccountPayoutAccountDetailsLatestVerificationNullableFields maps the wire names of LedgerAccountPayoutAccountDetailsLatestVerification's nullable fields (required or optional) to their field bits.
+var ledgerAccountPayoutAccountDetailsLatestVerificationNullableFields = map[string]*big.Int{
+	"last_error_code":   ledgerAccountPayoutAccountDetailsLatestVerificationFieldLastErrorCode,
+	"last_error_reason": ledgerAccountPayoutAccountDetailsLatestVerificationFieldLastErrorReason,
+}
+
+// The latest verification for the connected account.
 type LedgerAccountPayoutAccountDetailsLatestVerification struct {
 	// The numeric id of the verification record.
 	ID string `json:"id" url:"id"`
@@ -1363,10 +1463,12 @@ func (l *LedgerAccountPayoutAccountDetailsLatestVerification) GetExtraProperties
 }
 
 func (l *LedgerAccountPayoutAccountDetailsLatestVerification) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1409,6 +1511,13 @@ func (l *LedgerAccountPayoutAccountDetailsLatestVerification) UnmarshalJSON(data
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerAccountPayoutAccountDetailsLatestVerificationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1439,7 +1548,6 @@ func (l *LedgerAccountPayoutAccountDetailsLatestVerification) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The balance cache associated with the account by currency.
 var (
 	ledgerAccountTreasuryBalanceFieldBalance                  = big.NewInt(1 << 0)
 	ledgerAccountTreasuryBalanceFieldBalanceUsd               = big.NewInt(1 << 1)
@@ -1449,6 +1557,7 @@ var (
 	ledgerAccountTreasuryBalanceFieldTotalWithdrawableBalance = big.NewInt(1 << 5)
 )
 
+// The balance cache associated with the account by currency.
 type LedgerAccountTreasuryBalance struct {
 	// The amount of the balance.
 	Balance float64 `json:"balance" url:"balance"`
@@ -1520,10 +1629,12 @@ func (l *LedgerAccountTreasuryBalance) GetExtraProperties() map[string]interface
 }
 
 func (l *LedgerAccountTreasuryBalance) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBalance sets the Balance field and marks it as non-optional;
@@ -1673,6 +1784,12 @@ var (
 	postLedgerAccountFundsAvailablePayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postLedgerAccountFundsAvailablePayloadNullableFields maps the wire names of PostLedgerAccountFundsAvailablePayload's nullable fields (required or optional) to their field bits.
+var postLedgerAccountFundsAvailablePayloadNullableFields = map[string]*big.Int{
+	"account_id":       postLedgerAccountFundsAvailablePayloadFieldAccountID,
+	"api_version_date": postLedgerAccountFundsAvailablePayloadFieldAPIVersionDate,
+}
+
 type PostLedgerAccountFundsAvailablePayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -1761,10 +1878,12 @@ func (p *PostLedgerAccountFundsAvailablePayload) GetExtraProperties() map[string
 }
 
 func (p *PostLedgerAccountFundsAvailablePayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1841,6 +1960,13 @@ func (p *PostLedgerAccountFundsAvailablePayload) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postLedgerAccountFundsAvailablePayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

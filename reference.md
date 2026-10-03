@@ -158,7 +158,7 @@ client.AccountLinks.Create(
 <dl>
 <dd>
 
-**useCase:** `*whopsdk.AccountLinkUseCases` — The purpose of the account link, such as hosted payouts portal or hosted KYC onboarding.
+**useCase:** `whopsdk.AccountLinkUseCases` — The purpose of the account link, such as hosted payouts portal or hosted KYC onboarding.
     
 </dd>
 </dl>
@@ -801,7 +801,7 @@ client.Accounts.Update(
 <dl>
 <dd>
 
-**homePreferences:** `[]*whopsdk.UpdateAccountsRequestHomePreferencesItem` — Public account home page preferences.
+**homePreferences:** `[]whopsdk.UpdateAccountsRequestHomePreferencesItem` — Public account home page preferences.
     
 </dd>
 </dl>
@@ -1001,7 +1001,7 @@ client.Accounts.Update(
 <dl>
 <dd>
 
-**taxCollectionEnabledStates:** `[]*whopsdk.UpdateAccountsRequestTaxCollectionEnabledStatesItem` — US state codes (50 states plus `DC`) where the account collects tax. Replaces the full set on update. Only settable when `tax_remitted_by` is `self`.
+**taxCollectionEnabledStates:** `[]whopsdk.UpdateAccountsRequestTaxCollectionEnabledStatesItem` — US state codes (50 states plus `DC`) where the account collects tax. Replaces the full set on update. Only settable when `tax_remitted_by` is `self`.
     
 </dd>
 </dl>
@@ -1261,7 +1261,7 @@ client.Accounts.FormCompany(
 <dl>
 <dd>
 
-**formationState:** `*whopsdk.FormCompanyAccountsRequestFormationState` — Two-letter code of the US state (or `DC`) to form the company in. We recommend `WY` because Wyoming formations are completed the same day.
+**formationState:** `whopsdk.FormCompanyAccountsRequestFormationState` — Two-letter code of the US state (or `DC`) to form the company in. We recommend `WY` because Wyoming formations are completed the same day.
     
 </dd>
 </dl>
@@ -1803,7 +1803,7 @@ client.AdCampaigns.Create(
 <dl>
 <dd>
 
-**objective:** `*whopsdk.CreateAdCampaignsRequestObjective` — The goal the campaign optimizes toward.
+**objective:** `whopsdk.CreateAdCampaignsRequestObjective` — The goal the campaign optimizes toward.
     
 </dd>
 </dl>
@@ -1811,7 +1811,7 @@ client.AdCampaigns.Create(
 <dl>
 <dd>
 
-**platform:** `*whopsdk.CreateAdCampaignsRequestPlatform` — The ad network the campaign runs on.
+**platform:** `whopsdk.CreateAdCampaignsRequestPlatform` — The ad network the campaign runs on.
     
 </dd>
 </dl>
@@ -1819,7 +1819,7 @@ client.AdCampaigns.Create(
 <dl>
 <dd>
 
-**specialAdCategories:** `[]*whopsdk.CreateAdCampaignsRequestSpecialAdCategoriesItem` — Regulated categories the campaign falls under. Ads in these categories are subject to extra targeting restrictions.
+**specialAdCategories:** `[]whopsdk.CreateAdCampaignsRequestSpecialAdCategoriesItem` — Regulated categories the campaign falls under. Ads in these categories are subject to extra targeting restrictions.
     
 </dd>
 </dl>
@@ -2103,7 +2103,7 @@ client.AdCampaigns.Update(
 <dl>
 <dd>
 
-**specialAdCategories:** `[]*whopsdk.UpdateAdCampaignsRequestSpecialAdCategoriesItem` — Regulated categories the campaign falls under. Editable on any campaign, draft or launched; pass an empty array to clear.
+**specialAdCategories:** `[]whopsdk.UpdateAdCampaignsRequestSpecialAdCategoriesItem` — Regulated categories the campaign falls under. Editable on any campaign, draft or launched; pass an empty array to clear.
     
 </dd>
 </dl>
@@ -2534,7 +2534,7 @@ client.AdConversionValueRules.Create(
 <dl>
 <dd>
 
-**adjustmentType:** `*whopsdk.CreateAdConversionValueRulesRequestAdjustmentType` 
+**adjustmentType:** `whopsdk.CreateAdConversionValueRulesRequestAdjustmentType` 
     
 </dd>
 </dl>
@@ -3321,7 +3321,7 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
-**messageApps:** `[]*whopsdk.CreateAdGroupsRequestMessageAppsItem` — Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
+**messageApps:** `[]whopsdk.CreateAdGroupsRequestMessageAppsItem` — Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
     
 </dd>
 </dl>
@@ -3496,7 +3496,7 @@ client.AdGroups.EstimateReach(
 <dl>
 <dd>
 
-**platform:** `*whopsdk.EstimateReachAdGroupsRequestPlatform` — The ad network the estimate runs on.
+**platform:** `whopsdk.EstimateReachAdGroupsRequestPlatform` — The ad network the estimate runs on.
     
 </dd>
 </dl>
@@ -3572,7 +3572,7 @@ client.AdGroups.SearchTargetingOptions(
 <dl>
 <dd>
 
-**platform:** `*whopsdk.SearchTargetingOptionsAdGroupsRequestPlatform` — The ad network whose targeting taxonomy to search.
+**platform:** `whopsdk.SearchTargetingOptionsAdGroupsRequestPlatform` — The ad network whose targeting taxonomy to search.
     
 </dd>
 </dl>
@@ -3960,7 +3960,7 @@ client.AdGroups.Update(
 <dl>
 <dd>
 
-**messageApps:** `[]*whopsdk.UpdateAdGroupsRequestMessageAppsItem` — Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
+**messageApps:** `[]whopsdk.UpdateAdGroupsRequestMessageAppsItem` — Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
     
 </dd>
 </dl>
@@ -6091,7 +6091,7 @@ client.APIKeys.List(
 <dl>
 <dd>
 
-**resourceType:** `*whopsdk.ListAPIKeysRequestResourceType` — The type of resource that owns the API keys.
+**resourceType:** `whopsdk.ListAPIKeysRequestResourceType` — The type of resource that owns the API keys.
     
 </dd>
 </dl>
@@ -6266,7 +6266,7 @@ client.APIKeys.Create(
 <dl>
 <dd>
 
-**resourceType:** `*whopsdk.CreateAPIKeysRequestResourceType` — The type of resource that will own this API key.
+**resourceType:** `whopsdk.CreateAPIKeysRequestResourceType` — The type of resource that will own this API key.
     
 </dd>
 </dl>
@@ -6945,7 +6945,7 @@ client.AppBuilds.Create(
 <dl>
 <dd>
 
-**platform:** `*whopsdk.CreateAppBuildsRequestPlatform` — The target platform for the build.
+**platform:** `whopsdk.CreateAppBuildsRequestPlatform` — The target platform for the build.
     
 </dd>
 </dl>
@@ -6961,7 +6961,7 @@ client.AppBuilds.Create(
 <dl>
 <dd>
 
-**supportedAppViewTypes:** `[]*whopsdk.CreateAppBuildsRequestSupportedAppViewTypesItem` — The view types this build supports. Only list the ones its code implements.
+**supportedAppViewTypes:** `[]whopsdk.CreateAppBuildsRequestSupportedAppViewTypesItem` — The view types this build supports. Only list the ones its code implements.
     
 </dd>
 </dl>
@@ -8653,7 +8653,7 @@ client.AuthorizedUsers.Create(
 <dl>
 <dd>
 
-**role:** `*whopsdk.GrantableAuthorizedUserRoles` — The role to assign to the authorized user within the company. Supported roles: 'moderator', 'sales_manager'.
+**role:** `whopsdk.GrantableAuthorizedUserRoles` — The role to assign to the authorized user within the company. Supported roles: 'moderator', 'sales_manager'.
     
 </dd>
 </dl>
@@ -12613,7 +12613,7 @@ client.CourseLessons.Create(
 <dl>
 <dd>
 
-**lessonType:** `*whopsdk.LessonTypes` — The content type of the lesson, such as video, text, quiz, or knowledge check.
+**lessonType:** `whopsdk.LessonTypes` — The content type of the lesson, such as video, text, quiz, or knowledge check.
     
 </dd>
 </dl>
@@ -18277,7 +18277,7 @@ client.Exports.Create(
 <dl>
 <dd>
 
-**resource:** `*whopsdk.CreateExportsRequestResource` — The resource to export, e.g. `payouts`, `receipts`, or `members`.
+**resource:** `whopsdk.CreateExportsRequestResource` — The resource to export, e.g. `payouts`, `receipts`, or `members`.
     
 </dd>
 </dl>
@@ -18519,7 +18519,7 @@ client.FeeMarkups.Create(
 <dl>
 <dd>
 
-**feeType:** `*whopsdk.FeeMarkupTypes` — The type of fee this markup applies to, such as processing or platform fees.
+**feeType:** `whopsdk.FeeMarkupTypes` — The type of fee this markup applies to, such as processing or platform fees.
     
 </dd>
 </dl>
@@ -19227,7 +19227,7 @@ client.FinancialReports.Retrieve(
 <dl>
 <dd>
 
-**reportType:** `*whopsdk.RetrieveFinancialReportsRequestReportType` — The type of financial report to generate.
+**reportType:** `whopsdk.RetrieveFinancialReportsRequestReportType` — The type of financial report to generate.
     
 </dd>
 </dl>
@@ -21757,7 +21757,7 @@ client.Media.Generate(
 <dl>
 <dd>
 
-**type_:** `*whopsdk.GenerateMediaRequestType` — The kind of media to generate.
+**type_:** `whopsdk.GenerateMediaRequestType` — The kind of media to generate.
     
 </dd>
 </dl>
@@ -25633,7 +25633,7 @@ client.PaymentRules.Create(
 <dl>
 <dd>
 
-**action:** `*whopsdk.CreatePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
+**action:** `whopsdk.CreatePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
     
 </dd>
 </dl>
@@ -26066,7 +26066,7 @@ client.PaymentRules.Replace(
 <dl>
 <dd>
 
-**action:** `*whopsdk.ReplacePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
+**action:** `whopsdk.ReplacePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
     
 </dd>
 </dl>
@@ -30497,7 +30497,7 @@ client.PromoCodes.Create(
 <dl>
 <dd>
 
-**baseCurrency:** `*whopsdk.CreatePromoCodesRequestBaseCurrency` 
+**baseCurrency:** `whopsdk.CreatePromoCodesRequestBaseCurrency` 
     
 </dd>
 </dl>
@@ -30577,7 +30577,7 @@ client.PromoCodes.Create(
 <dl>
 <dd>
 
-**promoType:** `*whopsdk.CreatePromoCodesRequestPromoType` 
+**promoType:** `whopsdk.CreatePromoCodesRequestPromoType` 
     
 </dd>
 </dl>
@@ -31596,7 +31596,7 @@ client.ResolutionCenterCases.Create(
 <dl>
 <dd>
 
-**reason:** `*whopsdk.CreateResolutionCenterCasesRequestReason` — What went wrong. Uses the same vocabulary as `/disputes`.
+**reason:** `whopsdk.CreateResolutionCenterCasesRequestReason` — What went wrong. Uses the same vocabulary as `/disputes`.
     
 </dd>
 </dl>
@@ -33538,7 +33538,7 @@ client.SocialAccounts.Create(
 <dl>
 <dd>
 
-**platform:** `*whopsdk.CreateSocialAccountsRequestPlatform` — The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+**platform:** `whopsdk.CreateSocialAccountsRequestPlatform` — The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
     
 </dd>
 </dl>
@@ -33607,7 +33607,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**platform:** `*whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, or `youtube` to connect their YouTube channel.
+**platform:** `whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, or `youtube` to connect their YouTube channel.
     
 </dd>
 </dl>
@@ -33623,7 +33623,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**scopes:** `[]*whopsdk.ConnectSocialAccountsRequestScopesItem` — The connection purpose. For `meta_business` and `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin` and `youtube`, omit scopes to connect the authenticated user’s profile; advertising is not supported. For `tiktok`, omit scopes to connect the authenticated user’s profile, or pass `advertise` to connect company advertising assets. Profile connections still request the platform permissions needed to read the profile.
+**scopes:** `[]whopsdk.ConnectSocialAccountsRequestScopesItem` — The connection purpose. For `meta_business` and `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin` and `youtube`, omit scopes to connect the authenticated user’s profile; advertising is not supported. For `tiktok`, omit scopes to connect the authenticated user’s profile, or pass `advertise` to connect company advertising assets. Profile connections still request the platform permissions needed to read the profile.
     
 </dd>
 </dl>
@@ -35705,7 +35705,7 @@ client.TeamMembers.Create(
 <dl>
 <dd>
 
-**role:** `*whopsdk.CreateTeamMembersRequestRole` — The system role to grant. The Partner role can only be granted to the account's attached, verified partner.
+**role:** `whopsdk.CreateTeamMembersRequestRole` — The system role to grant. The Partner role can only be granted to the account's attached, verified partner.
     
 </dd>
 </dl>
@@ -35984,7 +35984,7 @@ client.Topups.Create(
 <dl>
 <dd>
 
-**currency:** `*whopsdk.Currencies` — The currency for the top-up amount, such as 'usd'.
+**currency:** `whopsdk.Currencies` — The currency for the top-up amount, such as 'usd'.
     
 </dd>
 </dl>
@@ -36192,7 +36192,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**instrumentType:** `*whopsdk.CreateTradesRequestInstrumentType` — The kind of instrument to trade.
+**instrumentType:** `whopsdk.CreateTradesRequestInstrumentType` — The kind of instrument to trade.
     
 </dd>
 </dl>
@@ -36216,7 +36216,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**provider:** `*whopsdk.CreateTradesRequestProvider` 
+**provider:** `whopsdk.CreateTradesRequestProvider` 
     
 </dd>
 </dl>
@@ -36304,7 +36304,7 @@ client.Trades.UpdateLeverage(
 <dl>
 <dd>
 
-**marginMode:** `*whopsdk.UpdateLeverageTradesRequestMarginMode` — `cross` shares margin across positions; `isolated` limits margin to this market's position.
+**marginMode:** `whopsdk.UpdateLeverageTradesRequestMarginMode` — `cross` shares margin across positions; `isolated` limits margin to this market's position.
     
 </dd>
 </dl>
@@ -36328,7 +36328,7 @@ client.Trades.UpdateLeverage(
 <dl>
 <dd>
 
-**provider:** `*whopsdk.UpdateLeverageTradesRequestProvider` 
+**provider:** `whopsdk.UpdateLeverageTradesRequestProvider` 
     
 </dd>
 </dl>
@@ -39504,7 +39504,7 @@ client.Webhooks.Create(
 <dl>
 <dd>
 
-**events:** `[]*whopsdk.CreateWebhooksRequestEventsItem` — The events to send the webhook for, in dot form (for example `payment.succeeded`).
+**events:** `[]whopsdk.CreateWebhooksRequestEventsItem` — The events to send the webhook for, in dot form (for example `payment.succeeded`).
     
 </dd>
 </dl>
@@ -39732,7 +39732,7 @@ client.Webhooks.Update(
 <dl>
 <dd>
 
-**events:** `[]*whopsdk.UpdateWebhooksRequestEventsItem` — The events to send the webhook for, in dot form (for example `payment.succeeded`).
+**events:** `[]whopsdk.UpdateWebhooksRequestEventsItem` — The events to send the webhook for, in dot form (for example `payment.succeeded`).
     
 </dd>
 </dl>
@@ -41838,7 +41838,7 @@ client.FinancialReports.Breakdown.Retrieve(
 <dl>
 <dd>
 
-**bucket:** `*financialreports.RetrieveBreakdownRequestBucket` — The high-level report bucket to explain.
+**bucket:** `financialreports.RetrieveBreakdownRequestBucket` — The high-level report bucket to explain.
     
 </dd>
 </dl>
@@ -41846,7 +41846,7 @@ client.FinancialReports.Breakdown.Retrieve(
 <dl>
 <dd>
 
-**direction:** `*financialreports.RetrieveBreakdownRequestDirection` — Whether to explain money received or money sent.
+**direction:** `financialreports.RetrieveBreakdownRequestDirection` — Whether to explain money received or money sent.
     
 </dd>
 </dl>
@@ -43717,7 +43717,7 @@ client.Users.Passkeys.Challenge(
 <dl>
 <dd>
 
-**challengeType:** `*users.ChallengePasskeysRequestChallengeType` — The ceremony this challenge is for.
+**challengeType:** `users.ChallengePasskeysRequestChallengeType` — The ceremony this challenge is for.
     
 </dd>
 </dl>

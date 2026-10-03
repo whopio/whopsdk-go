@@ -63,10 +63,12 @@ type ListBusinessesRequest struct {
 }
 
 func (l *ListBusinessesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -180,10 +182,12 @@ type RetrieveBusinessesRequest struct {
 }
 
 func (r *RetrieveBusinessesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -337,10 +341,12 @@ func (l *ListBusinessesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListBusinessesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -416,6 +422,17 @@ var (
 	listBusinessesResponseDataItemFieldStatus            = big.NewInt(1 << 13)
 	listBusinessesResponseDataItemFieldVolumeUsd         = big.NewInt(1 << 14)
 )
+
+// listBusinessesResponseDataItemNullableFields maps the wire names of ListBusinessesResponseDataItem's nullable fields (required or optional) to their field bits.
+var listBusinessesResponseDataItemNullableFields = map[string]*big.Int{
+	"account":             listBusinessesResponseDataItemFieldAccount,
+	"blueprint_partner":   listBusinessesResponseDataItemFieldBlueprintPartner,
+	"first_tier_partner":  listBusinessesResponseDataItemFieldFirstTierPartner,
+	"owner":               listBusinessesResponseDataItemFieldOwner,
+	"referral_expires_at": listBusinessesResponseDataItemFieldReferralExpiresAt,
+	"referral_started_at": listBusinessesResponseDataItemFieldReferralStartedAt,
+	"second_tier_partner": listBusinessesResponseDataItemFieldSecondTierPartner,
+}
 
 type ListBusinessesResponseDataItem struct {
 	// Referred account.
@@ -566,10 +583,12 @@ func (l *ListBusinessesResponseDataItem) GetExtraProperties() map[string]interfa
 }
 
 func (l *ListBusinessesResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -699,6 +718,13 @@ func (l *ListBusinessesResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBusinessesResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -735,7 +761,6 @@ func (l *ListBusinessesResponseDataItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Referred account.
 var (
 	listBusinessesResponseDataItemAccountFieldID      = big.NewInt(1 << 0)
 	listBusinessesResponseDataItemAccountFieldLogoURL = big.NewInt(1 << 1)
@@ -743,6 +768,12 @@ var (
 	listBusinessesResponseDataItemAccountFieldTitle   = big.NewInt(1 << 3)
 )
 
+// listBusinessesResponseDataItemAccountNullableFields maps the wire names of ListBusinessesResponseDataItemAccount's nullable fields (required or optional) to their field bits.
+var listBusinessesResponseDataItemAccountNullableFields = map[string]*big.Int{
+	"logo_url": listBusinessesResponseDataItemAccountFieldLogoURL,
+}
+
+// Referred account.
 type ListBusinessesResponseDataItemAccount struct {
 	// Referred account ID.
 	ID string `json:"id" url:"id"`
@@ -796,10 +827,12 @@ func (l *ListBusinessesResponseDataItemAccount) GetExtraProperties() map[string]
 }
 
 func (l *ListBusinessesResponseDataItemAccount) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -842,6 +875,13 @@ func (l *ListBusinessesResponseDataItemAccount) UnmarshalJSON(data []byte) error
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBusinessesResponseDataItemAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -872,7 +912,6 @@ func (l *ListBusinessesResponseDataItemAccount) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
 var (
 	listBusinessesResponseDataItemBlueprintPartnerFieldID             = big.NewInt(1 << 0)
 	listBusinessesResponseDataItemBlueprintPartnerFieldName           = big.NewInt(1 << 1)
@@ -880,6 +919,12 @@ var (
 	listBusinessesResponseDataItemBlueprintPartnerFieldUsername       = big.NewInt(1 << 3)
 )
 
+// listBusinessesResponseDataItemBlueprintPartnerNullableFields maps the wire names of ListBusinessesResponseDataItemBlueprintPartner's nullable fields (required or optional) to their field bits.
+var listBusinessesResponseDataItemBlueprintPartnerNullableFields = map[string]*big.Int{
+	"name": listBusinessesResponseDataItemBlueprintPartnerFieldName,
+}
+
+// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
 type ListBusinessesResponseDataItemBlueprintPartner struct {
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
@@ -933,10 +978,12 @@ func (l *ListBusinessesResponseDataItemBlueprintPartner) GetExtraProperties() ma
 }
 
 func (l *ListBusinessesResponseDataItemBlueprintPartner) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -979,6 +1026,13 @@ func (l *ListBusinessesResponseDataItemBlueprintPartner) UnmarshalJSON(data []by
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBusinessesResponseDataItemBlueprintPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1009,11 +1063,11 @@ func (l *ListBusinessesResponseDataItemBlueprintPartner) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user's profile picture.
 var (
 	listBusinessesResponseDataItemBlueprintPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture.
 type ListBusinessesResponseDataItemBlueprintPartnerProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -1040,10 +1094,12 @@ func (l *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture) GetExtraP
 }
 
 func (l *ListBusinessesResponseDataItemBlueprintPartnerProfilePicture) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1145,10 +1201,12 @@ func (l *ListBusinessesResponseDataItemEarningsUsd) GetExtraProperties() map[str
 }
 
 func (l *ListBusinessesResponseDataItemEarningsUsd) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCompleted sets the Completed field and marks it as non-optional;
@@ -1214,7 +1272,6 @@ func (l *ListBusinessesResponseDataItemEarningsUsd) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
 var (
 	listBusinessesResponseDataItemFirstTierPartnerFieldID             = big.NewInt(1 << 0)
 	listBusinessesResponseDataItemFirstTierPartnerFieldName           = big.NewInt(1 << 1)
@@ -1222,6 +1279,12 @@ var (
 	listBusinessesResponseDataItemFirstTierPartnerFieldUsername       = big.NewInt(1 << 3)
 )
 
+// listBusinessesResponseDataItemFirstTierPartnerNullableFields maps the wire names of ListBusinessesResponseDataItemFirstTierPartner's nullable fields (required or optional) to their field bits.
+var listBusinessesResponseDataItemFirstTierPartnerNullableFields = map[string]*big.Int{
+	"name": listBusinessesResponseDataItemFirstTierPartnerFieldName,
+}
+
+// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
 type ListBusinessesResponseDataItemFirstTierPartner struct {
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
@@ -1275,10 +1338,12 @@ func (l *ListBusinessesResponseDataItemFirstTierPartner) GetExtraProperties() ma
 }
 
 func (l *ListBusinessesResponseDataItemFirstTierPartner) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1321,6 +1386,13 @@ func (l *ListBusinessesResponseDataItemFirstTierPartner) UnmarshalJSON(data []by
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBusinessesResponseDataItemFirstTierPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1351,11 +1423,11 @@ func (l *ListBusinessesResponseDataItemFirstTierPartner) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user's profile picture.
 var (
 	listBusinessesResponseDataItemFirstTierPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture.
 type ListBusinessesResponseDataItemFirstTierPartnerProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -1382,10 +1454,12 @@ func (l *ListBusinessesResponseDataItemFirstTierPartnerProfilePicture) GetExtraP
 }
 
 func (l *ListBusinessesResponseDataItemFirstTierPartnerProfilePicture) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1482,7 +1556,6 @@ func (l ListBusinessesResponseDataItemObject) Ptr() *ListBusinessesResponseDataI
 	return &l
 }
 
-// The owner of the referred business.
 var (
 	listBusinessesResponseDataItemOwnerFieldEmail          = big.NewInt(1 << 0)
 	listBusinessesResponseDataItemOwnerFieldID             = big.NewInt(1 << 1)
@@ -1491,6 +1564,13 @@ var (
 	listBusinessesResponseDataItemOwnerFieldUsername       = big.NewInt(1 << 4)
 )
 
+// listBusinessesResponseDataItemOwnerNullableFields maps the wire names of ListBusinessesResponseDataItemOwner's nullable fields (required or optional) to their field bits.
+var listBusinessesResponseDataItemOwnerNullableFields = map[string]*big.Int{
+	"email": listBusinessesResponseDataItemOwnerFieldEmail,
+	"name":  listBusinessesResponseDataItemOwnerFieldName,
+}
+
+// The owner of the referred business.
 type ListBusinessesResponseDataItemOwner struct {
 	// The business owner's email address, so a partner can follow up on a referral they made. Requires the `partner:email:read` scope; `null` without it, or while the account has no reachable address of its own.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -1553,10 +1633,12 @@ func (l *ListBusinessesResponseDataItemOwner) GetExtraProperties() map[string]in
 }
 
 func (l *ListBusinessesResponseDataItemOwner) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -1606,6 +1688,13 @@ func (l *ListBusinessesResponseDataItemOwner) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBusinessesResponseDataItemOwnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1636,11 +1725,11 @@ func (l *ListBusinessesResponseDataItemOwner) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user's profile picture.
 var (
 	listBusinessesResponseDataItemOwnerProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture.
 type ListBusinessesResponseDataItemOwnerProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -1667,10 +1756,12 @@ func (l *ListBusinessesResponseDataItemOwnerProfilePicture) GetExtraProperties()
 }
 
 func (l *ListBusinessesResponseDataItemOwnerProfilePicture) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1722,7 +1813,6 @@ func (l *ListBusinessesResponseDataItemOwnerProfilePicture) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
 var (
 	listBusinessesResponseDataItemPayoutPercentagesFieldAdSpend         = big.NewInt(1 << 0)
 	listBusinessesResponseDataItemPayoutPercentagesFieldCardInterchange = big.NewInt(1 << 1)
@@ -1730,6 +1820,14 @@ var (
 	listBusinessesResponseDataItemPayoutPercentagesFieldTransfer        = big.NewInt(1 << 3)
 )
 
+// listBusinessesResponseDataItemPayoutPercentagesNullableFields maps the wire names of ListBusinessesResponseDataItemPayoutPercentages's nullable fields (required or optional) to their field bits.
+var listBusinessesResponseDataItemPayoutPercentagesNullableFields = map[string]*big.Int{
+	"ad_spend":         listBusinessesResponseDataItemPayoutPercentagesFieldAdSpend,
+	"card_interchange": listBusinessesResponseDataItemPayoutPercentagesFieldCardInterchange,
+	"transfer":         listBusinessesResponseDataItemPayoutPercentagesFieldTransfer,
+}
+
+// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
 type ListBusinessesResponseDataItemPayoutPercentages struct {
 	// Share of the referred business's Whop Ads spend.
 	AdSpend *float64 `json:"ad_spend,omitempty" url:"ad_spend,omitempty"`
@@ -1783,10 +1881,12 @@ func (l *ListBusinessesResponseDataItemPayoutPercentages) GetExtraProperties() m
 }
 
 func (l *ListBusinessesResponseDataItemPayoutPercentages) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAdSpend sets the AdSpend field and marks it as non-optional;
@@ -1829,6 +1929,13 @@ func (l *ListBusinessesResponseDataItemPayoutPercentages) UnmarshalJSON(data []b
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBusinessesResponseDataItemPayoutPercentagesNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1859,7 +1966,6 @@ func (l *ListBusinessesResponseDataItemPayoutPercentages) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The second-tier partner who earns on this business (referred the first-tier partner). Null if there is no active second-tier partner.
 var (
 	listBusinessesResponseDataItemSecondTierPartnerFieldID             = big.NewInt(1 << 0)
 	listBusinessesResponseDataItemSecondTierPartnerFieldName           = big.NewInt(1 << 1)
@@ -1867,6 +1973,12 @@ var (
 	listBusinessesResponseDataItemSecondTierPartnerFieldUsername       = big.NewInt(1 << 3)
 )
 
+// listBusinessesResponseDataItemSecondTierPartnerNullableFields maps the wire names of ListBusinessesResponseDataItemSecondTierPartner's nullable fields (required or optional) to their field bits.
+var listBusinessesResponseDataItemSecondTierPartnerNullableFields = map[string]*big.Int{
+	"name": listBusinessesResponseDataItemSecondTierPartnerFieldName,
+}
+
+// The second-tier partner who earns on this business (referred the first-tier partner). Null if there is no active second-tier partner.
 type ListBusinessesResponseDataItemSecondTierPartner struct {
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
@@ -1920,10 +2032,12 @@ func (l *ListBusinessesResponseDataItemSecondTierPartner) GetExtraProperties() m
 }
 
 func (l *ListBusinessesResponseDataItemSecondTierPartner) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1966,6 +2080,13 @@ func (l *ListBusinessesResponseDataItemSecondTierPartner) UnmarshalJSON(data []b
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBusinessesResponseDataItemSecondTierPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1996,11 +2117,11 @@ func (l *ListBusinessesResponseDataItemSecondTierPartner) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user's profile picture.
 var (
 	listBusinessesResponseDataItemSecondTierPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture.
 type ListBusinessesResponseDataItemSecondTierPartnerProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -2027,10 +2148,12 @@ func (l *ListBusinessesResponseDataItemSecondTierPartnerProfilePicture) GetExtra
 }
 
 func (l *ListBusinessesResponseDataItemSecondTierPartnerProfilePicture) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -2165,10 +2288,12 @@ func (l *ListBusinessesResponseDataItemVolumeUsd) GetExtraProperties() map[strin
 }
 
 func (l *ListBusinessesResponseDataItemVolumeUsd) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAttributed sets the Attributed field and marks it as non-optional;
@@ -2248,6 +2373,12 @@ var (
 	listBusinessesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listBusinessesResponsePageInfoNullableFields maps the wire names of ListBusinessesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listBusinessesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listBusinessesResponsePageInfoFieldEndCursor,
+	"start_cursor": listBusinessesResponsePageInfoFieldStartCursor,
+}
+
 type ListBusinessesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2297,10 +2428,12 @@ func (l *ListBusinessesResponsePageInfo) GetExtraProperties() map[string]interfa
 }
 
 func (l *ListBusinessesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2343,6 +2476,13 @@ func (l *ListBusinessesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBusinessesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2390,6 +2530,17 @@ var (
 	retrieveBusinessesResponseFieldStatus            = big.NewInt(1 << 13)
 	retrieveBusinessesResponseFieldVolumeUsd         = big.NewInt(1 << 14)
 )
+
+// retrieveBusinessesResponseNullableFields maps the wire names of RetrieveBusinessesResponse's nullable fields (required or optional) to their field bits.
+var retrieveBusinessesResponseNullableFields = map[string]*big.Int{
+	"account":             retrieveBusinessesResponseFieldAccount,
+	"blueprint_partner":   retrieveBusinessesResponseFieldBlueprintPartner,
+	"first_tier_partner":  retrieveBusinessesResponseFieldFirstTierPartner,
+	"owner":               retrieveBusinessesResponseFieldOwner,
+	"referral_expires_at": retrieveBusinessesResponseFieldReferralExpiresAt,
+	"referral_started_at": retrieveBusinessesResponseFieldReferralStartedAt,
+	"second_tier_partner": retrieveBusinessesResponseFieldSecondTierPartner,
+}
 
 type RetrieveBusinessesResponse struct {
 	// Referred account.
@@ -2540,10 +2691,12 @@ func (r *RetrieveBusinessesResponse) GetExtraProperties() map[string]interface{}
 }
 
 func (r *RetrieveBusinessesResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -2673,6 +2826,13 @@ func (r *RetrieveBusinessesResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBusinessesResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2709,7 +2869,6 @@ func (r *RetrieveBusinessesResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Referred account.
 var (
 	retrieveBusinessesResponseAccountFieldCapabilities       = big.NewInt(1 << 0)
 	retrieveBusinessesResponseAccountFieldID                 = big.NewInt(1 << 1)
@@ -2720,6 +2879,14 @@ var (
 	retrieveBusinessesResponseAccountFieldTitle              = big.NewInt(1 << 6)
 )
 
+// retrieveBusinessesResponseAccountNullableFields maps the wire names of RetrieveBusinessesResponseAccount's nullable fields (required or optional) to their field bits.
+var retrieveBusinessesResponseAccountNullableFields = map[string]*big.Int{
+	"logo_url":            retrieveBusinessesResponseAccountFieldLogoURL,
+	"recommended_actions": retrieveBusinessesResponseAccountFieldRecommendedActions,
+	"required_actions":    retrieveBusinessesResponseAccountFieldRequiredActions,
+}
+
+// Referred account.
 type RetrieveBusinessesResponseAccount struct {
 	Capabilities *v2.AccountCapabilities `json:"capabilities" url:"capabilities"`
 	// Referred account ID.
@@ -2799,10 +2966,12 @@ func (r *RetrieveBusinessesResponseAccount) GetExtraProperties() map[string]inte
 }
 
 func (r *RetrieveBusinessesResponseAccount) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCapabilities sets the Capabilities field and marks it as non-optional;
@@ -2866,6 +3035,13 @@ func (r *RetrieveBusinessesResponseAccount) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBusinessesResponseAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2896,7 +3072,6 @@ func (r *RetrieveBusinessesResponseAccount) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
 var (
 	retrieveBusinessesResponseBlueprintPartnerFieldID             = big.NewInt(1 << 0)
 	retrieveBusinessesResponseBlueprintPartnerFieldName           = big.NewInt(1 << 1)
@@ -2904,6 +3079,12 @@ var (
 	retrieveBusinessesResponseBlueprintPartnerFieldUsername       = big.NewInt(1 << 3)
 )
 
+// retrieveBusinessesResponseBlueprintPartnerNullableFields maps the wire names of RetrieveBusinessesResponseBlueprintPartner's nullable fields (required or optional) to their field bits.
+var retrieveBusinessesResponseBlueprintPartnerNullableFields = map[string]*big.Int{
+	"name": retrieveBusinessesResponseBlueprintPartnerFieldName,
+}
+
+// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
 type RetrieveBusinessesResponseBlueprintPartner struct {
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
@@ -2957,10 +3138,12 @@ func (r *RetrieveBusinessesResponseBlueprintPartner) GetExtraProperties() map[st
 }
 
 func (r *RetrieveBusinessesResponseBlueprintPartner) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3003,6 +3186,13 @@ func (r *RetrieveBusinessesResponseBlueprintPartner) UnmarshalJSON(data []byte) 
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBusinessesResponseBlueprintPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3033,11 +3223,11 @@ func (r *RetrieveBusinessesResponseBlueprintPartner) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The user's profile picture.
 var (
 	retrieveBusinessesResponseBlueprintPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture.
 type RetrieveBusinessesResponseBlueprintPartnerProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -3064,10 +3254,12 @@ func (r *RetrieveBusinessesResponseBlueprintPartnerProfilePicture) GetExtraPrope
 }
 
 func (r *RetrieveBusinessesResponseBlueprintPartnerProfilePicture) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -3169,10 +3361,12 @@ func (r *RetrieveBusinessesResponseEarningsUsd) GetExtraProperties() map[string]
 }
 
 func (r *RetrieveBusinessesResponseEarningsUsd) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCompleted sets the Completed field and marks it as non-optional;
@@ -3238,7 +3432,6 @@ func (r *RetrieveBusinessesResponseEarningsUsd) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
 var (
 	retrieveBusinessesResponseFirstTierPartnerFieldID             = big.NewInt(1 << 0)
 	retrieveBusinessesResponseFirstTierPartnerFieldName           = big.NewInt(1 << 1)
@@ -3246,6 +3439,12 @@ var (
 	retrieveBusinessesResponseFirstTierPartnerFieldUsername       = big.NewInt(1 << 3)
 )
 
+// retrieveBusinessesResponseFirstTierPartnerNullableFields maps the wire names of RetrieveBusinessesResponseFirstTierPartner's nullable fields (required or optional) to their field bits.
+var retrieveBusinessesResponseFirstTierPartnerNullableFields = map[string]*big.Int{
+	"name": retrieveBusinessesResponseFirstTierPartnerFieldName,
+}
+
+// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
 type RetrieveBusinessesResponseFirstTierPartner struct {
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
@@ -3299,10 +3498,12 @@ func (r *RetrieveBusinessesResponseFirstTierPartner) GetExtraProperties() map[st
 }
 
 func (r *RetrieveBusinessesResponseFirstTierPartner) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3345,6 +3546,13 @@ func (r *RetrieveBusinessesResponseFirstTierPartner) UnmarshalJSON(data []byte) 
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBusinessesResponseFirstTierPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3375,11 +3583,11 @@ func (r *RetrieveBusinessesResponseFirstTierPartner) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The user's profile picture.
 var (
 	retrieveBusinessesResponseFirstTierPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture.
 type RetrieveBusinessesResponseFirstTierPartnerProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -3406,10 +3614,12 @@ func (r *RetrieveBusinessesResponseFirstTierPartnerProfilePicture) GetExtraPrope
 }
 
 func (r *RetrieveBusinessesResponseFirstTierPartnerProfilePicture) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -3506,7 +3716,6 @@ func (r RetrieveBusinessesResponseObject) Ptr() *RetrieveBusinessesResponseObjec
 	return &r
 }
 
-// The owner of the referred business.
 var (
 	retrieveBusinessesResponseOwnerFieldEmail          = big.NewInt(1 << 0)
 	retrieveBusinessesResponseOwnerFieldID             = big.NewInt(1 << 1)
@@ -3515,6 +3724,13 @@ var (
 	retrieveBusinessesResponseOwnerFieldUsername       = big.NewInt(1 << 4)
 )
 
+// retrieveBusinessesResponseOwnerNullableFields maps the wire names of RetrieveBusinessesResponseOwner's nullable fields (required or optional) to their field bits.
+var retrieveBusinessesResponseOwnerNullableFields = map[string]*big.Int{
+	"email": retrieveBusinessesResponseOwnerFieldEmail,
+	"name":  retrieveBusinessesResponseOwnerFieldName,
+}
+
+// The owner of the referred business.
 type RetrieveBusinessesResponseOwner struct {
 	// The business owner's email address, so a partner can follow up on a referral they made. Requires the `partner:email:read` scope; `null` without it, or while the account has no reachable address of its own.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -3577,10 +3793,12 @@ func (r *RetrieveBusinessesResponseOwner) GetExtraProperties() map[string]interf
 }
 
 func (r *RetrieveBusinessesResponseOwner) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -3630,6 +3848,13 @@ func (r *RetrieveBusinessesResponseOwner) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBusinessesResponseOwnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3660,11 +3885,11 @@ func (r *RetrieveBusinessesResponseOwner) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The user's profile picture.
 var (
 	retrieveBusinessesResponseOwnerProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture.
 type RetrieveBusinessesResponseOwnerProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -3691,10 +3916,12 @@ func (r *RetrieveBusinessesResponseOwnerProfilePicture) GetExtraProperties() map
 }
 
 func (r *RetrieveBusinessesResponseOwnerProfilePicture) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -3746,7 +3973,6 @@ func (r *RetrieveBusinessesResponseOwnerProfilePicture) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
 var (
 	retrieveBusinessesResponsePayoutPercentagesFieldAdSpend         = big.NewInt(1 << 0)
 	retrieveBusinessesResponsePayoutPercentagesFieldCardInterchange = big.NewInt(1 << 1)
@@ -3754,6 +3980,14 @@ var (
 	retrieveBusinessesResponsePayoutPercentagesFieldTransfer        = big.NewInt(1 << 3)
 )
 
+// retrieveBusinessesResponsePayoutPercentagesNullableFields maps the wire names of RetrieveBusinessesResponsePayoutPercentages's nullable fields (required or optional) to their field bits.
+var retrieveBusinessesResponsePayoutPercentagesNullableFields = map[string]*big.Int{
+	"ad_spend":         retrieveBusinessesResponsePayoutPercentagesFieldAdSpend,
+	"card_interchange": retrieveBusinessesResponsePayoutPercentagesFieldCardInterchange,
+	"transfer":         retrieveBusinessesResponsePayoutPercentagesFieldTransfer,
+}
+
+// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
 type RetrieveBusinessesResponsePayoutPercentages struct {
 	// Share of the referred business's Whop Ads spend.
 	AdSpend *float64 `json:"ad_spend,omitempty" url:"ad_spend,omitempty"`
@@ -3807,10 +4041,12 @@ func (r *RetrieveBusinessesResponsePayoutPercentages) GetExtraProperties() map[s
 }
 
 func (r *RetrieveBusinessesResponsePayoutPercentages) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAdSpend sets the AdSpend field and marks it as non-optional;
@@ -3853,6 +4089,13 @@ func (r *RetrieveBusinessesResponsePayoutPercentages) UnmarshalJSON(data []byte)
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBusinessesResponsePayoutPercentagesNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3883,7 +4126,6 @@ func (r *RetrieveBusinessesResponsePayoutPercentages) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The second-tier partner who earns on this business (referred the first-tier partner). Null if there is no active second-tier partner.
 var (
 	retrieveBusinessesResponseSecondTierPartnerFieldID             = big.NewInt(1 << 0)
 	retrieveBusinessesResponseSecondTierPartnerFieldName           = big.NewInt(1 << 1)
@@ -3891,6 +4133,12 @@ var (
 	retrieveBusinessesResponseSecondTierPartnerFieldUsername       = big.NewInt(1 << 3)
 )
 
+// retrieveBusinessesResponseSecondTierPartnerNullableFields maps the wire names of RetrieveBusinessesResponseSecondTierPartner's nullable fields (required or optional) to their field bits.
+var retrieveBusinessesResponseSecondTierPartnerNullableFields = map[string]*big.Int{
+	"name": retrieveBusinessesResponseSecondTierPartnerFieldName,
+}
+
+// The second-tier partner who earns on this business (referred the first-tier partner). Null if there is no active second-tier partner.
 type RetrieveBusinessesResponseSecondTierPartner struct {
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
@@ -3944,10 +4192,12 @@ func (r *RetrieveBusinessesResponseSecondTierPartner) GetExtraProperties() map[s
 }
 
 func (r *RetrieveBusinessesResponseSecondTierPartner) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3990,6 +4240,13 @@ func (r *RetrieveBusinessesResponseSecondTierPartner) UnmarshalJSON(data []byte)
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBusinessesResponseSecondTierPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4020,11 +4277,11 @@ func (r *RetrieveBusinessesResponseSecondTierPartner) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The user's profile picture.
 var (
 	retrieveBusinessesResponseSecondTierPartnerProfilePictureFieldURL = big.NewInt(1 << 0)
 )
 
+// The user's profile picture.
 type RetrieveBusinessesResponseSecondTierPartnerProfilePicture struct {
 	// The user's profile picture URL.
 	URL string `json:"url" url:"url"`
@@ -4051,10 +4308,12 @@ func (r *RetrieveBusinessesResponseSecondTierPartnerProfilePicture) GetExtraProp
 }
 
 func (r *RetrieveBusinessesResponseSecondTierPartnerProfilePicture) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -4189,10 +4448,12 @@ func (r *RetrieveBusinessesResponseVolumeUsd) GetExtraProperties() map[string]in
 }
 
 func (r *RetrieveBusinessesResponseVolumeUsd) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAttributed sets the Attributed field and marks it as non-optional;

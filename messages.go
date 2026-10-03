@@ -38,10 +38,12 @@ type CreateMessagesRequest struct {
 }
 
 func (c *CreateMessagesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAttachments sets the Attachments field and marks it as non-optional;
@@ -120,10 +122,12 @@ type DeleteMessagesRequest struct {
 }
 
 func (d *DeleteMessagesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -160,10 +164,12 @@ type ListMessagesRequest struct {
 }
 
 func (l *ListMessagesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -221,10 +227,12 @@ type RetrieveMessagesRequest struct {
 }
 
 func (r *RetrieveMessagesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -260,7 +268,6 @@ func (d DmsPostTypes) Ptr() *DmsPostTypes {
 	return &d
 }
 
-// A message sent within an experience chat, direct message, or group chat.
 var (
 	messageFieldContent             = big.NewInt(1 << 0)
 	messageFieldCreatedAt           = big.NewInt(1 << 1)
@@ -279,6 +286,15 @@ var (
 	messageFieldViewCount           = big.NewInt(1 << 14)
 )
 
+// messageNullableFields maps the wire names of Message's nullable fields (required or optional) to their field bits.
+var messageNullableFields = map[string]*big.Int{
+	"content":                messageFieldContent,
+	"poll":                   messageFieldPoll,
+	"replying_to_message_id": messageFieldReplyingToMessageID,
+	"view_count":             messageFieldViewCount,
+}
+
+// A message sent within an experience chat, direct message, or group chat.
 type Message struct {
 	// The message content formatted as Markdown. Null if the message has no text content.
 	Content *string `json:"content,omitempty" url:"content,omitempty"`
@@ -431,10 +447,12 @@ func (m *Message) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *Message) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetContent sets the Content field and marks it as non-optional;
@@ -562,6 +580,13 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -596,7 +621,6 @@ func (m *Message) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// A message sent within an experience chat, direct message, or group chat.
 var (
 	messageListItemFieldContent             = big.NewInt(1 << 0)
 	messageListItemFieldCreatedAt           = big.NewInt(1 << 1)
@@ -615,6 +639,15 @@ var (
 	messageListItemFieldViewCount           = big.NewInt(1 << 14)
 )
 
+// messageListItemNullableFields maps the wire names of MessageListItem's nullable fields (required or optional) to their field bits.
+var messageListItemNullableFields = map[string]*big.Int{
+	"content":                messageListItemFieldContent,
+	"poll":                   messageListItemFieldPoll,
+	"replying_to_message_id": messageListItemFieldReplyingToMessageID,
+	"view_count":             messageListItemFieldViewCount,
+}
+
+// A message sent within an experience chat, direct message, or group chat.
 type MessageListItem struct {
 	// The message content formatted as Markdown. Null if the message has no text content.
 	Content *string `json:"content,omitempty" url:"content,omitempty"`
@@ -767,10 +800,12 @@ func (m *MessageListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MessageListItem) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetContent sets the Content field and marks it as non-optional;
@@ -898,6 +933,13 @@ func (m *MessageListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -932,11 +974,16 @@ func (m *MessageListItem) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// A poll attached to this message. Null if the message does not contain a poll.
 var (
 	messageListItemPollFieldOptions = big.NewInt(1 << 0)
 )
 
+// messageListItemPollNullableFields maps the wire names of MessageListItemPoll's nullable fields (required or optional) to their field bits.
+var messageListItemPollNullableFields = map[string]*big.Int{
+	"options": messageListItemPollFieldOptions,
+}
+
+// A poll attached to this message. Null if the message does not contain a poll.
 type MessageListItemPoll struct {
 	// The options for the poll
 	Options []*MessageListItemPollOptionsItem `json:"options,omitempty" url:"options,omitempty"`
@@ -963,10 +1010,12 @@ func (m *MessageListItemPoll) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MessageListItemPoll) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetOptions sets the Options field and marks it as non-optional;
@@ -988,6 +1037,13 @@ func (m *MessageListItemPoll) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageListItemPollNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1018,12 +1074,12 @@ func (m *MessageListItemPoll) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// Represents a single poll option
 var (
 	messageListItemPollOptionsItemFieldID   = big.NewInt(1 << 0)
 	messageListItemPollOptionsItemFieldText = big.NewInt(1 << 1)
 )
 
+// Represents a single poll option
 type MessageListItemPollOptionsItem struct {
 	// The unique identifier for the poll option.
 	ID string `json:"id" url:"id"`
@@ -1059,10 +1115,12 @@ func (m *MessageListItemPollOptionsItem) GetExtraProperties() map[string]interfa
 }
 
 func (m *MessageListItemPollOptionsItem) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1121,12 +1179,17 @@ func (m *MessageListItemPollOptionsItem) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// Represents a reaction count for a feed post
 var (
 	messageListItemPollVotesItemFieldCount    = big.NewInt(1 << 0)
 	messageListItemPollVotesItemFieldOptionID = big.NewInt(1 << 1)
 )
 
+// messageListItemPollVotesItemNullableFields maps the wire names of MessageListItemPollVotesItem's nullable fields (required or optional) to their field bits.
+var messageListItemPollVotesItemNullableFields = map[string]*big.Int{
+	"option_id": messageListItemPollVotesItemFieldOptionID,
+}
+
+// Represents a reaction count for a feed post
 type MessageListItemPollVotesItem struct {
 	// The number of users who reacted
 	Count int `json:"count" url:"count"`
@@ -1162,10 +1225,12 @@ func (m *MessageListItemPollVotesItem) GetExtraProperties() map[string]interface
 }
 
 func (m *MessageListItemPollVotesItem) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetCount sets the Count field and marks it as non-optional;
@@ -1194,6 +1259,13 @@ func (m *MessageListItemPollVotesItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageListItemPollVotesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1224,12 +1296,17 @@ func (m *MessageListItemPollVotesItem) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// Represents a reaction count for a feed post
 var (
 	messageListItemReactionCountsItemFieldCount = big.NewInt(1 << 0)
 	messageListItemReactionCountsItemFieldEmoji = big.NewInt(1 << 1)
 )
 
+// messageListItemReactionCountsItemNullableFields maps the wire names of MessageListItemReactionCountsItem's nullable fields (required or optional) to their field bits.
+var messageListItemReactionCountsItemNullableFields = map[string]*big.Int{
+	"emoji": messageListItemReactionCountsItemFieldEmoji,
+}
+
+// Represents a reaction count for a feed post
 type MessageListItemReactionCountsItem struct {
 	// The number of users who reacted
 	Count int `json:"count" url:"count"`
@@ -1265,10 +1342,12 @@ func (m *MessageListItemReactionCountsItem) GetExtraProperties() map[string]inte
 }
 
 func (m *MessageListItemReactionCountsItem) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetCount sets the Count field and marks it as non-optional;
@@ -1297,6 +1376,13 @@ func (m *MessageListItemReactionCountsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageListItemReactionCountsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1327,13 +1413,18 @@ func (m *MessageListItemReactionCountsItem) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// The user who authored this message.
 var (
 	messageListItemUserFieldID       = big.NewInt(1 << 0)
 	messageListItemUserFieldName     = big.NewInt(1 << 1)
 	messageListItemUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// messageListItemUserNullableFields maps the wire names of MessageListItemUser's nullable fields (required or optional) to their field bits.
+var messageListItemUserNullableFields = map[string]*big.Int{
+	"name": messageListItemUserFieldName,
+}
+
+// The user who authored this message.
 type MessageListItemUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1378,10 +1469,12 @@ func (m *MessageListItemUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MessageListItemUser) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1417,6 +1510,13 @@ func (m *MessageListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1447,11 +1547,16 @@ func (m *MessageListItemUser) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// A poll attached to this message. Null if the message does not contain a poll.
 var (
 	messagePollFieldOptions = big.NewInt(1 << 0)
 )
 
+// messagePollNullableFields maps the wire names of MessagePoll's nullable fields (required or optional) to their field bits.
+var messagePollNullableFields = map[string]*big.Int{
+	"options": messagePollFieldOptions,
+}
+
+// A poll attached to this message. Null if the message does not contain a poll.
 type MessagePoll struct {
 	// The options for the poll
 	Options []*MessagePollOptionsItem `json:"options,omitempty" url:"options,omitempty"`
@@ -1478,10 +1583,12 @@ func (m *MessagePoll) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MessagePoll) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetOptions sets the Options field and marks it as non-optional;
@@ -1503,6 +1610,13 @@ func (m *MessagePoll) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, messagePollNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1533,12 +1647,12 @@ func (m *MessagePoll) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// Represents a single poll option
 var (
 	messagePollOptionsItemFieldID   = big.NewInt(1 << 0)
 	messagePollOptionsItemFieldText = big.NewInt(1 << 1)
 )
 
+// Represents a single poll option
 type MessagePollOptionsItem struct {
 	// The unique identifier for the poll option.
 	ID string `json:"id" url:"id"`
@@ -1574,10 +1688,12 @@ func (m *MessagePollOptionsItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MessagePollOptionsItem) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1636,12 +1752,17 @@ func (m *MessagePollOptionsItem) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// Represents a reaction count for a feed post
 var (
 	messagePollVotesItemFieldCount    = big.NewInt(1 << 0)
 	messagePollVotesItemFieldOptionID = big.NewInt(1 << 1)
 )
 
+// messagePollVotesItemNullableFields maps the wire names of MessagePollVotesItem's nullable fields (required or optional) to their field bits.
+var messagePollVotesItemNullableFields = map[string]*big.Int{
+	"option_id": messagePollVotesItemFieldOptionID,
+}
+
+// Represents a reaction count for a feed post
 type MessagePollVotesItem struct {
 	// The number of users who reacted
 	Count int `json:"count" url:"count"`
@@ -1677,10 +1798,12 @@ func (m *MessagePollVotesItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MessagePollVotesItem) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetCount sets the Count field and marks it as non-optional;
@@ -1709,6 +1832,13 @@ func (m *MessagePollVotesItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, messagePollVotesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1739,12 +1869,17 @@ func (m *MessagePollVotesItem) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// Represents a reaction count for a feed post
 var (
 	messageReactionCountsItemFieldCount = big.NewInt(1 << 0)
 	messageReactionCountsItemFieldEmoji = big.NewInt(1 << 1)
 )
 
+// messageReactionCountsItemNullableFields maps the wire names of MessageReactionCountsItem's nullable fields (required or optional) to their field bits.
+var messageReactionCountsItemNullableFields = map[string]*big.Int{
+	"emoji": messageReactionCountsItemFieldEmoji,
+}
+
+// Represents a reaction count for a feed post
 type MessageReactionCountsItem struct {
 	// The number of users who reacted
 	Count int `json:"count" url:"count"`
@@ -1780,10 +1915,12 @@ func (m *MessageReactionCountsItem) GetExtraProperties() map[string]interface{} 
 }
 
 func (m *MessageReactionCountsItem) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetCount sets the Count field and marks it as non-optional;
@@ -1812,6 +1949,13 @@ func (m *MessageReactionCountsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageReactionCountsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1842,13 +1986,18 @@ func (m *MessageReactionCountsItem) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// The user who authored this message.
 var (
 	messageUserFieldID       = big.NewInt(1 << 0)
 	messageUserFieldName     = big.NewInt(1 << 1)
 	messageUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// messageUserNullableFields maps the wire names of MessageUser's nullable fields (required or optional) to their field bits.
+var messageUserNullableFields = map[string]*big.Int{
+	"name": messageUserFieldName,
+}
+
+// The user who authored this message.
 type MessageUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1893,10 +2042,12 @@ func (m *MessageUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MessageUser) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1932,6 +2083,13 @@ func (m *MessageUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1962,11 +2120,11 @@ func (m *MessageUser) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
-// Input for an attachment
 var (
 	createMessagesRequestAttachmentsItemFieldID = big.NewInt(1 << 0)
 )
 
+// Input for an attachment
 type CreateMessagesRequestAttachmentsItem struct {
 	// The ID of an existing file object.
 	ID string `json:"id" url:"id"`
@@ -1993,10 +2151,12 @@ func (c *CreateMessagesRequestAttachmentsItem) GetExtraProperties() map[string]i
 }
 
 func (c *CreateMessagesRequestAttachmentsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2048,11 +2208,11 @@ func (c *CreateMessagesRequestAttachmentsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A poll to attach to this message, allowing recipients to vote on options.
 var (
 	createMessagesRequestPollFieldOptions = big.NewInt(1 << 0)
 )
 
+// A poll to attach to this message, allowing recipients to vote on options.
 type CreateMessagesRequestPoll struct {
 	// The options for the poll. Must have sequential IDs starting from 1
 	Options []*CreateMessagesRequestPollOptionsItem `json:"options" url:"options"`
@@ -2079,10 +2239,12 @@ func (c *CreateMessagesRequestPoll) GetExtraProperties() map[string]interface{} 
 }
 
 func (c *CreateMessagesRequestPoll) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetOptions sets the Options field and marks it as non-optional;
@@ -2134,12 +2296,12 @@ func (c *CreateMessagesRequestPoll) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Input type for a single poll option
 var (
 	createMessagesRequestPollOptionsItemFieldID   = big.NewInt(1 << 0)
 	createMessagesRequestPollOptionsItemFieldText = big.NewInt(1 << 1)
 )
 
+// Input type for a single poll option
 type CreateMessagesRequestPollOptionsItem struct {
 	// Sequential ID for the poll option (starting from '1')
 	ID string `json:"id" url:"id"`
@@ -2175,10 +2337,12 @@ func (c *CreateMessagesRequestPollOptionsItem) GetExtraProperties() map[string]i
 }
 
 func (c *CreateMessagesRequestPollOptionsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2237,12 +2401,12 @@ func (c *CreateMessagesRequestPollOptionsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for DmsPost.
 var (
 	listMessagesResponseFieldData     = big.NewInt(1 << 0)
 	listMessagesResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for DmsPost.
 type ListMessagesResponse struct {
 	// A list of nodes.
 	Data []*MessageListItem `json:"data" url:"data"`
@@ -2278,10 +2442,12 @@ func (l *ListMessagesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListMessagesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2350,6 +2516,12 @@ var (
 	postChatMessageCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postChatMessageCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postChatMessageCreatedPayloadNullableFields maps the wire names of PostChatMessageCreatedPayload's nullable fields (required or optional) to their field bits.
+var postChatMessageCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postChatMessageCreatedPayloadFieldAccountID,
+	"api_version_date": postChatMessageCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostChatMessageCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -2439,10 +2611,12 @@ func (p *PostChatMessageCreatedPayload) GetExtraProperties() map[string]interfac
 }
 
 func (p *PostChatMessageCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2519,6 +2693,13 @@ func (p *PostChatMessageCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postChatMessageCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2627,10 +2808,12 @@ func (p *PostChatMessageCreatedPayloadData) GetExtraProperties() map[string]inte
 }
 
 func (p *PostChatMessageCreatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAudience sets the Audience field and marks it as non-optional;
@@ -2708,6 +2891,11 @@ var (
 	postChatMessageCreatedPayloadDataAudienceFieldUserIDs = big.NewInt(1 << 1)
 )
 
+// postChatMessageCreatedPayloadDataAudienceNullableFields maps the wire names of PostChatMessageCreatedPayloadDataAudience's nullable fields (required or optional) to their field bits.
+var postChatMessageCreatedPayloadDataAudienceNullableFields = map[string]*big.Int{
+	"user_ids": postChatMessageCreatedPayloadDataAudienceFieldUserIDs,
+}
+
 type PostChatMessageCreatedPayloadDataAudience struct {
 	Type    PostChatMessageCreatedPayloadDataAudienceType `json:"type" url:"type"`
 	UserIDs []string                                      `json:"user_ids,omitempty" url:"user_ids,omitempty"`
@@ -2741,10 +2929,12 @@ func (p *PostChatMessageCreatedPayloadDataAudience) GetExtraProperties() map[str
 }
 
 func (p *PostChatMessageCreatedPayloadDataAudience) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -2773,6 +2963,13 @@ func (p *PostChatMessageCreatedPayloadDataAudience) UnmarshalJSON(data []byte) e
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postChatMessageCreatedPayloadDataAudienceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2831,6 +3028,11 @@ var (
 	postChatMessageCreatedPayloadDataChannelFieldType         = big.NewInt(1 << 2)
 )
 
+// postChatMessageCreatedPayloadDataChannelNullableFields maps the wire names of PostChatMessageCreatedPayloadDataChannel's nullable fields (required or optional) to their field bits.
+var postChatMessageCreatedPayloadDataChannelNullableFields = map[string]*big.Int{
+	"experience_id": postChatMessageCreatedPayloadDataChannelFieldExperienceID,
+}
+
 type PostChatMessageCreatedPayloadDataChannel struct {
 	ExperienceID *string                                      `json:"experience_id,omitempty" url:"experience_id,omitempty"`
 	ID           string                                       `json:"id" url:"id"`
@@ -2872,10 +3074,12 @@ func (p *PostChatMessageCreatedPayloadDataChannel) GetExtraProperties() map[stri
 }
 
 func (p *PostChatMessageCreatedPayloadDataChannel) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetExperienceID sets the ExperienceID field and marks it as non-optional;
@@ -2911,6 +3115,13 @@ func (p *PostChatMessageCreatedPayloadDataChannel) UnmarshalJSON(data []byte) er
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postChatMessageCreatedPayloadDataChannelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2986,11 +3197,11 @@ func (p PostChatMessageCreatedPayloadType) Ptr() *PostChatMessageCreatedPayloadT
 	return &p
 }
 
-// Input for an attachment
 var (
 	updateMessagesRequestAttachmentsItemFieldID = big.NewInt(1 << 0)
 )
 
+// Input for an attachment
 type UpdateMessagesRequestAttachmentsItem struct {
 	// The ID of an existing file object.
 	ID string `json:"id" url:"id"`
@@ -3017,10 +3228,12 @@ func (u *UpdateMessagesRequestAttachmentsItem) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateMessagesRequestAttachmentsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3094,10 +3307,12 @@ type UpdateMessagesRequest struct {
 }
 
 func (u *UpdateMessagesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

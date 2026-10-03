@@ -25,10 +25,12 @@ type RetrieveConfirmationTokensRequest struct {
 }
 
 func (r *RetrieveConfirmationTokensRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -56,6 +58,13 @@ var (
 	confirmationTokenFieldSetupFutureUsage     = big.NewInt(1 << 7)
 	confirmationTokenFieldStatus               = big.NewInt(1 << 8)
 )
+
+// confirmationTokenNullableFields maps the wire names of ConfirmationToken's nullable fields (required or optional) to their field bits.
+var confirmationTokenNullableFields = map[string]*big.Int{
+	"billing_address":    confirmationTokenFieldBillingAddress,
+	"billing_details":    confirmationTokenFieldBillingDetails,
+	"setup_future_usage": confirmationTokenFieldSetupFutureUsage,
+}
 
 type ConfirmationToken struct {
 	// The collected billing address, including the name on the address. Null when not collected or without bearer authentication with payment:basic:read on the token’s account.
@@ -154,10 +163,12 @@ func (c *ConfirmationToken) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *ConfirmationToken) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetBillingAddress sets the BillingAddress field and marks it as non-optional;
@@ -235,6 +246,13 @@ func (c *ConfirmationToken) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, confirmationTokenNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -298,6 +316,14 @@ var (
 	paymentBillingDetailsPreviewFieldPostalCode = big.NewInt(1 << 3)
 )
 
+// paymentBillingDetailsPreviewNullableFields maps the wire names of PaymentBillingDetailsPreview's nullable fields (required or optional) to their field bits.
+var paymentBillingDetailsPreviewNullableFields = map[string]*big.Int{
+	"country":     paymentBillingDetailsPreviewFieldCountry,
+	"email":       paymentBillingDetailsPreviewFieldEmail,
+	"name":        paymentBillingDetailsPreviewFieldName,
+	"postal_code": paymentBillingDetailsPreviewFieldPostalCode,
+}
+
 type PaymentBillingDetailsPreview struct {
 	// ISO 3166-1 alpha-2 country code.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
@@ -351,10 +377,12 @@ func (p *PaymentBillingDetailsPreview) GetExtraProperties() map[string]interface
 }
 
 func (p *PaymentBillingDetailsPreview) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCountry sets the Country field and marks it as non-optional;
@@ -397,6 +425,13 @@ func (p *PaymentBillingDetailsPreview) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentBillingDetailsPreviewNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -437,6 +472,11 @@ var (
 	paymentMethodDisplayFieldType        = big.NewInt(1 << 6)
 	paymentMethodDisplayFieldWallet      = big.NewInt(1 << 7)
 )
+
+// paymentMethodDisplayNullableFields maps the wire names of PaymentMethodDisplay's nullable fields (required or optional) to their field bits.
+var paymentMethodDisplayNullableFields = map[string]*big.Int{
+	"id": paymentMethodDisplayFieldID,
+}
 
 type PaymentMethodDisplay struct {
 	// Present when the category is `bank_debit`. Empty until the account is charged.
@@ -527,10 +567,12 @@ func (p *PaymentMethodDisplay) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentMethodDisplay) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBankDebit sets the BankDebit field and marks it as non-optional;
@@ -601,6 +643,13 @@ func (p *PaymentMethodDisplay) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodDisplayNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -731,10 +780,12 @@ func (p *PaymentMethodDisplayPreview) GetExtraProperties() map[string]interface{
 }
 
 func (p *PaymentMethodDisplayPreview) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBrand sets the Brand field and marks it as non-optional;

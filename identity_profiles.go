@@ -39,10 +39,12 @@ type ListIdentityProfileRequest struct {
 }
 
 func (l *ListIdentityProfileRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -119,10 +121,12 @@ type ListVerificationsIdentityProfileRequest struct {
 }
 
 func (l *ListVerificationsIdentityProfileRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -173,10 +177,12 @@ type RetrieveIdentityProfileRequest struct {
 }
 
 func (r *RetrieveIdentityProfileRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -186,7 +192,6 @@ func (r *RetrieveIdentityProfileRequest) SetID(id string) {
 	r.require(retrieveIdentityProfileRequestFieldID)
 }
 
-// A consolidated identity or business profile synced from verification provider data.
 var (
 	identityProfileFieldBusinessAddress   = big.NewInt(1 << 0)
 	identityProfileFieldBusinessName      = big.NewInt(1 << 1)
@@ -209,6 +214,21 @@ var (
 	identityProfileFieldVerifications     = big.NewInt(1 << 18)
 )
 
+// identityProfileNullableFields maps the wire names of IdentityProfile's nullable fields (required or optional) to their field bits.
+var identityProfileNullableFields = map[string]*big.Int{
+	"business_address":   identityProfileFieldBusinessAddress,
+	"business_name":      identityProfileFieldBusinessName,
+	"business_structure": identityProfileFieldBusinessStructure,
+	"country":            identityProfileFieldCountry,
+	"date_of_birth":      identityProfileFieldDateOfBirth,
+	"email":              identityProfileFieldEmail,
+	"first_name":         identityProfileFieldFirstName,
+	"last_name":          identityProfileFieldLastName,
+	"personal_address":   identityProfileFieldPersonalAddress,
+	"phone":              identityProfileFieldPhone,
+}
+
+// A consolidated identity or business profile synced from verification provider data.
 type IdentityProfile struct {
 	// Registered business address reported by the identity provider. Present on `business` profiles.
 	BusinessAddress *IdentityProfileBusinessAddress `json:"business_address,omitempty" url:"business_address,omitempty"`
@@ -397,10 +417,12 @@ func (i *IdentityProfile) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *IdentityProfile) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetBusinessAddress sets the BusinessAddress field and marks it as non-optional;
@@ -556,6 +578,13 @@ func (i *IdentityProfile) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, identityProfileNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -590,7 +619,6 @@ func (i *IdentityProfile) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// Registered business address reported by the identity provider. Present on `business` profiles.
 var (
 	identityProfileBusinessAddressFieldCity       = big.NewInt(1 << 0)
 	identityProfileBusinessAddressFieldCountry    = big.NewInt(1 << 1)
@@ -600,6 +628,17 @@ var (
 	identityProfileBusinessAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// identityProfileBusinessAddressNullableFields maps the wire names of IdentityProfileBusinessAddress's nullable fields (required or optional) to their field bits.
+var identityProfileBusinessAddressNullableFields = map[string]*big.Int{
+	"city":        identityProfileBusinessAddressFieldCity,
+	"country":     identityProfileBusinessAddressFieldCountry,
+	"line1":       identityProfileBusinessAddressFieldLine1,
+	"line2":       identityProfileBusinessAddressFieldLine2,
+	"postal_code": identityProfileBusinessAddressFieldPostalCode,
+	"state":       identityProfileBusinessAddressFieldState,
+}
+
+// Registered business address reported by the identity provider. Present on `business` profiles.
 type IdentityProfileBusinessAddress struct {
 	// The city of the address.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -671,10 +710,12 @@ func (i *IdentityProfileBusinessAddress) GetExtraProperties() map[string]interfa
 }
 
 func (i *IdentityProfileBusinessAddress) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -731,6 +772,13 @@ func (i *IdentityProfileBusinessAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, identityProfileBusinessAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -784,12 +832,12 @@ func (i IdentityProfileKinds) Ptr() *IdentityProfileKinds {
 	return &i
 }
 
-// A company is a seller on Whop. Companies own products, manage members, and receive payouts.
 var (
 	identityProfileLinkedCompaniesItemFieldID    = big.NewInt(1 << 0)
 	identityProfileLinkedCompaniesItemFieldTitle = big.NewInt(1 << 1)
 )
 
+// A company is a seller on Whop. Companies own products, manage members, and receive payouts.
 type IdentityProfileLinkedCompaniesItem struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -825,10 +873,12 @@ func (i *IdentityProfileLinkedCompaniesItem) GetExtraProperties() map[string]int
 }
 
 func (i *IdentityProfileLinkedCompaniesItem) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -887,7 +937,6 @@ func (i *IdentityProfileLinkedCompaniesItem) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// A consolidated identity or business profile synced from verification provider data.
 var (
 	identityProfileListItemFieldBusinessAddress   = big.NewInt(1 << 0)
 	identityProfileListItemFieldBusinessName      = big.NewInt(1 << 1)
@@ -910,6 +959,21 @@ var (
 	identityProfileListItemFieldVerifications     = big.NewInt(1 << 18)
 )
 
+// identityProfileListItemNullableFields maps the wire names of IdentityProfileListItem's nullable fields (required or optional) to their field bits.
+var identityProfileListItemNullableFields = map[string]*big.Int{
+	"business_address":   identityProfileListItemFieldBusinessAddress,
+	"business_name":      identityProfileListItemFieldBusinessName,
+	"business_structure": identityProfileListItemFieldBusinessStructure,
+	"country":            identityProfileListItemFieldCountry,
+	"date_of_birth":      identityProfileListItemFieldDateOfBirth,
+	"email":              identityProfileListItemFieldEmail,
+	"first_name":         identityProfileListItemFieldFirstName,
+	"last_name":          identityProfileListItemFieldLastName,
+	"personal_address":   identityProfileListItemFieldPersonalAddress,
+	"phone":              identityProfileListItemFieldPhone,
+}
+
+// A consolidated identity or business profile synced from verification provider data.
 type IdentityProfileListItem struct {
 	// Registered business address reported by the identity provider. Present on `business` profiles.
 	BusinessAddress *IdentityProfileListItemBusinessAddress `json:"business_address,omitempty" url:"business_address,omitempty"`
@@ -1098,10 +1162,12 @@ func (i *IdentityProfileListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *IdentityProfileListItem) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetBusinessAddress sets the BusinessAddress field and marks it as non-optional;
@@ -1257,6 +1323,13 @@ func (i *IdentityProfileListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, identityProfileListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1291,7 +1364,6 @@ func (i *IdentityProfileListItem) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// Registered business address reported by the identity provider. Present on `business` profiles.
 var (
 	identityProfileListItemBusinessAddressFieldCity       = big.NewInt(1 << 0)
 	identityProfileListItemBusinessAddressFieldCountry    = big.NewInt(1 << 1)
@@ -1301,6 +1373,17 @@ var (
 	identityProfileListItemBusinessAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// identityProfileListItemBusinessAddressNullableFields maps the wire names of IdentityProfileListItemBusinessAddress's nullable fields (required or optional) to their field bits.
+var identityProfileListItemBusinessAddressNullableFields = map[string]*big.Int{
+	"city":        identityProfileListItemBusinessAddressFieldCity,
+	"country":     identityProfileListItemBusinessAddressFieldCountry,
+	"line1":       identityProfileListItemBusinessAddressFieldLine1,
+	"line2":       identityProfileListItemBusinessAddressFieldLine2,
+	"postal_code": identityProfileListItemBusinessAddressFieldPostalCode,
+	"state":       identityProfileListItemBusinessAddressFieldState,
+}
+
+// Registered business address reported by the identity provider. Present on `business` profiles.
 type IdentityProfileListItemBusinessAddress struct {
 	// The city of the address.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1372,10 +1455,12 @@ func (i *IdentityProfileListItemBusinessAddress) GetExtraProperties() map[string
 }
 
 func (i *IdentityProfileListItemBusinessAddress) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1432,6 +1517,13 @@ func (i *IdentityProfileListItemBusinessAddress) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, identityProfileListItemBusinessAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1462,12 +1554,12 @@ func (i *IdentityProfileListItemBusinessAddress) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// A company is a seller on Whop. Companies own products, manage members, and receive payouts.
 var (
 	identityProfileListItemLinkedCompaniesItemFieldID    = big.NewInt(1 << 0)
 	identityProfileListItemLinkedCompaniesItemFieldTitle = big.NewInt(1 << 1)
 )
 
+// A company is a seller on Whop. Companies own products, manage members, and receive payouts.
 type IdentityProfileListItemLinkedCompaniesItem struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -1503,10 +1595,12 @@ func (i *IdentityProfileListItemLinkedCompaniesItem) GetExtraProperties() map[st
 }
 
 func (i *IdentityProfileListItemLinkedCompaniesItem) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1565,7 +1659,6 @@ func (i *IdentityProfileListItemLinkedCompaniesItem) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// Residential address reported by the identity provider. Present on `individual` profiles.
 var (
 	identityProfileListItemPersonalAddressFieldCity       = big.NewInt(1 << 0)
 	identityProfileListItemPersonalAddressFieldCountry    = big.NewInt(1 << 1)
@@ -1575,6 +1668,17 @@ var (
 	identityProfileListItemPersonalAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// identityProfileListItemPersonalAddressNullableFields maps the wire names of IdentityProfileListItemPersonalAddress's nullable fields (required or optional) to their field bits.
+var identityProfileListItemPersonalAddressNullableFields = map[string]*big.Int{
+	"city":        identityProfileListItemPersonalAddressFieldCity,
+	"country":     identityProfileListItemPersonalAddressFieldCountry,
+	"line1":       identityProfileListItemPersonalAddressFieldLine1,
+	"line2":       identityProfileListItemPersonalAddressFieldLine2,
+	"postal_code": identityProfileListItemPersonalAddressFieldPostalCode,
+	"state":       identityProfileListItemPersonalAddressFieldState,
+}
+
+// Residential address reported by the identity provider. Present on `individual` profiles.
 type IdentityProfileListItemPersonalAddress struct {
 	// The city of the address.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1646,10 +1750,12 @@ func (i *IdentityProfileListItemPersonalAddress) GetExtraProperties() map[string
 }
 
 func (i *IdentityProfileListItemPersonalAddress) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1706,6 +1812,13 @@ func (i *IdentityProfileListItemPersonalAddress) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, identityProfileListItemPersonalAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1736,7 +1849,6 @@ func (i *IdentityProfileListItemPersonalAddress) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// An identity verification session used to confirm a person or entity's identity for payout account eligibility.
 var (
 	identityProfileListItemVerificationsItemFieldCreatedAt       = big.NewInt(1 << 0)
 	identityProfileListItemVerificationsItemFieldID              = big.NewInt(1 << 1)
@@ -1746,6 +1858,14 @@ var (
 	identityProfileListItemVerificationsItemFieldStatus          = big.NewInt(1 << 5)
 )
 
+// identityProfileListItemVerificationsItemNullableFields maps the wire names of IdentityProfileListItemVerificationsItem's nullable fields (required or optional) to their field bits.
+var identityProfileListItemVerificationsItemNullableFields = map[string]*big.Int{
+	"last_error_code":   identityProfileListItemVerificationsItemFieldLastErrorCode,
+	"last_error_reason": identityProfileListItemVerificationsItemFieldLastErrorReason,
+	"session_url":       identityProfileListItemVerificationsItemFieldSessionURL,
+}
+
+// An identity verification session used to confirm a person or entity's identity for payout account eligibility.
 type IdentityProfileListItemVerificationsItem struct {
 	// When the verification record was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -1817,10 +1937,12 @@ func (i *IdentityProfileListItemVerificationsItem) GetExtraProperties() map[stri
 }
 
 func (i *IdentityProfileListItemVerificationsItem) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -1883,6 +2005,13 @@ func (i *IdentityProfileListItemVerificationsItem) UnmarshalJSON(data []byte) er
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, identityProfileListItemVerificationsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1915,7 +2044,6 @@ func (i *IdentityProfileListItemVerificationsItem) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// Residential address reported by the identity provider. Present on `individual` profiles.
 var (
 	identityProfilePersonalAddressFieldCity       = big.NewInt(1 << 0)
 	identityProfilePersonalAddressFieldCountry    = big.NewInt(1 << 1)
@@ -1925,6 +2053,17 @@ var (
 	identityProfilePersonalAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// identityProfilePersonalAddressNullableFields maps the wire names of IdentityProfilePersonalAddress's nullable fields (required or optional) to their field bits.
+var identityProfilePersonalAddressNullableFields = map[string]*big.Int{
+	"city":        identityProfilePersonalAddressFieldCity,
+	"country":     identityProfilePersonalAddressFieldCountry,
+	"line1":       identityProfilePersonalAddressFieldLine1,
+	"line2":       identityProfilePersonalAddressFieldLine2,
+	"postal_code": identityProfilePersonalAddressFieldPostalCode,
+	"state":       identityProfilePersonalAddressFieldState,
+}
+
+// Residential address reported by the identity provider. Present on `individual` profiles.
 type IdentityProfilePersonalAddress struct {
 	// The city of the address.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1996,10 +2135,12 @@ func (i *IdentityProfilePersonalAddress) GetExtraProperties() map[string]interfa
 }
 
 func (i *IdentityProfilePersonalAddress) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -2056,6 +2197,13 @@ func (i *IdentityProfilePersonalAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, identityProfilePersonalAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2121,7 +2269,6 @@ func (i IdentityProfileStatuses) Ptr() *IdentityProfileStatuses {
 	return &i
 }
 
-// An identity verification session used to confirm a person or entity's identity for payout account eligibility.
 var (
 	identityProfileVerificationsItemFieldCreatedAt       = big.NewInt(1 << 0)
 	identityProfileVerificationsItemFieldID              = big.NewInt(1 << 1)
@@ -2131,6 +2278,14 @@ var (
 	identityProfileVerificationsItemFieldStatus          = big.NewInt(1 << 5)
 )
 
+// identityProfileVerificationsItemNullableFields maps the wire names of IdentityProfileVerificationsItem's nullable fields (required or optional) to their field bits.
+var identityProfileVerificationsItemNullableFields = map[string]*big.Int{
+	"last_error_code":   identityProfileVerificationsItemFieldLastErrorCode,
+	"last_error_reason": identityProfileVerificationsItemFieldLastErrorReason,
+	"session_url":       identityProfileVerificationsItemFieldSessionURL,
+}
+
+// An identity verification session used to confirm a person or entity's identity for payout account eligibility.
 type IdentityProfileVerificationsItem struct {
 	// When the verification record was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -2202,10 +2357,12 @@ func (i *IdentityProfileVerificationsItem) GetExtraProperties() map[string]inter
 }
 
 func (i *IdentityProfileVerificationsItem) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -2268,6 +2425,13 @@ func (i *IdentityProfileVerificationsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, identityProfileVerificationsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2300,12 +2464,12 @@ func (i *IdentityProfileVerificationsItem) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// The connection type for IdentityProfile.
 var (
 	listIdentityProfileResponseFieldData     = big.NewInt(1 << 0)
 	listIdentityProfileResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for IdentityProfile.
 type ListIdentityProfileResponse struct {
 	// A list of nodes.
 	Data []*IdentityProfileListItem `json:"data" url:"data"`
@@ -2341,10 +2505,12 @@ func (l *ListIdentityProfileResponse) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListIdentityProfileResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2403,12 +2569,12 @@ func (l *ListIdentityProfileResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The connection type for Verification.
 var (
 	listVerificationsIdentityProfileResponseFieldData     = big.NewInt(1 << 0)
 	listVerificationsIdentityProfileResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for Verification.
 type ListVerificationsIdentityProfileResponse struct {
 	// A list of nodes.
 	Data []*ListVerificationsIdentityProfileResponseDataItem `json:"data" url:"data"`
@@ -2444,10 +2610,12 @@ func (l *ListVerificationsIdentityProfileResponse) GetExtraProperties() map[stri
 }
 
 func (l *ListVerificationsIdentityProfileResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2506,7 +2674,6 @@ func (l *ListVerificationsIdentityProfileResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// An identity verification session used to confirm a person or entity's identity for payout account eligibility.
 var (
 	listVerificationsIdentityProfileResponseDataItemFieldCreatedAt       = big.NewInt(1 << 0)
 	listVerificationsIdentityProfileResponseDataItemFieldID              = big.NewInt(1 << 1)
@@ -2516,6 +2683,14 @@ var (
 	listVerificationsIdentityProfileResponseDataItemFieldStatus          = big.NewInt(1 << 5)
 )
 
+// listVerificationsIdentityProfileResponseDataItemNullableFields maps the wire names of ListVerificationsIdentityProfileResponseDataItem's nullable fields (required or optional) to their field bits.
+var listVerificationsIdentityProfileResponseDataItemNullableFields = map[string]*big.Int{
+	"last_error_code":   listVerificationsIdentityProfileResponseDataItemFieldLastErrorCode,
+	"last_error_reason": listVerificationsIdentityProfileResponseDataItemFieldLastErrorReason,
+	"session_url":       listVerificationsIdentityProfileResponseDataItemFieldSessionURL,
+}
+
+// An identity verification session used to confirm a person or entity's identity for payout account eligibility.
 type ListVerificationsIdentityProfileResponseDataItem struct {
 	// When the verification record was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -2587,10 +2762,12 @@ func (l *ListVerificationsIdentityProfileResponseDataItem) GetExtraProperties() 
 }
 
 func (l *ListVerificationsIdentityProfileResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -2653,6 +2830,13 @@ func (l *ListVerificationsIdentityProfileResponseDataItem) UnmarshalJSON(data []
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listVerificationsIdentityProfileResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2701,10 +2885,12 @@ type UnlinkIdentityProfileRequest struct {
 }
 
 func (u *UnlinkIdentityProfileRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

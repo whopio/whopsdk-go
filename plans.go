@@ -28,10 +28,12 @@ type CalculateTaxPlansRequest struct {
 }
 
 func (c *CalculateTaxPlansRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -147,10 +149,12 @@ type CreatePlansRequest struct {
 }
 
 func (c *CreatePlansRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -376,10 +380,12 @@ type DeletePlansRequest struct {
 }
 
 func (d *DeletePlansRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -429,10 +435,12 @@ type ListPlansRequest struct {
 }
 
 func (l *ListPlansRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -539,10 +547,12 @@ type RetrievePlansRequest struct {
 }
 
 func (r *RetrievePlansRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -597,6 +607,36 @@ var (
 	planFieldUpdatedAt                           = big.NewInt(1 << 41)
 	planFieldVisibility                          = big.NewInt(1 << 42)
 )
+
+// planNullableFields maps the wire names of Plan's nullable fields (required or optional) to their field bits.
+var planNullableFields = map[string]*big.Int{
+	"account":                                planFieldAccount,
+	"attributes":                             planFieldAttributes,
+	"billing_period":                         planFieldBillingPeriod,
+	"cancel_discount_intervals":              planFieldCancelDiscountIntervals,
+	"cancel_discount_percentage":             planFieldCancelDiscountPercentage,
+	"checkout_styling":                       planFieldCheckoutStyling,
+	"deletable":                              planFieldDeletable,
+	"description":                            planFieldDescription,
+	"effective_payment_method_configuration": planFieldEffectivePaymentMethodConfiguration,
+	"expiration_days":                        planFieldExpirationDays,
+	"image":                                  planFieldImage,
+	"internal_notes":                         planFieldInternalNotes,
+	"invoice":                                planFieldInvoice,
+	"member_count":                           planFieldMemberCount,
+	"metadata":                               planFieldMetadata,
+	"offer_cancel_discount":                  planFieldOfferCancelDiscount,
+	"payment_method_configuration":           planFieldPaymentMethodConfiguration,
+	"product":                                planFieldProduct,
+	"sku":                                    planFieldSku,
+	"split_pay_required_payments":            planFieldSplitPayRequiredPayments,
+	"stock":                                  planFieldStock,
+	"strike_through_initial_price":           planFieldStrikeThroughInitialPrice,
+	"strike_through_renewal_price":           planFieldStrikeThroughRenewalPrice,
+	"three_ds_level":                         planFieldThreeDsLevel,
+	"title":                                  planFieldTitle,
+	"trial_period_days":                      planFieldTrialPeriodDays,
+}
 
 type Plan struct {
 	// Account that sells this variant; `null` for standalone invoice variants.
@@ -1001,10 +1041,12 @@ func (p *Plan) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *Plan) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -1320,6 +1362,13 @@ func (p *Plan) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, planNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1678,6 +1727,34 @@ var (
 	planListItemFieldUpdatedAt                  = big.NewInt(1 << 37)
 	planListItemFieldVisibility                 = big.NewInt(1 << 38)
 )
+
+// planListItemNullableFields maps the wire names of PlanListItem's nullable fields (required or optional) to their field bits.
+var planListItemNullableFields = map[string]*big.Int{
+	"account":                      planListItemFieldAccount,
+	"attributes":                   planListItemFieldAttributes,
+	"billing_period":               planListItemFieldBillingPeriod,
+	"cancel_discount_intervals":    planListItemFieldCancelDiscountIntervals,
+	"cancel_discount_percentage":   planListItemFieldCancelDiscountPercentage,
+	"checkout_styling":             planListItemFieldCheckoutStyling,
+	"description":                  planListItemFieldDescription,
+	"expiration_days":              planListItemFieldExpirationDays,
+	"image":                        planListItemFieldImage,
+	"internal_notes":               planListItemFieldInternalNotes,
+	"invoice":                      planListItemFieldInvoice,
+	"member_count":                 planListItemFieldMemberCount,
+	"metadata":                     planListItemFieldMetadata,
+	"offer_cancel_discount":        planListItemFieldOfferCancelDiscount,
+	"payment_method_configuration": planListItemFieldPaymentMethodConfiguration,
+	"product":                      planListItemFieldProduct,
+	"sku":                          planListItemFieldSku,
+	"split_pay_required_payments":  planListItemFieldSplitPayRequiredPayments,
+	"stock":                        planListItemFieldStock,
+	"strike_through_initial_price": planListItemFieldStrikeThroughInitialPrice,
+	"strike_through_renewal_price": planListItemFieldStrikeThroughRenewalPrice,
+	"three_ds_level":               planListItemFieldThreeDsLevel,
+	"title":                        planListItemFieldTitle,
+	"trial_period_days":            planListItemFieldTrialPeriodDays,
+}
 
 type PlanListItem struct {
 	// Account that sells this variant; `null` for standalone invoice variants.
@@ -2046,10 +2123,12 @@ func (p *PlanListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PlanListItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -2337,6 +2416,13 @@ func (p *PlanListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, planListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2604,6 +2690,15 @@ var (
 	calculateTaxPlansRequestAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// calculateTaxPlansRequestAddressNullableFields maps the wire names of CalculateTaxPlansRequestAddress's nullable fields (required or optional) to their field bits.
+var calculateTaxPlansRequestAddressNullableFields = map[string]*big.Int{
+	"city":        calculateTaxPlansRequestAddressFieldCity,
+	"line1":       calculateTaxPlansRequestAddressFieldLine1,
+	"line2":       calculateTaxPlansRequestAddressFieldLine2,
+	"postal_code": calculateTaxPlansRequestAddressFieldPostalCode,
+	"state":       calculateTaxPlansRequestAddressFieldState,
+}
+
 type CalculateTaxPlansRequestAddress struct {
 	City       *string `json:"city,omitempty" url:"city,omitempty"`
 	Country    string  `json:"country" url:"country"`
@@ -2669,10 +2764,12 @@ func (c *CalculateTaxPlansRequestAddress) GetExtraProperties() map[string]interf
 }
 
 func (c *CalculateTaxPlansRequestAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -2729,6 +2826,13 @@ func (c *CalculateTaxPlansRequestAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, calculateTaxPlansRequestAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2797,10 +2901,12 @@ func (c *CalculateTaxPlansRequestTaxIDsItem) GetExtraProperties() map[string]int
 }
 
 func (c *CalculateTaxPlansRequestTaxIDsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -3282,10 +3388,12 @@ func (c *CalculateTaxPlansResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (c *CalculateTaxPlansResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -3425,6 +3533,11 @@ var (
 	createPlansRequestCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
 )
 
+// createPlansRequestCustomFieldsItemNullableFields maps the wire names of CreatePlansRequestCustomFieldsItem's nullable fields (required or optional) to their field bits.
+var createPlansRequestCustomFieldsItemNullableFields = map[string]*big.Int{
+	"placeholder": createPlansRequestCustomFieldsItemFieldPlaceholder,
+}
+
 type CreatePlansRequestCustomFieldsItem struct {
 	FieldType   *CreatePlansRequestCustomFieldsItemFieldType `json:"field_type,omitempty" url:"field_type,omitempty"`
 	ID          *string                                      `json:"id,omitempty" url:"id,omitempty"`
@@ -3490,10 +3603,12 @@ func (c *CreatePlansRequestCustomFieldsItem) GetExtraProperties() map[string]int
 }
 
 func (c *CreatePlansRequestCustomFieldsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetFieldType sets the FieldType field and marks it as non-optional;
@@ -3550,6 +3665,13 @@ func (c *CreatePlansRequestCustomFieldsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPlansRequestCustomFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3637,10 +3759,12 @@ func (c *CreatePlansRequestImage) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreatePlansRequestImage) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3746,10 +3870,12 @@ func (c *CreatePlansRequestPaymentMethodConfiguration) GetExtraProperties() map[
 }
 
 func (c *CreatePlansRequestPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -3878,10 +4004,12 @@ func (d *DeletePlansResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeletePlansResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -4031,10 +4159,12 @@ func (l *ListPlansResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPlansResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -4100,6 +4230,12 @@ var (
 	listPlansResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPlansResponsePageInfoNullableFields maps the wire names of ListPlansResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPlansResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPlansResponsePageInfoFieldEndCursor,
+	"start_cursor": listPlansResponsePageInfoFieldStartCursor,
+}
+
 type ListPlansResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -4149,10 +4285,12 @@ func (l *ListPlansResponsePageInfo) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListPlansResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -4195,6 +4333,13 @@ func (l *ListPlansResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPlansResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4233,6 +4378,11 @@ var (
 	updatePlansRequestCustomFieldsItemFieldPlaceholder = big.NewInt(1 << 4)
 	updatePlansRequestCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
 )
+
+// updatePlansRequestCustomFieldsItemNullableFields maps the wire names of UpdatePlansRequestCustomFieldsItem's nullable fields (required or optional) to their field bits.
+var updatePlansRequestCustomFieldsItemNullableFields = map[string]*big.Int{
+	"placeholder": updatePlansRequestCustomFieldsItemFieldPlaceholder,
+}
 
 type UpdatePlansRequestCustomFieldsItem struct {
 	FieldType   *UpdatePlansRequestCustomFieldsItemFieldType `json:"field_type,omitempty" url:"field_type,omitempty"`
@@ -4299,10 +4449,12 @@ func (u *UpdatePlansRequestCustomFieldsItem) GetExtraProperties() map[string]int
 }
 
 func (u *UpdatePlansRequestCustomFieldsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFieldType sets the FieldType field and marks it as non-optional;
@@ -4359,6 +4511,13 @@ func (u *UpdatePlansRequestCustomFieldsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePlansRequestCustomFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4446,10 +4605,12 @@ func (u *UpdatePlansRequestImage) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdatePlansRequestImage) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4555,10 +4716,12 @@ func (u *UpdatePlansRequestPaymentMethodConfiguration) GetExtraProperties() map[
 }
 
 func (u *UpdatePlansRequestPaymentMethodConfiguration) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -4718,10 +4881,12 @@ type UpdatePlansRequest struct {
 }
 
 func (u *UpdatePlansRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

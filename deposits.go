@@ -26,10 +26,12 @@ type CreateDepositsRequest struct {
 }
 
 func (c *CreateDepositsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -74,6 +76,12 @@ var (
 	createDepositsResponseFieldMethods   = big.NewInt(1 << 3)
 	createDepositsResponseFieldObject    = big.NewInt(1 << 4)
 )
+
+// createDepositsResponseNullableFields maps the wire names of CreateDepositsResponse's nullable fields (required or optional) to their field bits.
+var createDepositsResponseNullableFields = map[string]*big.Int{
+	"account_id": createDepositsResponseFieldAccountID,
+	"hosted_url": createDepositsResponseFieldHostedURL,
+}
 
 type CreateDepositsResponse struct {
 	// Account ID of the destination owner.
@@ -136,10 +144,12 @@ func (c *CreateDepositsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreateDepositsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -189,6 +199,13 @@ func (c *CreateDepositsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDepositsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -219,12 +236,17 @@ func (c *CreateDepositsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Available deposit methods for destination.
 var (
 	createDepositsResponseMethodsFieldBank   = big.NewInt(1 << 0)
 	createDepositsResponseMethodsFieldCrypto = big.NewInt(1 << 1)
 )
 
+// createDepositsResponseMethodsNullableFields maps the wire names of CreateDepositsResponseMethods's nullable fields (required or optional) to their field bits.
+var createDepositsResponseMethodsNullableFields = map[string]*big.Int{
+	"bank": createDepositsResponseMethodsFieldBank,
+}
+
+// Available deposit methods for destination.
 type CreateDepositsResponseMethods struct {
 	// Bank deposit details. Only present when bank deposits are active for the destination account.
 	Bank *CreateDepositsResponseMethodsBank `json:"bank,omitempty" url:"bank,omitempty"`
@@ -260,10 +282,12 @@ func (c *CreateDepositsResponseMethods) GetExtraProperties() map[string]interfac
 }
 
 func (c *CreateDepositsResponseMethods) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetBank sets the Bank field and marks it as non-optional;
@@ -292,6 +316,13 @@ func (c *CreateDepositsResponseMethods) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDepositsResponseMethodsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -322,11 +353,11 @@ func (c *CreateDepositsResponseMethods) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Bank deposit details. Only present when bank deposits are active for the destination account.
 var (
 	createDepositsResponseMethodsBankFieldCurrencies = big.NewInt(1 << 0)
 )
 
+// Bank deposit details. Only present when bank deposits are active for the destination account.
 type CreateDepositsResponseMethodsBank struct {
 	// Bank transfer currencies available for this deposit.
 	Currencies []*CreateDepositsResponseMethodsBankCurrenciesItem `json:"currencies" url:"currencies"`
@@ -353,10 +384,12 @@ func (c *CreateDepositsResponseMethodsBank) GetExtraProperties() map[string]inte
 }
 
 func (c *CreateDepositsResponseMethodsBank) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCurrencies sets the Currencies field and marks it as non-optional;
@@ -419,6 +452,17 @@ var (
 	createDepositsResponseMethodsBankCurrenciesItemFieldRoutingNumber          = big.NewInt(1 << 7)
 	createDepositsResponseMethodsBankCurrenciesItemFieldSwiftBic               = big.NewInt(1 << 8)
 )
+
+// createDepositsResponseMethodsBankCurrenciesItemNullableFields maps the wire names of CreateDepositsResponseMethodsBankCurrenciesItem's nullable fields (required or optional) to their field bits.
+var createDepositsResponseMethodsBankCurrenciesItemNullableFields = map[string]*big.Int{
+	"account_number":           createDepositsResponseMethodsBankCurrenciesItemFieldAccountNumber,
+	"deposit_bank_address":     createDepositsResponseMethodsBankCurrenciesItemFieldDepositBankAddress,
+	"deposit_bank_name":        createDepositsResponseMethodsBankCurrenciesItemFieldDepositBankName,
+	"deposit_beneficiary_name": createDepositsResponseMethodsBankCurrenciesItemFieldDepositBeneficiaryName,
+	"deposit_reference":        createDepositsResponseMethodsBankCurrenciesItemFieldDepositReference,
+	"routing_number":           createDepositsResponseMethodsBankCurrenciesItemFieldRoutingNumber,
+	"swift_bic":                createDepositsResponseMethodsBankCurrenciesItemFieldSwiftBic,
+}
 
 type CreateDepositsResponseMethodsBankCurrenciesItem struct {
 	// Bank account number for deposits in this currency.
@@ -518,10 +562,12 @@ func (c *CreateDepositsResponseMethodsBankCurrenciesItem) GetExtraProperties() m
 }
 
 func (c *CreateDepositsResponseMethodsBankCurrenciesItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountNumber sets the AccountNumber field and marks it as non-optional;
@@ -599,6 +645,13 @@ func (c *CreateDepositsResponseMethodsBankCurrenciesItem) UnmarshalJSON(data []b
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDepositsResponseMethodsBankCurrenciesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -667,6 +720,12 @@ var (
 	createDepositsResponseMethodsCryptoItemFieldSupportedCurrencies = big.NewInt(1 << 3)
 )
 
+// createDepositsResponseMethodsCryptoItemNullableFields maps the wire names of CreateDepositsResponseMethodsCryptoItem's nullable fields (required or optional) to their field bits.
+var createDepositsResponseMethodsCryptoItemNullableFields = map[string]*big.Int{
+	"deposit_address": createDepositsResponseMethodsCryptoItemFieldDepositAddress,
+	"icon_url":        createDepositsResponseMethodsCryptoItemFieldIconURL,
+}
+
 type CreateDepositsResponseMethodsCryptoItem struct {
 	// Address to send funds to on this network. Null when the provider has not issued one yet.
 	DepositAddress *string `json:"deposit_address,omitempty" url:"deposit_address,omitempty"`
@@ -720,10 +779,12 @@ func (c *CreateDepositsResponseMethodsCryptoItem) GetExtraProperties() map[strin
 }
 
 func (c *CreateDepositsResponseMethodsCryptoItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDepositAddress sets the DepositAddress field and marks it as non-optional;
@@ -766,6 +827,13 @@ func (c *CreateDepositsResponseMethodsCryptoItem) UnmarshalJSON(data []byte) err
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDepositsResponseMethodsCryptoItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -851,6 +919,11 @@ var (
 	createDepositsResponseMethodsCryptoItemSupportedCurrenciesItemFieldName    = big.NewInt(1 << 1)
 )
 
+// createDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNullableFields maps the wire names of CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItem's nullable fields (required or optional) to their field bits.
+var createDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNullableFields = map[string]*big.Int{
+	"icon_url": createDepositsResponseMethodsCryptoItemSupportedCurrenciesItemFieldIconURL,
+}
+
 type CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItem struct {
 	// Token icon URL. Null when no icon is available.
 	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
@@ -886,10 +959,12 @@ func (c *CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItem) GetExtr
 }
 
 func (c *CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetIconURL sets the IconURL field and marks it as non-optional;
@@ -918,6 +993,13 @@ func (c *CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItem) Unmarsh
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1055,6 +1137,12 @@ var (
 	postDepositSucceededPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postDepositSucceededPayloadNullableFields maps the wire names of PostDepositSucceededPayload's nullable fields (required or optional) to their field bits.
+var postDepositSucceededPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postDepositSucceededPayloadFieldAccountID,
+	"api_version_date": postDepositSucceededPayloadFieldAPIVersionDate,
+}
+
 type PostDepositSucceededPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -1143,10 +1231,12 @@ func (p *PostDepositSucceededPayload) GetExtraProperties() map[string]interface{
 }
 
 func (p *PostDepositSucceededPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1223,6 +1313,13 @@ func (p *PostDepositSucceededPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postDepositSucceededPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

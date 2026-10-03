@@ -28,10 +28,12 @@ type CompleteFilesRequest struct {
 }
 
 func (c *CompleteFilesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -98,10 +100,12 @@ type CreateFilesRequest struct {
 }
 
 func (c *CreateFilesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetByteSize sets the ByteSize field and marks it as non-optional;
@@ -184,10 +188,12 @@ type ListFilesRequest struct {
 }
 
 func (l *ListFilesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFileIDs sets the FileIDs field and marks it as non-optional;
@@ -252,10 +258,12 @@ type RetrieveFilesRequest struct {
 }
 
 func (r *RetrieveFilesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -305,10 +313,12 @@ func (c *CompleteFilesRequestMultipartPartsItem) GetExtraProperties() map[string
 }
 
 func (c *CompleteFilesRequestMultipartPartsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetEtag sets the Etag field and marks it as non-optional;
@@ -469,10 +479,12 @@ func (l *ListFilesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListFilesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -538,6 +550,12 @@ var (
 	listFilesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listFilesResponsePageInfoNullableFields maps the wire names of ListFilesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listFilesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listFilesResponsePageInfoFieldEndCursor,
+	"start_cursor": listFilesResponsePageInfoFieldStartCursor,
+}
+
 type ListFilesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -587,10 +605,12 @@ func (l *ListFilesResponsePageInfo) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListFilesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -633,6 +653,13 @@ func (l *ListFilesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listFilesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

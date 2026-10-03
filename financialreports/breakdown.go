@@ -45,10 +45,12 @@ type RetrieveBreakdownRequest struct {
 }
 
 func (r *RetrieveBreakdownRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -234,6 +236,11 @@ var (
 	retrieveBreakdownResponseFieldOtherName       = big.NewInt(1 << 6)
 )
 
+// retrieveBreakdownResponseNullableFields maps the wire names of RetrieveBreakdownResponse's nullable fields (required or optional) to their field bits.
+var retrieveBreakdownResponseNullableFields = map[string]*big.Int{
+	"other_amount": retrieveBreakdownResponseFieldOtherAmount,
+}
+
 type RetrieveBreakdownResponse struct {
 	ActivityFilters *RetrieveBreakdownResponseActivityFilters `json:"activity_filters" url:"activity_filters"`
 	Bucket          RetrieveBreakdownResponseBucket           `json:"bucket" url:"bucket"`
@@ -307,10 +314,12 @@ func (r *RetrieveBreakdownResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (r *RetrieveBreakdownResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetActivityFilters sets the ActivityFilters field and marks it as non-optional;
@@ -374,6 +383,13 @@ func (r *RetrieveBreakdownResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBreakdownResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -442,10 +458,12 @@ func (r *RetrieveBreakdownResponseActivityFilters) GetExtraProperties() map[stri
 }
 
 func (r *RetrieveBreakdownResponseActivityFilters) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDirection sets the Direction field and marks it as non-optional;
@@ -625,6 +643,13 @@ var (
 	retrieveBreakdownResponseItemsItemFieldResourceID = big.NewInt(1 << 6)
 )
 
+// retrieveBreakdownResponseItemsItemNullableFields maps the wire names of RetrieveBreakdownResponseItemsItem's nullable fields (required or optional) to their field bits.
+var retrieveBreakdownResponseItemsItemNullableFields = map[string]*big.Int{
+	"avatar":      retrieveBreakdownResponseItemsItemFieldAvatar,
+	"image_url":   retrieveBreakdownResponseItemsItemFieldImageURL,
+	"resource_id": retrieveBreakdownResponseItemsItemFieldResourceID,
+}
+
 type RetrieveBreakdownResponseItemsItem struct {
 	Amount *v2.Money `json:"amount" url:"amount"`
 	// How to draw the row's icon. `null` when the row has nothing to show (balances, adjustments, ad campaigns), so clients render no icon rather than a placeholder.
@@ -701,10 +726,12 @@ func (r *RetrieveBreakdownResponseItemsItem) GetExtraProperties() map[string]int
 }
 
 func (r *RetrieveBreakdownResponseItemsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -768,6 +795,13 @@ func (r *RetrieveBreakdownResponseItemsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBreakdownResponseItemsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -803,6 +837,11 @@ var (
 	retrieveBreakdownResponseItemsItemAvatarFieldURL   = big.NewInt(1 << 1)
 )
 
+// retrieveBreakdownResponseItemsItemAvatarNullableFields maps the wire names of RetrieveBreakdownResponseItemsItemAvatar's nullable fields (required or optional) to their field bits.
+var retrieveBreakdownResponseItemsItemAvatarNullableFields = map[string]*big.Int{
+	"url": retrieveBreakdownResponseItemsItemAvatarFieldURL,
+}
+
 type RetrieveBreakdownResponseItemsItemAvatar struct {
 	Shape RetrieveBreakdownResponseItemsItemAvatarShape `json:"shape" url:"shape"`
 	// The image to show, or `null` to fall back to the row's initials.
@@ -837,10 +876,12 @@ func (r *RetrieveBreakdownResponseItemsItemAvatar) GetExtraProperties() map[stri
 }
 
 func (r *RetrieveBreakdownResponseItemsItemAvatar) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetShape sets the Shape field and marks it as non-optional;
@@ -869,6 +910,13 @@ func (r *RetrieveBreakdownResponseItemsItemAvatar) UnmarshalJSON(data []byte) er
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBreakdownResponseItemsItemAvatarNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }

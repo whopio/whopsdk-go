@@ -37,10 +37,12 @@ type CreateWebhooksRequest struct {
 }
 
 func (c *CreateWebhooksRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
@@ -119,10 +121,12 @@ type DeleteWebhooksRequest struct {
 }
 
 func (d *DeleteWebhooksRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -166,10 +170,12 @@ type ListWebhooksRequest struct {
 }
 
 func (l *ListWebhooksRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -247,10 +253,12 @@ type ListDeliveriesWebhooksRequest struct {
 }
 
 func (l *ListDeliveriesWebhooksRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -302,10 +310,12 @@ type ReplayWebhooksRequest struct {
 }
 
 func (r *ReplayWebhooksRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -390,10 +400,12 @@ type ReplayDeliveryWebhooksRequest struct {
 }
 
 func (r *ReplayDeliveryWebhooksRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -451,10 +463,12 @@ type RetrieveWebhooksRequest struct {
 }
 
 func (r *RetrieveWebhooksRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -480,10 +494,12 @@ type TestWebhooksRequest struct {
 }
 
 func (t *TestWebhooksRequest) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -539,6 +555,16 @@ var (
 	webhookFieldURL                 = big.NewInt(1 << 14)
 	webhookFieldWebhookSecret       = big.NewInt(1 << 15)
 )
+
+// webhookNullableFields maps the wire names of Webhook's nullable fields (required or optional) to their field bits.
+var webhookNullableFields = map[string]*big.Int{
+	"api_version_date": webhookFieldAPIVersionDate,
+	"disabled_at":      webhookFieldDisabledAt,
+	"disabled_reason":  webhookFieldDisabledReason,
+	"failing_since":    webhookFieldFailingSince,
+	"last_failure_at":  webhookFieldLastFailureAt,
+	"webhook_secret":   webhookFieldWebhookSecret,
+}
 
 type Webhook struct {
 	// The API version used to format payloads sent to this webhook endpoint.
@@ -699,10 +725,12 @@ func (w *Webhook) GetExtraProperties() map[string]interface{} {
 }
 
 func (w *Webhook) require(field *big.Int) {
-	if w.explicitFields == nil {
-		w.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if w.explicitFields != nil {
+		next.Set(w.explicitFields)
 	}
-	w.explicitFields.Or(w.explicitFields, field)
+	next.Or(next, field)
+	w.explicitFields = next
 }
 
 // SetAPIVersion sets the APIVersion field and marks it as non-optional;
@@ -829,6 +857,13 @@ func (w *Webhook) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	w.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, webhookNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		w.require(presentFields)
+	}
 	w.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -897,6 +932,13 @@ var (
 	webhookDeliveryFieldSuccess      = big.NewInt(1 << 8)
 	webhookDeliveryFieldTotalTime    = big.NewInt(1 << 9)
 )
+
+// webhookDeliveryNullableFields maps the wire names of WebhookDelivery's nullable fields (required or optional) to their field bits.
+var webhookDeliveryNullableFields = map[string]*big.Int{
+	"event":         webhookDeliveryFieldEvent,
+	"replayed_from": webhookDeliveryFieldReplayedFrom,
+	"response_body": webhookDeliveryFieldResponseBody,
+}
 
 type WebhookDelivery struct {
 	// The event type this delivery carried, for example `payment.succeeded`.
@@ -1005,10 +1047,12 @@ func (w *WebhookDelivery) GetExtraProperties() map[string]interface{} {
 }
 
 func (w *WebhookDelivery) require(field *big.Int) {
-	if w.explicitFields == nil {
-		w.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if w.explicitFields != nil {
+		next.Set(w.explicitFields)
 	}
-	w.explicitFields.Or(w.explicitFields, field)
+	next.Or(next, field)
+	w.explicitFields = next
 }
 
 // SetEvent sets the Event field and marks it as non-optional;
@@ -1093,6 +1137,13 @@ func (w *WebhookDelivery) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	w.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, webhookDeliveryNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		w.require(presentFields)
+	}
 	w.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1490,6 +1541,16 @@ var (
 	webhookListItemFieldWebhookSecret       = big.NewInt(1 << 14)
 )
 
+// webhookListItemNullableFields maps the wire names of WebhookListItem's nullable fields (required or optional) to their field bits.
+var webhookListItemNullableFields = map[string]*big.Int{
+	"api_version_date": webhookListItemFieldAPIVersionDate,
+	"disabled_at":      webhookListItemFieldDisabledAt,
+	"disabled_reason":  webhookListItemFieldDisabledReason,
+	"failing_since":    webhookListItemFieldFailingSince,
+	"last_failure_at":  webhookListItemFieldLastFailureAt,
+	"webhook_secret":   webhookListItemFieldWebhookSecret,
+}
+
 type WebhookListItem struct {
 	// The API version used to format payloads sent to this webhook endpoint.
 	APIVersion WebhookListItemAPIVersion `json:"api_version" url:"api_version"`
@@ -1641,10 +1702,12 @@ func (w *WebhookListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (w *WebhookListItem) require(field *big.Int) {
-	if w.explicitFields == nil {
-		w.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if w.explicitFields != nil {
+		next.Set(w.explicitFields)
 	}
-	w.explicitFields.Or(w.explicitFields, field)
+	next.Or(next, field)
+	w.explicitFields = next
 }
 
 // SetAPIVersion sets the APIVersion field and marks it as non-optional;
@@ -1764,6 +1827,13 @@ func (w *WebhookListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	w.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, webhookListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		w.require(presentFields)
+	}
 	w.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2809,10 +2879,12 @@ func (d *DeleteWebhooksResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteWebhooksResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -2909,10 +2981,12 @@ func (l *ListDeliveriesWebhooksResponse) GetExtraProperties() map[string]interfa
 }
 
 func (l *ListDeliveriesWebhooksResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2978,6 +3052,12 @@ var (
 	listDeliveriesWebhooksResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listDeliveriesWebhooksResponsePageInfoNullableFields maps the wire names of ListDeliveriesWebhooksResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listDeliveriesWebhooksResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listDeliveriesWebhooksResponsePageInfoFieldEndCursor,
+	"start_cursor": listDeliveriesWebhooksResponsePageInfoFieldStartCursor,
+}
+
 type ListDeliveriesWebhooksResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -3027,10 +3107,12 @@ func (l *ListDeliveriesWebhooksResponsePageInfo) GetExtraProperties() map[string
 }
 
 func (l *ListDeliveriesWebhooksResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3073,6 +3155,13 @@ func (l *ListDeliveriesWebhooksResponsePageInfo) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listDeliveriesWebhooksResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3141,10 +3230,12 @@ func (l *ListWebhooksResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListWebhooksResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3210,6 +3301,12 @@ var (
 	listWebhooksResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listWebhooksResponsePageInfoNullableFields maps the wire names of ListWebhooksResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listWebhooksResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listWebhooksResponsePageInfoFieldEndCursor,
+	"start_cursor": listWebhooksResponsePageInfoFieldStartCursor,
+}
+
 type ListWebhooksResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -3259,10 +3356,12 @@ func (l *ListWebhooksResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListWebhooksResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3305,6 +3404,13 @@ func (l *ListWebhooksResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listWebhooksResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3385,10 +3491,12 @@ func (r *ReplayDeliveryWebhooksResponse) GetExtraProperties() map[string]interfa
 }
 
 func (r *ReplayDeliveryWebhooksResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBody sets the Body field and marks it as non-optional;
@@ -3484,10 +3592,12 @@ func (r *ReplayWebhooksResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReplayWebhooksResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetQueued sets the Queued field and marks it as non-optional;
@@ -3588,10 +3698,12 @@ func (t *TestWebhooksResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TestWebhooksResponse) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetBody sets the Body field and marks it as non-optional;
@@ -3956,10 +4068,12 @@ type UpdateWebhooksRequest struct {
 }
 
 func (u *UpdateWebhooksRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

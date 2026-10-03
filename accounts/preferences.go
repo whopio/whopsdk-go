@@ -22,10 +22,12 @@ type RetrievePreferencesRequest struct {
 }
 
 func (r *RetrievePreferencesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -51,6 +53,14 @@ var (
 	retrievePreferencesResponseFieldEconomicIntelligenceOffers        = big.NewInt(1 << 12)
 	retrievePreferencesResponseFieldSubscriptionFailureBehavior       = big.NewInt(1 << 13)
 )
+
+// retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseNullableFields = map[string]*big.Int{
+	"ads_payment_methods":                  retrievePreferencesResponseFieldAdsPaymentMethods,
+	"economic_intelligence_ends_at":        retrievePreferencesResponseFieldEconomicIntelligenceEndsAt,
+	"economic_intelligence_fee_percentage": retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage,
+	"economic_intelligence_offers":         retrievePreferencesResponseFieldEconomicIntelligenceOffers,
+}
 
 type RetrievePreferencesResponse struct {
 	// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
@@ -195,10 +205,12 @@ func (r *RetrievePreferencesResponse) GetExtraProperties() map[string]interface{
 }
 
 func (r *RetrievePreferencesResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAdsAgreement sets the AdsAgreement field and marks it as non-optional;
@@ -311,6 +323,13 @@ func (r *RetrievePreferencesResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -341,7 +360,6 @@ func (r *RetrievePreferencesResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 var (
 	retrievePreferencesResponseAdsAgreementFieldAcceptedAt       = big.NewInt(1 << 0)
 	retrievePreferencesResponseAdsAgreementFieldAgreementVersion = big.NewInt(1 << 1)
@@ -349,6 +367,14 @@ var (
 	retrievePreferencesResponseAdsAgreementFieldStatus           = big.NewInt(1 << 3)
 )
 
+// retrievePreferencesResponseAdsAgreementNullableFields maps the wire names of RetrievePreferencesResponseAdsAgreement's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsAgreementNullableFields = map[string]*big.Int{
+	"accepted_at":       retrievePreferencesResponseAdsAgreementFieldAcceptedAt,
+	"agreement_version": retrievePreferencesResponseAdsAgreementFieldAgreementVersion,
+	"printed_name":      retrievePreferencesResponseAdsAgreementFieldPrintedName,
+}
+
+// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 type RetrievePreferencesResponseAdsAgreement struct {
 	// When the agreement was signed, as an ISO 8601 timestamp. `null` until signed.
 	AcceptedAt *string `json:"accepted_at,omitempty" url:"accepted_at,omitempty"`
@@ -402,10 +428,12 @@ func (r *RetrievePreferencesResponseAdsAgreement) GetExtraProperties() map[strin
 }
 
 func (r *RetrievePreferencesResponseAdsAgreement) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAcceptedAt sets the AcceptedAt field and marks it as non-optional;
@@ -448,6 +476,13 @@ func (r *RetrievePreferencesResponseAdsAgreement) UnmarshalJSON(data []byte) err
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsAgreementNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -515,6 +550,15 @@ var (
 	retrievePreferencesResponseAdsCertificationsItemFieldStatus            = big.NewInt(1 << 7)
 	retrievePreferencesResponseAdsCertificationsItemFieldURL               = big.NewInt(1 << 8)
 )
+
+// retrievePreferencesResponseAdsCertificationsItemNullableFields maps the wire names of RetrievePreferencesResponseAdsCertificationsItem's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsCertificationsItemNullableFields = map[string]*big.Int{
+	"business_name": retrievePreferencesResponseAdsCertificationsItemFieldBusinessName,
+	"business_type": retrievePreferencesResponseAdsCertificationsItemFieldBusinessType,
+	"denial_reason": retrievePreferencesResponseAdsCertificationsItemFieldDenialReason,
+	"request_id":    retrievePreferencesResponseAdsCertificationsItemFieldRequestID,
+	"url":           retrievePreferencesResponseAdsCertificationsItemFieldURL,
+}
 
 type RetrievePreferencesResponseAdsCertificationsItem struct {
 	// Countries every approved application of this type covers, as ISO 3166-1 alpha-2 codes. Ads targeting only these countries are exempt from the category's restrictions.
@@ -614,10 +658,12 @@ func (r *RetrievePreferencesResponseAdsCertificationsItem) GetExtraProperties() 
 }
 
 func (r *RetrievePreferencesResponseAdsCertificationsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetApprovedCountries sets the ApprovedCountries field and marks it as non-optional;
@@ -695,6 +741,13 @@ func (r *RetrievePreferencesResponseAdsCertificationsItem) UnmarshalJSON(data []
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsCertificationsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -803,12 +856,18 @@ func (r RetrievePreferencesResponseAdsCertificationsItemStatus) Ptr() *RetrieveP
 	return &r
 }
 
-// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
 var (
 	retrievePreferencesResponseAdsPaymentMethodsFieldBackup  = big.NewInt(1 << 0)
 	retrievePreferencesResponseAdsPaymentMethodsFieldPrimary = big.NewInt(1 << 1)
 )
 
+// retrievePreferencesResponseAdsPaymentMethodsNullableFields maps the wire names of RetrievePreferencesResponseAdsPaymentMethods's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsPaymentMethodsNullableFields = map[string]*big.Int{
+	"backup":  retrievePreferencesResponseAdsPaymentMethodsFieldBackup,
+	"primary": retrievePreferencesResponseAdsPaymentMethodsFieldPrimary,
+}
+
+// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
 type RetrievePreferencesResponseAdsPaymentMethods struct {
 	Backup  *RetrievePreferencesResponseAdsPaymentMethodsBackup  `json:"backup,omitempty" url:"backup,omitempty"`
 	Primary *RetrievePreferencesResponseAdsPaymentMethodsPrimary `json:"primary,omitempty" url:"primary,omitempty"`
@@ -842,10 +901,12 @@ func (r *RetrievePreferencesResponseAdsPaymentMethods) GetExtraProperties() map[
 }
 
 func (r *RetrievePreferencesResponseAdsPaymentMethods) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBackup sets the Backup field and marks it as non-optional;
@@ -874,6 +935,13 @@ func (r *RetrievePreferencesResponseAdsPaymentMethods) UnmarshalJSON(data []byte
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsPaymentMethodsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -914,6 +982,16 @@ var (
 	retrievePreferencesResponseAdsPaymentMethodsBackupFieldTitle     = big.NewInt(1 << 6)
 	retrievePreferencesResponseAdsPaymentMethodsBackupFieldType      = big.NewInt(1 << 7)
 )
+
+// retrievePreferencesResponseAdsPaymentMethodsBackupNullableFields maps the wire names of RetrievePreferencesResponseAdsPaymentMethodsBackup's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsPaymentMethodsBackupNullableFields = map[string]*big.Int{
+	"card_brand": retrievePreferencesResponseAdsPaymentMethodsBackupFieldCardBrand,
+	"exp_month":  retrievePreferencesResponseAdsPaymentMethodsBackupFieldExpMonth,
+	"exp_year":   retrievePreferencesResponseAdsPaymentMethodsBackupFieldExpYear,
+	"icon_url":   retrievePreferencesResponseAdsPaymentMethodsBackupFieldIconURL,
+	"last4":      retrievePreferencesResponseAdsPaymentMethodsBackupFieldLast4,
+	"title":      retrievePreferencesResponseAdsPaymentMethodsBackupFieldTitle,
+}
 
 type RetrievePreferencesResponseAdsPaymentMethodsBackup struct {
 	// Card brand, present for `card` entries.
@@ -1004,10 +1082,12 @@ func (r *RetrievePreferencesResponseAdsPaymentMethodsBackup) GetExtraProperties(
 }
 
 func (r *RetrievePreferencesResponseAdsPaymentMethodsBackup) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
@@ -1078,6 +1158,13 @@ func (r *RetrievePreferencesResponseAdsPaymentMethodsBackup) UnmarshalJSON(data 
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsPaymentMethodsBackupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1141,6 +1228,16 @@ var (
 	retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldTitle     = big.NewInt(1 << 6)
 	retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldType      = big.NewInt(1 << 7)
 )
+
+// retrievePreferencesResponseAdsPaymentMethodsPrimaryNullableFields maps the wire names of RetrievePreferencesResponseAdsPaymentMethodsPrimary's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsPaymentMethodsPrimaryNullableFields = map[string]*big.Int{
+	"card_brand": retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldCardBrand,
+	"exp_month":  retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldExpMonth,
+	"exp_year":   retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldExpYear,
+	"icon_url":   retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldIconURL,
+	"last4":      retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldLast4,
+	"title":      retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldTitle,
+}
 
 type RetrievePreferencesResponseAdsPaymentMethodsPrimary struct {
 	// Card brand, present for `card` entries.
@@ -1231,10 +1328,12 @@ func (r *RetrievePreferencesResponseAdsPaymentMethodsPrimary) GetExtraProperties
 }
 
 func (r *RetrievePreferencesResponseAdsPaymentMethodsPrimary) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
@@ -1305,6 +1404,13 @@ func (r *RetrievePreferencesResponseAdsPaymentMethodsPrimary) UnmarshalJSON(data
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsPaymentMethodsPrimaryNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1358,13 +1464,19 @@ func (r RetrievePreferencesResponseAdsPaymentMethodsPrimaryType) Ptr() *Retrieve
 	return &r
 }
 
-// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, a custom checkout, or no connected store — by setting `shop_domain` explicitly; Shopify merchants may instead rely on a connected store's domain. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 var (
 	retrievePreferencesResponseAdsTripleWhaleIntegrationFieldMaskedAPIKey = big.NewInt(1 << 0)
 	retrievePreferencesResponseAdsTripleWhaleIntegrationFieldShopDomain   = big.NewInt(1 << 1)
 	retrievePreferencesResponseAdsTripleWhaleIntegrationFieldStatus       = big.NewInt(1 << 2)
 )
 
+// retrievePreferencesResponseAdsTripleWhaleIntegrationNullableFields maps the wire names of RetrievePreferencesResponseAdsTripleWhaleIntegration's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsTripleWhaleIntegrationNullableFields = map[string]*big.Int{
+	"masked_api_key": retrievePreferencesResponseAdsTripleWhaleIntegrationFieldMaskedAPIKey,
+	"shop_domain":    retrievePreferencesResponseAdsTripleWhaleIntegrationFieldShopDomain,
+}
+
+// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, a custom checkout, or no connected store — by setting `shop_domain` explicitly; Shopify merchants may instead rely on a connected store's domain. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 type RetrievePreferencesResponseAdsTripleWhaleIntegration struct {
 	// The leading characters of the stored Data-In API key, followed by asterisks. The full key is never returned. `null` when no key is stored.
 	MaskedAPIKey *string `json:"masked_api_key,omitempty" url:"masked_api_key,omitempty"`
@@ -1409,10 +1521,12 @@ func (r *RetrievePreferencesResponseAdsTripleWhaleIntegration) GetExtraPropertie
 }
 
 func (r *RetrievePreferencesResponseAdsTripleWhaleIntegration) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetMaskedAPIKey sets the MaskedAPIKey field and marks it as non-optional;
@@ -1448,6 +1562,13 @@ func (r *RetrievePreferencesResponseAdsTripleWhaleIntegration) UnmarshalJSON(dat
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsTripleWhaleIntegrationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1574,10 +1695,12 @@ func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetExtraProp
 }
 
 func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDuration sets the Duration field and marks it as non-optional;
@@ -1759,10 +1882,12 @@ func (u *UpdatePreferencesRequestAdsCertificationsValue) GetExtraProperties() ma
 }
 
 func (u *UpdatePreferencesRequestAdsCertificationsValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -1834,12 +1959,12 @@ func (u UpdatePreferencesRequestAdsCertificationsValueStatus) Ptr() *UpdatePrefe
 	return &u
 }
 
-// How the account pays for Whop Ads spend. Requires `primary`; `backup` is optional and covers the charge when the primary fails. Requires the `ad_campaign:create` scope on your API key. Configuring a `card` requires a user token; account API keys can configure only `platform_balance` sources.
 var (
 	updatePreferencesRequestAdsPaymentMethodsFieldBackup  = big.NewInt(1 << 0)
 	updatePreferencesRequestAdsPaymentMethodsFieldPrimary = big.NewInt(1 << 1)
 )
 
+// How the account pays for Whop Ads spend. Requires `primary`; `backup` is optional and covers the charge when the primary fails. Requires the `ad_campaign:create` scope on your API key. Configuring a `card` requires a user token; account API keys can configure only `platform_balance` sources.
 type UpdatePreferencesRequestAdsPaymentMethods struct {
 	// Optional second method charged if the primary fails. Any pairing is allowed (two cards, card+balance, balance+card); omit it to run on a single method. Must differ from the primary.
 	Backup  *UpdatePreferencesRequestAdsPaymentMethodsBackup  `json:"backup,omitempty" url:"backup,omitempty"`
@@ -1874,10 +1999,12 @@ func (u *UpdatePreferencesRequestAdsPaymentMethods) GetExtraProperties() map[str
 }
 
 func (u *UpdatePreferencesRequestAdsPaymentMethods) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBackup sets the Backup field and marks it as non-optional;
@@ -1936,12 +2063,12 @@ func (u *UpdatePreferencesRequestAdsPaymentMethods) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Optional second method charged if the primary fails. Any pairing is allowed (two cards, card+balance, balance+card); omit it to run on a single method. Must differ from the primary.
 var (
 	updatePreferencesRequestAdsPaymentMethodsBackupFieldID   = big.NewInt(1 << 0)
 	updatePreferencesRequestAdsPaymentMethodsBackupFieldType = big.NewInt(1 << 1)
 )
 
+// Optional second method charged if the primary fails. Any pairing is allowed (two cards, card+balance, balance+card); omit it to run on a single method. Must differ from the primary.
 type UpdatePreferencesRequestAdsPaymentMethodsBackup struct {
 	// The funding source ID: a Whop balance (`ldgr_`) for `platform_balance`, or a payment method (`payt_`) for `card`. Optional for `platform_balance` — defaults to the account's default Whop balance. Required for `card`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -1977,10 +2104,12 @@ func (u *UpdatePreferencesRequestAdsPaymentMethodsBackup) GetExtraProperties() m
 }
 
 func (u *UpdatePreferencesRequestAdsPaymentMethodsBackup) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2102,10 +2231,12 @@ func (u *UpdatePreferencesRequestAdsPaymentMethodsPrimary) GetExtraProperties() 
 }
 
 func (u *UpdatePreferencesRequestAdsPaymentMethodsPrimary) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2187,12 +2318,17 @@ func (u UpdatePreferencesRequestAdsPaymentMethodsPrimaryType) Ptr() *UpdatePrefe
 	return &u
 }
 
-// Connects or disconnects the Triple Whale integration, or changes the shop it reports to. Requires the `ad_campaign:create` scope on your API key. Connecting requires a shop domain to report spend against — either an explicit `shop_domain` (required for any merchant without a connected Shopify store, e.g. WooCommerce, a custom checkout, or a white-label platform's merchant) or a Shopify store connected on the Fulfillment page.
 var (
 	updatePreferencesRequestAdsTripleWhaleIntegrationFieldAPIKey     = big.NewInt(1 << 0)
 	updatePreferencesRequestAdsTripleWhaleIntegrationFieldShopDomain = big.NewInt(1 << 1)
 )
 
+// updatePreferencesRequestAdsTripleWhaleIntegrationNullableFields maps the wire names of UpdatePreferencesRequestAdsTripleWhaleIntegration's nullable fields (required or optional) to their field bits.
+var updatePreferencesRequestAdsTripleWhaleIntegrationNullableFields = map[string]*big.Int{
+	"api_key": updatePreferencesRequestAdsTripleWhaleIntegrationFieldAPIKey,
+}
+
+// Connects or disconnects the Triple Whale integration, or changes the shop it reports to. Requires the `ad_campaign:create` scope on your API key. Connecting requires a shop domain to report spend against — either an explicit `shop_domain` (required for any merchant without a connected Shopify store, e.g. WooCommerce, a custom checkout, or a white-label platform's merchant) or a Shopify store connected on the Fulfillment page.
 type UpdatePreferencesRequestAdsTripleWhaleIntegration struct {
 	// A Triple Whale Data-In API key with the `Ads: Write` scope, validated against Triple Whale before it is stored. Pass `null` to disconnect. Connecting for the first time backfills the account's existing ad spend. Required unless you are only changing `shop_domain` on an already connected integration, in which case the stored key is reused.
 	APIKey *string `json:"api_key,omitempty" url:"api_key,omitempty"`
@@ -2228,10 +2364,12 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) GetExtraProperties()
 }
 
 func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAPIKey sets the APIKey field and marks it as non-optional;
@@ -2260,6 +2398,13 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) UnmarshalJSON(data [
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesRequestAdsTripleWhaleIntegrationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2355,6 +2500,14 @@ var (
 	updatePreferencesResponseFieldEconomicIntelligenceOffers        = big.NewInt(1 << 12)
 	updatePreferencesResponseFieldSubscriptionFailureBehavior       = big.NewInt(1 << 13)
 )
+
+// updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseNullableFields = map[string]*big.Int{
+	"ads_payment_methods":                  updatePreferencesResponseFieldAdsPaymentMethods,
+	"economic_intelligence_ends_at":        updatePreferencesResponseFieldEconomicIntelligenceEndsAt,
+	"economic_intelligence_fee_percentage": updatePreferencesResponseFieldEconomicIntelligenceFeePercentage,
+	"economic_intelligence_offers":         updatePreferencesResponseFieldEconomicIntelligenceOffers,
+}
 
 type UpdatePreferencesResponse struct {
 	// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
@@ -2499,10 +2652,12 @@ func (u *UpdatePreferencesResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (u *UpdatePreferencesResponse) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAdsAgreement sets the AdsAgreement field and marks it as non-optional;
@@ -2615,6 +2770,13 @@ func (u *UpdatePreferencesResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2645,7 +2807,6 @@ func (u *UpdatePreferencesResponse) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 var (
 	updatePreferencesResponseAdsAgreementFieldAcceptedAt       = big.NewInt(1 << 0)
 	updatePreferencesResponseAdsAgreementFieldAgreementVersion = big.NewInt(1 << 1)
@@ -2653,6 +2814,14 @@ var (
 	updatePreferencesResponseAdsAgreementFieldStatus           = big.NewInt(1 << 3)
 )
 
+// updatePreferencesResponseAdsAgreementNullableFields maps the wire names of UpdatePreferencesResponseAdsAgreement's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsAgreementNullableFields = map[string]*big.Int{
+	"accepted_at":       updatePreferencesResponseAdsAgreementFieldAcceptedAt,
+	"agreement_version": updatePreferencesResponseAdsAgreementFieldAgreementVersion,
+	"printed_name":      updatePreferencesResponseAdsAgreementFieldPrintedName,
+}
+
+// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 type UpdatePreferencesResponseAdsAgreement struct {
 	// When the agreement was signed, as an ISO 8601 timestamp. `null` until signed.
 	AcceptedAt *string `json:"accepted_at,omitempty" url:"accepted_at,omitempty"`
@@ -2706,10 +2875,12 @@ func (u *UpdatePreferencesResponseAdsAgreement) GetExtraProperties() map[string]
 }
 
 func (u *UpdatePreferencesResponseAdsAgreement) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAcceptedAt sets the AcceptedAt field and marks it as non-optional;
@@ -2752,6 +2923,13 @@ func (u *UpdatePreferencesResponseAdsAgreement) UnmarshalJSON(data []byte) error
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsAgreementNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2819,6 +2997,15 @@ var (
 	updatePreferencesResponseAdsCertificationsItemFieldStatus            = big.NewInt(1 << 7)
 	updatePreferencesResponseAdsCertificationsItemFieldURL               = big.NewInt(1 << 8)
 )
+
+// updatePreferencesResponseAdsCertificationsItemNullableFields maps the wire names of UpdatePreferencesResponseAdsCertificationsItem's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsCertificationsItemNullableFields = map[string]*big.Int{
+	"business_name": updatePreferencesResponseAdsCertificationsItemFieldBusinessName,
+	"business_type": updatePreferencesResponseAdsCertificationsItemFieldBusinessType,
+	"denial_reason": updatePreferencesResponseAdsCertificationsItemFieldDenialReason,
+	"request_id":    updatePreferencesResponseAdsCertificationsItemFieldRequestID,
+	"url":           updatePreferencesResponseAdsCertificationsItemFieldURL,
+}
 
 type UpdatePreferencesResponseAdsCertificationsItem struct {
 	// Countries every approved application of this type covers, as ISO 3166-1 alpha-2 codes. Ads targeting only these countries are exempt from the category's restrictions.
@@ -2918,10 +3105,12 @@ func (u *UpdatePreferencesResponseAdsCertificationsItem) GetExtraProperties() ma
 }
 
 func (u *UpdatePreferencesResponseAdsCertificationsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetApprovedCountries sets the ApprovedCountries field and marks it as non-optional;
@@ -2999,6 +3188,13 @@ func (u *UpdatePreferencesResponseAdsCertificationsItem) UnmarshalJSON(data []by
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsCertificationsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3107,12 +3303,18 @@ func (u UpdatePreferencesResponseAdsCertificationsItemStatus) Ptr() *UpdatePrefe
 	return &u
 }
 
-// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
 var (
 	updatePreferencesResponseAdsPaymentMethodsFieldBackup  = big.NewInt(1 << 0)
 	updatePreferencesResponseAdsPaymentMethodsFieldPrimary = big.NewInt(1 << 1)
 )
 
+// updatePreferencesResponseAdsPaymentMethodsNullableFields maps the wire names of UpdatePreferencesResponseAdsPaymentMethods's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsPaymentMethodsNullableFields = map[string]*big.Int{
+	"backup":  updatePreferencesResponseAdsPaymentMethodsFieldBackup,
+	"primary": updatePreferencesResponseAdsPaymentMethodsFieldPrimary,
+}
+
+// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
 type UpdatePreferencesResponseAdsPaymentMethods struct {
 	Backup  *UpdatePreferencesResponseAdsPaymentMethodsBackup  `json:"backup,omitempty" url:"backup,omitempty"`
 	Primary *UpdatePreferencesResponseAdsPaymentMethodsPrimary `json:"primary,omitempty" url:"primary,omitempty"`
@@ -3146,10 +3348,12 @@ func (u *UpdatePreferencesResponseAdsPaymentMethods) GetExtraProperties() map[st
 }
 
 func (u *UpdatePreferencesResponseAdsPaymentMethods) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBackup sets the Backup field and marks it as non-optional;
@@ -3178,6 +3382,13 @@ func (u *UpdatePreferencesResponseAdsPaymentMethods) UnmarshalJSON(data []byte) 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsPaymentMethodsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3218,6 +3429,16 @@ var (
 	updatePreferencesResponseAdsPaymentMethodsBackupFieldTitle     = big.NewInt(1 << 6)
 	updatePreferencesResponseAdsPaymentMethodsBackupFieldType      = big.NewInt(1 << 7)
 )
+
+// updatePreferencesResponseAdsPaymentMethodsBackupNullableFields maps the wire names of UpdatePreferencesResponseAdsPaymentMethodsBackup's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsPaymentMethodsBackupNullableFields = map[string]*big.Int{
+	"card_brand": updatePreferencesResponseAdsPaymentMethodsBackupFieldCardBrand,
+	"exp_month":  updatePreferencesResponseAdsPaymentMethodsBackupFieldExpMonth,
+	"exp_year":   updatePreferencesResponseAdsPaymentMethodsBackupFieldExpYear,
+	"icon_url":   updatePreferencesResponseAdsPaymentMethodsBackupFieldIconURL,
+	"last4":      updatePreferencesResponseAdsPaymentMethodsBackupFieldLast4,
+	"title":      updatePreferencesResponseAdsPaymentMethodsBackupFieldTitle,
+}
 
 type UpdatePreferencesResponseAdsPaymentMethodsBackup struct {
 	// Card brand, present for `card` entries.
@@ -3308,10 +3529,12 @@ func (u *UpdatePreferencesResponseAdsPaymentMethodsBackup) GetExtraProperties() 
 }
 
 func (u *UpdatePreferencesResponseAdsPaymentMethodsBackup) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
@@ -3382,6 +3605,13 @@ func (u *UpdatePreferencesResponseAdsPaymentMethodsBackup) UnmarshalJSON(data []
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsPaymentMethodsBackupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3445,6 +3675,16 @@ var (
 	updatePreferencesResponseAdsPaymentMethodsPrimaryFieldTitle     = big.NewInt(1 << 6)
 	updatePreferencesResponseAdsPaymentMethodsPrimaryFieldType      = big.NewInt(1 << 7)
 )
+
+// updatePreferencesResponseAdsPaymentMethodsPrimaryNullableFields maps the wire names of UpdatePreferencesResponseAdsPaymentMethodsPrimary's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsPaymentMethodsPrimaryNullableFields = map[string]*big.Int{
+	"card_brand": updatePreferencesResponseAdsPaymentMethodsPrimaryFieldCardBrand,
+	"exp_month":  updatePreferencesResponseAdsPaymentMethodsPrimaryFieldExpMonth,
+	"exp_year":   updatePreferencesResponseAdsPaymentMethodsPrimaryFieldExpYear,
+	"icon_url":   updatePreferencesResponseAdsPaymentMethodsPrimaryFieldIconURL,
+	"last4":      updatePreferencesResponseAdsPaymentMethodsPrimaryFieldLast4,
+	"title":      updatePreferencesResponseAdsPaymentMethodsPrimaryFieldTitle,
+}
 
 type UpdatePreferencesResponseAdsPaymentMethodsPrimary struct {
 	// Card brand, present for `card` entries.
@@ -3535,10 +3775,12 @@ func (u *UpdatePreferencesResponseAdsPaymentMethodsPrimary) GetExtraProperties()
 }
 
 func (u *UpdatePreferencesResponseAdsPaymentMethodsPrimary) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
@@ -3609,6 +3851,13 @@ func (u *UpdatePreferencesResponseAdsPaymentMethodsPrimary) UnmarshalJSON(data [
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsPaymentMethodsPrimaryNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3662,13 +3911,19 @@ func (u UpdatePreferencesResponseAdsPaymentMethodsPrimaryType) Ptr() *UpdatePref
 	return &u
 }
 
-// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, a custom checkout, or no connected store — by setting `shop_domain` explicitly; Shopify merchants may instead rely on a connected store's domain. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 var (
 	updatePreferencesResponseAdsTripleWhaleIntegrationFieldMaskedAPIKey = big.NewInt(1 << 0)
 	updatePreferencesResponseAdsTripleWhaleIntegrationFieldShopDomain   = big.NewInt(1 << 1)
 	updatePreferencesResponseAdsTripleWhaleIntegrationFieldStatus       = big.NewInt(1 << 2)
 )
 
+// updatePreferencesResponseAdsTripleWhaleIntegrationNullableFields maps the wire names of UpdatePreferencesResponseAdsTripleWhaleIntegration's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsTripleWhaleIntegrationNullableFields = map[string]*big.Int{
+	"masked_api_key": updatePreferencesResponseAdsTripleWhaleIntegrationFieldMaskedAPIKey,
+	"shop_domain":    updatePreferencesResponseAdsTripleWhaleIntegrationFieldShopDomain,
+}
+
+// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, a custom checkout, or no connected store — by setting `shop_domain` explicitly; Shopify merchants may instead rely on a connected store's domain. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 type UpdatePreferencesResponseAdsTripleWhaleIntegration struct {
 	// The leading characters of the stored Data-In API key, followed by asterisks. The full key is never returned. `null` when no key is stored.
 	MaskedAPIKey *string `json:"masked_api_key,omitempty" url:"masked_api_key,omitempty"`
@@ -3713,10 +3968,12 @@ func (u *UpdatePreferencesResponseAdsTripleWhaleIntegration) GetExtraProperties(
 }
 
 func (u *UpdatePreferencesResponseAdsTripleWhaleIntegration) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetMaskedAPIKey sets the MaskedAPIKey field and marks it as non-optional;
@@ -3752,6 +4009,13 @@ func (u *UpdatePreferencesResponseAdsTripleWhaleIntegration) UnmarshalJSON(data 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsTripleWhaleIntegrationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3878,10 +4142,12 @@ func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetExtraProper
 }
 
 func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDuration sets the Duration field and marks it as non-optional;
@@ -4076,10 +4342,12 @@ type UpdatePreferencesRequest struct {
 }
 
 func (u *UpdatePreferencesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;

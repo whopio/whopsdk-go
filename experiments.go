@@ -28,10 +28,12 @@ type ActivateExperimentsRequest struct {
 }
 
 func (a *ActivateExperimentsRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -114,10 +116,12 @@ type CreateExperimentsRequest struct {
 }
 
 func (c *CreateExperimentsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -233,10 +237,12 @@ type EndExperimentsRequest struct {
 }
 
 func (e *EndExperimentsRequest) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -316,10 +322,12 @@ type ExposuresExperimentsRequest struct {
 }
 
 func (e *ExposuresExperimentsRequest) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetSubject sets the Subject field and marks it as non-optional;
@@ -401,10 +409,12 @@ type ListExperimentsRequest struct {
 }
 
 func (l *ListExperimentsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -486,10 +496,12 @@ type PauseExperimentsRequest struct {
 }
 
 func (p *PauseExperimentsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -522,10 +534,12 @@ type RetrieveExperimentsRequest struct {
 }
 
 func (r *RetrieveExperimentsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -565,6 +579,20 @@ var (
 	experimentFieldVariants              = big.NewInt(1 << 19)
 	experimentFieldWinningArm            = big.NewInt(1 << 20)
 )
+
+// experimentNullableFields maps the wire names of Experiment's nullable fields (required or optional) to their field bits.
+var experimentNullableFields = map[string]*big.Int{
+	"bucket_by":         experimentFieldBucketBy,
+	"created_at":        experimentFieldCreatedAt,
+	"created_by":        experimentFieldCreatedBy,
+	"ended_at":          experimentFieldEndedAt,
+	"feature_flag_only": experimentFieldFeatureFlagOnly,
+	"findings":          experimentFieldFindings,
+	"hypothesis":        experimentFieldHypothesis,
+	"started_at":        experimentFieldStartedAt,
+	"updated_at":        experimentFieldUpdatedAt,
+	"winning_arm":       experimentFieldWinningArm,
+}
 
 type Experiment struct {
 	// Owning account ID, or internal for Whop platform experiments.
@@ -769,10 +797,12 @@ func (e *Experiment) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *Experiment) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -934,6 +964,13 @@ func (e *Experiment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experimentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1019,10 +1056,12 @@ func (e *ExperimentControl) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperimentControl) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetRelatedResource sets the RelatedResource field and marks it as non-optional;
@@ -1082,6 +1121,11 @@ var (
 	experimentExposureFieldRelatedResource       = big.NewInt(1 << 4)
 	experimentExposureFieldVariant               = big.NewInt(1 << 5)
 )
+
+// experimentExposureNullableFields maps the wire names of ExperimentExposure's nullable fields (required or optional) to their field bits.
+var experimentExposureNullableFields = map[string]*big.Int{
+	"variant": experimentExposureFieldVariant,
+}
 
 type ExperimentExposure struct {
 	ConfigurationRevision *int `json:"configuration_revision,omitempty" url:"configuration_revision,omitempty"`
@@ -1152,10 +1196,12 @@ func (e *ExperimentExposure) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperimentExposure) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetConfigurationRevision sets the ConfigurationRevision field and marks it as non-optional;
@@ -1212,6 +1258,13 @@ func (e *ExperimentExposure) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experimentExposureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1271,10 +1324,12 @@ func (e *ExperimentExposureBatch) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperimentExposureBatch) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetExposures sets the Exposures field and marks it as non-optional;
@@ -1365,10 +1420,12 @@ func (e *ExperimentResourceReference) GetExtraProperties() map[string]interface{
 }
 
 func (e *ExperimentResourceReference) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1524,10 +1581,12 @@ func (e *ExperimentTargetingRulesItem) GetExtraProperties() map[string]interface
 }
 
 func (e *ExperimentTargetingRulesItem) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetConditions sets the Conditions field and marks it as non-optional;
@@ -1593,6 +1652,11 @@ var (
 	experimentTargetingRulesItemConditionsItemFieldValue    = big.NewInt(1 << 3)
 )
 
+// experimentTargetingRulesItemConditionsItemNullableFields maps the wire names of ExperimentTargetingRulesItemConditionsItem's nullable fields (required or optional) to their field bits.
+var experimentTargetingRulesItemConditionsItemNullableFields = map[string]*big.Int{
+	"field": experimentTargetingRulesItemConditionsItemFieldField,
+}
+
 type ExperimentTargetingRulesItemConditionsItem struct {
 	// Property name to read from the user context. Present when `type` is `property`.
 	Field *string `json:"field,omitempty" url:"field,omitempty"`
@@ -1645,10 +1709,12 @@ func (e *ExperimentTargetingRulesItemConditionsItem) GetExtraProperties() map[st
 }
 
 func (e *ExperimentTargetingRulesItemConditionsItem) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetField sets the Field field and marks it as non-optional;
@@ -1691,6 +1757,13 @@ func (e *ExperimentTargetingRulesItemConditionsItem) UnmarshalJSON(data []byte) 
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experimentTargetingRulesItemConditionsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1870,10 +1943,12 @@ func (e *ExperimentVariantsItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperimentVariantsItem) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -1993,10 +2068,12 @@ func (e *ExposuresExperimentsRequestSubject) GetExtraProperties() map[string]int
 }
 
 func (e *ExposuresExperimentsRequestSubject) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2117,10 +2194,12 @@ func (c *CreateExperimentsRequestControl) GetExtraProperties() map[string]interf
 }
 
 func (c *CreateExperimentsRequestControl) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetRelatedResource sets the RelatedResource field and marks it as non-optional;
@@ -2212,10 +2291,12 @@ func (c *CreateExperimentsRequestTargetingRulesItem) GetExtraProperties() map[st
 }
 
 func (c *CreateExperimentsRequestTargetingRulesItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetConditions sets the Conditions field and marks it as non-optional;
@@ -2281,6 +2362,11 @@ var (
 	createExperimentsRequestTargetingRulesItemConditionsItemFieldValue    = big.NewInt(1 << 3)
 )
 
+// createExperimentsRequestTargetingRulesItemConditionsItemNullableFields maps the wire names of CreateExperimentsRequestTargetingRulesItemConditionsItem's nullable fields (required or optional) to their field bits.
+var createExperimentsRequestTargetingRulesItemConditionsItemNullableFields = map[string]*big.Int{
+	"field": createExperimentsRequestTargetingRulesItemConditionsItemFieldField,
+}
+
 type CreateExperimentsRequestTargetingRulesItemConditionsItem struct {
 	// Property name to read from the user context. Required when `type` is `property`.
 	Field *string `json:"field,omitempty" url:"field,omitempty"`
@@ -2333,10 +2419,12 @@ func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) GetExtraPrope
 }
 
 func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetField sets the Field field and marks it as non-optional;
@@ -2379,6 +2467,13 @@ func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) UnmarshalJSON
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createExperimentsRequestTargetingRulesItemConditionsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2548,10 +2643,12 @@ func (c *CreateExperimentsRequestVariantsItem) GetExtraProperties() map[string]i
 }
 
 func (c *CreateExperimentsRequestVariantsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -2639,6 +2736,38 @@ func (e *ExposuresExperimentsResponse) GetExperimentExposureBatch() *ExperimentE
 }
 
 func (e *ExposuresExperimentsResponse) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"configuration_revision", "enabled", "experiment_id", "flag_key", "related_resource", "variant"}, []string{"enabled"}) {
+		valueExperimentExposure := new(ExperimentExposure)
+		if err := json.Unmarshal(data, &valueExperimentExposure); err == nil {
+			e.typ = "ExperimentExposure"
+			e.ExperimentExposure = valueExperimentExposure
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"exposures"}, []string{"exposures"}) {
+		valueExperimentExposureBatch := new(ExperimentExposureBatch)
+		if err := json.Unmarshal(data, &valueExperimentExposureBatch); err == nil {
+			e.typ = "ExperimentExposureBatch"
+			e.ExperimentExposureBatch = valueExperimentExposureBatch
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"enabled"}) {
+		valueExperimentExposure := new(ExperimentExposure)
+		if err := json.Unmarshal(data, &valueExperimentExposure); err == nil {
+			e.typ = "ExperimentExposure"
+			e.ExperimentExposure = valueExperimentExposure
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"exposures"}) {
+		valueExperimentExposureBatch := new(ExperimentExposureBatch)
+		if err := json.Unmarshal(data, &valueExperimentExposureBatch); err == nil {
+			e.typ = "ExperimentExposureBatch"
+			e.ExperimentExposureBatch = valueExperimentExposureBatch
+			return nil
+		}
+	}
 	valueExperimentExposure := new(ExperimentExposure)
 	if err := json.Unmarshal(data, &valueExperimentExposure); err == nil {
 		e.typ = "ExperimentExposure"
@@ -2789,10 +2918,12 @@ func (l *ListExperimentsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListExperimentsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2858,6 +2989,12 @@ var (
 	listExperimentsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listExperimentsResponsePageInfoNullableFields maps the wire names of ListExperimentsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listExperimentsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listExperimentsResponsePageInfoFieldEndCursor,
+	"start_cursor": listExperimentsResponsePageInfoFieldStartCursor,
+}
+
 type ListExperimentsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2907,10 +3044,12 @@ func (l *ListExperimentsResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListExperimentsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2953,6 +3092,13 @@ func (l *ListExperimentsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listExperimentsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3012,10 +3158,12 @@ func (u *UpdateExperimentsRequestControl) GetExtraProperties() map[string]interf
 }
 
 func (u *UpdateExperimentsRequestControl) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetRelatedResource sets the RelatedResource field and marks it as non-optional;
@@ -3107,10 +3255,12 @@ func (u *UpdateExperimentsRequestTargetingRulesItem) GetExtraProperties() map[st
 }
 
 func (u *UpdateExperimentsRequestTargetingRulesItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetConditions sets the Conditions field and marks it as non-optional;
@@ -3176,6 +3326,11 @@ var (
 	updateExperimentsRequestTargetingRulesItemConditionsItemFieldValue    = big.NewInt(1 << 3)
 )
 
+// updateExperimentsRequestTargetingRulesItemConditionsItemNullableFields maps the wire names of UpdateExperimentsRequestTargetingRulesItemConditionsItem's nullable fields (required or optional) to their field bits.
+var updateExperimentsRequestTargetingRulesItemConditionsItemNullableFields = map[string]*big.Int{
+	"field": updateExperimentsRequestTargetingRulesItemConditionsItemFieldField,
+}
+
 type UpdateExperimentsRequestTargetingRulesItemConditionsItem struct {
 	// Property name to read from the user context. Required when `type` is `property`.
 	Field *string `json:"field,omitempty" url:"field,omitempty"`
@@ -3228,10 +3383,12 @@ func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) GetExtraPrope
 }
 
 func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetField sets the Field field and marks it as non-optional;
@@ -3274,6 +3431,13 @@ func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) UnmarshalJSON
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateExperimentsRequestTargetingRulesItemConditionsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3443,10 +3607,12 @@ func (u *UpdateExperimentsRequestVariantsItem) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateExperimentsRequestVariantsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -3541,10 +3707,12 @@ type UpdateExperimentsRequest struct {
 }
 
 func (u *UpdateExperimentsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

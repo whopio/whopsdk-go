@@ -29,10 +29,12 @@ type CreateReactionsRequest struct {
 }
 
 func (c *CreateReactionsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetEmoji sets the Emoji field and marks it as non-optional;
@@ -93,10 +95,12 @@ type DeleteReactionsRequest struct {
 }
 
 func (d *DeleteReactionsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -138,10 +142,12 @@ type ListReactionsRequest struct {
 }
 
 func (l *ListReactionsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -192,10 +198,12 @@ type RetrieveReactionsRequest struct {
 }
 
 func (r *RetrieveReactionsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -205,7 +213,6 @@ func (r *RetrieveReactionsRequest) SetID(id string) {
 	r.require(retrieveReactionsRequestFieldID)
 }
 
-// A single reaction left by a user on a feed post, such as a like or emoji.
 var (
 	reactionFieldEmoji      = big.NewInt(1 << 0)
 	reactionFieldID         = big.NewInt(1 << 1)
@@ -213,6 +220,12 @@ var (
 	reactionFieldUser       = big.NewInt(1 << 3)
 )
 
+// reactionNullableFields maps the wire names of Reaction's nullable fields (required or optional) to their field bits.
+var reactionNullableFields = map[string]*big.Int{
+	"emoji": reactionFieldEmoji,
+}
+
+// A single reaction left by a user on a feed post, such as a like or emoji.
 type Reaction struct {
 	// The emoji used for this reaction in shortcode format. Null if the reaction type is not emoji.
 	Emoji *string `json:"emoji,omitempty" url:"emoji,omitempty"`
@@ -266,10 +279,12 @@ func (r *Reaction) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *Reaction) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEmoji sets the Emoji field and marks it as non-optional;
@@ -312,6 +327,13 @@ func (r *Reaction) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reactionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -342,7 +364,6 @@ func (r *Reaction) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// A single reaction left by a user on a feed post, such as a like or emoji.
 var (
 	reactionListItemFieldEmoji      = big.NewInt(1 << 0)
 	reactionListItemFieldID         = big.NewInt(1 << 1)
@@ -350,6 +371,12 @@ var (
 	reactionListItemFieldUser       = big.NewInt(1 << 3)
 )
 
+// reactionListItemNullableFields maps the wire names of ReactionListItem's nullable fields (required or optional) to their field bits.
+var reactionListItemNullableFields = map[string]*big.Int{
+	"emoji": reactionListItemFieldEmoji,
+}
+
+// A single reaction left by a user on a feed post, such as a like or emoji.
 type ReactionListItem struct {
 	// The emoji used for this reaction in shortcode format. Null if the reaction type is not emoji.
 	Emoji *string `json:"emoji,omitempty" url:"emoji,omitempty"`
@@ -403,10 +430,12 @@ func (r *ReactionListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReactionListItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEmoji sets the Emoji field and marks it as non-optional;
@@ -449,6 +478,13 @@ func (r *ReactionListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reactionListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -479,13 +515,18 @@ func (r *ReactionListItem) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The user who left this reaction on the post.
 var (
 	reactionListItemUserFieldID       = big.NewInt(1 << 0)
 	reactionListItemUserFieldName     = big.NewInt(1 << 1)
 	reactionListItemUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// reactionListItemUserNullableFields maps the wire names of ReactionListItemUser's nullable fields (required or optional) to their field bits.
+var reactionListItemUserNullableFields = map[string]*big.Int{
+	"name": reactionListItemUserFieldName,
+}
+
+// The user who left this reaction on the post.
 type ReactionListItemUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -530,10 +571,12 @@ func (r *ReactionListItemUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReactionListItemUser) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -569,6 +612,13 @@ func (r *ReactionListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reactionListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -599,13 +649,18 @@ func (r *ReactionListItemUser) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The user who left this reaction on the post.
 var (
 	reactionUserFieldID       = big.NewInt(1 << 0)
 	reactionUserFieldName     = big.NewInt(1 << 1)
 	reactionUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// reactionUserNullableFields maps the wire names of ReactionUser's nullable fields (required or optional) to their field bits.
+var reactionUserNullableFields = map[string]*big.Int{
+	"name": reactionUserFieldName,
+}
+
+// The user who left this reaction on the post.
 type ReactionUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -650,10 +705,12 @@ func (r *ReactionUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReactionUser) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -689,6 +746,13 @@ func (r *ReactionUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reactionUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -719,12 +783,12 @@ func (r *ReactionUser) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The connection type for Reaction.
 var (
 	listReactionsResponseFieldData     = big.NewInt(1 << 0)
 	listReactionsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for Reaction.
 type ListReactionsResponse struct {
 	// A list of nodes.
 	Data []*ReactionListItem `json:"data" url:"data"`
@@ -760,10 +824,12 @@ func (l *ListReactionsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListReactionsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -832,6 +898,12 @@ var (
 	postChatReactionCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postChatReactionCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postChatReactionCreatedPayloadNullableFields maps the wire names of PostChatReactionCreatedPayload's nullable fields (required or optional) to their field bits.
+var postChatReactionCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postChatReactionCreatedPayloadFieldAccountID,
+	"api_version_date": postChatReactionCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostChatReactionCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -921,10 +993,12 @@ func (p *PostChatReactionCreatedPayload) GetExtraProperties() map[string]interfa
 }
 
 func (p *PostChatReactionCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1001,6 +1075,13 @@ func (p *PostChatReactionCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postChatReactionCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1118,10 +1199,12 @@ func (p *PostChatReactionCreatedPayloadData) GetExtraProperties() map[string]int
 }
 
 func (p *PostChatReactionCreatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAudience sets the Audience field and marks it as non-optional;
@@ -1206,6 +1289,11 @@ var (
 	postChatReactionCreatedPayloadDataAudienceFieldUserIDs = big.NewInt(1 << 1)
 )
 
+// postChatReactionCreatedPayloadDataAudienceNullableFields maps the wire names of PostChatReactionCreatedPayloadDataAudience's nullable fields (required or optional) to their field bits.
+var postChatReactionCreatedPayloadDataAudienceNullableFields = map[string]*big.Int{
+	"user_ids": postChatReactionCreatedPayloadDataAudienceFieldUserIDs,
+}
+
 type PostChatReactionCreatedPayloadDataAudience struct {
 	Type    PostChatReactionCreatedPayloadDataAudienceType `json:"type" url:"type"`
 	UserIDs []string                                       `json:"user_ids,omitempty" url:"user_ids,omitempty"`
@@ -1239,10 +1327,12 @@ func (p *PostChatReactionCreatedPayloadDataAudience) GetExtraProperties() map[st
 }
 
 func (p *PostChatReactionCreatedPayloadDataAudience) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -1271,6 +1361,13 @@ func (p *PostChatReactionCreatedPayloadDataAudience) UnmarshalJSON(data []byte) 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postChatReactionCreatedPayloadDataAudienceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1329,6 +1426,11 @@ var (
 	postChatReactionCreatedPayloadDataChannelFieldType         = big.NewInt(1 << 2)
 )
 
+// postChatReactionCreatedPayloadDataChannelNullableFields maps the wire names of PostChatReactionCreatedPayloadDataChannel's nullable fields (required or optional) to their field bits.
+var postChatReactionCreatedPayloadDataChannelNullableFields = map[string]*big.Int{
+	"experience_id": postChatReactionCreatedPayloadDataChannelFieldExperienceID,
+}
+
 type PostChatReactionCreatedPayloadDataChannel struct {
 	ExperienceID *string                                       `json:"experience_id,omitempty" url:"experience_id,omitempty"`
 	ID           string                                        `json:"id" url:"id"`
@@ -1370,10 +1472,12 @@ func (p *PostChatReactionCreatedPayloadDataChannel) GetExtraProperties() map[str
 }
 
 func (p *PostChatReactionCreatedPayloadDataChannel) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetExperienceID sets the ExperienceID field and marks it as non-optional;
@@ -1409,6 +1513,13 @@ func (p *PostChatReactionCreatedPayloadDataChannel) UnmarshalJSON(data []byte) e
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postChatReactionCreatedPayloadDataChannelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

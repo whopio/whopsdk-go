@@ -50,10 +50,12 @@ type CreateAccountsRequest struct {
 }
 
 func (c *CreateAccountsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAffiliateCode sets the AffiliateCode field and marks it as non-optional;
@@ -160,10 +162,12 @@ type DeleteAccountsRequest struct {
 }
 
 func (d *DeleteAccountsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -228,10 +232,12 @@ type FormCompanyAccountsRequest struct {
 }
 
 func (f *FormCompanyAccountsRequest) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -409,10 +415,12 @@ type ListAccountsRequest struct {
 }
 
 func (l *ListAccountsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -519,10 +527,12 @@ type MeAccountsRequest struct {
 }
 
 func (m *MeAccountsRequest) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetIncludeTrading sets the IncludeTrading field and marks it as non-optional;
@@ -548,10 +558,12 @@ type RetrieveAccountsRequest struct {
 }
 
 func (r *RetrieveAccountsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -581,10 +593,12 @@ type RetryAdsPaymentAccountsRequest struct {
 }
 
 func (r *RetryAdsPaymentAccountsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -607,10 +621,12 @@ type SuspendAccountsRequest struct {
 }
 
 func (s *SuspendAccountsRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -642,10 +658,12 @@ type TransferOwnershipAccountsRequest struct {
 }
 
 func (t *TransferOwnershipAccountsRequest) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -771,6 +789,54 @@ var (
 	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 70)
 	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 71)
 )
+
+// accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
+var accountNullableFields = map[string]*big.Int{
+	"ads_spend_usd":              accountFieldAdsSpendUsd,
+	"banner_image_url":           accountFieldBannerImageURL,
+	"business_address":           accountFieldBusinessAddress,
+	"business_name":              accountFieldBusinessName,
+	"business_type":              accountFieldBusinessType,
+	"cancellation_policy":        accountFieldCancellationPolicy,
+	"capabilities":               accountFieldCapabilities,
+	"cards":                      accountFieldCards,
+	"country":                    accountFieldCountry,
+	"description":                accountFieldDescription,
+	"email":                      accountFieldEmail,
+	"eula":                       accountFieldEula,
+	"financing":                  accountFieldFinancing,
+	"industry_group":             accountFieldIndustryGroup,
+	"industry_type":              accountFieldIndustryType,
+	"invoice_prefix":             accountFieldInvoicePrefix,
+	"logo_url":                   accountFieldLogoURL,
+	"onboarding_type":            accountFieldOnboardingType,
+	"opengraph_image_url":        accountFieldOpengraphImageURL,
+	"opengraph_image_variant":    accountFieldOpengraphImageVariant,
+	"other_business_description": accountFieldOtherBusinessDescription,
+	"other_industry_description": accountFieldOtherIndustryDescription,
+	"parent_account":             accountFieldParentAccount,
+	"partner":                    accountFieldPartner,
+	"payment_controls":           accountFieldPaymentControls,
+	"privacy_policy":             accountFieldPrivacyPolicy,
+	"product_tax_code":           accountFieldProductTaxCode,
+	"recommended_actions":        accountFieldRecommendedActions,
+	"required_actions":           accountFieldRequiredActions,
+	"return_policy":              accountFieldReturnPolicy,
+	"shipping_policy":            accountFieldShippingPolicy,
+	"status":                     accountFieldStatus,
+	"status_reason":              accountFieldStatusReason,
+	"target_audience":            accountFieldTargetAudience,
+	"tax_remitted_by":            accountFieldTaxRemittedBy,
+	"tax_type":                   accountFieldTaxType,
+	"terms_of_service":           accountFieldTermsOfService,
+	"three_ds_level":             accountFieldThreeDsLevel,
+	"total_earned_usd":           accountFieldTotalEarnedUsd,
+	"total_usd":                  accountFieldTotalUsd,
+	"trading":                    accountFieldTrading,
+	"volume_usd":                 accountFieldVolumeUsd,
+	"wallet":                     accountFieldWallet,
+	"website":                    accountFieldWebsite,
+}
 
 type Account struct {
 	// Lifetime charged ad spend for the account, in USD. Computed only on `list` for callers with `stats:read` on the account; `null` otherwise.
@@ -1429,10 +1495,12 @@ func (a *Account) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *Account) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAdsSpendUsd sets the AdsSpendUsd field and marks it as non-optional;
@@ -1951,6 +2019,13 @@ func (a *Account) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1990,6 +2065,13 @@ var (
 	accountBalanceTokenFieldSymbol    = big.NewInt(1 << 5)
 	accountBalanceTokenFieldValueUsd  = big.NewInt(1 << 6)
 )
+
+// accountBalanceTokenNullableFields maps the wire names of AccountBalanceToken's nullable fields (required or optional) to their field bits.
+var accountBalanceTokenNullableFields = map[string]*big.Int{
+	"icon_url":  accountBalanceTokenFieldIconURL,
+	"price_usd": accountBalanceTokenFieldPriceUsd,
+	"value_usd": accountBalanceTokenFieldValueUsd,
+}
 
 type AccountBalanceToken struct {
 	// Total amount held in native units, as a decimal string.
@@ -2071,10 +2153,12 @@ func (a *AccountBalanceToken) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountBalanceToken) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetBalance sets the Balance field and marks it as non-optional;
@@ -2138,6 +2222,13 @@ func (a *AccountBalanceToken) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountBalanceTokenNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2172,6 +2263,11 @@ var (
 	accountCardsFieldKind   = big.NewInt(1 << 0)
 	accountCardsFieldStatus = big.NewInt(1 << 1)
 )
+
+// accountCardsNullableFields maps the wire names of AccountCards's nullable fields (required or optional) to their field bits.
+var accountCardsNullableFields = map[string]*big.Int{
+	"kind": accountCardsFieldKind,
+}
 
 type AccountCards struct {
 	// Whether the card application verifies a business (`business`, KYB) or a person (`individual`, consumer identity). `null` when the application is not yet linked to a verification.
@@ -2208,10 +2304,12 @@ func (a *AccountCards) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountCards) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetKind sets the Kind field and marks it as non-optional;
@@ -2240,6 +2338,13 @@ func (a *AccountCards) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountCardsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2343,6 +2448,11 @@ var (
 	accountCompanyFormationFieldStatus          = big.NewInt(1 << 5)
 )
 
+// accountCompanyFormationNullableFields maps the wire names of AccountCompanyFormation's nullable fields (required or optional) to their field bits.
+var accountCompanyFormationNullableFields = map[string]*big.Int{
+	"legal_name": accountCompanyFormationFieldLegalName,
+}
+
 type AccountCompanyFormation struct {
 	Documents []*AccountCompanyFormationDocument `json:"documents,omitempty" url:"documents,omitempty"`
 	// Whether the company's EIN has been issued by the IRS. Present once `status` leaves `draft`.
@@ -2413,10 +2523,12 @@ func (a *AccountCompanyFormation) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountCompanyFormation) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetDocuments sets the Documents field and marks it as non-optional;
@@ -2477,6 +2589,13 @@ func (a *AccountCompanyFormation) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.ExtraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountCompanyFormationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2567,10 +2686,12 @@ func (a *AccountCompanyFormationDocument) GetExtraProperties() map[string]interf
 }
 
 func (a *AccountCompanyFormationDocument) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2693,10 +2814,12 @@ func (a *AccountCompanyFormationSignatureRequest) GetExtraProperties() map[strin
 }
 
 func (a *AccountCompanyFormationSignatureRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
@@ -2826,10 +2949,12 @@ func (a *AccountCompanyFormationSignatures) GetExtraProperties() map[string]inte
 }
 
 func (a *AccountCompanyFormationSignatures) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetForm8821 sets the Form8821 field and marks it as non-optional;
@@ -2928,6 +3053,11 @@ var (
 	accountDisputeAlertAutoRefundControlFieldThresholdUsd = big.NewInt(1 << 1)
 )
 
+// accountDisputeAlertAutoRefundControlNullableFields maps the wire names of AccountDisputeAlertAutoRefundControl's nullable fields (required or optional) to their field bits.
+var accountDisputeAlertAutoRefundControlNullableFields = map[string]*big.Int{
+	"threshold_usd": accountDisputeAlertAutoRefundControlFieldThresholdUsd,
+}
+
 type AccountDisputeAlertAutoRefundControl struct {
 	// Whether the account owner is prevented from changing this threshold.
 	Locked bool `json:"locked" url:"locked"`
@@ -2963,10 +3093,12 @@ func (a *AccountDisputeAlertAutoRefundControl) GetExtraProperties() map[string]i
 }
 
 func (a *AccountDisputeAlertAutoRefundControl) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetLocked sets the Locked field and marks it as non-optional;
@@ -2995,6 +3127,13 @@ func (a *AccountDisputeAlertAutoRefundControl) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountDisputeAlertAutoRefundControlNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3065,10 +3204,12 @@ func (a *AccountFinancing) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountFinancing) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetApplicationID sets the ApplicationID field and marks it as non-optional;
@@ -3240,6 +3381,13 @@ var (
 	accountPartnerFieldWhopPartnerVerifiedAt = big.NewInt(1 << 5)
 )
 
+// accountPartnerNullableFields maps the wire names of AccountPartner's nullable fields (required or optional) to their field bits.
+var accountPartnerNullableFields = map[string]*big.Int{
+	"email":                    accountPartnerFieldEmail,
+	"name":                     accountPartnerFieldName,
+	"whop_partner_verified_at": accountPartnerFieldWhopPartnerVerifiedAt,
+}
+
 type AccountPartner struct {
 	// Email address for contacting the partner. Null when the partner has not added their own email address.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -3311,10 +3459,12 @@ func (a *AccountPartner) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountPartner) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -3371,6 +3521,13 @@ func (a *AccountPartner) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3481,10 +3638,12 @@ func (a *AccountPartnerReward) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountPartnerReward) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3644,6 +3803,12 @@ var (
 	accountPaymentControlsFieldWithdrawalSchedule              = big.NewInt(1 << 11)
 )
 
+// accountPaymentControlsNullableFields maps the wire names of AccountPaymentControls's nullable fields (required or optional) to their field bits.
+var accountPaymentControlsNullableFields = map[string]*big.Int{
+	"dispute_alert_fee_usd":  accountPaymentControlsFieldDisputeAlertFeeUsd,
+	"undated_pending_reason": accountPaymentControlsFieldUndatedPendingReason,
+}
+
 type AccountPaymentControls struct {
 	// Automatic refund settings for pre-chargeback dispute alerts.
 	DisputeAlertAutoRefund *AccountDisputeAlertAutoRefundControl `json:"dispute_alert_auto_refund" url:"dispute_alert_auto_refund"`
@@ -3768,10 +3933,12 @@ func (a *AccountPaymentControls) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountPaymentControls) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetDisputeAlertAutoRefund sets the DisputeAlertAutoRefund field and marks it as non-optional;
@@ -3870,6 +4037,13 @@ func (a *AccountPaymentControls) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountPaymentControlsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3960,6 +4134,11 @@ var (
 	accountReserveControlFieldPercentage     = big.NewInt(1 << 1)
 )
 
+// accountReserveControlNullableFields maps the wire names of AccountReserveControl's nullable fields (required or optional) to their field bits.
+var accountReserveControlNullableFields = map[string]*big.Int{
+	"percentage": accountReserveControlFieldPercentage,
+}
+
 type AccountReserveControl struct {
 	// Number of days reserved funds are held before release.
 	HoldPeriodDays int `json:"hold_period_days" url:"hold_period_days"`
@@ -3995,10 +4174,12 @@ func (a *AccountReserveControl) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountReserveControl) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetHoldPeriodDays sets the HoldPeriodDays field and marks it as non-optional;
@@ -4027,6 +4208,13 @@ func (a *AccountReserveControl) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountReserveControlNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4063,6 +4251,13 @@ var (
 	accountResolutionCenterAutoRefundControlFieldLocked                = big.NewInt(1 << 2)
 	accountResolutionCenterAutoRefundControlFieldPaypalThresholdUsd    = big.NewInt(1 << 3)
 )
+
+// accountResolutionCenterAutoRefundControlNullableFields maps the wire names of AccountResolutionCenterAutoRefundControl's nullable fields (required or optional) to their field bits.
+var accountResolutionCenterAutoRefundControlNullableFields = map[string]*big.Int{
+	"card_threshold_usd":      accountResolutionCenterAutoRefundControlFieldCardThresholdUsd,
+	"financing_threshold_usd": accountResolutionCenterAutoRefundControlFieldFinancingThresholdUsd,
+	"paypal_threshold_usd":    accountResolutionCenterAutoRefundControlFieldPaypalThresholdUsd,
+}
 
 type AccountResolutionCenterAutoRefundControl struct {
 	// Maximum card-funded resolution center case amount automatically refunded in USD. `null` when automatic refunds are disabled for cards.
@@ -4117,10 +4312,12 @@ func (a *AccountResolutionCenterAutoRefundControl) GetExtraProperties() map[stri
 }
 
 func (a *AccountResolutionCenterAutoRefundControl) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCardThresholdUsd sets the CardThresholdUsd field and marks it as non-optional;
@@ -4163,6 +4360,13 @@ func (a *AccountResolutionCenterAutoRefundControl) UnmarshalJSON(data []byte) er
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountResolutionCenterAutoRefundControlNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4199,6 +4403,11 @@ var (
 	accountSocialLinkFieldURL     = big.NewInt(1 << 2)
 	accountSocialLinkFieldWebsite = big.NewInt(1 << 3)
 )
+
+// accountSocialLinkNullableFields maps the wire names of AccountSocialLink's nullable fields (required or optional) to their field bits.
+var accountSocialLinkNullableFields = map[string]*big.Int{
+	"title": accountSocialLinkFieldTitle,
+}
 
 type AccountSocialLink struct {
 	// The ID of the social link
@@ -4253,10 +4462,12 @@ func (a *AccountSocialLink) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountSocialLink) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4299,6 +4510,13 @@ func (a *AccountSocialLink) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountSocialLinkNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4380,6 +4598,13 @@ var (
 	accountStorePageConfigFieldWhopAffiliateLink = big.NewInt(1 << 3)
 )
 
+// accountStorePageConfigNullableFields maps the wire names of AccountStorePageConfig's nullable fields (required or optional) to their field bits.
+var accountStorePageConfigNullableFields = map[string]*big.Int{
+	"accent_color":    accountStorePageConfigFieldAccentColor,
+	"layout":          accountStorePageConfigFieldLayout,
+	"profile_variant": accountStorePageConfigFieldProfileVariant,
+}
+
 type AccountStorePageConfig struct {
 	// Accent color used on the account store page.
 	AccentColor *AccountStorePageConfigAccentColor `json:"accent_color,omitempty" url:"accent_color,omitempty"`
@@ -4433,10 +4658,12 @@ func (a *AccountStorePageConfig) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountStorePageConfig) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAccentColor sets the AccentColor field and marks it as non-optional;
@@ -4479,6 +4706,13 @@ func (a *AccountStorePageConfig) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountStorePageConfigNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4706,10 +4940,12 @@ func (a *AccountTaxIdentifier) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountTaxIdentifier) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5256,10 +5492,12 @@ func (a *AccountWallet) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountWallet) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -5357,6 +5595,12 @@ var (
 	accountWithdrawalScheduleControlFieldNextPayoutDate = big.NewInt(1 << 2)
 )
 
+// accountWithdrawalScheduleControlNullableFields maps the wire names of AccountWithdrawalScheduleControl's nullable fields (required or optional) to their field bits.
+var accountWithdrawalScheduleControlNullableFields = map[string]*big.Int{
+	"day":              accountWithdrawalScheduleControlFieldDay,
+	"next_payout_date": accountWithdrawalScheduleControlFieldNextPayoutDate,
+}
+
 type AccountWithdrawalScheduleControl struct {
 	// Day the automatic withdrawal runs on: 0-6 (Sunday-Saturday) for `weekly`, 1-31 for `monthly`. `null` for `manual` and `daily`.
 	Day *int `json:"day,omitempty" url:"day,omitempty"`
@@ -5401,10 +5645,12 @@ func (a *AccountWithdrawalScheduleControl) GetExtraProperties() map[string]inter
 }
 
 func (a *AccountWithdrawalScheduleControl) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetDay sets the Day field and marks it as non-optional;
@@ -5440,6 +5686,13 @@ func (a *AccountWithdrawalScheduleControl) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountWithdrawalScheduleControlNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5539,10 +5792,12 @@ func (d *DeleteAccountsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAccountsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -5601,7 +5856,6 @@ func (d *DeleteAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// Company mailing address. Required unless `use_registered_agent` is `true`.
 var (
 	formCompanyAccountsRequestBusinessAddressFieldCity       = big.NewInt(1 << 0)
 	formCompanyAccountsRequestBusinessAddressFieldCountry    = big.NewInt(1 << 1)
@@ -5611,6 +5865,7 @@ var (
 	formCompanyAccountsRequestBusinessAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// Company mailing address. Required unless `use_registered_agent` is `true`.
 type FormCompanyAccountsRequestBusinessAddress struct {
 	City string `json:"city" url:"city"`
 	// Two-letter ISO 3166-1 country code, for example `US`.
@@ -5681,10 +5936,12 @@ func (f *FormCompanyAccountsRequestBusinessAddress) GetExtraProperties() map[str
 }
 
 func (f *FormCompanyAccountsRequestBusinessAddress) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -6137,10 +6394,12 @@ func (f *FormCompanyAccountsRequestFoundersItem) GetExtraProperties() map[string
 }
 
 func (f *FormCompanyAccountsRequestFoundersItem) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -6255,7 +6514,6 @@ func (f *FormCompanyAccountsRequestFoundersItem) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// Founder's personal address.
 var (
 	formCompanyAccountsRequestFoundersItemAddressFieldCity       = big.NewInt(1 << 0)
 	formCompanyAccountsRequestFoundersItemAddressFieldCountry    = big.NewInt(1 << 1)
@@ -6265,6 +6523,7 @@ var (
 	formCompanyAccountsRequestFoundersItemAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// Founder's personal address.
 type FormCompanyAccountsRequestFoundersItemAddress struct {
 	City string `json:"city" url:"city"`
 	// Two-letter ISO 3166-1 country code, for example `US`.
@@ -6335,10 +6594,12 @@ func (f *FormCompanyAccountsRequestFoundersItemAddress) GetExtraProperties() map
 }
 
 func (f *FormCompanyAccountsRequestFoundersItemAddress) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -6453,12 +6714,12 @@ func (f FormCompanyAccountsRequestFoundersItemRolesItem) Ptr() *FormCompanyAccou
 	return &f
 }
 
-// Authorized share structure. Required when `entity_type` is `c_corp`; ignored for LLCs.
 var (
 	formCompanyAccountsRequestShareStructureFieldNumberOfShares = big.NewInt(1 << 0)
 	formCompanyAccountsRequestShareStructureFieldValue          = big.NewInt(1 << 1)
 )
 
+// Authorized share structure. Required when `entity_type` is `c_corp`; ignored for LLCs.
 type FormCompanyAccountsRequestShareStructure struct {
 	// Number of shares the company authorizes. Must be greater than `0`.
 	NumberOfShares int `json:"number_of_shares" url:"number_of_shares"`
@@ -6494,10 +6755,12 @@ func (f *FormCompanyAccountsRequestShareStructure) GetExtraProperties() map[stri
 }
 
 func (f *FormCompanyAccountsRequestShareStructure) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetNumberOfShares sets the NumberOfShares field and marks it as non-optional;
@@ -6616,10 +6879,12 @@ func (f *FormCompanyAccountsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (f *FormCompanyAccountsResponse) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetCheckoutSessionID sets the CheckoutSessionID field and marks it as non-optional;
@@ -6796,10 +7061,12 @@ func (l *ListAccountsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAccountsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -6865,6 +7132,12 @@ var (
 	listAccountsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAccountsResponsePageInfoNullableFields maps the wire names of ListAccountsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAccountsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAccountsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAccountsResponsePageInfoFieldStartCursor,
+}
+
 type ListAccountsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -6914,10 +7187,12 @@ func (l *ListAccountsResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListAccountsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -6960,6 +7235,13 @@ func (l *ListAccountsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAccountsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7000,6 +7282,12 @@ var (
 	postAccountFinancingApprovedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postAccountFinancingApprovedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postAccountFinancingApprovedPayloadNullableFields maps the wire names of PostAccountFinancingApprovedPayload's nullable fields (required or optional) to their field bits.
+var postAccountFinancingApprovedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAccountFinancingApprovedPayloadFieldAccountID,
+	"api_version_date": postAccountFinancingApprovedPayloadFieldAPIVersionDate,
+}
 
 type PostAccountFinancingApprovedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -7089,10 +7377,12 @@ func (p *PostAccountFinancingApprovedPayload) GetExtraProperties() map[string]in
 }
 
 func (p *PostAccountFinancingApprovedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -7169,6 +7459,13 @@ func (p *PostAccountFinancingApprovedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAccountFinancingApprovedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7251,6 +7548,12 @@ var (
 	postAccountFinancingDeniedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postAccountFinancingDeniedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postAccountFinancingDeniedPayloadNullableFields maps the wire names of PostAccountFinancingDeniedPayload's nullable fields (required or optional) to their field bits.
+var postAccountFinancingDeniedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAccountFinancingDeniedPayloadFieldAccountID,
+	"api_version_date": postAccountFinancingDeniedPayloadFieldAPIVersionDate,
+}
 
 type PostAccountFinancingDeniedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -7340,10 +7643,12 @@ func (p *PostAccountFinancingDeniedPayload) GetExtraProperties() map[string]inte
 }
 
 func (p *PostAccountFinancingDeniedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -7420,6 +7725,13 @@ func (p *PostAccountFinancingDeniedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAccountFinancingDeniedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7502,6 +7814,12 @@ var (
 	postAccountUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postAccountUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postAccountUpdatedPayloadNullableFields maps the wire names of PostAccountUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postAccountUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAccountUpdatedPayloadFieldAccountID,
+	"api_version_date": postAccountUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostAccountUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -7591,10 +7909,12 @@ func (p *PostAccountUpdatedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostAccountUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -7671,6 +7991,13 @@ func (p *PostAccountUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAccountUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7783,10 +8110,12 @@ func (r *RetryAdsPaymentAccountsResponse) GetExtraProperties() map[string]interf
 }
 
 func (r *RetryAdsPaymentAccountsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -7874,10 +8203,12 @@ func (t *TransferOwnershipAccountsResponse) GetExtraProperties() map[string]inte
 }
 
 func (t *TransferOwnershipAccountsResponse) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -7929,11 +8260,11 @@ func (t *TransferOwnershipAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
-// Account banner image, used as the cover photo when creating a Whop-managed Facebook page. Image files up to 10 MB, except `image/gif`. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 var (
 	updateAccountsRequestBannerImageFieldID = big.NewInt(1 << 0)
 )
 
+// Account banner image, used as the cover photo when creating a Whop-managed Facebook page. Image files up to 10 MB, except `image/gif`. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 type UpdateAccountsRequestBannerImage struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -7961,10 +8292,12 @@ func (u *UpdateAccountsRequestBannerImage) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateAccountsRequestBannerImage) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8020,7 +8353,6 @@ func (u *UpdateAccountsRequestBannerImage) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Account business address used to calculate tax. A complete address in a supported country is required when `tax_remitted_by` is `self`.
 var (
 	updateAccountsRequestBusinessAddressFieldCity       = big.NewInt(1 << 0)
 	updateAccountsRequestBusinessAddressFieldCountry    = big.NewInt(1 << 1)
@@ -8030,6 +8362,15 @@ var (
 	updateAccountsRequestBusinessAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// updateAccountsRequestBusinessAddressNullableFields maps the wire names of UpdateAccountsRequestBusinessAddress's nullable fields (required or optional) to their field bits.
+var updateAccountsRequestBusinessAddressNullableFields = map[string]*big.Int{
+	"city":        updateAccountsRequestBusinessAddressFieldCity,
+	"line2":       updateAccountsRequestBusinessAddressFieldLine2,
+	"postal_code": updateAccountsRequestBusinessAddressFieldPostalCode,
+	"state":       updateAccountsRequestBusinessAddressFieldState,
+}
+
+// Account business address used to calculate tax. A complete address in a supported country is required when `tax_remitted_by` is `self`.
 type UpdateAccountsRequestBusinessAddress struct {
 	// City name.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -8101,10 +8442,12 @@ func (u *UpdateAccountsRequestBusinessAddress) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateAccountsRequestBusinessAddress) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -8161,6 +8504,13 @@ func (u *UpdateAccountsRequestBusinessAddress) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAccountsRequestBusinessAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8191,11 +8541,11 @@ func (u *UpdateAccountsRequestBusinessAddress) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The account's cancellation policy document. Attached to new disputes as the cancellation policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 var (
 	updateAccountsRequestCancellationPolicyFieldID = big.NewInt(1 << 0)
 )
 
+// The account's cancellation policy document. Attached to new disputes as the cancellation policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 type UpdateAccountsRequestCancellationPolicy struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -8223,10 +8573,12 @@ func (u *UpdateAccountsRequestCancellationPolicy) GetExtraProperties() map[strin
 }
 
 func (u *UpdateAccountsRequestCancellationPolicy) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8282,11 +8634,11 @@ func (u *UpdateAccountsRequestCancellationPolicy) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 var (
 	updateAccountsRequestEulaFieldID = big.NewInt(1 << 0)
 )
 
+// The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 type UpdateAccountsRequestEula struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -8314,10 +8666,12 @@ func (u *UpdateAccountsRequestEula) GetExtraProperties() map[string]interface{} 
 }
 
 func (u *UpdateAccountsRequestEula) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8395,11 +8749,11 @@ func (u UpdateAccountsRequestHomePreferencesItem) Ptr() *UpdateAccountsRequestHo
 	return &u
 }
 
-// Account logo, used as the profile picture when creating a Whop-managed Facebook page. Image files up to 5 MB. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 var (
 	updateAccountsRequestLogoFieldID = big.NewInt(1 << 0)
 )
 
+// Account logo, used as the profile picture when creating a Whop-managed Facebook page. Image files up to 5 MB. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 type UpdateAccountsRequestLogo struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -8427,10 +8781,12 @@ func (u *UpdateAccountsRequestLogo) GetExtraProperties() map[string]interface{} 
 }
 
 func (u *UpdateAccountsRequestLogo) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8509,11 +8865,11 @@ func (u UpdateAccountsRequestOnboardingType) Ptr() *UpdateAccountsRequestOnboard
 	return &u
 }
 
-// Open Graph preview media used when the account is shared. Image and video files up to 5 MB. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 var (
 	updateAccountsRequestOpengraphImageFieldID = big.NewInt(1 << 0)
 )
 
+// Open Graph preview media used when the account is shared. Image and video files up to 5 MB. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 type UpdateAccountsRequestOpengraphImage struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -8541,10 +8897,12 @@ func (u *UpdateAccountsRequestOpengraphImage) GetExtraProperties() map[string]in
 }
 
 func (u *UpdateAccountsRequestOpengraphImage) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8626,11 +8984,11 @@ func (u UpdateAccountsRequestOpengraphImageVariant) Ptr() *UpdateAccountsRequest
 	return &u
 }
 
-// The account's privacy policy document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 var (
 	updateAccountsRequestPrivacyPolicyFieldID = big.NewInt(1 << 0)
 )
 
+// The account's privacy policy document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 type UpdateAccountsRequestPrivacyPolicy struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -8658,10 +9016,12 @@ func (u *UpdateAccountsRequestPrivacyPolicy) GetExtraProperties() map[string]int
 }
 
 func (u *UpdateAccountsRequestPrivacyPolicy) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8717,11 +9077,11 @@ func (u *UpdateAccountsRequestPrivacyPolicy) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The account's return and refund policy document. Attached to new disputes as the refund policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 var (
 	updateAccountsRequestReturnPolicyFieldID = big.NewInt(1 << 0)
 )
 
+// The account's return and refund policy document. Attached to new disputes as the refund policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 type UpdateAccountsRequestReturnPolicy struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -8749,10 +9109,12 @@ func (u *UpdateAccountsRequestReturnPolicy) GetExtraProperties() map[string]inte
 }
 
 func (u *UpdateAccountsRequestReturnPolicy) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8808,11 +9170,11 @@ func (u *UpdateAccountsRequestReturnPolicy) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The account's shipping policy document. Sent with physical-goods dispute evidence. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 var (
 	updateAccountsRequestShippingPolicyFieldID = big.NewInt(1 << 0)
 )
 
+// The account's shipping policy document. Sent with physical-goods dispute evidence. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 type UpdateAccountsRequestShippingPolicy struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -8840,10 +9202,12 @@ func (u *UpdateAccountsRequestShippingPolicy) GetExtraProperties() map[string]in
 }
 
 func (u *UpdateAccountsRequestShippingPolicy) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8899,7 +9263,6 @@ func (u *UpdateAccountsRequestShippingPolicy) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Account store page display configuration.
 var (
 	updateAccountsRequestStorePageConfigFieldAccentColor       = big.NewInt(1 << 0)
 	updateAccountsRequestStorePageConfigFieldLayout            = big.NewInt(1 << 1)
@@ -8907,6 +9270,14 @@ var (
 	updateAccountsRequestStorePageConfigFieldWhopAffiliateLink = big.NewInt(1 << 3)
 )
 
+// updateAccountsRequestStorePageConfigNullableFields maps the wire names of UpdateAccountsRequestStorePageConfig's nullable fields (required or optional) to their field bits.
+var updateAccountsRequestStorePageConfigNullableFields = map[string]*big.Int{
+	"accent_color":    updateAccountsRequestStorePageConfigFieldAccentColor,
+	"layout":          updateAccountsRequestStorePageConfigFieldLayout,
+	"profile_variant": updateAccountsRequestStorePageConfigFieldProfileVariant,
+}
+
+// Account store page display configuration.
 type UpdateAccountsRequestStorePageConfig struct {
 	// Accent color used on the account store page.
 	AccentColor *UpdateAccountsRequestStorePageConfigAccentColor `json:"accent_color,omitempty" url:"accent_color,omitempty"`
@@ -8960,10 +9331,12 @@ func (u *UpdateAccountsRequestStorePageConfig) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateAccountsRequestStorePageConfig) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccentColor sets the AccentColor field and marks it as non-optional;
@@ -9006,6 +9379,13 @@ func (u *UpdateAccountsRequestStorePageConfig) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAccountsRequestStorePageConfigNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9392,10 +9772,12 @@ func (u *UpdateAccountsRequestTaxIdentifiersItem) GetExtraProperties() map[strin
 }
 
 func (u *UpdateAccountsRequestTaxIdentifiersItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetTaxIDType sets the TaxIDType field and marks it as non-optional;
@@ -9853,11 +10235,11 @@ func (u UpdateAccountsRequestTaxType) Ptr() *UpdateAccountsRequestTaxType {
 	return &u
 }
 
-// The account's terms of service document. Attached to new disputes as the cancellation policy evidence when no cancellation policy is set. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 var (
 	updateAccountsRequestTermsOfServiceFieldID = big.NewInt(1 << 0)
 )
 
+// The account's terms of service document. Attached to new disputes as the cancellation policy evidence when no cancellation policy is set. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 type UpdateAccountsRequestTermsOfService struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -9885,10 +10267,12 @@ func (u *UpdateAccountsRequestTermsOfService) GetExtraProperties() map[string]in
 }
 
 func (u *UpdateAccountsRequestTermsOfService) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -10124,10 +10508,12 @@ type UpdateAccountsRequest struct {
 }
 
 func (u *UpdateAccountsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

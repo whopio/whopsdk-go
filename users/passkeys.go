@@ -26,10 +26,12 @@ type ChallengePasskeysRequest struct {
 }
 
 func (c *ChallengePasskeysRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetChallengeType sets the ChallengeType field and marks it as non-optional;
@@ -89,10 +91,12 @@ type CreatePasskeysRequest struct {
 }
 
 func (c *CreatePasskeysRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAttestationObject sets the AttestationObject field and marks it as non-optional;
@@ -166,10 +170,12 @@ type DeletePasskeysRequest struct {
 }
 
 func (d *DeletePasskeysRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -249,10 +255,12 @@ type ListPasskeysRequest struct {
 }
 
 func (l *ListPasskeysRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -350,10 +358,12 @@ func (c *ChallengePasskeysResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (c *ChallengePasskeysResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetChallenge sets the Challenge field and marks it as non-optional;
@@ -445,10 +455,12 @@ func (d *DeletePasskeysResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeletePasskeysResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -586,10 +598,12 @@ func (l *ListPasskeysResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPasskeysResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -655,6 +669,12 @@ var (
 	listPasskeysResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPasskeysResponsePageInfoNullableFields maps the wire names of ListPasskeysResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPasskeysResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPasskeysResponsePageInfoFieldEndCursor,
+	"start_cursor": listPasskeysResponsePageInfoFieldStartCursor,
+}
+
 type ListPasskeysResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -704,10 +724,12 @@ func (l *ListPasskeysResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListPasskeysResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -750,6 +772,13 @@ func (l *ListPasskeysResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPasskeysResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

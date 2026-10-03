@@ -35,10 +35,12 @@ type CreateExportsRequest struct {
 }
 
 func (c *CreateExportsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -128,10 +130,12 @@ type ListExportsRequest struct {
 }
 
 func (l *ListExportsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -196,10 +200,12 @@ type RetrieveExportsRequest struct {
 }
 
 func (r *RetrieveExportsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -219,6 +225,12 @@ var (
 	exportFieldStatus          = big.NewInt(1 << 6)
 	exportFieldUpdatedAt       = big.NewInt(1 << 7)
 )
+
+// exportNullableFields maps the wire names of Export's nullable fields (required or optional) to their field bits.
+var exportNullableFields = map[string]*big.Int{
+	"download_url":     exportFieldDownloadURL,
+	"progress_percent": exportFieldProgressPercent,
+}
 
 type Export struct {
 	// When the export was requested, as an ISO 8601 timestamp.
@@ -309,10 +321,12 @@ func (e *Export) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *Export) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -383,6 +397,13 @@ func (e *Export) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, exportNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -941,10 +962,12 @@ func (l *ListExportsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListExportsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1010,6 +1033,12 @@ var (
 	listExportsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listExportsResponsePageInfoNullableFields maps the wire names of ListExportsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listExportsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listExportsResponsePageInfoFieldEndCursor,
+	"start_cursor": listExportsResponsePageInfoFieldStartCursor,
+}
+
 type ListExportsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1059,10 +1088,12 @@ func (l *ListExportsResponsePageInfo) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListExportsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1105,6 +1136,13 @@ func (l *ListExportsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listExportsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1145,6 +1183,12 @@ var (
 	postExportCompletedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postExportCompletedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postExportCompletedPayloadNullableFields maps the wire names of PostExportCompletedPayload's nullable fields (required or optional) to their field bits.
+var postExportCompletedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postExportCompletedPayloadFieldAccountID,
+	"api_version_date": postExportCompletedPayloadFieldAPIVersionDate,
+}
 
 type PostExportCompletedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1234,10 +1278,12 @@ func (p *PostExportCompletedPayload) GetExtraProperties() map[string]interface{}
 }
 
 func (p *PostExportCompletedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1314,6 +1360,13 @@ func (p *PostExportCompletedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postExportCompletedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1396,6 +1449,12 @@ var (
 	postExportFailedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postExportFailedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postExportFailedPayloadNullableFields maps the wire names of PostExportFailedPayload's nullable fields (required or optional) to their field bits.
+var postExportFailedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postExportFailedPayloadFieldAccountID,
+	"api_version_date": postExportFailedPayloadFieldAPIVersionDate,
+}
 
 type PostExportFailedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1485,10 +1544,12 @@ func (p *PostExportFailedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostExportFailedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1565,6 +1626,13 @@ func (p *PostExportFailedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postExportFailedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

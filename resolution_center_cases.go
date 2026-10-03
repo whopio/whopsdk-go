@@ -32,10 +32,12 @@ type AcceptResolutionCenterCasesRequest struct {
 }
 
 func (a *AcceptResolutionCenterCasesRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -106,10 +108,12 @@ type AppealResolutionCenterCasesRequest struct {
 }
 
 func (a *AppealResolutionCenterCasesRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -175,10 +179,12 @@ type CreateResolutionCenterCasesRequest struct {
 }
 
 func (c *CreateResolutionCenterCasesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAttachments sets the Attachments field and marks it as non-optional;
@@ -249,10 +255,12 @@ type DenyResolutionCenterCasesRequest struct {
 }
 
 func (d *DenyResolutionCenterCasesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -322,10 +330,12 @@ type EventsResolutionCenterCasesRequest struct {
 }
 
 func (e *EventsResolutionCenterCasesRequest) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -412,10 +422,12 @@ type ListResolutionCenterCasesRequest struct {
 }
 
 func (l *ListResolutionCenterCasesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -528,10 +540,12 @@ type ReplyResolutionCenterCasesRequest struct {
 }
 
 func (r *ReplyResolutionCenterCasesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -595,10 +609,12 @@ type RequestInfoResolutionCenterCasesRequest struct {
 }
 
 func (r *RequestInfoResolutionCenterCasesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -656,10 +672,12 @@ type RetrieveResolutionCenterCasesRequest struct {
 }
 
 func (r *RetrieveResolutionCenterCasesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -703,10 +721,12 @@ type SummaryResolutionCenterCasesRequest struct {
 }
 
 func (s *SummaryResolutionCenterCasesRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetGroups sets the Groups field and marks it as non-optional;
@@ -772,6 +792,13 @@ var (
 	resolutionAttachmentFieldURL         = big.NewInt(1 << 3)
 )
 
+// resolutionAttachmentNullableFields maps the wire names of ResolutionAttachment's nullable fields (required or optional) to their field bits.
+var resolutionAttachmentNullableFields = map[string]*big.Int{
+	"content_type": resolutionAttachmentFieldContentType,
+	"filename":     resolutionAttachmentFieldFilename,
+	"url":          resolutionAttachmentFieldURL,
+}
+
 type ResolutionAttachment struct {
 	// The file's MIME type.
 	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
@@ -825,10 +852,12 @@ func (r *ResolutionAttachment) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ResolutionAttachment) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -871,6 +900,13 @@ func (r *ResolutionAttachment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resolutionAttachmentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -908,6 +944,15 @@ var (
 	resolutionBuyerFieldUserID   = big.NewInt(1 << 3)
 	resolutionBuyerFieldUsername = big.NewInt(1 << 4)
 )
+
+// resolutionBuyerNullableFields maps the wire names of ResolutionBuyer's nullable fields (required or optional) to their field bits.
+var resolutionBuyerNullableFields = map[string]*big.Int{
+	"email":     resolutionBuyerFieldEmail,
+	"member_id": resolutionBuyerFieldMemberID,
+	"name":      resolutionBuyerFieldName,
+	"user_id":   resolutionBuyerFieldUserID,
+	"username":  resolutionBuyerFieldUsername,
+}
 
 type ResolutionBuyer struct {
 	// The customer's email address. Requires the `member:email:read` scope; `null` without it.
@@ -971,10 +1016,12 @@ func (r *ResolutionBuyer) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ResolutionBuyer) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -1024,6 +1071,13 @@ func (r *ResolutionBuyer) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resolutionBuyerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1075,6 +1129,17 @@ var (
 	resolutionCenterCaseFieldStatus           = big.NewInt(1 << 17)
 	resolutionCenterCaseFieldUpdatedAt        = big.NewInt(1 << 18)
 )
+
+// resolutionCenterCaseNullableFields maps the wire names of ResolutionCenterCase's nullable fields (required or optional) to their field bits.
+var resolutionCenterCaseNullableFields = map[string]*big.Int{
+	"account":         resolutionCenterCaseFieldAccount,
+	"currency":        resolutionCenterCaseFieldCurrency,
+	"outcome":         resolutionCenterCaseFieldOutcome,
+	"plan_id":         resolutionCenterCaseFieldPlanID,
+	"product_id":      resolutionCenterCaseFieldProductID,
+	"refund":          resolutionCenterCaseFieldRefund,
+	"response_due_at": resolutionCenterCaseFieldResponseDueAt,
+}
 
 type ResolutionCenterCase struct {
 	// The account the case was filed against.
@@ -1262,10 +1327,12 @@ func (r *ResolutionCenterCase) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ResolutionCenterCase) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -1413,6 +1480,13 @@ func (r *ResolutionCenterCase) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resolutionCenterCaseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1602,6 +1676,11 @@ var (
 	resolutionEventFieldViewableByMerchant = big.NewInt(1 << 7)
 )
 
+// resolutionEventNullableFields maps the wire names of ResolutionEvent's nullable fields (required or optional) to their field bits.
+var resolutionEventNullableFields = map[string]*big.Int{
+	"details": resolutionEventFieldDetails,
+}
+
 type ResolutionEvent struct {
 	// The action recorded in this event.
 	Action      ResolutionEventAction   `json:"action" url:"action"`
@@ -1690,10 +1769,12 @@ func (r *ResolutionEvent) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ResolutionEvent) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -1764,6 +1845,13 @@ func (r *ResolutionEvent) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resolutionEventNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1881,6 +1969,13 @@ var (
 	resolutionPaymentFieldPaymentMethodType = big.NewInt(1 << 4)
 )
 
+// resolutionPaymentNullableFields maps the wire names of ResolutionPayment's nullable fields (required or optional) to their field bits.
+var resolutionPaymentNullableFields = map[string]*big.Int{
+	"card_brand":          resolutionPaymentFieldCardBrand,
+	"card_last4":          resolutionPaymentFieldCardLast4,
+	"payment_method_type": resolutionPaymentFieldPaymentMethodType,
+}
+
 type ResolutionPayment struct {
 	// Card brand, when the customer paid by card.
 	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
@@ -1943,10 +2038,12 @@ func (r *ResolutionPayment) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ResolutionPayment) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
@@ -1996,6 +2093,13 @@ func (r *ResolutionPayment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resolutionPaymentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2064,10 +2168,12 @@ func (a *AcceptResolutionCenterCasesRequestAttachmentsItem) GetExtraProperties()
 }
 
 func (a *AcceptResolutionCenterCasesRequestAttachmentsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -2164,10 +2270,12 @@ func (a *AppealResolutionCenterCasesRequestAttachmentsItem) GetExtraProperties()
 }
 
 func (a *AppealResolutionCenterCasesRequestAttachmentsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -2264,10 +2372,12 @@ func (c *CreateResolutionCenterCasesRequestAttachmentsItem) GetExtraProperties()
 }
 
 func (c *CreateResolutionCenterCasesRequestAttachmentsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -2396,10 +2506,12 @@ func (d *DenyResolutionCenterCasesRequestAttachmentsItem) GetExtraProperties() m
 }
 
 func (d *DenyResolutionCenterCasesRequestAttachmentsItem) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -2496,10 +2608,12 @@ func (e *EventsResolutionCenterCasesResponse) GetExtraProperties() map[string]in
 }
 
 func (e *EventsResolutionCenterCasesResponse) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2565,6 +2679,12 @@ var (
 	eventsResolutionCenterCasesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// eventsResolutionCenterCasesResponsePageInfoNullableFields maps the wire names of EventsResolutionCenterCasesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var eventsResolutionCenterCasesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   eventsResolutionCenterCasesResponsePageInfoFieldEndCursor,
+	"start_cursor": eventsResolutionCenterCasesResponsePageInfoFieldStartCursor,
+}
+
 type EventsResolutionCenterCasesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2614,10 +2734,12 @@ func (e *EventsResolutionCenterCasesResponsePageInfo) GetExtraProperties() map[s
 }
 
 func (e *EventsResolutionCenterCasesResponsePageInfo) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2660,6 +2782,13 @@ func (e *EventsResolutionCenterCasesResponsePageInfo) UnmarshalJSON(data []byte)
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, eventsResolutionCenterCasesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2856,10 +2985,12 @@ func (l *ListResolutionCenterCasesResponse) GetExtraProperties() map[string]inte
 }
 
 func (l *ListResolutionCenterCasesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2925,6 +3056,12 @@ var (
 	listResolutionCenterCasesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listResolutionCenterCasesResponsePageInfoNullableFields maps the wire names of ListResolutionCenterCasesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listResolutionCenterCasesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listResolutionCenterCasesResponsePageInfoFieldEndCursor,
+	"start_cursor": listResolutionCenterCasesResponsePageInfoFieldStartCursor,
+}
+
 type ListResolutionCenterCasesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2974,10 +3111,12 @@ func (l *ListResolutionCenterCasesResponsePageInfo) GetExtraProperties() map[str
 }
 
 func (l *ListResolutionCenterCasesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3020,6 +3159,13 @@ func (l *ListResolutionCenterCasesResponsePageInfo) UnmarshalJSON(data []byte) e
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listResolutionCenterCasesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3060,6 +3206,12 @@ var (
 	postResolutionCenterCaseCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postResolutionCenterCaseCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postResolutionCenterCaseCreatedPayloadNullableFields maps the wire names of PostResolutionCenterCaseCreatedPayload's nullable fields (required or optional) to their field bits.
+var postResolutionCenterCaseCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postResolutionCenterCaseCreatedPayloadFieldAccountID,
+	"api_version_date": postResolutionCenterCaseCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostResolutionCenterCaseCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3149,10 +3301,12 @@ func (p *PostResolutionCenterCaseCreatedPayload) GetExtraProperties() map[string
 }
 
 func (p *PostResolutionCenterCaseCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3229,6 +3383,13 @@ func (p *PostResolutionCenterCaseCreatedPayload) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postResolutionCenterCaseCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3311,6 +3472,12 @@ var (
 	postResolutionCenterCaseDecidedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postResolutionCenterCaseDecidedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postResolutionCenterCaseDecidedPayloadNullableFields maps the wire names of PostResolutionCenterCaseDecidedPayload's nullable fields (required or optional) to their field bits.
+var postResolutionCenterCaseDecidedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postResolutionCenterCaseDecidedPayloadFieldAccountID,
+	"api_version_date": postResolutionCenterCaseDecidedPayloadFieldAPIVersionDate,
+}
 
 type PostResolutionCenterCaseDecidedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3400,10 +3567,12 @@ func (p *PostResolutionCenterCaseDecidedPayload) GetExtraProperties() map[string
 }
 
 func (p *PostResolutionCenterCaseDecidedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3480,6 +3649,13 @@ func (p *PostResolutionCenterCaseDecidedPayload) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postResolutionCenterCaseDecidedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3562,6 +3738,12 @@ var (
 	postResolutionCenterCaseUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postResolutionCenterCaseUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postResolutionCenterCaseUpdatedPayloadNullableFields maps the wire names of PostResolutionCenterCaseUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postResolutionCenterCaseUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postResolutionCenterCaseUpdatedPayloadFieldAccountID,
+	"api_version_date": postResolutionCenterCaseUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostResolutionCenterCaseUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3651,10 +3833,12 @@ func (p *PostResolutionCenterCaseUpdatedPayload) GetExtraProperties() map[string
 }
 
 func (p *PostResolutionCenterCaseUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3731,6 +3915,13 @@ func (p *PostResolutionCenterCaseUpdatedPayload) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postResolutionCenterCaseUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3841,10 +4032,12 @@ func (r *ReplyResolutionCenterCasesRequestAttachmentsItem) GetExtraProperties() 
 }
 
 func (r *ReplyResolutionCenterCasesRequestAttachmentsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3941,10 +4134,12 @@ func (r *RequestInfoResolutionCenterCasesRequestAttachmentsItem) GetExtraPropert
 }
 
 func (r *RequestInfoResolutionCenterCasesRequestAttachmentsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4152,10 +4347,12 @@ func (s *SummaryResolutionCenterCasesResponse) GetExtraProperties() map[string]i
 }
 
 func (s *SummaryResolutionCenterCasesResponse) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetGroups sets the Groups field and marks it as non-optional;
@@ -4214,13 +4411,13 @@ func (s *SummaryResolutionCenterCasesResponse) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// One entry per requested breakdown, keyed by the field it groups on. A field you did not ask for is absent.
 var (
 	summaryResolutionCenterCasesResponseGroupsFieldOutcome = big.NewInt(1 << 0)
 	summaryResolutionCenterCasesResponseGroupsFieldReason  = big.NewInt(1 << 1)
 	summaryResolutionCenterCasesResponseGroupsFieldStatus  = big.NewInt(1 << 2)
 )
 
+// One entry per requested breakdown, keyed by the field it groups on. A field you did not ask for is absent.
 type SummaryResolutionCenterCasesResponseGroups struct {
 	// How many of the matching cases ended each way. Every outcome is present, including those with a count of zero; open cases are counted in none of them.
 	Outcome *SummaryResolutionCenterCasesResponseGroupsOutcome `json:"outcome,omitempty" url:"outcome,omitempty"`
@@ -4265,10 +4462,12 @@ func (s *SummaryResolutionCenterCasesResponseGroups) GetExtraProperties() map[st
 }
 
 func (s *SummaryResolutionCenterCasesResponseGroups) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetOutcome sets the Outcome field and marks it as non-optional;
@@ -4334,13 +4533,13 @@ func (s *SummaryResolutionCenterCasesResponseGroups) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// How many of the matching cases ended each way. Every outcome is present, including those with a count of zero; open cases are counted in none of them.
 var (
 	summaryResolutionCenterCasesResponseGroupsOutcomeFieldCustomerWon = big.NewInt(1 << 0)
 	summaryResolutionCenterCasesResponseGroupsOutcomeFieldMerchantWon = big.NewInt(1 << 1)
 	summaryResolutionCenterCasesResponseGroupsOutcomeFieldWithdrawn   = big.NewInt(1 << 2)
 )
 
+// How many of the matching cases ended each way. Every outcome is present, including those with a count of zero; open cases are counted in none of them.
 type SummaryResolutionCenterCasesResponseGroupsOutcome struct {
 	CustomerWon int `json:"customer_won" url:"customer_won"`
 	MerchantWon int `json:"merchant_won" url:"merchant_won"`
@@ -4382,10 +4581,12 @@ func (s *SummaryResolutionCenterCasesResponseGroupsOutcome) GetExtraProperties()
 }
 
 func (s *SummaryResolutionCenterCasesResponseGroupsOutcome) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetCustomerWon sets the CustomerWon field and marks it as non-optional;
@@ -4451,7 +4652,6 @@ func (s *SummaryResolutionCenterCasesResponseGroupsOutcome) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// How many of the matching cases were opened for each reason. Every reason is present, including those with a count of zero.
 var (
 	summaryResolutionCenterCasesResponseGroupsReasonFieldFraudulent           = big.NewInt(1 << 0)
 	summaryResolutionCenterCasesResponseGroupsReasonFieldNotAsDescribed       = big.NewInt(1 << 1)
@@ -4460,6 +4660,7 @@ var (
 	summaryResolutionCenterCasesResponseGroupsReasonFieldSubscriptionCanceled = big.NewInt(1 << 4)
 )
 
+// How many of the matching cases were opened for each reason. Every reason is present, including those with a count of zero.
 type SummaryResolutionCenterCasesResponseGroupsReason struct {
 	Fraudulent           int `json:"fraudulent" url:"fraudulent"`
 	NotAsDescribed       int `json:"not_as_described" url:"not_as_described"`
@@ -4517,10 +4718,12 @@ func (s *SummaryResolutionCenterCasesResponseGroupsReason) GetExtraProperties() 
 }
 
 func (s *SummaryResolutionCenterCasesResponseGroupsReason) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetFraudulent sets the Fraudulent field and marks it as non-optional;
@@ -4600,7 +4803,6 @@ func (s *SummaryResolutionCenterCasesResponseGroupsReason) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// How many of the matching cases are in each status. Every status is present, including those with a count of zero.
 var (
 	summaryResolutionCenterCasesResponseGroupsStatusFieldAwaitingCustomer = big.NewInt(1 << 0)
 	summaryResolutionCenterCasesResponseGroupsStatusFieldAwaitingMerchant = big.NewInt(1 << 1)
@@ -4608,6 +4810,7 @@ var (
 	summaryResolutionCenterCasesResponseGroupsStatusFieldUnderReview      = big.NewInt(1 << 3)
 )
 
+// How many of the matching cases are in each status. Every status is present, including those with a count of zero.
 type SummaryResolutionCenterCasesResponseGroupsStatus struct {
 	AwaitingCustomer int `json:"awaiting_customer" url:"awaiting_customer"`
 	AwaitingMerchant int `json:"awaiting_merchant" url:"awaiting_merchant"`
@@ -4657,10 +4860,12 @@ func (s *SummaryResolutionCenterCasesResponseGroupsStatus) GetExtraProperties() 
 }
 
 func (s *SummaryResolutionCenterCasesResponseGroupsStatus) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetAwaitingCustomer sets the AwaitingCustomer field and marks it as non-optional;
@@ -4746,10 +4951,12 @@ type WithdrawResolutionCenterCasesRequest struct {
 }
 
 func (w *WithdrawResolutionCenterCasesRequest) require(field *big.Int) {
-	if w.explicitFields == nil {
-		w.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if w.explicitFields != nil {
+		next.Set(w.explicitFields)
 	}
-	w.explicitFields.Or(w.explicitFields, field)
+	next.Or(next, field)
+	w.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

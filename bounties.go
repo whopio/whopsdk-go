@@ -22,10 +22,12 @@ type CancelBountiesRequest struct {
 }
 
 func (c *CancelBountiesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -84,10 +86,12 @@ type CreateBountiesRequest struct {
 }
 
 func (c *CreateBountiesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAcceptedSubmissionsLimit sets the AcceptedSubmissionsLimit field and marks it as non-optional;
@@ -257,10 +261,12 @@ type ListBountiesRequest struct {
 }
 
 func (l *ListBountiesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -381,10 +387,12 @@ type RetrieveBountiesRequest struct {
 }
 
 func (r *RetrieveBountiesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -433,6 +441,23 @@ var (
 	bountyFieldUpdatedAt                       = big.NewInt(1 << 35)
 	bountyFieldViewerAcceptedSubmissionsCount  = big.NewInt(1 << 36)
 )
+
+// bountyNullableFields maps the wire names of Bounty's nullable fields (required or optional) to their field bits.
+var bountyNullableFields = map[string]*big.Int{
+	"business_goal_type":                  bountyFieldBusinessGoalType,
+	"cancel_requested_at":                 bountyFieldCancelRequestedAt,
+	"capture_spec":                        bountyFieldCaptureSpec,
+	"discussion_experience_id":            bountyFieldDiscussionExperienceID,
+	"discussion_feed_id":                  bountyFieldDiscussionFeedID,
+	"discussion_post_id":                  bountyFieldDiscussionPostID,
+	"experience_id":                       bountyFieldExperienceID,
+	"funding_account":                     bountyFieldFundingAccount,
+	"hosting_account":                     bountyFieldHostingAccount,
+	"min_total_verified_duration_seconds": bountyFieldMinTotalVerifiedDurationSeconds,
+	"scheduled_frequency":                 bountyFieldScheduledFrequency,
+	"scheduled_publish_at":                bountyFieldScheduledPublishAt,
+	"submissions_closed_at":               bountyFieldSubmissionsClosedAt,
+}
 
 type Bounty struct {
 	AcceptedDeliverableTypes []BountyAcceptedDeliverableTypesItem `json:"accepted_deliverable_types" url:"accepted_deliverable_types"`
@@ -781,10 +806,12 @@ func (b *Bounty) GetExtraProperties() map[string]interface{} {
 }
 
 func (b *Bounty) require(field *big.Int) {
-	if b.explicitFields == nil {
-		b.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if b.explicitFields != nil {
+		next.Set(b.explicitFields)
 	}
-	b.explicitFields.Or(b.explicitFields, field)
+	next.Or(next, field)
+	b.explicitFields = next
 }
 
 // SetAcceptedDeliverableTypes sets the AcceptedDeliverableTypes field and marks it as non-optional;
@@ -1058,6 +1085,13 @@ func (b *Bounty) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	b.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, bountyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		b.require(presentFields)
+	}
 	b.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1120,6 +1154,11 @@ var (
 	bountyActiveLivestreamFeedFieldTitle = big.NewInt(1 << 2)
 )
 
+// bountyActiveLivestreamFeedNullableFields maps the wire names of BountyActiveLivestreamFeed's nullable fields (required or optional) to their field bits.
+var bountyActiveLivestreamFeedNullableFields = map[string]*big.Int{
+	"host": bountyActiveLivestreamFeedFieldHost,
+}
+
 type BountyActiveLivestreamFeed struct {
 	// User hosting the proof livestream — the worker streaming their attempt. `null` if the host account no longer exists.
 	Host *UserSummary `json:"host,omitempty" url:"host,omitempty"`
@@ -1164,10 +1203,12 @@ func (b *BountyActiveLivestreamFeed) GetExtraProperties() map[string]interface{}
 }
 
 func (b *BountyActiveLivestreamFeed) require(field *big.Int) {
-	if b.explicitFields == nil {
-		b.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if b.explicitFields != nil {
+		next.Set(b.explicitFields)
 	}
-	b.explicitFields.Or(b.explicitFields, field)
+	next.Or(next, field)
+	b.explicitFields = next
 }
 
 // SetHost sets the Host field and marks it as non-optional;
@@ -1203,6 +1244,13 @@ func (b *BountyActiveLivestreamFeed) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	b.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, bountyActiveLivestreamFeedNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		b.require(presentFields)
+	}
 	b.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1576,6 +1624,22 @@ var (
 	bountyListItemFieldViewerAcceptedSubmissionsCount  = big.NewInt(1 << 32)
 )
 
+// bountyListItemNullableFields maps the wire names of BountyListItem's nullable fields (required or optional) to their field bits.
+var bountyListItemNullableFields = map[string]*big.Int{
+	"business_goal_type":                  bountyListItemFieldBusinessGoalType,
+	"cancel_requested_at":                 bountyListItemFieldCancelRequestedAt,
+	"discussion_experience_id":            bountyListItemFieldDiscussionExperienceID,
+	"discussion_feed_id":                  bountyListItemFieldDiscussionFeedID,
+	"discussion_post_id":                  bountyListItemFieldDiscussionPostID,
+	"experience_id":                       bountyListItemFieldExperienceID,
+	"funding_account":                     bountyListItemFieldFundingAccount,
+	"hosting_account":                     bountyListItemFieldHostingAccount,
+	"min_total_verified_duration_seconds": bountyListItemFieldMinTotalVerifiedDurationSeconds,
+	"scheduled_frequency":                 bountyListItemFieldScheduledFrequency,
+	"scheduled_publish_at":                bountyListItemFieldScheduledPublishAt,
+	"submissions_closed_at":               bountyListItemFieldSubmissionsClosedAt,
+}
+
 type BountyListItem struct {
 	AcceptedDeliverableTypes []BountyListItemAcceptedDeliverableTypesItem `json:"accepted_deliverable_types" url:"accepted_deliverable_types"`
 	// Submissions accepted so far.
@@ -1888,10 +1952,12 @@ func (b *BountyListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (b *BountyListItem) require(field *big.Int) {
-	if b.explicitFields == nil {
-		b.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if b.explicitFields != nil {
+		next.Set(b.explicitFields)
 	}
-	b.explicitFields.Or(b.explicitFields, field)
+	next.Or(next, field)
+	b.explicitFields = next
 }
 
 // SetAcceptedDeliverableTypes sets the AcceptedDeliverableTypes field and marks it as non-optional;
@@ -2137,6 +2203,13 @@ func (b *BountyListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	b.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, bountyListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		b.require(presentFields)
+	}
 	b.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2458,10 +2531,12 @@ func (c *CaptureSpec) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CaptureSpec) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetFilenamePattern sets the FilenamePattern field and marks it as non-optional;
@@ -2642,10 +2717,12 @@ func (c *CaptureSpecImu) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CaptureSpecImu) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDeviceMotionUnits sets the DeviceMotionUnits field and marks it as non-optional;
@@ -2901,10 +2978,12 @@ func (c *CaptureSpecVideo) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CaptureSpecVideo) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetBitrateCeilingMbps sets the BitrateCeilingMbps field and marks it as non-optional;
@@ -3118,7 +3197,6 @@ func (c CreateBountiesRequestBusinessGoalType) Ptr() *CreateBountiesRequestBusin
 	return &c
 }
 
-// Per-bounty overrides of the served capture contract. Only accepted when `business_goal_type` is `data_capture`; omitted fields keep the platform defaults, and the resulting contract is echoed back as `capture_spec` on the bounty.
 var (
 	createBountiesRequestCaptureSpecFieldBitrateTargetMbps               = big.NewInt(1 << 0)
 	createBountiesRequestCaptureSpecFieldEmbedCameraMetadata             = big.NewInt(1 << 1)
@@ -3128,6 +3206,7 @@ var (
 	createBountiesRequestCaptureSpecFieldStabilizationMode               = big.NewInt(1 << 5)
 )
 
+// Per-bounty overrides of the served capture contract. Only accepted when `business_goal_type` is `data_capture`; omitted fields keep the platform defaults, and the resulting contract is echoed back as `capture_spec` on the bounty.
 type CreateBountiesRequestCaptureSpec struct {
 	// Average bitrate the recorder encodes at, in megabits per second. Must sit within the served floor and ceiling.
 	BitrateTargetMbps *int `json:"bitrate_target_mbps,omitempty" url:"bitrate_target_mbps,omitempty"`
@@ -3199,10 +3278,12 @@ func (c *CreateBountiesRequestCaptureSpec) GetExtraProperties() map[string]inter
 }
 
 func (c *CreateBountiesRequestCaptureSpec) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetBitrateTargetMbps sets the BitrateTargetMbps field and marks it as non-optional;
@@ -3500,10 +3581,12 @@ func (l *ListBountiesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListBountiesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3569,6 +3652,12 @@ var (
 	listBountiesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listBountiesResponsePageInfoNullableFields maps the wire names of ListBountiesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listBountiesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listBountiesResponsePageInfoFieldEndCursor,
+	"start_cursor": listBountiesResponsePageInfoFieldStartCursor,
+}
+
 type ListBountiesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -3618,10 +3707,12 @@ func (l *ListBountiesResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListBountiesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3664,6 +3755,13 @@ func (l *ListBountiesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBountiesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3807,10 +3905,12 @@ type UpdateBountiesRequest struct {
 }
 
 func (u *UpdateBountiesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

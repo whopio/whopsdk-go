@@ -62,10 +62,12 @@ type RetrieveFinancialReportsRequest struct {
 }
 
 func (r *RetrieveFinancialReportsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -685,6 +687,12 @@ var (
 	retrieveFinancialReportsResponseFieldTotal                = big.NewInt(1 << 7)
 )
 
+// retrieveFinancialReportsResponseNullableFields maps the wire names of RetrieveFinancialReportsResponse's nullable fields (required or optional) to their field bits.
+var retrieveFinancialReportsResponseNullableFields = map[string]*big.Int{
+	"beginning_balance": retrieveFinancialReportsResponseFieldBeginningBalance,
+	"ending_balance":    retrieveFinancialReportsResponseFieldEndingBalance,
+}
+
 type RetrieveFinancialReportsResponse struct {
 	BeginningBalance *float64 `json:"beginning_balance,omitempty" url:"beginning_balance,omitempty"`
 	// Cashflow currencies ordered by volume in the requested period. Includes lifetime currencies unless `period_only_currencies` is true.
@@ -769,10 +777,12 @@ func (r *RetrieveFinancialReportsResponse) GetExtraProperties() map[string]inter
 }
 
 func (r *RetrieveFinancialReportsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBeginningBalance sets the BeginningBalance field and marks it as non-optional;
@@ -843,6 +853,13 @@ func (r *RetrieveFinancialReportsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveFinancialReportsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -933,10 +950,12 @@ func (r *RetrieveFinancialReportsResponsePaymentFeeBreakdownItem) GetExtraProper
 }
 
 func (r *RetrieveFinancialReportsResponsePaymentFeeBreakdownItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -1100,6 +1119,15 @@ var (
 	retrieveFinancialReportsResponseRowsItemFieldProfitAndLossSection = big.NewInt(1 << 8)
 )
 
+// retrieveFinancialReportsResponseRowsItemNullableFields maps the wire names of RetrieveFinancialReportsResponseRowsItem's nullable fields (required or optional) to their field bits.
+var retrieveFinancialReportsResponseRowsItemNullableFields = map[string]*big.Int{
+	"account_ik_path":         retrieveFinancialReportsResponseRowsItemFieldAccountIkPath,
+	"account_name":            retrieveFinancialReportsResponseRowsItemFieldAccountName,
+	"account_type":            retrieveFinancialReportsResponseRowsItemFieldAccountType,
+	"line_count":              retrieveFinancialReportsResponseRowsItemFieldLineCount,
+	"profit_and_loss_section": retrieveFinancialReportsResponseRowsItemFieldProfitAndLossSection,
+}
+
 type RetrieveFinancialReportsResponseRowsItem struct {
 	AccountIkPath *string `json:"account_ik_path,omitempty" url:"account_ik_path,omitempty"`
 	AccountName   *string `json:"account_name,omitempty" url:"account_name,omitempty"`
@@ -1193,10 +1221,12 @@ func (r *RetrieveFinancialReportsResponseRowsItem) GetExtraProperties() map[stri
 }
 
 func (r *RetrieveFinancialReportsResponseRowsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountIkPath sets the AccountIkPath field and marks it as non-optional;
@@ -1274,6 +1304,13 @@ func (r *RetrieveFinancialReportsResponseRowsItem) UnmarshalJSON(data []byte) er
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveFinancialReportsResponseRowsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }

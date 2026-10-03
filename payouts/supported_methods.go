@@ -53,10 +53,12 @@ type ListSupportedMethodsRequest struct {
 }
 
 func (l *ListSupportedMethodsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -174,10 +176,12 @@ func (l *ListSupportedMethodsResponse) GetExtraProperties() map[string]interface
 }
 
 func (l *ListSupportedMethodsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -247,6 +251,14 @@ var (
 	listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery  = big.NewInt(1 << 7)
 	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 8)
 )
+
+// listSupportedMethodsResponseDataItemNullableFields maps the wire names of ListSupportedMethodsResponseDataItem's nullable fields (required or optional) to their field bits.
+var listSupportedMethodsResponseDataItemNullableFields = map[string]*big.Int{
+	"icon_url":        listSupportedMethodsResponseDataItemFieldIconURL,
+	"name":            listSupportedMethodsResponseDataItemFieldName,
+	"quotes":          listSupportedMethodsResponseDataItemFieldQuotes,
+	"required_fields": listSupportedMethodsResponseDataItemFieldRequiredFields,
+}
 
 type ListSupportedMethodsResponseDataItem struct {
 	// How funds are delivered, for example `bank_deposit`.
@@ -343,10 +355,12 @@ func (l *ListSupportedMethodsResponseDataItem) GetExtraProperties() map[string]i
 }
 
 func (l *ListSupportedMethodsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
@@ -424,6 +438,13 @@ func (l *ListSupportedMethodsResponseDataItem) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSupportedMethodsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -525,6 +546,13 @@ var (
 	listSupportedMethodsResponseDataItemQuotesItemFieldStandard            = big.NewInt(1 << 7)
 )
 
+// listSupportedMethodsResponseDataItemQuotesItemNullableFields maps the wire names of ListSupportedMethodsResponseDataItemQuotesItem's nullable fields (required or optional) to their field bits.
+var listSupportedMethodsResponseDataItemQuotesItemNullableFields = map[string]*big.Int{
+	"instant":   listSupportedMethodsResponseDataItemQuotesItemFieldInstant,
+	"max_limit": listSupportedMethodsResponseDataItemQuotesItemFieldMaxLimit,
+	"standard":  listSupportedMethodsResponseDataItemQuotesItemFieldStandard,
+}
+
 type ListSupportedMethodsResponseDataItemQuotesItem struct {
 	// The payout amount the quote is for.
 	Amount float64 `json:"amount" url:"amount"`
@@ -614,10 +642,12 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItem) GetExtraProperties() ma
 }
 
 func (l *ListSupportedMethodsResponseDataItemQuotesItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -688,6 +718,13 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItem) UnmarshalJSON(data []by
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSupportedMethodsResponseDataItemQuotesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -718,13 +755,13 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Instant-delivery estimate. Null if unsupported, unavailable for the account, or the amount does not cover the fee.
 var (
 	listSupportedMethodsResponseDataItemQuotesItemInstantFieldEstimatedArrival = big.NewInt(1 << 0)
 	listSupportedMethodsResponseDataItemQuotesItemInstantFieldFee              = big.NewInt(1 << 1)
 	listSupportedMethodsResponseDataItemQuotesItemInstantFieldTotalReceived    = big.NewInt(1 << 2)
 )
 
+// Instant-delivery estimate. Null if unsupported, unavailable for the account, or the amount does not cover the fee.
 type ListSupportedMethodsResponseDataItemQuotesItemInstant struct {
 	EstimatedArrival time.Time `json:"estimated_arrival" url:"estimated_arrival"`
 	Fee              float64   `json:"fee" url:"fee"`
@@ -766,10 +803,12 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItemInstant) GetExtraProperti
 }
 
 func (l *ListSupportedMethodsResponseDataItemQuotesItemInstant) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
@@ -843,13 +882,13 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItemInstant) String() string 
 	return fmt.Sprintf("%#v", l)
 }
 
-// Standard-delivery estimate. Null if unsupported or the amount does not cover the fee.
 var (
 	listSupportedMethodsResponseDataItemQuotesItemStandardFieldEstimatedArrival = big.NewInt(1 << 0)
 	listSupportedMethodsResponseDataItemQuotesItemStandardFieldFee              = big.NewInt(1 << 1)
 	listSupportedMethodsResponseDataItemQuotesItemStandardFieldTotalReceived    = big.NewInt(1 << 2)
 )
 
+// Standard-delivery estimate. Null if unsupported or the amount does not cover the fee.
 type ListSupportedMethodsResponseDataItemQuotesItemStandard struct {
 	EstimatedArrival time.Time `json:"estimated_arrival" url:"estimated_arrival"`
 	Fee              float64   `json:"fee" url:"fee"`
@@ -891,10 +930,12 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItemStandard) GetExtraPropert
 }
 
 func (l *ListSupportedMethodsResponseDataItemQuotesItemStandard) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
@@ -980,6 +1021,13 @@ var (
 	listSupportedMethodsResponseDataItemRequiredFieldsItemFieldType        = big.NewInt(1 << 8)
 	listSupportedMethodsResponseDataItemRequiredFieldsItemFieldValidation  = big.NewInt(1 << 9)
 )
+
+// listSupportedMethodsResponseDataItemRequiredFieldsItemNullableFields maps the wire names of ListSupportedMethodsResponseDataItemRequiredFieldsItem's nullable fields (required or optional) to their field bits.
+var listSupportedMethodsResponseDataItemRequiredFieldsItemNullableFields = map[string]*big.Int{
+	"options":     listSupportedMethodsResponseDataItemRequiredFieldsItemFieldOptions,
+	"placeholder": listSupportedMethodsResponseDataItemRequiredFieldsItemFieldPlaceholder,
+	"validation":  listSupportedMethodsResponseDataItemRequiredFieldsItemFieldValidation,
+}
 
 type ListSupportedMethodsResponseDataItemRequiredFieldsItem struct {
 	// Stable field ID (`fld_` + the semantic type), used as the field key when creating the payout method. Safe to hardcode — it never changes for a given field.
@@ -1087,10 +1135,12 @@ func (l *ListSupportedMethodsResponseDataItemRequiredFieldsItem) GetExtraPropert
 }
 
 func (l *ListSupportedMethodsResponseDataItemRequiredFieldsItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1175,6 +1225,13 @@ func (l *ListSupportedMethodsResponseDataItemRequiredFieldsItem) UnmarshalJSON(d
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSupportedMethodsResponseDataItemRequiredFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1231,6 +1288,12 @@ var (
 	listSupportedMethodsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listSupportedMethodsResponsePageInfoNullableFields maps the wire names of ListSupportedMethodsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listSupportedMethodsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listSupportedMethodsResponsePageInfoFieldEndCursor,
+	"start_cursor": listSupportedMethodsResponsePageInfoFieldStartCursor,
+}
+
 type ListSupportedMethodsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1280,10 +1343,12 @@ func (l *ListSupportedMethodsResponsePageInfo) GetExtraProperties() map[string]i
 }
 
 func (l *ListSupportedMethodsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1326,6 +1391,13 @@ func (l *ListSupportedMethodsResponsePageInfo) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSupportedMethodsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

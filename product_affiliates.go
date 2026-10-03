@@ -50,10 +50,12 @@ type ListProductAffiliatesRequest struct {
 }
 
 func (l *ListProductAffiliatesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -216,10 +218,12 @@ func (p *ProductAffiliate) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *ProductAffiliate) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -344,6 +348,12 @@ var (
 	productAffiliateUserFieldUsername       = big.NewInt(1 << 4)
 )
 
+// productAffiliateUserNullableFields maps the wire names of ProductAffiliateUser's nullable fields (required or optional) to their field bits.
+var productAffiliateUserNullableFields = map[string]*big.Int{
+	"email": productAffiliateUserFieldEmail,
+	"name":  productAffiliateUserFieldName,
+}
+
 type ProductAffiliateUser struct {
 	// The affiliate's email address. Requires the `member:email:read` scope; `null` without it.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -406,10 +416,12 @@ func (p *ProductAffiliateUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *ProductAffiliateUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -459,6 +471,13 @@ func (p *ProductAffiliateUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, productAffiliateUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -517,6 +536,11 @@ var (
 	listProductAffiliatesResponseFieldTotalCount = big.NewInt(1 << 2)
 )
 
+// listProductAffiliatesResponseNullableFields maps the wire names of ListProductAffiliatesResponse's nullable fields (required or optional) to their field bits.
+var listProductAffiliatesResponseNullableFields = map[string]*big.Int{
+	"total_count": listProductAffiliatesResponseFieldTotalCount,
+}
+
 type ListProductAffiliatesResponse struct {
 	Data     []*ProductAffiliate                    `json:"data" url:"data"`
 	PageInfo *ListProductAffiliatesResponsePageInfo `json:"page_info" url:"page_info"`
@@ -559,10 +583,12 @@ func (l *ListProductAffiliatesResponse) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListProductAffiliatesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -598,6 +624,13 @@ func (l *ListProductAffiliatesResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listProductAffiliatesResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -634,6 +667,12 @@ var (
 	listProductAffiliatesResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
 	listProductAffiliatesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
+
+// listProductAffiliatesResponsePageInfoNullableFields maps the wire names of ListProductAffiliatesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listProductAffiliatesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listProductAffiliatesResponsePageInfoFieldEndCursor,
+	"start_cursor": listProductAffiliatesResponsePageInfoFieldStartCursor,
+}
 
 type ListProductAffiliatesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
@@ -684,10 +723,12 @@ func (l *ListProductAffiliatesResponsePageInfo) GetExtraProperties() map[string]
 }
 
 func (l *ListProductAffiliatesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -730,6 +771,13 @@ func (l *ListProductAffiliatesResponsePageInfo) UnmarshalJSON(data []byte) error
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listProductAffiliatesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

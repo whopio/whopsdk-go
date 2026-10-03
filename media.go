@@ -37,10 +37,12 @@ type GenerateMediaRequest struct {
 }
 
 func (g *GenerateMediaRequest) require(field *big.Int) {
-	if g.explicitFields == nil {
-		g.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if g.explicitFields != nil {
+		next.Set(g.explicitFields)
 	}
-	g.explicitFields.Or(g.explicitFields, field)
+	next.Or(next, field)
+	g.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -119,10 +121,12 @@ type RetrieveMediaRequest struct {
 }
 
 func (r *RetrieveMediaRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -145,6 +149,14 @@ var (
 	mediaAssetFieldSource        = big.NewInt(1 << 9)
 	mediaAssetFieldStatus        = big.NewInt(1 << 10)
 )
+
+// mediaAssetNullableFields maps the wire names of MediaAsset's nullable fields (required or optional) to their field bits.
+var mediaAssetNullableFields = map[string]*big.Int{
+	"amount_charged": mediaAssetFieldAmountCharged,
+	"completed_at":   mediaAssetFieldCompletedAt,
+	"error_message":  mediaAssetFieldErrorMessage,
+	"file":           mediaAssetFieldFile,
+}
 
 type MediaAsset struct {
 	// USD amount charged to the account's balance for this generation. `null` if the generation wasn't billed.
@@ -262,10 +274,12 @@ func (m *MediaAsset) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MediaAsset) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetAmountCharged sets the AmountCharged field and marks it as non-optional;
@@ -357,6 +371,13 @@ func (m *MediaAsset) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, mediaAssetNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -427,10 +448,12 @@ func (m *MediaAssetFile) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MediaAssetFile) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -496,6 +519,12 @@ var (
 	mediaAssetGenerationFieldResolution      = big.NewInt(1 << 3)
 )
 
+// mediaAssetGenerationNullableFields maps the wire names of MediaAssetGeneration's nullable fields (required or optional) to their field bits.
+var mediaAssetGenerationNullableFields = map[string]*big.Int{
+	"duration_seconds": mediaAssetGenerationFieldDurationSeconds,
+	"resolution":       mediaAssetGenerationFieldResolution,
+}
+
 type MediaAssetGeneration struct {
 	// Requested video length in seconds. `null` for images.
 	DurationSeconds *float64 `json:"duration_seconds,omitempty" url:"duration_seconds,omitempty"`
@@ -548,10 +577,12 @@ func (m *MediaAssetGeneration) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MediaAssetGeneration) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetDurationSeconds sets the DurationSeconds field and marks it as non-optional;
@@ -594,6 +625,13 @@ func (m *MediaAssetGeneration) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, mediaAssetGenerationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }

@@ -23,10 +23,12 @@ type ActivatePromoCodesRequest struct {
 }
 
 func (a *ActivatePromoCodesRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -76,10 +78,12 @@ type CreatePromoCodesRequest struct {
 }
 
 func (c *CreatePromoCodesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -221,10 +225,12 @@ type DeactivatePromoCodesRequest struct {
 }
 
 func (d *DeactivatePromoCodesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -247,10 +253,12 @@ type DeletePromoCodesRequest struct {
 }
 
 func (d *DeletePromoCodesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -306,10 +314,12 @@ type ListPromoCodesRequest struct {
 }
 
 func (l *ListPromoCodesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -409,10 +419,12 @@ type RetrievePromoCodesRequest struct {
 }
 
 func (r *RetrievePromoCodesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -445,6 +457,14 @@ var (
 	promoCodeFieldUpdatedAt               = big.NewInt(1 << 19)
 	promoCodeFieldUses                    = big.NewInt(1 << 20)
 )
+
+// promoCodeNullableFields maps the wire names of PromoCode's nullable fields (required or optional) to their field bits.
+var promoCodeNullableFields = map[string]*big.Int{
+	"code":                  promoCodeFieldCode,
+	"expires_at":            promoCodeFieldExpiresAt,
+	"product":               promoCodeFieldProduct,
+	"promo_duration_months": promoCodeFieldPromoDurationMonths,
+}
 
 type PromoCode struct {
 	// Account that owns the promo code.
@@ -652,10 +672,12 @@ func (p *PromoCode) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PromoCode) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -817,6 +839,13 @@ func (p *PromoCode) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, promoCodeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1183,6 +1212,14 @@ var (
 	promoCodeListItemFieldUses                    = big.NewInt(1 << 19)
 )
 
+// promoCodeListItemNullableFields maps the wire names of PromoCodeListItem's nullable fields (required or optional) to their field bits.
+var promoCodeListItemNullableFields = map[string]*big.Int{
+	"code":                  promoCodeListItemFieldCode,
+	"expires_at":            promoCodeListItemFieldExpiresAt,
+	"product":               promoCodeListItemFieldProduct,
+	"promo_duration_months": promoCodeListItemFieldPromoDurationMonths,
+}
+
 type PromoCodeListItem struct {
 	// Discount amount. Percentage discounts are represented as a decimal fraction.
 	AmountOff float64 `json:"amount_off" url:"amount_off"`
@@ -1380,10 +1417,12 @@ func (p *PromoCodeListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PromoCodeListItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmountOff sets the AmountOff field and marks it as non-optional;
@@ -1538,6 +1577,13 @@ func (p *PromoCodeListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, promoCodeListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2325,10 +2371,12 @@ func (d *DeletePromoCodesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeletePromoCodesResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -2494,10 +2542,12 @@ func (l *ListPromoCodesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPromoCodesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2563,6 +2613,12 @@ var (
 	listPromoCodesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPromoCodesResponsePageInfoNullableFields maps the wire names of ListPromoCodesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPromoCodesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPromoCodesResponsePageInfoFieldEndCursor,
+	"start_cursor": listPromoCodesResponsePageInfoFieldStartCursor,
+}
+
 type ListPromoCodesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2612,10 +2668,12 @@ func (l *ListPromoCodesResponsePageInfo) GetExtraProperties() map[string]interfa
 }
 
 func (l *ListPromoCodesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2658,6 +2716,13 @@ func (l *ListPromoCodesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPromoCodesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
