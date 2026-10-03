@@ -26000,7 +26000,8 @@ var (
 	paymentInputFieldLineItems   = big.NewInt(1 << 1)
 	paymentInputFieldPlan        = big.NewInt(1 << 2)
 	paymentInputFieldPlanID      = big.NewInt(1 << 3)
-	paymentInputFieldPromoCodeID = big.NewInt(1 << 4)
+	paymentInputFieldPromoCode   = big.NewInt(1 << 4)
+	paymentInputFieldPromoCodeID = big.NewInt(1 << 5)
 )
 
 type PaymentInput struct {
@@ -26012,7 +26013,9 @@ type PaymentInput struct {
 	Plan *PaymentInputPlan `json:"plan,omitempty" url:"plan,omitempty"`
 	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
-	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant.
+	// The promo code as the buyer typed it, matched within the account regardless of case and surrounding spaces, as checkout matches it. It must be valid for the variant. Send it or `promo_code_id`, not both; an empty or whitespace-only string counts as not sent. A code the account does not have, or one that is no longer active, is refused before anything is written, with the error code `promo_invalid`.
+	PromoCode *string `json:"promo_code,omitempty" url:"promo_code,omitempty"`
+	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant. Send it or `promo_code`, not both.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -26048,6 +26051,13 @@ func (p *PaymentInput) GetPlanID() *string {
 		return nil
 	}
 	return p.PlanID
+}
+
+func (p *PaymentInput) GetPromoCode() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PromoCode
 }
 
 func (p *PaymentInput) GetPromoCodeID() *string {
@@ -26097,6 +26107,13 @@ func (p *PaymentInput) SetPlan(plan *PaymentInputPlan) {
 func (p *PaymentInput) SetPlanID(planID *string) {
 	p.PlanID = planID
 	p.require(paymentInputFieldPlanID)
+}
+
+// SetPromoCode sets the PromoCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInput) SetPromoCode(promoCode *string) {
+	p.PromoCode = promoCode
+	p.require(paymentInputFieldPromoCode)
 }
 
 // SetPromoCodeID sets the PromoCodeID field and marks it as non-optional;
