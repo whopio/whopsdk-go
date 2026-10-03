@@ -25994,6 +25994,1293 @@ func (p PaymentHoldType) Ptr() *PaymentHoldType {
 	return &p
 }
 
+// The purchase: the account it belongs to, what is bought, and the promo code applied. The same shape prices a purchase and pays for it.
+var (
+	paymentInputFieldAccountID   = big.NewInt(1 << 0)
+	paymentInputFieldLineItems   = big.NewInt(1 << 1)
+	paymentInputFieldPlan        = big.NewInt(1 << 2)
+	paymentInputFieldPlanID      = big.NewInt(1 << 3)
+	paymentInputFieldPromoCodeID = big.NewInt(1 << 4)
+)
+
+type PaymentInput struct {
+	// The account the purchase belongs to, prefixed `biz_`.
+	AccountID string `json:"account_id" url:"account_id"`
+	// What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+	LineItems []*PaymentInputLineItemsItem `json:"line_items,omitempty" url:"line_items,omitempty"`
+	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
+	Plan *PaymentInputPlan `json:"plan,omitempty" url:"plan,omitempty"`
+	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `plan` and `line_items`.
+	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
+	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant.
+	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentInput) GetAccountID() string {
+	if p == nil {
+		return ""
+	}
+	return p.AccountID
+}
+
+func (p *PaymentInput) GetLineItems() []*PaymentInputLineItemsItem {
+	if p == nil {
+		return nil
+	}
+	return p.LineItems
+}
+
+func (p *PaymentInput) GetPlan() *PaymentInputPlan {
+	if p == nil {
+		return nil
+	}
+	return p.Plan
+}
+
+func (p *PaymentInput) GetPlanID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PlanID
+}
+
+func (p *PaymentInput) GetPromoCodeID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PromoCodeID
+}
+
+func (p *PaymentInput) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentInput) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInput) SetAccountID(accountID string) {
+	p.AccountID = accountID
+	p.require(paymentInputFieldAccountID)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInput) SetLineItems(lineItems []*PaymentInputLineItemsItem) {
+	p.LineItems = lineItems
+	p.require(paymentInputFieldLineItems)
+}
+
+// SetPlan sets the Plan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInput) SetPlan(plan *PaymentInputPlan) {
+	p.Plan = plan
+	p.require(paymentInputFieldPlan)
+}
+
+// SetPlanID sets the PlanID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInput) SetPlanID(planID *string) {
+	p.PlanID = planID
+	p.require(paymentInputFieldPlanID)
+}
+
+// SetPromoCodeID sets the PromoCodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInput) SetPromoCodeID(promoCodeID *string) {
+	p.PromoCodeID = promoCodeID
+	p.require(paymentInputFieldPromoCodeID)
+}
+
+func (p *PaymentInput) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentInput
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentInput(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentInput) MarshalJSON() ([]byte, error) {
+	type embed PaymentInput
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentInput) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	paymentInputLineItemsItemFieldPlanID   = big.NewInt(1 << 0)
+	paymentInputLineItemsItemFieldQuantity = big.NewInt(1 << 1)
+)
+
+type PaymentInputLineItemsItem struct {
+	// An existing variant to charge for, prefixed `plan_`. Each variant may appear once — use `quantity` for multiple units.
+	PlanID string `json:"plan_id" url:"plan_id"`
+	// How many units of the variant to purchase. Defaults to 1; more than 1 requires the variant to allow multiple quantities.
+	Quantity *int `json:"quantity,omitempty" url:"quantity,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentInputLineItemsItem) GetPlanID() string {
+	if p == nil {
+		return ""
+	}
+	return p.PlanID
+}
+
+func (p *PaymentInputLineItemsItem) GetQuantity() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Quantity
+}
+
+func (p *PaymentInputLineItemsItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentInputLineItemsItem) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetPlanID sets the PlanID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputLineItemsItem) SetPlanID(planID string) {
+	p.PlanID = planID
+	p.require(paymentInputLineItemsItemFieldPlanID)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputLineItemsItem) SetQuantity(quantity *int) {
+	p.Quantity = quantity
+	p.require(paymentInputLineItemsItemFieldQuantity)
+}
+
+func (p *PaymentInputLineItemsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentInputLineItemsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentInputLineItemsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentInputLineItemsItem) MarshalJSON() ([]byte, error) {
+	type embed PaymentInputLineItemsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentInputLineItemsItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
+var (
+	paymentInputPlanFieldApplicationFeeAmount = big.NewInt(1 << 0)
+	paymentInputPlanFieldBillingPeriod        = big.NewInt(1 << 1)
+	paymentInputPlanFieldCurrency             = big.NewInt(1 << 2)
+	paymentInputPlanFieldDescription          = big.NewInt(1 << 3)
+	paymentInputPlanFieldExpirationDays       = big.NewInt(1 << 4)
+	paymentInputPlanFieldForceCreateNewPlan   = big.NewInt(1 << 5)
+	paymentInputPlanFieldInitialPrice         = big.NewInt(1 << 6)
+	paymentInputPlanFieldInternalNotes        = big.NewInt(1 << 7)
+	paymentInputPlanFieldOverrideTaxType      = big.NewInt(1 << 8)
+	paymentInputPlanFieldPlanType             = big.NewInt(1 << 9)
+	paymentInputPlanFieldProduct              = big.NewInt(1 << 10)
+	paymentInputPlanFieldProductID            = big.NewInt(1 << 11)
+	paymentInputPlanFieldRenewalPrice         = big.NewInt(1 << 12)
+	paymentInputPlanFieldTitle                = big.NewInt(1 << 13)
+	paymentInputPlanFieldTrialPeriodDays      = big.NewInt(1 << 14)
+	paymentInputPlanFieldVisibility           = big.NewInt(1 << 15)
+)
+
+type PaymentInputPlan struct {
+	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
+	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
+	// Recurring billing interval in days.
+	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
+	// Currency code for the variant prices.
+	Currency PaymentInputPlanCurrency `json:"currency" url:"currency"`
+	// Variant description.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Days until access expires.
+	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
+	// Create a new variant instead of reusing a matching variant.
+	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
+	// Additional amount charged on the first purchase, in the variant currency. For recurring variants without a trial, the first charge includes this amount plus renewal_price.
+	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
+	// Internal notes for the account.
+	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
+	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+	OverrideTaxType *PaymentInputPlanOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
+	// Billing model for the variant.
+	PlanType *PaymentInputPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
+	// Find or create a product by external identifier. Mutually exclusive with product_id.
+	Product *PaymentInputPlanProduct `json:"product,omitempty" url:"product,omitempty"`
+	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Recurring price in the variant currency.
+	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// Variant title.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// Free trial days before renewal.
+	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
+	// Whether the variant is visible to customers.
+	Visibility *PaymentInputPlanVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentInputPlan) GetApplicationFeeAmount() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.ApplicationFeeAmount
+}
+
+func (p *PaymentInputPlan) GetBillingPeriod() *int {
+	if p == nil {
+		return nil
+	}
+	return p.BillingPeriod
+}
+
+func (p *PaymentInputPlan) GetCurrency() PaymentInputPlanCurrency {
+	if p == nil {
+		return ""
+	}
+	return p.Currency
+}
+
+func (p *PaymentInputPlan) GetDescription() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Description
+}
+
+func (p *PaymentInputPlan) GetExpirationDays() *int {
+	if p == nil {
+		return nil
+	}
+	return p.ExpirationDays
+}
+
+func (p *PaymentInputPlan) GetForceCreateNewPlan() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.ForceCreateNewPlan
+}
+
+func (p *PaymentInputPlan) GetInitialPrice() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.InitialPrice
+}
+
+func (p *PaymentInputPlan) GetInternalNotes() *string {
+	if p == nil {
+		return nil
+	}
+	return p.InternalNotes
+}
+
+func (p *PaymentInputPlan) GetOverrideTaxType() *PaymentInputPlanOverrideTaxType {
+	if p == nil {
+		return nil
+	}
+	return p.OverrideTaxType
+}
+
+func (p *PaymentInputPlan) GetPlanType() *PaymentInputPlanPlanType {
+	if p == nil {
+		return nil
+	}
+	return p.PlanType
+}
+
+func (p *PaymentInputPlan) GetProduct() *PaymentInputPlanProduct {
+	if p == nil {
+		return nil
+	}
+	return p.Product
+}
+
+func (p *PaymentInputPlan) GetProductID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ProductID
+}
+
+func (p *PaymentInputPlan) GetRenewalPrice() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.RenewalPrice
+}
+
+func (p *PaymentInputPlan) GetTitle() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Title
+}
+
+func (p *PaymentInputPlan) GetTrialPeriodDays() *int {
+	if p == nil {
+		return nil
+	}
+	return p.TrialPeriodDays
+}
+
+func (p *PaymentInputPlan) GetVisibility() *PaymentInputPlanVisibility {
+	if p == nil {
+		return nil
+	}
+	return p.Visibility
+}
+
+func (p *PaymentInputPlan) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentInputPlan) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetApplicationFeeAmount(applicationFeeAmount *float64) {
+	p.ApplicationFeeAmount = applicationFeeAmount
+	p.require(paymentInputPlanFieldApplicationFeeAmount)
+}
+
+// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetBillingPeriod(billingPeriod *int) {
+	p.BillingPeriod = billingPeriod
+	p.require(paymentInputPlanFieldBillingPeriod)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetCurrency(currency PaymentInputPlanCurrency) {
+	p.Currency = currency
+	p.require(paymentInputPlanFieldCurrency)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetDescription(description *string) {
+	p.Description = description
+	p.require(paymentInputPlanFieldDescription)
+}
+
+// SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetExpirationDays(expirationDays *int) {
+	p.ExpirationDays = expirationDays
+	p.require(paymentInputPlanFieldExpirationDays)
+}
+
+// SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
+	p.ForceCreateNewPlan = forceCreateNewPlan
+	p.require(paymentInputPlanFieldForceCreateNewPlan)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetInitialPrice(initialPrice *float64) {
+	p.InitialPrice = initialPrice
+	p.require(paymentInputPlanFieldInitialPrice)
+}
+
+// SetInternalNotes sets the InternalNotes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetInternalNotes(internalNotes *string) {
+	p.InternalNotes = internalNotes
+	p.require(paymentInputPlanFieldInternalNotes)
+}
+
+// SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetOverrideTaxType(overrideTaxType *PaymentInputPlanOverrideTaxType) {
+	p.OverrideTaxType = overrideTaxType
+	p.require(paymentInputPlanFieldOverrideTaxType)
+}
+
+// SetPlanType sets the PlanType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetPlanType(planType *PaymentInputPlanPlanType) {
+	p.PlanType = planType
+	p.require(paymentInputPlanFieldPlanType)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetProduct(product *PaymentInputPlanProduct) {
+	p.Product = product
+	p.require(paymentInputPlanFieldProduct)
+}
+
+// SetProductID sets the ProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetProductID(productID *string) {
+	p.ProductID = productID
+	p.require(paymentInputPlanFieldProductID)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetRenewalPrice(renewalPrice *float64) {
+	p.RenewalPrice = renewalPrice
+	p.require(paymentInputPlanFieldRenewalPrice)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetTitle(title *string) {
+	p.Title = title
+	p.require(paymentInputPlanFieldTitle)
+}
+
+// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+	p.TrialPeriodDays = trialPeriodDays
+	p.require(paymentInputPlanFieldTrialPeriodDays)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlan) SetVisibility(visibility *PaymentInputPlanVisibility) {
+	p.Visibility = visibility
+	p.require(paymentInputPlanFieldVisibility)
+}
+
+func (p *PaymentInputPlan) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentInputPlan
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentInputPlan(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentInputPlan) MarshalJSON() ([]byte, error) {
+	type embed PaymentInputPlan
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentInputPlan) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Currency code for the variant prices.
+type PaymentInputPlanCurrency string
+
+const (
+	PaymentInputPlanCurrencyUsd     PaymentInputPlanCurrency = "usd"
+	PaymentInputPlanCurrencySgd     PaymentInputPlanCurrency = "sgd"
+	PaymentInputPlanCurrencyInr     PaymentInputPlanCurrency = "inr"
+	PaymentInputPlanCurrencyAud     PaymentInputPlanCurrency = "aud"
+	PaymentInputPlanCurrencyBrl     PaymentInputPlanCurrency = "brl"
+	PaymentInputPlanCurrencyCad     PaymentInputPlanCurrency = "cad"
+	PaymentInputPlanCurrencyDkk     PaymentInputPlanCurrency = "dkk"
+	PaymentInputPlanCurrencyEur     PaymentInputPlanCurrency = "eur"
+	PaymentInputPlanCurrencyNok     PaymentInputPlanCurrency = "nok"
+	PaymentInputPlanCurrencyGbp     PaymentInputPlanCurrency = "gbp"
+	PaymentInputPlanCurrencySek     PaymentInputPlanCurrency = "sek"
+	PaymentInputPlanCurrencyChf     PaymentInputPlanCurrency = "chf"
+	PaymentInputPlanCurrencyHkd     PaymentInputPlanCurrency = "hkd"
+	PaymentInputPlanCurrencyHuf     PaymentInputPlanCurrency = "huf"
+	PaymentInputPlanCurrencyJpy     PaymentInputPlanCurrency = "jpy"
+	PaymentInputPlanCurrencyMxn     PaymentInputPlanCurrency = "mxn"
+	PaymentInputPlanCurrencyMyr     PaymentInputPlanCurrency = "myr"
+	PaymentInputPlanCurrencyPln     PaymentInputPlanCurrency = "pln"
+	PaymentInputPlanCurrencyCzk     PaymentInputPlanCurrency = "czk"
+	PaymentInputPlanCurrencyNzd     PaymentInputPlanCurrency = "nzd"
+	PaymentInputPlanCurrencyAed     PaymentInputPlanCurrency = "aed"
+	PaymentInputPlanCurrencyEth     PaymentInputPlanCurrency = "eth"
+	PaymentInputPlanCurrencyApe     PaymentInputPlanCurrency = "ape"
+	PaymentInputPlanCurrencyCop     PaymentInputPlanCurrency = "cop"
+	PaymentInputPlanCurrencyRon     PaymentInputPlanCurrency = "ron"
+	PaymentInputPlanCurrencyThb     PaymentInputPlanCurrency = "thb"
+	PaymentInputPlanCurrencyBgn     PaymentInputPlanCurrency = "bgn"
+	PaymentInputPlanCurrencyIdr     PaymentInputPlanCurrency = "idr"
+	PaymentInputPlanCurrencyDop     PaymentInputPlanCurrency = "dop"
+	PaymentInputPlanCurrencyPhp     PaymentInputPlanCurrency = "php"
+	PaymentInputPlanCurrencyTry     PaymentInputPlanCurrency = "try"
+	PaymentInputPlanCurrencyKrw     PaymentInputPlanCurrency = "krw"
+	PaymentInputPlanCurrencyTwd     PaymentInputPlanCurrency = "twd"
+	PaymentInputPlanCurrencyVnd     PaymentInputPlanCurrency = "vnd"
+	PaymentInputPlanCurrencyPkr     PaymentInputPlanCurrency = "pkr"
+	PaymentInputPlanCurrencyClp     PaymentInputPlanCurrency = "clp"
+	PaymentInputPlanCurrencyUyu     PaymentInputPlanCurrency = "uyu"
+	PaymentInputPlanCurrencyArs     PaymentInputPlanCurrency = "ars"
+	PaymentInputPlanCurrencyZar     PaymentInputPlanCurrency = "zar"
+	PaymentInputPlanCurrencyDzd     PaymentInputPlanCurrency = "dzd"
+	PaymentInputPlanCurrencyTnd     PaymentInputPlanCurrency = "tnd"
+	PaymentInputPlanCurrencyMad     PaymentInputPlanCurrency = "mad"
+	PaymentInputPlanCurrencyKes     PaymentInputPlanCurrency = "kes"
+	PaymentInputPlanCurrencyKwd     PaymentInputPlanCurrency = "kwd"
+	PaymentInputPlanCurrencyJod     PaymentInputPlanCurrency = "jod"
+	PaymentInputPlanCurrencyAll     PaymentInputPlanCurrency = "all"
+	PaymentInputPlanCurrencyXcd     PaymentInputPlanCurrency = "xcd"
+	PaymentInputPlanCurrencyAmd     PaymentInputPlanCurrency = "amd"
+	PaymentInputPlanCurrencyBsd     PaymentInputPlanCurrency = "bsd"
+	PaymentInputPlanCurrencyBhd     PaymentInputPlanCurrency = "bhd"
+	PaymentInputPlanCurrencyBob     PaymentInputPlanCurrency = "bob"
+	PaymentInputPlanCurrencyBam     PaymentInputPlanCurrency = "bam"
+	PaymentInputPlanCurrencyKhr     PaymentInputPlanCurrency = "khr"
+	PaymentInputPlanCurrencyCrc     PaymentInputPlanCurrency = "crc"
+	PaymentInputPlanCurrencyXof     PaymentInputPlanCurrency = "xof"
+	PaymentInputPlanCurrencyEgp     PaymentInputPlanCurrency = "egp"
+	PaymentInputPlanCurrencyEtb     PaymentInputPlanCurrency = "etb"
+	PaymentInputPlanCurrencyGmd     PaymentInputPlanCurrency = "gmd"
+	PaymentInputPlanCurrencyGhs     PaymentInputPlanCurrency = "ghs"
+	PaymentInputPlanCurrencyGtq     PaymentInputPlanCurrency = "gtq"
+	PaymentInputPlanCurrencyGyd     PaymentInputPlanCurrency = "gyd"
+	PaymentInputPlanCurrencyIls     PaymentInputPlanCurrency = "ils"
+	PaymentInputPlanCurrencyJmd     PaymentInputPlanCurrency = "jmd"
+	PaymentInputPlanCurrencyMop     PaymentInputPlanCurrency = "mop"
+	PaymentInputPlanCurrencyMga     PaymentInputPlanCurrency = "mga"
+	PaymentInputPlanCurrencyMur     PaymentInputPlanCurrency = "mur"
+	PaymentInputPlanCurrencyMdl     PaymentInputPlanCurrency = "mdl"
+	PaymentInputPlanCurrencyMnt     PaymentInputPlanCurrency = "mnt"
+	PaymentInputPlanCurrencyNad     PaymentInputPlanCurrency = "nad"
+	PaymentInputPlanCurrencyNgn     PaymentInputPlanCurrency = "ngn"
+	PaymentInputPlanCurrencyMkd     PaymentInputPlanCurrency = "mkd"
+	PaymentInputPlanCurrencyOmr     PaymentInputPlanCurrency = "omr"
+	PaymentInputPlanCurrencyPyg     PaymentInputPlanCurrency = "pyg"
+	PaymentInputPlanCurrencyPen     PaymentInputPlanCurrency = "pen"
+	PaymentInputPlanCurrencyQar     PaymentInputPlanCurrency = "qar"
+	PaymentInputPlanCurrencyRwf     PaymentInputPlanCurrency = "rwf"
+	PaymentInputPlanCurrencySar     PaymentInputPlanCurrency = "sar"
+	PaymentInputPlanCurrencyRsd     PaymentInputPlanCurrency = "rsd"
+	PaymentInputPlanCurrencyLkr     PaymentInputPlanCurrency = "lkr"
+	PaymentInputPlanCurrencyTzs     PaymentInputPlanCurrency = "tzs"
+	PaymentInputPlanCurrencyTtd     PaymentInputPlanCurrency = "ttd"
+	PaymentInputPlanCurrencyUzs     PaymentInputPlanCurrency = "uzs"
+	PaymentInputPlanCurrencyRub     PaymentInputPlanCurrency = "rub"
+	PaymentInputPlanCurrencyBtc     PaymentInputPlanCurrency = "btc"
+	PaymentInputPlanCurrencyCny     PaymentInputPlanCurrency = "cny"
+	PaymentInputPlanCurrencyUsdt    PaymentInputPlanCurrency = "usdt"
+	PaymentInputPlanCurrencyKzt     PaymentInputPlanCurrency = "kzt"
+	PaymentInputPlanCurrencyAwg     PaymentInputPlanCurrency = "awg"
+	PaymentInputPlanCurrencyWhopUsd PaymentInputPlanCurrency = "whop_usd"
+	PaymentInputPlanCurrencyXau     PaymentInputPlanCurrency = "xau"
+)
+
+func NewPaymentInputPlanCurrencyFromString(s string) (PaymentInputPlanCurrency, error) {
+	switch s {
+	case "usd":
+		return PaymentInputPlanCurrencyUsd, nil
+	case "sgd":
+		return PaymentInputPlanCurrencySgd, nil
+	case "inr":
+		return PaymentInputPlanCurrencyInr, nil
+	case "aud":
+		return PaymentInputPlanCurrencyAud, nil
+	case "brl":
+		return PaymentInputPlanCurrencyBrl, nil
+	case "cad":
+		return PaymentInputPlanCurrencyCad, nil
+	case "dkk":
+		return PaymentInputPlanCurrencyDkk, nil
+	case "eur":
+		return PaymentInputPlanCurrencyEur, nil
+	case "nok":
+		return PaymentInputPlanCurrencyNok, nil
+	case "gbp":
+		return PaymentInputPlanCurrencyGbp, nil
+	case "sek":
+		return PaymentInputPlanCurrencySek, nil
+	case "chf":
+		return PaymentInputPlanCurrencyChf, nil
+	case "hkd":
+		return PaymentInputPlanCurrencyHkd, nil
+	case "huf":
+		return PaymentInputPlanCurrencyHuf, nil
+	case "jpy":
+		return PaymentInputPlanCurrencyJpy, nil
+	case "mxn":
+		return PaymentInputPlanCurrencyMxn, nil
+	case "myr":
+		return PaymentInputPlanCurrencyMyr, nil
+	case "pln":
+		return PaymentInputPlanCurrencyPln, nil
+	case "czk":
+		return PaymentInputPlanCurrencyCzk, nil
+	case "nzd":
+		return PaymentInputPlanCurrencyNzd, nil
+	case "aed":
+		return PaymentInputPlanCurrencyAed, nil
+	case "eth":
+		return PaymentInputPlanCurrencyEth, nil
+	case "ape":
+		return PaymentInputPlanCurrencyApe, nil
+	case "cop":
+		return PaymentInputPlanCurrencyCop, nil
+	case "ron":
+		return PaymentInputPlanCurrencyRon, nil
+	case "thb":
+		return PaymentInputPlanCurrencyThb, nil
+	case "bgn":
+		return PaymentInputPlanCurrencyBgn, nil
+	case "idr":
+		return PaymentInputPlanCurrencyIdr, nil
+	case "dop":
+		return PaymentInputPlanCurrencyDop, nil
+	case "php":
+		return PaymentInputPlanCurrencyPhp, nil
+	case "try":
+		return PaymentInputPlanCurrencyTry, nil
+	case "krw":
+		return PaymentInputPlanCurrencyKrw, nil
+	case "twd":
+		return PaymentInputPlanCurrencyTwd, nil
+	case "vnd":
+		return PaymentInputPlanCurrencyVnd, nil
+	case "pkr":
+		return PaymentInputPlanCurrencyPkr, nil
+	case "clp":
+		return PaymentInputPlanCurrencyClp, nil
+	case "uyu":
+		return PaymentInputPlanCurrencyUyu, nil
+	case "ars":
+		return PaymentInputPlanCurrencyArs, nil
+	case "zar":
+		return PaymentInputPlanCurrencyZar, nil
+	case "dzd":
+		return PaymentInputPlanCurrencyDzd, nil
+	case "tnd":
+		return PaymentInputPlanCurrencyTnd, nil
+	case "mad":
+		return PaymentInputPlanCurrencyMad, nil
+	case "kes":
+		return PaymentInputPlanCurrencyKes, nil
+	case "kwd":
+		return PaymentInputPlanCurrencyKwd, nil
+	case "jod":
+		return PaymentInputPlanCurrencyJod, nil
+	case "all":
+		return PaymentInputPlanCurrencyAll, nil
+	case "xcd":
+		return PaymentInputPlanCurrencyXcd, nil
+	case "amd":
+		return PaymentInputPlanCurrencyAmd, nil
+	case "bsd":
+		return PaymentInputPlanCurrencyBsd, nil
+	case "bhd":
+		return PaymentInputPlanCurrencyBhd, nil
+	case "bob":
+		return PaymentInputPlanCurrencyBob, nil
+	case "bam":
+		return PaymentInputPlanCurrencyBam, nil
+	case "khr":
+		return PaymentInputPlanCurrencyKhr, nil
+	case "crc":
+		return PaymentInputPlanCurrencyCrc, nil
+	case "xof":
+		return PaymentInputPlanCurrencyXof, nil
+	case "egp":
+		return PaymentInputPlanCurrencyEgp, nil
+	case "etb":
+		return PaymentInputPlanCurrencyEtb, nil
+	case "gmd":
+		return PaymentInputPlanCurrencyGmd, nil
+	case "ghs":
+		return PaymentInputPlanCurrencyGhs, nil
+	case "gtq":
+		return PaymentInputPlanCurrencyGtq, nil
+	case "gyd":
+		return PaymentInputPlanCurrencyGyd, nil
+	case "ils":
+		return PaymentInputPlanCurrencyIls, nil
+	case "jmd":
+		return PaymentInputPlanCurrencyJmd, nil
+	case "mop":
+		return PaymentInputPlanCurrencyMop, nil
+	case "mga":
+		return PaymentInputPlanCurrencyMga, nil
+	case "mur":
+		return PaymentInputPlanCurrencyMur, nil
+	case "mdl":
+		return PaymentInputPlanCurrencyMdl, nil
+	case "mnt":
+		return PaymentInputPlanCurrencyMnt, nil
+	case "nad":
+		return PaymentInputPlanCurrencyNad, nil
+	case "ngn":
+		return PaymentInputPlanCurrencyNgn, nil
+	case "mkd":
+		return PaymentInputPlanCurrencyMkd, nil
+	case "omr":
+		return PaymentInputPlanCurrencyOmr, nil
+	case "pyg":
+		return PaymentInputPlanCurrencyPyg, nil
+	case "pen":
+		return PaymentInputPlanCurrencyPen, nil
+	case "qar":
+		return PaymentInputPlanCurrencyQar, nil
+	case "rwf":
+		return PaymentInputPlanCurrencyRwf, nil
+	case "sar":
+		return PaymentInputPlanCurrencySar, nil
+	case "rsd":
+		return PaymentInputPlanCurrencyRsd, nil
+	case "lkr":
+		return PaymentInputPlanCurrencyLkr, nil
+	case "tzs":
+		return PaymentInputPlanCurrencyTzs, nil
+	case "ttd":
+		return PaymentInputPlanCurrencyTtd, nil
+	case "uzs":
+		return PaymentInputPlanCurrencyUzs, nil
+	case "rub":
+		return PaymentInputPlanCurrencyRub, nil
+	case "btc":
+		return PaymentInputPlanCurrencyBtc, nil
+	case "cny":
+		return PaymentInputPlanCurrencyCny, nil
+	case "usdt":
+		return PaymentInputPlanCurrencyUsdt, nil
+	case "kzt":
+		return PaymentInputPlanCurrencyKzt, nil
+	case "awg":
+		return PaymentInputPlanCurrencyAwg, nil
+	case "whop_usd":
+		return PaymentInputPlanCurrencyWhopUsd, nil
+	case "xau":
+		return PaymentInputPlanCurrencyXau, nil
+	}
+	var t PaymentInputPlanCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentInputPlanCurrency) Ptr() *PaymentInputPlanCurrency {
+	return &p
+}
+
+// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+type PaymentInputPlanOverrideTaxType string
+
+const (
+	PaymentInputPlanOverrideTaxTypeExclusive   PaymentInputPlanOverrideTaxType = "exclusive"
+	PaymentInputPlanOverrideTaxTypeInclusive   PaymentInputPlanOverrideTaxType = "inclusive"
+	PaymentInputPlanOverrideTaxTypeUnspecified PaymentInputPlanOverrideTaxType = "unspecified"
+)
+
+func NewPaymentInputPlanOverrideTaxTypeFromString(s string) (PaymentInputPlanOverrideTaxType, error) {
+	switch s {
+	case "exclusive":
+		return PaymentInputPlanOverrideTaxTypeExclusive, nil
+	case "inclusive":
+		return PaymentInputPlanOverrideTaxTypeInclusive, nil
+	case "unspecified":
+		return PaymentInputPlanOverrideTaxTypeUnspecified, nil
+	}
+	var t PaymentInputPlanOverrideTaxType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentInputPlanOverrideTaxType) Ptr() *PaymentInputPlanOverrideTaxType {
+	return &p
+}
+
+// Billing model for the variant.
+type PaymentInputPlanPlanType string
+
+const (
+	PaymentInputPlanPlanTypeRenewal PaymentInputPlanPlanType = "renewal"
+	PaymentInputPlanPlanTypeOneTime PaymentInputPlanPlanType = "one_time"
+)
+
+func NewPaymentInputPlanPlanTypeFromString(s string) (PaymentInputPlanPlanType, error) {
+	switch s {
+	case "renewal":
+		return PaymentInputPlanPlanTypeRenewal, nil
+	case "one_time":
+		return PaymentInputPlanPlanTypeOneTime, nil
+	}
+	var t PaymentInputPlanPlanType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentInputPlanPlanType) Ptr() *PaymentInputPlanPlanType {
+	return &p
+}
+
+// Find or create a product by external identifier. Mutually exclusive with product_id.
+var (
+	paymentInputPlanProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
+	paymentInputPlanProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
+	paymentInputPlanProductFieldDescription               = big.NewInt(1 << 2)
+	paymentInputPlanProductFieldExternalIdentifier        = big.NewInt(1 << 3)
+	paymentInputPlanProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
+	paymentInputPlanProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
+	paymentInputPlanProductFieldHeadline                  = big.NewInt(1 << 6)
+	paymentInputPlanProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
+	paymentInputPlanProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
+	paymentInputPlanProductFieldRoute                     = big.NewInt(1 << 9)
+	paymentInputPlanProductFieldTitle                     = big.NewInt(1 << 10)
+	paymentInputPlanProductFieldVisibility                = big.NewInt(1 << 11)
+)
+
+type PaymentInputPlanProduct struct {
+	// Whether to collect a shipping address at checkout.
+	CollectShippingAddress *bool `json:"collect_shipping_address,omitempty" url:"collect_shipping_address,omitempty"`
+	// Custom card statement descriptor for the product, starting with WHOP*.
+	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"custom_statement_descriptor,omitempty"`
+	// Product description.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Your unique identifier for the product.
+	ExternalIdentifier string `json:"external_identifier" url:"external_identifier"`
+	// Percentage of revenue paid to global affiliates.
+	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"global_affiliate_percentage,omitempty"`
+	// Global affiliate program status.
+	GlobalAffiliateStatus *PaymentInputPlanProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
+	// Product headline.
+	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
+	// Product tax code identifier.
+	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"product_tax_code_id,omitempty"`
+	// Where to redirect the buyer after purchase.
+	RedirectPurchaseURL *string `json:"redirect_purchase_url,omitempty" url:"redirect_purchase_url,omitempty"`
+	// Product route.
+	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Product title.
+	Title string `json:"title" url:"title"`
+	// Product visibility. Defaults to hidden.
+	Visibility *PaymentInputPlanProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentInputPlanProduct) GetCollectShippingAddress() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.CollectShippingAddress
+}
+
+func (p *PaymentInputPlanProduct) GetCustomStatementDescriptor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.CustomStatementDescriptor
+}
+
+func (p *PaymentInputPlanProduct) GetDescription() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Description
+}
+
+func (p *PaymentInputPlanProduct) GetExternalIdentifier() string {
+	if p == nil {
+		return ""
+	}
+	return p.ExternalIdentifier
+}
+
+func (p *PaymentInputPlanProduct) GetGlobalAffiliatePercentage() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.GlobalAffiliatePercentage
+}
+
+func (p *PaymentInputPlanProduct) GetGlobalAffiliateStatus() *PaymentInputPlanProductGlobalAffiliateStatus {
+	if p == nil {
+		return nil
+	}
+	return p.GlobalAffiliateStatus
+}
+
+func (p *PaymentInputPlanProduct) GetHeadline() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Headline
+}
+
+func (p *PaymentInputPlanProduct) GetProductTaxCodeID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ProductTaxCodeID
+}
+
+func (p *PaymentInputPlanProduct) GetRedirectPurchaseURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.RedirectPurchaseURL
+}
+
+func (p *PaymentInputPlanProduct) GetRoute() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Route
+}
+
+func (p *PaymentInputPlanProduct) GetTitle() string {
+	if p == nil {
+		return ""
+	}
+	return p.Title
+}
+
+func (p *PaymentInputPlanProduct) GetVisibility() *PaymentInputPlanProductVisibility {
+	if p == nil {
+		return nil
+	}
+	return p.Visibility
+}
+
+func (p *PaymentInputPlanProduct) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentInputPlanProduct) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCollectShippingAddress sets the CollectShippingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
+	p.CollectShippingAddress = collectShippingAddress
+	p.require(paymentInputPlanProductFieldCollectShippingAddress)
+}
+
+// SetCustomStatementDescriptor sets the CustomStatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
+	p.CustomStatementDescriptor = customStatementDescriptor
+	p.require(paymentInputPlanProductFieldCustomStatementDescriptor)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetDescription(description *string) {
+	p.Description = description
+	p.require(paymentInputPlanProductFieldDescription)
+}
+
+// SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetExternalIdentifier(externalIdentifier string) {
+	p.ExternalIdentifier = externalIdentifier
+	p.require(paymentInputPlanProductFieldExternalIdentifier)
+}
+
+// SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
+	p.GlobalAffiliatePercentage = globalAffiliatePercentage
+	p.require(paymentInputPlanProductFieldGlobalAffiliatePercentage)
+}
+
+// SetGlobalAffiliateStatus sets the GlobalAffiliateStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *PaymentInputPlanProductGlobalAffiliateStatus) {
+	p.GlobalAffiliateStatus = globalAffiliateStatus
+	p.require(paymentInputPlanProductFieldGlobalAffiliateStatus)
+}
+
+// SetHeadline sets the Headline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetHeadline(headline *string) {
+	p.Headline = headline
+	p.require(paymentInputPlanProductFieldHeadline)
+}
+
+// SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetProductTaxCodeID(productTaxCodeID *string) {
+	p.ProductTaxCodeID = productTaxCodeID
+	p.require(paymentInputPlanProductFieldProductTaxCodeID)
+}
+
+// SetRedirectPurchaseURL sets the RedirectPurchaseURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
+	p.RedirectPurchaseURL = redirectPurchaseURL
+	p.require(paymentInputPlanProductFieldRedirectPurchaseURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetRoute(route *string) {
+	p.Route = route
+	p.require(paymentInputPlanProductFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetTitle(title string) {
+	p.Title = title
+	p.require(paymentInputPlanProductFieldTitle)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputPlanProduct) SetVisibility(visibility *PaymentInputPlanProductVisibility) {
+	p.Visibility = visibility
+	p.require(paymentInputPlanProductFieldVisibility)
+}
+
+func (p *PaymentInputPlanProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentInputPlanProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentInputPlanProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentInputPlanProduct) MarshalJSON() ([]byte, error) {
+	type embed PaymentInputPlanProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentInputPlanProduct) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Global affiliate program status.
+type PaymentInputPlanProductGlobalAffiliateStatus string
+
+const (
+	PaymentInputPlanProductGlobalAffiliateStatusEnabled  PaymentInputPlanProductGlobalAffiliateStatus = "enabled"
+	PaymentInputPlanProductGlobalAffiliateStatusDisabled PaymentInputPlanProductGlobalAffiliateStatus = "disabled"
+)
+
+func NewPaymentInputPlanProductGlobalAffiliateStatusFromString(s string) (PaymentInputPlanProductGlobalAffiliateStatus, error) {
+	switch s {
+	case "enabled":
+		return PaymentInputPlanProductGlobalAffiliateStatusEnabled, nil
+	case "disabled":
+		return PaymentInputPlanProductGlobalAffiliateStatusDisabled, nil
+	}
+	var t PaymentInputPlanProductGlobalAffiliateStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentInputPlanProductGlobalAffiliateStatus) Ptr() *PaymentInputPlanProductGlobalAffiliateStatus {
+	return &p
+}
+
+// Product visibility. Defaults to hidden.
+type PaymentInputPlanProductVisibility string
+
+const (
+	PaymentInputPlanProductVisibilityVisible   PaymentInputPlanProductVisibility = "visible"
+	PaymentInputPlanProductVisibilityHidden    PaymentInputPlanProductVisibility = "hidden"
+	PaymentInputPlanProductVisibilityArchived  PaymentInputPlanProductVisibility = "archived"
+	PaymentInputPlanProductVisibilityQuickLink PaymentInputPlanProductVisibility = "quick_link"
+)
+
+func NewPaymentInputPlanProductVisibilityFromString(s string) (PaymentInputPlanProductVisibility, error) {
+	switch s {
+	case "visible":
+		return PaymentInputPlanProductVisibilityVisible, nil
+	case "hidden":
+		return PaymentInputPlanProductVisibilityHidden, nil
+	case "archived":
+		return PaymentInputPlanProductVisibilityArchived, nil
+	case "quick_link":
+		return PaymentInputPlanProductVisibilityQuickLink, nil
+	}
+	var t PaymentInputPlanProductVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentInputPlanProductVisibility) Ptr() *PaymentInputPlanProductVisibility {
+	return &p
+}
+
+// Whether the variant is visible to customers.
+type PaymentInputPlanVisibility string
+
+const (
+	PaymentInputPlanVisibilityVisible   PaymentInputPlanVisibility = "visible"
+	PaymentInputPlanVisibilityHidden    PaymentInputPlanVisibility = "hidden"
+	PaymentInputPlanVisibilityArchived  PaymentInputPlanVisibility = "archived"
+	PaymentInputPlanVisibilityQuickLink PaymentInputPlanVisibility = "quick_link"
+)
+
+func NewPaymentInputPlanVisibilityFromString(s string) (PaymentInputPlanVisibility, error) {
+	switch s {
+	case "visible":
+		return PaymentInputPlanVisibilityVisible, nil
+	case "hidden":
+		return PaymentInputPlanVisibilityHidden, nil
+	case "archived":
+		return PaymentInputPlanVisibilityArchived, nil
+	case "quick_link":
+		return PaymentInputPlanVisibilityQuickLink, nil
+	}
+	var t PaymentInputPlanVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentInputPlanVisibility) Ptr() *PaymentInputPlanVisibility {
+	return &p
+}
+
 // What to show the buyer so they can pay. `kind` picks the shape and the details sit under the key named for it, so switching on `kind` gives you exactly that kind's payload. Every detail field is optional — the rails behind these methods publish them unevenly — but a kind that arrives with `document_url` can always fall back to sending the buyer to that hosted copy of the instructions.
 type PaymentInstructions struct {
 	Kind         string
