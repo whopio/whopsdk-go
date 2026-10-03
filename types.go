@@ -39619,6 +39619,7 @@ const (
 	PaymentMethodTypesVipps                  PaymentMethodTypes = "vipps"
 	PaymentMethodTypesWebpay                 PaymentMethodTypes = "webpay"
 	PaymentMethodTypesWechatPay              PaymentMethodTypes = "wechat_pay"
+	PaymentMethodTypesWhopPay                PaymentMethodTypes = "whop_pay"
 	PaymentMethodTypesYape                   PaymentMethodTypes = "yape"
 	PaymentMethodTypesZip                    PaymentMethodTypes = "zip"
 	PaymentMethodTypesCoinflow               PaymentMethodTypes = "coinflow"
@@ -39881,6 +39882,8 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesWebpay, nil
 	case "wechat_pay":
 		return PaymentMethodTypesWechatPay, nil
+	case "whop_pay":
+		return PaymentMethodTypesWhopPay, nil
 	case "yape":
 		return PaymentMethodTypesYape, nil
 	case "zip":
