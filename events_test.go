@@ -1706,6 +1706,14 @@ func TestSettersMarkExplicitPulseEventsRequest(t *testing.T) {
 }
 
 func TestSettersPixelValidation(t *testing.T) {
+	t.Run("SetAffiliateTrackingDetected", func(t *testing.T) {
+		obj := &PixelValidation{}
+		var fernTestValueAffiliateTrackingDetected bool
+		obj.SetAffiliateTrackingDetected(fernTestValueAffiliateTrackingDetected)
+		assert.Equal(t, fernTestValueAffiliateTrackingDetected, obj.AffiliateTrackingDetected)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFiringDataOk", func(t *testing.T) {
 		obj := &PixelValidation{}
 		var fernTestValueFiringDataOk bool
@@ -1781,6 +1789,29 @@ func TestSettersPixelValidation(t *testing.T) {
 }
 
 func TestGettersPixelValidation(t *testing.T) {
+	t.Run("GetAffiliateTrackingDetected", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PixelValidation{}
+		var expected bool
+		obj.AffiliateTrackingDetected = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAffiliateTrackingDetected(), "getter should return the property value")
+	})
+
+	t.Run("GetAffiliateTrackingDetected_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PixelValidation
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAffiliateTrackingDetected() // Should return zero value
+	})
+
 	t.Run("GetFiringDataOk", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2051,6 +2082,37 @@ func TestGettersPixelValidation(t *testing.T) {
 }
 
 func TestSettersMarkExplicitPixelValidation(t *testing.T) {
+	t.Run("SetAffiliateTrackingDetected_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PixelValidation{}
+		var fernTestValueAffiliateTrackingDetected bool
+
+		// Act
+		obj.SetAffiliateTrackingDetected(fernTestValueAffiliateTrackingDetected)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetFiringDataOk_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange

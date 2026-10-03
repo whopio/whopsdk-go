@@ -514,18 +514,21 @@ func (p *PulseEventsRequest) SetBefore(before *string) {
 }
 
 var (
-	pixelValidationFieldFiringDataOk   = big.NewInt(1 << 0)
-	pixelValidationFieldHostEvents     = big.NewInt(1 << 1)
-	pixelValidationFieldInstalled      = big.NewInt(1 << 2)
-	pixelValidationFieldLastFiredDays  = big.NewInt(1 << 3)
-	pixelValidationFieldLastSeenDays   = big.NewInt(1 << 4)
-	pixelValidationFieldNativeTracking = big.NewInt(1 << 5)
-	pixelValidationFieldPageEvents     = big.NewInt(1 << 6)
-	pixelValidationFieldReachable      = big.NewInt(1 << 7)
-	pixelValidationFieldURL            = big.NewInt(1 << 8)
+	pixelValidationFieldAffiliateTrackingDetected = big.NewInt(1 << 0)
+	pixelValidationFieldFiringDataOk              = big.NewInt(1 << 1)
+	pixelValidationFieldHostEvents                = big.NewInt(1 << 2)
+	pixelValidationFieldInstalled                 = big.NewInt(1 << 3)
+	pixelValidationFieldLastFiredDays             = big.NewInt(1 << 4)
+	pixelValidationFieldLastSeenDays              = big.NewInt(1 << 5)
+	pixelValidationFieldNativeTracking            = big.NewInt(1 << 6)
+	pixelValidationFieldPageEvents                = big.NewInt(1 << 7)
+	pixelValidationFieldReachable                 = big.NewInt(1 << 8)
+	pixelValidationFieldURL                       = big.NewInt(1 << 9)
 )
 
 type PixelValidation struct {
+	// Whether an affiliate tracking SDK was found on the page at `url`. Supported platforms: Everflow.
+	AffiliateTrackingDetected bool `json:"affiliate_tracking_detected" url:"affiliate_tracking_detected"`
 	// False when the event lookup failed, meaning `host_events` and `last_seen_days` are incomplete.
 	FiringDataOk bool     `json:"firing_data_ok" url:"firing_data_ok"`
 	HostEvents   []string `json:"host_events" url:"host_events"`
@@ -548,6 +551,13 @@ type PixelValidation struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *PixelValidation) GetAffiliateTrackingDetected() bool {
+	if p == nil {
+		return false
+	}
+	return p.AffiliateTrackingDetected
 }
 
 func (p *PixelValidation) GetFiringDataOk() bool {
@@ -625,6 +635,13 @@ func (p *PixelValidation) require(field *big.Int) {
 		p.explicitFields = big.NewInt(0)
 	}
 	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetAffiliateTrackingDetected sets the AffiliateTrackingDetected field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PixelValidation) SetAffiliateTrackingDetected(affiliateTrackingDetected bool) {
+	p.AffiliateTrackingDetected = affiliateTrackingDetected
+	p.require(pixelValidationFieldAffiliateTrackingDetected)
 }
 
 // SetFiringDataOk sets the FiringDataOk field and marks it as non-optional;
