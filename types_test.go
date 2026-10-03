@@ -54453,6 +54453,2512 @@ func TestSettersMarkExplicitPaymentHold(t *testing.T) {
 
 }
 
+func TestSettersPaymentInput(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &PaymentInput{}
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetLineItems", func(t *testing.T) {
+		obj := &PaymentInput{}
+		var fernTestValueLineItems []*PaymentInputLineItemsItem
+		obj.SetLineItems(fernTestValueLineItems)
+		assert.Equal(t, fernTestValueLineItems, obj.LineItems)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPlan", func(t *testing.T) {
+		obj := &PaymentInput{}
+		var fernTestValuePlan *PaymentInputPlan
+		obj.SetPlan(fernTestValuePlan)
+		assert.Equal(t, fernTestValuePlan, obj.Plan)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPlanID", func(t *testing.T) {
+		obj := &PaymentInput{}
+		var fernTestValuePlanID *string
+		obj.SetPlanID(fernTestValuePlanID)
+		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPromoCodeID", func(t *testing.T) {
+		obj := &PaymentInput{}
+		var fernTestValuePromoCodeID *string
+		obj.SetPromoCodeID(fernTestValuePromoCodeID)
+		assert.Equal(t, fernTestValuePromoCodeID, obj.PromoCodeID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersPaymentInput(t *testing.T) {
+	t.Run("GetAccountID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		var expected string
+		obj.AccountID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccountID() // Should return zero value
+	})
+
+	t.Run("GetLineItems", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		var expected []*PaymentInputLineItemsItem
+		obj.LineItems = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLineItems(), "getter should return the property value")
+	})
+
+	t.Run("GetLineItems_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		obj.LineItems = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetLineItems(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetLineItems_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLineItems() // Should return zero value
+	})
+
+	t.Run("GetPlan", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		var expected *PaymentInputPlan
+		obj.Plan = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlan(), "getter should return the property value")
+	})
+
+	t.Run("GetPlan_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		obj.Plan = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPlan(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPlan_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlan() // Should return zero value
+	})
+
+	t.Run("GetPlanID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		var expected *string
+		obj.PlanID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlanID(), "getter should return the property value")
+	})
+
+	t.Run("GetPlanID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		obj.PlanID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPlanID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPlanID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlanID() // Should return zero value
+	})
+
+	t.Run("GetPromoCodeID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		var expected *string
+		obj.PromoCodeID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPromoCodeID(), "getter should return the property value")
+	})
+
+	t.Run("GetPromoCodeID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		obj.PromoCodeID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPromoCodeID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPromoCodeID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPromoCodeID() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitPaymentInput(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		var fernTestValueAccountID string
+
+		// Act
+		obj.SetAccountID(fernTestValueAccountID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLineItems_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		var fernTestValueLineItems []*PaymentInputLineItemsItem
+
+		// Act
+		obj.SetLineItems(fernTestValueLineItems)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlan_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		var fernTestValuePlan *PaymentInputPlan
+
+		// Act
+		obj.SetPlan(fernTestValuePlan)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		var fernTestValuePlanID *string
+
+		// Act
+		obj.SetPlanID(fernTestValuePlanID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPromoCodeID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+		var fernTestValuePromoCodeID *string
+
+		// Act
+		obj.SetPromoCodeID(fernTestValuePromoCodeID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersPaymentInputLineItemsItem(t *testing.T) {
+	t.Run("SetPlanID", func(t *testing.T) {
+		obj := &PaymentInputLineItemsItem{}
+		var fernTestValuePlanID string
+		obj.SetPlanID(fernTestValuePlanID)
+		assert.Equal(t, fernTestValuePlanID, obj.PlanID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQuantity", func(t *testing.T) {
+		obj := &PaymentInputLineItemsItem{}
+		var fernTestValueQuantity *int
+		obj.SetQuantity(fernTestValueQuantity)
+		assert.Equal(t, fernTestValueQuantity, obj.Quantity)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersPaymentInputLineItemsItem(t *testing.T) {
+	t.Run("GetPlanID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputLineItemsItem{}
+		var expected string
+		obj.PlanID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlanID(), "getter should return the property value")
+	})
+
+	t.Run("GetPlanID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputLineItemsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlanID() // Should return zero value
+	})
+
+	t.Run("GetQuantity", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputLineItemsItem{}
+		var expected *int
+		obj.Quantity = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuantity(), "getter should return the property value")
+	})
+
+	t.Run("GetQuantity_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputLineItemsItem{}
+		obj.Quantity = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQuantity(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQuantity_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputLineItemsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuantity() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitPaymentInputLineItemsItem(t *testing.T) {
+	t.Run("SetPlanID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputLineItemsItem{}
+		var fernTestValuePlanID string
+
+		// Act
+		obj.SetPlanID(fernTestValuePlanID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuantity_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputLineItemsItem{}
+		var fernTestValueQuantity *int
+
+		// Act
+		obj.SetQuantity(fernTestValueQuantity)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersPaymentInputPlan(t *testing.T) {
+	t.Run("SetApplicationFeeAmount", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueApplicationFeeAmount *float64
+		obj.SetApplicationFeeAmount(fernTestValueApplicationFeeAmount)
+		assert.Equal(t, fernTestValueApplicationFeeAmount, obj.ApplicationFeeAmount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetBillingPeriod", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueBillingPeriod *int
+		obj.SetBillingPeriod(fernTestValueBillingPeriod)
+		assert.Equal(t, fernTestValueBillingPeriod, obj.BillingPeriod)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCurrency", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueCurrency PaymentInputPlanCurrency
+		obj.SetCurrency(fernTestValueCurrency)
+		assert.Equal(t, fernTestValueCurrency, obj.Currency)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDescription", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueDescription *string
+		obj.SetDescription(fernTestValueDescription)
+		assert.Equal(t, fernTestValueDescription, obj.Description)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetExpirationDays", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueExpirationDays *int
+		obj.SetExpirationDays(fernTestValueExpirationDays)
+		assert.Equal(t, fernTestValueExpirationDays, obj.ExpirationDays)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetForceCreateNewPlan", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueForceCreateNewPlan *bool
+		obj.SetForceCreateNewPlan(fernTestValueForceCreateNewPlan)
+		assert.Equal(t, fernTestValueForceCreateNewPlan, obj.ForceCreateNewPlan)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetInitialPrice", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueInitialPrice *float64
+		obj.SetInitialPrice(fernTestValueInitialPrice)
+		assert.Equal(t, fernTestValueInitialPrice, obj.InitialPrice)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetInternalNotes", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueInternalNotes *string
+		obj.SetInternalNotes(fernTestValueInternalNotes)
+		assert.Equal(t, fernTestValueInternalNotes, obj.InternalNotes)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetOverrideTaxType", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueOverrideTaxType *PaymentInputPlanOverrideTaxType
+		obj.SetOverrideTaxType(fernTestValueOverrideTaxType)
+		assert.Equal(t, fernTestValueOverrideTaxType, obj.OverrideTaxType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPlanType", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValuePlanType *PaymentInputPlanPlanType
+		obj.SetPlanType(fernTestValuePlanType)
+		assert.Equal(t, fernTestValuePlanType, obj.PlanType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProduct", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueProduct *PaymentInputPlanProduct
+		obj.SetProduct(fernTestValueProduct)
+		assert.Equal(t, fernTestValueProduct, obj.Product)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProductID", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueProductID *string
+		obj.SetProductID(fernTestValueProductID)
+		assert.Equal(t, fernTestValueProductID, obj.ProductID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRenewalPrice", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueRenewalPrice *float64
+		obj.SetRenewalPrice(fernTestValueRenewalPrice)
+		assert.Equal(t, fernTestValueRenewalPrice, obj.RenewalPrice)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTitle", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueTitle *string
+		obj.SetTitle(fernTestValueTitle)
+		assert.Equal(t, fernTestValueTitle, obj.Title)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTrialPeriodDays", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueTrialPeriodDays *int
+		obj.SetTrialPeriodDays(fernTestValueTrialPeriodDays)
+		assert.Equal(t, fernTestValueTrialPeriodDays, obj.TrialPeriodDays)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVisibility", func(t *testing.T) {
+		obj := &PaymentInputPlan{}
+		var fernTestValueVisibility *PaymentInputPlanVisibility
+		obj.SetVisibility(fernTestValueVisibility)
+		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersPaymentInputPlan(t *testing.T) {
+	t.Run("GetApplicationFeeAmount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *float64
+		obj.ApplicationFeeAmount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetApplicationFeeAmount(), "getter should return the property value")
+	})
+
+	t.Run("GetApplicationFeeAmount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.ApplicationFeeAmount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetApplicationFeeAmount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetApplicationFeeAmount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetApplicationFeeAmount() // Should return zero value
+	})
+
+	t.Run("GetBillingPeriod", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *int
+		obj.BillingPeriod = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBillingPeriod(), "getter should return the property value")
+	})
+
+	t.Run("GetBillingPeriod_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.BillingPeriod = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBillingPeriod(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetBillingPeriod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBillingPeriod() // Should return zero value
+	})
+
+	t.Run("GetCurrency", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected PaymentInputPlanCurrency
+		obj.Currency = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCurrency(), "getter should return the property value")
+	})
+
+	t.Run("GetCurrency_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCurrency() // Should return zero value
+	})
+
+	t.Run("GetDescription", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *string
+		obj.Description = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDescription(), "getter should return the property value")
+	})
+
+	t.Run("GetDescription_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.Description = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDescription(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDescription_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDescription() // Should return zero value
+	})
+
+	t.Run("GetExpirationDays", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *int
+		obj.ExpirationDays = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetExpirationDays(), "getter should return the property value")
+	})
+
+	t.Run("GetExpirationDays_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.ExpirationDays = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetExpirationDays(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetExpirationDays_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetExpirationDays() // Should return zero value
+	})
+
+	t.Run("GetForceCreateNewPlan", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *bool
+		obj.ForceCreateNewPlan = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetForceCreateNewPlan(), "getter should return the property value")
+	})
+
+	t.Run("GetForceCreateNewPlan_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.ForceCreateNewPlan = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetForceCreateNewPlan(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetForceCreateNewPlan_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetForceCreateNewPlan() // Should return zero value
+	})
+
+	t.Run("GetInitialPrice", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *float64
+		obj.InitialPrice = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInitialPrice(), "getter should return the property value")
+	})
+
+	t.Run("GetInitialPrice_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.InitialPrice = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInitialPrice(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInitialPrice_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInitialPrice() // Should return zero value
+	})
+
+	t.Run("GetInternalNotes", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *string
+		obj.InternalNotes = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInternalNotes(), "getter should return the property value")
+	})
+
+	t.Run("GetInternalNotes_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.InternalNotes = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInternalNotes(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInternalNotes_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInternalNotes() // Should return zero value
+	})
+
+	t.Run("GetOverrideTaxType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *PaymentInputPlanOverrideTaxType
+		obj.OverrideTaxType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetOverrideTaxType(), "getter should return the property value")
+	})
+
+	t.Run("GetOverrideTaxType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.OverrideTaxType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetOverrideTaxType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetOverrideTaxType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetOverrideTaxType() // Should return zero value
+	})
+
+	t.Run("GetPlanType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *PaymentInputPlanPlanType
+		obj.PlanType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlanType(), "getter should return the property value")
+	})
+
+	t.Run("GetPlanType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.PlanType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPlanType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPlanType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlanType() // Should return zero value
+	})
+
+	t.Run("GetProduct", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *PaymentInputPlanProduct
+		obj.Product = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProduct(), "getter should return the property value")
+	})
+
+	t.Run("GetProduct_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.Product = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProduct(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProduct_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProduct() // Should return zero value
+	})
+
+	t.Run("GetProductID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *string
+		obj.ProductID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProductID(), "getter should return the property value")
+	})
+
+	t.Run("GetProductID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.ProductID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProductID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProductID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProductID() // Should return zero value
+	})
+
+	t.Run("GetRenewalPrice", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *float64
+		obj.RenewalPrice = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRenewalPrice(), "getter should return the property value")
+	})
+
+	t.Run("GetRenewalPrice_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.RenewalPrice = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRenewalPrice(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRenewalPrice_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRenewalPrice() // Should return zero value
+	})
+
+	t.Run("GetTitle", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *string
+		obj.Title = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTitle(), "getter should return the property value")
+	})
+
+	t.Run("GetTitle_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.Title = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTitle(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTitle_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTitle() // Should return zero value
+	})
+
+	t.Run("GetTrialPeriodDays", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *int
+		obj.TrialPeriodDays = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTrialPeriodDays(), "getter should return the property value")
+	})
+
+	t.Run("GetTrialPeriodDays_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.TrialPeriodDays = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTrialPeriodDays(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTrialPeriodDays_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTrialPeriodDays() // Should return zero value
+	})
+
+	t.Run("GetVisibility", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var expected *PaymentInputPlanVisibility
+		obj.Visibility = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVisibility(), "getter should return the property value")
+	})
+
+	t.Run("GetVisibility_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		obj.Visibility = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetVisibility(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVisibility() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitPaymentInputPlan(t *testing.T) {
+	t.Run("SetApplicationFeeAmount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueApplicationFeeAmount *float64
+
+		// Act
+		obj.SetApplicationFeeAmount(fernTestValueApplicationFeeAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetBillingPeriod_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueBillingPeriod *int
+
+		// Act
+		obj.SetBillingPeriod(fernTestValueBillingPeriod)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCurrency_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueCurrency PaymentInputPlanCurrency
+
+		// Act
+		obj.SetCurrency(fernTestValueCurrency)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueDescription *string
+
+		// Act
+		obj.SetDescription(fernTestValueDescription)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetExpirationDays_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueExpirationDays *int
+
+		// Act
+		obj.SetExpirationDays(fernTestValueExpirationDays)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetForceCreateNewPlan_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueForceCreateNewPlan *bool
+
+		// Act
+		obj.SetForceCreateNewPlan(fernTestValueForceCreateNewPlan)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInitialPrice_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueInitialPrice *float64
+
+		// Act
+		obj.SetInitialPrice(fernTestValueInitialPrice)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInternalNotes_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueInternalNotes *string
+
+		// Act
+		obj.SetInternalNotes(fernTestValueInternalNotes)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetOverrideTaxType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueOverrideTaxType *PaymentInputPlanOverrideTaxType
+
+		// Act
+		obj.SetOverrideTaxType(fernTestValueOverrideTaxType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlanType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValuePlanType *PaymentInputPlanPlanType
+
+		// Act
+		obj.SetPlanType(fernTestValuePlanType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProduct_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueProduct *PaymentInputPlanProduct
+
+		// Act
+		obj.SetProduct(fernTestValueProduct)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProductID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueProductID *string
+
+		// Act
+		obj.SetProductID(fernTestValueProductID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRenewalPrice_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueRenewalPrice *float64
+
+		// Act
+		obj.SetRenewalPrice(fernTestValueRenewalPrice)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueTitle *string
+
+		// Act
+		obj.SetTitle(fernTestValueTitle)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTrialPeriodDays_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueTrialPeriodDays *int
+
+		// Act
+		obj.SetTrialPeriodDays(fernTestValueTrialPeriodDays)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+		var fernTestValueVisibility *PaymentInputPlanVisibility
+
+		// Act
+		obj.SetVisibility(fernTestValueVisibility)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersPaymentInputPlanProduct(t *testing.T) {
+	t.Run("SetCollectShippingAddress", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueCollectShippingAddress *bool
+		obj.SetCollectShippingAddress(fernTestValueCollectShippingAddress)
+		assert.Equal(t, fernTestValueCollectShippingAddress, obj.CollectShippingAddress)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCustomStatementDescriptor", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueCustomStatementDescriptor *string
+		obj.SetCustomStatementDescriptor(fernTestValueCustomStatementDescriptor)
+		assert.Equal(t, fernTestValueCustomStatementDescriptor, obj.CustomStatementDescriptor)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDescription", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueDescription *string
+		obj.SetDescription(fernTestValueDescription)
+		assert.Equal(t, fernTestValueDescription, obj.Description)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetExternalIdentifier", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueExternalIdentifier string
+		obj.SetExternalIdentifier(fernTestValueExternalIdentifier)
+		assert.Equal(t, fernTestValueExternalIdentifier, obj.ExternalIdentifier)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetGlobalAffiliatePercentage", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueGlobalAffiliatePercentage *float64
+		obj.SetGlobalAffiliatePercentage(fernTestValueGlobalAffiliatePercentage)
+		assert.Equal(t, fernTestValueGlobalAffiliatePercentage, obj.GlobalAffiliatePercentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetGlobalAffiliateStatus", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueGlobalAffiliateStatus *PaymentInputPlanProductGlobalAffiliateStatus
+		obj.SetGlobalAffiliateStatus(fernTestValueGlobalAffiliateStatus)
+		assert.Equal(t, fernTestValueGlobalAffiliateStatus, obj.GlobalAffiliateStatus)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetHeadline", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueHeadline *string
+		obj.SetHeadline(fernTestValueHeadline)
+		assert.Equal(t, fernTestValueHeadline, obj.Headline)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProductTaxCodeID", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueProductTaxCodeID *string
+		obj.SetProductTaxCodeID(fernTestValueProductTaxCodeID)
+		assert.Equal(t, fernTestValueProductTaxCodeID, obj.ProductTaxCodeID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRedirectPurchaseURL", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueRedirectPurchaseURL *string
+		obj.SetRedirectPurchaseURL(fernTestValueRedirectPurchaseURL)
+		assert.Equal(t, fernTestValueRedirectPurchaseURL, obj.RedirectPurchaseURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRoute", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueRoute *string
+		obj.SetRoute(fernTestValueRoute)
+		assert.Equal(t, fernTestValueRoute, obj.Route)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTitle", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueTitle string
+		obj.SetTitle(fernTestValueTitle)
+		assert.Equal(t, fernTestValueTitle, obj.Title)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVisibility", func(t *testing.T) {
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueVisibility *PaymentInputPlanProductVisibility
+		obj.SetVisibility(fernTestValueVisibility)
+		assert.Equal(t, fernTestValueVisibility, obj.Visibility)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersPaymentInputPlanProduct(t *testing.T) {
+	t.Run("GetCollectShippingAddress", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected *bool
+		obj.CollectShippingAddress = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCollectShippingAddress(), "getter should return the property value")
+	})
+
+	t.Run("GetCollectShippingAddress_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		obj.CollectShippingAddress = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCollectShippingAddress(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCollectShippingAddress_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCollectShippingAddress() // Should return zero value
+	})
+
+	t.Run("GetCustomStatementDescriptor", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected *string
+		obj.CustomStatementDescriptor = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCustomStatementDescriptor(), "getter should return the property value")
+	})
+
+	t.Run("GetCustomStatementDescriptor_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		obj.CustomStatementDescriptor = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCustomStatementDescriptor(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCustomStatementDescriptor_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCustomStatementDescriptor() // Should return zero value
+	})
+
+	t.Run("GetDescription", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected *string
+		obj.Description = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDescription(), "getter should return the property value")
+	})
+
+	t.Run("GetDescription_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		obj.Description = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDescription(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDescription_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDescription() // Should return zero value
+	})
+
+	t.Run("GetExternalIdentifier", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected string
+		obj.ExternalIdentifier = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetExternalIdentifier(), "getter should return the property value")
+	})
+
+	t.Run("GetExternalIdentifier_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetExternalIdentifier() // Should return zero value
+	})
+
+	t.Run("GetGlobalAffiliatePercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected *float64
+		obj.GlobalAffiliatePercentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetGlobalAffiliatePercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetGlobalAffiliatePercentage_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		obj.GlobalAffiliatePercentage = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetGlobalAffiliatePercentage(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetGlobalAffiliatePercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetGlobalAffiliatePercentage() // Should return zero value
+	})
+
+	t.Run("GetGlobalAffiliateStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected *PaymentInputPlanProductGlobalAffiliateStatus
+		obj.GlobalAffiliateStatus = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetGlobalAffiliateStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetGlobalAffiliateStatus_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		obj.GlobalAffiliateStatus = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetGlobalAffiliateStatus(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetGlobalAffiliateStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetGlobalAffiliateStatus() // Should return zero value
+	})
+
+	t.Run("GetHeadline", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected *string
+		obj.Headline = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetHeadline(), "getter should return the property value")
+	})
+
+	t.Run("GetHeadline_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		obj.Headline = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetHeadline(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetHeadline_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetHeadline() // Should return zero value
+	})
+
+	t.Run("GetProductTaxCodeID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected *string
+		obj.ProductTaxCodeID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProductTaxCodeID(), "getter should return the property value")
+	})
+
+	t.Run("GetProductTaxCodeID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		obj.ProductTaxCodeID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProductTaxCodeID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProductTaxCodeID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProductTaxCodeID() // Should return zero value
+	})
+
+	t.Run("GetRedirectPurchaseURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected *string
+		obj.RedirectPurchaseURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRedirectPurchaseURL(), "getter should return the property value")
+	})
+
+	t.Run("GetRedirectPurchaseURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		obj.RedirectPurchaseURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRedirectPurchaseURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRedirectPurchaseURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRedirectPurchaseURL() // Should return zero value
+	})
+
+	t.Run("GetRoute", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected *string
+		obj.Route = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRoute(), "getter should return the property value")
+	})
+
+	t.Run("GetRoute_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		obj.Route = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRoute(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRoute_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRoute() // Should return zero value
+	})
+
+	t.Run("GetTitle", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected string
+		obj.Title = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTitle(), "getter should return the property value")
+	})
+
+	t.Run("GetTitle_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTitle() // Should return zero value
+	})
+
+	t.Run("GetVisibility", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var expected *PaymentInputPlanProductVisibility
+		obj.Visibility = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVisibility(), "getter should return the property value")
+	})
+
+	t.Run("GetVisibility_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		obj.Visibility = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetVisibility(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetVisibility_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVisibility() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitPaymentInputPlanProduct(t *testing.T) {
+	t.Run("SetCollectShippingAddress_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueCollectShippingAddress *bool
+
+		// Act
+		obj.SetCollectShippingAddress(fernTestValueCollectShippingAddress)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCustomStatementDescriptor_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueCustomStatementDescriptor *string
+
+		// Act
+		obj.SetCustomStatementDescriptor(fernTestValueCustomStatementDescriptor)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueDescription *string
+
+		// Act
+		obj.SetDescription(fernTestValueDescription)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetExternalIdentifier_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueExternalIdentifier string
+
+		// Act
+		obj.SetExternalIdentifier(fernTestValueExternalIdentifier)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetGlobalAffiliatePercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueGlobalAffiliatePercentage *float64
+
+		// Act
+		obj.SetGlobalAffiliatePercentage(fernTestValueGlobalAffiliatePercentage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetGlobalAffiliateStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueGlobalAffiliateStatus *PaymentInputPlanProductGlobalAffiliateStatus
+
+		// Act
+		obj.SetGlobalAffiliateStatus(fernTestValueGlobalAffiliateStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetHeadline_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueHeadline *string
+
+		// Act
+		obj.SetHeadline(fernTestValueHeadline)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProductTaxCodeID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueProductTaxCodeID *string
+
+		// Act
+		obj.SetProductTaxCodeID(fernTestValueProductTaxCodeID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRedirectPurchaseURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueRedirectPurchaseURL *string
+
+		// Act
+		obj.SetRedirectPurchaseURL(fernTestValueRedirectPurchaseURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRoute_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueRoute *string
+
+		// Act
+		obj.SetRoute(fernTestValueRoute)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueTitle string
+
+		// Act
+		obj.SetTitle(fernTestValueTitle)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVisibility_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+		var fernTestValueVisibility *PaymentInputPlanProductVisibility
+
+		// Act
+		obj.SetVisibility(fernTestValueVisibility)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestGettersPaymentInstructions(t *testing.T) {
 	t.Run("GetKind", func(t *testing.T) {
 		t.Parallel()
@@ -117389,6 +119895,138 @@ func TestJSONMarshalingPaymentHold(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingPaymentInput(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInput{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled PaymentInput
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInput
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInput
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingPaymentInputLineItemsItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputLineItemsItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled PaymentInputLineItemsItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInputLineItemsItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInputLineItemsItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingPaymentInputPlan(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlan{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled PaymentInputPlan
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInputPlan
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInputPlan
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingPaymentInputPlanProduct(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInputPlanProduct{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled PaymentInputPlanProduct
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInputPlanProduct
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInputPlanProduct
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingPaymentInstrument(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -124464,6 +127102,70 @@ func TestStringPaymentHold(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *PaymentHold
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringPaymentInput(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &PaymentInput{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInput
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringPaymentInputLineItemsItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &PaymentInputLineItemsItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputLineItemsItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringPaymentInputPlan(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &PaymentInputPlan{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringPaymentInputPlanProduct(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &PaymentInputPlanProduct{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -132966,6 +135668,831 @@ func TestEnumPaymentHoldType(t *testing.T) {
 	})
 }
 
+func TestEnumPaymentInputPlanCurrency(t *testing.T) {
+	t.Run("NewFromString_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sgd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("sgd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("sgd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("inr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("inr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aud", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("aud")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("aud"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_brl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("brl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("brl"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("cad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("cad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dkk", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("dkk")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("dkk"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("eur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("eur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("nok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("nok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gbp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("gbp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("gbp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sek", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("sek")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("sek"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_chf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("chf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("chf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hkd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("hkd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("hkd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_huf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("huf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("huf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jpy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("jpy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("jpy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mxn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("mxn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("mxn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_myr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("myr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("myr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pln", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("pln")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("pln"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_czk", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("czk")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("czk"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nzd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("nzd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("nzd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("aed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("aed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eth", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("eth")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("eth"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ape", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("ape")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("ape"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("cop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("cop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ron", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("ron")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("ron"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_thb", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("thb")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("thb"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bgn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("bgn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("bgn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_idr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("idr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("idr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("dop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("dop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_php", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("php")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("php"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_try", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("try")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("try"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_krw", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("krw")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("krw"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_twd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("twd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("twd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_vnd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("vnd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("vnd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pkr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("pkr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("pkr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_clp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("clp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("clp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_uyu", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("uyu")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("uyu"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ars", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("ars")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("ars"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_zar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("zar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("zar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_dzd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("dzd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("dzd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tnd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("tnd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("tnd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("mad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("mad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kes", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("kes")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("kes"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kwd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("kwd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("kwd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jod", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("jod")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("jod"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_all", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("all")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("all"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xcd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("xcd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("xcd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_amd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("amd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("amd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bsd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("bsd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("bsd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bhd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("bhd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("bhd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bob", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("bob")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("bob"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bam", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("bam")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("bam"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_khr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("khr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("khr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_crc", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("crc")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("crc"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xof", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("xof")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("xof"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_egp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("egp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("egp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_etb", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("etb")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("etb"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gmd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("gmd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("gmd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ghs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("ghs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("ghs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gtq", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("gtq")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("gtq"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gyd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("gyd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("gyd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ils", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("ils")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("ils"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_jmd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("jmd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("jmd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("mop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("mop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mga", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("mga")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("mga"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("mur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("mur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mdl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("mdl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("mdl"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mnt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("mnt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("mnt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_nad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("nad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("nad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ngn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("ngn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("ngn"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mkd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("mkd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("mkd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_omr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("omr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("omr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pyg", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("pyg")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("pyg"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pen", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("pen")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("pen"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_qar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("qar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("qar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rwf", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("rwf")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("rwf"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sar", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("sar")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("sar"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rsd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("rsd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("rsd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_lkr", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("lkr")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("lkr"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tzs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("tzs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("tzs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ttd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("ttd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("ttd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_uzs", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("uzs")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("uzs"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rub", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("rub")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("rub"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_btc", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("btc")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("btc"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cny", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("cny")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("cny"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_usdt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("usdt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("usdt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_kzt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("kzt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("kzt"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_awg", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("awg")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("awg"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("whop_usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("whop_usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_xau", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanCurrencyFromString("xau")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanCurrency("xau"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentInputPlanCurrencyFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentInputPlanCurrencyFromString("usd")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPaymentInputPlanOverrideTaxType(t *testing.T) {
+	t.Run("NewFromString_exclusive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanOverrideTaxTypeFromString("exclusive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanOverrideTaxType("exclusive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inclusive", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanOverrideTaxTypeFromString("inclusive")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanOverrideTaxType("inclusive"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unspecified", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanOverrideTaxTypeFromString("unspecified")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanOverrideTaxType("unspecified"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentInputPlanOverrideTaxTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentInputPlanOverrideTaxTypeFromString("exclusive")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPaymentInputPlanPlanType(t *testing.T) {
+	t.Run("NewFromString_renewal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanPlanTypeFromString("renewal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanPlanType("renewal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_one_time", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanPlanTypeFromString("one_time")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanPlanType("one_time"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentInputPlanPlanTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentInputPlanPlanTypeFromString("renewal")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPaymentInputPlanProductGlobalAffiliateStatus(t *testing.T) {
+	t.Run("NewFromString_enabled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanProductGlobalAffiliateStatusFromString("enabled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanProductGlobalAffiliateStatus("enabled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_disabled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanProductGlobalAffiliateStatusFromString("disabled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanProductGlobalAffiliateStatus("disabled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentInputPlanProductGlobalAffiliateStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentInputPlanProductGlobalAffiliateStatusFromString("enabled")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPaymentInputPlanProductVisibility(t *testing.T) {
+	t.Run("NewFromString_visible", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanProductVisibilityFromString("visible")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanProductVisibility("visible"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hidden", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanProductVisibilityFromString("hidden")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanProductVisibility("hidden"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_archived", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanProductVisibilityFromString("archived")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanProductVisibility("archived"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_quick_link", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanProductVisibilityFromString("quick_link")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanProductVisibility("quick_link"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentInputPlanProductVisibilityFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentInputPlanProductVisibilityFromString("visible")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPaymentInputPlanVisibility(t *testing.T) {
+	t.Run("NewFromString_visible", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanVisibilityFromString("visible")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanVisibility("visible"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hidden", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanVisibilityFromString("hidden")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanVisibility("hidden"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_archived", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanVisibilityFromString("archived")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanVisibility("archived"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_quick_link", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputPlanVisibilityFromString("quick_link")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputPlanVisibility("quick_link"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentInputPlanVisibilityFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentInputPlanVisibilityFromString("visible")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPaymentMethodTypes(t *testing.T) {
 	t.Run("NewFromString_acss_debit", func(t *testing.T) {
 		t.Parallel()
@@ -140836,6 +144363,98 @@ func TestExtraPropertiesPaymentHold(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *PaymentHold
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesPaymentInput(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &PaymentInput{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInput
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesPaymentInputLineItemsItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &PaymentInputLineItemsItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputLineItemsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesPaymentInputPlan(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &PaymentInputPlan{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlan
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesPaymentInputPlanProduct(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &PaymentInputPlanProduct{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInputPlanProduct
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
