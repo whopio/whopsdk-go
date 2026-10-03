@@ -25325,6 +25325,151 @@ client.PaymentMethods.DeletePaymentMethod(
 </dl>
 </details>
 
+## Payment Quotes
+<details><summary><code>client.PaymentQuotes.Create(request) -> *whopsdk.PaymentQuote</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Prices a purchase the way a payment for it will be charged, for a buyer located by the shipping address, then the billing address, then the IP address you pass. The body is the `PaymentInput` a payment takes plus where the buyer is (`address`, `shipping_address`, `tax_ids`, `ip_address`); a seller that collects no tax on the purchase can be quoted without them. The purchase is priced from exactly what you send: no buyer is looked up, so no stored registration or purchase history applies. A quote is priced once, in the plans' own currency, and expires at `expires_at`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreatePaymentQuotesRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
+}
+client.PaymentQuotes.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**address:** `*whopsdk.CreatePaymentQuotesRequestAddress` — The buyer's billing address. Where tax is calculated when no shipping address is given, and the address a tax registration belongs to. A seller that collects tax on this purchase needs the buyer located: provide a `country` here, on `shipping_address`, or an `ip_address`. Only the keys you supply are kept.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ipAddress:** `*string` — The buyer's IP address, when your server makes the call on their behalf. Locates the buyer when neither address carries a country. A quote located this way is an estimate (`located_by` is `ip_address`): quote again with the buyer's address.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**shippingAddress:** `*whopsdk.CreatePaymentQuotesRequestShippingAddress` — Where physical goods ship. When present it is where tax is calculated; omit it for digital goods. Only the keys you supply are kept.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**taxIDs:** `[]*whopsdk.CreatePaymentQuotesRequestTaxIDsItem` — The buyer's tax registration, for a business purchase. One entry. Prices the purchase as business-to-business where that applies (EU reverse charge, for one) and requires an `address` to belong to.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.PaymentQuotes.Retrieve(ID) -> *whopsdk.PaymentQuote</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a payment quote, including when it expires.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrievePaymentQuotesRequest{
+    ID: "id",
+}
+client.PaymentQuotes.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The payment quote ID, prefixed `pq_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Payment Rules
 <details><summary><code>client.PaymentRules.List() -> *whopsdk.ListPaymentRulesResponse</code></summary>
 <dl>
