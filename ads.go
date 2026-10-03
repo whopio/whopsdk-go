@@ -77,10 +77,12 @@ type CreateAdsRequest struct {
 }
 
 func (c *CreateAdsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAdGroup sets the AdGroup field and marks it as non-optional;
@@ -250,10 +252,12 @@ type DeleteAdsRequest struct {
 }
 
 func (d *DeleteAdsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -285,10 +289,12 @@ type DuplicateAdsRequest struct {
 }
 
 func (d *DuplicateAdsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -407,10 +413,12 @@ type ListAdsRequest struct {
 }
 
 func (l *ListAdsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -559,10 +567,12 @@ type PauseAdsRequest struct {
 }
 
 func (p *PauseAdsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -597,10 +607,12 @@ type RetrieveAdsRequest struct {
 }
 
 func (r *RetrieveAdsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -713,6 +725,38 @@ var (
 	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 71)
 	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 72)
 )
+
+// adNullableFields maps the wire names of Ad's nullable fields (required or optional) to their field bits.
+var adNullableFields = map[string]*big.Int{
+	"call_to_action":                  adFieldCallToAction,
+	"cost_per_added_to_cart":          adFieldCostPerAddedToCart,
+	"cost_per_completed_registration": adFieldCostPerCompletedRegistration,
+	"cost_per_contact":                adFieldCostPerContact,
+	"cost_per_lead":                   adFieldCostPerLead,
+	"cost_per_purchase":               adFieldCostPerPurchase,
+	"cost_per_result":                 adFieldCostPerResult,
+	"cost_per_schedule":               adFieldCostPerSchedule,
+	"cost_per_submitted_application":  adFieldCostPerSubmittedApplication,
+	"cost_per_unique_click":           adFieldCostPerUniqueClick,
+	"cost_per_viewed_content":         adFieldCostPerViewedContent,
+	"existing_post_id":                adFieldExistingPostID,
+	"frequency":                       adFieldFrequency,
+	"lead_form":                       adFieldLeadForm,
+	"lead_form_id":                    adFieldLeadFormID,
+	"messaging_config":                adFieldMessagingConfig,
+	"music":                           adFieldMusic,
+	"post_id":                         adFieldPostID,
+	"post_source":                     adFieldPostSource,
+	"post_thumbnail_url":              adFieldPostThumbnailURL,
+	"result_event":                    adFieldResultEvent,
+	"result_event_name":               adFieldResultEventName,
+	"results":                         adFieldResults,
+	"spend_currency":                  adFieldSpendCurrency,
+	"title":                           adFieldTitle,
+	"translations":                    adFieldTranslations,
+	"unique_click_through_rate":       adFieldUniqueClickThroughRate,
+	"url":                             adFieldURL,
+}
 
 type Ad struct {
 	// The ad campaign this ad belongs to.
@@ -1382,10 +1426,12 @@ func (a *Ad) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *Ad) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAdCampaign sets the AdCampaign field and marks it as non-optional;
@@ -1911,6 +1957,13 @@ func (a *Ad) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2069,6 +2122,15 @@ var (
 	adCreativeFieldURL       = big.NewInt(1 << 5)
 )
 
+// adCreativeNullableFields maps the wire names of AdCreative's nullable fields (required or optional) to their field bits.
+var adCreativeNullableFields = map[string]*big.Int{
+	"crop":       adCreativeFieldCrop,
+	"format":     adCreativeFieldFormat,
+	"language":   adCreativeFieldLanguage,
+	"media_type": adCreativeFieldMediaType,
+	"url":        adCreativeFieldURL,
+}
+
 type AdCreative struct {
 	// The saved crop window for this creative, in source image pixels. Null for the original asset or a format that has not been cropped.
 	Crop *AdCreativeCrop `json:"crop,omitempty" url:"crop,omitempty"`
@@ -2140,10 +2202,12 @@ func (a *AdCreative) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdCreative) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCrop sets the Crop field and marks it as non-optional;
@@ -2200,6 +2264,13 @@ func (a *AdCreative) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adCreativeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2290,10 +2361,12 @@ func (a *AdCreativeCrop) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdCreativeCrop) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetHeight sets the Height field and marks it as non-optional;
@@ -2459,6 +2532,15 @@ var (
 	adLeadFormFieldQuestions         = big.NewInt(1 << 7)
 )
 
+// adLeadFormNullableFields maps the wire names of AdLeadForm's nullable fields (required or optional) to their field bits.
+var adLeadFormNullableFields = map[string]*big.Int{
+	"completion":     adLeadFormFieldCompletion,
+	"disclaimer":     adLeadFormFieldDisclaimer,
+	"intro":          adLeadFormFieldIntro,
+	"name":           adLeadFormFieldName,
+	"privacy_policy": adLeadFormFieldPrivacyPolicy,
+}
+
 type AdLeadForm struct {
 	// Screen shown after the form is submitted. `null` when the form uses the default.
 	Completion *AdLeadFormCompletion `json:"completion,omitempty" url:"completion,omitempty"`
@@ -2547,10 +2629,12 @@ func (a *AdLeadForm) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdLeadForm) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCompletion sets the Completion field and marks it as non-optional;
@@ -2621,6 +2705,13 @@ func (a *AdLeadForm) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adLeadFormNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2679,6 +2770,11 @@ var (
 	adLeadFormPrivacyPolicyFieldURL      = big.NewInt(1 << 1)
 )
 
+// adLeadFormPrivacyPolicyNullableFields maps the wire names of AdLeadFormPrivacyPolicy's nullable fields (required or optional) to their field bits.
+var adLeadFormPrivacyPolicyNullableFields = map[string]*big.Int{
+	"link_text": adLeadFormPrivacyPolicyFieldLinkText,
+}
+
 type AdLeadFormPrivacyPolicy struct {
 	// Link text shown for the policy. `null` uses the platform default.
 	LinkText *string `json:"link_text,omitempty" url:"link_text,omitempty"`
@@ -2714,10 +2810,12 @@ func (a *AdLeadFormPrivacyPolicy) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdLeadFormPrivacyPolicy) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetLinkText sets the LinkText field and marks it as non-optional;
@@ -2746,6 +2844,13 @@ func (a *AdLeadFormPrivacyPolicy) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adLeadFormPrivacyPolicyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2780,6 +2885,12 @@ var (
 	adMessagingConfigFieldKeyword = big.NewInt(1 << 0)
 	adMessagingConfigFieldMessage = big.NewInt(1 << 1)
 )
+
+// adMessagingConfigNullableFields maps the wire names of AdMessagingConfig's nullable fields (required or optional) to their field bits.
+var adMessagingConfigNullableFields = map[string]*big.Int{
+	"keyword": adMessagingConfigFieldKeyword,
+	"message": adMessagingConfigFieldMessage,
+}
 
 type AdMessagingConfig struct {
 	// Suggested reply the person can tap to start the conversation.
@@ -2816,10 +2927,12 @@ func (a *AdMessagingConfig) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdMessagingConfig) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetKeyword sets the Keyword field and marks it as non-optional;
@@ -2848,6 +2961,13 @@ func (a *AdMessagingConfig) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adMessagingConfigNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2883,6 +3003,12 @@ var (
 	adMusicFieldName = big.NewInt(1 << 1)
 	adMusicFieldURL  = big.NewInt(1 << 2)
 )
+
+// adMusicNullableFields maps the wire names of AdMusic's nullable fields (required or optional) to their field bits.
+var adMusicNullableFields = map[string]*big.Int{
+	"name": adMusicFieldName,
+	"url":  adMusicFieldURL,
+}
 
 type AdMusic struct {
 	// The music attachment's file id.
@@ -2928,10 +3054,12 @@ func (a *AdMusic) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdMusic) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2967,6 +3095,13 @@ func (a *AdMusic) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adMusicNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3127,6 +3262,11 @@ var (
 	adTextFieldText     = big.NewInt(1 << 1)
 )
 
+// adTextNullableFields maps the wire names of AdText's nullable fields (required or optional) to their field bits.
+var adTextNullableFields = map[string]*big.Int{
+	"language": adTextFieldLanguage,
+}
+
 type AdText struct {
 	// ISO 639 code of the language this text is in, such as `es`. On an ad with translations, the ad's own copy carries `translations.source_language`. It's `null` on an ad without translations.
 	Language *string `json:"language,omitempty" url:"language,omitempty"`
@@ -3162,10 +3302,12 @@ func (a *AdText) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdText) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetLanguage sets the Language field and marks it as non-optional;
@@ -3194,6 +3336,13 @@ func (a *AdText) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adTextNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3263,10 +3412,12 @@ func (a *AdTranslations) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdTranslations) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAutomaticLanguages sets the AutomaticLanguages field and marks it as non-optional;
@@ -3476,10 +3627,12 @@ func (c *CreateAdsRequestCreativesItem) GetExtraProperties() map[string]interfac
 }
 
 func (c *CreateAdsRequestCreativesItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCrop sets the Crop field and marks it as non-optional;
@@ -3552,7 +3705,6 @@ func (c *CreateAdsRequestCreativesItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The saved crop window for this creative, in source image pixels. Omit it for the original asset or for a format that has not been cropped.
 var (
 	createAdsRequestCreativesItemCropFieldHeight = big.NewInt(1 << 0)
 	createAdsRequestCreativesItemCropFieldWidth  = big.NewInt(1 << 1)
@@ -3560,6 +3712,7 @@ var (
 	createAdsRequestCreativesItemCropFieldY      = big.NewInt(1 << 3)
 )
 
+// The saved crop window for this creative, in source image pixels. Omit it for the original asset or for a format that has not been cropped.
 type CreateAdsRequestCreativesItemCrop struct {
 	Height *float64 `json:"height,omitempty" url:"height,omitempty"`
 	Width  *float64 `json:"width,omitempty" url:"width,omitempty"`
@@ -3609,10 +3762,12 @@ func (c *CreateAdsRequestCreativesItemCrop) GetExtraProperties() map[string]inte
 }
 
 func (c *CreateAdsRequestCreativesItemCrop) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetHeight sets the Height field and marks it as non-optional;
@@ -3715,6 +3870,11 @@ var (
 	createAdsRequestDescriptionsItemFieldText     = big.NewInt(1 << 1)
 )
 
+// createAdsRequestDescriptionsItemNullableFields maps the wire names of CreateAdsRequestDescriptionsItem's nullable fields (required or optional) to their field bits.
+var createAdsRequestDescriptionsItemNullableFields = map[string]*big.Int{
+	"language": createAdsRequestDescriptionsItemFieldLanguage,
+}
+
 type CreateAdsRequestDescriptionsItem struct {
 	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
 	Language *string `json:"language,omitempty" url:"language,omitempty"`
@@ -3750,10 +3910,12 @@ func (c *CreateAdsRequestDescriptionsItem) GetExtraProperties() map[string]inter
 }
 
 func (c *CreateAdsRequestDescriptionsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetLanguage sets the Language field and marks it as non-optional;
@@ -3782,6 +3944,13 @@ func (c *CreateAdsRequestDescriptionsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAdsRequestDescriptionsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3816,6 +3985,11 @@ var (
 	createAdsRequestHeadlinesItemFieldLanguage = big.NewInt(1 << 0)
 	createAdsRequestHeadlinesItemFieldText     = big.NewInt(1 << 1)
 )
+
+// createAdsRequestHeadlinesItemNullableFields maps the wire names of CreateAdsRequestHeadlinesItem's nullable fields (required or optional) to their field bits.
+var createAdsRequestHeadlinesItemNullableFields = map[string]*big.Int{
+	"language": createAdsRequestHeadlinesItemFieldLanguage,
+}
 
 type CreateAdsRequestHeadlinesItem struct {
 	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
@@ -3852,10 +4026,12 @@ func (c *CreateAdsRequestHeadlinesItem) GetExtraProperties() map[string]interfac
 }
 
 func (c *CreateAdsRequestHeadlinesItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetLanguage sets the Language field and marks it as non-optional;
@@ -3884,6 +4060,13 @@ func (c *CreateAdsRequestHeadlinesItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAdsRequestHeadlinesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3914,7 +4097,6 @@ func (c *CreateAdsRequestHeadlinesItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
 var (
 	createAdsRequestLeadFormFieldCompletion        = big.NewInt(1 << 0)
 	createAdsRequestLeadFormFieldDisclaimer        = big.NewInt(1 << 1)
@@ -3926,6 +4108,7 @@ var (
 	createAdsRequestLeadFormFieldQuestions         = big.NewInt(1 << 7)
 )
 
+// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
 type CreateAdsRequestLeadForm struct {
 	// Optional completion screen shown after submission. Its button needs a destination: url for button_type website (the default), phone_number for call, file_url for download.
 	Completion *CreateAdsRequestLeadFormCompletion `json:"completion,omitempty" url:"completion,omitempty"`
@@ -4015,10 +4198,12 @@ func (c *CreateAdsRequestLeadForm) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreateAdsRequestLeadForm) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCompletion sets the Completion field and marks it as non-optional;
@@ -4119,7 +4304,6 @@ func (c *CreateAdsRequestLeadForm) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Optional completion screen shown after submission. Its button needs a destination: url for button_type website (the default), phone_number for call, file_url for download.
 var (
 	createAdsRequestLeadFormCompletionFieldButtonText  = big.NewInt(1 << 0)
 	createAdsRequestLeadFormCompletionFieldButtonType  = big.NewInt(1 << 1)
@@ -4130,6 +4314,7 @@ var (
 	createAdsRequestLeadFormCompletionFieldURL         = big.NewInt(1 << 6)
 )
 
+// Optional completion screen shown after submission. Its button needs a destination: url for button_type website (the default), phone_number for call, file_url for download.
 type CreateAdsRequestLeadFormCompletion struct {
 	ButtonText  *string                                       `json:"button_text,omitempty" url:"button_text,omitempty"`
 	ButtonType  *CreateAdsRequestLeadFormCompletionButtonType `json:"button_type,omitempty" url:"button_type,omitempty"`
@@ -4203,10 +4388,12 @@ func (c *CreateAdsRequestLeadFormCompletion) GetExtraProperties() map[string]int
 }
 
 func (c *CreateAdsRequestLeadFormCompletion) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetButtonText sets the ButtonText field and marks it as non-optional;
@@ -4325,13 +4512,13 @@ func (c CreateAdsRequestLeadFormCompletionButtonType) Ptr() *CreateAdsRequestLea
 	return &c
 }
 
-// Optional custom consent disclaimer with checkboxes.
 var (
 	createAdsRequestLeadFormDisclaimerFieldBody       = big.NewInt(1 << 0)
 	createAdsRequestLeadFormDisclaimerFieldCheckboxes = big.NewInt(1 << 1)
 	createAdsRequestLeadFormDisclaimerFieldTitle      = big.NewInt(1 << 2)
 )
 
+// Optional custom consent disclaimer with checkboxes.
 type CreateAdsRequestLeadFormDisclaimer struct {
 	Body       *string                                             `json:"body,omitempty" url:"body,omitempty"`
 	Checkboxes []*CreateAdsRequestLeadFormDisclaimerCheckboxesItem `json:"checkboxes,omitempty" url:"checkboxes,omitempty"`
@@ -4373,10 +4560,12 @@ func (c *CreateAdsRequestLeadFormDisclaimer) GetExtraProperties() map[string]int
 }
 
 func (c *CreateAdsRequestLeadFormDisclaimer) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetBody sets the Body field and marks it as non-optional;
@@ -4498,10 +4687,12 @@ func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) GetExtraProperties() 
 }
 
 func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCheckedByDefault sets the CheckedByDefault field and marks it as non-optional;
@@ -4597,12 +4788,12 @@ func (c CreateAdsRequestLeadFormFormType) Ptr() *CreateAdsRequestLeadFormFormTyp
 	return &c
 }
 
-// Optional intro screen shown before the questions.
 var (
 	createAdsRequestLeadFormIntroFieldDescription = big.NewInt(1 << 0)
 	createAdsRequestLeadFormIntroFieldHeadline    = big.NewInt(1 << 1)
 )
 
+// Optional intro screen shown before the questions.
 type CreateAdsRequestLeadFormIntro struct {
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	Headline    *string `json:"headline,omitempty" url:"headline,omitempty"`
@@ -4636,10 +4827,12 @@ func (c *CreateAdsRequestLeadFormIntro) GetExtraProperties() map[string]interfac
 }
 
 func (c *CreateAdsRequestLeadFormIntro) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -4698,12 +4891,12 @@ func (c *CreateAdsRequestLeadFormIntro) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Your privacy policy. url is required by the ad platform.
 var (
 	createAdsRequestLeadFormPrivacyPolicyFieldLinkText = big.NewInt(1 << 0)
 	createAdsRequestLeadFormPrivacyPolicyFieldURL      = big.NewInt(1 << 1)
 )
 
+// Your privacy policy. url is required by the ad platform.
 type CreateAdsRequestLeadFormPrivacyPolicy struct {
 	LinkText *string `json:"link_text,omitempty" url:"link_text,omitempty"`
 	URL      *string `json:"url,omitempty" url:"url,omitempty"`
@@ -4737,10 +4930,12 @@ func (c *CreateAdsRequestLeadFormPrivacyPolicy) GetExtraProperties() map[string]
 }
 
 func (c *CreateAdsRequestLeadFormPrivacyPolicy) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetLinkText sets the LinkText field and marks it as non-optional;
@@ -4855,10 +5050,12 @@ func (c *CreateAdsRequestLeadFormQuestionsItem) GetExtraProperties() map[string]
 }
 
 func (c *CreateAdsRequestLeadFormQuestionsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetFormat sets the Format field and marks it as non-optional;
@@ -5003,10 +5200,12 @@ func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) GetExtraProperties() 
 }
 
 func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetKey sets the Key field and marks it as non-optional;
@@ -5119,10 +5318,12 @@ func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) GetExtraProperti
 }
 
 func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -5292,12 +5493,12 @@ func (c CreateAdsRequestLeadFormQuestionsItemType) Ptr() *CreateAdsRequestLeadFo
 	return &c
 }
 
-// Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
 var (
 	createAdsRequestMessagingConfigFieldKeyword = big.NewInt(1 << 0)
 	createAdsRequestMessagingConfigFieldMessage = big.NewInt(1 << 1)
 )
 
+// Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
 type CreateAdsRequestMessagingConfig struct {
 	Keyword *string `json:"keyword,omitempty" url:"keyword,omitempty"`
 	Message *string `json:"message,omitempty" url:"message,omitempty"`
@@ -5331,10 +5532,12 @@ func (c *CreateAdsRequestMessagingConfig) GetExtraProperties() map[string]interf
 }
 
 func (c *CreateAdsRequestMessagingConfig) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetKeyword sets the Keyword field and marks it as non-optional;
@@ -5393,11 +5596,11 @@ func (c *CreateAdsRequestMessagingConfig) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Required for TikTok carousels (image creatives); TikTok-only.
 var (
 	createAdsRequestMusicFieldID = big.NewInt(1 << 0)
 )
 
+// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Required for TikTok carousels (image creatives); TikTok-only.
 type CreateAdsRequestMusic struct {
 	// Uploaded MP3 file ID, prefixed `file_`.
 	ID string `json:"id" url:"id"`
@@ -5424,10 +5627,12 @@ func (c *CreateAdsRequestMusic) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreateAdsRequestMusic) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5507,6 +5712,11 @@ var (
 	createAdsRequestPrimaryTextsItemFieldText     = big.NewInt(1 << 1)
 )
 
+// createAdsRequestPrimaryTextsItemNullableFields maps the wire names of CreateAdsRequestPrimaryTextsItem's nullable fields (required or optional) to their field bits.
+var createAdsRequestPrimaryTextsItemNullableFields = map[string]*big.Int{
+	"language": createAdsRequestPrimaryTextsItemFieldLanguage,
+}
+
 type CreateAdsRequestPrimaryTextsItem struct {
 	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
 	Language *string `json:"language,omitempty" url:"language,omitempty"`
@@ -5542,10 +5752,12 @@ func (c *CreateAdsRequestPrimaryTextsItem) GetExtraProperties() map[string]inter
 }
 
 func (c *CreateAdsRequestPrimaryTextsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetLanguage sets the Language field and marks it as non-optional;
@@ -5574,6 +5786,13 @@ func (c *CreateAdsRequestPrimaryTextsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAdsRequestPrimaryTextsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5634,10 +5853,12 @@ func (c *CreateAdsRequestSocialAccountsItem) GetExtraProperties() map[string]int
 }
 
 func (c *CreateAdsRequestSocialAccountsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5689,12 +5910,12 @@ func (c *CreateAdsRequestSocialAccountsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
 var (
 	createAdsRequestTranslationsFieldAutomaticLanguages = big.NewInt(1 << 0)
 	createAdsRequestTranslationsFieldSourceLanguage     = big.NewInt(1 << 1)
 )
 
+// Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
 type CreateAdsRequestTranslations struct {
 	// ISO 639 codes Meta translates the ad's own copy into automatically. English copy translates into `es`, `fr`, `de`, `pt`, `it`, `ar`, `nl`, `ms`, `sv`, `id`, `pl`, `hi`, `da`, `tr`, `fil`, and `ro`; `de`, `ar`, `he`, `es`, `ja`, `no`, `fr`, `nl`, and `sv` copy translate into `en`.
 	AutomaticLanguages []string `json:"automatic_languages,omitempty" url:"automatic_languages,omitempty"`
@@ -5730,10 +5951,12 @@ func (c *CreateAdsRequestTranslations) GetExtraProperties() map[string]interface
 }
 
 func (c *CreateAdsRequestTranslations) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAutomaticLanguages sets the AutomaticLanguages field and marks it as non-optional;
@@ -5832,10 +6055,12 @@ func (d *DeleteAdsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAdsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -5923,10 +6148,12 @@ func (d *DuplicateAdsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DuplicateAdsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -6149,10 +6376,12 @@ func (l *ListAdsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAdsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -6218,6 +6447,12 @@ var (
 	listAdsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAdsResponsePageInfoNullableFields maps the wire names of ListAdsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAdsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAdsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAdsResponsePageInfoFieldStartCursor,
+}
+
 type ListAdsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -6267,10 +6502,12 @@ func (l *ListAdsResponsePageInfo) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAdsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -6313,6 +6550,13 @@ func (l *ListAdsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAdsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6353,6 +6597,12 @@ var (
 	postAdUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postAdUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postAdUpdatedPayloadNullableFields maps the wire names of PostAdUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postAdUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAdUpdatedPayloadFieldAccountID,
+	"api_version_date": postAdUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostAdUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -6442,10 +6692,12 @@ func (p *PostAdUpdatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostAdUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -6522,6 +6774,13 @@ func (p *PostAdUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6604,6 +6863,22 @@ var (
 	postAdUpdatedPayloadDataFieldURL                = big.NewInt(1 << 26)
 	postAdUpdatedPayloadDataFieldURLParameters      = big.NewInt(1 << 27)
 )
+
+// postAdUpdatedPayloadDataNullableFields maps the wire names of PostAdUpdatedPayloadData's nullable fields (required or optional) to their field bits.
+var postAdUpdatedPayloadDataNullableFields = map[string]*big.Int{
+	"call_to_action":     postAdUpdatedPayloadDataFieldCallToAction,
+	"existing_post_id":   postAdUpdatedPayloadDataFieldExistingPostID,
+	"lead_form":          postAdUpdatedPayloadDataFieldLeadForm,
+	"lead_form_id":       postAdUpdatedPayloadDataFieldLeadFormID,
+	"messaging_config":   postAdUpdatedPayloadDataFieldMessagingConfig,
+	"music":              postAdUpdatedPayloadDataFieldMusic,
+	"post_id":            postAdUpdatedPayloadDataFieldPostID,
+	"post_source":        postAdUpdatedPayloadDataFieldPostSource,
+	"post_thumbnail_url": postAdUpdatedPayloadDataFieldPostThumbnailURL,
+	"title":              postAdUpdatedPayloadDataFieldTitle,
+	"translations":       postAdUpdatedPayloadDataFieldTranslations,
+	"url":                postAdUpdatedPayloadDataFieldURL,
+}
 
 type PostAdUpdatedPayloadData struct {
 	// The ad campaign this ad belongs to.
@@ -6868,10 +7143,12 @@ func (p *PostAdUpdatedPayloadData) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostAdUpdatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAdCampaign sets the AdCampaign field and marks it as non-optional;
@@ -7082,6 +7359,13 @@ func (p *PostAdUpdatedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdUpdatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7558,10 +7842,12 @@ func (u *UpdateAdsRequestCreativesItem) GetExtraProperties() map[string]interfac
 }
 
 func (u *UpdateAdsRequestCreativesItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCrop sets the Crop field and marks it as non-optional;
@@ -7634,7 +7920,6 @@ func (u *UpdateAdsRequestCreativesItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The saved crop window for this creative, in source image pixels. Omit it for the original asset or for a format that has not been cropped.
 var (
 	updateAdsRequestCreativesItemCropFieldHeight = big.NewInt(1 << 0)
 	updateAdsRequestCreativesItemCropFieldWidth  = big.NewInt(1 << 1)
@@ -7642,6 +7927,7 @@ var (
 	updateAdsRequestCreativesItemCropFieldY      = big.NewInt(1 << 3)
 )
 
+// The saved crop window for this creative, in source image pixels. Omit it for the original asset or for a format that has not been cropped.
 type UpdateAdsRequestCreativesItemCrop struct {
 	Height *float64 `json:"height,omitempty" url:"height,omitempty"`
 	Width  *float64 `json:"width,omitempty" url:"width,omitempty"`
@@ -7691,10 +7977,12 @@ func (u *UpdateAdsRequestCreativesItemCrop) GetExtraProperties() map[string]inte
 }
 
 func (u *UpdateAdsRequestCreativesItemCrop) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetHeight sets the Height field and marks it as non-optional;
@@ -7797,6 +8085,11 @@ var (
 	updateAdsRequestDescriptionsItemFieldText     = big.NewInt(1 << 1)
 )
 
+// updateAdsRequestDescriptionsItemNullableFields maps the wire names of UpdateAdsRequestDescriptionsItem's nullable fields (required or optional) to their field bits.
+var updateAdsRequestDescriptionsItemNullableFields = map[string]*big.Int{
+	"language": updateAdsRequestDescriptionsItemFieldLanguage,
+}
+
 type UpdateAdsRequestDescriptionsItem struct {
 	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
 	Language *string `json:"language,omitempty" url:"language,omitempty"`
@@ -7832,10 +8125,12 @@ func (u *UpdateAdsRequestDescriptionsItem) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateAdsRequestDescriptionsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetLanguage sets the Language field and marks it as non-optional;
@@ -7864,6 +8159,13 @@ func (u *UpdateAdsRequestDescriptionsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAdsRequestDescriptionsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7898,6 +8200,11 @@ var (
 	updateAdsRequestHeadlinesItemFieldLanguage = big.NewInt(1 << 0)
 	updateAdsRequestHeadlinesItemFieldText     = big.NewInt(1 << 1)
 )
+
+// updateAdsRequestHeadlinesItemNullableFields maps the wire names of UpdateAdsRequestHeadlinesItem's nullable fields (required or optional) to their field bits.
+var updateAdsRequestHeadlinesItemNullableFields = map[string]*big.Int{
+	"language": updateAdsRequestHeadlinesItemFieldLanguage,
+}
 
 type UpdateAdsRequestHeadlinesItem struct {
 	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
@@ -7934,10 +8241,12 @@ func (u *UpdateAdsRequestHeadlinesItem) GetExtraProperties() map[string]interfac
 }
 
 func (u *UpdateAdsRequestHeadlinesItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetLanguage sets the Language field and marks it as non-optional;
@@ -7966,6 +8275,13 @@ func (u *UpdateAdsRequestHeadlinesItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAdsRequestHeadlinesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7996,7 +8312,6 @@ func (u *UpdateAdsRequestHeadlinesItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
 var (
 	updateAdsRequestLeadFormFieldCompletion        = big.NewInt(1 << 0)
 	updateAdsRequestLeadFormFieldDisclaimer        = big.NewInt(1 << 1)
@@ -8008,6 +8323,7 @@ var (
 	updateAdsRequestLeadFormFieldQuestions         = big.NewInt(1 << 7)
 )
 
+// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
 type UpdateAdsRequestLeadForm struct {
 	// Optional completion screen shown after submission. Its button needs a destination: url for button_type website (the default), phone_number for call, file_url for download.
 	Completion *UpdateAdsRequestLeadFormCompletion `json:"completion,omitempty" url:"completion,omitempty"`
@@ -8097,10 +8413,12 @@ func (u *UpdateAdsRequestLeadForm) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateAdsRequestLeadForm) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCompletion sets the Completion field and marks it as non-optional;
@@ -8201,7 +8519,6 @@ func (u *UpdateAdsRequestLeadForm) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Optional completion screen shown after submission. Its button needs a destination: url for button_type website (the default), phone_number for call, file_url for download.
 var (
 	updateAdsRequestLeadFormCompletionFieldButtonText  = big.NewInt(1 << 0)
 	updateAdsRequestLeadFormCompletionFieldButtonType  = big.NewInt(1 << 1)
@@ -8212,6 +8529,7 @@ var (
 	updateAdsRequestLeadFormCompletionFieldURL         = big.NewInt(1 << 6)
 )
 
+// Optional completion screen shown after submission. Its button needs a destination: url for button_type website (the default), phone_number for call, file_url for download.
 type UpdateAdsRequestLeadFormCompletion struct {
 	ButtonText  *string                                       `json:"button_text,omitempty" url:"button_text,omitempty"`
 	ButtonType  *UpdateAdsRequestLeadFormCompletionButtonType `json:"button_type,omitempty" url:"button_type,omitempty"`
@@ -8285,10 +8603,12 @@ func (u *UpdateAdsRequestLeadFormCompletion) GetExtraProperties() map[string]int
 }
 
 func (u *UpdateAdsRequestLeadFormCompletion) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetButtonText sets the ButtonText field and marks it as non-optional;
@@ -8407,13 +8727,13 @@ func (u UpdateAdsRequestLeadFormCompletionButtonType) Ptr() *UpdateAdsRequestLea
 	return &u
 }
 
-// Optional custom consent disclaimer with checkboxes.
 var (
 	updateAdsRequestLeadFormDisclaimerFieldBody       = big.NewInt(1 << 0)
 	updateAdsRequestLeadFormDisclaimerFieldCheckboxes = big.NewInt(1 << 1)
 	updateAdsRequestLeadFormDisclaimerFieldTitle      = big.NewInt(1 << 2)
 )
 
+// Optional custom consent disclaimer with checkboxes.
 type UpdateAdsRequestLeadFormDisclaimer struct {
 	Body       *string                                             `json:"body,omitempty" url:"body,omitempty"`
 	Checkboxes []*UpdateAdsRequestLeadFormDisclaimerCheckboxesItem `json:"checkboxes,omitempty" url:"checkboxes,omitempty"`
@@ -8455,10 +8775,12 @@ func (u *UpdateAdsRequestLeadFormDisclaimer) GetExtraProperties() map[string]int
 }
 
 func (u *UpdateAdsRequestLeadFormDisclaimer) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBody sets the Body field and marks it as non-optional;
@@ -8580,10 +8902,12 @@ func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) GetExtraProperties() 
 }
 
 func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCheckedByDefault sets the CheckedByDefault field and marks it as non-optional;
@@ -8679,12 +9003,12 @@ func (u UpdateAdsRequestLeadFormFormType) Ptr() *UpdateAdsRequestLeadFormFormTyp
 	return &u
 }
 
-// Optional intro screen shown before the questions.
 var (
 	updateAdsRequestLeadFormIntroFieldDescription = big.NewInt(1 << 0)
 	updateAdsRequestLeadFormIntroFieldHeadline    = big.NewInt(1 << 1)
 )
 
+// Optional intro screen shown before the questions.
 type UpdateAdsRequestLeadFormIntro struct {
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	Headline    *string `json:"headline,omitempty" url:"headline,omitempty"`
@@ -8718,10 +9042,12 @@ func (u *UpdateAdsRequestLeadFormIntro) GetExtraProperties() map[string]interfac
 }
 
 func (u *UpdateAdsRequestLeadFormIntro) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -8780,12 +9106,12 @@ func (u *UpdateAdsRequestLeadFormIntro) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Your privacy policy. url is required by the ad platform.
 var (
 	updateAdsRequestLeadFormPrivacyPolicyFieldLinkText = big.NewInt(1 << 0)
 	updateAdsRequestLeadFormPrivacyPolicyFieldURL      = big.NewInt(1 << 1)
 )
 
+// Your privacy policy. url is required by the ad platform.
 type UpdateAdsRequestLeadFormPrivacyPolicy struct {
 	LinkText *string `json:"link_text,omitempty" url:"link_text,omitempty"`
 	URL      *string `json:"url,omitempty" url:"url,omitempty"`
@@ -8819,10 +9145,12 @@ func (u *UpdateAdsRequestLeadFormPrivacyPolicy) GetExtraProperties() map[string]
 }
 
 func (u *UpdateAdsRequestLeadFormPrivacyPolicy) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetLinkText sets the LinkText field and marks it as non-optional;
@@ -8937,10 +9265,12 @@ func (u *UpdateAdsRequestLeadFormQuestionsItem) GetExtraProperties() map[string]
 }
 
 func (u *UpdateAdsRequestLeadFormQuestionsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFormat sets the Format field and marks it as non-optional;
@@ -9085,10 +9415,12 @@ func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) GetExtraProperties() 
 }
 
 func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetKey sets the Key field and marks it as non-optional;
@@ -9201,10 +9533,12 @@ func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) GetExtraProperti
 }
 
 func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -9374,12 +9708,12 @@ func (u UpdateAdsRequestLeadFormQuestionsItemType) Ptr() *UpdateAdsRequestLeadFo
 	return &u
 }
 
-// Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
 var (
 	updateAdsRequestMessagingConfigFieldKeyword = big.NewInt(1 << 0)
 	updateAdsRequestMessagingConfigFieldMessage = big.NewInt(1 << 1)
 )
 
+// Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
 type UpdateAdsRequestMessagingConfig struct {
 	Keyword *string `json:"keyword,omitempty" url:"keyword,omitempty"`
 	Message *string `json:"message,omitempty" url:"message,omitempty"`
@@ -9413,10 +9747,12 @@ func (u *UpdateAdsRequestMessagingConfig) GetExtraProperties() map[string]interf
 }
 
 func (u *UpdateAdsRequestMessagingConfig) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetKeyword sets the Keyword field and marks it as non-optional;
@@ -9475,11 +9811,11 @@ func (u *UpdateAdsRequestMessagingConfig) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Omitted leaves the ad's music untouched. Null removes it before launch; a submitted carousel takes a replacement track instead. TikTok-only.
 var (
 	updateAdsRequestMusicFieldID = big.NewInt(1 << 0)
 )
 
+// The looping track a TikTok carousel ad plays — an MP3 you uploaded, no larger than 10MB. Omitted leaves the ad's music untouched. Null removes it before launch; a submitted carousel takes a replacement track instead. TikTok-only.
 type UpdateAdsRequestMusic struct {
 	// Uploaded MP3 file ID, prefixed `file_`.
 	ID string `json:"id" url:"id"`
@@ -9506,10 +9842,12 @@ func (u *UpdateAdsRequestMusic) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateAdsRequestMusic) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -9589,6 +9927,11 @@ var (
 	updateAdsRequestPrimaryTextsItemFieldText     = big.NewInt(1 << 1)
 )
 
+// updateAdsRequestPrimaryTextsItemNullableFields maps the wire names of UpdateAdsRequestPrimaryTextsItem's nullable fields (required or optional) to their field bits.
+var updateAdsRequestPrimaryTextsItemNullableFields = map[string]*big.Int{
+	"language": updateAdsRequestPrimaryTextsItemFieldLanguage,
+}
+
 type UpdateAdsRequestPrimaryTextsItem struct {
 	// ISO 639 code of the language this text is in, such as `es`. Required on every entry of an ad with `translations`, where the ad's own copy uses `translations.source_language`. Leave it out on an ad without translations.
 	Language *string `json:"language,omitempty" url:"language,omitempty"`
@@ -9624,10 +9967,12 @@ func (u *UpdateAdsRequestPrimaryTextsItem) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateAdsRequestPrimaryTextsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetLanguage sets the Language field and marks it as non-optional;
@@ -9656,6 +10001,13 @@ func (u *UpdateAdsRequestPrimaryTextsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAdsRequestPrimaryTextsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9716,10 +10068,12 @@ func (u *UpdateAdsRequestSocialAccountsItem) GetExtraProperties() map[string]int
 }
 
 func (u *UpdateAdsRequestSocialAccountsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -9771,12 +10125,12 @@ func (u *UpdateAdsRequestSocialAccountsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
 var (
 	updateAdsRequestTranslationsFieldAutomaticLanguages = big.NewInt(1 << 0)
 	updateAdsRequestTranslationsFieldSourceLanguage     = big.NewInt(1 << 1)
 )
 
+// Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
 type UpdateAdsRequestTranslations struct {
 	// ISO 639 codes Meta translates the ad's own copy into automatically. English copy translates into `es`, `fr`, `de`, `pt`, `it`, `ar`, `nl`, `ms`, `sv`, `id`, `pl`, `hi`, `da`, `tr`, `fil`, and `ro`; `de`, `ar`, `he`, `es`, `ja`, `no`, `fr`, `nl`, and `sv` copy translate into `en`.
 	AutomaticLanguages []string `json:"automatic_languages,omitempty" url:"automatic_languages,omitempty"`
@@ -9812,10 +10166,12 @@ func (u *UpdateAdsRequestTranslations) GetExtraProperties() map[string]interface
 }
 
 func (u *UpdateAdsRequestTranslations) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAutomaticLanguages sets the AutomaticLanguages field and marks it as non-optional;
@@ -9887,10 +10243,12 @@ type UnpauseAdsRequest struct {
 }
 
 func (u *UnpauseAdsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -9964,10 +10322,12 @@ type UpdateAdsRequest struct {
 }
 
 func (u *UpdateAdsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

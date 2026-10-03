@@ -50,10 +50,12 @@ type CreateOauthGrantsRequest struct {
 }
 
 func (c *CreateOauthGrantsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -178,10 +180,12 @@ type ListOauthGrantsRequest struct {
 }
 
 func (l *ListOauthGrantsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAppID sets the AppID field and marks it as non-optional;
@@ -352,10 +356,12 @@ func (l *ListOauthGrantsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListOauthGrantsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -421,6 +427,12 @@ var (
 	listOauthGrantsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listOauthGrantsResponsePageInfoNullableFields maps the wire names of ListOauthGrantsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listOauthGrantsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listOauthGrantsResponsePageInfoFieldEndCursor,
+	"start_cursor": listOauthGrantsResponsePageInfoFieldStartCursor,
+}
+
 type ListOauthGrantsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -470,10 +482,12 @@ func (l *ListOauthGrantsResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListOauthGrantsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -516,6 +530,13 @@ func (l *ListOauthGrantsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listOauthGrantsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

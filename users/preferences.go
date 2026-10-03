@@ -27,10 +27,12 @@ type UpdatePreferencesRequest struct {
 }
 
 func (u *UpdatePreferencesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBountyWorkerOnboardingDismissed sets the BountyWorkerOnboardingDismissed field and marks it as non-optional;

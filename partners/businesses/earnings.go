@@ -54,10 +54,12 @@ type ListEarningsRequest struct {
 }
 
 func (l *ListEarningsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -293,10 +295,12 @@ func (l *ListEarningsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListEarningsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -373,6 +377,20 @@ var (
 	listEarningsResponseDataItemFieldStatus                       = big.NewInt(1 << 14)
 	listEarningsResponseDataItemFieldTransactionAmountUsd         = big.NewInt(1 << 15)
 )
+
+// listEarningsResponseDataItemNullableFields maps the wire names of ListEarningsResponseDataItem's nullable fields (required or optional) to their field bits.
+var listEarningsResponseDataItemNullableFields = map[string]*big.Int{
+	"account":                         listEarningsResponseDataItemFieldAccount,
+	"cancelation_reason":              listEarningsResponseDataItemFieldCancelationReason,
+	"commission_amount_usd":           listEarningsResponseDataItemFieldCommissionAmountUsd,
+	"financial_activity":              listEarningsResponseDataItemFieldFinancialActivity,
+	"id":                              listEarningsResponseDataItemFieldID,
+	"payout_at":                       listEarningsResponseDataItemFieldPayoutAt,
+	"payout_percentage":               listEarningsResponseDataItemFieldPayoutPercentage,
+	"product":                         listEarningsResponseDataItemFieldProduct,
+	"projected_commission_amount_usd": listEarningsResponseDataItemFieldProjectedCommissionAmountUsd,
+	"resource":                        listEarningsResponseDataItemFieldResource,
+}
 
 type ListEarningsResponseDataItem struct {
 	// Referred account.
@@ -530,10 +548,12 @@ func (l *ListEarningsResponseDataItem) GetExtraProperties() map[string]interface
 }
 
 func (l *ListEarningsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -668,6 +688,13 @@ func (l *ListEarningsResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEarningsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -702,7 +729,6 @@ func (l *ListEarningsResponseDataItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Referred account.
 var (
 	listEarningsResponseDataItemAccountFieldID      = big.NewInt(1 << 0)
 	listEarningsResponseDataItemAccountFieldLogoURL = big.NewInt(1 << 1)
@@ -710,6 +736,12 @@ var (
 	listEarningsResponseDataItemAccountFieldTitle   = big.NewInt(1 << 3)
 )
 
+// listEarningsResponseDataItemAccountNullableFields maps the wire names of ListEarningsResponseDataItemAccount's nullable fields (required or optional) to their field bits.
+var listEarningsResponseDataItemAccountNullableFields = map[string]*big.Int{
+	"logo_url": listEarningsResponseDataItemAccountFieldLogoURL,
+}
+
+// Referred account.
 type ListEarningsResponseDataItemAccount struct {
 	// Referred account ID.
 	ID string `json:"id" url:"id"`
@@ -763,10 +795,12 @@ func (l *ListEarningsResponseDataItemAccount) GetExtraProperties() map[string]in
 }
 
 func (l *ListEarningsResponseDataItemAccount) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -809,6 +843,13 @@ func (l *ListEarningsResponseDataItemAccount) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEarningsResponseDataItemAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -847,6 +888,12 @@ var (
 	listEarningsResponseDataItemFinancialActivityItemFieldCurrency  = big.NewInt(1 << 4)
 	listEarningsResponseDataItemFinancialActivityItemFieldType      = big.NewInt(1 << 5)
 )
+
+// listEarningsResponseDataItemFinancialActivityItemNullableFields maps the wire names of ListEarningsResponseDataItemFinancialActivityItem's nullable fields (required or optional) to their field bits.
+var listEarningsResponseDataItemFinancialActivityItemNullableFields = map[string]*big.Int{
+	"category":   listEarningsResponseDataItemFinancialActivityItemFieldCategory,
+	"created_at": listEarningsResponseDataItemFinancialActivityItemFieldCreatedAt,
+}
 
 type ListEarningsResponseDataItemFinancialActivityItem struct {
 	// Line amount in its native currency.
@@ -918,10 +965,12 @@ func (l *ListEarningsResponseDataItemFinancialActivityItem) GetExtraProperties()
 }
 
 func (l *ListEarningsResponseDataItemFinancialActivityItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -984,6 +1033,13 @@ func (l *ListEarningsResponseDataItemFinancialActivityItem) UnmarshalJSON(data [
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEarningsResponseDataItemFinancialActivityItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1143,10 +1199,12 @@ func (l *ListEarningsResponseDataItemProduct) GetExtraProperties() map[string]in
 }
 
 func (l *ListEarningsResponseDataItemProduct) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1265,6 +1323,70 @@ func (l *ListEarningsResponseDataItemResource) UnmarshalJSON(data []byte) error 
 		l.ListEarningsResponseDataItemResourceAlternativePaymentMethodOptional = valueListEarningsResponseDataItemResourceAlternativePaymentMethodOptional
 		return nil
 	}
+	if internal.MatchesObjectKeys(data, []string{"created_at", "currency", "id", "object"}, []string{"created_at", "currency", "id", "object"}) {
+		valueListEarningsResponseDataItemResourceOne := new(ListEarningsResponseDataItemResourceOne)
+		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceOne); err == nil {
+			l.typ = "ListEarningsResponseDataItemResourceOne"
+			l.ListEarningsResponseDataItemResourceOne = valueListEarningsResponseDataItemResourceOne
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"created_at", "currency", "id", "merchant_name", "object"}, []string{"created_at", "id", "object"}) {
+		valueListEarningsResponseDataItemResourceCurrency := new(ListEarningsResponseDataItemResourceCurrency)
+		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceCurrency); err == nil {
+			l.typ = "ListEarningsResponseDataItemResourceCurrency"
+			l.ListEarningsResponseDataItemResourceCurrency = valueListEarningsResponseDataItemResourceCurrency
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"business_id", "created_at", "id", "object", "slug"}, []string{"business_id", "created_at", "object"}) {
+		valueListEarningsResponseDataItemResourceSlug := new(ListEarningsResponseDataItemResourceSlug)
+		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceSlug); err == nil {
+			l.typ = "ListEarningsResponseDataItemResourceSlug"
+			l.ListEarningsResponseDataItemResourceSlug = valueListEarningsResponseDataItemResourceSlug
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"business_id", "created_at", "id", "object"}, []string{"business_id", "created_at", "id", "object"}) {
+		valueListEarningsResponseDataItemResourceCreatedAt := new(ListEarningsResponseDataItemResourceCreatedAt)
+		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceCreatedAt); err == nil {
+			l.typ = "ListEarningsResponseDataItemResourceCreatedAt"
+			l.ListEarningsResponseDataItemResourceCreatedAt = valueListEarningsResponseDataItemResourceCreatedAt
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"created_at", "currency", "id", "object"}) {
+		valueListEarningsResponseDataItemResourceOne := new(ListEarningsResponseDataItemResourceOne)
+		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceOne); err == nil {
+			l.typ = "ListEarningsResponseDataItemResourceOne"
+			l.ListEarningsResponseDataItemResourceOne = valueListEarningsResponseDataItemResourceOne
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"created_at", "id", "object"}) {
+		valueListEarningsResponseDataItemResourceCurrency := new(ListEarningsResponseDataItemResourceCurrency)
+		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceCurrency); err == nil {
+			l.typ = "ListEarningsResponseDataItemResourceCurrency"
+			l.ListEarningsResponseDataItemResourceCurrency = valueListEarningsResponseDataItemResourceCurrency
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"business_id", "created_at", "object"}) {
+		valueListEarningsResponseDataItemResourceSlug := new(ListEarningsResponseDataItemResourceSlug)
+		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceSlug); err == nil {
+			l.typ = "ListEarningsResponseDataItemResourceSlug"
+			l.ListEarningsResponseDataItemResourceSlug = valueListEarningsResponseDataItemResourceSlug
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"business_id", "created_at", "id", "object"}) {
+		valueListEarningsResponseDataItemResourceCreatedAt := new(ListEarningsResponseDataItemResourceCreatedAt)
+		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceCreatedAt); err == nil {
+			l.typ = "ListEarningsResponseDataItemResourceCreatedAt"
+			l.ListEarningsResponseDataItemResourceCreatedAt = valueListEarningsResponseDataItemResourceCreatedAt
+			return nil
+		}
+	}
 	valueListEarningsResponseDataItemResourceOne := new(ListEarningsResponseDataItemResourceOne)
 	if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceOne); err == nil {
 		l.typ = "ListEarningsResponseDataItemResourceOne"
@@ -1349,6 +1471,15 @@ var (
 	listEarningsResponseDataItemResourceAlternativePaymentMethodFieldPaymentMethodType        = big.NewInt(1 << 7)
 	listEarningsResponseDataItemResourceAlternativePaymentMethodFieldProcessor                = big.NewInt(1 << 8)
 )
+
+// listEarningsResponseDataItemResourceAlternativePaymentMethodNullableFields maps the wire names of ListEarningsResponseDataItemResourceAlternativePaymentMethod's nullable fields (required or optional) to their field bits.
+var listEarningsResponseDataItemResourceAlternativePaymentMethodNullableFields = map[string]*big.Int{
+	"alternative_payment_method": listEarningsResponseDataItemResourceAlternativePaymentMethodFieldAlternativePaymentMethod,
+	"brand":                      listEarningsResponseDataItemResourceAlternativePaymentMethodFieldBrand,
+	"last4":                      listEarningsResponseDataItemResourceAlternativePaymentMethodFieldLast4,
+	"payment_method_type":        listEarningsResponseDataItemResourceAlternativePaymentMethodFieldPaymentMethodType,
+	"processor":                  listEarningsResponseDataItemResourceAlternativePaymentMethodFieldProcessor,
+}
 
 type ListEarningsResponseDataItemResourceAlternativePaymentMethod struct {
 	AlternativePaymentMethod *ListEarningsResponseDataItemResourceAlternativePaymentMethodAlternativePaymentMethod `json:"alternative_payment_method,omitempty" url:"alternative_payment_method,omitempty"`
@@ -1439,10 +1570,12 @@ func (l *ListEarningsResponseDataItemResourceAlternativePaymentMethod) GetExtraP
 }
 
 func (l *ListEarningsResponseDataItemResourceAlternativePaymentMethod) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAlternativePaymentMethod sets the AlternativePaymentMethod field and marks it as non-optional;
@@ -1526,6 +1659,13 @@ func (l *ListEarningsResponseDataItemResourceAlternativePaymentMethod) Unmarshal
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEarningsResponseDataItemResourceAlternativePaymentMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1563,6 +1703,11 @@ var (
 	listEarningsResponseDataItemResourceAlternativePaymentMethodAlternativePaymentMethodFieldName     = big.NewInt(1 << 1)
 )
 
+// listEarningsResponseDataItemResourceAlternativePaymentMethodAlternativePaymentMethodNullableFields maps the wire names of ListEarningsResponseDataItemResourceAlternativePaymentMethodAlternativePaymentMethod's nullable fields (required or optional) to their field bits.
+var listEarningsResponseDataItemResourceAlternativePaymentMethodAlternativePaymentMethodNullableFields = map[string]*big.Int{
+	"image_url": listEarningsResponseDataItemResourceAlternativePaymentMethodAlternativePaymentMethodFieldImageURL,
+}
+
 type ListEarningsResponseDataItemResourceAlternativePaymentMethodAlternativePaymentMethod struct {
 	ImageURL *string `json:"image_url,omitempty" url:"image_url,omitempty"`
 	Name     string  `json:"name" url:"name"`
@@ -1596,10 +1741,12 @@ func (l *ListEarningsResponseDataItemResourceAlternativePaymentMethodAlternative
 }
 
 func (l *ListEarningsResponseDataItemResourceAlternativePaymentMethodAlternativePaymentMethod) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetImageURL sets the ImageURL field and marks it as non-optional;
@@ -1628,6 +1775,13 @@ func (l *ListEarningsResponseDataItemResourceAlternativePaymentMethodAlternative
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEarningsResponseDataItemResourceAlternativePaymentMethodAlternativePaymentMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1735,10 +1889,12 @@ func (l *ListEarningsResponseDataItemResourceCreatedAt) GetExtraProperties() map
 }
 
 func (l *ListEarningsResponseDataItemResourceCreatedAt) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBusinessID sets the BusinessID field and marks it as non-optional;
@@ -1846,6 +2002,12 @@ var (
 	listEarningsResponseDataItemResourceCurrencyFieldObject       = big.NewInt(1 << 4)
 )
 
+// listEarningsResponseDataItemResourceCurrencyNullableFields maps the wire names of ListEarningsResponseDataItemResourceCurrency's nullable fields (required or optional) to their field bits.
+var listEarningsResponseDataItemResourceCurrencyNullableFields = map[string]*big.Int{
+	"currency":      listEarningsResponseDataItemResourceCurrencyFieldCurrency,
+	"merchant_name": listEarningsResponseDataItemResourceCurrencyFieldMerchantName,
+}
+
 type ListEarningsResponseDataItemResourceCurrency struct {
 	CreatedAt    time.Time                                          `json:"created_at" url:"created_at"`
 	Currency     *string                                            `json:"currency,omitempty" url:"currency,omitempty"`
@@ -1903,10 +2065,12 @@ func (l *ListEarningsResponseDataItemResourceCurrency) GetExtraProperties() map[
 }
 
 func (l *ListEarningsResponseDataItemResourceCurrency) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -1962,6 +2126,13 @@ func (l *ListEarningsResponseDataItemResourceCurrency) UnmarshalJSON(data []byte
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEarningsResponseDataItemResourceCurrencyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2069,10 +2240,12 @@ func (l *ListEarningsResponseDataItemResourceOne) GetExtraProperties() map[strin
 }
 
 func (l *ListEarningsResponseDataItemResourceOne) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -2180,6 +2353,12 @@ var (
 	listEarningsResponseDataItemResourceSlugFieldSlug       = big.NewInt(1 << 4)
 )
 
+// listEarningsResponseDataItemResourceSlugNullableFields maps the wire names of ListEarningsResponseDataItemResourceSlug's nullable fields (required or optional) to their field bits.
+var listEarningsResponseDataItemResourceSlugNullableFields = map[string]*big.Int{
+	"id":   listEarningsResponseDataItemResourceSlugFieldID,
+	"slug": listEarningsResponseDataItemResourceSlugFieldSlug,
+}
+
 type ListEarningsResponseDataItemResourceSlug struct {
 	// The referred business that qualified.
 	BusinessID string    `json:"business_id" url:"business_id"`
@@ -2240,10 +2419,12 @@ func (l *ListEarningsResponseDataItemResourceSlug) GetExtraProperties() map[stri
 }
 
 func (l *ListEarningsResponseDataItemResourceSlug) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBusinessID sets the BusinessID field and marks it as non-optional;
@@ -2299,6 +2480,13 @@ func (l *ListEarningsResponseDataItemResourceSlug) UnmarshalJSON(data []byte) er
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEarningsResponseDataItemResourceSlugNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2389,6 +2577,12 @@ var (
 	listEarningsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listEarningsResponsePageInfoNullableFields maps the wire names of ListEarningsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listEarningsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listEarningsResponsePageInfoFieldEndCursor,
+	"start_cursor": listEarningsResponsePageInfoFieldStartCursor,
+}
+
 type ListEarningsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2438,10 +2632,12 @@ func (l *ListEarningsResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListEarningsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2484,6 +2680,13 @@ func (l *ListEarningsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listEarningsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

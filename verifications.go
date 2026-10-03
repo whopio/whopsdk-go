@@ -27,10 +27,12 @@ type CreateVerificationsRequest struct {
 }
 
 func (c *CreateVerificationsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -82,10 +84,12 @@ type ListVerificationsRequest struct {
 }
 
 func (l *ListVerificationsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -129,10 +133,12 @@ type RetrieveVerificationsRequest struct {
 }
 
 func (r *RetrieveVerificationsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -272,7 +278,6 @@ func (c *CreateVerificationsRequestBody) validate() error {
 	return nil
 }
 
-// Request body for a business entity (KYB) verification. Set `kind` to `business`. KYB includes everything KYC provides and additionally unlocks financing options for payments and business Whop Cards.
 var (
 	createVerificationsRequestBodyBusinessFieldAddress                         = big.NewInt(1 << 0)
 	createVerificationsRequestBodyBusinessFieldBusinessName                    = big.NewInt(1 << 1)
@@ -289,6 +294,7 @@ var (
 	createVerificationsRequestBodyBusinessFieldVerificationID                  = big.NewInt(1 << 12)
 )
 
+// Request body for a business entity (KYB) verification. Set `kind` to `business`. KYB includes everything KYC provides and additionally unlocks financing options for payments and business Whop Cards.
 type CreateVerificationsRequestBodyBusiness struct {
 	// Every value accepts `null`, so a form seeded from a previous response can round-trip unset fields unchanged.
 	Address *CreateVerificationsRequestBodyBusinessAddress `json:"address,omitempty" url:"address,omitempty"`
@@ -423,10 +429,12 @@ func (c *CreateVerificationsRequestBodyBusiness) GetExtraProperties() map[string
 }
 
 func (c *CreateVerificationsRequestBodyBusiness) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -562,7 +570,6 @@ func (c *CreateVerificationsRequestBodyBusiness) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Every value accepts `null`, so a form seeded from a previous response can round-trip unset fields unchanged.
 var (
 	createVerificationsRequestBodyBusinessAddressFieldCity       = big.NewInt(1 << 0)
 	createVerificationsRequestBodyBusinessAddressFieldCountry    = big.NewInt(1 << 1)
@@ -572,6 +579,17 @@ var (
 	createVerificationsRequestBodyBusinessAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// createVerificationsRequestBodyBusinessAddressNullableFields maps the wire names of CreateVerificationsRequestBodyBusinessAddress's nullable fields (required or optional) to their field bits.
+var createVerificationsRequestBodyBusinessAddressNullableFields = map[string]*big.Int{
+	"city":        createVerificationsRequestBodyBusinessAddressFieldCity,
+	"country":     createVerificationsRequestBodyBusinessAddressFieldCountry,
+	"line1":       createVerificationsRequestBodyBusinessAddressFieldLine1,
+	"line2":       createVerificationsRequestBodyBusinessAddressFieldLine2,
+	"postal_code": createVerificationsRequestBodyBusinessAddressFieldPostalCode,
+	"state":       createVerificationsRequestBodyBusinessAddressFieldState,
+}
+
+// Every value accepts `null`, so a form seeded from a previous response can round-trip unset fields unchanged.
 type CreateVerificationsRequestBodyBusinessAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
@@ -642,10 +660,12 @@ func (c *CreateVerificationsRequestBodyBusinessAddress) GetExtraProperties() map
 }
 
 func (c *CreateVerificationsRequestBodyBusinessAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -702,6 +722,13 @@ func (c *CreateVerificationsRequestBodyBusinessAddress) UnmarshalJSON(data []byt
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createVerificationsRequestBodyBusinessAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -732,9 +759,6 @@ func (c *CreateVerificationsRequestBodyBusinessAddress) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Request body for an individual (KYC) verification. Omit `kind` or set it to `individual`. KYC is required to pay out funds and is a prerequisite for Whop Card access. Accepting payments does not require verification until a business reaches $5000 in payments.
-//
-// Add `business_name` and `business_structure` if the individual operates under a business entity — this enables payouts to be received by a business bank account. `country` is always the individual's own country, and the supported `business_structure` values vary by it — see [Business structures](/developer/verification/business-structures).
 var (
 	createVerificationsRequestBodyIndividualFieldAddress                         = big.NewInt(1 << 0)
 	createVerificationsRequestBodyIndividualFieldBusinessName                    = big.NewInt(1 << 1)
@@ -753,6 +777,9 @@ var (
 	createVerificationsRequestBodyIndividualFieldVerificationID                  = big.NewInt(1 << 14)
 )
 
+// Request body for an individual (KYC) verification. Omit `kind` or set it to `individual`. KYC is required to pay out funds and is a prerequisite for Whop Card access. Accepting payments does not require verification until a business reaches $5000 in payments.
+//
+// Add `business_name` and `business_structure` if the individual operates under a business entity — this enables payouts to be received by a business bank account. `country` is always the individual's own country, and the supported `business_structure` values vary by it — see [Business structures](/developer/verification/business-structures).
 type CreateVerificationsRequestBodyIndividual struct {
 	// Every value accepts `null`, so a form seeded from a previous response can round-trip unset fields unchanged.
 	Address *CreateVerificationsRequestBodyIndividualAddress `json:"address,omitempty" url:"address,omitempty"`
@@ -902,10 +929,12 @@ func (c *CreateVerificationsRequestBodyIndividual) GetExtraProperties() map[stri
 }
 
 func (c *CreateVerificationsRequestBodyIndividual) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -1055,7 +1084,6 @@ func (c *CreateVerificationsRequestBodyIndividual) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Every value accepts `null`, so a form seeded from a previous response can round-trip unset fields unchanged.
 var (
 	createVerificationsRequestBodyIndividualAddressFieldCity       = big.NewInt(1 << 0)
 	createVerificationsRequestBodyIndividualAddressFieldCountry    = big.NewInt(1 << 1)
@@ -1065,6 +1093,17 @@ var (
 	createVerificationsRequestBodyIndividualAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// createVerificationsRequestBodyIndividualAddressNullableFields maps the wire names of CreateVerificationsRequestBodyIndividualAddress's nullable fields (required or optional) to their field bits.
+var createVerificationsRequestBodyIndividualAddressNullableFields = map[string]*big.Int{
+	"city":        createVerificationsRequestBodyIndividualAddressFieldCity,
+	"country":     createVerificationsRequestBodyIndividualAddressFieldCountry,
+	"line1":       createVerificationsRequestBodyIndividualAddressFieldLine1,
+	"line2":       createVerificationsRequestBodyIndividualAddressFieldLine2,
+	"postal_code": createVerificationsRequestBodyIndividualAddressFieldPostalCode,
+	"state":       createVerificationsRequestBodyIndividualAddressFieldState,
+}
+
+// Every value accepts `null`, so a form seeded from a previous response can round-trip unset fields unchanged.
 type CreateVerificationsRequestBodyIndividualAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
@@ -1135,10 +1174,12 @@ func (c *CreateVerificationsRequestBodyIndividualAddress) GetExtraProperties() m
 }
 
 func (c *CreateVerificationsRequestBodyIndividualAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1195,6 +1236,13 @@ func (c *CreateVerificationsRequestBodyIndividualAddress) UnmarshalJSON(data []b
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createVerificationsRequestBodyIndividualAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1254,7 +1302,6 @@ func (c CreateVerificationsRequestBodyIndividualDocumentType) Ptr() *CreateVerif
 	return &c
 }
 
-// Identity document files, each value the file's raw bytes base64-encoded (JPEG, PNG, or PDF, up to 5MB per file before encoding). Sending this object verifies the person from the files in this request instead of a hosted session — individual verifications only, and the request must also carry `document_type`, `first_name`, `last_name`, `date_of_birth`, `country`, `phone`, `tax_identification_number`, and an `address` with `line1`, `city`, `state`, and `postal_code`. Send every slot for your `document_type` — a missing or rejected file fails the whole request and nothing is submitted; review starts automatically once every document is accepted. See [Identity documents](/developer/verification/identity-documents) for a full walkthrough.
 var (
 	createVerificationsRequestBodyIndividualDocumentsFieldDriversBack          = big.NewInt(1 << 0)
 	createVerificationsRequestBodyIndividualDocumentsFieldDriversFront         = big.NewInt(1 << 1)
@@ -1266,6 +1313,7 @@ var (
 	createVerificationsRequestBodyIndividualDocumentsFieldSelfie               = big.NewInt(1 << 7)
 )
 
+// Identity document files, each value the file's raw bytes base64-encoded (JPEG, PNG, or PDF, up to 5MB per file before encoding). Sending this object verifies the person from the files in this request instead of a hosted session — individual verifications only, and the request must also carry `document_type`, `first_name`, `last_name`, `date_of_birth`, `country`, `phone`, `tax_identification_number`, and an `address` with `line1`, `city`, `state`, and `postal_code`. Send every slot for your `document_type` — a missing or rejected file fails the whole request and nothing is submitted; review starts automatically once every document is accepted. See [Identity documents](/developer/verification/identity-documents) for a full walkthrough.
 type CreateVerificationsRequestBodyIndividualDocuments struct {
 	// Back of the driver's license, base64-encoded. Required when `document_type` is `DRIVERS`.
 	DriversBack *string `json:"drivers_back,omitempty" url:"drivers_back,omitempty"`
@@ -1355,10 +1403,12 @@ func (c *CreateVerificationsRequestBodyIndividualDocuments) GetExtraProperties()
 }
 
 func (c *CreateVerificationsRequestBodyIndividualDocuments) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDriversBack sets the DriversBack field and marks it as non-optional;
@@ -1478,6 +1528,20 @@ var (
 	createVerificationsResponseFieldStatus               = big.NewInt(1 << 15)
 	createVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 16)
 )
+
+// createVerificationsResponseNullableFields maps the wire names of CreateVerificationsResponse's nullable fields (required or optional) to their field bits.
+var createVerificationsResponseNullableFields = map[string]*big.Int{
+	"address":            createVerificationsResponseFieldAddress,
+	"business_name":      createVerificationsResponseFieldBusinessName,
+	"business_structure": createVerificationsResponseFieldBusinessStructure,
+	"country":            createVerificationsResponseFieldCountry,
+	"date_of_birth":      createVerificationsResponseFieldDateOfBirth,
+	"email":              createVerificationsResponseFieldEmail,
+	"first_name":         createVerificationsResponseFieldFirstName,
+	"last_name":          createVerificationsResponseFieldLastName,
+	"phone":              createVerificationsResponseFieldPhone,
+	"session_url":        createVerificationsResponseFieldSessionURL,
+}
 
 type CreateVerificationsResponse struct {
 	// Address on the verification profile. `null` when no address is set.
@@ -1646,10 +1710,12 @@ func (c *CreateVerificationsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (c *CreateVerificationsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -1783,6 +1849,13 @@ func (c *CreateVerificationsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createVerificationsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1813,7 +1886,6 @@ func (c *CreateVerificationsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Address on the verification profile. `null` when no address is set.
 var (
 	createVerificationsResponseAddressFieldCity       = big.NewInt(1 << 0)
 	createVerificationsResponseAddressFieldCountry    = big.NewInt(1 << 1)
@@ -1823,6 +1895,16 @@ var (
 	createVerificationsResponseAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// createVerificationsResponseAddressNullableFields maps the wire names of CreateVerificationsResponseAddress's nullable fields (required or optional) to their field bits.
+var createVerificationsResponseAddressNullableFields = map[string]*big.Int{
+	"city":        createVerificationsResponseAddressFieldCity,
+	"country":     createVerificationsResponseAddressFieldCountry,
+	"line2":       createVerificationsResponseAddressFieldLine2,
+	"postal_code": createVerificationsResponseAddressFieldPostalCode,
+	"state":       createVerificationsResponseAddressFieldState,
+}
+
+// Address on the verification profile. `null` when no address is set.
 type CreateVerificationsResponseAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
@@ -1893,10 +1975,12 @@ func (c *CreateVerificationsResponseAddress) GetExtraProperties() map[string]int
 }
 
 func (c *CreateVerificationsResponseAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1953,6 +2037,13 @@ func (c *CreateVerificationsResponseAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createVerificationsResponseAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2195,10 +2286,12 @@ func (c *CreateVerificationsResponseRequestedInformationItem) GetExtraProperties
 }
 
 func (c *CreateVerificationsResponseRequestedInformationItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetActionURL sets the ActionURL field and marks it as non-optional;
@@ -2402,10 +2495,12 @@ func (c *CreateVerificationsResponseRequestedInformationItemErrorsItem) GetExtra
 }
 
 func (c *CreateVerificationsResponseRequestedInformationItemErrorsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -2528,6 +2623,11 @@ var (
 	createVerificationsResponseRequiredDocumentsItemFieldStatus          = big.NewInt(1 << 2)
 )
 
+// createVerificationsResponseRequiredDocumentsItemNullableFields maps the wire names of CreateVerificationsResponseRequiredDocumentsItem's nullable fields (required or optional) to their field bits.
+var createVerificationsResponseRequiredDocumentsItemNullableFields = map[string]*big.Int{
+	"rejection_reason": createVerificationsResponseRequiredDocumentsItemFieldRejectionReason,
+}
+
 type CreateVerificationsResponseRequiredDocumentsItem struct {
 	// Document slot key, such as `id_card_front`, `id_card_back`, or `selfie`.
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
@@ -2572,10 +2672,12 @@ func (c *CreateVerificationsResponseRequiredDocumentsItem) GetExtraProperties() 
 }
 
 func (c *CreateVerificationsResponseRequiredDocumentsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDocument sets the Document field and marks it as non-optional;
@@ -2611,6 +2713,13 @@ func (c *CreateVerificationsResponseRequiredDocumentsItem) UnmarshalJSON(data []
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createVerificationsResponseRequiredDocumentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2775,10 +2884,12 @@ func (l *ListVerificationsResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListVerificationsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2849,6 +2960,20 @@ var (
 	listVerificationsResponseDataItemFieldStatus               = big.NewInt(1 << 15)
 	listVerificationsResponseDataItemFieldUpdatedAt            = big.NewInt(1 << 16)
 )
+
+// listVerificationsResponseDataItemNullableFields maps the wire names of ListVerificationsResponseDataItem's nullable fields (required or optional) to their field bits.
+var listVerificationsResponseDataItemNullableFields = map[string]*big.Int{
+	"address":            listVerificationsResponseDataItemFieldAddress,
+	"business_name":      listVerificationsResponseDataItemFieldBusinessName,
+	"business_structure": listVerificationsResponseDataItemFieldBusinessStructure,
+	"country":            listVerificationsResponseDataItemFieldCountry,
+	"date_of_birth":      listVerificationsResponseDataItemFieldDateOfBirth,
+	"email":              listVerificationsResponseDataItemFieldEmail,
+	"first_name":         listVerificationsResponseDataItemFieldFirstName,
+	"last_name":          listVerificationsResponseDataItemFieldLastName,
+	"phone":              listVerificationsResponseDataItemFieldPhone,
+	"session_url":        listVerificationsResponseDataItemFieldSessionURL,
+}
 
 type ListVerificationsResponseDataItem struct {
 	// Address on the verification profile. `null` when no address is set.
@@ -3017,10 +3142,12 @@ func (l *ListVerificationsResponseDataItem) GetExtraProperties() map[string]inte
 }
 
 func (l *ListVerificationsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -3154,6 +3281,13 @@ func (l *ListVerificationsResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listVerificationsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3184,7 +3318,6 @@ func (l *ListVerificationsResponseDataItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Address on the verification profile. `null` when no address is set.
 var (
 	listVerificationsResponseDataItemAddressFieldCity       = big.NewInt(1 << 0)
 	listVerificationsResponseDataItemAddressFieldCountry    = big.NewInt(1 << 1)
@@ -3194,6 +3327,16 @@ var (
 	listVerificationsResponseDataItemAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// listVerificationsResponseDataItemAddressNullableFields maps the wire names of ListVerificationsResponseDataItemAddress's nullable fields (required or optional) to their field bits.
+var listVerificationsResponseDataItemAddressNullableFields = map[string]*big.Int{
+	"city":        listVerificationsResponseDataItemAddressFieldCity,
+	"country":     listVerificationsResponseDataItemAddressFieldCountry,
+	"line2":       listVerificationsResponseDataItemAddressFieldLine2,
+	"postal_code": listVerificationsResponseDataItemAddressFieldPostalCode,
+	"state":       listVerificationsResponseDataItemAddressFieldState,
+}
+
+// Address on the verification profile. `null` when no address is set.
 type ListVerificationsResponseDataItemAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
@@ -3264,10 +3407,12 @@ func (l *ListVerificationsResponseDataItemAddress) GetExtraProperties() map[stri
 }
 
 func (l *ListVerificationsResponseDataItemAddress) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -3324,6 +3469,13 @@ func (l *ListVerificationsResponseDataItemAddress) UnmarshalJSON(data []byte) er
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listVerificationsResponseDataItemAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3566,10 +3718,12 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItem) GetExtraProp
 }
 
 func (l *ListVerificationsResponseDataItemRequestedInformationItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetActionURL sets the ActionURL field and marks it as non-optional;
@@ -3773,10 +3927,12 @@ func (l *ListVerificationsResponseDataItemRequestedInformationItemErrorsItem) Ge
 }
 
 func (l *ListVerificationsResponseDataItemRequestedInformationItemErrorsItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -3899,6 +4055,11 @@ var (
 	listVerificationsResponseDataItemRequiredDocumentsItemFieldStatus          = big.NewInt(1 << 2)
 )
 
+// listVerificationsResponseDataItemRequiredDocumentsItemNullableFields maps the wire names of ListVerificationsResponseDataItemRequiredDocumentsItem's nullable fields (required or optional) to their field bits.
+var listVerificationsResponseDataItemRequiredDocumentsItemNullableFields = map[string]*big.Int{
+	"rejection_reason": listVerificationsResponseDataItemRequiredDocumentsItemFieldRejectionReason,
+}
+
 type ListVerificationsResponseDataItemRequiredDocumentsItem struct {
 	// Document slot key, such as `id_card_front`, `id_card_back`, or `selfie`.
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
@@ -3943,10 +4104,12 @@ func (l *ListVerificationsResponseDataItemRequiredDocumentsItem) GetExtraPropert
 }
 
 func (l *ListVerificationsResponseDataItemRequiredDocumentsItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetDocument sets the Document field and marks it as non-optional;
@@ -3982,6 +4145,13 @@ func (l *ListVerificationsResponseDataItemRequiredDocumentsItem) UnmarshalJSON(d
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listVerificationsResponseDataItemRequiredDocumentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4084,6 +4254,12 @@ var (
 	postIdentityProfileUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postIdentityProfileUpdatedPayloadNullableFields maps the wire names of PostIdentityProfileUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postIdentityProfileUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postIdentityProfileUpdatedPayloadFieldAccountID,
+	"api_version_date": postIdentityProfileUpdatedPayloadFieldAPIVersionDate,
+}
+
 type PostIdentityProfileUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -4172,10 +4348,12 @@ func (p *PostIdentityProfileUpdatedPayload) GetExtraProperties() map[string]inte
 }
 
 func (p *PostIdentityProfileUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -4252,6 +4430,13 @@ func (p *PostIdentityProfileUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postIdentityProfileUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4334,10 +4519,12 @@ func (p *PostIdentityProfileUpdatedPayloadData) GetExtraProperties() map[string]
 }
 
 func (p *PostIdentityProfileUpdatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4419,6 +4606,12 @@ var (
 	postVerificationSucceededPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postVerificationSucceededPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postVerificationSucceededPayloadNullableFields maps the wire names of PostVerificationSucceededPayload's nullable fields (required or optional) to their field bits.
+var postVerificationSucceededPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postVerificationSucceededPayloadFieldAccountID,
+	"api_version_date": postVerificationSucceededPayloadFieldAPIVersionDate,
+}
 
 type PostVerificationSucceededPayload struct {
 	// The account ID that this webhook event is associated with
@@ -4508,10 +4701,12 @@ func (p *PostVerificationSucceededPayload) GetExtraProperties() map[string]inter
 }
 
 func (p *PostVerificationSucceededPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -4588,6 +4783,13 @@ func (p *PostVerificationSucceededPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postVerificationSucceededPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4679,6 +4881,20 @@ var (
 	retrieveVerificationsResponseFieldStatus               = big.NewInt(1 << 15)
 	retrieveVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 16)
 )
+
+// retrieveVerificationsResponseNullableFields maps the wire names of RetrieveVerificationsResponse's nullable fields (required or optional) to their field bits.
+var retrieveVerificationsResponseNullableFields = map[string]*big.Int{
+	"address":            retrieveVerificationsResponseFieldAddress,
+	"business_name":      retrieveVerificationsResponseFieldBusinessName,
+	"business_structure": retrieveVerificationsResponseFieldBusinessStructure,
+	"country":            retrieveVerificationsResponseFieldCountry,
+	"date_of_birth":      retrieveVerificationsResponseFieldDateOfBirth,
+	"email":              retrieveVerificationsResponseFieldEmail,
+	"first_name":         retrieveVerificationsResponseFieldFirstName,
+	"last_name":          retrieveVerificationsResponseFieldLastName,
+	"phone":              retrieveVerificationsResponseFieldPhone,
+	"session_url":        retrieveVerificationsResponseFieldSessionURL,
+}
 
 type RetrieveVerificationsResponse struct {
 	// Address on the verification profile. `null` when no address is set.
@@ -4847,10 +5063,12 @@ func (r *RetrieveVerificationsResponse) GetExtraProperties() map[string]interfac
 }
 
 func (r *RetrieveVerificationsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -4984,6 +5202,13 @@ func (r *RetrieveVerificationsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveVerificationsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5014,7 +5239,6 @@ func (r *RetrieveVerificationsResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Address on the verification profile. `null` when no address is set.
 var (
 	retrieveVerificationsResponseAddressFieldCity       = big.NewInt(1 << 0)
 	retrieveVerificationsResponseAddressFieldCountry    = big.NewInt(1 << 1)
@@ -5024,6 +5248,16 @@ var (
 	retrieveVerificationsResponseAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// retrieveVerificationsResponseAddressNullableFields maps the wire names of RetrieveVerificationsResponseAddress's nullable fields (required or optional) to their field bits.
+var retrieveVerificationsResponseAddressNullableFields = map[string]*big.Int{
+	"city":        retrieveVerificationsResponseAddressFieldCity,
+	"country":     retrieveVerificationsResponseAddressFieldCountry,
+	"line2":       retrieveVerificationsResponseAddressFieldLine2,
+	"postal_code": retrieveVerificationsResponseAddressFieldPostalCode,
+	"state":       retrieveVerificationsResponseAddressFieldState,
+}
+
+// Address on the verification profile. `null` when no address is set.
 type RetrieveVerificationsResponseAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
@@ -5094,10 +5328,12 @@ func (r *RetrieveVerificationsResponseAddress) GetExtraProperties() map[string]i
 }
 
 func (r *RetrieveVerificationsResponseAddress) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -5154,6 +5390,13 @@ func (r *RetrieveVerificationsResponseAddress) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveVerificationsResponseAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5396,10 +5639,12 @@ func (r *RetrieveVerificationsResponseRequestedInformationItem) GetExtraProperti
 }
 
 func (r *RetrieveVerificationsResponseRequestedInformationItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetActionURL sets the ActionURL field and marks it as non-optional;
@@ -5603,10 +5848,12 @@ func (r *RetrieveVerificationsResponseRequestedInformationItemErrorsItem) GetExt
 }
 
 func (r *RetrieveVerificationsResponseRequestedInformationItemErrorsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -5729,6 +5976,11 @@ var (
 	retrieveVerificationsResponseRequiredDocumentsItemFieldStatus          = big.NewInt(1 << 2)
 )
 
+// retrieveVerificationsResponseRequiredDocumentsItemNullableFields maps the wire names of RetrieveVerificationsResponseRequiredDocumentsItem's nullable fields (required or optional) to their field bits.
+var retrieveVerificationsResponseRequiredDocumentsItemNullableFields = map[string]*big.Int{
+	"rejection_reason": retrieveVerificationsResponseRequiredDocumentsItemFieldRejectionReason,
+}
+
 type RetrieveVerificationsResponseRequiredDocumentsItem struct {
 	// Document slot key, such as `id_card_front`, `id_card_back`, or `selfie`.
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
@@ -5773,10 +6025,12 @@ func (r *RetrieveVerificationsResponseRequiredDocumentsItem) GetExtraProperties(
 }
 
 func (r *RetrieveVerificationsResponseRequiredDocumentsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDocument sets the Document field and marks it as non-optional;
@@ -5812,6 +6066,13 @@ func (r *RetrieveVerificationsResponseRequiredDocumentsItem) UnmarshalJSON(data 
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveVerificationsResponseRequiredDocumentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5927,6 +6188,22 @@ func (u *UpdateVerificationsRequestBody) GetUpdateVerificationsRequestBodyBusine
 }
 
 func (u *UpdateVerificationsRequestBody) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"business_name", "business_structure", "business_tax_identification_number", "country", "date_of_birth", "first_name", "last_name", "personal_address", "requested_information", "tax_identification_number"}, []string{}) {
+		valueUpdateVerificationsRequestBodyPersonalAddress := new(UpdateVerificationsRequestBodyPersonalAddress)
+		if err := json.Unmarshal(data, &valueUpdateVerificationsRequestBodyPersonalAddress); err == nil {
+			u.typ = "UpdateVerificationsRequestBodyPersonalAddress"
+			u.UpdateVerificationsRequestBodyPersonalAddress = valueUpdateVerificationsRequestBodyPersonalAddress
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"business_address", "business_name", "business_structure", "business_tax_identification_number", "country", "date_of_birth", "first_name", "last_name", "requested_information", "tax_identification_number"}, []string{}) {
+		valueUpdateVerificationsRequestBodyBusinessAddress := new(UpdateVerificationsRequestBodyBusinessAddress)
+		if err := json.Unmarshal(data, &valueUpdateVerificationsRequestBodyBusinessAddress); err == nil {
+			u.typ = "UpdateVerificationsRequestBodyBusinessAddress"
+			u.UpdateVerificationsRequestBodyBusinessAddress = valueUpdateVerificationsRequestBodyBusinessAddress
+			return nil
+		}
+	}
 	valueUpdateVerificationsRequestBodyPersonalAddress := new(UpdateVerificationsRequestBodyPersonalAddress)
 	if err := json.Unmarshal(data, &valueUpdateVerificationsRequestBodyPersonalAddress); err == nil {
 		u.typ = "UpdateVerificationsRequestBodyPersonalAddress"
@@ -5967,7 +6244,6 @@ func (u *UpdateVerificationsRequestBody) Accept(visitor UpdateVerificationsReque
 	return fmt.Errorf("type %T does not include a non-empty union type", u)
 }
 
-// Fields that can be updated on a business entity (KYB) verification. At least one field is required.
 var (
 	updateVerificationsRequestBodyBusinessAddressFieldBusinessAddress                 = big.NewInt(1 << 0)
 	updateVerificationsRequestBodyBusinessAddressFieldBusinessName                    = big.NewInt(1 << 1)
@@ -5981,6 +6257,7 @@ var (
 	updateVerificationsRequestBodyBusinessAddressFieldTaxIdentificationNumber         = big.NewInt(1 << 9)
 )
 
+// Fields that can be updated on a business entity (KYB) verification. At least one field is required.
 type UpdateVerificationsRequestBodyBusinessAddress struct {
 	// Business address.
 	BusinessAddress *UpdateVerificationsRequestBodyBusinessAddressBusinessAddress `json:"business_address,omitempty" url:"business_address,omitempty"`
@@ -6088,10 +6365,12 @@ func (u *UpdateVerificationsRequestBodyBusinessAddress) GetExtraProperties() map
 }
 
 func (u *UpdateVerificationsRequestBodyBusinessAddress) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBusinessAddress sets the BusinessAddress field and marks it as non-optional;
@@ -6206,7 +6485,6 @@ func (u *UpdateVerificationsRequestBodyBusinessAddress) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Business address.
 var (
 	updateVerificationsRequestBodyBusinessAddressBusinessAddressFieldCity       = big.NewInt(1 << 0)
 	updateVerificationsRequestBodyBusinessAddressBusinessAddressFieldCountry    = big.NewInt(1 << 1)
@@ -6216,6 +6494,17 @@ var (
 	updateVerificationsRequestBodyBusinessAddressBusinessAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// updateVerificationsRequestBodyBusinessAddressBusinessAddressNullableFields maps the wire names of UpdateVerificationsRequestBodyBusinessAddressBusinessAddress's nullable fields (required or optional) to their field bits.
+var updateVerificationsRequestBodyBusinessAddressBusinessAddressNullableFields = map[string]*big.Int{
+	"city":        updateVerificationsRequestBodyBusinessAddressBusinessAddressFieldCity,
+	"country":     updateVerificationsRequestBodyBusinessAddressBusinessAddressFieldCountry,
+	"line1":       updateVerificationsRequestBodyBusinessAddressBusinessAddressFieldLine1,
+	"line2":       updateVerificationsRequestBodyBusinessAddressBusinessAddressFieldLine2,
+	"postal_code": updateVerificationsRequestBodyBusinessAddressBusinessAddressFieldPostalCode,
+	"state":       updateVerificationsRequestBodyBusinessAddressBusinessAddressFieldState,
+}
+
+// Business address.
 type UpdateVerificationsRequestBodyBusinessAddressBusinessAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
@@ -6286,10 +6575,12 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressBusinessAddress) GetExtraP
 }
 
 func (u *UpdateVerificationsRequestBodyBusinessAddressBusinessAddress) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -6346,6 +6637,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressBusinessAddress) Unmarshal
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsRequestBodyBusinessAddressBusinessAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6486,10 +6784,12 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) 
 }
 
 func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -6597,7 +6897,6 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem) 
 	return fmt.Sprintf("%#v", u)
 }
 
-// Answer for `address` items.
 var (
 	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressFieldCity       = big.NewInt(1 << 0)
 	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressFieldCountry    = big.NewInt(1 << 1)
@@ -6607,6 +6906,17 @@ var (
 	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressNullableFields maps the wire names of UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddress's nullable fields (required or optional) to their field bits.
+var updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressNullableFields = map[string]*big.Int{
+	"city":        updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressFieldCity,
+	"country":     updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressFieldCountry,
+	"line1":       updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressFieldLine1,
+	"line2":       updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressFieldLine2,
+	"postal_code": updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressFieldPostalCode,
+	"state":       updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressFieldState,
+}
+
+// Answer for `address` items.
 type UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
@@ -6677,10 +6987,12 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAd
 }
 
 func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddress) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -6737,6 +7049,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAd
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsRequestBodyBusinessAddressRequestedInformationItemAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6767,7 +7086,6 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemAd
 	return fmt.Sprintf("%#v", u)
 }
 
-// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 var (
 	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocumentsFieldDriversBack          = big.NewInt(1 << 0)
 	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocumentsFieldDriversFront         = big.NewInt(1 << 1)
@@ -6778,6 +7096,7 @@ var (
 	updateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocumentsFieldResidencePermitFront = big.NewInt(1 << 6)
 )
 
+// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 type UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocuments struct {
 	// Back of the driver's license.
 	DriversBack *string `json:"drivers_back,omitempty" url:"drivers_back,omitempty"`
@@ -6858,10 +7177,12 @@ func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemDo
 }
 
 func (u *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemDocuments) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDriversBack sets the DriversBack field and marks it as non-optional;
@@ -6978,7 +7299,6 @@ func (u UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemVal
 	return &u
 }
 
-// Fields that can be updated on an individual (KYC) verification. At least one field is required.
 var (
 	updateVerificationsRequestBodyPersonalAddressFieldBusinessName                    = big.NewInt(1 << 0)
 	updateVerificationsRequestBodyPersonalAddressFieldBusinessStructure               = big.NewInt(1 << 1)
@@ -6992,6 +7312,7 @@ var (
 	updateVerificationsRequestBodyPersonalAddressFieldTaxIdentificationNumber         = big.NewInt(1 << 9)
 )
 
+// Fields that can be updated on an individual (KYC) verification. At least one field is required.
 type UpdateVerificationsRequestBodyPersonalAddress struct {
 	// Legal business name for a sole proprietor or single-member LLC.
 	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
@@ -7097,10 +7418,12 @@ func (u *UpdateVerificationsRequestBodyPersonalAddress) GetExtraProperties() map
 }
 
 func (u *UpdateVerificationsRequestBodyPersonalAddress) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBusinessName sets the BusinessName field and marks it as non-optional;
@@ -7215,7 +7538,6 @@ func (u *UpdateVerificationsRequestBodyPersonalAddress) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Personal address for the individual.
 var (
 	updateVerificationsRequestBodyPersonalAddressPersonalAddressFieldCity       = big.NewInt(1 << 0)
 	updateVerificationsRequestBodyPersonalAddressPersonalAddressFieldCountry    = big.NewInt(1 << 1)
@@ -7225,6 +7547,17 @@ var (
 	updateVerificationsRequestBodyPersonalAddressPersonalAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// updateVerificationsRequestBodyPersonalAddressPersonalAddressNullableFields maps the wire names of UpdateVerificationsRequestBodyPersonalAddressPersonalAddress's nullable fields (required or optional) to their field bits.
+var updateVerificationsRequestBodyPersonalAddressPersonalAddressNullableFields = map[string]*big.Int{
+	"city":        updateVerificationsRequestBodyPersonalAddressPersonalAddressFieldCity,
+	"country":     updateVerificationsRequestBodyPersonalAddressPersonalAddressFieldCountry,
+	"line1":       updateVerificationsRequestBodyPersonalAddressPersonalAddressFieldLine1,
+	"line2":       updateVerificationsRequestBodyPersonalAddressPersonalAddressFieldLine2,
+	"postal_code": updateVerificationsRequestBodyPersonalAddressPersonalAddressFieldPostalCode,
+	"state":       updateVerificationsRequestBodyPersonalAddressPersonalAddressFieldState,
+}
+
+// Personal address for the individual.
 type UpdateVerificationsRequestBodyPersonalAddressPersonalAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
@@ -7295,10 +7628,12 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressPersonalAddress) GetExtraP
 }
 
 func (u *UpdateVerificationsRequestBodyPersonalAddressPersonalAddress) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -7355,6 +7690,13 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressPersonalAddress) Unmarshal
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsRequestBodyPersonalAddressPersonalAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7495,10 +7837,12 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) 
 }
 
 func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -7606,7 +7950,6 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem) 
 	return fmt.Sprintf("%#v", u)
 }
 
-// Answer for `address` items.
 var (
 	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressFieldCity       = big.NewInt(1 << 0)
 	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressFieldCountry    = big.NewInt(1 << 1)
@@ -7616,6 +7959,17 @@ var (
 	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressNullableFields maps the wire names of UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddress's nullable fields (required or optional) to their field bits.
+var updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressNullableFields = map[string]*big.Int{
+	"city":        updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressFieldCity,
+	"country":     updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressFieldCountry,
+	"line1":       updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressFieldLine1,
+	"line2":       updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressFieldLine2,
+	"postal_code": updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressFieldPostalCode,
+	"state":       updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressFieldState,
+}
+
+// Answer for `address` items.
 type UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
@@ -7686,10 +8040,12 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemAd
 }
 
 func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddress) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -7746,6 +8102,13 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemAd
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsRequestBodyPersonalAddressRequestedInformationItemAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7776,7 +8139,6 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemAd
 	return fmt.Sprintf("%#v", u)
 }
 
-// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 var (
 	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocumentsFieldDriversBack          = big.NewInt(1 << 0)
 	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocumentsFieldDriversFront         = big.NewInt(1 << 1)
@@ -7787,6 +8149,7 @@ var (
 	updateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocumentsFieldResidencePermitFront = big.NewInt(1 << 6)
 )
 
+// Answer for an `id_document` item: the same slot keys Create Verification takes, so the key names both the document and the side. Send every slot for the ID you are uploading — `PASSPORT` is `passport_front`; `ID_CARD`, `DRIVERS` and `RESIDENCE_PERMIT` take a front and a back. Each value is a direct upload ID, or a `file_`-prefixed attachment ID to reuse an uploaded document.
 type UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocuments struct {
 	// Back of the driver's license.
 	DriversBack *string `json:"drivers_back,omitempty" url:"drivers_back,omitempty"`
@@ -7867,10 +8230,12 @@ func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemDo
 }
 
 func (u *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemDocuments) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDriversBack sets the DriversBack field and marks it as non-optional;
@@ -8006,6 +8371,20 @@ var (
 	updateVerificationsResponseFieldStatus               = big.NewInt(1 << 15)
 	updateVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 16)
 )
+
+// updateVerificationsResponseNullableFields maps the wire names of UpdateVerificationsResponse's nullable fields (required or optional) to their field bits.
+var updateVerificationsResponseNullableFields = map[string]*big.Int{
+	"address":            updateVerificationsResponseFieldAddress,
+	"business_name":      updateVerificationsResponseFieldBusinessName,
+	"business_structure": updateVerificationsResponseFieldBusinessStructure,
+	"country":            updateVerificationsResponseFieldCountry,
+	"date_of_birth":      updateVerificationsResponseFieldDateOfBirth,
+	"email":              updateVerificationsResponseFieldEmail,
+	"first_name":         updateVerificationsResponseFieldFirstName,
+	"last_name":          updateVerificationsResponseFieldLastName,
+	"phone":              updateVerificationsResponseFieldPhone,
+	"session_url":        updateVerificationsResponseFieldSessionURL,
+}
 
 type UpdateVerificationsResponse struct {
 	// Address on the verification profile. `null` when no address is set.
@@ -8174,10 +8553,12 @@ func (u *UpdateVerificationsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (u *UpdateVerificationsResponse) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -8311,6 +8692,13 @@ func (u *UpdateVerificationsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8341,7 +8729,6 @@ func (u *UpdateVerificationsResponse) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Address on the verification profile. `null` when no address is set.
 var (
 	updateVerificationsResponseAddressFieldCity       = big.NewInt(1 << 0)
 	updateVerificationsResponseAddressFieldCountry    = big.NewInt(1 << 1)
@@ -8351,6 +8738,16 @@ var (
 	updateVerificationsResponseAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// updateVerificationsResponseAddressNullableFields maps the wire names of UpdateVerificationsResponseAddress's nullable fields (required or optional) to their field bits.
+var updateVerificationsResponseAddressNullableFields = map[string]*big.Int{
+	"city":        updateVerificationsResponseAddressFieldCity,
+	"country":     updateVerificationsResponseAddressFieldCountry,
+	"line2":       updateVerificationsResponseAddressFieldLine2,
+	"postal_code": updateVerificationsResponseAddressFieldPostalCode,
+	"state":       updateVerificationsResponseAddressFieldState,
+}
+
+// Address on the verification profile. `null` when no address is set.
 type UpdateVerificationsResponseAddress struct {
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
@@ -8421,10 +8818,12 @@ func (u *UpdateVerificationsResponseAddress) GetExtraProperties() map[string]int
 }
 
 func (u *UpdateVerificationsResponseAddress) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -8481,6 +8880,13 @@ func (u *UpdateVerificationsResponseAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsResponseAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8723,10 +9129,12 @@ func (u *UpdateVerificationsResponseRequestedInformationItem) GetExtraProperties
 }
 
 func (u *UpdateVerificationsResponseRequestedInformationItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetActionURL sets the ActionURL field and marks it as non-optional;
@@ -8930,10 +9338,12 @@ func (u *UpdateVerificationsResponseRequestedInformationItemErrorsItem) GetExtra
 }
 
 func (u *UpdateVerificationsResponseRequestedInformationItemErrorsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -9056,6 +9466,11 @@ var (
 	updateVerificationsResponseRequiredDocumentsItemFieldStatus          = big.NewInt(1 << 2)
 )
 
+// updateVerificationsResponseRequiredDocumentsItemNullableFields maps the wire names of UpdateVerificationsResponseRequiredDocumentsItem's nullable fields (required or optional) to their field bits.
+var updateVerificationsResponseRequiredDocumentsItemNullableFields = map[string]*big.Int{
+	"rejection_reason": updateVerificationsResponseRequiredDocumentsItemFieldRejectionReason,
+}
+
 type UpdateVerificationsResponseRequiredDocumentsItem struct {
 	// Document slot key, such as `id_card_front`, `id_card_back`, or `selfie`.
 	Document *string `json:"document,omitempty" url:"document,omitempty"`
@@ -9100,10 +9515,12 @@ func (u *UpdateVerificationsResponseRequiredDocumentsItem) GetExtraProperties() 
 }
 
 func (u *UpdateVerificationsResponseRequiredDocumentsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDocument sets the Document field and marks it as non-optional;
@@ -9139,6 +9556,13 @@ func (u *UpdateVerificationsResponseRequiredDocumentsItem) UnmarshalJSON(data []
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsResponseRequiredDocumentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9244,10 +9668,12 @@ type UpdateVerificationsRequest struct {
 }
 
 func (u *UpdateVerificationsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

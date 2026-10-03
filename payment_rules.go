@@ -22,10 +22,12 @@ type ActivatePaymentRulesRequest struct {
 }
 
 func (a *ActivatePaymentRulesRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -60,10 +62,12 @@ type CreatePaymentRulesRequest struct {
 }
 
 func (c *CreatePaymentRulesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -135,10 +139,12 @@ type DeactivatePaymentRulesRequest struct {
 }
 
 func (d *DeactivatePaymentRulesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -161,10 +167,12 @@ type DeletePaymentRulesRequest struct {
 }
 
 func (d *DeletePaymentRulesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -211,10 +219,12 @@ type ListPaymentRulesRequest struct {
 }
 
 func (l *ListPaymentRulesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -299,10 +309,12 @@ type ReplacePaymentRulesRequest struct {
 }
 
 func (r *ReplacePaymentRulesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -360,10 +372,12 @@ type RetrievePaymentRulesRequest struct {
 }
 
 func (r *RetrievePaymentRulesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -385,6 +399,11 @@ var (
 	paymentRuleFieldStatus     = big.NewInt(1 << 8)
 	paymentRuleFieldUpdatedAt  = big.NewInt(1 << 9)
 )
+
+// paymentRuleNullableFields maps the wire names of PaymentRule's nullable fields (required or optional) to their field bits.
+var paymentRuleNullableFields = map[string]*big.Int{
+	"deleted_at": paymentRuleFieldDeletedAt,
+}
 
 type PaymentRule struct {
 	// Account ID, prefixed `biz_`.
@@ -493,10 +512,12 @@ func (p *PaymentRule) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentRule) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -581,6 +602,13 @@ func (p *PaymentRule) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentRuleNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -690,10 +718,12 @@ func (p *PaymentRuleCondition) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentRuleCondition) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetField sets the Field field and marks it as non-optional;
@@ -960,10 +990,12 @@ func (p *PaymentRuleConditions) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentRuleConditions) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAll sets the All field and marks it as non-optional;
@@ -1023,6 +1055,13 @@ var (
 	paymentRuleFieldFieldOptions   = big.NewInt(1 << 4)
 	paymentRuleFieldFieldType      = big.NewInt(1 << 5)
 )
+
+// paymentRuleFieldNullableFields maps the wire names of PaymentRuleField's nullable fields (required or optional) to their field bits.
+var paymentRuleFieldNullableFields = map[string]*big.Int{
+	"maximum": paymentRuleFieldFieldMaximum,
+	"minimum": paymentRuleFieldFieldMinimum,
+	"options": paymentRuleFieldFieldOptions,
+}
 
 type PaymentRuleField struct {
 	// The payment attribute this condition reads.
@@ -1093,10 +1132,12 @@ func (p *PaymentRuleField) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentRuleField) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetField sets the Field field and marks it as non-optional;
@@ -1153,6 +1194,13 @@ func (p *PaymentRuleField) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentRuleFieldNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1311,10 +1359,12 @@ func (p *PaymentRuleFieldOption) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentRuleFieldOption) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetLabel sets the Label field and marks it as non-optional;
@@ -1454,11 +1504,11 @@ func (c CreatePaymentRulesRequestAction) Ptr() *CreatePaymentRulesRequestAction 
 	return &c
 }
 
-// The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
 var (
 	createPaymentRulesRequestConditionsFieldAll = big.NewInt(1 << 0)
 )
 
+// The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
 type CreatePaymentRulesRequestConditions struct {
 	All []*CreatePaymentRulesRequestConditionsAllItem `json:"all" url:"all"`
 
@@ -1484,10 +1534,12 @@ func (c *CreatePaymentRulesRequestConditions) GetExtraProperties() map[string]in
 }
 
 func (c *CreatePaymentRulesRequestConditions) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAll sets the All field and marks it as non-optional;
@@ -1588,10 +1640,12 @@ func (c *CreatePaymentRulesRequestConditionsAllItem) GetExtraProperties() map[st
 }
 
 func (c *CreatePaymentRulesRequestConditionsAllItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetField sets the Field field and marks it as non-optional;
@@ -1783,10 +1837,12 @@ func (l *ListFieldsPaymentRulesResponse) GetExtraProperties() map[string]interfa
 }
 
 func (l *ListFieldsPaymentRulesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1852,6 +1908,12 @@ var (
 	listFieldsPaymentRulesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listFieldsPaymentRulesResponsePageInfoNullableFields maps the wire names of ListFieldsPaymentRulesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listFieldsPaymentRulesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listFieldsPaymentRulesResponsePageInfoFieldEndCursor,
+	"start_cursor": listFieldsPaymentRulesResponsePageInfoFieldStartCursor,
+}
+
 type ListFieldsPaymentRulesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1901,10 +1963,12 @@ func (l *ListFieldsPaymentRulesResponsePageInfo) GetExtraProperties() map[string
 }
 
 func (l *ListFieldsPaymentRulesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1947,6 +2011,13 @@ func (l *ListFieldsPaymentRulesResponsePageInfo) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listFieldsPaymentRulesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2109,10 +2180,12 @@ func (l *ListPaymentRulesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPaymentRulesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2178,6 +2251,12 @@ var (
 	listPaymentRulesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPaymentRulesResponsePageInfoNullableFields maps the wire names of ListPaymentRulesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPaymentRulesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPaymentRulesResponsePageInfoFieldEndCursor,
+	"start_cursor": listPaymentRulesResponsePageInfoFieldStartCursor,
+}
+
 type ListPaymentRulesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2227,10 +2306,12 @@ func (l *ListPaymentRulesResponsePageInfo) GetExtraProperties() map[string]inter
 }
 
 func (l *ListPaymentRulesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2273,6 +2354,13 @@ func (l *ListPaymentRulesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPaymentRulesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2332,11 +2420,11 @@ func (r ReplacePaymentRulesRequestAction) Ptr() *ReplacePaymentRulesRequestActio
 	return &r
 }
 
-// The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
 var (
 	replacePaymentRulesRequestConditionsFieldAll = big.NewInt(1 << 0)
 )
 
+// The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
 type ReplacePaymentRulesRequestConditions struct {
 	All []*ReplacePaymentRulesRequestConditionsAllItem `json:"all" url:"all"`
 
@@ -2362,10 +2450,12 @@ func (r *ReplacePaymentRulesRequestConditions) GetExtraProperties() map[string]i
 }
 
 func (r *ReplacePaymentRulesRequestConditions) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAll sets the All field and marks it as non-optional;
@@ -2466,10 +2556,12 @@ func (r *ReplacePaymentRulesRequestConditionsAllItem) GetExtraProperties() map[s
 }
 
 func (r *ReplacePaymentRulesRequestConditionsAllItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetField sets the Field field and marks it as non-optional;
@@ -2642,10 +2734,12 @@ type UpdatePaymentRulesRequest struct {
 }
 
 func (u *UpdatePaymentRulesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

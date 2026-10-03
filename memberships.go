@@ -26,10 +26,12 @@ type ApplyPromoCodeMembershipsRequest struct {
 }
 
 func (a *ApplyPromoCodeMembershipsRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -86,10 +88,12 @@ type CancelMembershipsRequest struct {
 }
 
 func (c *CancelMembershipsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -150,10 +154,12 @@ type ExtendMembershipsRequest struct {
 }
 
 func (e *ExtendMembershipsRequest) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -240,10 +246,12 @@ type ListMembershipsRequest struct {
 }
 
 func (l *ListMembershipsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -353,10 +361,12 @@ type PauseMembershipsRequest struct {
 }
 
 func (p *PauseMembershipsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -410,10 +420,12 @@ type ReactivateMembershipsRequest struct {
 }
 
 func (r *ReactivateMembershipsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -464,10 +476,12 @@ type ResumeMembershipsRequest struct {
 }
 
 func (r *ResumeMembershipsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -490,10 +504,12 @@ type ResyncAccessMembershipsRequest struct {
 }
 
 func (r *ResyncAccessMembershipsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -516,10 +532,12 @@ type RetrieveMembershipsRequest struct {
 }
 
 func (r *RetrieveMembershipsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -542,10 +560,12 @@ type TransferMembershipsRequest struct {
 }
 
 func (t *TransferMembershipsRequest) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -577,6 +597,21 @@ var (
 	membershipFieldUpdatedAt          = big.NewInt(1 << 18)
 	membershipFieldUserID             = big.NewInt(1 << 19)
 )
+
+// membershipNullableFields maps the wire names of Membership's nullable fields (required or optional) to their field bits.
+var membershipNullableFields = map[string]*big.Int{
+	"billing_period_days":  membershipFieldBillingPeriodDays,
+	"canceled_at":          membershipFieldCanceledAt,
+	"cancellation_reason":  membershipFieldCancellationReason,
+	"current_period_end":   membershipFieldCurrentPeriodEnd,
+	"current_period_start": membershipFieldCurrentPeriodStart,
+	"license_key":          membershipFieldLicenseKey,
+	"manage_url":           membershipFieldManageURL,
+	"member":               membershipFieldMember,
+	"phone_number":         membershipFieldPhoneNumber,
+	"promo_code_id":        membershipFieldPromoCodeID,
+	"user_id":              membershipFieldUserID,
+}
 
 type Membership struct {
 	// The account (seller) this membership belongs to.
@@ -775,10 +810,12 @@ func (m *Membership) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *Membership) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -933,6 +970,13 @@ func (m *Membership) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, membershipNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -968,6 +1012,12 @@ var (
 	membershipMemberFieldLastAccessedAt = big.NewInt(1 << 1)
 	membershipMemberFieldPosition       = big.NewInt(1 << 2)
 )
+
+// membershipMemberNullableFields maps the wire names of MembershipMember's nullable fields (required or optional) to their field bits.
+var membershipMemberNullableFields = map[string]*big.Int{
+	"last_accessed_at": membershipMemberFieldLastAccessedAt,
+	"position":         membershipMemberFieldPosition,
+}
 
 type MembershipMember struct {
 	// What the member can reach on the account: `customer` for paying members, `admin` for team members, `no_access` once every grant has lapsed.
@@ -1013,10 +1063,12 @@ func (m *MembershipMember) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MembershipMember) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetAccessLevel sets the AccessLevel field and marks it as non-optional;
@@ -1052,6 +1104,13 @@ func (m *MembershipMember) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, membershipMemberNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1174,6 +1233,38 @@ func (i *InviteMembershipsRequestBody) GetInviteMembershipsRequestBodyEmail() *I
 }
 
 func (i *InviteMembershipsRequestBody) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"plan_id", "user_id"}, []string{"plan_id", "user_id"}) {
+		valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
+		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
+			i.typ = "InviteMembershipsRequestBodyUserID"
+			i.InviteMembershipsRequestBodyUserID = valueInviteMembershipsRequestBodyUserID
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"email", "plan_id"}, []string{"email", "plan_id"}) {
+		valueInviteMembershipsRequestBodyEmail := new(InviteMembershipsRequestBodyEmail)
+		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyEmail); err == nil {
+			i.typ = "InviteMembershipsRequestBodyEmail"
+			i.InviteMembershipsRequestBodyEmail = valueInviteMembershipsRequestBodyEmail
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"plan_id", "user_id"}) {
+		valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
+		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
+			i.typ = "InviteMembershipsRequestBodyUserID"
+			i.InviteMembershipsRequestBodyUserID = valueInviteMembershipsRequestBodyUserID
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"email", "plan_id"}) {
+		valueInviteMembershipsRequestBodyEmail := new(InviteMembershipsRequestBodyEmail)
+		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyEmail); err == nil {
+			i.typ = "InviteMembershipsRequestBodyEmail"
+			i.InviteMembershipsRequestBodyEmail = valueInviteMembershipsRequestBodyEmail
+			return nil
+		}
+	}
 	valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
 	if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
 		i.typ = "InviteMembershipsRequestBodyUserID"
@@ -1254,10 +1345,12 @@ func (i *InviteMembershipsRequestBodyEmail) GetExtraProperties() map[string]inte
 }
 
 func (i *InviteMembershipsRequestBodyEmail) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -1356,10 +1449,12 @@ func (i *InviteMembershipsRequestBodyUserID) GetExtraProperties() map[string]int
 }
 
 func (i *InviteMembershipsRequestBodyUserID) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetPlanID sets the PlanID field and marks it as non-optional;
@@ -1447,10 +1542,12 @@ func (i *InviteMembershipsResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (i *InviteMembershipsResponse) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetInvitationSent sets the InvitationSent field and marks it as non-optional;
@@ -1621,10 +1718,12 @@ func (l *ListMembershipsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListMembershipsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1690,6 +1789,12 @@ var (
 	listMembershipsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listMembershipsResponsePageInfoNullableFields maps the wire names of ListMembershipsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listMembershipsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listMembershipsResponsePageInfoFieldEndCursor,
+	"start_cursor": listMembershipsResponsePageInfoFieldStartCursor,
+}
+
 type ListMembershipsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1739,10 +1844,12 @@ func (l *ListMembershipsResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListMembershipsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1785,6 +1892,13 @@ func (l *ListMembershipsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listMembershipsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1825,6 +1939,12 @@ var (
 	postMembershipActivatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postMembershipActivatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postMembershipActivatedPayloadNullableFields maps the wire names of PostMembershipActivatedPayload's nullable fields (required or optional) to their field bits.
+var postMembershipActivatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postMembershipActivatedPayloadFieldAccountID,
+	"api_version_date": postMembershipActivatedPayloadFieldAPIVersionDate,
+}
 
 type PostMembershipActivatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1914,10 +2034,12 @@ func (p *PostMembershipActivatedPayload) GetExtraProperties() map[string]interfa
 }
 
 func (p *PostMembershipActivatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1994,6 +2116,13 @@ func (p *PostMembershipActivatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postMembershipActivatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2076,6 +2205,12 @@ var (
 	postMembershipTrialEndingSoonPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postMembershipTrialEndingSoonPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postMembershipTrialEndingSoonPayloadNullableFields maps the wire names of PostMembershipTrialEndingSoonPayload's nullable fields (required or optional) to their field bits.
+var postMembershipTrialEndingSoonPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postMembershipTrialEndingSoonPayloadFieldAccountID,
+	"api_version_date": postMembershipTrialEndingSoonPayloadFieldAPIVersionDate,
+}
 
 type PostMembershipTrialEndingSoonPayload struct {
 	// The account ID that this webhook event is associated with
@@ -2165,10 +2300,12 @@ func (p *PostMembershipTrialEndingSoonPayload) GetExtraProperties() map[string]i
 }
 
 func (p *PostMembershipTrialEndingSoonPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2245,6 +2382,13 @@ func (p *PostMembershipTrialEndingSoonPayload) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postMembershipTrialEndingSoonPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2327,6 +2471,12 @@ var (
 	postMembershipUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postMembershipUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postMembershipUpdatedPayloadNullableFields maps the wire names of PostMembershipUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postMembershipUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postMembershipUpdatedPayloadFieldAccountID,
+	"api_version_date": postMembershipUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostMembershipUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -2416,10 +2566,12 @@ func (p *PostMembershipUpdatedPayload) GetExtraProperties() map[string]interface
 }
 
 func (p *PostMembershipUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2496,6 +2648,13 @@ func (p *PostMembershipUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postMembershipUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2598,10 +2757,12 @@ func (t *TransferMembershipsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (t *TransferMembershipsResponse) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -2678,10 +2839,12 @@ type UpdateMembershipsRequest struct {
 }
 
 func (u *UpdateMembershipsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

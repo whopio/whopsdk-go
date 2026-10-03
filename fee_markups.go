@@ -38,10 +38,12 @@ type CreateFeeMarkupsRequest struct {
 }
 
 func (c *CreateFeeMarkupsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -120,10 +122,12 @@ type DeleteFeeMarkupsRequest struct {
 }
 
 func (d *DeleteFeeMarkupsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -158,10 +162,12 @@ type ListFeeMarkupsRequest struct {
 }
 
 func (l *ListFeeMarkupsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -199,7 +205,6 @@ func (l *ListFeeMarkupsRequest) SetAccountID(accountID string) {
 	l.require(listFeeMarkupsRequestFieldAccountID)
 }
 
-// A fee markup configuration that defines additional charges applied to transactions for a platform's connected accounts.
 var (
 	feeMarkupFieldCreatedAt     = big.NewInt(1 << 0)
 	feeMarkupFieldFeeType       = big.NewInt(1 << 1)
@@ -210,6 +215,14 @@ var (
 	feeMarkupFieldUpdatedAt     = big.NewInt(1 << 6)
 )
 
+// feeMarkupNullableFields maps the wire names of FeeMarkup's nullable fields (required or optional) to their field bits.
+var feeMarkupNullableFields = map[string]*big.Int{
+	"fixed_fee_usd":  feeMarkupFieldFixedFeeUsd,
+	"notes":          feeMarkupFieldNotes,
+	"percentage_fee": feeMarkupFieldPercentageFee,
+}
+
+// A fee markup configuration that defines additional charges applied to transactions for a platform's connected accounts.
 type FeeMarkup struct {
 	// The datetime the fee markup was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -290,10 +303,12 @@ func (f *FeeMarkup) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *FeeMarkup) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -365,6 +380,13 @@ func (f *FeeMarkup) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, feeMarkupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -399,7 +421,6 @@ func (f *FeeMarkup) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// A fee markup configuration that defines additional charges applied to transactions for a platform's connected accounts.
 var (
 	feeMarkupListItemFieldCreatedAt     = big.NewInt(1 << 0)
 	feeMarkupListItemFieldFeeType       = big.NewInt(1 << 1)
@@ -410,6 +431,14 @@ var (
 	feeMarkupListItemFieldUpdatedAt     = big.NewInt(1 << 6)
 )
 
+// feeMarkupListItemNullableFields maps the wire names of FeeMarkupListItem's nullable fields (required or optional) to their field bits.
+var feeMarkupListItemNullableFields = map[string]*big.Int{
+	"fixed_fee_usd":  feeMarkupListItemFieldFixedFeeUsd,
+	"notes":          feeMarkupListItemFieldNotes,
+	"percentage_fee": feeMarkupListItemFieldPercentageFee,
+}
+
+// A fee markup configuration that defines additional charges applied to transactions for a platform's connected accounts.
 type FeeMarkupListItem struct {
 	// The datetime the fee markup was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -490,10 +519,12 @@ func (f *FeeMarkupListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *FeeMarkupListItem) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -565,6 +596,13 @@ func (f *FeeMarkupListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, feeMarkupListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -646,12 +684,12 @@ func (f FeeMarkupTypes) Ptr() *FeeMarkupTypes {
 	return &f
 }
 
-// The connection type for FeeMarkup.
 var (
 	listFeeMarkupsResponseFieldData     = big.NewInt(1 << 0)
 	listFeeMarkupsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for FeeMarkup.
 type ListFeeMarkupsResponse struct {
 	// A list of nodes.
 	Data []*FeeMarkupListItem `json:"data" url:"data"`
@@ -687,10 +725,12 @@ func (l *ListFeeMarkupsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListFeeMarkupsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

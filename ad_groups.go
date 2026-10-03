@@ -102,10 +102,12 @@ type CreateAdGroupsRequest struct {
 }
 
 func (c *CreateAdGroupsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAdCampaignID sets the AdCampaignID field and marks it as non-optional;
@@ -317,10 +319,12 @@ type DeleteAdGroupsRequest struct {
 }
 
 func (d *DeleteAdGroupsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -352,10 +356,12 @@ type DuplicateAdGroupsRequest struct {
 }
 
 func (d *DuplicateAdGroupsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -441,10 +447,12 @@ type EstimateReachAdGroupsRequest struct {
 }
 
 func (e *EstimateReachAdGroupsRequest) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -585,10 +593,12 @@ type ListAdGroupsRequest struct {
 }
 
 func (l *ListAdGroupsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -723,10 +733,12 @@ type PauseAdGroupsRequest struct {
 }
 
 func (p *PauseAdGroupsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -761,10 +773,12 @@ type RetrieveAdGroupsRequest struct {
 }
 
 func (r *RetrieveAdGroupsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -836,10 +850,12 @@ type SearchTargetingOptionsAdGroupsRequest struct {
 }
 
 func (s *SearchTargetingOptionsAdGroupsRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -977,6 +993,40 @@ var (
 	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 75)
 	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 76)
 )
+
+// adGroupNullableFields maps the wire names of AdGroup's nullable fields (required or optional) to their field bits.
+var adGroupNullableFields = map[string]*big.Int{
+	"bid_type":                        adGroupFieldBidType,
+	"budget_amount":                   adGroupFieldBudgetAmount,
+	"budget_amount_local":             adGroupFieldBudgetAmountLocal,
+	"budget_type":                     adGroupFieldBudgetType,
+	"conversion_event":                adGroupFieldConversionEvent,
+	"conversion_location":             adGroupFieldConversionLocation,
+	"cost_per_added_to_cart":          adGroupFieldCostPerAddedToCart,
+	"cost_per_completed_registration": adGroupFieldCostPerCompletedRegistration,
+	"cost_per_contact":                adGroupFieldCostPerContact,
+	"cost_per_lead":                   adGroupFieldCostPerLead,
+	"cost_per_purchase":               adGroupFieldCostPerPurchase,
+	"cost_per_result":                 adGroupFieldCostPerResult,
+	"cost_per_schedule":               adGroupFieldCostPerSchedule,
+	"cost_per_submitted_application":  adGroupFieldCostPerSubmittedApplication,
+	"cost_per_unique_click":           adGroupFieldCostPerUniqueClick,
+	"cost_per_viewed_content":         adGroupFieldCostPerViewedContent,
+	"delivery_schedule":               adGroupFieldDeliverySchedule,
+	"desired_cost_per_result":         adGroupFieldDesiredCostPerResult,
+	"ends_at":                         adGroupFieldEndsAt,
+	"frequency":                       adGroupFieldFrequency,
+	"frequency_cap":                   adGroupFieldFrequencyCap,
+	"minimum_daily_spend":             adGroupFieldMinimumDailySpend,
+	"optimization_goal":               adGroupFieldOptimizationGoal,
+	"result_event":                    adGroupFieldResultEvent,
+	"result_event_name":               adGroupFieldResultEventName,
+	"results":                         adGroupFieldResults,
+	"spend_currency":                  adGroupFieldSpendCurrency,
+	"starts_at":                       adGroupFieldStartsAt,
+	"title":                           adGroupFieldTitle,
+	"unique_click_through_rate":       adGroupFieldUniqueClickThroughRate,
+}
 
 type AdGroup struct {
 	// The ad campaign this ad group belongs to.
@@ -1683,10 +1733,12 @@ func (a *AdGroup) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroup) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAdCampaign sets the AdCampaign field and marks it as non-optional;
@@ -2240,6 +2292,13 @@ func (a *AdGroup) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adGroupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2308,10 +2367,12 @@ func (a *AdGroupAudiences) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupAudiences) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExclude sets the Exclude field and marks it as non-optional;
@@ -2370,12 +2431,12 @@ func (a *AdGroupAudiences) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Saved audiences to deliver to or exclude. Can't be combined with demographics.automatic.
 var (
 	adGroupAudiencesBodyFieldExclude = big.NewInt(1 << 0)
 	adGroupAudiencesBodyFieldInclude = big.NewInt(1 << 1)
 )
 
+// Saved audiences to deliver to or exclude. Can't be combined with demographics.automatic.
 type AdGroupAudiencesBody struct {
 	// IDs of saved audiences to exclude from delivery, prefixed `adaud_`.
 	Exclude []string `json:"exclude,omitempty" url:"exclude,omitempty"`
@@ -2411,10 +2472,12 @@ func (a *AdGroupAudiencesBody) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupAudiencesBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExclude sets the Exclude field and marks it as non-optional;
@@ -2533,10 +2596,12 @@ func (a *AdGroupBehaviorCategory) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupBehaviorCategory) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetBehaviorType sets the BehaviorType field and marks it as non-optional;
@@ -2724,10 +2789,12 @@ func (a *AdGroupCity) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupCity) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetKey sets the Key field and marks it as non-optional;
@@ -2910,10 +2977,12 @@ func (a *AdGroupCustomLocation) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupCustomLocation) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCountryCode sets the CountryCode field and marks it as non-optional;
@@ -3106,10 +3175,12 @@ func (a *AdGroupDeliverySchedule) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDeliverySchedule) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetFriday sets the Friday field and marks it as non-optional;
@@ -3305,10 +3376,12 @@ func (a *AdGroupDeliveryWindow) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDeliveryWindow) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -3417,10 +3490,12 @@ func (a *AdGroupDemographicCategory) GetExtraProperties() map[string]interface{}
 }
 
 func (a *AdGroupDemographicCategory) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3534,6 +3609,12 @@ var (
 	adGroupDemographicsFieldMinimumAge = big.NewInt(1 << 3)
 )
 
+// adGroupDemographicsNullableFields maps the wire names of AdGroupDemographics's nullable fields (required or optional) to their field bits.
+var adGroupDemographicsNullableFields = map[string]*big.Int{
+	"maximum_age": adGroupDemographicsFieldMaximumAge,
+	"minimum_age": adGroupDemographicsFieldMinimumAge,
+}
+
 type AdGroupDemographics struct {
 	// Whether automatic audience targeting is on (Advantage+ on Meta). When `true`, the platform can deliver beyond the ages, genders, and detailed targeting you set, treating them as suggestions.
 	Automatic bool `json:"automatic" url:"automatic"`
@@ -3587,10 +3668,12 @@ func (a *AdGroupDemographics) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDemographics) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAutomatic sets the Automatic field and marks it as non-optional;
@@ -3633,6 +3716,13 @@ func (a *AdGroupDemographics) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adGroupDemographicsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3663,7 +3753,6 @@ func (a *AdGroupDemographics) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Age, gender, and automatic-audience targeting.
 var (
 	adGroupDemographicsBodyFieldAutomatic  = big.NewInt(1 << 0)
 	adGroupDemographicsBodyFieldGender     = big.NewInt(1 << 1)
@@ -3671,6 +3760,7 @@ var (
 	adGroupDemographicsBodyFieldMinimumAge = big.NewInt(1 << 3)
 )
 
+// Age, gender, and automatic-audience targeting.
 type AdGroupDemographicsBody struct {
 	// Turn on automatic audience targeting (Advantage+ on Meta): the platform can deliver beyond the ages, genders, and detailed targeting you set, treating them as suggestions.
 	Automatic *bool `json:"automatic,omitempty" url:"automatic,omitempty"`
@@ -3724,10 +3814,12 @@ func (a *AdGroupDemographicsBody) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDemographicsBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAutomatic sets the Automatic field and marks it as non-optional;
@@ -3899,10 +3991,12 @@ func (a *AdGroupDetailedTargeting) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDetailedTargeting) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetBehaviors sets the Behaviors field and marks it as non-optional;
@@ -3968,13 +4062,13 @@ func (a *AdGroupDetailedTargeting) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. At most 100 entries per section. Can't be combined with demographics.automatic, and unavailable to campaigns with special_ad_categories.
 var (
 	adGroupDetailedTargetingBodyFieldBehaviors    = big.NewInt(1 << 0)
 	adGroupDetailedTargetingBodyFieldDemographics = big.NewInt(1 << 1)
 	adGroupDetailedTargetingBodyFieldInterests    = big.NewInt(1 << 2)
 )
 
+// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. At most 100 entries per section. Can't be combined with demographics.automatic, and unavailable to campaigns with special_ad_categories.
 type AdGroupDetailedTargetingBody struct {
 	// Behavior categories to target, such as frequent travelers.
 	Behaviors []*AdGroupDetailedTargetingBodyBehaviorsItem `json:"behaviors,omitempty" url:"behaviors,omitempty"`
@@ -4019,10 +4113,12 @@ func (a *AdGroupDetailedTargetingBody) GetExtraProperties() map[string]interface
 }
 
 func (a *AdGroupDetailedTargetingBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetBehaviors sets the Behaviors field and marks it as non-optional;
@@ -4148,10 +4244,12 @@ func (a *AdGroupDetailedTargetingBodyBehaviorsItem) GetExtraProperties() map[str
 }
 
 func (a *AdGroupDetailedTargetingBodyBehaviorsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetBehaviorType sets the BehaviorType field and marks it as non-optional;
@@ -4300,10 +4398,12 @@ func (a *AdGroupDetailedTargetingBodyDemographicsItem) GetExtraProperties() map[
 }
 
 func (a *AdGroupDetailedTargetingBodyDemographicsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4450,10 +4550,12 @@ func (a *AdGroupDetailedTargetingBodyInterestsItem) GetExtraProperties() map[str
 }
 
 func (a *AdGroupDetailedTargetingBodyInterestsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4550,10 +4652,12 @@ func (a *AdGroupDevices) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDevices) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetOperatingSystems sets the OperatingSystems field and marks it as non-optional;
@@ -4612,12 +4716,12 @@ func (a *AdGroupDevices) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Device platforms and operating systems to target.
 var (
 	adGroupDevicesBodyFieldOperatingSystems = big.NewInt(1 << 0)
 	adGroupDevicesBodyFieldPlatforms        = big.NewInt(1 << 1)
 )
 
+// Device platforms and operating systems to target.
 type AdGroupDevicesBody struct {
 	// Operating systems to target. Empty targets all operating systems.
 	OperatingSystems []*AdGroupDevicesBodyOperatingSystemsItem `json:"operating_systems,omitempty" url:"operating_systems,omitempty"`
@@ -4653,10 +4757,12 @@ func (a *AdGroupDevicesBody) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDevicesBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetOperatingSystems sets the OperatingSystems field and marks it as non-optional;
@@ -4755,10 +4861,12 @@ func (a *AdGroupDevicesBodyOperatingSystemsItem) GetExtraProperties() map[string
 }
 
 func (a *AdGroupDevicesBodyOperatingSystemsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetMinimumVersion sets the MinimumVersion field and marks it as non-optional;
@@ -4890,6 +4998,11 @@ var (
 	adGroupFrequencyCapFieldPerDays            = big.NewInt(1 << 1)
 )
 
+// adGroupFrequencyCapNullableFields maps the wire names of AdGroupFrequencyCap's nullable fields (required or optional) to their field bits.
+var adGroupFrequencyCapNullableFields = map[string]*big.Int{
+	"per_days": adGroupFrequencyCapFieldPerDays,
+}
+
 type AdGroupFrequencyCap struct {
 	// Most times one person can be shown ads from this ad group within the window.
 	MaximumImpressions float64 `json:"maximum_impressions" url:"maximum_impressions"`
@@ -4925,10 +5038,12 @@ func (a *AdGroupFrequencyCap) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupFrequencyCap) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetMaximumImpressions sets the MaximumImpressions field and marks it as non-optional;
@@ -4957,6 +5072,13 @@ func (a *AdGroupFrequencyCap) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adGroupFrequencyCapNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5061,10 +5183,12 @@ func (a *AdGroupGeoLocations) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupGeoLocations) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCities sets the Cities field and marks it as non-optional;
@@ -5231,10 +5355,12 @@ func (a *AdGroupGeoLocationsBody) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupGeoLocationsBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCities sets the Cities field and marks it as non-optional;
@@ -5361,10 +5487,12 @@ func (a *AdGroupGeoLocationsBodyCitiesItem) GetExtraProperties() map[string]inte
 }
 
 func (a *AdGroupGeoLocationsBodyCitiesItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetKey sets the Key field and marks it as non-optional;
@@ -5503,10 +5631,12 @@ func (a *AdGroupGeoLocationsBodyCustomLocationsItem) GetExtraProperties() map[st
 }
 
 func (a *AdGroupGeoLocationsBodyCustomLocationsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCountryCode sets the CountryCode field and marks it as non-optional;
@@ -5644,6 +5774,22 @@ func (a *AdGroupGeoLocationsBodyZipsItem) UnmarshalJSON(data []byte) error {
 		a.String = valueString
 		return nil
 	}
+	if internal.MatchesObjectKeys(data, []string{"key"}, []string{"key"}) {
+		valueAdGroupGeoLocationsBodyZipsItemKey := new(AdGroupGeoLocationsBodyZipsItemKey)
+		if err := json.Unmarshal(data, &valueAdGroupGeoLocationsBodyZipsItemKey); err == nil {
+			a.typ = "AdGroupGeoLocationsBodyZipsItemKey"
+			a.AdGroupGeoLocationsBodyZipsItemKey = valueAdGroupGeoLocationsBodyZipsItemKey
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"key"}) {
+		valueAdGroupGeoLocationsBodyZipsItemKey := new(AdGroupGeoLocationsBodyZipsItemKey)
+		if err := json.Unmarshal(data, &valueAdGroupGeoLocationsBodyZipsItemKey); err == nil {
+			a.typ = "AdGroupGeoLocationsBodyZipsItemKey"
+			a.AdGroupGeoLocationsBodyZipsItemKey = valueAdGroupGeoLocationsBodyZipsItemKey
+			return nil
+		}
+	}
 	valueAdGroupGeoLocationsBodyZipsItemKey := new(AdGroupGeoLocationsBodyZipsItemKey)
 	if err := json.Unmarshal(data, &valueAdGroupGeoLocationsBodyZipsItemKey); err == nil {
 		a.typ = "AdGroupGeoLocationsBodyZipsItemKey"
@@ -5708,10 +5854,12 @@ func (a *AdGroupGeoLocationsBodyZipsItemKey) GetExtraProperties() map[string]int
 }
 
 func (a *AdGroupGeoLocationsBodyZipsItemKey) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetKey sets the Key field and marks it as non-optional;
@@ -5829,10 +5977,12 @@ func (a *AdGroupOperatingSystem) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupOperatingSystem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetMinimumVersion sets the MinimumVersion field and marks it as non-optional;
@@ -6024,10 +6174,12 @@ func (a *AdGroupPlacement) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupPlacement) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -6187,10 +6339,12 @@ func (a *AdGroupRegions) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupRegions) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExclude sets the Exclude field and marks it as non-optional;
@@ -6249,12 +6403,12 @@ func (a *AdGroupRegions) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Locations to target and exclude.
 var (
 	adGroupRegionsBodyFieldExclude = big.NewInt(1 << 0)
 	adGroupRegionsBodyFieldInclude = big.NewInt(1 << 1)
 )
 
+// Locations to target and exclude.
 type AdGroupRegionsBody struct {
 	// Locations excluded from targeting. Country groups can't be excluded.
 	Exclude *AdGroupGeoLocationsBody `json:"exclude,omitempty" url:"exclude,omitempty"`
@@ -6290,10 +6444,12 @@ func (a *AdGroupRegionsBody) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupRegionsBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExclude sets the Exclude field and marks it as non-optional;
@@ -6468,10 +6624,12 @@ func (a *AdGroupTargetingCategory) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupTargetingCategory) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6666,6 +6824,14 @@ var (
 	detailedTargetingOptionFieldName                   = big.NewInt(1 << 5)
 )
 
+// detailedTargetingOptionNullableFields maps the wire names of DetailedTargetingOption's nullable fields (required or optional) to their field bits.
+var detailedTargetingOptionNullableFields = map[string]*big.Int{
+	"audience_size_lower_bound": detailedTargetingOptionFieldAudienceSizeLowerBound,
+	"audience_size_upper_bound": detailedTargetingOptionFieldAudienceSizeUpperBound,
+	"behavior_type":             detailedTargetingOptionFieldBehaviorType,
+	"description":               detailedTargetingOptionFieldDescription,
+}
+
 type DetailedTargetingOption struct {
 	// Low end of the ad platform's estimate of how many people this option can reach. Null when the platform doesn't publish one.
 	AudienceSizeLowerBound *float64 `json:"audience_size_lower_bound,omitempty" url:"audience_size_lower_bound,omitempty"`
@@ -6737,10 +6903,12 @@ func (d *DetailedTargetingOption) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DetailedTargetingOption) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAudienceSizeLowerBound sets the AudienceSizeLowerBound field and marks it as non-optional;
@@ -6797,6 +6965,13 @@ func (d *DetailedTargetingOption) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, detailedTargetingOptionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6893,10 +7068,12 @@ func (l *LanguageTargetingOption) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LanguageTargetingOption) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -6964,6 +7141,14 @@ var (
 	locationTargetingOptionFieldName         = big.NewInt(1 << 5)
 	locationTargetingOptionFieldRegion       = big.NewInt(1 << 6)
 )
+
+// locationTargetingOptionNullableFields maps the wire names of LocationTargetingOption's nullable fields (required or optional) to their field bits.
+var locationTargetingOptionNullableFields = map[string]*big.Int{
+	"code":         locationTargetingOptionFieldCode,
+	"country_code": locationTargetingOptionFieldCountryCode,
+	"country_name": locationTargetingOptionFieldCountryName,
+	"region":       locationTargetingOptionFieldRegion,
+}
 
 type LocationTargetingOption struct {
 	// The standardized code the ad-group `regions` field takes: an ISO 3166-1 code for countries (`US`) or an ISO 3166-2 code for states and provinces (`US-CA`, `CA-ON`). Null for a location that has no standard code, such as a city or a metro area — target those by `key` in the `regions` cities list instead.
@@ -7045,10 +7230,12 @@ func (l *LocationTargetingOption) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LocationTargetingOption) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -7112,6 +7299,13 @@ func (l *LocationTargetingOption) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, locationTargetingOptionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7191,6 +7385,12 @@ var (
 	reachEstimateFieldUsersUpperBound = big.NewInt(1 << 1)
 )
 
+// reachEstimateNullableFields maps the wire names of ReachEstimate's nullable fields (required or optional) to their field bits.
+var reachEstimateNullableFields = map[string]*big.Int{
+	"users_lower_bound": reachEstimateFieldUsersLowerBound,
+	"users_upper_bound": reachEstimateFieldUsersUpperBound,
+}
+
 type ReachEstimate struct {
 	// Low end of how many people the targeting can reach. Null when the platform couldn't produce an estimate.
 	UsersLowerBound *float64 `json:"users_lower_bound,omitempty" url:"users_lower_bound,omitempty"`
@@ -7226,10 +7426,12 @@ func (r *ReachEstimate) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReachEstimate) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetUsersLowerBound sets the UsersLowerBound field and marks it as non-optional;
@@ -7258,6 +7460,13 @@ func (r *ReachEstimate) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reachEstimateNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7748,7 +7957,6 @@ func (c CreateAdGroupsRequestConversionLocation) Ptr() *CreateAdGroupsRequestCon
 	return &c
 }
 
-// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
 var (
 	createAdGroupsRequestDeliveryScheduleFieldFriday    = big.NewInt(1 << 0)
 	createAdGroupsRequestDeliveryScheduleFieldMonday    = big.NewInt(1 << 1)
@@ -7759,6 +7967,7 @@ var (
 	createAdGroupsRequestDeliveryScheduleFieldWednesday = big.NewInt(1 << 6)
 )
 
+// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
 type CreateAdGroupsRequestDeliverySchedule struct {
 	// Windows the ad group delivers in on Friday.
 	Friday []*CreateAdGroupsRequestDeliveryScheduleFridayItem `json:"friday,omitempty" url:"friday,omitempty"`
@@ -7839,10 +8048,12 @@ func (c *CreateAdGroupsRequestDeliverySchedule) GetExtraProperties() map[string]
 }
 
 func (c *CreateAdGroupsRequestDeliverySchedule) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetFriday sets the Friday field and marks it as non-optional;
@@ -7976,10 +8187,12 @@ func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) GetExtraProperties() m
 }
 
 func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -8078,10 +8291,12 @@ func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) GetExtraProperties() m
 }
 
 func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -8180,10 +8395,12 @@ func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) GetExtraProperties()
 }
 
 func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -8282,10 +8499,12 @@ func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) GetExtraProperties() m
 }
 
 func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -8384,10 +8603,12 @@ func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) GetExtraProperties()
 }
 
 func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -8486,10 +8707,12 @@ func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) GetExtraProperties() 
 }
 
 func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -8588,10 +8811,12 @@ func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) GetExtraProperties(
 }
 
 func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -8650,12 +8875,12 @@ func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Under a campaign budget every ad group must use the same cap, which applies across the whole campaign, and only with the awareness objective (reach or ThruPlay ad groups) or engagement (ThruPlay). Fixed once the campaign launches; `null` clears it before then.
 var (
 	createAdGroupsRequestFrequencyCapFieldMaximumImpressions = big.NewInt(1 << 0)
 	createAdGroupsRequestFrequencyCapFieldPerDays            = big.NewInt(1 << 1)
 )
 
+// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Under a campaign budget every ad group must use the same cap, which applies across the whole campaign, and only with the awareness objective (reach or ThruPlay ad groups) or engagement (ThruPlay). Fixed once the campaign launches; `null` clears it before then.
 type CreateAdGroupsRequestFrequencyCap struct {
 	// Most times one person can be shown ads from this ad group within the window.
 	MaximumImpressions *int `json:"maximum_impressions,omitempty" url:"maximum_impressions,omitempty"`
@@ -8691,10 +8916,12 @@ func (c *CreateAdGroupsRequestFrequencyCap) GetExtraProperties() map[string]inte
 }
 
 func (c *CreateAdGroupsRequestFrequencyCap) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetMaximumImpressions sets the MaximumImpressions field and marks it as non-optional;
@@ -8961,10 +9188,12 @@ func (c *CreateAdGroupsRequestPlacementsOneItem) GetExtraProperties() map[string
 }
 
 func (c *CreateAdGroupsRequestPlacementsOneItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -9140,10 +9369,12 @@ func (d *DeleteAdGroupsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAdGroupsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -9231,10 +9462,12 @@ func (d *DuplicateAdGroupsResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (d *DuplicateAdGroupsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -9477,10 +9710,12 @@ func (l *ListAdGroupsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAdGroupsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -9546,6 +9781,12 @@ var (
 	listAdGroupsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAdGroupsResponsePageInfoNullableFields maps the wire names of ListAdGroupsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAdGroupsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAdGroupsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAdGroupsResponsePageInfoFieldStartCursor,
+}
+
 type ListAdGroupsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -9595,10 +9836,12 @@ func (l *ListAdGroupsResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListAdGroupsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -9641,6 +9884,13 @@ func (l *ListAdGroupsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAdGroupsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9858,10 +10108,12 @@ func (s *SearchTargetingOptionsAdGroupsResponse) GetExtraProperties() map[string
 }
 
 func (s *SearchTargetingOptionsAdGroupsResponse) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -10006,7 +10258,6 @@ func (u UpdateAdGroupsRequestConversionLocation) Ptr() *UpdateAdGroupsRequestCon
 	return &u
 }
 
-// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
 var (
 	updateAdGroupsRequestDeliveryScheduleFieldFriday    = big.NewInt(1 << 0)
 	updateAdGroupsRequestDeliveryScheduleFieldMonday    = big.NewInt(1 << 1)
@@ -10017,6 +10268,7 @@ var (
 	updateAdGroupsRequestDeliveryScheduleFieldWednesday = big.NewInt(1 << 6)
 )
 
+// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
 type UpdateAdGroupsRequestDeliverySchedule struct {
 	// Windows the ad group delivers in on Friday.
 	Friday []*UpdateAdGroupsRequestDeliveryScheduleFridayItem `json:"friday,omitempty" url:"friday,omitempty"`
@@ -10097,10 +10349,12 @@ func (u *UpdateAdGroupsRequestDeliverySchedule) GetExtraProperties() map[string]
 }
 
 func (u *UpdateAdGroupsRequestDeliverySchedule) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFriday sets the Friday field and marks it as non-optional;
@@ -10234,10 +10488,12 @@ func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) GetExtraProperties() m
 }
 
 func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -10336,10 +10592,12 @@ func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) GetExtraProperties() m
 }
 
 func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -10438,10 +10696,12 @@ func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) GetExtraProperties()
 }
 
 func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -10540,10 +10800,12 @@ func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) GetExtraProperties() m
 }
 
 func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -10642,10 +10904,12 @@ func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) GetExtraProperties()
 }
 
 func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -10744,10 +11008,12 @@ func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) GetExtraProperties() 
 }
 
 func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -10846,10 +11112,12 @@ func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) GetExtraProperties(
 }
 
 func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetEnd sets the End field and marks it as non-optional;
@@ -10908,12 +11176,12 @@ func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Under a campaign budget every ad group must use the same cap, which applies across the whole campaign, and only with the awareness objective (reach or ThruPlay ad groups) or engagement (ThruPlay). Fixed once the campaign launches; `null` clears it before then.
 var (
 	updateAdGroupsRequestFrequencyCapFieldMaximumImpressions = big.NewInt(1 << 0)
 	updateAdGroupsRequestFrequencyCapFieldPerDays            = big.NewInt(1 << 1)
 )
 
+// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Under a campaign budget every ad group must use the same cap, which applies across the whole campaign, and only with the awareness objective (reach or ThruPlay ad groups) or engagement (ThruPlay). Fixed once the campaign launches; `null` clears it before then.
 type UpdateAdGroupsRequestFrequencyCap struct {
 	// Most times one person can be shown ads from this ad group within the window.
 	MaximumImpressions *int `json:"maximum_impressions,omitempty" url:"maximum_impressions,omitempty"`
@@ -10949,10 +11217,12 @@ func (u *UpdateAdGroupsRequestFrequencyCap) GetExtraProperties() map[string]inte
 }
 
 func (u *UpdateAdGroupsRequestFrequencyCap) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetMaximumImpressions sets the MaximumImpressions field and marks it as non-optional;
@@ -11219,10 +11489,12 @@ func (u *UpdateAdGroupsRequestPlacementsOneItem) GetExtraProperties() map[string
 }
 
 func (u *UpdateAdGroupsRequestPlacementsOneItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -11371,10 +11643,12 @@ type UnpauseAdGroupsRequest struct {
 }
 
 func (u *UnpauseAdGroupsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -11474,10 +11748,12 @@ type UpdateAdGroupsRequest struct {
 }
 
 func (u *UpdateAdGroupsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

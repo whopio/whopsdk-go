@@ -41,10 +41,12 @@ type CreateAPIKeysRequest struct {
 }
 
 func (c *CreateAPIKeysRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
@@ -130,10 +132,12 @@ type DeleteAPIKeysRequest struct {
 }
 
 func (d *DeleteAPIKeysRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -183,10 +187,12 @@ type ListAPIKeysRequest struct {
 }
 
 func (l *ListAPIKeysRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetResourceID sets the ResourceID field and marks it as non-optional;
@@ -272,10 +278,12 @@ type RetrieveAPIKeysRequest struct {
 }
 
 func (r *RetrieveAPIKeysRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -298,10 +306,12 @@ type RotateAPIKeysRequest struct {
 }
 
 func (r *RotateAPIKeysRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -325,6 +335,14 @@ var (
 	aPIKeyFieldSystemRole           = big.NewInt(1 << 10)
 	aPIKeyFieldUpdatedAt            = big.NewInt(1 << 11)
 )
+
+// aPIKeyNullableFields maps the wire names of APIKey's nullable fields (required or optional) to their field bits.
+var aPIKeyNullableFields = map[string]*big.Int{
+	"expires_at":   aPIKeyFieldExpiresAt,
+	"ip_allowlist": aPIKeyFieldIPAllowlist,
+	"name":         aPIKeyFieldName,
+	"system_role":  aPIKeyFieldSystemRole,
+}
 
 type APIKey struct {
 	// Dated API version used when requests authenticated with this key omit the `Api-Version-Date` header.
@@ -449,10 +467,12 @@ func (a *APIKey) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *APIKey) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
@@ -551,6 +571,13 @@ func (a *APIKey) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, aPIKeyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -803,10 +830,12 @@ func (a *APIKeyGrant) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *APIKeyGrant) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetActions sets the Actions field and marks it as non-optional;
@@ -912,10 +941,12 @@ func (a *APIKeyGrantAction) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *APIKeyGrantAction) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -1171,6 +1202,11 @@ var (
 	permissionFieldName                 = big.NewInt(1 << 7)
 )
 
+// permissionNullableFields maps the wire names of Permission's nullable fields (required or optional) to their field bits.
+var permissionNullableFields = map[string]*big.Int{
+	"category": permissionFieldCategory,
+}
+
 type Permission struct {
 	// The permission action's identifier, for example `company:basic:read`.
 	Action string `json:"action" url:"action"`
@@ -1259,10 +1295,12 @@ func (p *Permission) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *Permission) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -1333,6 +1371,13 @@ func (p *Permission) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, permissionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1571,12 +1616,17 @@ func (c CreateAPIKeysRequestAPIVersionDate) Ptr() *CreateAPIKeysRequestAPIVersio
 	return &c
 }
 
-// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
 var (
 	createAPIKeysRequestPermissionsFieldStatements = big.NewInt(1 << 0)
 	createAPIKeysRequestPermissionsFieldSystemRole = big.NewInt(1 << 1)
 )
 
+// createAPIKeysRequestPermissionsNullableFields maps the wire names of CreateAPIKeysRequestPermissions's nullable fields (required or optional) to their field bits.
+var createAPIKeysRequestPermissionsNullableFields = map[string]*big.Int{
+	"system_role": createAPIKeysRequestPermissionsFieldSystemRole,
+}
+
+// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
 type CreateAPIKeysRequestPermissions struct {
 	// Explicit permission statements. Required unless `system_role` is set.
 	Statements []*CreateAPIKeysRequestPermissionsStatementsItem `json:"statements,omitempty" url:"statements,omitempty"`
@@ -1612,10 +1662,12 @@ func (c *CreateAPIKeysRequestPermissions) GetExtraProperties() map[string]interf
 }
 
 func (c *CreateAPIKeysRequestPermissions) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetStatements sets the Statements field and marks it as non-optional;
@@ -1644,6 +1696,13 @@ func (c *CreateAPIKeysRequestPermissions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAPIKeysRequestPermissionsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1724,10 +1783,12 @@ func (c *CreateAPIKeysRequestPermissionsStatementsItem) GetExtraProperties() map
 }
 
 func (c *CreateAPIKeysRequestPermissionsStatementsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetActions sets the Actions field and marks it as non-optional;
@@ -1888,10 +1949,12 @@ func (d *DeleteAPIKeysResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAPIKeysResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -2051,10 +2114,12 @@ func (l *ListAPIKeysResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAPIKeysResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2120,6 +2185,12 @@ var (
 	listAPIKeysResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAPIKeysResponsePageInfoNullableFields maps the wire names of ListAPIKeysResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAPIKeysResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAPIKeysResponsePageInfoFieldEndCursor,
+	"start_cursor": listAPIKeysResponsePageInfoFieldStartCursor,
+}
+
 type ListAPIKeysResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2169,10 +2240,12 @@ func (l *ListAPIKeysResponsePageInfo) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListAPIKeysResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2215,6 +2288,13 @@ func (l *ListAPIKeysResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAPIKeysResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2283,10 +2363,12 @@ func (l *ListPermissionsAPIKeysResponse) GetExtraProperties() map[string]interfa
 }
 
 func (l *ListPermissionsAPIKeysResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2352,6 +2434,12 @@ var (
 	listPermissionsAPIKeysResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPermissionsAPIKeysResponsePageInfoNullableFields maps the wire names of ListPermissionsAPIKeysResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPermissionsAPIKeysResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPermissionsAPIKeysResponsePageInfoFieldEndCursor,
+	"start_cursor": listPermissionsAPIKeysResponsePageInfoFieldStartCursor,
+}
+
 type ListPermissionsAPIKeysResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2401,10 +2489,12 @@ func (l *ListPermissionsAPIKeysResponsePageInfo) GetExtraProperties() map[string
 }
 
 func (l *ListPermissionsAPIKeysResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2447,6 +2537,13 @@ func (l *ListPermissionsAPIKeysResponsePageInfo) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPermissionsAPIKeysResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2650,12 +2747,17 @@ func (u UpdateAPIKeysRequestAPIVersionDate) Ptr() *UpdateAPIKeysRequestAPIVersio
 	return &u
 }
 
-// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
 var (
 	updateAPIKeysRequestPermissionsFieldStatements = big.NewInt(1 << 0)
 	updateAPIKeysRequestPermissionsFieldSystemRole = big.NewInt(1 << 1)
 )
 
+// updateAPIKeysRequestPermissionsNullableFields maps the wire names of UpdateAPIKeysRequestPermissions's nullable fields (required or optional) to their field bits.
+var updateAPIKeysRequestPermissionsNullableFields = map[string]*big.Int{
+	"system_role": updateAPIKeysRequestPermissionsFieldSystemRole,
+}
+
+// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
 type UpdateAPIKeysRequestPermissions struct {
 	// Explicit permission statements. Required unless `system_role` is set.
 	Statements []*UpdateAPIKeysRequestPermissionsStatementsItem `json:"statements,omitempty" url:"statements,omitempty"`
@@ -2691,10 +2793,12 @@ func (u *UpdateAPIKeysRequestPermissions) GetExtraProperties() map[string]interf
 }
 
 func (u *UpdateAPIKeysRequestPermissions) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetStatements sets the Statements field and marks it as non-optional;
@@ -2723,6 +2827,13 @@ func (u *UpdateAPIKeysRequestPermissions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAPIKeysRequestPermissionsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2803,10 +2914,12 @@ func (u *UpdateAPIKeysRequestPermissionsStatementsItem) GetExtraProperties() map
 }
 
 func (u *UpdateAPIKeysRequestPermissionsStatementsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetActions sets the Actions field and marks it as non-optional;
@@ -2932,10 +3045,12 @@ type UpdateAPIKeysRequest struct {
 }
 
 func (u *UpdateAPIKeysRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

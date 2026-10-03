@@ -21,6 +21,12 @@ var (
 	postFinancialActivityFundsAvailablePayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postFinancialActivityFundsAvailablePayloadNullableFields maps the wire names of PostFinancialActivityFundsAvailablePayload's nullable fields (required or optional) to their field bits.
+var postFinancialActivityFundsAvailablePayloadNullableFields = map[string]*big.Int{
+	"account_id":       postFinancialActivityFundsAvailablePayloadFieldAccountID,
+	"api_version_date": postFinancialActivityFundsAvailablePayloadFieldAPIVersionDate,
+}
+
 type PostFinancialActivityFundsAvailablePayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -109,10 +115,12 @@ func (p *PostFinancialActivityFundsAvailablePayload) GetExtraProperties() map[st
 }
 
 func (p *PostFinancialActivityFundsAvailablePayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -189,6 +197,13 @@ func (p *PostFinancialActivityFundsAvailablePayload) UnmarshalJSON(data []byte) 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postFinancialActivityFundsAvailablePayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

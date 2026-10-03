@@ -43,10 +43,12 @@ type CreatePaymentQuotesRequest struct {
 }
 
 func (c *CreatePaymentQuotesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -111,10 +113,12 @@ type RetrievePaymentQuotesRequest struct {
 }
 
 func (r *RetrievePaymentQuotesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -144,6 +148,16 @@ var (
 	paymentQuoteFieldTaxStatus       = big.NewInt(1 << 16)
 	paymentQuoteFieldTotal           = big.NewInt(1 << 17)
 )
+
+// paymentQuoteNullableFields maps the wire names of PaymentQuote's nullable fields (required or optional) to their field bits.
+var paymentQuoteNullableFields = map[string]*big.Int{
+	"address":          paymentQuoteFieldAddress,
+	"located_by":       paymentQuoteFieldLocatedBy,
+	"payment_id":       paymentQuoteFieldPaymentID,
+	"promo_code_id":    paymentQuoteFieldPromoCodeID,
+	"shipping_address": paymentQuoteFieldShippingAddress,
+	"tax_behavior":     paymentQuoteFieldTaxBehavior,
+}
 
 type PaymentQuote struct {
 	// The account the purchase is priced for, prefixed `biz_`.
@@ -322,10 +336,12 @@ func (p *PaymentQuote) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentQuote) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -466,6 +482,13 @@ func (p *PaymentQuote) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentQuoteNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -504,6 +527,11 @@ var (
 	paymentQuoteLineItemFieldTaxAmount = big.NewInt(1 << 4)
 	paymentQuoteLineItemFieldTotal     = big.NewInt(1 << 5)
 )
+
+// paymentQuoteLineItemNullableFields maps the wire names of PaymentQuoteLineItem's nullable fields (required or optional) to their field bits.
+var paymentQuoteLineItemNullableFields = map[string]*big.Int{
+	"plan_id": paymentQuoteLineItemFieldPlanID,
+}
 
 type PaymentQuoteLineItem struct {
 	// The promo code's share on this line. Zero without a code.
@@ -576,10 +604,12 @@ func (p *PaymentQuoteLineItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentQuoteLineItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDiscount sets the Discount field and marks it as non-optional;
@@ -636,6 +666,13 @@ func (p *PaymentQuoteLineItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentQuoteLineItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -781,10 +818,12 @@ func (t *TaxID) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TaxID) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -1199,7 +1238,6 @@ func (t TaxIDType) Ptr() *TaxIDType {
 	return &t
 }
 
-// The buyer's billing address. Where tax is calculated when no shipping address is given, and the address a tax registration belongs to. A seller that collects tax on this purchase needs the buyer located: provide a `country` here, on `shipping_address`, or an `ip_address`. Only the keys you supply are kept. The payment that consumes the quote must put the buyer in the same place, by country, state and postal code, through its own `shipping_address` or its confirmation token's billing address, or it is refused with `quote_mismatch`.
 var (
 	createPaymentQuotesRequestAddressFieldCity       = big.NewInt(1 << 0)
 	createPaymentQuotesRequestAddressFieldCountry    = big.NewInt(1 << 1)
@@ -1210,6 +1248,18 @@ var (
 	createPaymentQuotesRequestAddressFieldState      = big.NewInt(1 << 6)
 )
 
+// createPaymentQuotesRequestAddressNullableFields maps the wire names of CreatePaymentQuotesRequestAddress's nullable fields (required or optional) to their field bits.
+var createPaymentQuotesRequestAddressNullableFields = map[string]*big.Int{
+	"city":        createPaymentQuotesRequestAddressFieldCity,
+	"country":     createPaymentQuotesRequestAddressFieldCountry,
+	"line1":       createPaymentQuotesRequestAddressFieldLine1,
+	"line2":       createPaymentQuotesRequestAddressFieldLine2,
+	"name":        createPaymentQuotesRequestAddressFieldName,
+	"postal_code": createPaymentQuotesRequestAddressFieldPostalCode,
+	"state":       createPaymentQuotesRequestAddressFieldState,
+}
+
+// The buyer's billing address. Where tax is calculated when no shipping address is given, and the address a tax registration belongs to. A seller that collects tax on this purchase needs the buyer located: provide a `country` here, on `shipping_address`, or an `ip_address`. Only the keys you supply are kept. The payment that consumes the quote must put the buyer in the same place, by country, state and postal code, through its own `shipping_address` or its confirmation token's billing address, or it is refused with `quote_mismatch`.
 type CreatePaymentQuotesRequestAddress struct {
 	// City name.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1290,10 +1340,12 @@ func (c *CreatePaymentQuotesRequestAddress) GetExtraProperties() map[string]inte
 }
 
 func (c *CreatePaymentQuotesRequestAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1357,6 +1409,13 @@ func (c *CreatePaymentQuotesRequestAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentQuotesRequestAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1387,7 +1446,6 @@ func (c *CreatePaymentQuotesRequestAddress) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Where physical goods ship. When present it is where tax is calculated; omit it for digital goods. Only the keys you supply are kept. The payment that consumes the quote must ship to the same place, by country, state and postal code, or it is refused with `quote_mismatch`.
 var (
 	createPaymentQuotesRequestShippingAddressFieldCity       = big.NewInt(1 << 0)
 	createPaymentQuotesRequestShippingAddressFieldCountry    = big.NewInt(1 << 1)
@@ -1398,6 +1456,18 @@ var (
 	createPaymentQuotesRequestShippingAddressFieldState      = big.NewInt(1 << 6)
 )
 
+// createPaymentQuotesRequestShippingAddressNullableFields maps the wire names of CreatePaymentQuotesRequestShippingAddress's nullable fields (required or optional) to their field bits.
+var createPaymentQuotesRequestShippingAddressNullableFields = map[string]*big.Int{
+	"city":        createPaymentQuotesRequestShippingAddressFieldCity,
+	"country":     createPaymentQuotesRequestShippingAddressFieldCountry,
+	"line1":       createPaymentQuotesRequestShippingAddressFieldLine1,
+	"line2":       createPaymentQuotesRequestShippingAddressFieldLine2,
+	"name":        createPaymentQuotesRequestShippingAddressFieldName,
+	"postal_code": createPaymentQuotesRequestShippingAddressFieldPostalCode,
+	"state":       createPaymentQuotesRequestShippingAddressFieldState,
+}
+
+// Where physical goods ship. When present it is where tax is calculated; omit it for digital goods. Only the keys you supply are kept. The payment that consumes the quote must ship to the same place, by country, state and postal code, or it is refused with `quote_mismatch`.
 type CreatePaymentQuotesRequestShippingAddress struct {
 	// City name.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1478,10 +1548,12 @@ func (c *CreatePaymentQuotesRequestShippingAddress) GetExtraProperties() map[str
 }
 
 func (c *CreatePaymentQuotesRequestShippingAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1545,6 +1617,13 @@ func (c *CreatePaymentQuotesRequestShippingAddress) UnmarshalJSON(data []byte) e
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentQuotesRequestShippingAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1615,10 +1694,12 @@ func (c *CreatePaymentQuotesRequestTaxIDsItem) GetExtraProperties() map[string]i
 }
 
 func (c *CreatePaymentQuotesRequestTaxIDsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetType sets the Type field and marks it as non-optional;

@@ -31,10 +31,12 @@ type CreateTeamMembersRequest struct {
 }
 
 func (c *CreateTeamMembersRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -99,10 +101,12 @@ type DeleteTeamMembersRequest struct {
 }
 
 func (d *DeleteTeamMembersRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -158,10 +162,12 @@ type ListTeamMembersRequest struct {
 }
 
 func (l *ListTeamMembersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -261,10 +267,12 @@ type RetrieveTeamMembersRequest struct {
 }
 
 func (r *RetrieveTeamMembersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -286,6 +294,13 @@ var (
 	teamMemberFieldUpdatedAt      = big.NewInt(1 << 8)
 	teamMemberFieldUser           = big.NewInt(1 << 9)
 )
+
+// teamMemberNullableFields maps the wire names of TeamMember's nullable fields (required or optional) to their field bits.
+var teamMemberNullableFields = map[string]*big.Int{
+	"authorized_role": teamMemberFieldAuthorizedRole,
+	"email":           teamMemberFieldEmail,
+	"user":            teamMemberFieldUser,
+}
 
 type TeamMember struct {
 	// The account this membership belongs to, prefixed `biz_`.
@@ -394,10 +409,12 @@ func (t *TeamMember) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TeamMember) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -482,6 +499,13 @@ func (t *TeamMember) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, teamMemberNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -552,10 +576,12 @@ func (t *TeamMemberAuthorizedRole) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TeamMemberAuthorizedRole) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -754,10 +780,12 @@ func (d *DeleteTeamMembersResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (d *DeleteTeamMembersResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -959,10 +987,12 @@ func (l *ListTeamMembersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListTeamMembersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1028,6 +1058,12 @@ var (
 	listTeamMembersResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listTeamMembersResponsePageInfoNullableFields maps the wire names of ListTeamMembersResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listTeamMembersResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listTeamMembersResponsePageInfoFieldEndCursor,
+	"start_cursor": listTeamMembersResponsePageInfoFieldStartCursor,
+}
+
 type ListTeamMembersResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1077,10 +1113,12 @@ func (l *ListTeamMembersResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListTeamMembersResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1123,6 +1161,13 @@ func (l *ListTeamMembersResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listTeamMembersResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1207,10 +1252,12 @@ type UpdateTeamMembersRequest struct {
 }
 
 func (u *UpdateTeamMembersRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

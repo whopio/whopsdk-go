@@ -31,10 +31,12 @@ type CreateBountySubmissionsRequest struct {
 }
 
 func (c *CreateBountySubmissionsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAffiliateCode sets the AffiliateCode field and marks it as non-optional;
@@ -99,10 +101,12 @@ type DeleteBountySubmissionsRequest struct {
 }
 
 func (d *DeleteBountySubmissionsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -155,10 +159,12 @@ type ListBountySubmissionsRequest struct {
 }
 
 func (l *ListBountySubmissionsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -254,10 +260,12 @@ type RetrieveBountySubmissionsRequest struct {
 }
 
 func (r *RetrieveBountySubmissionsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -290,10 +298,12 @@ type SubmitBountySubmissionsRequest struct {
 }
 
 func (s *SubmitBountySubmissionsRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -347,6 +357,18 @@ var (
 	bountyCaptureClipFieldUpdatedAt          = big.NewInt(1 << 12)
 	bountyCaptureClipFieldVideoURL           = big.NewInt(1 << 13)
 )
+
+// bountyCaptureClipNullableFields maps the wire names of BountyCaptureClip's nullable fields (required or optional) to their field bits.
+var bountyCaptureClipNullableFields = map[string]*big.Int{
+	"duration_seconds": bountyCaptureClipFieldDurationSeconds,
+	"failure_code":     bountyCaptureClipFieldFailureCode,
+	"failure_message":  bountyCaptureClipFieldFailureMessage,
+	"frames_url":       bountyCaptureClipFieldFramesURL,
+	"imu_url":          bountyCaptureClipFieldImuURL,
+	"manifest_url":     bountyCaptureClipFieldManifestURL,
+	"ready_at":         bountyCaptureClipFieldReadyAt,
+	"video_url":        bountyCaptureClipFieldVideoURL,
+}
 
 type BountyCaptureClip struct {
 	// The bounty submission (attempt) this clip belongs to, prefixed `btys_`.
@@ -491,10 +513,12 @@ func (b *BountyCaptureClip) GetExtraProperties() map[string]interface{} {
 }
 
 func (b *BountyCaptureClip) require(field *big.Int) {
-	if b.explicitFields == nil {
-		b.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if b.explicitFields != nil {
+		next.Set(b.explicitFields)
 	}
-	b.explicitFields.Or(b.explicitFields, field)
+	next.Or(next, field)
+	b.explicitFields = next
 }
 
 // SetBountySubmissionID sets the BountySubmissionID field and marks it as non-optional;
@@ -607,6 +631,13 @@ func (b *BountyCaptureClip) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	b.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, bountyCaptureClipNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		b.require(presentFields)
+	}
 	b.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -694,6 +725,28 @@ var (
 	bountySubmissionFieldUpdatedAt                 = big.NewInt(1 << 24)
 	bountySubmissionFieldWorker                    = big.NewInt(1 << 25)
 )
+
+// bountySubmissionNullableFields maps the wire names of BountySubmission's nullable fields (required or optional) to their field bits.
+var bountySubmissionNullableFields = map[string]*big.Int{
+	"capture_clips":                bountySubmissionFieldCaptureClips,
+	"capture_filename":             bountySubmissionFieldCaptureFilename,
+	"city":                         bountySubmissionFieldCity,
+	"claimed_at":                   bountySubmissionFieldClaimedAt,
+	"content":                      bountySubmissionFieldContent,
+	"country":                      bountySubmissionFieldCountry,
+	"deliverable_type":             bountySubmissionFieldDeliverableType,
+	"deliverable_urls":             bountySubmissionFieldDeliverableURLs,
+	"denial_reason":                bountySubmissionFieldDenialReason,
+	"device":                       bountySubmissionFieldDevice,
+	"fov":                          bountySubmissionFieldFov,
+	"latest_proof_livestream_feed": bountySubmissionFieldLatestProofLivestreamFeed,
+	"operator":                     bountySubmissionFieldOperator,
+	"resolved_at":                  bountySubmissionFieldResolvedAt,
+	"site":                         bountySubmissionFieldSite,
+	"station":                      bountySubmissionFieldStation,
+	"status":                       bountySubmissionFieldStatus,
+	"submitted_at":                 bountySubmissionFieldSubmittedAt,
+}
 
 type BountySubmission struct {
 	// The bounty the work was submitted to, prefixed `bnty_`.
@@ -943,10 +996,12 @@ func (b *BountySubmission) GetExtraProperties() map[string]interface{} {
 }
 
 func (b *BountySubmission) require(field *big.Int) {
-	if b.explicitFields == nil {
-		b.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if b.explicitFields != nil {
+		next.Set(b.explicitFields)
 	}
-	b.explicitFields.Or(b.explicitFields, field)
+	next.Or(next, field)
+	b.explicitFields = next
 }
 
 // SetBountyID sets the BountyID field and marks it as non-optional;
@@ -1143,6 +1198,13 @@ func (b *BountySubmission) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	b.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, bountySubmissionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		b.require(presentFields)
+	}
 	b.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1207,6 +1269,14 @@ var (
 	bountySubmissionFileFieldURL            = big.NewInt(1 << 4)
 )
 
+// bountySubmissionFileNullableFields maps the wire names of BountySubmissionFile's nullable fields (required or optional) to their field bits.
+var bountySubmissionFileNullableFields = map[string]*big.Int{
+	"attachment_type": bountySubmissionFileFieldAttachmentType,
+	"content_type":    bountySubmissionFileFieldContentType,
+	"filename":        bountySubmissionFileFieldFilename,
+	"url":             bountySubmissionFileFieldURL,
+}
+
 type BountySubmissionFile struct {
 	// Broad kind of file.
 	AttachmentType *BountySubmissionFileAttachmentType `json:"attachment_type,omitempty" url:"attachment_type,omitempty"`
@@ -1269,10 +1339,12 @@ func (b *BountySubmissionFile) GetExtraProperties() map[string]interface{} {
 }
 
 func (b *BountySubmissionFile) require(field *big.Int) {
-	if b.explicitFields == nil {
-		b.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if b.explicitFields != nil {
+		next.Set(b.explicitFields)
 	}
-	b.explicitFields.Or(b.explicitFields, field)
+	next.Or(next, field)
+	b.explicitFields = next
 }
 
 // SetAttachmentType sets the AttachmentType field and marks it as non-optional;
@@ -1322,6 +1394,13 @@ func (b *BountySubmissionFile) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	b.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, bountySubmissionFileNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		b.require(presentFields)
+	}
 	b.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1410,7 +1489,6 @@ func (b BountySubmissionStatus) Ptr() *BountySubmissionStatus {
 	return &b
 }
 
-// The submitted work. Combine `urls`, `file_ids`, and `caption` freely; at least one link or file is required.
 var (
 	createBountySubmissionsRequestDeliverableFieldCaption = big.NewInt(1 << 0)
 	createBountySubmissionsRequestDeliverableFieldFileIDs = big.NewInt(1 << 1)
@@ -1418,6 +1496,13 @@ var (
 	createBountySubmissionsRequestDeliverableFieldURLs    = big.NewInt(1 << 3)
 )
 
+// createBountySubmissionsRequestDeliverableNullableFields maps the wire names of CreateBountySubmissionsRequestDeliverable's nullable fields (required or optional) to their field bits.
+var createBountySubmissionsRequestDeliverableNullableFields = map[string]*big.Int{
+	"caption": createBountySubmissionsRequestDeliverableFieldCaption,
+	"type":    createBountySubmissionsRequestDeliverableFieldType,
+}
+
+// The submitted work. Combine `urls`, `file_ids`, and `caption` freely; at least one link or file is required.
 type CreateBountySubmissionsRequestDeliverable struct {
 	// Written context shown to reviewers alongside the work.
 	Caption *string `json:"caption,omitempty" url:"caption,omitempty"`
@@ -1471,10 +1556,12 @@ func (c *CreateBountySubmissionsRequestDeliverable) GetExtraProperties() map[str
 }
 
 func (c *CreateBountySubmissionsRequestDeliverable) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCaption sets the Caption field and marks it as non-optional;
@@ -1517,6 +1604,13 @@ func (c *CreateBountySubmissionsRequestDeliverable) UnmarshalJSON(data []byte) e
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createBountySubmissionsRequestDeliverableNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1570,7 +1664,6 @@ func (c CreateBountySubmissionsRequestDeliverableType) Ptr() *CreateBountySubmis
 	return &c
 }
 
-// Optional capture metadata describing where and how the footage was recorded. Persisted on the submission. On a `data_capture` bounty every field except `fov` is required whenever metadata is provided.
 var (
 	createBountySubmissionsRequestMetadataFieldCity     = big.NewInt(1 << 0)
 	createBountySubmissionsRequestMetadataFieldCountry  = big.NewInt(1 << 1)
@@ -1581,6 +1674,18 @@ var (
 	createBountySubmissionsRequestMetadataFieldStation  = big.NewInt(1 << 6)
 )
 
+// createBountySubmissionsRequestMetadataNullableFields maps the wire names of CreateBountySubmissionsRequestMetadata's nullable fields (required or optional) to their field bits.
+var createBountySubmissionsRequestMetadataNullableFields = map[string]*big.Int{
+	"city":     createBountySubmissionsRequestMetadataFieldCity,
+	"country":  createBountySubmissionsRequestMetadataFieldCountry,
+	"device":   createBountySubmissionsRequestMetadataFieldDevice,
+	"fov":      createBountySubmissionsRequestMetadataFieldFov,
+	"operator": createBountySubmissionsRequestMetadataFieldOperator,
+	"site":     createBountySubmissionsRequestMetadataFieldSite,
+	"station":  createBountySubmissionsRequestMetadataFieldStation,
+}
+
+// Optional capture metadata describing where and how the footage was recorded. Persisted on the submission. On a `data_capture` bounty every field except `fov` is required whenever metadata is provided.
 type CreateBountySubmissionsRequestMetadata struct {
 	// City the footage was recorded in.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1661,10 +1766,12 @@ func (c *CreateBountySubmissionsRequestMetadata) GetExtraProperties() map[string
 }
 
 func (c *CreateBountySubmissionsRequestMetadata) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1728,6 +1835,13 @@ func (c *CreateBountySubmissionsRequestMetadata) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createBountySubmissionsRequestMetadataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1798,10 +1912,12 @@ func (d *DeleteBountySubmissionsResponse) GetExtraProperties() map[string]interf
 }
 
 func (d *DeleteBountySubmissionsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -1970,10 +2086,12 @@ func (l *ListBountySubmissionsResponse) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListBountySubmissionsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2039,6 +2157,12 @@ var (
 	listBountySubmissionsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listBountySubmissionsResponsePageInfoNullableFields maps the wire names of ListBountySubmissionsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listBountySubmissionsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listBountySubmissionsResponsePageInfoFieldEndCursor,
+	"start_cursor": listBountySubmissionsResponsePageInfoFieldStartCursor,
+}
+
 type ListBountySubmissionsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2088,10 +2212,12 @@ func (l *ListBountySubmissionsResponsePageInfo) GetExtraProperties() map[string]
 }
 
 func (l *ListBountySubmissionsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2134,6 +2260,13 @@ func (l *ListBountySubmissionsResponsePageInfo) UnmarshalJSON(data []byte) error
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listBountySubmissionsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2164,13 +2297,18 @@ func (l *ListBountySubmissionsResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Work to attach to the submission. Combine `urls`, `file_ids`, and `caption` freely; all are optional.
 var (
 	submitBountySubmissionsRequestDeliverableFieldCaption = big.NewInt(1 << 0)
 	submitBountySubmissionsRequestDeliverableFieldFileIDs = big.NewInt(1 << 1)
 	submitBountySubmissionsRequestDeliverableFieldURLs    = big.NewInt(1 << 2)
 )
 
+// submitBountySubmissionsRequestDeliverableNullableFields maps the wire names of SubmitBountySubmissionsRequestDeliverable's nullable fields (required or optional) to their field bits.
+var submitBountySubmissionsRequestDeliverableNullableFields = map[string]*big.Int{
+	"caption": submitBountySubmissionsRequestDeliverableFieldCaption,
+}
+
+// Work to attach to the submission. Combine `urls`, `file_ids`, and `caption` freely; all are optional.
 type SubmitBountySubmissionsRequestDeliverable struct {
 	// Written context shown to reviewers alongside the work.
 	Caption *string `json:"caption,omitempty" url:"caption,omitempty"`
@@ -2215,10 +2353,12 @@ func (s *SubmitBountySubmissionsRequestDeliverable) GetExtraProperties() map[str
 }
 
 func (s *SubmitBountySubmissionsRequestDeliverable) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetCaption sets the Caption field and marks it as non-optional;
@@ -2254,6 +2394,13 @@ func (s *SubmitBountySubmissionsRequestDeliverable) UnmarshalJSON(data []byte) e
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, submitBountySubmissionsRequestDeliverableNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }

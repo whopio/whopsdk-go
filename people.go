@@ -155,10 +155,12 @@ type ListPeopleRequest struct {
 }
 
 func (l *ListPeopleRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -492,10 +494,12 @@ type RetrievePeopleRequest struct {
 }
 
 func (r *RetrievePeopleRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -649,10 +653,12 @@ func (l *ListPeopleResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPeopleResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -741,6 +747,21 @@ var (
 	listPeopleResponseDataItemFieldTimezone        = big.NewInt(1 << 19)
 	listPeopleResponseDataItemFieldUser            = big.NewInt(1 << 20)
 )
+
+// listPeopleResponseDataItemNullableFields maps the wire names of ListPeopleResponseDataItem's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemNullableFields = map[string]*big.Int{
+	"email":             listPeopleResponseDataItemFieldEmail,
+	"first_purchase_at": listPeopleResponseDataItemFieldFirstPurchaseAt,
+	"first_source":      listPeopleResponseDataItemFieldFirstSource,
+	"last_ip":           listPeopleResponseDataItemFieldLastIP,
+	"last_purchase_at":  listPeopleResponseDataItemFieldLastPurchaseAt,
+	"last_source":       listPeopleResponseDataItemFieldLastSource,
+	"member":            listPeopleResponseDataItemFieldMember,
+	"name":              listPeopleResponseDataItemFieldName,
+	"phone":             listPeopleResponseDataItemFieldPhone,
+	"timezone":          listPeopleResponseDataItemFieldTimezone,
+	"user":              listPeopleResponseDataItemFieldUser,
+}
 
 type ListPeopleResponseDataItem struct {
 	AccountID string                            `json:"account_id" url:"account_id"`
@@ -934,10 +955,12 @@ func (l *ListPeopleResponseDataItem) GetExtraProperties() map[string]interface{}
 }
 
 func (l *ListPeopleResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1111,6 +1134,13 @@ func (l *ListPeopleResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1155,6 +1185,13 @@ var (
 	listPeopleResponseDataItemDeviceFieldOs      = big.NewInt(1 << 2)
 )
 
+// listPeopleResponseDataItemDeviceNullableFields maps the wire names of ListPeopleResponseDataItemDevice's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemDeviceNullableFields = map[string]*big.Int{
+	"browser": listPeopleResponseDataItemDeviceFieldBrowser,
+	"device":  listPeopleResponseDataItemDeviceFieldDevice,
+	"os":      listPeopleResponseDataItemDeviceFieldOs,
+}
+
 type ListPeopleResponseDataItemDevice struct {
 	Browser *string `json:"browser,omitempty" url:"browser,omitempty"`
 	Device  *string `json:"device,omitempty" url:"device,omitempty"`
@@ -1196,10 +1233,12 @@ func (l *ListPeopleResponseDataItemDevice) GetExtraProperties() map[string]inter
 }
 
 func (l *ListPeopleResponseDataItemDevice) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBrowser sets the Browser field and marks it as non-optional;
@@ -1235,6 +1274,13 @@ func (l *ListPeopleResponseDataItemDevice) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemDeviceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1265,7 +1311,6 @@ func (l *ListPeopleResponseDataItemDevice) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Where a visit came from: a whop ad click, a lead form, an external ad, or a referring site.
 var (
 	listPeopleResponseDataItemFirstSourceFieldAd         = big.NewInt(1 << 0)
 	listPeopleResponseDataItemFirstSourceFieldAdGroup    = big.NewInt(1 << 1)
@@ -1277,6 +1322,18 @@ var (
 	listPeopleResponseDataItemFirstSourceFieldUtmSource  = big.NewInt(1 << 7)
 )
 
+// listPeopleResponseDataItemFirstSourceNullableFields maps the wire names of ListPeopleResponseDataItemFirstSource's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemFirstSourceNullableFields = map[string]*big.Int{
+	"ad":          listPeopleResponseDataItemFirstSourceFieldAd,
+	"ad_group":    listPeopleResponseDataItemFirstSourceFieldAdGroup,
+	"campaign":    listPeopleResponseDataItemFirstSourceFieldCampaign,
+	"domain":      listPeopleResponseDataItemFirstSourceFieldDomain,
+	"occurred_at": listPeopleResponseDataItemFirstSourceFieldOccurredAt,
+	"platform":    listPeopleResponseDataItemFirstSourceFieldPlatform,
+	"utm_source":  listPeopleResponseDataItemFirstSourceFieldUtmSource,
+}
+
+// Where a visit came from: a whop ad click, a lead form, an external ad, or a referring site.
 type ListPeopleResponseDataItemFirstSource struct {
 	Ad         *ListPeopleResponseDataItemFirstSourceAd       `json:"ad,omitempty" url:"ad,omitempty"`
 	AdGroup    *ListPeopleResponseDataItemFirstSourceAdGroup  `json:"ad_group,omitempty" url:"ad_group,omitempty"`
@@ -1358,10 +1415,12 @@ func (l *ListPeopleResponseDataItemFirstSource) GetExtraProperties() map[string]
 }
 
 func (l *ListPeopleResponseDataItemFirstSource) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAd sets the Ad field and marks it as non-optional;
@@ -1438,6 +1497,13 @@ func (l *ListPeopleResponseDataItemFirstSource) UnmarshalJSON(data []byte) error
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemFirstSourceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1475,6 +1541,12 @@ var (
 	listPeopleResponseDataItemFirstSourceAdFieldName         = big.NewInt(1 << 1)
 	listPeopleResponseDataItemFirstSourceAdFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// listPeopleResponseDataItemFirstSourceAdNullableFields maps the wire names of ListPeopleResponseDataItemFirstSourceAd's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemFirstSourceAdNullableFields = map[string]*big.Int{
+	"name":          listPeopleResponseDataItemFirstSourceAdFieldName,
+	"thumbnail_url": listPeopleResponseDataItemFirstSourceAdFieldThumbnailURL,
+}
 
 type ListPeopleResponseDataItemFirstSourceAd struct {
 	ID           string  `json:"id" url:"id"`
@@ -1517,10 +1589,12 @@ func (l *ListPeopleResponseDataItemFirstSourceAd) GetExtraProperties() map[strin
 }
 
 func (l *ListPeopleResponseDataItemFirstSourceAd) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1556,6 +1630,13 @@ func (l *ListPeopleResponseDataItemFirstSourceAd) UnmarshalJSON(data []byte) err
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemFirstSourceAdNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1591,6 +1672,12 @@ var (
 	listPeopleResponseDataItemFirstSourceAdGroupFieldName         = big.NewInt(1 << 1)
 	listPeopleResponseDataItemFirstSourceAdGroupFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// listPeopleResponseDataItemFirstSourceAdGroupNullableFields maps the wire names of ListPeopleResponseDataItemFirstSourceAdGroup's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemFirstSourceAdGroupNullableFields = map[string]*big.Int{
+	"name":          listPeopleResponseDataItemFirstSourceAdGroupFieldName,
+	"thumbnail_url": listPeopleResponseDataItemFirstSourceAdGroupFieldThumbnailURL,
+}
 
 type ListPeopleResponseDataItemFirstSourceAdGroup struct {
 	ID           string  `json:"id" url:"id"`
@@ -1633,10 +1720,12 @@ func (l *ListPeopleResponseDataItemFirstSourceAdGroup) GetExtraProperties() map[
 }
 
 func (l *ListPeopleResponseDataItemFirstSourceAdGroup) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1672,6 +1761,13 @@ func (l *ListPeopleResponseDataItemFirstSourceAdGroup) UnmarshalJSON(data []byte
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemFirstSourceAdGroupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1707,6 +1803,12 @@ var (
 	listPeopleResponseDataItemFirstSourceCampaignFieldName         = big.NewInt(1 << 1)
 	listPeopleResponseDataItemFirstSourceCampaignFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// listPeopleResponseDataItemFirstSourceCampaignNullableFields maps the wire names of ListPeopleResponseDataItemFirstSourceCampaign's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemFirstSourceCampaignNullableFields = map[string]*big.Int{
+	"name":          listPeopleResponseDataItemFirstSourceCampaignFieldName,
+	"thumbnail_url": listPeopleResponseDataItemFirstSourceCampaignFieldThumbnailURL,
+}
 
 type ListPeopleResponseDataItemFirstSourceCampaign struct {
 	ID           string  `json:"id" url:"id"`
@@ -1749,10 +1851,12 @@ func (l *ListPeopleResponseDataItemFirstSourceCampaign) GetExtraProperties() map
 }
 
 func (l *ListPeopleResponseDataItemFirstSourceCampaign) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1788,6 +1892,13 @@ func (l *ListPeopleResponseDataItemFirstSourceCampaign) UnmarshalJSON(data []byt
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemFirstSourceCampaignNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1849,7 +1960,6 @@ func (l ListPeopleResponseDataItemFirstSourceType) Ptr() *ListPeopleResponseData
 	return &l
 }
 
-// Where a visit came from: a whop ad click, a lead form, an external ad, or a referring site.
 var (
 	listPeopleResponseDataItemLastSourceFieldAd         = big.NewInt(1 << 0)
 	listPeopleResponseDataItemLastSourceFieldAdGroup    = big.NewInt(1 << 1)
@@ -1861,6 +1971,18 @@ var (
 	listPeopleResponseDataItemLastSourceFieldUtmSource  = big.NewInt(1 << 7)
 )
 
+// listPeopleResponseDataItemLastSourceNullableFields maps the wire names of ListPeopleResponseDataItemLastSource's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemLastSourceNullableFields = map[string]*big.Int{
+	"ad":          listPeopleResponseDataItemLastSourceFieldAd,
+	"ad_group":    listPeopleResponseDataItemLastSourceFieldAdGroup,
+	"campaign":    listPeopleResponseDataItemLastSourceFieldCampaign,
+	"domain":      listPeopleResponseDataItemLastSourceFieldDomain,
+	"occurred_at": listPeopleResponseDataItemLastSourceFieldOccurredAt,
+	"platform":    listPeopleResponseDataItemLastSourceFieldPlatform,
+	"utm_source":  listPeopleResponseDataItemLastSourceFieldUtmSource,
+}
+
+// Where a visit came from: a whop ad click, a lead form, an external ad, or a referring site.
 type ListPeopleResponseDataItemLastSource struct {
 	Ad         *ListPeopleResponseDataItemLastSourceAd       `json:"ad,omitempty" url:"ad,omitempty"`
 	AdGroup    *ListPeopleResponseDataItemLastSourceAdGroup  `json:"ad_group,omitempty" url:"ad_group,omitempty"`
@@ -1942,10 +2064,12 @@ func (l *ListPeopleResponseDataItemLastSource) GetExtraProperties() map[string]i
 }
 
 func (l *ListPeopleResponseDataItemLastSource) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAd sets the Ad field and marks it as non-optional;
@@ -2022,6 +2146,13 @@ func (l *ListPeopleResponseDataItemLastSource) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemLastSourceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2059,6 +2190,12 @@ var (
 	listPeopleResponseDataItemLastSourceAdFieldName         = big.NewInt(1 << 1)
 	listPeopleResponseDataItemLastSourceAdFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// listPeopleResponseDataItemLastSourceAdNullableFields maps the wire names of ListPeopleResponseDataItemLastSourceAd's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemLastSourceAdNullableFields = map[string]*big.Int{
+	"name":          listPeopleResponseDataItemLastSourceAdFieldName,
+	"thumbnail_url": listPeopleResponseDataItemLastSourceAdFieldThumbnailURL,
+}
 
 type ListPeopleResponseDataItemLastSourceAd struct {
 	ID           string  `json:"id" url:"id"`
@@ -2101,10 +2238,12 @@ func (l *ListPeopleResponseDataItemLastSourceAd) GetExtraProperties() map[string
 }
 
 func (l *ListPeopleResponseDataItemLastSourceAd) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2140,6 +2279,13 @@ func (l *ListPeopleResponseDataItemLastSourceAd) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemLastSourceAdNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2175,6 +2321,12 @@ var (
 	listPeopleResponseDataItemLastSourceAdGroupFieldName         = big.NewInt(1 << 1)
 	listPeopleResponseDataItemLastSourceAdGroupFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// listPeopleResponseDataItemLastSourceAdGroupNullableFields maps the wire names of ListPeopleResponseDataItemLastSourceAdGroup's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemLastSourceAdGroupNullableFields = map[string]*big.Int{
+	"name":          listPeopleResponseDataItemLastSourceAdGroupFieldName,
+	"thumbnail_url": listPeopleResponseDataItemLastSourceAdGroupFieldThumbnailURL,
+}
 
 type ListPeopleResponseDataItemLastSourceAdGroup struct {
 	ID           string  `json:"id" url:"id"`
@@ -2217,10 +2369,12 @@ func (l *ListPeopleResponseDataItemLastSourceAdGroup) GetExtraProperties() map[s
 }
 
 func (l *ListPeopleResponseDataItemLastSourceAdGroup) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2256,6 +2410,13 @@ func (l *ListPeopleResponseDataItemLastSourceAdGroup) UnmarshalJSON(data []byte)
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemLastSourceAdGroupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2291,6 +2452,12 @@ var (
 	listPeopleResponseDataItemLastSourceCampaignFieldName         = big.NewInt(1 << 1)
 	listPeopleResponseDataItemLastSourceCampaignFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// listPeopleResponseDataItemLastSourceCampaignNullableFields maps the wire names of ListPeopleResponseDataItemLastSourceCampaign's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemLastSourceCampaignNullableFields = map[string]*big.Int{
+	"name":          listPeopleResponseDataItemLastSourceCampaignFieldName,
+	"thumbnail_url": listPeopleResponseDataItemLastSourceCampaignFieldThumbnailURL,
+}
 
 type ListPeopleResponseDataItemLastSourceCampaign struct {
 	ID           string  `json:"id" url:"id"`
@@ -2333,10 +2500,12 @@ func (l *ListPeopleResponseDataItemLastSourceCampaign) GetExtraProperties() map[
 }
 
 func (l *ListPeopleResponseDataItemLastSourceCampaign) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2372,6 +2541,13 @@ func (l *ListPeopleResponseDataItemLastSourceCampaign) UnmarshalJSON(data []byte
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemLastSourceCampaignNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2439,6 +2615,13 @@ var (
 	listPeopleResponseDataItemLocationFieldCountry   = big.NewInt(1 << 2)
 )
 
+// listPeopleResponseDataItemLocationNullableFields maps the wire names of ListPeopleResponseDataItemLocation's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemLocationNullableFields = map[string]*big.Int{
+	"city":      listPeopleResponseDataItemLocationFieldCity,
+	"continent": listPeopleResponseDataItemLocationFieldContinent,
+	"country":   listPeopleResponseDataItemLocationFieldCountry,
+}
+
 type ListPeopleResponseDataItemLocation struct {
 	City      *string `json:"city,omitempty" url:"city,omitempty"`
 	Continent *string `json:"continent,omitempty" url:"continent,omitempty"`
@@ -2480,10 +2663,12 @@ func (l *ListPeopleResponseDataItemLocation) GetExtraProperties() map[string]int
 }
 
 func (l *ListPeopleResponseDataItemLocation) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -2519,6 +2704,13 @@ func (l *ListPeopleResponseDataItemLocation) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemLocationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2549,7 +2741,6 @@ func (l *ListPeopleResponseDataItemLocation) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The user's member record at this account, when they are a member of it.
 var (
 	listPeopleResponseDataItemMemberFieldID            = big.NewInt(1 << 0)
 	listPeopleResponseDataItemMemberFieldJoinedAt      = big.NewInt(1 << 1)
@@ -2557,6 +2748,13 @@ var (
 	listPeopleResponseDataItemMemberFieldUsdTotalSpend = big.NewInt(1 << 3)
 )
 
+// listPeopleResponseDataItemMemberNullableFields maps the wire names of ListPeopleResponseDataItemMember's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemMemberNullableFields = map[string]*big.Int{
+	"joined_at": listPeopleResponseDataItemMemberFieldJoinedAt,
+	"status":    listPeopleResponseDataItemMemberFieldStatus,
+}
+
+// The user's member record at this account, when they are a member of it.
 type ListPeopleResponseDataItemMember struct {
 	ID            string     `json:"id" url:"id"`
 	JoinedAt      *time.Time `json:"joined_at,omitempty" url:"joined_at,omitempty"`
@@ -2606,10 +2804,12 @@ func (l *ListPeopleResponseDataItemMember) GetExtraProperties() map[string]inter
 }
 
 func (l *ListPeopleResponseDataItemMember) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2658,6 +2858,13 @@ func (l *ListPeopleResponseDataItemMember) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemMemberNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2690,7 +2897,6 @@ func (l *ListPeopleResponseDataItemMember) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The person's primary whop user, when one of their identities is a whop account.
 var (
 	listPeopleResponseDataItemUserFieldID            = big.NewInt(1 << 0)
 	listPeopleResponseDataItemUserFieldName          = big.NewInt(1 << 1)
@@ -2698,6 +2904,13 @@ var (
 	listPeopleResponseDataItemUserFieldUsername      = big.NewInt(1 << 3)
 )
 
+// listPeopleResponseDataItemUserNullableFields maps the wire names of ListPeopleResponseDataItemUser's nullable fields (required or optional) to their field bits.
+var listPeopleResponseDataItemUserNullableFields = map[string]*big.Int{
+	"name":            listPeopleResponseDataItemUserFieldName,
+	"profile_pic_url": listPeopleResponseDataItemUserFieldProfilePicURL,
+}
+
+// The person's primary whop user, when one of their identities is a whop account.
 type ListPeopleResponseDataItemUser struct {
 	ID            string  `json:"id" url:"id"`
 	Name          *string `json:"name,omitempty" url:"name,omitempty"`
@@ -2747,10 +2960,12 @@ func (l *ListPeopleResponseDataItemUser) GetExtraProperties() map[string]interfa
 }
 
 func (l *ListPeopleResponseDataItemUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2793,6 +3008,13 @@ func (l *ListPeopleResponseDataItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponseDataItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2829,6 +3051,12 @@ var (
 	listPeopleResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
 	listPeopleResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
+
+// listPeopleResponsePageInfoNullableFields maps the wire names of ListPeopleResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPeopleResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPeopleResponsePageInfoFieldEndCursor,
+	"start_cursor": listPeopleResponsePageInfoFieldStartCursor,
+}
 
 type ListPeopleResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
@@ -2879,10 +3107,12 @@ func (l *ListPeopleResponsePageInfo) GetExtraProperties() map[string]interface{}
 }
 
 func (l *ListPeopleResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2925,6 +3155,13 @@ func (l *ListPeopleResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPeopleResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2955,7 +3192,6 @@ func (l *ListPeopleResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The full profile a retrieve returns: the summary plus every linked identity, purchase rows, all acquisition sources, and exact usage breakdowns.
 var (
 	retrievePeopleResponseFieldAccountID        = big.NewInt(1 << 0)
 	retrievePeopleResponseFieldAov              = big.NewInt(1 << 1)
@@ -2991,6 +3227,22 @@ var (
 	retrievePeopleResponseFieldUserIDs          = big.NewInt(1 << 31)
 )
 
+// retrievePeopleResponseNullableFields maps the wire names of RetrievePeopleResponse's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseNullableFields = map[string]*big.Int{
+	"email":             retrievePeopleResponseFieldEmail,
+	"first_purchase_at": retrievePeopleResponseFieldFirstPurchaseAt,
+	"first_source":      retrievePeopleResponseFieldFirstSource,
+	"last_ip":           retrievePeopleResponseFieldLastIP,
+	"last_purchase_at":  retrievePeopleResponseFieldLastPurchaseAt,
+	"last_source":       retrievePeopleResponseFieldLastSource,
+	"member":            retrievePeopleResponseFieldMember,
+	"name":              retrievePeopleResponseFieldName,
+	"phone":             retrievePeopleResponseFieldPhone,
+	"timezone":          retrievePeopleResponseFieldTimezone,
+	"user":              retrievePeopleResponseFieldUser,
+}
+
+// The full profile a retrieve returns: the summary plus every linked identity, purchase rows, all acquisition sources, and exact usage breakdowns.
 type RetrievePeopleResponse struct {
 	AccountID        string                        `json:"account_id" url:"account_id"`
 	Aov              *float64                      `json:"aov,omitempty" url:"aov,omitempty"`
@@ -3277,10 +3529,12 @@ func (r *RetrievePeopleResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *RetrievePeopleResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3531,6 +3785,13 @@ func (r *RetrievePeopleResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3575,6 +3836,13 @@ var (
 	retrievePeopleResponseDeviceFieldOs      = big.NewInt(1 << 2)
 )
 
+// retrievePeopleResponseDeviceNullableFields maps the wire names of RetrievePeopleResponseDevice's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseDeviceNullableFields = map[string]*big.Int{
+	"browser": retrievePeopleResponseDeviceFieldBrowser,
+	"device":  retrievePeopleResponseDeviceFieldDevice,
+	"os":      retrievePeopleResponseDeviceFieldOs,
+}
+
 type RetrievePeopleResponseDevice struct {
 	Browser *string `json:"browser,omitempty" url:"browser,omitempty"`
 	Device  *string `json:"device,omitempty" url:"device,omitempty"`
@@ -3616,10 +3884,12 @@ func (r *RetrievePeopleResponseDevice) GetExtraProperties() map[string]interface
 }
 
 func (r *RetrievePeopleResponseDevice) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBrowser sets the Browser field and marks it as non-optional;
@@ -3655,6 +3925,13 @@ func (r *RetrievePeopleResponseDevice) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseDeviceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3685,7 +3962,6 @@ func (r *RetrievePeopleResponseDevice) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Where a visit came from: a whop ad click, a lead form, an external ad, or a referring site.
 var (
 	retrievePeopleResponseFirstSourceFieldAd         = big.NewInt(1 << 0)
 	retrievePeopleResponseFirstSourceFieldAdGroup    = big.NewInt(1 << 1)
@@ -3697,6 +3973,18 @@ var (
 	retrievePeopleResponseFirstSourceFieldUtmSource  = big.NewInt(1 << 7)
 )
 
+// retrievePeopleResponseFirstSourceNullableFields maps the wire names of RetrievePeopleResponseFirstSource's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseFirstSourceNullableFields = map[string]*big.Int{
+	"ad":          retrievePeopleResponseFirstSourceFieldAd,
+	"ad_group":    retrievePeopleResponseFirstSourceFieldAdGroup,
+	"campaign":    retrievePeopleResponseFirstSourceFieldCampaign,
+	"domain":      retrievePeopleResponseFirstSourceFieldDomain,
+	"occurred_at": retrievePeopleResponseFirstSourceFieldOccurredAt,
+	"platform":    retrievePeopleResponseFirstSourceFieldPlatform,
+	"utm_source":  retrievePeopleResponseFirstSourceFieldUtmSource,
+}
+
+// Where a visit came from: a whop ad click, a lead form, an external ad, or a referring site.
 type RetrievePeopleResponseFirstSource struct {
 	Ad         *RetrievePeopleResponseFirstSourceAd       `json:"ad,omitempty" url:"ad,omitempty"`
 	AdGroup    *RetrievePeopleResponseFirstSourceAdGroup  `json:"ad_group,omitempty" url:"ad_group,omitempty"`
@@ -3778,10 +4066,12 @@ func (r *RetrievePeopleResponseFirstSource) GetExtraProperties() map[string]inte
 }
 
 func (r *RetrievePeopleResponseFirstSource) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAd sets the Ad field and marks it as non-optional;
@@ -3858,6 +4148,13 @@ func (r *RetrievePeopleResponseFirstSource) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseFirstSourceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3895,6 +4192,12 @@ var (
 	retrievePeopleResponseFirstSourceAdFieldName         = big.NewInt(1 << 1)
 	retrievePeopleResponseFirstSourceAdFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// retrievePeopleResponseFirstSourceAdNullableFields maps the wire names of RetrievePeopleResponseFirstSourceAd's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseFirstSourceAdNullableFields = map[string]*big.Int{
+	"name":          retrievePeopleResponseFirstSourceAdFieldName,
+	"thumbnail_url": retrievePeopleResponseFirstSourceAdFieldThumbnailURL,
+}
 
 type RetrievePeopleResponseFirstSourceAd struct {
 	ID           string  `json:"id" url:"id"`
@@ -3937,10 +4240,12 @@ func (r *RetrievePeopleResponseFirstSourceAd) GetExtraProperties() map[string]in
 }
 
 func (r *RetrievePeopleResponseFirstSourceAd) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3976,6 +4281,13 @@ func (r *RetrievePeopleResponseFirstSourceAd) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseFirstSourceAdNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4011,6 +4323,12 @@ var (
 	retrievePeopleResponseFirstSourceAdGroupFieldName         = big.NewInt(1 << 1)
 	retrievePeopleResponseFirstSourceAdGroupFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// retrievePeopleResponseFirstSourceAdGroupNullableFields maps the wire names of RetrievePeopleResponseFirstSourceAdGroup's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseFirstSourceAdGroupNullableFields = map[string]*big.Int{
+	"name":          retrievePeopleResponseFirstSourceAdGroupFieldName,
+	"thumbnail_url": retrievePeopleResponseFirstSourceAdGroupFieldThumbnailURL,
+}
 
 type RetrievePeopleResponseFirstSourceAdGroup struct {
 	ID           string  `json:"id" url:"id"`
@@ -4053,10 +4371,12 @@ func (r *RetrievePeopleResponseFirstSourceAdGroup) GetExtraProperties() map[stri
 }
 
 func (r *RetrievePeopleResponseFirstSourceAdGroup) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4092,6 +4412,13 @@ func (r *RetrievePeopleResponseFirstSourceAdGroup) UnmarshalJSON(data []byte) er
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseFirstSourceAdGroupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4127,6 +4454,12 @@ var (
 	retrievePeopleResponseFirstSourceCampaignFieldName         = big.NewInt(1 << 1)
 	retrievePeopleResponseFirstSourceCampaignFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// retrievePeopleResponseFirstSourceCampaignNullableFields maps the wire names of RetrievePeopleResponseFirstSourceCampaign's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseFirstSourceCampaignNullableFields = map[string]*big.Int{
+	"name":          retrievePeopleResponseFirstSourceCampaignFieldName,
+	"thumbnail_url": retrievePeopleResponseFirstSourceCampaignFieldThumbnailURL,
+}
 
 type RetrievePeopleResponseFirstSourceCampaign struct {
 	ID           string  `json:"id" url:"id"`
@@ -4169,10 +4502,12 @@ func (r *RetrievePeopleResponseFirstSourceCampaign) GetExtraProperties() map[str
 }
 
 func (r *RetrievePeopleResponseFirstSourceCampaign) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4208,6 +4543,13 @@ func (r *RetrievePeopleResponseFirstSourceCampaign) UnmarshalJSON(data []byte) e
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseFirstSourceCampaignNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4269,7 +4611,6 @@ func (r RetrievePeopleResponseFirstSourceType) Ptr() *RetrievePeopleResponseFirs
 	return &r
 }
 
-// Where a visit came from: a whop ad click, a lead form, an external ad, or a referring site.
 var (
 	retrievePeopleResponseLastSourceFieldAd         = big.NewInt(1 << 0)
 	retrievePeopleResponseLastSourceFieldAdGroup    = big.NewInt(1 << 1)
@@ -4281,6 +4622,18 @@ var (
 	retrievePeopleResponseLastSourceFieldUtmSource  = big.NewInt(1 << 7)
 )
 
+// retrievePeopleResponseLastSourceNullableFields maps the wire names of RetrievePeopleResponseLastSource's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseLastSourceNullableFields = map[string]*big.Int{
+	"ad":          retrievePeopleResponseLastSourceFieldAd,
+	"ad_group":    retrievePeopleResponseLastSourceFieldAdGroup,
+	"campaign":    retrievePeopleResponseLastSourceFieldCampaign,
+	"domain":      retrievePeopleResponseLastSourceFieldDomain,
+	"occurred_at": retrievePeopleResponseLastSourceFieldOccurredAt,
+	"platform":    retrievePeopleResponseLastSourceFieldPlatform,
+	"utm_source":  retrievePeopleResponseLastSourceFieldUtmSource,
+}
+
+// Where a visit came from: a whop ad click, a lead form, an external ad, or a referring site.
 type RetrievePeopleResponseLastSource struct {
 	Ad         *RetrievePeopleResponseLastSourceAd       `json:"ad,omitempty" url:"ad,omitempty"`
 	AdGroup    *RetrievePeopleResponseLastSourceAdGroup  `json:"ad_group,omitempty" url:"ad_group,omitempty"`
@@ -4362,10 +4715,12 @@ func (r *RetrievePeopleResponseLastSource) GetExtraProperties() map[string]inter
 }
 
 func (r *RetrievePeopleResponseLastSource) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAd sets the Ad field and marks it as non-optional;
@@ -4442,6 +4797,13 @@ func (r *RetrievePeopleResponseLastSource) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseLastSourceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4479,6 +4841,12 @@ var (
 	retrievePeopleResponseLastSourceAdFieldName         = big.NewInt(1 << 1)
 	retrievePeopleResponseLastSourceAdFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// retrievePeopleResponseLastSourceAdNullableFields maps the wire names of RetrievePeopleResponseLastSourceAd's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseLastSourceAdNullableFields = map[string]*big.Int{
+	"name":          retrievePeopleResponseLastSourceAdFieldName,
+	"thumbnail_url": retrievePeopleResponseLastSourceAdFieldThumbnailURL,
+}
 
 type RetrievePeopleResponseLastSourceAd struct {
 	ID           string  `json:"id" url:"id"`
@@ -4521,10 +4889,12 @@ func (r *RetrievePeopleResponseLastSourceAd) GetExtraProperties() map[string]int
 }
 
 func (r *RetrievePeopleResponseLastSourceAd) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4560,6 +4930,13 @@ func (r *RetrievePeopleResponseLastSourceAd) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseLastSourceAdNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4595,6 +4972,12 @@ var (
 	retrievePeopleResponseLastSourceAdGroupFieldName         = big.NewInt(1 << 1)
 	retrievePeopleResponseLastSourceAdGroupFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// retrievePeopleResponseLastSourceAdGroupNullableFields maps the wire names of RetrievePeopleResponseLastSourceAdGroup's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseLastSourceAdGroupNullableFields = map[string]*big.Int{
+	"name":          retrievePeopleResponseLastSourceAdGroupFieldName,
+	"thumbnail_url": retrievePeopleResponseLastSourceAdGroupFieldThumbnailURL,
+}
 
 type RetrievePeopleResponseLastSourceAdGroup struct {
 	ID           string  `json:"id" url:"id"`
@@ -4637,10 +5020,12 @@ func (r *RetrievePeopleResponseLastSourceAdGroup) GetExtraProperties() map[strin
 }
 
 func (r *RetrievePeopleResponseLastSourceAdGroup) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4676,6 +5061,13 @@ func (r *RetrievePeopleResponseLastSourceAdGroup) UnmarshalJSON(data []byte) err
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseLastSourceAdGroupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4711,6 +5103,12 @@ var (
 	retrievePeopleResponseLastSourceCampaignFieldName         = big.NewInt(1 << 1)
 	retrievePeopleResponseLastSourceCampaignFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// retrievePeopleResponseLastSourceCampaignNullableFields maps the wire names of RetrievePeopleResponseLastSourceCampaign's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseLastSourceCampaignNullableFields = map[string]*big.Int{
+	"name":          retrievePeopleResponseLastSourceCampaignFieldName,
+	"thumbnail_url": retrievePeopleResponseLastSourceCampaignFieldThumbnailURL,
+}
 
 type RetrievePeopleResponseLastSourceCampaign struct {
 	ID           string  `json:"id" url:"id"`
@@ -4753,10 +5151,12 @@ func (r *RetrievePeopleResponseLastSourceCampaign) GetExtraProperties() map[stri
 }
 
 func (r *RetrievePeopleResponseLastSourceCampaign) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4792,6 +5192,13 @@ func (r *RetrievePeopleResponseLastSourceCampaign) UnmarshalJSON(data []byte) er
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseLastSourceCampaignNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4859,6 +5266,13 @@ var (
 	retrievePeopleResponseLocationFieldCountry   = big.NewInt(1 << 2)
 )
 
+// retrievePeopleResponseLocationNullableFields maps the wire names of RetrievePeopleResponseLocation's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseLocationNullableFields = map[string]*big.Int{
+	"city":      retrievePeopleResponseLocationFieldCity,
+	"continent": retrievePeopleResponseLocationFieldContinent,
+	"country":   retrievePeopleResponseLocationFieldCountry,
+}
+
 type RetrievePeopleResponseLocation struct {
 	City      *string `json:"city,omitempty" url:"city,omitempty"`
 	Continent *string `json:"continent,omitempty" url:"continent,omitempty"`
@@ -4900,10 +5314,12 @@ func (r *RetrievePeopleResponseLocation) GetExtraProperties() map[string]interfa
 }
 
 func (r *RetrievePeopleResponseLocation) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -4939,6 +5355,13 @@ func (r *RetrievePeopleResponseLocation) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseLocationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4969,7 +5392,6 @@ func (r *RetrievePeopleResponseLocation) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The user's member record at this account, when they are a member of it.
 var (
 	retrievePeopleResponseMemberFieldID            = big.NewInt(1 << 0)
 	retrievePeopleResponseMemberFieldJoinedAt      = big.NewInt(1 << 1)
@@ -4977,6 +5399,13 @@ var (
 	retrievePeopleResponseMemberFieldUsdTotalSpend = big.NewInt(1 << 3)
 )
 
+// retrievePeopleResponseMemberNullableFields maps the wire names of RetrievePeopleResponseMember's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseMemberNullableFields = map[string]*big.Int{
+	"joined_at": retrievePeopleResponseMemberFieldJoinedAt,
+	"status":    retrievePeopleResponseMemberFieldStatus,
+}
+
+// The user's member record at this account, when they are a member of it.
 type RetrievePeopleResponseMember struct {
 	ID            string     `json:"id" url:"id"`
 	JoinedAt      *time.Time `json:"joined_at,omitempty" url:"joined_at,omitempty"`
@@ -5026,10 +5455,12 @@ func (r *RetrievePeopleResponseMember) GetExtraProperties() map[string]interface
 }
 
 func (r *RetrievePeopleResponseMember) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5078,6 +5509,13 @@ func (r *RetrievePeopleResponseMember) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseMemberNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5157,10 +5595,12 @@ func (r *RetrievePeopleResponsePurchasesItem) GetExtraProperties() map[string]in
 }
 
 func (r *RetrievePeopleResponsePurchasesItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEventID sets the EventID field and marks it as non-optional;
@@ -5234,7 +5674,6 @@ func (r *RetrievePeopleResponsePurchasesItem) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Where a visit came from: a whop ad click, a lead form, an external ad, or a referring site.
 var (
 	retrievePeopleResponseSourcesItemFieldAd         = big.NewInt(1 << 0)
 	retrievePeopleResponseSourcesItemFieldAdGroup    = big.NewInt(1 << 1)
@@ -5246,6 +5685,18 @@ var (
 	retrievePeopleResponseSourcesItemFieldUtmSource  = big.NewInt(1 << 7)
 )
 
+// retrievePeopleResponseSourcesItemNullableFields maps the wire names of RetrievePeopleResponseSourcesItem's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseSourcesItemNullableFields = map[string]*big.Int{
+	"ad":          retrievePeopleResponseSourcesItemFieldAd,
+	"ad_group":    retrievePeopleResponseSourcesItemFieldAdGroup,
+	"campaign":    retrievePeopleResponseSourcesItemFieldCampaign,
+	"domain":      retrievePeopleResponseSourcesItemFieldDomain,
+	"occurred_at": retrievePeopleResponseSourcesItemFieldOccurredAt,
+	"platform":    retrievePeopleResponseSourcesItemFieldPlatform,
+	"utm_source":  retrievePeopleResponseSourcesItemFieldUtmSource,
+}
+
+// Where a visit came from: a whop ad click, a lead form, an external ad, or a referring site.
 type RetrievePeopleResponseSourcesItem struct {
 	Ad         *RetrievePeopleResponseSourcesItemAd       `json:"ad,omitempty" url:"ad,omitempty"`
 	AdGroup    *RetrievePeopleResponseSourcesItemAdGroup  `json:"ad_group,omitempty" url:"ad_group,omitempty"`
@@ -5327,10 +5778,12 @@ func (r *RetrievePeopleResponseSourcesItem) GetExtraProperties() map[string]inte
 }
 
 func (r *RetrievePeopleResponseSourcesItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAd sets the Ad field and marks it as non-optional;
@@ -5407,6 +5860,13 @@ func (r *RetrievePeopleResponseSourcesItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseSourcesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5444,6 +5904,12 @@ var (
 	retrievePeopleResponseSourcesItemAdFieldName         = big.NewInt(1 << 1)
 	retrievePeopleResponseSourcesItemAdFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// retrievePeopleResponseSourcesItemAdNullableFields maps the wire names of RetrievePeopleResponseSourcesItemAd's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseSourcesItemAdNullableFields = map[string]*big.Int{
+	"name":          retrievePeopleResponseSourcesItemAdFieldName,
+	"thumbnail_url": retrievePeopleResponseSourcesItemAdFieldThumbnailURL,
+}
 
 type RetrievePeopleResponseSourcesItemAd struct {
 	ID           string  `json:"id" url:"id"`
@@ -5486,10 +5952,12 @@ func (r *RetrievePeopleResponseSourcesItemAd) GetExtraProperties() map[string]in
 }
 
 func (r *RetrievePeopleResponseSourcesItemAd) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5525,6 +5993,13 @@ func (r *RetrievePeopleResponseSourcesItemAd) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseSourcesItemAdNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5560,6 +6035,12 @@ var (
 	retrievePeopleResponseSourcesItemAdGroupFieldName         = big.NewInt(1 << 1)
 	retrievePeopleResponseSourcesItemAdGroupFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// retrievePeopleResponseSourcesItemAdGroupNullableFields maps the wire names of RetrievePeopleResponseSourcesItemAdGroup's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseSourcesItemAdGroupNullableFields = map[string]*big.Int{
+	"name":          retrievePeopleResponseSourcesItemAdGroupFieldName,
+	"thumbnail_url": retrievePeopleResponseSourcesItemAdGroupFieldThumbnailURL,
+}
 
 type RetrievePeopleResponseSourcesItemAdGroup struct {
 	ID           string  `json:"id" url:"id"`
@@ -5602,10 +6083,12 @@ func (r *RetrievePeopleResponseSourcesItemAdGroup) GetExtraProperties() map[stri
 }
 
 func (r *RetrievePeopleResponseSourcesItemAdGroup) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5641,6 +6124,13 @@ func (r *RetrievePeopleResponseSourcesItemAdGroup) UnmarshalJSON(data []byte) er
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseSourcesItemAdGroupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5676,6 +6166,12 @@ var (
 	retrievePeopleResponseSourcesItemCampaignFieldName         = big.NewInt(1 << 1)
 	retrievePeopleResponseSourcesItemCampaignFieldThumbnailURL = big.NewInt(1 << 2)
 )
+
+// retrievePeopleResponseSourcesItemCampaignNullableFields maps the wire names of RetrievePeopleResponseSourcesItemCampaign's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseSourcesItemCampaignNullableFields = map[string]*big.Int{
+	"name":          retrievePeopleResponseSourcesItemCampaignFieldName,
+	"thumbnail_url": retrievePeopleResponseSourcesItemCampaignFieldThumbnailURL,
+}
 
 type RetrievePeopleResponseSourcesItemCampaign struct {
 	ID           string  `json:"id" url:"id"`
@@ -5718,10 +6214,12 @@ func (r *RetrievePeopleResponseSourcesItemCampaign) GetExtraProperties() map[str
 }
 
 func (r *RetrievePeopleResponseSourcesItemCampaign) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5757,6 +6255,13 @@ func (r *RetrievePeopleResponseSourcesItemCampaign) UnmarshalJSON(data []byte) e
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseSourcesItemCampaignNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5818,7 +6323,6 @@ func (r RetrievePeopleResponseSourcesItemType) Ptr() *RetrievePeopleResponseSour
 	return &r
 }
 
-// Exact usage breakdowns for the person's browser traffic (distinct events per value).
 var (
 	retrievePeopleResponseUsageFieldBrowser  = big.NewInt(1 << 0)
 	retrievePeopleResponseUsageFieldCity     = big.NewInt(1 << 1)
@@ -5830,6 +6334,7 @@ var (
 	retrievePeopleResponseUsageFieldTimezone = big.NewInt(1 << 7)
 )
 
+// Exact usage breakdowns for the person's browser traffic (distinct events per value).
 type RetrievePeopleResponseUsage struct {
 	Browser  []*RetrievePeopleResponseUsageBrowserItem  `json:"browser,omitempty" url:"browser,omitempty"`
 	City     []*RetrievePeopleResponseUsageCityItem     `json:"city,omitempty" url:"city,omitempty"`
@@ -5911,10 +6416,12 @@ func (r *RetrievePeopleResponseUsage) GetExtraProperties() map[string]interface{
 }
 
 func (r *RetrievePeopleResponseUsage) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBrowser sets the Browser field and marks it as non-optional;
@@ -6053,10 +6560,12 @@ func (r *RetrievePeopleResponseUsageBrowserItem) GetExtraProperties() map[string
 }
 
 func (r *RetrievePeopleResponseUsageBrowserItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEvents sets the Events field and marks it as non-optional;
@@ -6153,10 +6662,12 @@ func (r *RetrievePeopleResponseUsageCityItem) GetExtraProperties() map[string]in
 }
 
 func (r *RetrievePeopleResponseUsageCityItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEvents sets the Events field and marks it as non-optional;
@@ -6253,10 +6764,12 @@ func (r *RetrievePeopleResponseUsageCountryItem) GetExtraProperties() map[string
 }
 
 func (r *RetrievePeopleResponseUsageCountryItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEvents sets the Events field and marks it as non-optional;
@@ -6353,10 +6866,12 @@ func (r *RetrievePeopleResponseUsageDeviceItem) GetExtraProperties() map[string]
 }
 
 func (r *RetrievePeopleResponseUsageDeviceItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEvents sets the Events field and marks it as non-optional;
@@ -6453,10 +6968,12 @@ func (r *RetrievePeopleResponseUsageIPItem) GetExtraProperties() map[string]inte
 }
 
 func (r *RetrievePeopleResponseUsageIPItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEvents sets the Events field and marks it as non-optional;
@@ -6553,10 +7070,12 @@ func (r *RetrievePeopleResponseUsageOsItem) GetExtraProperties() map[string]inte
 }
 
 func (r *RetrievePeopleResponseUsageOsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEvents sets the Events field and marks it as non-optional;
@@ -6653,10 +7172,12 @@ func (r *RetrievePeopleResponseUsageReferrerItem) GetExtraProperties() map[strin
 }
 
 func (r *RetrievePeopleResponseUsageReferrerItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEvents sets the Events field and marks it as non-optional;
@@ -6753,10 +7274,12 @@ func (r *RetrievePeopleResponseUsageTimezoneItem) GetExtraProperties() map[strin
 }
 
 func (r *RetrievePeopleResponseUsageTimezoneItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetEvents sets the Events field and marks it as non-optional;
@@ -6815,7 +7338,6 @@ func (r *RetrievePeopleResponseUsageTimezoneItem) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The person's primary whop user, when one of their identities is a whop account.
 var (
 	retrievePeopleResponseUserFieldID            = big.NewInt(1 << 0)
 	retrievePeopleResponseUserFieldName          = big.NewInt(1 << 1)
@@ -6823,6 +7345,13 @@ var (
 	retrievePeopleResponseUserFieldUsername      = big.NewInt(1 << 3)
 )
 
+// retrievePeopleResponseUserNullableFields maps the wire names of RetrievePeopleResponseUser's nullable fields (required or optional) to their field bits.
+var retrievePeopleResponseUserNullableFields = map[string]*big.Int{
+	"name":            retrievePeopleResponseUserFieldName,
+	"profile_pic_url": retrievePeopleResponseUserFieldProfilePicURL,
+}
+
+// The person's primary whop user, when one of their identities is a whop account.
 type RetrievePeopleResponseUser struct {
 	ID            string  `json:"id" url:"id"`
 	Name          *string `json:"name,omitempty" url:"name,omitempty"`
@@ -6872,10 +7401,12 @@ func (r *RetrievePeopleResponseUser) GetExtraProperties() map[string]interface{}
 }
 
 func (r *RetrievePeopleResponseUser) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6918,6 +7449,13 @@ func (r *RetrievePeopleResponseUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePeopleResponseUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }

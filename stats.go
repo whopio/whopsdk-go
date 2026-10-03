@@ -221,10 +221,12 @@ type RetrieveStatsRequest struct {
 }
 
 func (r *RetrieveStatsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetMetric sets the Metric field and marks it as non-optional;
@@ -703,6 +705,12 @@ var (
 	funnelComparisonFieldRelativeLiftPercent          = big.NewInt(1 << 3)
 )
 
+// funnelComparisonNullableFields maps the wire names of FunnelComparison's nullable fields (required or optional) to their field bits.
+var funnelComparisonNullableFields = map[string]*big.Int{
+	"difference_confidence_interval": funnelComparisonFieldDifferenceConfidenceInterval,
+	"relative_lift_percent":          funnelComparisonFieldRelativeLiftPercent,
+}
+
 type FunnelComparison struct {
 	// The reference group's name.
 	Baseline string `json:"baseline" url:"baseline"`
@@ -756,10 +764,12 @@ func (f *FunnelComparison) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *FunnelComparison) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetBaseline sets the Baseline field and marks it as non-optional;
@@ -802,6 +812,13 @@ func (f *FunnelComparison) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, funnelComparisonNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -872,10 +889,12 @@ func (f *FunnelConfidenceInterval) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *FunnelConfidenceInterval) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetLower sets the Lower field and marks it as non-optional;
@@ -1124,10 +1143,12 @@ func (f *FunnelStep) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *FunnelStep) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetAppBuildID sets the AppBuildID field and marks it as non-optional;
@@ -1297,6 +1318,11 @@ var (
 	funnelStepResultFieldStep           = big.NewInt(1 << 2)
 )
 
+// funnelStepResultNullableFields maps the wire names of FunnelStepResult's nullable fields (required or optional) to their field bits.
+var funnelStepResultNullableFields = map[string]*big.Int{
+	"conversion_rate": funnelStepResultFieldConversionRate,
+}
+
 type FunnelStepResult struct {
 	// The percentage of first-step entrants reaching this step; null when there are no entrants.
 	ConversionRate *float64 `json:"conversion_rate,omitempty" url:"conversion_rate,omitempty"`
@@ -1341,10 +1367,12 @@ func (f *FunnelStepResult) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *FunnelStepResult) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetConversionRate sets the ConversionRate field and marks it as non-optional;
@@ -1380,6 +1408,13 @@ func (f *FunnelStepResult) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, funnelStepResultNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1520,10 +1555,12 @@ func (r *RetrieveStatsRequestSteps) GetExtraProperties() map[string]interface{} 
 }
 
 func (r *RetrieveStatsRequestSteps) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetField1 sets the Field1 field and marks it as non-optional;
@@ -1668,10 +1705,12 @@ func (l *ListStatsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListStatsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1813,10 +1852,12 @@ func (l *ListStatsResponseDataItem) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListStatsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBreakdowns sets the Breakdowns field and marks it as non-optional;
@@ -2055,10 +2096,12 @@ func (r *RetrieveStatsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *RetrieveStatsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2116,6 +2159,12 @@ var (
 	retrieveStatsResponseDataFieldTotals   = big.NewInt(1 << 2)
 )
 
+// retrieveStatsResponseDataNullableFields maps the wire names of RetrieveStatsResponseData's nullable fields (required or optional) to their field bits.
+var retrieveStatsResponseDataNullableFields = map[string]*big.Int{
+	"currency": retrieveStatsResponseDataFieldCurrency,
+	"totals":   retrieveStatsResponseDataFieldTotals,
+}
+
 type RetrieveStatsResponseData struct {
 	// ISO currency the values are denominated in. Present for currency-unit metrics: the convert_to currency, or usd.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
@@ -2160,10 +2209,12 @@ func (r *RetrieveStatsResponseData) GetExtraProperties() map[string]interface{} 
 }
 
 func (r *RetrieveStatsResponseData) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -2199,6 +2250,13 @@ func (r *RetrieveStatsResponseData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveStatsResponseDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2235,6 +2293,11 @@ var (
 	retrieveStatsResponseDataPointsItemFieldTimestamp = big.NewInt(1 << 2)
 	retrieveStatsResponseDataPointsItemFieldValue     = big.NewInt(1 << 3)
 )
+
+// retrieveStatsResponseDataPointsItemNullableFields maps the wire names of RetrieveStatsResponseDataPointsItem's nullable fields (required or optional) to their field bits.
+var retrieveStatsResponseDataPointsItemNullableFields = map[string]*big.Int{
+	"value": retrieveStatsResponseDataPointsItemFieldValue,
+}
 
 type RetrieveStatsResponseDataPointsItem struct {
 	// Present only when broken down: one entry per property value in this period.
@@ -2289,10 +2352,12 @@ func (r *RetrieveStatsResponseDataPointsItem) GetExtraProperties() map[string]in
 }
 
 func (r *RetrieveStatsResponseDataPointsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBreakdown sets the Breakdown field and marks it as non-optional;
@@ -2335,6 +2400,13 @@ func (r *RetrieveStatsResponseDataPointsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveStatsResponseDataPointsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2370,6 +2442,11 @@ var (
 	retrieveStatsResponseDataPointsItemBreakdownItemFieldSteps = big.NewInt(1 << 1)
 	retrieveStatsResponseDataPointsItemBreakdownItemFieldValue = big.NewInt(1 << 2)
 )
+
+// retrieveStatsResponseDataPointsItemBreakdownItemNullableFields maps the wire names of RetrieveStatsResponseDataPointsItemBreakdownItem's nullable fields (required or optional) to their field bits.
+var retrieveStatsResponseDataPointsItemBreakdownItemNullableFields = map[string]*big.Int{
+	"value": retrieveStatsResponseDataPointsItemBreakdownItemFieldValue,
+}
 
 type RetrieveStatsResponseDataPointsItemBreakdownItem struct {
 	// The property value, for example usd or visa.
@@ -2415,10 +2492,12 @@ func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) GetExtraProperties() 
 }
 
 func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -2454,6 +2533,13 @@ func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) UnmarshalJSON(data []
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveStatsResponseDataPointsItemBreakdownItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2491,6 +2577,13 @@ var (
 	retrieveStatsResponseDataTotalsItemFieldSteps              = big.NewInt(1 << 3)
 	retrieveStatsResponseDataTotalsItemFieldValue              = big.NewInt(1 << 4)
 )
+
+// retrieveStatsResponseDataTotalsItemNullableFields maps the wire names of RetrieveStatsResponseDataTotalsItem's nullable fields (required or optional) to their field bits.
+var retrieveStatsResponseDataTotalsItemNullableFields = map[string]*big.Int{
+	"comparison":          retrieveStatsResponseDataTotalsItemFieldComparison,
+	"confidence_interval": retrieveStatsResponseDataTotalsItemFieldConfidenceInterval,
+	"value":               retrieveStatsResponseDataTotalsItemFieldValue,
+}
 
 type RetrieveStatsResponseDataTotalsItem struct {
 	Comparison *FunnelComparison `json:"comparison,omitempty" url:"comparison,omitempty"`
@@ -2553,10 +2646,12 @@ func (r *RetrieveStatsResponseDataTotalsItem) GetExtraProperties() map[string]in
 }
 
 func (r *RetrieveStatsResponseDataTotalsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetComparison sets the Comparison field and marks it as non-optional;
@@ -2606,6 +2701,13 @@ func (r *RetrieveStatsResponseDataTotalsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveStatsResponseDataTotalsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }

@@ -47,10 +47,12 @@ type CreateSetupIntentsRequest struct {
 }
 
 func (c *CreateSetupIntentsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -177,10 +179,12 @@ type ListSetupIntentsRequest struct {
 }
 
 func (l *ListSetupIntentsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -266,10 +270,12 @@ type RetrieveSetupIntentsRequest struct {
 }
 
 func (r *RetrieveSetupIntentsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -292,10 +298,12 @@ type RetrieveStatusSetupIntentsRequest struct {
 }
 
 func (r *RetrieveStatusSetupIntentsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetSetupIntentID sets the SetupIntentID field and marks it as non-optional;
@@ -313,6 +321,13 @@ var (
 	setupStatusFieldReturnURL      = big.NewInt(1 << 4)
 	setupStatusFieldStatus         = big.NewInt(1 << 5)
 )
+
+// setupStatusNullableFields maps the wire names of SetupStatus's nullable fields (required or optional) to their field bits.
+var setupStatusNullableFields = map[string]*big.Int{
+	"last_setup_error": setupStatusFieldLastSetupError,
+	"next_action":      setupStatusFieldNextAction,
+	"return_url":       setupStatusFieldReturnURL,
+}
 
 type SetupStatus struct {
 	// The setup this status describes, prefixed `sint_`.
@@ -385,10 +400,12 @@ func (s *SetupStatus) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SetupStatus) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -445,6 +462,13 @@ func (s *SetupStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, setupStatusNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -657,10 +681,12 @@ func (l *ListSetupIntentsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListSetupIntentsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -726,6 +752,12 @@ var (
 	listSetupIntentsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listSetupIntentsResponsePageInfoNullableFields maps the wire names of ListSetupIntentsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listSetupIntentsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listSetupIntentsResponsePageInfoFieldEndCursor,
+	"start_cursor": listSetupIntentsResponsePageInfoFieldStartCursor,
+}
+
 type ListSetupIntentsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -775,10 +807,12 @@ func (l *ListSetupIntentsResponsePageInfo) GetExtraProperties() map[string]inter
 }
 
 func (l *ListSetupIntentsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -821,6 +855,13 @@ func (l *ListSetupIntentsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSetupIntentsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -861,6 +902,12 @@ var (
 	postSetupIntentCanceledPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postSetupIntentCanceledPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postSetupIntentCanceledPayloadNullableFields maps the wire names of PostSetupIntentCanceledPayload's nullable fields (required or optional) to their field bits.
+var postSetupIntentCanceledPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postSetupIntentCanceledPayloadFieldAccountID,
+	"api_version_date": postSetupIntentCanceledPayloadFieldAPIVersionDate,
+}
 
 type PostSetupIntentCanceledPayload struct {
 	// The account ID that this webhook event is associated with
@@ -950,10 +997,12 @@ func (p *PostSetupIntentCanceledPayload) GetExtraProperties() map[string]interfa
 }
 
 func (p *PostSetupIntentCanceledPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1030,6 +1079,13 @@ func (p *PostSetupIntentCanceledPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postSetupIntentCanceledPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1112,6 +1168,12 @@ var (
 	postSetupIntentRequiresActionPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postSetupIntentRequiresActionPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postSetupIntentRequiresActionPayloadNullableFields maps the wire names of PostSetupIntentRequiresActionPayload's nullable fields (required or optional) to their field bits.
+var postSetupIntentRequiresActionPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postSetupIntentRequiresActionPayloadFieldAccountID,
+	"api_version_date": postSetupIntentRequiresActionPayloadFieldAPIVersionDate,
+}
 
 type PostSetupIntentRequiresActionPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1201,10 +1263,12 @@ func (p *PostSetupIntentRequiresActionPayload) GetExtraProperties() map[string]i
 }
 
 func (p *PostSetupIntentRequiresActionPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1281,6 +1345,13 @@ func (p *PostSetupIntentRequiresActionPayload) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postSetupIntentRequiresActionPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1363,6 +1434,12 @@ var (
 	postSetupIntentSucceededPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postSetupIntentSucceededPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postSetupIntentSucceededPayloadNullableFields maps the wire names of PostSetupIntentSucceededPayload's nullable fields (required or optional) to their field bits.
+var postSetupIntentSucceededPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postSetupIntentSucceededPayloadFieldAccountID,
+	"api_version_date": postSetupIntentSucceededPayloadFieldAPIVersionDate,
+}
 
 type PostSetupIntentSucceededPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1452,10 +1529,12 @@ func (p *PostSetupIntentSucceededPayload) GetExtraProperties() map[string]interf
 }
 
 func (p *PostSetupIntentSucceededPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1532,6 +1611,13 @@ func (p *PostSetupIntentSucceededPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postSetupIntentSucceededPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1620,10 +1706,12 @@ type UpdateReturnURLSetupIntentsRequest struct {
 }
 
 func (u *UpdateReturnURLSetupIntentsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetSetupIntentID sets the SetupIntentID field and marks it as non-optional;

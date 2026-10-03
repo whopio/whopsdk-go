@@ -47,10 +47,12 @@ type ListReviewsRequest struct {
 }
 
 func (l *ListReviewsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -129,10 +131,12 @@ type RetrieveReviewsRequest struct {
 }
 
 func (r *RetrieveReviewsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -142,7 +146,6 @@ func (r *RetrieveReviewsRequest) SetID(id string) {
 	r.require(retrieveReviewsRequestFieldID)
 }
 
-// A user-submitted review of a company, including a star rating and optional text feedback.
 var (
 	reviewFieldAttachments    = big.NewInt(1 << 0)
 	reviewFieldCompany        = big.NewInt(1 << 1)
@@ -160,6 +163,16 @@ var (
 	reviewFieldUser           = big.NewInt(1 << 13)
 )
 
+// reviewNullableFields maps the wire names of Review's nullable fields (required or optional) to their field bits.
+var reviewNullableFields = map[string]*big.Int{
+	"description":      reviewFieldDescription,
+	"joined_at":        reviewFieldJoinedAt,
+	"paid_for_product": reviewFieldPaidForProduct,
+	"published_at":     reviewFieldPublishedAt,
+	"title":            reviewFieldTitle,
+}
+
+// A user-submitted review of a company, including a star rating and optional text feedback.
 type Review struct {
 	// A list of files and media attached to the review.
 	Attachments []*ReviewAttachmentsItem `json:"attachments" url:"attachments"`
@@ -303,10 +316,12 @@ func (r *Review) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *Review) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAttachments sets the Attachments field and marks it as non-optional;
@@ -431,6 +446,13 @@ func (r *Review) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reviewNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -469,7 +491,6 @@ func (r *Review) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Represents an image attachment
 var (
 	reviewAttachmentsItemFieldContentType = big.NewInt(1 << 0)
 	reviewAttachmentsItemFieldFilename    = big.NewInt(1 << 1)
@@ -477,6 +498,14 @@ var (
 	reviewAttachmentsItemFieldURL         = big.NewInt(1 << 3)
 )
 
+// reviewAttachmentsItemNullableFields maps the wire names of ReviewAttachmentsItem's nullable fields (required or optional) to their field bits.
+var reviewAttachmentsItemNullableFields = map[string]*big.Int{
+	"content_type": reviewAttachmentsItemFieldContentType,
+	"filename":     reviewAttachmentsItemFieldFilename,
+	"url":          reviewAttachmentsItemFieldURL,
+}
+
+// Represents an image attachment
 type ReviewAttachmentsItem struct {
 	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
 	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
@@ -530,10 +559,12 @@ func (r *ReviewAttachmentsItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReviewAttachmentsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -576,6 +607,13 @@ func (r *ReviewAttachmentsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reviewAttachmentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -606,13 +644,13 @@ func (r *ReviewAttachmentsItem) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The company that this review was written for.
 var (
 	reviewCompanyFieldID    = big.NewInt(1 << 0)
 	reviewCompanyFieldRoute = big.NewInt(1 << 1)
 	reviewCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// The company that this review was written for.
 type ReviewCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -657,10 +695,12 @@ func (r *ReviewCompany) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReviewCompany) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -726,7 +766,6 @@ func (r *ReviewCompany) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// A user-submitted review of a company, including a star rating and optional text feedback.
 var (
 	reviewListItemFieldAttachments    = big.NewInt(1 << 0)
 	reviewListItemFieldCreatedAt      = big.NewInt(1 << 1)
@@ -742,6 +781,16 @@ var (
 	reviewListItemFieldUser           = big.NewInt(1 << 11)
 )
 
+// reviewListItemNullableFields maps the wire names of ReviewListItem's nullable fields (required or optional) to their field bits.
+var reviewListItemNullableFields = map[string]*big.Int{
+	"description":      reviewListItemFieldDescription,
+	"joined_at":        reviewListItemFieldJoinedAt,
+	"paid_for_product": reviewListItemFieldPaidForProduct,
+	"published_at":     reviewListItemFieldPublishedAt,
+	"title":            reviewListItemFieldTitle,
+}
+
+// A user-submitted review of a company, including a star rating and optional text feedback.
 type ReviewListItem struct {
 	// A list of files and media attached to the review.
 	Attachments []*ReviewListItemAttachmentsItem `json:"attachments" url:"attachments"`
@@ -867,10 +916,12 @@ func (r *ReviewListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReviewListItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAttachments sets the Attachments field and marks it as non-optional;
@@ -981,6 +1032,13 @@ func (r *ReviewListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reviewListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1019,7 +1077,6 @@ func (r *ReviewListItem) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Represents an image attachment
 var (
 	reviewListItemAttachmentsItemFieldContentType = big.NewInt(1 << 0)
 	reviewListItemAttachmentsItemFieldFilename    = big.NewInt(1 << 1)
@@ -1027,6 +1084,14 @@ var (
 	reviewListItemAttachmentsItemFieldURL         = big.NewInt(1 << 3)
 )
 
+// reviewListItemAttachmentsItemNullableFields maps the wire names of ReviewListItemAttachmentsItem's nullable fields (required or optional) to their field bits.
+var reviewListItemAttachmentsItemNullableFields = map[string]*big.Int{
+	"content_type": reviewListItemAttachmentsItemFieldContentType,
+	"filename":     reviewListItemAttachmentsItemFieldFilename,
+	"url":          reviewListItemAttachmentsItemFieldURL,
+}
+
+// Represents an image attachment
 type ReviewListItemAttachmentsItem struct {
 	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
 	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
@@ -1080,10 +1145,12 @@ func (r *ReviewListItemAttachmentsItem) GetExtraProperties() map[string]interfac
 }
 
 func (r *ReviewListItemAttachmentsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -1126,6 +1193,13 @@ func (r *ReviewListItemAttachmentsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reviewListItemAttachmentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1156,13 +1230,18 @@ func (r *ReviewListItemAttachmentsItem) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The user account of the person who wrote this review.
 var (
 	reviewListItemUserFieldID       = big.NewInt(1 << 0)
 	reviewListItemUserFieldName     = big.NewInt(1 << 1)
 	reviewListItemUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// reviewListItemUserNullableFields maps the wire names of ReviewListItemUser's nullable fields (required or optional) to their field bits.
+var reviewListItemUserNullableFields = map[string]*big.Int{
+	"name": reviewListItemUserFieldName,
+}
+
+// The user account of the person who wrote this review.
 type ReviewListItemUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1207,10 +1286,12 @@ func (r *ReviewListItemUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReviewListItemUser) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1246,6 +1327,13 @@ func (r *ReviewListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reviewListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1276,12 +1364,12 @@ func (r *ReviewListItemUser) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The product that this review was written for.
 var (
 	reviewProductFieldID    = big.NewInt(1 << 0)
 	reviewProductFieldTitle = big.NewInt(1 << 1)
 )
 
+// The product that this review was written for.
 type ReviewProduct struct {
 	// The unique identifier for the product.
 	ID string `json:"id" url:"id"`
@@ -1317,10 +1405,12 @@ func (r *ReviewProduct) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReviewProduct) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1405,13 +1495,18 @@ func (r ReviewStatus) Ptr() *ReviewStatus {
 	return &r
 }
 
-// The user account of the person who wrote this review.
 var (
 	reviewUserFieldID       = big.NewInt(1 << 0)
 	reviewUserFieldName     = big.NewInt(1 << 1)
 	reviewUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// reviewUserNullableFields maps the wire names of ReviewUser's nullable fields (required or optional) to their field bits.
+var reviewUserNullableFields = map[string]*big.Int{
+	"name": reviewUserFieldName,
+}
+
+// The user account of the person who wrote this review.
 type ReviewUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1456,10 +1551,12 @@ func (r *ReviewUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *ReviewUser) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1495,6 +1592,13 @@ func (r *ReviewUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, reviewUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1525,12 +1629,12 @@ func (r *ReviewUser) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The connection type for Review.
 var (
 	listReviewsResponseFieldData     = big.NewInt(1 << 0)
 	listReviewsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for Review.
 type ListReviewsResponse struct {
 	// A list of nodes.
 	Data []*ReviewListItem `json:"data" url:"data"`
@@ -1566,10 +1670,12 @@ func (l *ListReviewsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListReviewsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

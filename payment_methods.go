@@ -29,10 +29,12 @@ type DeletePaymentMethodRequest struct {
 }
 
 func (d *DeletePaymentMethodRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -112,10 +114,12 @@ type ListPaymentMethodsRequest struct {
 }
 
 func (l *ListPaymentMethodsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -249,10 +253,12 @@ type RetrievePaymentMethodsRequest struct {
 }
 
 func (r *RetrievePaymentMethodsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -708,7 +714,6 @@ func (p *PaymentMethod) validate() error {
 	return nil
 }
 
-// A saved payment method with no type-specific details available.
 var (
 	paymentMethodBasePaymentMethodFieldCreatedAt         = big.NewInt(1 << 0)
 	paymentMethodBasePaymentMethodFieldIcons             = big.NewInt(1 << 1)
@@ -716,6 +721,7 @@ var (
 	paymentMethodBasePaymentMethodFieldPaymentMethodType = big.NewInt(1 << 3)
 )
 
+// A saved payment method with no type-specific details available.
 type PaymentMethodBasePaymentMethod struct {
 	// The time of the event in ISO 8601 UTC format with millisecond precision
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -769,10 +775,12 @@ func (p *PaymentMethodBasePaymentMethod) GetExtraProperties() map[string]interfa
 }
 
 func (p *PaymentMethodBasePaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -853,12 +861,12 @@ func (p *PaymentMethodBasePaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodBasePaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodBasePaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodBasePaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodBasePaymentMethodIconsCard `json:"card" url:"card"`
@@ -894,10 +902,12 @@ func (p *PaymentMethodBasePaymentMethodIcons) GetExtraProperties() map[string]in
 }
 
 func (p *PaymentMethodBasePaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -956,12 +966,12 @@ func (p *PaymentMethodBasePaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodBasePaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodBasePaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodBasePaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodBasePaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -997,10 +1007,12 @@ func (p *PaymentMethodBasePaymentMethodIconsCard) GetExtraProperties() map[strin
 }
 
 func (p *PaymentMethodBasePaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -1059,7 +1071,6 @@ func (p *PaymentMethodBasePaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodBasePaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodBasePaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -1067,6 +1078,7 @@ var (
 	paymentMethodBasePaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodBasePaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -1120,10 +1132,12 @@ func (p *PaymentMethodBasePaymentMethodIconsCardDark) GetExtraProperties() map[s
 }
 
 func (p *PaymentMethodBasePaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -1196,7 +1210,6 @@ func (p *PaymentMethodBasePaymentMethodIconsCardDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodBasePaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodBasePaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -1204,6 +1217,7 @@ var (
 	paymentMethodBasePaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodBasePaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -1257,10 +1271,12 @@ func (p *PaymentMethodBasePaymentMethodIconsCardLight) GetExtraProperties() map[
 }
 
 func (p *PaymentMethodBasePaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -1333,12 +1349,12 @@ func (p *PaymentMethodBasePaymentMethodIconsCardLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodBasePaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodBasePaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodBasePaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodBasePaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -1374,10 +1390,12 @@ func (p *PaymentMethodBasePaymentMethodIconsSquare) GetExtraProperties() map[str
 }
 
 func (p *PaymentMethodBasePaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -1436,7 +1454,6 @@ func (p *PaymentMethodBasePaymentMethodIconsSquare) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodBasePaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodBasePaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -1444,6 +1461,7 @@ var (
 	paymentMethodBasePaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodBasePaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -1497,10 +1515,12 @@ func (p *PaymentMethodBasePaymentMethodIconsSquareDark) GetExtraProperties() map
 }
 
 func (p *PaymentMethodBasePaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -1573,7 +1593,6 @@ func (p *PaymentMethodBasePaymentMethodIconsSquareDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodBasePaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodBasePaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -1581,6 +1600,7 @@ var (
 	paymentMethodBasePaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodBasePaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -1634,10 +1654,12 @@ func (p *PaymentMethodBasePaymentMethodIconsSquareLight) GetExtraProperties() ma
 }
 
 func (p *PaymentMethodBasePaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -1710,7 +1732,6 @@ func (p *PaymentMethodBasePaymentMethodIconsSquareLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// A saved card payment method, including brand, last four digits, and expiration details.
 var (
 	paymentMethodCardPaymentMethodFieldCard              = big.NewInt(1 << 0)
 	paymentMethodCardPaymentMethodFieldCreatedAt         = big.NewInt(1 << 1)
@@ -1720,6 +1741,7 @@ var (
 	paymentMethodCardPaymentMethodFieldPaymentMethodType = big.NewInt(1 << 5)
 )
 
+// A saved card payment method, including brand, last four digits, and expiration details.
 type PaymentMethodCardPaymentMethod struct {
 	// The card-specific details for this payment method, including brand, last four digits, and expiration.
 	Card *PaymentMethodCardPaymentMethodCard `json:"card" url:"card"`
@@ -1791,10 +1813,12 @@ func (p *PaymentMethodCardPaymentMethod) GetExtraProperties() map[string]interfa
 }
 
 func (p *PaymentMethodCardPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -1889,7 +1913,6 @@ func (p *PaymentMethodCardPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The card-specific details for this payment method, including brand, last four digits, and expiration.
 var (
 	paymentMethodCardPaymentMethodCardFieldBrand           = big.NewInt(1 << 0)
 	paymentMethodCardPaymentMethodCardFieldExpMonth        = big.NewInt(1 << 1)
@@ -1901,6 +1924,17 @@ var (
 	paymentMethodCardPaymentMethodCardFieldThreeDsVerified = big.NewInt(1 << 7)
 )
 
+// paymentMethodCardPaymentMethodCardNullableFields maps the wire names of PaymentMethodCardPaymentMethodCard's nullable fields (required or optional) to their field bits.
+var paymentMethodCardPaymentMethodCardNullableFields = map[string]*big.Int{
+	"brand":        paymentMethodCardPaymentMethodCardFieldBrand,
+	"exp_month":    paymentMethodCardPaymentMethodCardFieldExpMonth,
+	"exp_year":     paymentMethodCardPaymentMethodCardFieldExpYear,
+	"fingerprint":  paymentMethodCardPaymentMethodCardFieldFingerprint,
+	"funding_type": paymentMethodCardPaymentMethodCardFieldFundingType,
+	"last4":        paymentMethodCardPaymentMethodCardFieldLast4,
+}
+
+// The card-specific details for this payment method, including brand, last four digits, and expiration.
 type PaymentMethodCardPaymentMethodCard struct {
 	// The card network (e.g., visa, mastercard, amex). Null if the brand could not be determined.
 	Brand *CardBrands `json:"brand,omitempty" url:"brand,omitempty"`
@@ -1990,10 +2024,12 @@ func (p *PaymentMethodCardPaymentMethodCard) GetExtraProperties() map[string]int
 }
 
 func (p *PaymentMethodCardPaymentMethodCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBrand sets the Brand field and marks it as non-optional;
@@ -2064,6 +2100,13 @@ func (p *PaymentMethodCardPaymentMethodCard) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodCardPaymentMethodCardNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2094,12 +2137,12 @@ func (p *PaymentMethodCardPaymentMethodCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodCardPaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodCardPaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodCardPaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodCardPaymentMethodIconsCard `json:"card" url:"card"`
@@ -2135,10 +2178,12 @@ func (p *PaymentMethodCardPaymentMethodIcons) GetExtraProperties() map[string]in
 }
 
 func (p *PaymentMethodCardPaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -2197,12 +2242,12 @@ func (p *PaymentMethodCardPaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodCardPaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodCardPaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodCardPaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodCardPaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -2238,10 +2283,12 @@ func (p *PaymentMethodCardPaymentMethodIconsCard) GetExtraProperties() map[strin
 }
 
 func (p *PaymentMethodCardPaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -2300,7 +2347,6 @@ func (p *PaymentMethodCardPaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodCardPaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodCardPaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -2308,6 +2354,7 @@ var (
 	paymentMethodCardPaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodCardPaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -2361,10 +2408,12 @@ func (p *PaymentMethodCardPaymentMethodIconsCardDark) GetExtraProperties() map[s
 }
 
 func (p *PaymentMethodCardPaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -2437,7 +2486,6 @@ func (p *PaymentMethodCardPaymentMethodIconsCardDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodCardPaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodCardPaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -2445,6 +2493,7 @@ var (
 	paymentMethodCardPaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodCardPaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -2498,10 +2547,12 @@ func (p *PaymentMethodCardPaymentMethodIconsCardLight) GetExtraProperties() map[
 }
 
 func (p *PaymentMethodCardPaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -2574,12 +2625,12 @@ func (p *PaymentMethodCardPaymentMethodIconsCardLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodCardPaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodCardPaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodCardPaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodCardPaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -2615,10 +2666,12 @@ func (p *PaymentMethodCardPaymentMethodIconsSquare) GetExtraProperties() map[str
 }
 
 func (p *PaymentMethodCardPaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -2677,7 +2730,6 @@ func (p *PaymentMethodCardPaymentMethodIconsSquare) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodCardPaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodCardPaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -2685,6 +2737,7 @@ var (
 	paymentMethodCardPaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodCardPaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -2738,10 +2791,12 @@ func (p *PaymentMethodCardPaymentMethodIconsSquareDark) GetExtraProperties() map
 }
 
 func (p *PaymentMethodCardPaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -2814,7 +2869,6 @@ func (p *PaymentMethodCardPaymentMethodIconsSquareDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodCardPaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodCardPaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -2822,6 +2876,7 @@ var (
 	paymentMethodCardPaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodCardPaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -2875,10 +2930,12 @@ func (p *PaymentMethodCardPaymentMethodIconsSquareLight) GetExtraProperties() ma
 }
 
 func (p *PaymentMethodCardPaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -2951,7 +3008,6 @@ func (p *PaymentMethodCardPaymentMethodIconsSquareLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// A saved Cash App payment method, including the buyer's cashtag and unique identifier.
 var (
 	paymentMethodCashappPaymentMethodFieldCashapp           = big.NewInt(1 << 0)
 	paymentMethodCashappPaymentMethodFieldCreatedAt         = big.NewInt(1 << 1)
@@ -2960,6 +3016,7 @@ var (
 	paymentMethodCashappPaymentMethodFieldPaymentMethodType = big.NewInt(1 << 4)
 )
 
+// A saved Cash App payment method, including the buyer's cashtag and unique identifier.
 type PaymentMethodCashappPaymentMethod struct {
 	// The Cash App-specific details for this payment method, including cashtag and buyer ID.
 	Cashapp *PaymentMethodCashappPaymentMethodCashapp `json:"cashapp" url:"cashapp"`
@@ -3022,10 +3079,12 @@ func (p *PaymentMethodCashappPaymentMethod) GetExtraProperties() map[string]inte
 }
 
 func (p *PaymentMethodCashappPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCashapp sets the Cashapp field and marks it as non-optional;
@@ -3113,12 +3172,18 @@ func (p *PaymentMethodCashappPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The Cash App-specific details for this payment method, including cashtag and buyer ID.
 var (
 	paymentMethodCashappPaymentMethodCashappFieldBuyerID = big.NewInt(1 << 0)
 	paymentMethodCashappPaymentMethodCashappFieldCashtag = big.NewInt(1 << 1)
 )
 
+// paymentMethodCashappPaymentMethodCashappNullableFields maps the wire names of PaymentMethodCashappPaymentMethodCashapp's nullable fields (required or optional) to their field bits.
+var paymentMethodCashappPaymentMethodCashappNullableFields = map[string]*big.Int{
+	"buyer_id": paymentMethodCashappPaymentMethodCashappFieldBuyerID,
+	"cashtag":  paymentMethodCashappPaymentMethodCashappFieldCashtag,
+}
+
+// The Cash App-specific details for this payment method, including cashtag and buyer ID.
 type PaymentMethodCashappPaymentMethodCashapp struct {
 	// The unique and immutable identifier assigned by Cash App to the buyer. Null if not available.
 	BuyerID *string `json:"buyer_id,omitempty" url:"buyer_id,omitempty"`
@@ -3154,10 +3219,12 @@ func (p *PaymentMethodCashappPaymentMethodCashapp) GetExtraProperties() map[stri
 }
 
 func (p *PaymentMethodCashappPaymentMethodCashapp) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBuyerID sets the BuyerID field and marks it as non-optional;
@@ -3186,6 +3253,13 @@ func (p *PaymentMethodCashappPaymentMethodCashapp) UnmarshalJSON(data []byte) er
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodCashappPaymentMethodCashappNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3216,12 +3290,12 @@ func (p *PaymentMethodCashappPaymentMethodCashapp) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodCashappPaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodCashappPaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodCashappPaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodCashappPaymentMethodIconsCard `json:"card" url:"card"`
@@ -3257,10 +3331,12 @@ func (p *PaymentMethodCashappPaymentMethodIcons) GetExtraProperties() map[string
 }
 
 func (p *PaymentMethodCashappPaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -3319,12 +3395,12 @@ func (p *PaymentMethodCashappPaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodCashappPaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodCashappPaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodCashappPaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodCashappPaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -3360,10 +3436,12 @@ func (p *PaymentMethodCashappPaymentMethodIconsCard) GetExtraProperties() map[st
 }
 
 func (p *PaymentMethodCashappPaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -3422,7 +3500,6 @@ func (p *PaymentMethodCashappPaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodCashappPaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodCashappPaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -3430,6 +3507,7 @@ var (
 	paymentMethodCashappPaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodCashappPaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -3483,10 +3561,12 @@ func (p *PaymentMethodCashappPaymentMethodIconsCardDark) GetExtraProperties() ma
 }
 
 func (p *PaymentMethodCashappPaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -3559,7 +3639,6 @@ func (p *PaymentMethodCashappPaymentMethodIconsCardDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodCashappPaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodCashappPaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -3567,6 +3646,7 @@ var (
 	paymentMethodCashappPaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodCashappPaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -3620,10 +3700,12 @@ func (p *PaymentMethodCashappPaymentMethodIconsCardLight) GetExtraProperties() m
 }
 
 func (p *PaymentMethodCashappPaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -3696,12 +3778,12 @@ func (p *PaymentMethodCashappPaymentMethodIconsCardLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodCashappPaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodCashappPaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodCashappPaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodCashappPaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -3737,10 +3819,12 @@ func (p *PaymentMethodCashappPaymentMethodIconsSquare) GetExtraProperties() map[
 }
 
 func (p *PaymentMethodCashappPaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -3799,7 +3883,6 @@ func (p *PaymentMethodCashappPaymentMethodIconsSquare) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodCashappPaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodCashappPaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -3807,6 +3890,7 @@ var (
 	paymentMethodCashappPaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodCashappPaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -3860,10 +3944,12 @@ func (p *PaymentMethodCashappPaymentMethodIconsSquareDark) GetExtraProperties() 
 }
 
 func (p *PaymentMethodCashappPaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -3936,7 +4022,6 @@ func (p *PaymentMethodCashappPaymentMethodIconsSquareDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodCashappPaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodCashappPaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -3944,6 +4029,7 @@ var (
 	paymentMethodCashappPaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodCashappPaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -3997,10 +4083,12 @@ func (p *PaymentMethodCashappPaymentMethodIconsSquareLight) GetExtraProperties()
 }
 
 func (p *PaymentMethodCashappPaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -4073,7 +4161,6 @@ func (p *PaymentMethodCashappPaymentMethodIconsSquareLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// A saved iDEAL payment method, including the customer's bank name and BIC code.
 var (
 	paymentMethodIdealPaymentMethodFieldCreatedAt         = big.NewInt(1 << 0)
 	paymentMethodIdealPaymentMethodFieldIcons             = big.NewInt(1 << 1)
@@ -4082,6 +4169,7 @@ var (
 	paymentMethodIdealPaymentMethodFieldPaymentMethodType = big.NewInt(1 << 4)
 )
 
+// A saved iDEAL payment method, including the customer's bank name and BIC code.
 type PaymentMethodIdealPaymentMethod struct {
 	// The time of the event in ISO 8601 UTC format with millisecond precision
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -4144,10 +4232,12 @@ func (p *PaymentMethodIdealPaymentMethod) GetExtraProperties() map[string]interf
 }
 
 func (p *PaymentMethodIdealPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -4235,12 +4325,12 @@ func (p *PaymentMethodIdealPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodIdealPaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodIdealPaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodIdealPaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodIdealPaymentMethodIconsCard `json:"card" url:"card"`
@@ -4276,10 +4366,12 @@ func (p *PaymentMethodIdealPaymentMethodIcons) GetExtraProperties() map[string]i
 }
 
 func (p *PaymentMethodIdealPaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -4338,12 +4430,12 @@ func (p *PaymentMethodIdealPaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodIdealPaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodIdealPaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodIdealPaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodIdealPaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -4379,10 +4471,12 @@ func (p *PaymentMethodIdealPaymentMethodIconsCard) GetExtraProperties() map[stri
 }
 
 func (p *PaymentMethodIdealPaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -4441,7 +4535,6 @@ func (p *PaymentMethodIdealPaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodIdealPaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodIdealPaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -4449,6 +4542,7 @@ var (
 	paymentMethodIdealPaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodIdealPaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -4502,10 +4596,12 @@ func (p *PaymentMethodIdealPaymentMethodIconsCardDark) GetExtraProperties() map[
 }
 
 func (p *PaymentMethodIdealPaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -4578,7 +4674,6 @@ func (p *PaymentMethodIdealPaymentMethodIconsCardDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodIdealPaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodIdealPaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -4586,6 +4681,7 @@ var (
 	paymentMethodIdealPaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodIdealPaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -4639,10 +4735,12 @@ func (p *PaymentMethodIdealPaymentMethodIconsCardLight) GetExtraProperties() map
 }
 
 func (p *PaymentMethodIdealPaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -4715,12 +4813,12 @@ func (p *PaymentMethodIdealPaymentMethodIconsCardLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodIdealPaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodIdealPaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodIdealPaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodIdealPaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -4756,10 +4854,12 @@ func (p *PaymentMethodIdealPaymentMethodIconsSquare) GetExtraProperties() map[st
 }
 
 func (p *PaymentMethodIdealPaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -4818,7 +4918,6 @@ func (p *PaymentMethodIdealPaymentMethodIconsSquare) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodIdealPaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodIdealPaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -4826,6 +4925,7 @@ var (
 	paymentMethodIdealPaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodIdealPaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -4879,10 +4979,12 @@ func (p *PaymentMethodIdealPaymentMethodIconsSquareDark) GetExtraProperties() ma
 }
 
 func (p *PaymentMethodIdealPaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -4955,7 +5057,6 @@ func (p *PaymentMethodIdealPaymentMethodIconsSquareDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodIdealPaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodIdealPaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -4963,6 +5064,7 @@ var (
 	paymentMethodIdealPaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodIdealPaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -5016,10 +5118,12 @@ func (p *PaymentMethodIdealPaymentMethodIconsSquareLight) GetExtraProperties() m
 }
 
 func (p *PaymentMethodIdealPaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -5092,12 +5196,18 @@ func (p *PaymentMethodIdealPaymentMethodIconsSquareLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The iDEAL-specific details for this payment method, including bank name and BIC.
 var (
 	paymentMethodIdealPaymentMethodIdealFieldBank = big.NewInt(1 << 0)
 	paymentMethodIdealPaymentMethodIdealFieldBic  = big.NewInt(1 << 1)
 )
 
+// paymentMethodIdealPaymentMethodIdealNullableFields maps the wire names of PaymentMethodIdealPaymentMethodIdeal's nullable fields (required or optional) to their field bits.
+var paymentMethodIdealPaymentMethodIdealNullableFields = map[string]*big.Int{
+	"bank": paymentMethodIdealPaymentMethodIdealFieldBank,
+	"bic":  paymentMethodIdealPaymentMethodIdealFieldBic,
+}
+
+// The iDEAL-specific details for this payment method, including bank name and BIC.
 type PaymentMethodIdealPaymentMethodIdeal struct {
 	// The name of the customer's bank used for the iDEAL transaction. Null if not available.
 	Bank *string `json:"bank,omitempty" url:"bank,omitempty"`
@@ -5133,10 +5243,12 @@ func (p *PaymentMethodIdealPaymentMethodIdeal) GetExtraProperties() map[string]i
 }
 
 func (p *PaymentMethodIdealPaymentMethodIdeal) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBank sets the Bank field and marks it as non-optional;
@@ -5165,6 +5277,13 @@ func (p *PaymentMethodIdealPaymentMethodIdeal) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodIdealPaymentMethodIdealNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5423,7 +5542,6 @@ func (p *PaymentMethodListItem) validate() error {
 	return nil
 }
 
-// A saved payment method with no type-specific details available.
 var (
 	paymentMethodListItemBasePaymentMethodFieldCreatedAt         = big.NewInt(1 << 0)
 	paymentMethodListItemBasePaymentMethodFieldIcons             = big.NewInt(1 << 1)
@@ -5431,6 +5549,7 @@ var (
 	paymentMethodListItemBasePaymentMethodFieldPaymentMethodType = big.NewInt(1 << 3)
 )
 
+// A saved payment method with no type-specific details available.
 type PaymentMethodListItemBasePaymentMethod struct {
 	// The time of the event in ISO 8601 UTC format with millisecond precision
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -5484,10 +5603,12 @@ func (p *PaymentMethodListItemBasePaymentMethod) GetExtraProperties() map[string
 }
 
 func (p *PaymentMethodListItemBasePaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -5568,12 +5689,12 @@ func (p *PaymentMethodListItemBasePaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodListItemBasePaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodListItemBasePaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodListItemBasePaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodListItemBasePaymentMethodIconsCard `json:"card" url:"card"`
@@ -5609,10 +5730,12 @@ func (p *PaymentMethodListItemBasePaymentMethodIcons) GetExtraProperties() map[s
 }
 
 func (p *PaymentMethodListItemBasePaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -5671,12 +5794,12 @@ func (p *PaymentMethodListItemBasePaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodListItemBasePaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemBasePaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodListItemBasePaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemBasePaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -5712,10 +5835,12 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsCard) GetExtraProperties() m
 }
 
 func (p *PaymentMethodListItemBasePaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -5774,7 +5899,6 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemBasePaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemBasePaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -5782,6 +5906,7 @@ var (
 	paymentMethodListItemBasePaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemBasePaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -5835,10 +5960,12 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsCardDark) GetExtraProperties
 }
 
 func (p *PaymentMethodListItemBasePaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -5911,7 +6038,6 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsCardDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemBasePaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemBasePaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -5919,6 +6045,7 @@ var (
 	paymentMethodListItemBasePaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemBasePaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -5972,10 +6099,12 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsCardLight) GetExtraPropertie
 }
 
 func (p *PaymentMethodListItemBasePaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -6048,12 +6177,12 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsCardLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodListItemBasePaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemBasePaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodListItemBasePaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemBasePaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -6089,10 +6218,12 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsSquare) GetExtraProperties()
 }
 
 func (p *PaymentMethodListItemBasePaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -6151,7 +6282,6 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsSquare) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemBasePaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemBasePaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -6159,6 +6289,7 @@ var (
 	paymentMethodListItemBasePaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemBasePaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -6212,10 +6343,12 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsSquareDark) GetExtraProperti
 }
 
 func (p *PaymentMethodListItemBasePaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -6288,7 +6421,6 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsSquareDark) String() string 
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemBasePaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemBasePaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -6296,6 +6428,7 @@ var (
 	paymentMethodListItemBasePaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemBasePaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -6349,10 +6482,12 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsSquareLight) GetExtraPropert
 }
 
 func (p *PaymentMethodListItemBasePaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -6425,7 +6560,6 @@ func (p *PaymentMethodListItemBasePaymentMethodIconsSquareLight) String() string
 	return fmt.Sprintf("%#v", p)
 }
 
-// A saved card payment method, including brand, last four digits, and expiration details.
 var (
 	paymentMethodListItemCardPaymentMethodFieldCard              = big.NewInt(1 << 0)
 	paymentMethodListItemCardPaymentMethodFieldCreatedAt         = big.NewInt(1 << 1)
@@ -6435,6 +6569,7 @@ var (
 	paymentMethodListItemCardPaymentMethodFieldPaymentMethodType = big.NewInt(1 << 5)
 )
 
+// A saved card payment method, including brand, last four digits, and expiration details.
 type PaymentMethodListItemCardPaymentMethod struct {
 	// The card-specific details for this payment method, including brand, last four digits, and expiration.
 	Card *PaymentMethodListItemCardPaymentMethodCard `json:"card" url:"card"`
@@ -6506,10 +6641,12 @@ func (p *PaymentMethodListItemCardPaymentMethod) GetExtraProperties() map[string
 }
 
 func (p *PaymentMethodListItemCardPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -6604,7 +6741,6 @@ func (p *PaymentMethodListItemCardPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The card-specific details for this payment method, including brand, last four digits, and expiration.
 var (
 	paymentMethodListItemCardPaymentMethodCardFieldBrand           = big.NewInt(1 << 0)
 	paymentMethodListItemCardPaymentMethodCardFieldExpMonth        = big.NewInt(1 << 1)
@@ -6616,6 +6752,17 @@ var (
 	paymentMethodListItemCardPaymentMethodCardFieldThreeDsVerified = big.NewInt(1 << 7)
 )
 
+// paymentMethodListItemCardPaymentMethodCardNullableFields maps the wire names of PaymentMethodListItemCardPaymentMethodCard's nullable fields (required or optional) to their field bits.
+var paymentMethodListItemCardPaymentMethodCardNullableFields = map[string]*big.Int{
+	"brand":        paymentMethodListItemCardPaymentMethodCardFieldBrand,
+	"exp_month":    paymentMethodListItemCardPaymentMethodCardFieldExpMonth,
+	"exp_year":     paymentMethodListItemCardPaymentMethodCardFieldExpYear,
+	"fingerprint":  paymentMethodListItemCardPaymentMethodCardFieldFingerprint,
+	"funding_type": paymentMethodListItemCardPaymentMethodCardFieldFundingType,
+	"last4":        paymentMethodListItemCardPaymentMethodCardFieldLast4,
+}
+
+// The card-specific details for this payment method, including brand, last four digits, and expiration.
 type PaymentMethodListItemCardPaymentMethodCard struct {
 	// The card network (e.g., visa, mastercard, amex). Null if the brand could not be determined.
 	Brand *CardBrands `json:"brand,omitempty" url:"brand,omitempty"`
@@ -6705,10 +6852,12 @@ func (p *PaymentMethodListItemCardPaymentMethodCard) GetExtraProperties() map[st
 }
 
 func (p *PaymentMethodListItemCardPaymentMethodCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBrand sets the Brand field and marks it as non-optional;
@@ -6779,6 +6928,13 @@ func (p *PaymentMethodListItemCardPaymentMethodCard) UnmarshalJSON(data []byte) 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodListItemCardPaymentMethodCardNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6809,12 +6965,12 @@ func (p *PaymentMethodListItemCardPaymentMethodCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodListItemCardPaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodListItemCardPaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodListItemCardPaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodListItemCardPaymentMethodIconsCard `json:"card" url:"card"`
@@ -6850,10 +7006,12 @@ func (p *PaymentMethodListItemCardPaymentMethodIcons) GetExtraProperties() map[s
 }
 
 func (p *PaymentMethodListItemCardPaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -6912,12 +7070,12 @@ func (p *PaymentMethodListItemCardPaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodListItemCardPaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemCardPaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodListItemCardPaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemCardPaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -6953,10 +7111,12 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsCard) GetExtraProperties() m
 }
 
 func (p *PaymentMethodListItemCardPaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -7015,7 +7175,6 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemCardPaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemCardPaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -7023,6 +7182,7 @@ var (
 	paymentMethodListItemCardPaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemCardPaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -7076,10 +7236,12 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsCardDark) GetExtraProperties
 }
 
 func (p *PaymentMethodListItemCardPaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -7152,7 +7314,6 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsCardDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemCardPaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemCardPaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -7160,6 +7321,7 @@ var (
 	paymentMethodListItemCardPaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemCardPaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -7213,10 +7375,12 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsCardLight) GetExtraPropertie
 }
 
 func (p *PaymentMethodListItemCardPaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -7289,12 +7453,12 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsCardLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodListItemCardPaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemCardPaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodListItemCardPaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemCardPaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -7330,10 +7494,12 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsSquare) GetExtraProperties()
 }
 
 func (p *PaymentMethodListItemCardPaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -7392,7 +7558,6 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsSquare) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemCardPaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemCardPaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -7400,6 +7565,7 @@ var (
 	paymentMethodListItemCardPaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemCardPaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -7453,10 +7619,12 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsSquareDark) GetExtraProperti
 }
 
 func (p *PaymentMethodListItemCardPaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -7529,7 +7697,6 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsSquareDark) String() string 
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemCardPaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemCardPaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -7537,6 +7704,7 @@ var (
 	paymentMethodListItemCardPaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemCardPaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -7590,10 +7758,12 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsSquareLight) GetExtraPropert
 }
 
 func (p *PaymentMethodListItemCardPaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -7666,7 +7836,6 @@ func (p *PaymentMethodListItemCardPaymentMethodIconsSquareLight) String() string
 	return fmt.Sprintf("%#v", p)
 }
 
-// A saved Cash App payment method, including the buyer's cashtag and unique identifier.
 var (
 	paymentMethodListItemCashappPaymentMethodFieldCashapp           = big.NewInt(1 << 0)
 	paymentMethodListItemCashappPaymentMethodFieldCreatedAt         = big.NewInt(1 << 1)
@@ -7675,6 +7844,7 @@ var (
 	paymentMethodListItemCashappPaymentMethodFieldPaymentMethodType = big.NewInt(1 << 4)
 )
 
+// A saved Cash App payment method, including the buyer's cashtag and unique identifier.
 type PaymentMethodListItemCashappPaymentMethod struct {
 	// The Cash App-specific details for this payment method, including cashtag and buyer ID.
 	Cashapp *PaymentMethodListItemCashappPaymentMethodCashapp `json:"cashapp" url:"cashapp"`
@@ -7737,10 +7907,12 @@ func (p *PaymentMethodListItemCashappPaymentMethod) GetExtraProperties() map[str
 }
 
 func (p *PaymentMethodListItemCashappPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCashapp sets the Cashapp field and marks it as non-optional;
@@ -7828,12 +8000,18 @@ func (p *PaymentMethodListItemCashappPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The Cash App-specific details for this payment method, including cashtag and buyer ID.
 var (
 	paymentMethodListItemCashappPaymentMethodCashappFieldBuyerID = big.NewInt(1 << 0)
 	paymentMethodListItemCashappPaymentMethodCashappFieldCashtag = big.NewInt(1 << 1)
 )
 
+// paymentMethodListItemCashappPaymentMethodCashappNullableFields maps the wire names of PaymentMethodListItemCashappPaymentMethodCashapp's nullable fields (required or optional) to their field bits.
+var paymentMethodListItemCashappPaymentMethodCashappNullableFields = map[string]*big.Int{
+	"buyer_id": paymentMethodListItemCashappPaymentMethodCashappFieldBuyerID,
+	"cashtag":  paymentMethodListItemCashappPaymentMethodCashappFieldCashtag,
+}
+
+// The Cash App-specific details for this payment method, including cashtag and buyer ID.
 type PaymentMethodListItemCashappPaymentMethodCashapp struct {
 	// The unique and immutable identifier assigned by Cash App to the buyer. Null if not available.
 	BuyerID *string `json:"buyer_id,omitempty" url:"buyer_id,omitempty"`
@@ -7869,10 +8047,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodCashapp) GetExtraProperties() 
 }
 
 func (p *PaymentMethodListItemCashappPaymentMethodCashapp) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBuyerID sets the BuyerID field and marks it as non-optional;
@@ -7901,6 +8081,13 @@ func (p *PaymentMethodListItemCashappPaymentMethodCashapp) UnmarshalJSON(data []
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodListItemCashappPaymentMethodCashappNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7931,12 +8118,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodCashapp) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodListItemCashappPaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodListItemCashappPaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodListItemCashappPaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodListItemCashappPaymentMethodIconsCard `json:"card" url:"card"`
@@ -7972,10 +8159,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodIcons) GetExtraProperties() ma
 }
 
 func (p *PaymentMethodListItemCashappPaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -8034,12 +8223,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodListItemCashappPaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemCashappPaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodListItemCashappPaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemCashappPaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -8075,10 +8264,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsCard) GetExtraProperties(
 }
 
 func (p *PaymentMethodListItemCashappPaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -8137,7 +8328,6 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemCashappPaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemCashappPaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -8145,6 +8335,7 @@ var (
 	paymentMethodListItemCashappPaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemCashappPaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -8198,10 +8389,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsCardDark) GetExtraPropert
 }
 
 func (p *PaymentMethodListItemCashappPaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -8274,7 +8467,6 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsCardDark) String() string
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemCashappPaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemCashappPaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -8282,6 +8474,7 @@ var (
 	paymentMethodListItemCashappPaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemCashappPaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -8335,10 +8528,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsCardLight) GetExtraProper
 }
 
 func (p *PaymentMethodListItemCashappPaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -8411,12 +8606,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsCardLight) String() strin
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodListItemCashappPaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemCashappPaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodListItemCashappPaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemCashappPaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -8452,10 +8647,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsSquare) GetExtraPropertie
 }
 
 func (p *PaymentMethodListItemCashappPaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -8514,7 +8711,6 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsSquare) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemCashappPaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemCashappPaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -8522,6 +8718,7 @@ var (
 	paymentMethodListItemCashappPaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemCashappPaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -8575,10 +8772,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsSquareDark) GetExtraPrope
 }
 
 func (p *PaymentMethodListItemCashappPaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -8651,7 +8850,6 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsSquareDark) String() stri
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemCashappPaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemCashappPaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -8659,6 +8857,7 @@ var (
 	paymentMethodListItemCashappPaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemCashappPaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -8712,10 +8911,12 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsSquareLight) GetExtraProp
 }
 
 func (p *PaymentMethodListItemCashappPaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -8788,7 +8989,6 @@ func (p *PaymentMethodListItemCashappPaymentMethodIconsSquareLight) String() str
 	return fmt.Sprintf("%#v", p)
 }
 
-// A saved iDEAL payment method, including the customer's bank name and BIC code.
 var (
 	paymentMethodListItemIdealPaymentMethodFieldCreatedAt         = big.NewInt(1 << 0)
 	paymentMethodListItemIdealPaymentMethodFieldIcons             = big.NewInt(1 << 1)
@@ -8797,6 +8997,7 @@ var (
 	paymentMethodListItemIdealPaymentMethodFieldPaymentMethodType = big.NewInt(1 << 4)
 )
 
+// A saved iDEAL payment method, including the customer's bank name and BIC code.
 type PaymentMethodListItemIdealPaymentMethod struct {
 	// The time of the event in ISO 8601 UTC format with millisecond precision
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -8859,10 +9060,12 @@ func (p *PaymentMethodListItemIdealPaymentMethod) GetExtraProperties() map[strin
 }
 
 func (p *PaymentMethodListItemIdealPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -8950,12 +9153,12 @@ func (p *PaymentMethodListItemIdealPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodListItemIdealPaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodListItemIdealPaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodListItemIdealPaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodListItemIdealPaymentMethodIconsCard `json:"card" url:"card"`
@@ -8991,10 +9194,12 @@ func (p *PaymentMethodListItemIdealPaymentMethodIcons) GetExtraProperties() map[
 }
 
 func (p *PaymentMethodListItemIdealPaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -9053,12 +9258,12 @@ func (p *PaymentMethodListItemIdealPaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodListItemIdealPaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemIdealPaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodListItemIdealPaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemIdealPaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -9094,10 +9299,12 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsCard) GetExtraProperties() 
 }
 
 func (p *PaymentMethodListItemIdealPaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -9156,7 +9363,6 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemIdealPaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemIdealPaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -9164,6 +9370,7 @@ var (
 	paymentMethodListItemIdealPaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemIdealPaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -9217,10 +9424,12 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsCardDark) GetExtraPropertie
 }
 
 func (p *PaymentMethodListItemIdealPaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -9293,7 +9502,6 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsCardDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemIdealPaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemIdealPaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -9301,6 +9509,7 @@ var (
 	paymentMethodListItemIdealPaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemIdealPaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -9354,10 +9563,12 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsCardLight) GetExtraProperti
 }
 
 func (p *PaymentMethodListItemIdealPaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -9430,12 +9641,12 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsCardLight) String() string 
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodListItemIdealPaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemIdealPaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodListItemIdealPaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemIdealPaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -9471,10 +9682,12 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsSquare) GetExtraProperties(
 }
 
 func (p *PaymentMethodListItemIdealPaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -9533,7 +9746,6 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsSquare) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemIdealPaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemIdealPaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -9541,6 +9753,7 @@ var (
 	paymentMethodListItemIdealPaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemIdealPaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -9594,10 +9807,12 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsSquareDark) GetExtraPropert
 }
 
 func (p *PaymentMethodListItemIdealPaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -9670,7 +9885,6 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsSquareDark) String() string
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemIdealPaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemIdealPaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -9678,6 +9892,7 @@ var (
 	paymentMethodListItemIdealPaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemIdealPaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -9731,10 +9946,12 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsSquareLight) GetExtraProper
 }
 
 func (p *PaymentMethodListItemIdealPaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -9807,12 +10024,18 @@ func (p *PaymentMethodListItemIdealPaymentMethodIconsSquareLight) String() strin
 	return fmt.Sprintf("%#v", p)
 }
 
-// The iDEAL-specific details for this payment method, including bank name and BIC.
 var (
 	paymentMethodListItemIdealPaymentMethodIdealFieldBank = big.NewInt(1 << 0)
 	paymentMethodListItemIdealPaymentMethodIdealFieldBic  = big.NewInt(1 << 1)
 )
 
+// paymentMethodListItemIdealPaymentMethodIdealNullableFields maps the wire names of PaymentMethodListItemIdealPaymentMethodIdeal's nullable fields (required or optional) to their field bits.
+var paymentMethodListItemIdealPaymentMethodIdealNullableFields = map[string]*big.Int{
+	"bank": paymentMethodListItemIdealPaymentMethodIdealFieldBank,
+	"bic":  paymentMethodListItemIdealPaymentMethodIdealFieldBic,
+}
+
+// The iDEAL-specific details for this payment method, including bank name and BIC.
 type PaymentMethodListItemIdealPaymentMethodIdeal struct {
 	// The name of the customer's bank used for the iDEAL transaction. Null if not available.
 	Bank *string `json:"bank,omitempty" url:"bank,omitempty"`
@@ -9848,10 +10071,12 @@ func (p *PaymentMethodListItemIdealPaymentMethodIdeal) GetExtraProperties() map[
 }
 
 func (p *PaymentMethodListItemIdealPaymentMethodIdeal) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBank sets the Bank field and marks it as non-optional;
@@ -9880,6 +10105,13 @@ func (p *PaymentMethodListItemIdealPaymentMethodIdeal) UnmarshalJSON(data []byte
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodListItemIdealPaymentMethodIdealNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9910,7 +10142,6 @@ func (p *PaymentMethodListItemIdealPaymentMethodIdeal) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// A saved SEPA Direct Debit payment method, including the bank code, country, and last four IBAN digits.
 var (
 	paymentMethodListItemSepaDebitPaymentMethodFieldCreatedAt         = big.NewInt(1 << 0)
 	paymentMethodListItemSepaDebitPaymentMethodFieldIcons             = big.NewInt(1 << 1)
@@ -9919,6 +10150,7 @@ var (
 	paymentMethodListItemSepaDebitPaymentMethodFieldSepaDebit         = big.NewInt(1 << 4)
 )
 
+// A saved SEPA Direct Debit payment method, including the bank code, country, and last four IBAN digits.
 type PaymentMethodListItemSepaDebitPaymentMethod struct {
 	// The time of the event in ISO 8601 UTC format with millisecond precision
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -9981,10 +10213,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethod) GetExtraProperties() map[s
 }
 
 func (p *PaymentMethodListItemSepaDebitPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -10072,12 +10306,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodListItemSepaDebitPaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodListItemSepaDebitPaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodListItemSepaDebitPaymentMethodIconsCard `json:"card" url:"card"`
@@ -10113,10 +10347,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIcons) GetExtraProperties() 
 }
 
 func (p *PaymentMethodListItemSepaDebitPaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -10175,12 +10411,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemSepaDebitPaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodListItemSepaDebitPaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemSepaDebitPaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -10216,10 +10452,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsCard) GetExtraPropertie
 }
 
 func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -10278,7 +10516,6 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemSepaDebitPaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -10286,6 +10523,7 @@ var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemSepaDebitPaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -10339,10 +10577,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsCardDark) GetExtraPrope
 }
 
 func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -10415,7 +10655,6 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsCardDark) String() stri
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemSepaDebitPaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -10423,6 +10662,7 @@ var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemSepaDebitPaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -10476,10 +10716,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsCardLight) GetExtraProp
 }
 
 func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -10552,12 +10794,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsCardLight) String() str
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemSepaDebitPaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodListItemSepaDebitPaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemSepaDebitPaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -10593,10 +10835,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsSquare) GetExtraPropert
 }
 
 func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -10655,7 +10899,6 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsSquare) String() string
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemSepaDebitPaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -10663,6 +10906,7 @@ var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemSepaDebitPaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -10716,10 +10960,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsSquareDark) GetExtraPro
 }
 
 func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -10792,7 +11038,6 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsSquareDark) String() st
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemSepaDebitPaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -10800,6 +11045,7 @@ var (
 	paymentMethodListItemSepaDebitPaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemSepaDebitPaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -10853,10 +11099,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsSquareLight) GetExtraPr
 }
 
 func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -10929,7 +11177,6 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodIconsSquareLight) String() s
 	return fmt.Sprintf("%#v", p)
 }
 
-// The SEPA Direct Debit-specific details for this payment method, including bank code and last four IBAN digits.
 var (
 	paymentMethodListItemSepaDebitPaymentMethodSepaDebitFieldBankCode   = big.NewInt(1 << 0)
 	paymentMethodListItemSepaDebitPaymentMethodSepaDebitFieldBranchCode = big.NewInt(1 << 1)
@@ -10937,6 +11184,15 @@ var (
 	paymentMethodListItemSepaDebitPaymentMethodSepaDebitFieldLast4      = big.NewInt(1 << 3)
 )
 
+// paymentMethodListItemSepaDebitPaymentMethodSepaDebitNullableFields maps the wire names of PaymentMethodListItemSepaDebitPaymentMethodSepaDebit's nullable fields (required or optional) to their field bits.
+var paymentMethodListItemSepaDebitPaymentMethodSepaDebitNullableFields = map[string]*big.Int{
+	"bank_code":   paymentMethodListItemSepaDebitPaymentMethodSepaDebitFieldBankCode,
+	"branch_code": paymentMethodListItemSepaDebitPaymentMethodSepaDebitFieldBranchCode,
+	"country":     paymentMethodListItemSepaDebitPaymentMethodSepaDebitFieldCountry,
+	"last4":       paymentMethodListItemSepaDebitPaymentMethodSepaDebitFieldLast4,
+}
+
+// The SEPA Direct Debit-specific details for this payment method, including bank code and last four IBAN digits.
 type PaymentMethodListItemSepaDebitPaymentMethodSepaDebit struct {
 	// The bank code of the financial institution associated with this SEPA account. Null if not available.
 	BankCode *string `json:"bank_code,omitempty" url:"bank_code,omitempty"`
@@ -10990,10 +11246,12 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodSepaDebit) GetExtraPropertie
 }
 
 func (p *PaymentMethodListItemSepaDebitPaymentMethodSepaDebit) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBankCode sets the BankCode field and marks it as non-optional;
@@ -11036,6 +11294,13 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodSepaDebit) UnmarshalJSON(dat
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodListItemSepaDebitPaymentMethodSepaDebitNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -11066,7 +11331,6 @@ func (p *PaymentMethodListItemSepaDebitPaymentMethodSepaDebit) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// A saved US bank account payment method, including bank name, last four digits, and account type.
 var (
 	paymentMethodListItemUsBankAccountPaymentMethodFieldCreatedAt         = big.NewInt(1 << 0)
 	paymentMethodListItemUsBankAccountPaymentMethodFieldIcons             = big.NewInt(1 << 1)
@@ -11075,6 +11339,7 @@ var (
 	paymentMethodListItemUsBankAccountPaymentMethodFieldUsBankAccount     = big.NewInt(1 << 4)
 )
 
+// A saved US bank account payment method, including bank name, last four digits, and account type.
 type PaymentMethodListItemUsBankAccountPaymentMethod struct {
 	// The time of the event in ISO 8601 UTC format with millisecond precision
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -11137,10 +11402,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethod) GetExtraProperties() m
 }
 
 func (p *PaymentMethodListItemUsBankAccountPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -11228,12 +11495,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodListItemUsBankAccountPaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodListItemUsBankAccountPaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodListItemUsBankAccountPaymentMethodIconsCard `json:"card" url:"card"`
@@ -11269,10 +11536,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIcons) GetExtraPropertie
 }
 
 func (p *PaymentMethodListItemUsBankAccountPaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -11331,12 +11600,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemUsBankAccountPaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodListItemUsBankAccountPaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemUsBankAccountPaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -11372,10 +11641,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsCard) GetExtraPrope
 }
 
 func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -11434,7 +11705,6 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsCard) String() stri
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemUsBankAccountPaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -11442,6 +11712,7 @@ var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemUsBankAccountPaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -11495,10 +11766,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsCardDark) GetExtraP
 }
 
 func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -11571,7 +11844,6 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsCardDark) String() 
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemUsBankAccountPaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -11579,6 +11851,7 @@ var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemUsBankAccountPaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -11632,10 +11905,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsCardLight) GetExtra
 }
 
 func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -11708,12 +11983,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsCardLight) String()
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodListItemUsBankAccountPaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodListItemUsBankAccountPaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodListItemUsBankAccountPaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -11749,10 +12024,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsSquare) GetExtraPro
 }
 
 func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -11811,7 +12088,6 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsSquare) String() st
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemUsBankAccountPaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -11819,6 +12095,7 @@ var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodListItemUsBankAccountPaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -11872,10 +12149,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsSquareDark) GetExtr
 }
 
 func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -11948,7 +12227,6 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsSquareDark) String(
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodListItemUsBankAccountPaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -11956,6 +12234,7 @@ var (
 	paymentMethodListItemUsBankAccountPaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodListItemUsBankAccountPaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -12009,10 +12288,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsSquareLight) GetExt
 }
 
 func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -12085,13 +12366,13 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodIconsSquareLight) String
 	return fmt.Sprintf("%#v", p)
 }
 
-// The bank account-specific details for this payment method, including bank name and last four digits.
 var (
 	paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountFieldAccountType = big.NewInt(1 << 0)
 	paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountFieldBankName    = big.NewInt(1 << 1)
 	paymentMethodListItemUsBankAccountPaymentMethodUsBankAccountFieldLast4       = big.NewInt(1 << 2)
 )
 
+// The bank account-specific details for this payment method, including bank name and last four digits.
 type PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount struct {
 	// The type of bank account (e.g., checking, savings).
 	AccountType string `json:"account_type" url:"account_type"`
@@ -12136,10 +12417,12 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) GetExtraP
 }
 
 func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountType sets the AccountType field and marks it as non-optional;
@@ -12205,7 +12488,6 @@ func (p *PaymentMethodListItemUsBankAccountPaymentMethodUsBankAccount) String() 
 	return fmt.Sprintf("%#v", p)
 }
 
-// A saved SEPA Direct Debit payment method, including the bank code, country, and last four IBAN digits.
 var (
 	paymentMethodSepaDebitPaymentMethodFieldCreatedAt         = big.NewInt(1 << 0)
 	paymentMethodSepaDebitPaymentMethodFieldIcons             = big.NewInt(1 << 1)
@@ -12214,6 +12496,7 @@ var (
 	paymentMethodSepaDebitPaymentMethodFieldSepaDebit         = big.NewInt(1 << 4)
 )
 
+// A saved SEPA Direct Debit payment method, including the bank code, country, and last four IBAN digits.
 type PaymentMethodSepaDebitPaymentMethod struct {
 	// The time of the event in ISO 8601 UTC format with millisecond precision
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -12276,10 +12559,12 @@ func (p *PaymentMethodSepaDebitPaymentMethod) GetExtraProperties() map[string]in
 }
 
 func (p *PaymentMethodSepaDebitPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -12367,12 +12652,12 @@ func (p *PaymentMethodSepaDebitPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodSepaDebitPaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodSepaDebitPaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodSepaDebitPaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodSepaDebitPaymentMethodIconsCard `json:"card" url:"card"`
@@ -12408,10 +12693,12 @@ func (p *PaymentMethodSepaDebitPaymentMethodIcons) GetExtraProperties() map[stri
 }
 
 func (p *PaymentMethodSepaDebitPaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -12470,12 +12757,12 @@ func (p *PaymentMethodSepaDebitPaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodSepaDebitPaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodSepaDebitPaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodSepaDebitPaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodSepaDebitPaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -12511,10 +12798,12 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsCard) GetExtraProperties() map[
 }
 
 func (p *PaymentMethodSepaDebitPaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -12573,7 +12862,6 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodSepaDebitPaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodSepaDebitPaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -12581,6 +12869,7 @@ var (
 	paymentMethodSepaDebitPaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodSepaDebitPaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -12634,10 +12923,12 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsCardDark) GetExtraProperties() 
 }
 
 func (p *PaymentMethodSepaDebitPaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -12710,7 +13001,6 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsCardDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodSepaDebitPaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodSepaDebitPaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -12718,6 +13008,7 @@ var (
 	paymentMethodSepaDebitPaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodSepaDebitPaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -12771,10 +13062,12 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsCardLight) GetExtraProperties()
 }
 
 func (p *PaymentMethodSepaDebitPaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -12847,12 +13140,12 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsCardLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodSepaDebitPaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodSepaDebitPaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodSepaDebitPaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodSepaDebitPaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -12888,10 +13181,12 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsSquare) GetExtraProperties() ma
 }
 
 func (p *PaymentMethodSepaDebitPaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -12950,7 +13245,6 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsSquare) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodSepaDebitPaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodSepaDebitPaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -12958,6 +13252,7 @@ var (
 	paymentMethodSepaDebitPaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodSepaDebitPaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -13011,10 +13306,12 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsSquareDark) GetExtraProperties(
 }
 
 func (p *PaymentMethodSepaDebitPaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -13087,7 +13384,6 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsSquareDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodSepaDebitPaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodSepaDebitPaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -13095,6 +13391,7 @@ var (
 	paymentMethodSepaDebitPaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodSepaDebitPaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -13148,10 +13445,12 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsSquareLight) GetExtraProperties
 }
 
 func (p *PaymentMethodSepaDebitPaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -13224,7 +13523,6 @@ func (p *PaymentMethodSepaDebitPaymentMethodIconsSquareLight) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The SEPA Direct Debit-specific details for this payment method, including bank code and last four IBAN digits.
 var (
 	paymentMethodSepaDebitPaymentMethodSepaDebitFieldBankCode   = big.NewInt(1 << 0)
 	paymentMethodSepaDebitPaymentMethodSepaDebitFieldBranchCode = big.NewInt(1 << 1)
@@ -13232,6 +13530,15 @@ var (
 	paymentMethodSepaDebitPaymentMethodSepaDebitFieldLast4      = big.NewInt(1 << 3)
 )
 
+// paymentMethodSepaDebitPaymentMethodSepaDebitNullableFields maps the wire names of PaymentMethodSepaDebitPaymentMethodSepaDebit's nullable fields (required or optional) to their field bits.
+var paymentMethodSepaDebitPaymentMethodSepaDebitNullableFields = map[string]*big.Int{
+	"bank_code":   paymentMethodSepaDebitPaymentMethodSepaDebitFieldBankCode,
+	"branch_code": paymentMethodSepaDebitPaymentMethodSepaDebitFieldBranchCode,
+	"country":     paymentMethodSepaDebitPaymentMethodSepaDebitFieldCountry,
+	"last4":       paymentMethodSepaDebitPaymentMethodSepaDebitFieldLast4,
+}
+
+// The SEPA Direct Debit-specific details for this payment method, including bank code and last four IBAN digits.
 type PaymentMethodSepaDebitPaymentMethodSepaDebit struct {
 	// The bank code of the financial institution associated with this SEPA account. Null if not available.
 	BankCode *string `json:"bank_code,omitempty" url:"bank_code,omitempty"`
@@ -13285,10 +13592,12 @@ func (p *PaymentMethodSepaDebitPaymentMethodSepaDebit) GetExtraProperties() map[
 }
 
 func (p *PaymentMethodSepaDebitPaymentMethodSepaDebit) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBankCode sets the BankCode field and marks it as non-optional;
@@ -13331,6 +13640,13 @@ func (p *PaymentMethodSepaDebitPaymentMethodSepaDebit) UnmarshalJSON(data []byte
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodSepaDebitPaymentMethodSepaDebitNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -13361,7 +13677,6 @@ func (p *PaymentMethodSepaDebitPaymentMethodSepaDebit) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// A saved US bank account payment method, including bank name, last four digits, and account type.
 var (
 	paymentMethodUsBankAccountPaymentMethodFieldCreatedAt         = big.NewInt(1 << 0)
 	paymentMethodUsBankAccountPaymentMethodFieldIcons             = big.NewInt(1 << 1)
@@ -13370,6 +13685,7 @@ var (
 	paymentMethodUsBankAccountPaymentMethodFieldUsBankAccount     = big.NewInt(1 << 4)
 )
 
+// A saved US bank account payment method, including bank name, last four digits, and account type.
 type PaymentMethodUsBankAccountPaymentMethod struct {
 	// The time of the event in ISO 8601 UTC format with millisecond precision
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -13432,10 +13748,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethod) GetExtraProperties() map[strin
 }
 
 func (p *PaymentMethodUsBankAccountPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -13523,12 +13841,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 var (
 	paymentMethodUsBankAccountPaymentMethodIconsFieldCard   = big.NewInt(1 << 0)
 	paymentMethodUsBankAccountPaymentMethodIconsFieldSquare = big.NewInt(1 << 1)
 )
 
+// Every rendition of the icon to display this payment method with. A saved card carries its brand's icon (Visa, Mastercard, ...) rather than the generic card art.
 type PaymentMethodUsBankAccountPaymentMethodIcons struct {
 	// The credit-card-proportioned tile (48x30).
 	Card *PaymentMethodUsBankAccountPaymentMethodIconsCard `json:"card" url:"card"`
@@ -13564,10 +13882,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIcons) GetExtraProperties() map[
 }
 
 func (p *PaymentMethodUsBankAccountPaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCard sets the Card field and marks it as non-optional;
@@ -13626,12 +13946,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIcons) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The credit-card-proportioned tile (48x30).
 var (
 	paymentMethodUsBankAccountPaymentMethodIconsCardFieldDark  = big.NewInt(1 << 0)
 	paymentMethodUsBankAccountPaymentMethodIconsCardFieldLight = big.NewInt(1 << 1)
 )
 
+// The credit-card-proportioned tile (48x30).
 type PaymentMethodUsBankAccountPaymentMethodIconsCard struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodUsBankAccountPaymentMethodIconsCardDark `json:"dark" url:"dark"`
@@ -13667,10 +13987,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsCard) GetExtraProperties() 
 }
 
 func (p *PaymentMethodUsBankAccountPaymentMethodIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -13729,7 +14051,6 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsCard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodUsBankAccountPaymentMethodIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodUsBankAccountPaymentMethodIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
@@ -13737,6 +14058,7 @@ var (
 	paymentMethodUsBankAccountPaymentMethodIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodUsBankAccountPaymentMethodIconsCardDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -13790,10 +14112,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsCardDark) GetExtraPropertie
 }
 
 func (p *PaymentMethodUsBankAccountPaymentMethodIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -13866,7 +14190,6 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsCardDark) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodUsBankAccountPaymentMethodIconsCardLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodUsBankAccountPaymentMethodIconsCardLightFieldPng2X = big.NewInt(1 << 1)
@@ -13874,6 +14197,7 @@ var (
 	paymentMethodUsBankAccountPaymentMethodIconsCardLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodUsBankAccountPaymentMethodIconsCardLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -13927,10 +14251,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsCardLight) GetExtraProperti
 }
 
 func (p *PaymentMethodUsBankAccountPaymentMethodIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -14003,12 +14329,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsCardLight) String() string 
 	return fmt.Sprintf("%#v", p)
 }
 
-// The square tile (32x32).
 var (
 	paymentMethodUsBankAccountPaymentMethodIconsSquareFieldDark  = big.NewInt(1 << 0)
 	paymentMethodUsBankAccountPaymentMethodIconsSquareFieldLight = big.NewInt(1 << 1)
 )
 
+// The square tile (32x32).
 type PaymentMethodUsBankAccountPaymentMethodIconsSquare struct {
 	// The colorway for dark surfaces.
 	Dark *PaymentMethodUsBankAccountPaymentMethodIconsSquareDark `json:"dark" url:"dark"`
@@ -14044,10 +14370,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsSquare) GetExtraProperties(
 }
 
 func (p *PaymentMethodUsBankAccountPaymentMethodIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDark sets the Dark field and marks it as non-optional;
@@ -14106,7 +14434,6 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsSquare) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for dark surfaces.
 var (
 	paymentMethodUsBankAccountPaymentMethodIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodUsBankAccountPaymentMethodIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
@@ -14114,6 +14441,7 @@ var (
 	paymentMethodUsBankAccountPaymentMethodIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for dark surfaces.
 type PaymentMethodUsBankAccountPaymentMethodIconsSquareDark struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -14167,10 +14495,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsSquareDark) GetExtraPropert
 }
 
 func (p *PaymentMethodUsBankAccountPaymentMethodIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -14243,7 +14573,6 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsSquareDark) String() string
 	return fmt.Sprintf("%#v", p)
 }
 
-// The colorway for light surfaces.
 var (
 	paymentMethodUsBankAccountPaymentMethodIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
 	paymentMethodUsBankAccountPaymentMethodIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
@@ -14251,6 +14580,7 @@ var (
 	paymentMethodUsBankAccountPaymentMethodIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
 )
 
+// The colorway for light surfaces.
 type PaymentMethodUsBankAccountPaymentMethodIconsSquareLight struct {
 	// Raster fallback at the shape's native size.
 	Png1X string `json:"png_1x" url:"png_1x"`
@@ -14304,10 +14634,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsSquareLight) GetExtraProper
 }
 
 func (p *PaymentMethodUsBankAccountPaymentMethodIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetPng1X sets the Png1X field and marks it as non-optional;
@@ -14380,13 +14712,13 @@ func (p *PaymentMethodUsBankAccountPaymentMethodIconsSquareLight) String() strin
 	return fmt.Sprintf("%#v", p)
 }
 
-// The bank account-specific details for this payment method, including bank name and last four digits.
 var (
 	paymentMethodUsBankAccountPaymentMethodUsBankAccountFieldAccountType = big.NewInt(1 << 0)
 	paymentMethodUsBankAccountPaymentMethodUsBankAccountFieldBankName    = big.NewInt(1 << 1)
 	paymentMethodUsBankAccountPaymentMethodUsBankAccountFieldLast4       = big.NewInt(1 << 2)
 )
 
+// The bank account-specific details for this payment method, including bank name and last four digits.
 type PaymentMethodUsBankAccountPaymentMethodUsBankAccount struct {
 	// The type of bank account (e.g., checking, savings).
 	AccountType string `json:"account_type" url:"account_type"`
@@ -14431,10 +14763,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) GetExtraPropertie
 }
 
 func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountType sets the AccountType field and marks it as non-optional;
@@ -14500,12 +14834,12 @@ func (p *PaymentMethodUsBankAccountPaymentMethodUsBankAccount) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The connection type for PaymentMethodInterface.
 var (
 	listPaymentMethodsResponseFieldData     = big.NewInt(1 << 0)
 	listPaymentMethodsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for PaymentMethodInterface.
 type ListPaymentMethodsResponse struct {
 	// A list of nodes.
 	Data []*PaymentMethodListItem `json:"data" url:"data"`
@@ -14541,10 +14875,12 @@ func (l *ListPaymentMethodsResponse) GetExtraProperties() map[string]interface{}
 }
 
 func (l *ListPaymentMethodsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

@@ -52,10 +52,12 @@ type ListAPILogsRequest struct {
 }
 
 func (l *ListAPILogsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -226,10 +228,12 @@ func (l *ListAPILogsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAPILogsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -302,6 +306,20 @@ var (
 	listAPILogsResponseDataItemFieldStatusCode    = big.NewInt(1 << 10)
 	listAPILogsResponseDataItemFieldUserAgent     = big.NewInt(1 << 11)
 )
+
+// listAPILogsResponseDataItemNullableFields maps the wire names of ListAPILogsResponseDataItem's nullable fields (required or optional) to their field bits.
+var listAPILogsResponseDataItemNullableFields = map[string]*big.Int{
+	"api_key_id":     listAPILogsResponseDataItemFieldAPIKeyID,
+	"duration_ms":    listAPILogsResponseDataItemFieldDurationMs,
+	"http_method":    listAPILogsResponseDataItemFieldHTTPMethod,
+	"http_path":      listAPILogsResponseDataItemFieldHTTPPath,
+	"ip_address":     listAPILogsResponseDataItemFieldIPAddress,
+	"operation_name": listAPILogsResponseDataItemFieldOperationName,
+	"resource_id":    listAPILogsResponseDataItemFieldResourceID,
+	"status":         listAPILogsResponseDataItemFieldStatus,
+	"status_code":    listAPILogsResponseDataItemFieldStatusCode,
+	"user_agent":     listAPILogsResponseDataItemFieldUserAgent,
+}
 
 type ListAPILogsResponseDataItem struct {
 	APIKeyID      *string                                `json:"api_key_id,omitempty" url:"api_key_id,omitempty"`
@@ -416,10 +434,12 @@ func (l *ListAPILogsResponseDataItem) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListAPILogsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAPIKeyID sets the APIKeyID field and marks it as non-optional;
@@ -518,6 +538,13 @@ func (l *ListAPILogsResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAPILogsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -608,6 +635,12 @@ var (
 	listAPILogsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAPILogsResponsePageInfoNullableFields maps the wire names of ListAPILogsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAPILogsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAPILogsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAPILogsResponsePageInfoFieldStartCursor,
+}
+
 type ListAPILogsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -657,10 +690,12 @@ func (l *ListAPILogsResponsePageInfo) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListAPILogsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -703,6 +738,13 @@ func (l *ListAPILogsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAPILogsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

@@ -37,10 +37,12 @@ type ListChatChannelsRequest struct {
 }
 
 func (l *ListChatChannelsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -98,10 +100,12 @@ type RetrieveChatChannelsRequest struct {
 }
 
 func (r *RetrieveChatChannelsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -111,7 +115,6 @@ func (r *RetrieveChatChannelsRequest) SetID(id string) {
 	r.require(retrieveChatChannelsRequestFieldID)
 }
 
-// A real-time chat feed attached to an experience, with configurable moderation and posting permissions.
 var (
 	chatChannelFieldBanMedia                 = big.NewInt(1 << 0)
 	chatChannelFieldBanURLs                  = big.NewInt(1 << 1)
@@ -123,6 +126,12 @@ var (
 	chatChannelFieldWhoCanReact              = big.NewInt(1 << 7)
 )
 
+// chatChannelNullableFields maps the wire names of ChatChannel's nullable fields (required or optional) to their field bits.
+var chatChannelNullableFields = map[string]*big.Int{
+	"user_posts_cooldown_seconds": chatChannelFieldUserPostsCooldownSeconds,
+}
+
+// A real-time chat feed attached to an experience, with configurable moderation and posting permissions.
 type ChatChannel struct {
 	// Whether media uploads such as images and videos are blocked in this chat.
 	BanMedia bool `json:"ban_media" url:"ban_media"`
@@ -212,10 +221,12 @@ func (c *ChatChannel) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *ChatChannel) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetBanMedia sets the BanMedia field and marks it as non-optional;
@@ -286,6 +297,13 @@ func (c *ChatChannel) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, chatChannelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -316,12 +334,12 @@ func (c *ChatChannel) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The experience this chat feed is attached to.
 var (
 	chatChannelExperienceFieldID   = big.NewInt(1 << 0)
 	chatChannelExperienceFieldName = big.NewInt(1 << 1)
 )
 
+// The experience this chat feed is attached to.
 type ChatChannelExperience struct {
 	// The unique identifier for the experience.
 	ID string `json:"id" url:"id"`
@@ -357,10 +375,12 @@ func (c *ChatChannelExperience) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *ChatChannelExperience) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -419,7 +439,6 @@ func (c *ChatChannelExperience) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A real-time chat feed attached to an experience, with configurable moderation and posting permissions.
 var (
 	chatChannelListItemFieldBanMedia                 = big.NewInt(1 << 0)
 	chatChannelListItemFieldBanURLs                  = big.NewInt(1 << 1)
@@ -431,6 +450,12 @@ var (
 	chatChannelListItemFieldWhoCanReact              = big.NewInt(1 << 7)
 )
 
+// chatChannelListItemNullableFields maps the wire names of ChatChannelListItem's nullable fields (required or optional) to their field bits.
+var chatChannelListItemNullableFields = map[string]*big.Int{
+	"user_posts_cooldown_seconds": chatChannelListItemFieldUserPostsCooldownSeconds,
+}
+
+// A real-time chat feed attached to an experience, with configurable moderation and posting permissions.
 type ChatChannelListItem struct {
 	// Whether media uploads such as images and videos are blocked in this chat.
 	BanMedia bool `json:"ban_media" url:"ban_media"`
@@ -520,10 +545,12 @@ func (c *ChatChannelListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *ChatChannelListItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetBanMedia sets the BanMedia field and marks it as non-optional;
@@ -594,6 +621,13 @@ func (c *ChatChannelListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, chatChannelListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -624,12 +658,12 @@ func (c *ChatChannelListItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The experience this chat feed is attached to.
 var (
 	chatChannelListItemExperienceFieldID   = big.NewInt(1 << 0)
 	chatChannelListItemExperienceFieldName = big.NewInt(1 << 1)
 )
 
+// The experience this chat feed is attached to.
 type ChatChannelListItemExperience struct {
 	// The unique identifier for the experience.
 	ID string `json:"id" url:"id"`
@@ -665,10 +699,12 @@ func (c *ChatChannelListItemExperience) GetExtraProperties() map[string]interfac
 }
 
 func (c *ChatChannelListItemExperience) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -773,12 +809,12 @@ func (w WhoCanReactTypes) Ptr() *WhoCanReactTypes {
 	return &w
 }
 
-// The connection type for ChatFeed.
 var (
 	listChatChannelsResponseFieldData     = big.NewInt(1 << 0)
 	listChatChannelsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for ChatFeed.
 type ListChatChannelsResponse struct {
 	// A list of nodes.
 	Data []*ChatChannelListItem `json:"data" url:"data"`
@@ -814,10 +850,12 @@ func (l *ListChatChannelsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListChatChannelsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -907,10 +945,12 @@ type UpdateChatChannelsRequest struct {
 }
 
 func (u *UpdateChatChannelsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

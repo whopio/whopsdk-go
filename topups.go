@@ -32,10 +32,12 @@ type CreateTopupsRequest struct {
 }
 
 func (c *CreateTopupsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -87,7 +89,6 @@ func (c *CreateTopupsRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-// A payment represents a completed or attempted charge. Payments track the amount, status, currency, and payment method used.
 var (
 	topupFieldCreatedAt      = big.NewInt(1 << 0)
 	topupFieldCurrency       = big.NewInt(1 << 1)
@@ -98,6 +99,16 @@ var (
 	topupFieldTotal          = big.NewInt(1 << 6)
 )
 
+// topupNullableFields maps the wire names of Topup's nullable fields (required or optional) to their field bits.
+var topupNullableFields = map[string]*big.Int{
+	"currency":        topupFieldCurrency,
+	"failure_message": topupFieldFailureMessage,
+	"paid_at":         topupFieldPaidAt,
+	"status":          topupFieldStatus,
+	"total":           topupFieldTotal,
+}
+
+// A payment represents a completed or attempted charge. Payments track the amount, status, currency, and payment method used.
 type Topup struct {
 	// The datetime the payment was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -178,10 +189,12 @@ func (t *Topup) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *Topup) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -253,6 +266,13 @@ func (t *Topup) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, topupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }

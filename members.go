@@ -59,10 +59,12 @@ type ListMembersRequest struct {
 }
 
 func (l *ListMembersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -169,10 +171,12 @@ type RetrieveMembersRequest struct {
 }
 
 func (r *RetrieveMembersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -194,6 +198,13 @@ var (
 	memberFieldTokenBalance   = big.NewInt(1 << 8)
 	memberFieldUser           = big.NewInt(1 << 9)
 )
+
+// memberNullableFields maps the wire names of Member's nullable fields (required or optional) to their field bits.
+var memberNullableFields = map[string]*big.Int{
+	"last_accessed_at": memberFieldLastAccessedAt,
+	"phone_number":     memberFieldPhoneNumber,
+	"user":             memberFieldUser,
+}
 
 type Member struct {
 	// What the member can reach on the account: `customer` for paying members, `admin` for team members, `no_access` once every grant has lapsed.
@@ -302,10 +313,12 @@ func (m *Member) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *Member) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetAccessLevel sets the AccessLevel field and marks it as non-optional;
@@ -390,6 +403,13 @@ func (m *Member) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, memberNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -604,10 +624,12 @@ func (l *ListMembersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListMembersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -673,6 +695,12 @@ var (
 	listMembersResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listMembersResponsePageInfoNullableFields maps the wire names of ListMembersResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listMembersResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listMembersResponsePageInfoFieldEndCursor,
+	"start_cursor": listMembersResponsePageInfoFieldStartCursor,
+}
+
 type ListMembersResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -722,10 +750,12 @@ func (l *ListMembersResponsePageInfo) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListMembersResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -768,6 +798,13 @@ func (l *ListMembersResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listMembersResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -808,6 +845,12 @@ var (
 	postMemberCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postMemberCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postMemberCreatedPayloadNullableFields maps the wire names of PostMemberCreatedPayload's nullable fields (required or optional) to their field bits.
+var postMemberCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postMemberCreatedPayloadFieldAccountID,
+	"api_version_date": postMemberCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostMemberCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -897,10 +940,12 @@ func (p *PostMemberCreatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostMemberCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -977,6 +1022,13 @@ func (p *PostMemberCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postMemberCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1059,6 +1111,12 @@ var (
 	postMemberUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postMemberUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postMemberUpdatedPayloadNullableFields maps the wire names of PostMemberUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postMemberUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postMemberUpdatedPayloadFieldAccountID,
+	"api_version_date": postMemberUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostMemberUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1148,10 +1206,12 @@ func (p *PostMemberUpdatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostMemberUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1228,6 +1288,13 @@ func (p *PostMemberUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postMemberUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

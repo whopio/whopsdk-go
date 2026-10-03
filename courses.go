@@ -44,10 +44,12 @@ type CreateCoursesRequest struct {
 }
 
 func (c *CreateCoursesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCertificateAfterCompletionEnabled sets the CertificateAfterCompletionEnabled field and marks it as non-optional;
@@ -140,10 +142,12 @@ type DeleteCoursesRequest struct {
 }
 
 func (d *DeleteCoursesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -181,10 +185,12 @@ type ListCoursesRequest struct {
 }
 
 func (l *ListCoursesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -242,10 +248,12 @@ type RetrieveCoursesRequest struct {
 }
 
 func (r *RetrieveCoursesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -255,7 +263,6 @@ func (r *RetrieveCoursesRequest) SetID(id string) {
 	r.require(retrieveCoursesRequestFieldID)
 }
 
-// A structured learning module containing chapters and lessons, belonging to an experience.
 var (
 	courseFieldCertificateAfterCompletionEnabled = big.NewInt(1 << 0)
 	courseFieldChapters                          = big.NewInt(1 << 1)
@@ -281,6 +288,20 @@ var (
 	courseFieldVisibility                        = big.NewInt(1 << 21)
 )
 
+// courseNullableFields maps the wire names of Course's nullable fields (required or optional) to their field bits.
+var courseNullableFields = map[string]*big.Int{
+	"certificate_after_completion_enabled": courseFieldCertificateAfterCompletionEnabled,
+	"cover_image":                          courseFieldCoverImage,
+	"description":                          courseFieldDescription,
+	"latest_lesson_created_at":             courseFieldLatestLessonCreatedAt,
+	"resume_lesson":                        courseFieldResumeLesson,
+	"started_at":                           courseFieldStartedAt,
+	"tagline":                              courseFieldTagline,
+	"thumbnail":                            courseFieldThumbnail,
+	"title":                                courseFieldTitle,
+}
+
+// A structured learning module containing chapters and lessons, belonging to an experience.
 type Course struct {
 	// Whether students receive a PDF certificate after completing all lessons in this course. Null if the setting has not been configured.
 	CertificateAfterCompletionEnabled *bool `json:"certificate_after_completion_enabled,omitempty" url:"certificate_after_completion_enabled,omitempty"`
@@ -496,10 +517,12 @@ func (c *Course) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *Course) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCertificateAfterCompletionEnabled sets the CertificateAfterCompletionEnabled field and marks it as non-optional;
@@ -680,6 +703,13 @@ func (c *Course) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -718,7 +748,6 @@ func (c *Course) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A grouping of related lessons within a course, used to organize content into sections.
 var (
 	courseChaptersItemFieldID      = big.NewInt(1 << 0)
 	courseChaptersItemFieldLessons = big.NewInt(1 << 1)
@@ -726,6 +755,7 @@ var (
 	courseChaptersItemFieldTitle   = big.NewInt(1 << 3)
 )
 
+// A grouping of related lessons within a course, used to organize content into sections.
 type CourseChaptersItem struct {
 	// The unique identifier for the chapter.
 	ID string `json:"id" url:"id"`
@@ -779,10 +809,12 @@ func (c *CourseChaptersItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseChaptersItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -855,7 +887,6 @@ func (c *CourseChaptersItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// An individual learning unit within a chapter, which can contain text, video, PDF, or assessment content.
 var (
 	courseChaptersItemLessonsItemFieldID         = big.NewInt(1 << 0)
 	courseChaptersItemLessonsItemFieldLessonType = big.NewInt(1 << 1)
@@ -865,6 +896,13 @@ var (
 	courseChaptersItemLessonsItemFieldVideoAsset = big.NewInt(1 << 5)
 )
 
+// courseChaptersItemLessonsItemNullableFields maps the wire names of CourseChaptersItemLessonsItem's nullable fields (required or optional) to their field bits.
+var courseChaptersItemLessonsItemNullableFields = map[string]*big.Int{
+	"thumbnail":   courseChaptersItemLessonsItemFieldThumbnail,
+	"video_asset": courseChaptersItemLessonsItemFieldVideoAsset,
+}
+
+// An individual learning unit within a chapter, which can contain text, video, PDF, or assessment content.
 type CourseChaptersItemLessonsItem struct {
 	// The unique identifier for the lesson.
 	ID string `json:"id" url:"id"`
@@ -936,10 +974,12 @@ func (c *CourseChaptersItemLessonsItem) GetExtraProperties() map[string]interfac
 }
 
 func (c *CourseChaptersItemLessonsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -996,6 +1036,13 @@ func (c *CourseChaptersItemLessonsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseChaptersItemLessonsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1026,11 +1073,16 @@ func (c *CourseChaptersItemLessonsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The thumbnail image displayed on lesson cards and previews. Null if no thumbnail has been uploaded.
 var (
 	courseChaptersItemLessonsItemThumbnailFieldURL = big.NewInt(1 << 0)
 )
 
+// courseChaptersItemLessonsItemThumbnailNullableFields maps the wire names of CourseChaptersItemLessonsItemThumbnail's nullable fields (required or optional) to their field bits.
+var courseChaptersItemLessonsItemThumbnailNullableFields = map[string]*big.Int{
+	"url": courseChaptersItemLessonsItemThumbnailFieldURL,
+}
+
+// The thumbnail image displayed on lesson cards and previews. Null if no thumbnail has been uploaded.
 type CourseChaptersItemLessonsItemThumbnail struct {
 	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
@@ -1057,10 +1109,12 @@ func (c *CourseChaptersItemLessonsItemThumbnail) GetExtraProperties() map[string
 }
 
 func (c *CourseChaptersItemLessonsItemThumbnail) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1082,6 +1136,13 @@ func (c *CourseChaptersItemLessonsItemThumbnail) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseChaptersItemLessonsItemThumbnailNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1112,13 +1173,20 @@ func (c *CourseChaptersItemLessonsItemThumbnail) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The Mux video asset for video-type lessons, used for streaming playback. Null if this lesson has no hosted video.
 var (
 	courseChaptersItemLessonsItemVideoAssetFieldDurationSeconds              = big.NewInt(1 << 0)
 	courseChaptersItemLessonsItemVideoAssetFieldSignedPlaybackID             = big.NewInt(1 << 1)
 	courseChaptersItemLessonsItemVideoAssetFieldSignedThumbnailPlaybackToken = big.NewInt(1 << 2)
 )
 
+// courseChaptersItemLessonsItemVideoAssetNullableFields maps the wire names of CourseChaptersItemLessonsItemVideoAsset's nullable fields (required or optional) to their field bits.
+var courseChaptersItemLessonsItemVideoAssetNullableFields = map[string]*big.Int{
+	"duration_seconds":                courseChaptersItemLessonsItemVideoAssetFieldDurationSeconds,
+	"signed_playback_id":              courseChaptersItemLessonsItemVideoAssetFieldSignedPlaybackID,
+	"signed_thumbnail_playback_token": courseChaptersItemLessonsItemVideoAssetFieldSignedThumbnailPlaybackToken,
+}
+
+// The Mux video asset for video-type lessons, used for streaming playback. Null if this lesson has no hosted video.
 type CourseChaptersItemLessonsItemVideoAsset struct {
 	// The duration of the video in seconds
 	DurationSeconds *int `json:"duration_seconds,omitempty" url:"duration_seconds,omitempty"`
@@ -1163,10 +1231,12 @@ func (c *CourseChaptersItemLessonsItemVideoAsset) GetExtraProperties() map[strin
 }
 
 func (c *CourseChaptersItemLessonsItemVideoAsset) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDurationSeconds sets the DurationSeconds field and marks it as non-optional;
@@ -1202,6 +1272,13 @@ func (c *CourseChaptersItemLessonsItemVideoAsset) UnmarshalJSON(data []byte) err
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseChaptersItemLessonsItemVideoAssetNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1232,7 +1309,6 @@ func (c *CourseChaptersItemLessonsItemVideoAsset) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A structured learning module containing chapters and lessons, belonging to an experience.
 var (
 	courseListItemFieldCertificateAfterCompletionEnabled = big.NewInt(1 << 0)
 	courseListItemFieldChaptersCount                     = big.NewInt(1 << 1)
@@ -1257,6 +1333,20 @@ var (
 	courseListItemFieldVisibility                        = big.NewInt(1 << 20)
 )
 
+// courseListItemNullableFields maps the wire names of CourseListItem's nullable fields (required or optional) to their field bits.
+var courseListItemNullableFields = map[string]*big.Int{
+	"certificate_after_completion_enabled": courseListItemFieldCertificateAfterCompletionEnabled,
+	"cover_image":                          courseListItemFieldCoverImage,
+	"description":                          courseListItemFieldDescription,
+	"latest_lesson_created_at":             courseListItemFieldLatestLessonCreatedAt,
+	"resume_lesson":                        courseListItemFieldResumeLesson,
+	"started_at":                           courseListItemFieldStartedAt,
+	"tagline":                              courseListItemFieldTagline,
+	"thumbnail":                            courseListItemFieldThumbnail,
+	"title":                                courseListItemFieldTitle,
+}
+
+// A structured learning module containing chapters and lessons, belonging to an experience.
 type CourseListItem struct {
 	// Whether students receive a PDF certificate after completing all lessons in this course. Null if the setting has not been configured.
 	CertificateAfterCompletionEnabled *bool `json:"certificate_after_completion_enabled,omitempty" url:"certificate_after_completion_enabled,omitempty"`
@@ -1463,10 +1553,12 @@ func (c *CourseListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseListItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCertificateAfterCompletionEnabled sets the CertificateAfterCompletionEnabled field and marks it as non-optional;
@@ -1640,6 +1732,13 @@ func (c *CourseListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1678,11 +1777,11 @@ func (c *CourseListItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The lesson the current user should continue from: their first incomplete lesson, or the first lesson when they have finished the course, have not started it, or can edit it. Null if the course has no lessons.
 var (
 	courseListItemResumeLessonFieldID = big.NewInt(1 << 0)
 )
 
+// The lesson the current user should continue from: their first incomplete lesson, or the first lesson when they have finished the course, have not started it, or can edit it. Null if the course has no lessons.
 type CourseListItemResumeLesson struct {
 	// The unique identifier for the lesson.
 	ID string `json:"id" url:"id"`
@@ -1709,10 +1808,12 @@ func (c *CourseListItemResumeLesson) GetExtraProperties() map[string]interface{}
 }
 
 func (c *CourseListItemResumeLesson) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1764,7 +1865,6 @@ func (c *CourseListItemResumeLesson) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The thumbnail image displayed on course cards and previews. Null if no thumbnail has been uploaded.
 var (
 	courseListItemThumbnailFieldContentType  = big.NewInt(1 << 0)
 	courseListItemThumbnailFieldFilename     = big.NewInt(1 << 1)
@@ -1773,6 +1873,15 @@ var (
 	courseListItemThumbnailFieldSourceURL    = big.NewInt(1 << 4)
 )
 
+// courseListItemThumbnailNullableFields maps the wire names of CourseListItemThumbnail's nullable fields (required or optional) to their field bits.
+var courseListItemThumbnailNullableFields = map[string]*big.Int{
+	"content_type":  courseListItemThumbnailFieldContentType,
+	"filename":      courseListItemThumbnailFieldFilename,
+	"optimized_url": courseListItemThumbnailFieldOptimizedURL,
+	"source_url":    courseListItemThumbnailFieldSourceURL,
+}
+
+// The thumbnail image displayed on course cards and previews. Null if no thumbnail has been uploaded.
 type CourseListItemThumbnail struct {
 	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
 	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
@@ -1835,10 +1944,12 @@ func (c *CourseListItemThumbnail) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseListItemThumbnail) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -1888,6 +1999,13 @@ func (c *CourseListItemThumbnail) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseListItemThumbnailNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1918,11 +2036,11 @@ func (c *CourseListItemThumbnail) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The lesson the current user should continue from: their first incomplete lesson, or the first lesson when they have finished the course, have not started it, or can edit it. Null if the course has no lessons.
 var (
 	courseResumeLessonFieldID = big.NewInt(1 << 0)
 )
 
+// The lesson the current user should continue from: their first incomplete lesson, or the first lesson when they have finished the course, have not started it, or can edit it. Null if the course has no lessons.
 type CourseResumeLesson struct {
 	// The unique identifier for the lesson.
 	ID string `json:"id" url:"id"`
@@ -1949,10 +2067,12 @@ func (c *CourseResumeLesson) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseResumeLesson) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2004,7 +2124,6 @@ func (c *CourseResumeLesson) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The thumbnail image displayed on course cards and previews. Null if no thumbnail has been uploaded.
 var (
 	courseThumbnailFieldContentType  = big.NewInt(1 << 0)
 	courseThumbnailFieldFilename     = big.NewInt(1 << 1)
@@ -2013,6 +2132,15 @@ var (
 	courseThumbnailFieldSourceURL    = big.NewInt(1 << 4)
 )
 
+// courseThumbnailNullableFields maps the wire names of CourseThumbnail's nullable fields (required or optional) to their field bits.
+var courseThumbnailNullableFields = map[string]*big.Int{
+	"content_type":  courseThumbnailFieldContentType,
+	"filename":      courseThumbnailFieldFilename,
+	"optimized_url": courseThumbnailFieldOptimizedURL,
+	"source_url":    courseThumbnailFieldSourceURL,
+}
+
+// The thumbnail image displayed on course cards and previews. Null if no thumbnail has been uploaded.
 type CourseThumbnail struct {
 	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
 	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
@@ -2075,10 +2203,12 @@ func (c *CourseThumbnail) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseThumbnail) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -2128,6 +2258,13 @@ func (c *CourseThumbnail) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseThumbnailNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2264,11 +2401,11 @@ func (l Languages) Ptr() *Languages {
 	return &l
 }
 
-// The thumbnail image for the course in PNG, JPEG, or GIF format.
 var (
 	createCoursesRequestThumbnailFieldID = big.NewInt(1 << 0)
 )
 
+// The thumbnail image for the course in PNG, JPEG, or GIF format.
 type CreateCoursesRequestThumbnail struct {
 	// The ID of an existing file object.
 	ID string `json:"id" url:"id"`
@@ -2295,10 +2432,12 @@ func (c *CreateCoursesRequestThumbnail) GetExtraProperties() map[string]interfac
 }
 
 func (c *CreateCoursesRequestThumbnail) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2350,12 +2489,12 @@ func (c *CreateCoursesRequestThumbnail) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for Course.
 var (
 	listCoursesResponseFieldData     = big.NewInt(1 << 0)
 	listCoursesResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for Course.
 type ListCoursesResponse struct {
 	// A list of nodes.
 	Data []*CourseListItem `json:"data" url:"data"`
@@ -2391,10 +2530,12 @@ func (l *ListCoursesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListCoursesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2453,7 +2594,6 @@ func (l *ListCoursesResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Input for updating a chapter while updating a course
 var (
 	updateCoursesRequestChaptersItemFieldID      = big.NewInt(1 << 0)
 	updateCoursesRequestChaptersItemFieldLessons = big.NewInt(1 << 1)
@@ -2461,6 +2601,12 @@ var (
 	updateCoursesRequestChaptersItemFieldTitle   = big.NewInt(1 << 3)
 )
 
+// updateCoursesRequestChaptersItemNullableFields maps the wire names of UpdateCoursesRequestChaptersItem's nullable fields (required or optional) to their field bits.
+var updateCoursesRequestChaptersItemNullableFields = map[string]*big.Int{
+	"lessons": updateCoursesRequestChaptersItemFieldLessons,
+}
+
+// Input for updating a chapter while updating a course
 type UpdateCoursesRequestChaptersItem struct {
 	// The ID of the chapter to update
 	ID string `json:"id" url:"id"`
@@ -2514,10 +2660,12 @@ func (u *UpdateCoursesRequestChaptersItem) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateCoursesRequestChaptersItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2560,6 +2708,13 @@ func (u *UpdateCoursesRequestChaptersItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateCoursesRequestChaptersItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2590,7 +2745,6 @@ func (u *UpdateCoursesRequestChaptersItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Input for updating a lesson while updating a course
 var (
 	updateCoursesRequestChaptersItemLessonsItemFieldChapterID = big.NewInt(1 << 0)
 	updateCoursesRequestChaptersItemLessonsItemFieldID        = big.NewInt(1 << 1)
@@ -2598,6 +2752,7 @@ var (
 	updateCoursesRequestChaptersItemLessonsItemFieldTitle     = big.NewInt(1 << 3)
 )
 
+// Input for updating a lesson while updating a course
 type UpdateCoursesRequestChaptersItemLessonsItem struct {
 	// The ID of the chapter this lesson belongs to (for moving between chapters)
 	ChapterID string `json:"chapter_id" url:"chapter_id"`
@@ -2651,10 +2806,12 @@ func (u *UpdateCoursesRequestChaptersItemLessonsItem) GetExtraProperties() map[s
 }
 
 func (u *UpdateCoursesRequestChaptersItemLessonsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetChapterID sets the ChapterID field and marks it as non-optional;
@@ -2727,11 +2884,11 @@ func (u *UpdateCoursesRequestChaptersItemLessonsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The thumbnail image for the course in PNG, JPEG, or GIF format.
 var (
 	updateCoursesRequestThumbnailFieldID = big.NewInt(1 << 0)
 )
 
+// The thumbnail image for the course in PNG, JPEG, or GIF format.
 type UpdateCoursesRequestThumbnail struct {
 	// The ID of an existing file object.
 	ID string `json:"id" url:"id"`
@@ -2758,10 +2915,12 @@ func (u *UpdateCoursesRequestThumbnail) GetExtraProperties() map[string]interfac
 }
 
 func (u *UpdateCoursesRequestThumbnail) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2856,10 +3015,12 @@ type UpdateCoursesRequest struct {
 }
 
 func (u *UpdateCoursesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

@@ -29,10 +29,12 @@ type ListTopicsRequest struct {
 }
 
 func (l *ListTopicsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetTopicType sets the TopicType field and marks it as non-optional;
@@ -116,10 +118,12 @@ func (l *ListTopicsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListTopicsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -185,6 +189,12 @@ var (
 	listTopicsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listTopicsResponsePageInfoNullableFields maps the wire names of ListTopicsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listTopicsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listTopicsResponsePageInfoFieldEndCursor,
+	"start_cursor": listTopicsResponsePageInfoFieldStartCursor,
+}
+
 type ListTopicsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -234,10 +244,12 @@ func (l *ListTopicsResponsePageInfo) GetExtraProperties() map[string]interface{}
 }
 
 func (l *ListTopicsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -280,6 +292,13 @@ func (l *ListTopicsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listTopicsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

@@ -43,10 +43,12 @@ type CreateAdConversionValueRulesRequest struct {
 }
 
 func (c *CreateAdConversionValueRulesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -146,10 +148,12 @@ type DeleteAdConversionValueRulesRequest struct {
 }
 
 func (d *DeleteAdConversionValueRulesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -194,10 +198,12 @@ type ListAdConversionValueRulesRequest struct {
 }
 
 func (l *ListAdConversionValueRulesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -283,10 +289,12 @@ type PauseAdConversionValueRulesRequest struct {
 }
 
 func (p *PauseAdConversionValueRulesRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -309,10 +317,12 @@ type RetrieveAdConversionValueRulesRequest struct {
 }
 
 func (r *RetrieveAdConversionValueRulesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -335,6 +345,12 @@ var (
 	adConversionValueRuleFieldTargets          = big.NewInt(1 << 9)
 	adConversionValueRuleFieldUpdatedAt        = big.NewInt(1 << 10)
 )
+
+// adConversionValueRuleNullableFields maps the wire names of AdConversionValueRule's nullable fields (required or optional) to their field bits.
+var adConversionValueRuleNullableFields = map[string]*big.Int{
+	"fixed_value":       adConversionValueRuleFieldFixedValue,
+	"percentage_change": adConversionValueRuleFieldPercentageChange,
+}
 
 type AdConversionValueRule struct {
 	// Business that owns this shared, editable rule.
@@ -450,10 +466,12 @@ func (a *AdConversionValueRule) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdConversionValueRule) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -545,6 +563,13 @@ func (a *AdConversionValueRule) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adConversionValueRuleNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -603,6 +628,11 @@ var (
 	adConversionValueRuleEventFieldEventName  = big.NewInt(1 << 1)
 )
 
+// adConversionValueRuleEventNullableFields maps the wire names of AdConversionValueRuleEvent's nullable fields (required or optional) to their field bits.
+var adConversionValueRuleEventNullableFields = map[string]*big.Int{
+	"custom_name": adConversionValueRuleEventFieldCustomName,
+}
+
 type AdConversionValueRuleEvent struct {
 	// Exact custom event name. Null for standard events.
 	CustomName *string `json:"custom_name,omitempty" url:"custom_name,omitempty"`
@@ -638,10 +668,12 @@ func (a *AdConversionValueRuleEvent) GetExtraProperties() map[string]interface{}
 }
 
 func (a *AdConversionValueRuleEvent) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCustomName sets the CustomName field and marks it as non-optional;
@@ -670,6 +702,13 @@ func (a *AdConversionValueRuleEvent) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adConversionValueRuleEventNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -780,6 +819,12 @@ var (
 	adConversionValueRuleTargetFieldScope         = big.NewInt(1 << 3)
 )
 
+// adConversionValueRuleTargetNullableFields maps the wire names of AdConversionValueRuleTarget's nullable fields (required or optional) to their field bits.
+var adConversionValueRuleTargetNullableFields = map[string]*big.Int{
+	"resource_id":    adConversionValueRuleTargetFieldResourceID,
+	"resource_title": adConversionValueRuleTargetFieldResourceTitle,
+}
+
 type AdConversionValueRuleTarget struct {
 	// Ad platform that receives the adjusted value.
 	Platform AdConversionValueRuleTargetPlatform `json:"platform" url:"platform"`
@@ -833,10 +878,12 @@ func (a *AdConversionValueRuleTarget) GetExtraProperties() map[string]interface{
 }
 
 func (a *AdConversionValueRuleTarget) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -879,6 +926,13 @@ func (a *AdConversionValueRuleTarget) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adConversionValueRuleTargetNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -991,6 +1045,11 @@ var (
 	createAdConversionValueRulesRequestEventsItemFieldEventName  = big.NewInt(1 << 1)
 )
 
+// createAdConversionValueRulesRequestEventsItemNullableFields maps the wire names of CreateAdConversionValueRulesRequestEventsItem's nullable fields (required or optional) to their field bits.
+var createAdConversionValueRulesRequestEventsItemNullableFields = map[string]*big.Int{
+	"custom_name": createAdConversionValueRulesRequestEventsItemFieldCustomName,
+}
+
 type CreateAdConversionValueRulesRequestEventsItem struct {
 	// Exact custom event name. Required for custom events; null for standard events.
 	CustomName *string                                                `json:"custom_name,omitempty" url:"custom_name,omitempty"`
@@ -1025,10 +1084,12 @@ func (c *CreateAdConversionValueRulesRequestEventsItem) GetExtraProperties() map
 }
 
 func (c *CreateAdConversionValueRulesRequestEventsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCustomName sets the CustomName field and marks it as non-optional;
@@ -1057,6 +1118,13 @@ func (c *CreateAdConversionValueRulesRequestEventsItem) UnmarshalJSON(data []byt
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAdConversionValueRulesRequestEventsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1175,10 +1243,12 @@ func (c *CreateAdConversionValueRulesRequestFixedValue) GetExtraProperties() map
 }
 
 func (c *CreateAdConversionValueRulesRequestFixedValue) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -1266,6 +1336,11 @@ var (
 	createAdConversionValueRulesRequestTargetsItemFieldScope      = big.NewInt(1 << 2)
 )
 
+// createAdConversionValueRulesRequestTargetsItemNullableFields maps the wire names of CreateAdConversionValueRulesRequestTargetsItem's nullable fields (required or optional) to their field bits.
+var createAdConversionValueRulesRequestTargetsItemNullableFields = map[string]*big.Int{
+	"resource_id": createAdConversionValueRulesRequestTargetsItemFieldResourceID,
+}
+
 type CreateAdConversionValueRulesRequestTargetsItem struct {
 	Platform CreateAdConversionValueRulesRequestTargetsItemPlatform `json:"platform" url:"platform"`
 	// Campaign, ad group, or ad ID. Null for a business target.
@@ -1308,10 +1383,12 @@ func (c *CreateAdConversionValueRulesRequestTargetsItem) GetExtraProperties() ma
 }
 
 func (c *CreateAdConversionValueRulesRequestTargetsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -1347,6 +1424,13 @@ func (c *CreateAdConversionValueRulesRequestTargetsItem) UnmarshalJSON(data []by
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAdConversionValueRulesRequestTargetsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1468,10 +1552,12 @@ func (d *DeleteAdConversionValueRulesResponse) GetExtraProperties() map[string]i
 }
 
 func (d *DeleteAdConversionValueRulesResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -1656,10 +1742,12 @@ func (l *ListAdConversionValueRulesResponse) GetExtraProperties() map[string]int
 }
 
 func (l *ListAdConversionValueRulesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1725,6 +1813,12 @@ var (
 	listAdConversionValueRulesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAdConversionValueRulesResponsePageInfoNullableFields maps the wire names of ListAdConversionValueRulesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAdConversionValueRulesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAdConversionValueRulesResponsePageInfoFieldEndCursor,
+	"start_cursor": listAdConversionValueRulesResponsePageInfoFieldStartCursor,
+}
+
 type ListAdConversionValueRulesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1774,10 +1868,12 @@ func (l *ListAdConversionValueRulesResponsePageInfo) GetExtraProperties() map[st
 }
 
 func (l *ListAdConversionValueRulesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1820,6 +1916,13 @@ func (l *ListAdConversionValueRulesResponsePageInfo) UnmarshalJSON(data []byte) 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAdConversionValueRulesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1877,6 +1980,11 @@ var (
 	updateAdConversionValueRulesRequestEventsItemFieldEventName  = big.NewInt(1 << 1)
 )
 
+// updateAdConversionValueRulesRequestEventsItemNullableFields maps the wire names of UpdateAdConversionValueRulesRequestEventsItem's nullable fields (required or optional) to their field bits.
+var updateAdConversionValueRulesRequestEventsItemNullableFields = map[string]*big.Int{
+	"custom_name": updateAdConversionValueRulesRequestEventsItemFieldCustomName,
+}
+
 type UpdateAdConversionValueRulesRequestEventsItem struct {
 	// Exact custom event name. Required for custom events; null for standard events.
 	CustomName *string                                                `json:"custom_name,omitempty" url:"custom_name,omitempty"`
@@ -1911,10 +2019,12 @@ func (u *UpdateAdConversionValueRulesRequestEventsItem) GetExtraProperties() map
 }
 
 func (u *UpdateAdConversionValueRulesRequestEventsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCustomName sets the CustomName field and marks it as non-optional;
@@ -1943,6 +2053,13 @@ func (u *UpdateAdConversionValueRulesRequestEventsItem) UnmarshalJSON(data []byt
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAdConversionValueRulesRequestEventsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2061,10 +2178,12 @@ func (u *UpdateAdConversionValueRulesRequestFixedValue) GetExtraProperties() map
 }
 
 func (u *UpdateAdConversionValueRulesRequestFixedValue) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -2129,6 +2248,11 @@ var (
 	updateAdConversionValueRulesRequestTargetsItemFieldScope      = big.NewInt(1 << 2)
 )
 
+// updateAdConversionValueRulesRequestTargetsItemNullableFields maps the wire names of UpdateAdConversionValueRulesRequestTargetsItem's nullable fields (required or optional) to their field bits.
+var updateAdConversionValueRulesRequestTargetsItemNullableFields = map[string]*big.Int{
+	"resource_id": updateAdConversionValueRulesRequestTargetsItemFieldResourceID,
+}
+
 type UpdateAdConversionValueRulesRequestTargetsItem struct {
 	Platform UpdateAdConversionValueRulesRequestTargetsItemPlatform `json:"platform" url:"platform"`
 	// Campaign, ad group, or ad ID. Null for a business target.
@@ -2171,10 +2295,12 @@ func (u *UpdateAdConversionValueRulesRequestTargetsItem) GetExtraProperties() ma
 }
 
 func (u *UpdateAdConversionValueRulesRequestTargetsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -2210,6 +2336,13 @@ func (u *UpdateAdConversionValueRulesRequestTargetsItem) UnmarshalJSON(data []by
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAdConversionValueRulesRequestTargetsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2306,10 +2439,12 @@ type UnpauseAdConversionValueRulesRequest struct {
 }
 
 func (u *UnpauseAdConversionValueRulesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2350,10 +2485,12 @@ type UpdateAdConversionValueRulesRequest struct {
 }
 
 func (u *UpdateAdConversionValueRulesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

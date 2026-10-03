@@ -58,10 +58,12 @@ type ListCardTransactionsRequest struct {
 }
 
 func (l *ListCardTransactionsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -171,10 +173,12 @@ type RetrieveCardTransactionsRequest struct {
 }
 
 func (r *RetrieveCardTransactionsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -210,6 +214,21 @@ var (
 	cardTransactionFieldTransactionType      = big.NewInt(1 << 15)
 	cardTransactionFieldUsdAmount            = big.NewInt(1 << 16)
 )
+
+// cardTransactionNullableFields maps the wire names of CardTransaction's nullable fields (required or optional) to their field bits.
+var cardTransactionNullableFields = map[string]*big.Int{
+	"cardholder_id":          cardTransactionFieldCardholderID,
+	"cashback_usd_amount":    cardTransactionFieldCashbackUsdAmount,
+	"currency":               cardTransactionFieldCurrency,
+	"declined_reason":        cardTransactionFieldDeclinedReason,
+	"local_amount":           cardTransactionFieldLocalAmount,
+	"merchant_category":      cardTransactionFieldMerchantCategory,
+	"merchant_category_code": cardTransactionFieldMerchantCategoryCode,
+	"merchant_icon_url":      cardTransactionFieldMerchantIconURL,
+	"merchant_name":          cardTransactionFieldMerchantName,
+	"posted_at":              cardTransactionFieldPostedAt,
+	"usd_amount":             cardTransactionFieldUsdAmount,
+}
 
 type CardTransaction struct {
 	// The card this transaction was charged to, prefixed `icrd_`.
@@ -381,10 +400,12 @@ func (c *CardTransaction) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CardTransaction) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCardID sets the CardID field and marks it as non-optional;
@@ -518,6 +539,13 @@ func (c *CardTransaction) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, cardTransactionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -704,10 +732,12 @@ func (l *ListCardTransactionsResponse) GetExtraProperties() map[string]interface
 }
 
 func (l *ListCardTransactionsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -773,6 +803,12 @@ var (
 	listCardTransactionsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listCardTransactionsResponsePageInfoNullableFields maps the wire names of ListCardTransactionsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listCardTransactionsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listCardTransactionsResponsePageInfoFieldEndCursor,
+	"start_cursor": listCardTransactionsResponsePageInfoFieldStartCursor,
+}
+
 type ListCardTransactionsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -822,10 +858,12 @@ func (l *ListCardTransactionsResponsePageInfo) GetExtraProperties() map[string]i
 }
 
 func (l *ListCardTransactionsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -868,6 +906,13 @@ func (l *ListCardTransactionsResponsePageInfo) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCardTransactionsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

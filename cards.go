@@ -41,10 +41,12 @@ type CreateCardsRequest struct {
 }
 
 func (c *CreateCardsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -133,10 +135,12 @@ type ListCardsRequest struct {
 }
 
 func (l *ListCardsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -172,10 +176,12 @@ type RetrieveCardsRequest struct {
 }
 
 func (r *RetrieveCardsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -245,6 +251,23 @@ var (
 	createCardsResponseFieldType            = big.NewInt(1 << 13)
 	createCardsResponseFieldUserID          = big.NewInt(1 << 14)
 )
+
+// createCardsResponseNullableFields maps the wire names of CreateCardsResponse's nullable fields (required or optional) to their field bits.
+var createCardsResponseNullableFields = map[string]*big.Int{
+	"billing":          createCardsResponseFieldBilling,
+	"canceled_at":      createCardsResponseFieldCanceledAt,
+	"created_at":       createCardsResponseFieldCreatedAt,
+	"expiration_month": createCardsResponseFieldExpirationMonth,
+	"expiration_year":  createCardsResponseFieldExpirationYear,
+	"last4":            createCardsResponseFieldLast4,
+	"limit":            createCardsResponseFieldLimit,
+	"name":             createCardsResponseFieldName,
+	"secrets":          createCardsResponseFieldSecrets,
+	"spent_last_month": createCardsResponseFieldSpentLastMonth,
+	"status":           createCardsResponseFieldStatus,
+	"type":             createCardsResponseFieldType,
+	"user_id":          createCardsResponseFieldUserID,
+}
 
 type CreateCardsResponse struct {
 	// The billing address.
@@ -397,10 +420,12 @@ func (c *CreateCardsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreateCardsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetBilling sets the Billing field and marks it as non-optional;
@@ -528,6 +553,13 @@ func (c *CreateCardsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCardsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -562,7 +594,6 @@ func (c *CreateCardsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The billing address.
 var (
 	createCardsResponseBillingFieldCity        = big.NewInt(1 << 0)
 	createCardsResponseBillingFieldCountryCode = big.NewInt(1 << 1)
@@ -572,6 +603,17 @@ var (
 	createCardsResponseBillingFieldRegion      = big.NewInt(1 << 5)
 )
 
+// createCardsResponseBillingNullableFields maps the wire names of CreateCardsResponseBilling's nullable fields (required or optional) to their field bits.
+var createCardsResponseBillingNullableFields = map[string]*big.Int{
+	"city":         createCardsResponseBillingFieldCity,
+	"country_code": createCardsResponseBillingFieldCountryCode,
+	"line1":        createCardsResponseBillingFieldLine1,
+	"line2":        createCardsResponseBillingFieldLine2,
+	"postal_code":  createCardsResponseBillingFieldPostalCode,
+	"region":       createCardsResponseBillingFieldRegion,
+}
+
+// The billing address.
 type CreateCardsResponseBilling struct {
 	// Billing city.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -643,10 +685,12 @@ func (c *CreateCardsResponseBilling) GetExtraProperties() map[string]interface{}
 }
 
 func (c *CreateCardsResponseBilling) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -703,6 +747,13 @@ func (c *CreateCardsResponseBilling) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCardsResponseBillingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -733,12 +784,12 @@ func (c *CreateCardsResponseBilling) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The spending limit configuration.
 var (
 	createCardsResponseLimitFieldAmount    = big.NewInt(1 << 0)
 	createCardsResponseLimitFieldFrequency = big.NewInt(1 << 1)
 )
 
+// The spending limit configuration.
 type CreateCardsResponseLimit struct {
 	// The limit amount in dollars.
 	Amount float64 `json:"amount" url:"amount"`
@@ -774,10 +825,12 @@ func (c *CreateCardsResponseLimit) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreateCardsResponseLimit) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -887,7 +940,6 @@ func (c CreateCardsResponseObject) Ptr() *CreateCardsResponseObject {
 	return &c
 }
 
-// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 var (
 	createCardsResponseSecretsFieldCardNumber = big.NewInt(1 << 0)
 	createCardsResponseSecretsFieldCvc        = big.NewInt(1 << 1)
@@ -895,6 +947,13 @@ var (
 	createCardsResponseSecretsFieldPin        = big.NewInt(1 << 3)
 )
 
+// createCardsResponseSecretsNullableFields maps the wire names of CreateCardsResponseSecrets's nullable fields (required or optional) to their field bits.
+var createCardsResponseSecretsNullableFields = map[string]*big.Int{
+	"name_on_card": createCardsResponseSecretsFieldNameOnCard,
+	"pin":          createCardsResponseSecretsFieldPin,
+}
+
+// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 type CreateCardsResponseSecrets struct {
 	// Full card number.
 	CardNumber string `json:"card_number" url:"card_number"`
@@ -948,10 +1007,12 @@ func (c *CreateCardsResponseSecrets) GetExtraProperties() map[string]interface{}
 }
 
 func (c *CreateCardsResponseSecrets) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCardNumber sets the CardNumber field and marks it as non-optional;
@@ -994,6 +1055,13 @@ func (c *CreateCardsResponseSecrets) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCardsResponseSecretsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1108,10 +1176,12 @@ func (l *ListCardsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListCardsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1180,6 +1250,23 @@ var (
 	listCardsResponseDataItemFieldType            = big.NewInt(1 << 13)
 	listCardsResponseDataItemFieldUserID          = big.NewInt(1 << 14)
 )
+
+// listCardsResponseDataItemNullableFields maps the wire names of ListCardsResponseDataItem's nullable fields (required or optional) to their field bits.
+var listCardsResponseDataItemNullableFields = map[string]*big.Int{
+	"billing":          listCardsResponseDataItemFieldBilling,
+	"canceled_at":      listCardsResponseDataItemFieldCanceledAt,
+	"created_at":       listCardsResponseDataItemFieldCreatedAt,
+	"expiration_month": listCardsResponseDataItemFieldExpirationMonth,
+	"expiration_year":  listCardsResponseDataItemFieldExpirationYear,
+	"last4":            listCardsResponseDataItemFieldLast4,
+	"limit":            listCardsResponseDataItemFieldLimit,
+	"name":             listCardsResponseDataItemFieldName,
+	"secrets":          listCardsResponseDataItemFieldSecrets,
+	"spent_last_month": listCardsResponseDataItemFieldSpentLastMonth,
+	"status":           listCardsResponseDataItemFieldStatus,
+	"type":             listCardsResponseDataItemFieldType,
+	"user_id":          listCardsResponseDataItemFieldUserID,
+}
 
 type ListCardsResponseDataItem struct {
 	// The billing address.
@@ -1332,10 +1419,12 @@ func (l *ListCardsResponseDataItem) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListCardsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBilling sets the Billing field and marks it as non-optional;
@@ -1463,6 +1552,13 @@ func (l *ListCardsResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCardsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1497,7 +1593,6 @@ func (l *ListCardsResponseDataItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The billing address.
 var (
 	listCardsResponseDataItemBillingFieldCity        = big.NewInt(1 << 0)
 	listCardsResponseDataItemBillingFieldCountryCode = big.NewInt(1 << 1)
@@ -1507,6 +1602,17 @@ var (
 	listCardsResponseDataItemBillingFieldRegion      = big.NewInt(1 << 5)
 )
 
+// listCardsResponseDataItemBillingNullableFields maps the wire names of ListCardsResponseDataItemBilling's nullable fields (required or optional) to their field bits.
+var listCardsResponseDataItemBillingNullableFields = map[string]*big.Int{
+	"city":         listCardsResponseDataItemBillingFieldCity,
+	"country_code": listCardsResponseDataItemBillingFieldCountryCode,
+	"line1":        listCardsResponseDataItemBillingFieldLine1,
+	"line2":        listCardsResponseDataItemBillingFieldLine2,
+	"postal_code":  listCardsResponseDataItemBillingFieldPostalCode,
+	"region":       listCardsResponseDataItemBillingFieldRegion,
+}
+
+// The billing address.
 type ListCardsResponseDataItemBilling struct {
 	// Billing city.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1578,10 +1684,12 @@ func (l *ListCardsResponseDataItemBilling) GetExtraProperties() map[string]inter
 }
 
 func (l *ListCardsResponseDataItemBilling) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1638,6 +1746,13 @@ func (l *ListCardsResponseDataItemBilling) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCardsResponseDataItemBillingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1668,12 +1783,12 @@ func (l *ListCardsResponseDataItemBilling) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The spending limit configuration.
 var (
 	listCardsResponseDataItemLimitFieldAmount    = big.NewInt(1 << 0)
 	listCardsResponseDataItemLimitFieldFrequency = big.NewInt(1 << 1)
 )
 
+// The spending limit configuration.
 type ListCardsResponseDataItemLimit struct {
 	// The limit amount in dollars.
 	Amount float64 `json:"amount" url:"amount"`
@@ -1709,10 +1824,12 @@ func (l *ListCardsResponseDataItemLimit) GetExtraProperties() map[string]interfa
 }
 
 func (l *ListCardsResponseDataItemLimit) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -1822,7 +1939,6 @@ func (l ListCardsResponseDataItemObject) Ptr() *ListCardsResponseDataItemObject 
 	return &l
 }
 
-// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 var (
 	listCardsResponseDataItemSecretsFieldCardNumber = big.NewInt(1 << 0)
 	listCardsResponseDataItemSecretsFieldCvc        = big.NewInt(1 << 1)
@@ -1830,6 +1946,13 @@ var (
 	listCardsResponseDataItemSecretsFieldPin        = big.NewInt(1 << 3)
 )
 
+// listCardsResponseDataItemSecretsNullableFields maps the wire names of ListCardsResponseDataItemSecrets's nullable fields (required or optional) to their field bits.
+var listCardsResponseDataItemSecretsNullableFields = map[string]*big.Int{
+	"name_on_card": listCardsResponseDataItemSecretsFieldNameOnCard,
+	"pin":          listCardsResponseDataItemSecretsFieldPin,
+}
+
+// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 type ListCardsResponseDataItemSecrets struct {
 	// Full card number.
 	CardNumber string `json:"card_number" url:"card_number"`
@@ -1883,10 +2006,12 @@ func (l *ListCardsResponseDataItemSecrets) GetExtraProperties() map[string]inter
 }
 
 func (l *ListCardsResponseDataItemSecrets) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCardNumber sets the CardNumber field and marks it as non-optional;
@@ -1929,6 +2054,13 @@ func (l *ListCardsResponseDataItemSecrets) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCardsResponseDataItemSecretsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2025,6 +2157,12 @@ var (
 	postCardApplicationApprovedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postCardApplicationApprovedPayloadNullableFields maps the wire names of PostCardApplicationApprovedPayload's nullable fields (required or optional) to their field bits.
+var postCardApplicationApprovedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardApplicationApprovedPayloadFieldAccountID,
+	"api_version_date": postCardApplicationApprovedPayloadFieldAPIVersionDate,
+}
+
 type PostCardApplicationApprovedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -2113,10 +2251,12 @@ func (p *PostCardApplicationApprovedPayload) GetExtraProperties() map[string]int
 }
 
 func (p *PostCardApplicationApprovedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2193,6 +2333,13 @@ func (p *PostCardApplicationApprovedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardApplicationApprovedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2252,6 +2399,11 @@ var (
 	postCardApplicationApprovedPayloadDataFieldStatus    = big.NewInt(1 << 3)
 )
 
+// postCardApplicationApprovedPayloadDataNullableFields maps the wire names of PostCardApplicationApprovedPayloadData's nullable fields (required or optional) to their field bits.
+var postCardApplicationApprovedPayloadDataNullableFields = map[string]*big.Int{
+	"hosted_url": postCardApplicationApprovedPayloadDataFieldHostedURL,
+}
+
 type PostCardApplicationApprovedPayloadData struct {
 	// URL where the applicant completes additional identity verification.
 	HostedURL *string `json:"hosted_url,omitempty" url:"hosted_url,omitempty"`
@@ -2304,10 +2456,12 @@ func (p *PostCardApplicationApprovedPayloadData) GetExtraProperties() map[string
 }
 
 func (p *PostCardApplicationApprovedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetHostedURL sets the HostedURL field and marks it as non-optional;
@@ -2350,6 +2504,13 @@ func (p *PostCardApplicationApprovedPayloadData) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardApplicationApprovedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2471,6 +2632,12 @@ var (
 	postCardApplicationCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postCardApplicationCreatedPayloadNullableFields maps the wire names of PostCardApplicationCreatedPayload's nullable fields (required or optional) to their field bits.
+var postCardApplicationCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardApplicationCreatedPayloadFieldAccountID,
+	"api_version_date": postCardApplicationCreatedPayloadFieldAPIVersionDate,
+}
+
 type PostCardApplicationCreatedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -2559,10 +2726,12 @@ func (p *PostCardApplicationCreatedPayload) GetExtraProperties() map[string]inte
 }
 
 func (p *PostCardApplicationCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2639,6 +2808,13 @@ func (p *PostCardApplicationCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardApplicationCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2698,6 +2874,11 @@ var (
 	postCardApplicationCreatedPayloadDataFieldStatus    = big.NewInt(1 << 3)
 )
 
+// postCardApplicationCreatedPayloadDataNullableFields maps the wire names of PostCardApplicationCreatedPayloadData's nullable fields (required or optional) to their field bits.
+var postCardApplicationCreatedPayloadDataNullableFields = map[string]*big.Int{
+	"hosted_url": postCardApplicationCreatedPayloadDataFieldHostedURL,
+}
+
 type PostCardApplicationCreatedPayloadData struct {
 	// URL where the applicant completes additional identity verification.
 	HostedURL *string `json:"hosted_url,omitempty" url:"hosted_url,omitempty"`
@@ -2750,10 +2931,12 @@ func (p *PostCardApplicationCreatedPayloadData) GetExtraProperties() map[string]
 }
 
 func (p *PostCardApplicationCreatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetHostedURL sets the HostedURL field and marks it as non-optional;
@@ -2796,6 +2979,13 @@ func (p *PostCardApplicationCreatedPayloadData) UnmarshalJSON(data []byte) error
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardApplicationCreatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2917,6 +3107,12 @@ var (
 	postCardApplicationDeniedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postCardApplicationDeniedPayloadNullableFields maps the wire names of PostCardApplicationDeniedPayload's nullable fields (required or optional) to their field bits.
+var postCardApplicationDeniedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardApplicationDeniedPayloadFieldAccountID,
+	"api_version_date": postCardApplicationDeniedPayloadFieldAPIVersionDate,
+}
+
 type PostCardApplicationDeniedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -3005,10 +3201,12 @@ func (p *PostCardApplicationDeniedPayload) GetExtraProperties() map[string]inter
 }
 
 func (p *PostCardApplicationDeniedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3085,6 +3283,13 @@ func (p *PostCardApplicationDeniedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardApplicationDeniedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3144,6 +3349,11 @@ var (
 	postCardApplicationDeniedPayloadDataFieldStatus    = big.NewInt(1 << 3)
 )
 
+// postCardApplicationDeniedPayloadDataNullableFields maps the wire names of PostCardApplicationDeniedPayloadData's nullable fields (required or optional) to their field bits.
+var postCardApplicationDeniedPayloadDataNullableFields = map[string]*big.Int{
+	"hosted_url": postCardApplicationDeniedPayloadDataFieldHostedURL,
+}
+
 type PostCardApplicationDeniedPayloadData struct {
 	// URL where the applicant completes additional identity verification.
 	HostedURL *string `json:"hosted_url,omitempty" url:"hosted_url,omitempty"`
@@ -3196,10 +3406,12 @@ func (p *PostCardApplicationDeniedPayloadData) GetExtraProperties() map[string]i
 }
 
 func (p *PostCardApplicationDeniedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetHostedURL sets the HostedURL field and marks it as non-optional;
@@ -3242,6 +3454,13 @@ func (p *PostCardApplicationDeniedPayloadData) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardApplicationDeniedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3363,6 +3582,12 @@ var (
 	postCardApplicationUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postCardApplicationUpdatedPayloadNullableFields maps the wire names of PostCardApplicationUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postCardApplicationUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardApplicationUpdatedPayloadFieldAccountID,
+	"api_version_date": postCardApplicationUpdatedPayloadFieldAPIVersionDate,
+}
+
 type PostCardApplicationUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -3451,10 +3676,12 @@ func (p *PostCardApplicationUpdatedPayload) GetExtraProperties() map[string]inte
 }
 
 func (p *PostCardApplicationUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3531,6 +3758,13 @@ func (p *PostCardApplicationUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardApplicationUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3590,6 +3824,11 @@ var (
 	postCardApplicationUpdatedPayloadDataFieldStatus    = big.NewInt(1 << 3)
 )
 
+// postCardApplicationUpdatedPayloadDataNullableFields maps the wire names of PostCardApplicationUpdatedPayloadData's nullable fields (required or optional) to their field bits.
+var postCardApplicationUpdatedPayloadDataNullableFields = map[string]*big.Int{
+	"hosted_url": postCardApplicationUpdatedPayloadDataFieldHostedURL,
+}
+
 type PostCardApplicationUpdatedPayloadData struct {
 	// URL where the applicant completes additional identity verification.
 	HostedURL *string `json:"hosted_url,omitempty" url:"hosted_url,omitempty"`
@@ -3642,10 +3881,12 @@ func (p *PostCardApplicationUpdatedPayloadData) GetExtraProperties() map[string]
 }
 
 func (p *PostCardApplicationUpdatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetHostedURL sets the HostedURL field and marks it as non-optional;
@@ -3688,6 +3929,13 @@ func (p *PostCardApplicationUpdatedPayloadData) UnmarshalJSON(data []byte) error
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardApplicationUpdatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3809,6 +4057,12 @@ var (
 	postCardCanceledPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postCardCanceledPayloadNullableFields maps the wire names of PostCardCanceledPayload's nullable fields (required or optional) to their field bits.
+var postCardCanceledPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardCanceledPayloadFieldAccountID,
+	"api_version_date": postCardCanceledPayloadFieldAPIVersionDate,
+}
+
 type PostCardCanceledPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -3897,10 +4151,12 @@ func (p *PostCardCanceledPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostCardCanceledPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3977,6 +4233,13 @@ func (p *PostCardCanceledPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardCanceledPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4046,6 +4309,23 @@ var (
 	postCardCanceledPayloadDataFieldType            = big.NewInt(1 << 13)
 	postCardCanceledPayloadDataFieldUserID          = big.NewInt(1 << 14)
 )
+
+// postCardCanceledPayloadDataNullableFields maps the wire names of PostCardCanceledPayloadData's nullable fields (required or optional) to their field bits.
+var postCardCanceledPayloadDataNullableFields = map[string]*big.Int{
+	"billing":          postCardCanceledPayloadDataFieldBilling,
+	"canceled_at":      postCardCanceledPayloadDataFieldCanceledAt,
+	"created_at":       postCardCanceledPayloadDataFieldCreatedAt,
+	"expiration_month": postCardCanceledPayloadDataFieldExpirationMonth,
+	"expiration_year":  postCardCanceledPayloadDataFieldExpirationYear,
+	"last4":            postCardCanceledPayloadDataFieldLast4,
+	"limit":            postCardCanceledPayloadDataFieldLimit,
+	"name":             postCardCanceledPayloadDataFieldName,
+	"secrets":          postCardCanceledPayloadDataFieldSecrets,
+	"spent_last_month": postCardCanceledPayloadDataFieldSpentLastMonth,
+	"status":           postCardCanceledPayloadDataFieldStatus,
+	"type":             postCardCanceledPayloadDataFieldType,
+	"user_id":          postCardCanceledPayloadDataFieldUserID,
+}
 
 type PostCardCanceledPayloadData struct {
 	// The billing address.
@@ -4198,10 +4478,12 @@ func (p *PostCardCanceledPayloadData) GetExtraProperties() map[string]interface{
 }
 
 func (p *PostCardCanceledPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBilling sets the Billing field and marks it as non-optional;
@@ -4329,6 +4611,13 @@ func (p *PostCardCanceledPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardCanceledPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4363,7 +4652,6 @@ func (p *PostCardCanceledPayloadData) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The billing address.
 var (
 	postCardCanceledPayloadDataBillingFieldCity        = big.NewInt(1 << 0)
 	postCardCanceledPayloadDataBillingFieldCountryCode = big.NewInt(1 << 1)
@@ -4373,6 +4661,17 @@ var (
 	postCardCanceledPayloadDataBillingFieldRegion      = big.NewInt(1 << 5)
 )
 
+// postCardCanceledPayloadDataBillingNullableFields maps the wire names of PostCardCanceledPayloadDataBilling's nullable fields (required or optional) to their field bits.
+var postCardCanceledPayloadDataBillingNullableFields = map[string]*big.Int{
+	"city":         postCardCanceledPayloadDataBillingFieldCity,
+	"country_code": postCardCanceledPayloadDataBillingFieldCountryCode,
+	"line1":        postCardCanceledPayloadDataBillingFieldLine1,
+	"line2":        postCardCanceledPayloadDataBillingFieldLine2,
+	"postal_code":  postCardCanceledPayloadDataBillingFieldPostalCode,
+	"region":       postCardCanceledPayloadDataBillingFieldRegion,
+}
+
+// The billing address.
 type PostCardCanceledPayloadDataBilling struct {
 	// Billing city.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -4444,10 +4743,12 @@ func (p *PostCardCanceledPayloadDataBilling) GetExtraProperties() map[string]int
 }
 
 func (p *PostCardCanceledPayloadDataBilling) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -4504,6 +4805,13 @@ func (p *PostCardCanceledPayloadDataBilling) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardCanceledPayloadDataBillingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4534,12 +4842,12 @@ func (p *PostCardCanceledPayloadDataBilling) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The spending limit configuration.
 var (
 	postCardCanceledPayloadDataLimitFieldAmount    = big.NewInt(1 << 0)
 	postCardCanceledPayloadDataLimitFieldFrequency = big.NewInt(1 << 1)
 )
 
+// The spending limit configuration.
 type PostCardCanceledPayloadDataLimit struct {
 	// The limit amount in dollars.
 	Amount float64 `json:"amount" url:"amount"`
@@ -4575,10 +4883,12 @@ func (p *PostCardCanceledPayloadDataLimit) GetExtraProperties() map[string]inter
 }
 
 func (p *PostCardCanceledPayloadDataLimit) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -4688,7 +4998,6 @@ func (p PostCardCanceledPayloadDataObject) Ptr() *PostCardCanceledPayloadDataObj
 	return &p
 }
 
-// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 var (
 	postCardCanceledPayloadDataSecretsFieldCardNumber = big.NewInt(1 << 0)
 	postCardCanceledPayloadDataSecretsFieldCvc        = big.NewInt(1 << 1)
@@ -4696,6 +5005,13 @@ var (
 	postCardCanceledPayloadDataSecretsFieldPin        = big.NewInt(1 << 3)
 )
 
+// postCardCanceledPayloadDataSecretsNullableFields maps the wire names of PostCardCanceledPayloadDataSecrets's nullable fields (required or optional) to their field bits.
+var postCardCanceledPayloadDataSecretsNullableFields = map[string]*big.Int{
+	"name_on_card": postCardCanceledPayloadDataSecretsFieldNameOnCard,
+	"pin":          postCardCanceledPayloadDataSecretsFieldPin,
+}
+
+// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 type PostCardCanceledPayloadDataSecrets struct {
 	// Full card number.
 	CardNumber string `json:"card_number" url:"card_number"`
@@ -4749,10 +5065,12 @@ func (p *PostCardCanceledPayloadDataSecrets) GetExtraProperties() map[string]int
 }
 
 func (p *PostCardCanceledPayloadDataSecrets) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCardNumber sets the CardNumber field and marks it as non-optional;
@@ -4795,6 +5113,13 @@ func (p *PostCardCanceledPayloadDataSecrets) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardCanceledPayloadDataSecretsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4911,6 +5236,12 @@ var (
 	postCardCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postCardCreatedPayloadNullableFields maps the wire names of PostCardCreatedPayload's nullable fields (required or optional) to their field bits.
+var postCardCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardCreatedPayloadFieldAccountID,
+	"api_version_date": postCardCreatedPayloadFieldAPIVersionDate,
+}
+
 type PostCardCreatedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -4999,10 +5330,12 @@ func (p *PostCardCreatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostCardCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -5079,6 +5412,13 @@ func (p *PostCardCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5148,6 +5488,23 @@ var (
 	postCardCreatedPayloadDataFieldType            = big.NewInt(1 << 13)
 	postCardCreatedPayloadDataFieldUserID          = big.NewInt(1 << 14)
 )
+
+// postCardCreatedPayloadDataNullableFields maps the wire names of PostCardCreatedPayloadData's nullable fields (required or optional) to their field bits.
+var postCardCreatedPayloadDataNullableFields = map[string]*big.Int{
+	"billing":          postCardCreatedPayloadDataFieldBilling,
+	"canceled_at":      postCardCreatedPayloadDataFieldCanceledAt,
+	"created_at":       postCardCreatedPayloadDataFieldCreatedAt,
+	"expiration_month": postCardCreatedPayloadDataFieldExpirationMonth,
+	"expiration_year":  postCardCreatedPayloadDataFieldExpirationYear,
+	"last4":            postCardCreatedPayloadDataFieldLast4,
+	"limit":            postCardCreatedPayloadDataFieldLimit,
+	"name":             postCardCreatedPayloadDataFieldName,
+	"secrets":          postCardCreatedPayloadDataFieldSecrets,
+	"spent_last_month": postCardCreatedPayloadDataFieldSpentLastMonth,
+	"status":           postCardCreatedPayloadDataFieldStatus,
+	"type":             postCardCreatedPayloadDataFieldType,
+	"user_id":          postCardCreatedPayloadDataFieldUserID,
+}
 
 type PostCardCreatedPayloadData struct {
 	// The billing address.
@@ -5300,10 +5657,12 @@ func (p *PostCardCreatedPayloadData) GetExtraProperties() map[string]interface{}
 }
 
 func (p *PostCardCreatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBilling sets the Billing field and marks it as non-optional;
@@ -5431,6 +5790,13 @@ func (p *PostCardCreatedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardCreatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5465,7 +5831,6 @@ func (p *PostCardCreatedPayloadData) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The billing address.
 var (
 	postCardCreatedPayloadDataBillingFieldCity        = big.NewInt(1 << 0)
 	postCardCreatedPayloadDataBillingFieldCountryCode = big.NewInt(1 << 1)
@@ -5475,6 +5840,17 @@ var (
 	postCardCreatedPayloadDataBillingFieldRegion      = big.NewInt(1 << 5)
 )
 
+// postCardCreatedPayloadDataBillingNullableFields maps the wire names of PostCardCreatedPayloadDataBilling's nullable fields (required or optional) to their field bits.
+var postCardCreatedPayloadDataBillingNullableFields = map[string]*big.Int{
+	"city":         postCardCreatedPayloadDataBillingFieldCity,
+	"country_code": postCardCreatedPayloadDataBillingFieldCountryCode,
+	"line1":        postCardCreatedPayloadDataBillingFieldLine1,
+	"line2":        postCardCreatedPayloadDataBillingFieldLine2,
+	"postal_code":  postCardCreatedPayloadDataBillingFieldPostalCode,
+	"region":       postCardCreatedPayloadDataBillingFieldRegion,
+}
+
+// The billing address.
 type PostCardCreatedPayloadDataBilling struct {
 	// Billing city.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -5546,10 +5922,12 @@ func (p *PostCardCreatedPayloadDataBilling) GetExtraProperties() map[string]inte
 }
 
 func (p *PostCardCreatedPayloadDataBilling) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -5606,6 +5984,13 @@ func (p *PostCardCreatedPayloadDataBilling) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardCreatedPayloadDataBillingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5636,12 +6021,12 @@ func (p *PostCardCreatedPayloadDataBilling) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The spending limit configuration.
 var (
 	postCardCreatedPayloadDataLimitFieldAmount    = big.NewInt(1 << 0)
 	postCardCreatedPayloadDataLimitFieldFrequency = big.NewInt(1 << 1)
 )
 
+// The spending limit configuration.
 type PostCardCreatedPayloadDataLimit struct {
 	// The limit amount in dollars.
 	Amount float64 `json:"amount" url:"amount"`
@@ -5677,10 +6062,12 @@ func (p *PostCardCreatedPayloadDataLimit) GetExtraProperties() map[string]interf
 }
 
 func (p *PostCardCreatedPayloadDataLimit) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -5790,7 +6177,6 @@ func (p PostCardCreatedPayloadDataObject) Ptr() *PostCardCreatedPayloadDataObjec
 	return &p
 }
 
-// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 var (
 	postCardCreatedPayloadDataSecretsFieldCardNumber = big.NewInt(1 << 0)
 	postCardCreatedPayloadDataSecretsFieldCvc        = big.NewInt(1 << 1)
@@ -5798,6 +6184,13 @@ var (
 	postCardCreatedPayloadDataSecretsFieldPin        = big.NewInt(1 << 3)
 )
 
+// postCardCreatedPayloadDataSecretsNullableFields maps the wire names of PostCardCreatedPayloadDataSecrets's nullable fields (required or optional) to their field bits.
+var postCardCreatedPayloadDataSecretsNullableFields = map[string]*big.Int{
+	"name_on_card": postCardCreatedPayloadDataSecretsFieldNameOnCard,
+	"pin":          postCardCreatedPayloadDataSecretsFieldPin,
+}
+
+// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 type PostCardCreatedPayloadDataSecrets struct {
 	// Full card number.
 	CardNumber string `json:"card_number" url:"card_number"`
@@ -5851,10 +6244,12 @@ func (p *PostCardCreatedPayloadDataSecrets) GetExtraProperties() map[string]inte
 }
 
 func (p *PostCardCreatedPayloadDataSecrets) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCardNumber sets the CardNumber field and marks it as non-optional;
@@ -5897,6 +6292,13 @@ func (p *PostCardCreatedPayloadDataSecrets) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardCreatedPayloadDataSecretsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6013,6 +6415,12 @@ var (
 	postCardFrozenPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postCardFrozenPayloadNullableFields maps the wire names of PostCardFrozenPayload's nullable fields (required or optional) to their field bits.
+var postCardFrozenPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardFrozenPayloadFieldAccountID,
+	"api_version_date": postCardFrozenPayloadFieldAPIVersionDate,
+}
+
 type PostCardFrozenPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -6101,10 +6509,12 @@ func (p *PostCardFrozenPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostCardFrozenPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -6181,6 +6591,13 @@ func (p *PostCardFrozenPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardFrozenPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6250,6 +6667,23 @@ var (
 	postCardFrozenPayloadDataFieldType            = big.NewInt(1 << 13)
 	postCardFrozenPayloadDataFieldUserID          = big.NewInt(1 << 14)
 )
+
+// postCardFrozenPayloadDataNullableFields maps the wire names of PostCardFrozenPayloadData's nullable fields (required or optional) to their field bits.
+var postCardFrozenPayloadDataNullableFields = map[string]*big.Int{
+	"billing":          postCardFrozenPayloadDataFieldBilling,
+	"canceled_at":      postCardFrozenPayloadDataFieldCanceledAt,
+	"created_at":       postCardFrozenPayloadDataFieldCreatedAt,
+	"expiration_month": postCardFrozenPayloadDataFieldExpirationMonth,
+	"expiration_year":  postCardFrozenPayloadDataFieldExpirationYear,
+	"last4":            postCardFrozenPayloadDataFieldLast4,
+	"limit":            postCardFrozenPayloadDataFieldLimit,
+	"name":             postCardFrozenPayloadDataFieldName,
+	"secrets":          postCardFrozenPayloadDataFieldSecrets,
+	"spent_last_month": postCardFrozenPayloadDataFieldSpentLastMonth,
+	"status":           postCardFrozenPayloadDataFieldStatus,
+	"type":             postCardFrozenPayloadDataFieldType,
+	"user_id":          postCardFrozenPayloadDataFieldUserID,
+}
 
 type PostCardFrozenPayloadData struct {
 	// The billing address.
@@ -6402,10 +6836,12 @@ func (p *PostCardFrozenPayloadData) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostCardFrozenPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBilling sets the Billing field and marks it as non-optional;
@@ -6533,6 +6969,13 @@ func (p *PostCardFrozenPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardFrozenPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6567,7 +7010,6 @@ func (p *PostCardFrozenPayloadData) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The billing address.
 var (
 	postCardFrozenPayloadDataBillingFieldCity        = big.NewInt(1 << 0)
 	postCardFrozenPayloadDataBillingFieldCountryCode = big.NewInt(1 << 1)
@@ -6577,6 +7019,17 @@ var (
 	postCardFrozenPayloadDataBillingFieldRegion      = big.NewInt(1 << 5)
 )
 
+// postCardFrozenPayloadDataBillingNullableFields maps the wire names of PostCardFrozenPayloadDataBilling's nullable fields (required or optional) to their field bits.
+var postCardFrozenPayloadDataBillingNullableFields = map[string]*big.Int{
+	"city":         postCardFrozenPayloadDataBillingFieldCity,
+	"country_code": postCardFrozenPayloadDataBillingFieldCountryCode,
+	"line1":        postCardFrozenPayloadDataBillingFieldLine1,
+	"line2":        postCardFrozenPayloadDataBillingFieldLine2,
+	"postal_code":  postCardFrozenPayloadDataBillingFieldPostalCode,
+	"region":       postCardFrozenPayloadDataBillingFieldRegion,
+}
+
+// The billing address.
 type PostCardFrozenPayloadDataBilling struct {
 	// Billing city.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -6648,10 +7101,12 @@ func (p *PostCardFrozenPayloadDataBilling) GetExtraProperties() map[string]inter
 }
 
 func (p *PostCardFrozenPayloadDataBilling) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -6708,6 +7163,13 @@ func (p *PostCardFrozenPayloadDataBilling) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardFrozenPayloadDataBillingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6738,12 +7200,12 @@ func (p *PostCardFrozenPayloadDataBilling) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The spending limit configuration.
 var (
 	postCardFrozenPayloadDataLimitFieldAmount    = big.NewInt(1 << 0)
 	postCardFrozenPayloadDataLimitFieldFrequency = big.NewInt(1 << 1)
 )
 
+// The spending limit configuration.
 type PostCardFrozenPayloadDataLimit struct {
 	// The limit amount in dollars.
 	Amount float64 `json:"amount" url:"amount"`
@@ -6779,10 +7241,12 @@ func (p *PostCardFrozenPayloadDataLimit) GetExtraProperties() map[string]interfa
 }
 
 func (p *PostCardFrozenPayloadDataLimit) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -6892,7 +7356,6 @@ func (p PostCardFrozenPayloadDataObject) Ptr() *PostCardFrozenPayloadDataObject 
 	return &p
 }
 
-// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 var (
 	postCardFrozenPayloadDataSecretsFieldCardNumber = big.NewInt(1 << 0)
 	postCardFrozenPayloadDataSecretsFieldCvc        = big.NewInt(1 << 1)
@@ -6900,6 +7363,13 @@ var (
 	postCardFrozenPayloadDataSecretsFieldPin        = big.NewInt(1 << 3)
 )
 
+// postCardFrozenPayloadDataSecretsNullableFields maps the wire names of PostCardFrozenPayloadDataSecrets's nullable fields (required or optional) to their field bits.
+var postCardFrozenPayloadDataSecretsNullableFields = map[string]*big.Int{
+	"name_on_card": postCardFrozenPayloadDataSecretsFieldNameOnCard,
+	"pin":          postCardFrozenPayloadDataSecretsFieldPin,
+}
+
+// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 type PostCardFrozenPayloadDataSecrets struct {
 	// Full card number.
 	CardNumber string `json:"card_number" url:"card_number"`
@@ -6953,10 +7423,12 @@ func (p *PostCardFrozenPayloadDataSecrets) GetExtraProperties() map[string]inter
 }
 
 func (p *PostCardFrozenPayloadDataSecrets) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCardNumber sets the CardNumber field and marks it as non-optional;
@@ -6999,6 +7471,13 @@ func (p *PostCardFrozenPayloadDataSecrets) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardFrozenPayloadDataSecretsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7115,6 +7594,12 @@ var (
 	postCardTransactionCompletedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postCardTransactionCompletedPayloadNullableFields maps the wire names of PostCardTransactionCompletedPayload's nullable fields (required or optional) to their field bits.
+var postCardTransactionCompletedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardTransactionCompletedPayloadFieldAccountID,
+	"api_version_date": postCardTransactionCompletedPayloadFieldAPIVersionDate,
+}
+
 type PostCardTransactionCompletedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -7203,10 +7688,12 @@ func (p *PostCardTransactionCompletedPayload) GetExtraProperties() map[string]in
 }
 
 func (p *PostCardTransactionCompletedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -7283,6 +7770,13 @@ func (p *PostCardTransactionCompletedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardTransactionCompletedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7365,6 +7859,12 @@ var (
 	postCardTransactionCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postCardTransactionCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postCardTransactionCreatedPayloadNullableFields maps the wire names of PostCardTransactionCreatedPayload's nullable fields (required or optional) to their field bits.
+var postCardTransactionCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardTransactionCreatedPayloadFieldAccountID,
+	"api_version_date": postCardTransactionCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostCardTransactionCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -7454,10 +7954,12 @@ func (p *PostCardTransactionCreatedPayload) GetExtraProperties() map[string]inte
 }
 
 func (p *PostCardTransactionCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -7534,6 +8036,13 @@ func (p *PostCardTransactionCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardTransactionCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7616,6 +8125,12 @@ var (
 	postCardTransactionDeclinedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postCardTransactionDeclinedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postCardTransactionDeclinedPayloadNullableFields maps the wire names of PostCardTransactionDeclinedPayload's nullable fields (required or optional) to their field bits.
+var postCardTransactionDeclinedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardTransactionDeclinedPayloadFieldAccountID,
+	"api_version_date": postCardTransactionDeclinedPayloadFieldAPIVersionDate,
+}
 
 type PostCardTransactionDeclinedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -7705,10 +8220,12 @@ func (p *PostCardTransactionDeclinedPayload) GetExtraProperties() map[string]int
 }
 
 func (p *PostCardTransactionDeclinedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -7785,6 +8302,13 @@ func (p *PostCardTransactionDeclinedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardTransactionDeclinedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7867,6 +8391,12 @@ var (
 	postCardTransactionReversedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postCardTransactionReversedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postCardTransactionReversedPayloadNullableFields maps the wire names of PostCardTransactionReversedPayload's nullable fields (required or optional) to their field bits.
+var postCardTransactionReversedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardTransactionReversedPayloadFieldAccountID,
+	"api_version_date": postCardTransactionReversedPayloadFieldAPIVersionDate,
+}
 
 type PostCardTransactionReversedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -7956,10 +8486,12 @@ func (p *PostCardTransactionReversedPayload) GetExtraProperties() map[string]int
 }
 
 func (p *PostCardTransactionReversedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -8036,6 +8568,13 @@ func (p *PostCardTransactionReversedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardTransactionReversedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8118,6 +8657,12 @@ var (
 	postCardTransactionUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postCardTransactionUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postCardTransactionUpdatedPayloadNullableFields maps the wire names of PostCardTransactionUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postCardTransactionUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardTransactionUpdatedPayloadFieldAccountID,
+	"api_version_date": postCardTransactionUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostCardTransactionUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -8207,10 +8752,12 @@ func (p *PostCardTransactionUpdatedPayload) GetExtraProperties() map[string]inte
 }
 
 func (p *PostCardTransactionUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -8287,6 +8834,13 @@ func (p *PostCardTransactionUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardTransactionUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8369,6 +8923,12 @@ var (
 	postCardUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postCardUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postCardUpdatedPayloadNullableFields maps the wire names of PostCardUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postCardUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postCardUpdatedPayloadFieldAccountID,
+	"api_version_date": postCardUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostCardUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -8458,10 +9018,12 @@ func (p *PostCardUpdatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostCardUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -8538,6 +9100,13 @@ func (p *PostCardUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8607,6 +9176,23 @@ var (
 	postCardUpdatedPayloadDataFieldType            = big.NewInt(1 << 13)
 	postCardUpdatedPayloadDataFieldUserID          = big.NewInt(1 << 14)
 )
+
+// postCardUpdatedPayloadDataNullableFields maps the wire names of PostCardUpdatedPayloadData's nullable fields (required or optional) to their field bits.
+var postCardUpdatedPayloadDataNullableFields = map[string]*big.Int{
+	"billing":          postCardUpdatedPayloadDataFieldBilling,
+	"canceled_at":      postCardUpdatedPayloadDataFieldCanceledAt,
+	"created_at":       postCardUpdatedPayloadDataFieldCreatedAt,
+	"expiration_month": postCardUpdatedPayloadDataFieldExpirationMonth,
+	"expiration_year":  postCardUpdatedPayloadDataFieldExpirationYear,
+	"last4":            postCardUpdatedPayloadDataFieldLast4,
+	"limit":            postCardUpdatedPayloadDataFieldLimit,
+	"name":             postCardUpdatedPayloadDataFieldName,
+	"secrets":          postCardUpdatedPayloadDataFieldSecrets,
+	"spent_last_month": postCardUpdatedPayloadDataFieldSpentLastMonth,
+	"status":           postCardUpdatedPayloadDataFieldStatus,
+	"type":             postCardUpdatedPayloadDataFieldType,
+	"user_id":          postCardUpdatedPayloadDataFieldUserID,
+}
 
 type PostCardUpdatedPayloadData struct {
 	// The billing address.
@@ -8759,10 +9345,12 @@ func (p *PostCardUpdatedPayloadData) GetExtraProperties() map[string]interface{}
 }
 
 func (p *PostCardUpdatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetBilling sets the Billing field and marks it as non-optional;
@@ -8890,6 +9478,13 @@ func (p *PostCardUpdatedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardUpdatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8924,7 +9519,6 @@ func (p *PostCardUpdatedPayloadData) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The billing address.
 var (
 	postCardUpdatedPayloadDataBillingFieldCity        = big.NewInt(1 << 0)
 	postCardUpdatedPayloadDataBillingFieldCountryCode = big.NewInt(1 << 1)
@@ -8934,6 +9528,17 @@ var (
 	postCardUpdatedPayloadDataBillingFieldRegion      = big.NewInt(1 << 5)
 )
 
+// postCardUpdatedPayloadDataBillingNullableFields maps the wire names of PostCardUpdatedPayloadDataBilling's nullable fields (required or optional) to their field bits.
+var postCardUpdatedPayloadDataBillingNullableFields = map[string]*big.Int{
+	"city":         postCardUpdatedPayloadDataBillingFieldCity,
+	"country_code": postCardUpdatedPayloadDataBillingFieldCountryCode,
+	"line1":        postCardUpdatedPayloadDataBillingFieldLine1,
+	"line2":        postCardUpdatedPayloadDataBillingFieldLine2,
+	"postal_code":  postCardUpdatedPayloadDataBillingFieldPostalCode,
+	"region":       postCardUpdatedPayloadDataBillingFieldRegion,
+}
+
+// The billing address.
 type PostCardUpdatedPayloadDataBilling struct {
 	// Billing city.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -9005,10 +9610,12 @@ func (p *PostCardUpdatedPayloadDataBilling) GetExtraProperties() map[string]inte
 }
 
 func (p *PostCardUpdatedPayloadDataBilling) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -9065,6 +9672,13 @@ func (p *PostCardUpdatedPayloadDataBilling) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardUpdatedPayloadDataBillingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9095,12 +9709,12 @@ func (p *PostCardUpdatedPayloadDataBilling) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The spending limit configuration.
 var (
 	postCardUpdatedPayloadDataLimitFieldAmount    = big.NewInt(1 << 0)
 	postCardUpdatedPayloadDataLimitFieldFrequency = big.NewInt(1 << 1)
 )
 
+// The spending limit configuration.
 type PostCardUpdatedPayloadDataLimit struct {
 	// The limit amount in dollars.
 	Amount float64 `json:"amount" url:"amount"`
@@ -9136,10 +9750,12 @@ func (p *PostCardUpdatedPayloadDataLimit) GetExtraProperties() map[string]interf
 }
 
 func (p *PostCardUpdatedPayloadDataLimit) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -9249,7 +9865,6 @@ func (p PostCardUpdatedPayloadDataObject) Ptr() *PostCardUpdatedPayloadDataObjec
 	return &p
 }
 
-// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 var (
 	postCardUpdatedPayloadDataSecretsFieldCardNumber = big.NewInt(1 << 0)
 	postCardUpdatedPayloadDataSecretsFieldCvc        = big.NewInt(1 << 1)
@@ -9257,6 +9872,13 @@ var (
 	postCardUpdatedPayloadDataSecretsFieldPin        = big.NewInt(1 << 3)
 )
 
+// postCardUpdatedPayloadDataSecretsNullableFields maps the wire names of PostCardUpdatedPayloadDataSecrets's nullable fields (required or optional) to their field bits.
+var postCardUpdatedPayloadDataSecretsNullableFields = map[string]*big.Int{
+	"name_on_card": postCardUpdatedPayloadDataSecretsFieldNameOnCard,
+	"pin":          postCardUpdatedPayloadDataSecretsFieldPin,
+}
+
+// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 type PostCardUpdatedPayloadDataSecrets struct {
 	// Full card number.
 	CardNumber string `json:"card_number" url:"card_number"`
@@ -9310,10 +9932,12 @@ func (p *PostCardUpdatedPayloadDataSecrets) GetExtraProperties() map[string]inte
 }
 
 func (p *PostCardUpdatedPayloadDataSecrets) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCardNumber sets the CardNumber field and marks it as non-optional;
@@ -9356,6 +9980,13 @@ func (p *PostCardUpdatedPayloadDataSecrets) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postCardUpdatedPayloadDataSecretsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9478,6 +10109,23 @@ var (
 	retrieveCardsResponseFieldType            = big.NewInt(1 << 13)
 	retrieveCardsResponseFieldUserID          = big.NewInt(1 << 14)
 )
+
+// retrieveCardsResponseNullableFields maps the wire names of RetrieveCardsResponse's nullable fields (required or optional) to their field bits.
+var retrieveCardsResponseNullableFields = map[string]*big.Int{
+	"billing":          retrieveCardsResponseFieldBilling,
+	"canceled_at":      retrieveCardsResponseFieldCanceledAt,
+	"created_at":       retrieveCardsResponseFieldCreatedAt,
+	"expiration_month": retrieveCardsResponseFieldExpirationMonth,
+	"expiration_year":  retrieveCardsResponseFieldExpirationYear,
+	"last4":            retrieveCardsResponseFieldLast4,
+	"limit":            retrieveCardsResponseFieldLimit,
+	"name":             retrieveCardsResponseFieldName,
+	"secrets":          retrieveCardsResponseFieldSecrets,
+	"spent_last_month": retrieveCardsResponseFieldSpentLastMonth,
+	"status":           retrieveCardsResponseFieldStatus,
+	"type":             retrieveCardsResponseFieldType,
+	"user_id":          retrieveCardsResponseFieldUserID,
+}
 
 type RetrieveCardsResponse struct {
 	// The billing address.
@@ -9630,10 +10278,12 @@ func (r *RetrieveCardsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *RetrieveCardsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBilling sets the Billing field and marks it as non-optional;
@@ -9761,6 +10411,13 @@ func (r *RetrieveCardsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveCardsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9795,7 +10452,6 @@ func (r *RetrieveCardsResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The billing address.
 var (
 	retrieveCardsResponseBillingFieldCity        = big.NewInt(1 << 0)
 	retrieveCardsResponseBillingFieldCountryCode = big.NewInt(1 << 1)
@@ -9805,6 +10461,17 @@ var (
 	retrieveCardsResponseBillingFieldRegion      = big.NewInt(1 << 5)
 )
 
+// retrieveCardsResponseBillingNullableFields maps the wire names of RetrieveCardsResponseBilling's nullable fields (required or optional) to their field bits.
+var retrieveCardsResponseBillingNullableFields = map[string]*big.Int{
+	"city":         retrieveCardsResponseBillingFieldCity,
+	"country_code": retrieveCardsResponseBillingFieldCountryCode,
+	"line1":        retrieveCardsResponseBillingFieldLine1,
+	"line2":        retrieveCardsResponseBillingFieldLine2,
+	"postal_code":  retrieveCardsResponseBillingFieldPostalCode,
+	"region":       retrieveCardsResponseBillingFieldRegion,
+}
+
+// The billing address.
 type RetrieveCardsResponseBilling struct {
 	// Billing city.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -9876,10 +10543,12 @@ func (r *RetrieveCardsResponseBilling) GetExtraProperties() map[string]interface
 }
 
 func (r *RetrieveCardsResponseBilling) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -9936,6 +10605,13 @@ func (r *RetrieveCardsResponseBilling) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveCardsResponseBillingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9966,12 +10642,12 @@ func (r *RetrieveCardsResponseBilling) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The spending limit configuration.
 var (
 	retrieveCardsResponseLimitFieldAmount    = big.NewInt(1 << 0)
 	retrieveCardsResponseLimitFieldFrequency = big.NewInt(1 << 1)
 )
 
+// The spending limit configuration.
 type RetrieveCardsResponseLimit struct {
 	// The limit amount in dollars.
 	Amount float64 `json:"amount" url:"amount"`
@@ -10007,10 +10683,12 @@ func (r *RetrieveCardsResponseLimit) GetExtraProperties() map[string]interface{}
 }
 
 func (r *RetrieveCardsResponseLimit) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -10120,7 +10798,6 @@ func (r RetrieveCardsResponseObject) Ptr() *RetrieveCardsResponseObject {
 	return &r
 }
 
-// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 var (
 	retrieveCardsResponseSecretsFieldCardNumber = big.NewInt(1 << 0)
 	retrieveCardsResponseSecretsFieldCvc        = big.NewInt(1 << 1)
@@ -10128,6 +10805,13 @@ var (
 	retrieveCardsResponseSecretsFieldPin        = big.NewInt(1 << 3)
 )
 
+// retrieveCardsResponseSecretsNullableFields maps the wire names of RetrieveCardsResponseSecrets's nullable fields (required or optional) to their field bits.
+var retrieveCardsResponseSecretsNullableFields = map[string]*big.Int{
+	"name_on_card": retrieveCardsResponseSecretsFieldNameOnCard,
+	"pin":          retrieveCardsResponseSecretsFieldPin,
+}
+
+// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 type RetrieveCardsResponseSecrets struct {
 	// Full card number.
 	CardNumber string `json:"card_number" url:"card_number"`
@@ -10181,10 +10865,12 @@ func (r *RetrieveCardsResponseSecrets) GetExtraProperties() map[string]interface
 }
 
 func (r *RetrieveCardsResponseSecrets) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCardNumber sets the CardNumber field and marks it as non-optional;
@@ -10227,6 +10913,13 @@ func (r *RetrieveCardsResponseSecrets) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveCardsResponseSecretsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -10312,7 +11005,6 @@ func (r RetrieveCardsResponseType) Ptr() *RetrieveCardsResponseType {
 	return &r
 }
 
-// The billing address. On an issued card this replaces the card's billing address and region is also required. On an invited card, sending it as the invited user completes onboarding and starts card provisioning.
 var (
 	updateCardsRequestBillingFieldCity        = big.NewInt(1 << 0)
 	updateCardsRequestBillingFieldCountryCode = big.NewInt(1 << 1)
@@ -10322,6 +11014,7 @@ var (
 	updateCardsRequestBillingFieldRegion      = big.NewInt(1 << 5)
 )
 
+// The billing address. On an issued card this replaces the card's billing address and region is also required. On an invited card, sending it as the invited user completes onboarding and starts card provisioning.
 type UpdateCardsRequestBilling struct {
 	// Billing city.
 	City string `json:"city" url:"city"`
@@ -10393,10 +11086,12 @@ func (u *UpdateCardsRequestBilling) GetExtraProperties() map[string]interface{} 
 }
 
 func (u *UpdateCardsRequestBilling) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -10483,7 +11178,6 @@ func (u *UpdateCardsRequestBilling) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Details for the invited cardholder, accepted only while completing onboarding on an invited card. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not.
 var (
 	updateCardsRequestCardholderFieldEmail     = big.NewInt(1 << 0)
 	updateCardsRequestCardholderFieldFirstName = big.NewInt(1 << 1)
@@ -10491,6 +11185,7 @@ var (
 	updateCardsRequestCardholderFieldPhone     = big.NewInt(1 << 3)
 )
 
+// Details for the invited cardholder, accepted only while completing onboarding on an invited card. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not.
 type UpdateCardsRequestCardholder struct {
 	// Email address for the invited cardholder.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -10544,10 +11239,12 @@ func (u *UpdateCardsRequestCardholder) GetExtraProperties() map[string]interface
 }
 
 func (u *UpdateCardsRequestCardholder) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -10666,6 +11363,23 @@ var (
 	updateCardsResponseFieldType            = big.NewInt(1 << 13)
 	updateCardsResponseFieldUserID          = big.NewInt(1 << 14)
 )
+
+// updateCardsResponseNullableFields maps the wire names of UpdateCardsResponse's nullable fields (required or optional) to their field bits.
+var updateCardsResponseNullableFields = map[string]*big.Int{
+	"billing":          updateCardsResponseFieldBilling,
+	"canceled_at":      updateCardsResponseFieldCanceledAt,
+	"created_at":       updateCardsResponseFieldCreatedAt,
+	"expiration_month": updateCardsResponseFieldExpirationMonth,
+	"expiration_year":  updateCardsResponseFieldExpirationYear,
+	"last4":            updateCardsResponseFieldLast4,
+	"limit":            updateCardsResponseFieldLimit,
+	"name":             updateCardsResponseFieldName,
+	"secrets":          updateCardsResponseFieldSecrets,
+	"spent_last_month": updateCardsResponseFieldSpentLastMonth,
+	"status":           updateCardsResponseFieldStatus,
+	"type":             updateCardsResponseFieldType,
+	"user_id":          updateCardsResponseFieldUserID,
+}
 
 type UpdateCardsResponse struct {
 	// The billing address.
@@ -10818,10 +11532,12 @@ func (u *UpdateCardsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateCardsResponse) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBilling sets the Billing field and marks it as non-optional;
@@ -10949,6 +11665,13 @@ func (u *UpdateCardsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateCardsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -10983,7 +11706,6 @@ func (u *UpdateCardsResponse) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The billing address.
 var (
 	updateCardsResponseBillingFieldCity        = big.NewInt(1 << 0)
 	updateCardsResponseBillingFieldCountryCode = big.NewInt(1 << 1)
@@ -10993,6 +11715,17 @@ var (
 	updateCardsResponseBillingFieldRegion      = big.NewInt(1 << 5)
 )
 
+// updateCardsResponseBillingNullableFields maps the wire names of UpdateCardsResponseBilling's nullable fields (required or optional) to their field bits.
+var updateCardsResponseBillingNullableFields = map[string]*big.Int{
+	"city":         updateCardsResponseBillingFieldCity,
+	"country_code": updateCardsResponseBillingFieldCountryCode,
+	"line1":        updateCardsResponseBillingFieldLine1,
+	"line2":        updateCardsResponseBillingFieldLine2,
+	"postal_code":  updateCardsResponseBillingFieldPostalCode,
+	"region":       updateCardsResponseBillingFieldRegion,
+}
+
+// The billing address.
 type UpdateCardsResponseBilling struct {
 	// Billing city.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -11064,10 +11797,12 @@ func (u *UpdateCardsResponseBilling) GetExtraProperties() map[string]interface{}
 }
 
 func (u *UpdateCardsResponseBilling) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -11124,6 +11859,13 @@ func (u *UpdateCardsResponseBilling) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateCardsResponseBillingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -11154,12 +11896,12 @@ func (u *UpdateCardsResponseBilling) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The spending limit configuration.
 var (
 	updateCardsResponseLimitFieldAmount    = big.NewInt(1 << 0)
 	updateCardsResponseLimitFieldFrequency = big.NewInt(1 << 1)
 )
 
+// The spending limit configuration.
 type UpdateCardsResponseLimit struct {
 	// The limit amount in dollars.
 	Amount float64 `json:"amount" url:"amount"`
@@ -11195,10 +11937,12 @@ func (u *UpdateCardsResponseLimit) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateCardsResponseLimit) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -11308,7 +12052,6 @@ func (u UpdateCardsResponseObject) Ptr() *UpdateCardsResponseObject {
 	return &u
 }
 
-// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 var (
 	updateCardsResponseSecretsFieldCardNumber = big.NewInt(1 << 0)
 	updateCardsResponseSecretsFieldCvc        = big.NewInt(1 << 1)
@@ -11316,6 +12059,13 @@ var (
 	updateCardsResponseSecretsFieldPin        = big.NewInt(1 << 3)
 )
 
+// updateCardsResponseSecretsNullableFields maps the wire names of UpdateCardsResponseSecrets's nullable fields (required or optional) to their field bits.
+var updateCardsResponseSecretsNullableFields = map[string]*big.Int{
+	"name_on_card": updateCardsResponseSecretsFieldNameOnCard,
+	"pin":          updateCardsResponseSecretsFieldPin,
+}
+
+// Sensitive card details. Present only on `GET /cards/:id` for active cards; `null` when the card is inactive or details cannot be retrieved.
 type UpdateCardsResponseSecrets struct {
 	// Full card number.
 	CardNumber string `json:"card_number" url:"card_number"`
@@ -11369,10 +12119,12 @@ func (u *UpdateCardsResponseSecrets) GetExtraProperties() map[string]interface{}
 }
 
 func (u *UpdateCardsResponseSecrets) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCardNumber sets the CardNumber field and marks it as non-optional;
@@ -11415,6 +12167,13 @@ func (u *UpdateCardsResponseSecrets) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateCardsResponseSecretsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -11549,10 +12308,12 @@ type UpdateCardsRequest struct {
 }
 
 func (u *UpdateCardsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

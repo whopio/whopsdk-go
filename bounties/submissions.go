@@ -50,10 +50,12 @@ type ListSubmissionsRequest struct {
 }
 
 func (l *ListSubmissionsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBountyID sets the BountyID field and marks it as non-optional;
@@ -142,10 +144,12 @@ type RetrieveSubmissionsRequest struct {
 }
 
 func (r *RetrieveSubmissionsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBountyID sets the BountyID field and marks it as non-optional;
@@ -269,10 +273,12 @@ func (l *ListSubmissionsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListSubmissionsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -338,6 +344,12 @@ var (
 	listSubmissionsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listSubmissionsResponsePageInfoNullableFields maps the wire names of ListSubmissionsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listSubmissionsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listSubmissionsResponsePageInfoFieldEndCursor,
+	"start_cursor": listSubmissionsResponsePageInfoFieldStartCursor,
+}
+
 type ListSubmissionsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -387,10 +399,12 @@ func (l *ListSubmissionsResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListSubmissionsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -433,6 +447,13 @@ func (l *ListSubmissionsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSubmissionsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

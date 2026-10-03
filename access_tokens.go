@@ -32,10 +32,12 @@ type CreateAccessTokensRequest struct {
 }
 
 func (c *CreateAccessTokensRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -67,12 +69,18 @@ func (c *CreateAccessTokensRequest) SetUserID(userID *string) {
 }
 
 func (c *CreateAccessTokensRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAccessTokensRequest
-	var body unmarshaler
+	type embed CreateAccessTokensRequest
+	var body = struct {
+		embed
+		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
+	}{
+		embed: embed(*c),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*c = CreateAccessTokensRequest(body)
+	*c = CreateAccessTokensRequest(body.embed)
+	c.ExpiresAt = body.ExpiresAt.TimePtr()
 	return nil
 }
 
@@ -89,12 +97,12 @@ func (c *CreateAccessTokensRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-// A short-lived access token used to authenticate API requests on behalf of a user.
 var (
 	accessTokenFieldExpiresAt = big.NewInt(1 << 0)
 	accessTokenFieldToken     = big.NewInt(1 << 1)
 )
 
+// A short-lived access token used to authenticate API requests on behalf of a user.
 type AccessToken struct {
 	// The timestamp after which this access token is no longer valid and must be refreshed.
 	ExpiresAt time.Time `json:"expires_at" url:"expires_at"`
@@ -130,10 +138,12 @@ func (a *AccessToken) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccessToken) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExpiresAt sets the ExpiresAt field and marks it as non-optional;

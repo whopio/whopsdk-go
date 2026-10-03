@@ -26,10 +26,12 @@ type AttachExperiencesRequest struct {
 }
 
 func (a *AttachExperiencesRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -98,10 +100,12 @@ type CreateExperiencesRequest struct {
 }
 
 func (c *CreateExperiencesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -187,10 +191,12 @@ type DeleteExperiencesRequest struct {
 }
 
 func (d *DeleteExperiencesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -216,10 +222,12 @@ type DetachExperiencesRequest struct {
 }
 
 func (d *DetachExperiencesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -273,10 +281,12 @@ type DuplicateExperiencesRequest struct {
 }
 
 func (d *DuplicateExperiencesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -351,10 +361,12 @@ type ListExperiencesRequest struct {
 }
 
 func (l *ListExperiencesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -433,10 +445,12 @@ type RetrieveExperiencesRequest struct {
 }
 
 func (r *RetrieveExperiencesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -446,7 +460,6 @@ func (r *RetrieveExperiencesRequest) SetID(id string) {
 	r.require(retrieveExperiencesRequestFieldID)
 }
 
-// An experience is a feature or content module within a product, such as a chat, course, or custom app.
 var (
 	experienceFieldApp       = big.NewInt(1 << 0)
 	experienceFieldCompany   = big.NewInt(1 << 1)
@@ -459,6 +472,13 @@ var (
 	experienceFieldProducts  = big.NewInt(1 << 8)
 )
 
+// experienceNullableFields maps the wire names of Experience's nullable fields (required or optional) to their field bits.
+var experienceNullableFields = map[string]*big.Int{
+	"image": experienceFieldImage,
+	"order": experienceFieldOrder,
+}
+
+// An experience is a feature or content module within a product, such as a chat, course, or custom app.
 type Experience struct {
 	// The app that powers this experience, defining its interface and behavior.
 	App *ExperienceApp `json:"app" url:"app"`
@@ -557,10 +577,12 @@ func (e *Experience) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *Experience) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetApp sets the App field and marks it as non-optional;
@@ -644,6 +666,13 @@ func (e *Experience) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experienceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -699,13 +728,18 @@ func (e ExperienceAccessLevels) Ptr() *ExperienceAccessLevels {
 	return &e
 }
 
-// The app that powers this experience, defining its interface and behavior.
 var (
 	experienceAppFieldIcon = big.NewInt(1 << 0)
 	experienceAppFieldID   = big.NewInt(1 << 1)
 	experienceAppFieldName = big.NewInt(1 << 2)
 )
 
+// experienceAppNullableFields maps the wire names of ExperienceApp's nullable fields (required or optional) to their field bits.
+var experienceAppNullableFields = map[string]*big.Int{
+	"icon": experienceAppFieldIcon,
+}
+
+// The app that powers this experience, defining its interface and behavior.
 type ExperienceApp struct {
 	// The icon image for this app, displayed on the app store, product pages, checkout, and as the default icon for experiences using this app.
 	Icon *ExperienceAppIcon `json:"icon,omitempty" url:"icon,omitempty"`
@@ -750,10 +784,12 @@ func (e *ExperienceApp) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperienceApp) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetIcon sets the Icon field and marks it as non-optional;
@@ -789,6 +825,13 @@ func (e *ExperienceApp) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experienceAppNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -819,11 +862,16 @@ func (e *ExperienceApp) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// The icon image for this app, displayed on the app store, product pages, checkout, and as the default icon for experiences using this app.
 var (
 	experienceAppIconFieldURL = big.NewInt(1 << 0)
 )
 
+// experienceAppIconNullableFields maps the wire names of ExperienceAppIcon's nullable fields (required or optional) to their field bits.
+var experienceAppIconNullableFields = map[string]*big.Int{
+	"url": experienceAppIconFieldURL,
+}
+
+// The icon image for this app, displayed on the app store, product pages, checkout, and as the default icon for experiences using this app.
 type ExperienceAppIcon struct {
 	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
@@ -850,10 +898,12 @@ func (e *ExperienceAppIcon) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperienceAppIcon) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -875,6 +925,13 @@ func (e *ExperienceAppIcon) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experienceAppIconNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -905,13 +962,13 @@ func (e *ExperienceAppIcon) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// The company that owns this experience.
 var (
 	experienceCompanyFieldID    = big.NewInt(1 << 0)
 	experienceCompanyFieldRoute = big.NewInt(1 << 1)
 	experienceCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// The company that owns this experience.
 type ExperienceCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -956,10 +1013,12 @@ func (e *ExperienceCompany) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperienceCompany) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1025,11 +1084,16 @@ func (e *ExperienceCompany) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// The custom logo image for this experience. Null if no custom logo has been uploaded.
 var (
 	experienceImageFieldURL = big.NewInt(1 << 0)
 )
 
+// experienceImageNullableFields maps the wire names of ExperienceImage's nullable fields (required or optional) to their field bits.
+var experienceImageNullableFields = map[string]*big.Int{
+	"url": experienceImageFieldURL,
+}
+
+// The custom logo image for this experience. Null if no custom logo has been uploaded.
 type ExperienceImage struct {
 	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
@@ -1056,10 +1120,12 @@ func (e *ExperienceImage) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperienceImage) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1081,6 +1147,13 @@ func (e *ExperienceImage) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experienceImageNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1111,7 +1184,6 @@ func (e *ExperienceImage) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// An experience is a feature or content module within a product, such as a chat, course, or custom app.
 var (
 	experienceListItemFieldApp       = big.NewInt(1 << 0)
 	experienceListItemFieldCompany   = big.NewInt(1 << 1)
@@ -1123,6 +1195,13 @@ var (
 	experienceListItemFieldOrder     = big.NewInt(1 << 7)
 )
 
+// experienceListItemNullableFields maps the wire names of ExperienceListItem's nullable fields (required or optional) to their field bits.
+var experienceListItemNullableFields = map[string]*big.Int{
+	"image": experienceListItemFieldImage,
+	"order": experienceListItemFieldOrder,
+}
+
+// An experience is a feature or content module within a product, such as a chat, course, or custom app.
 type ExperienceListItem struct {
 	// The app that powers this experience, defining its interface and behavior.
 	App *ExperienceListItemApp `json:"app" url:"app"`
@@ -1212,10 +1291,12 @@ func (e *ExperienceListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperienceListItem) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetApp sets the App field and marks it as non-optional;
@@ -1292,6 +1373,13 @@ func (e *ExperienceListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experienceListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1324,13 +1412,18 @@ func (e *ExperienceListItem) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// The app that powers this experience, defining its interface and behavior.
 var (
 	experienceListItemAppFieldIcon = big.NewInt(1 << 0)
 	experienceListItemAppFieldID   = big.NewInt(1 << 1)
 	experienceListItemAppFieldName = big.NewInt(1 << 2)
 )
 
+// experienceListItemAppNullableFields maps the wire names of ExperienceListItemApp's nullable fields (required or optional) to their field bits.
+var experienceListItemAppNullableFields = map[string]*big.Int{
+	"icon": experienceListItemAppFieldIcon,
+}
+
+// The app that powers this experience, defining its interface and behavior.
 type ExperienceListItemApp struct {
 	// The icon image for this app, displayed on the app store, product pages, checkout, and as the default icon for experiences using this app.
 	Icon *ExperienceListItemAppIcon `json:"icon,omitempty" url:"icon,omitempty"`
@@ -1375,10 +1468,12 @@ func (e *ExperienceListItemApp) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperienceListItemApp) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetIcon sets the Icon field and marks it as non-optional;
@@ -1414,6 +1509,13 @@ func (e *ExperienceListItemApp) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experienceListItemAppNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1444,11 +1546,16 @@ func (e *ExperienceListItemApp) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// The icon image for this app, displayed on the app store, product pages, checkout, and as the default icon for experiences using this app.
 var (
 	experienceListItemAppIconFieldURL = big.NewInt(1 << 0)
 )
 
+// experienceListItemAppIconNullableFields maps the wire names of ExperienceListItemAppIcon's nullable fields (required or optional) to their field bits.
+var experienceListItemAppIconNullableFields = map[string]*big.Int{
+	"url": experienceListItemAppIconFieldURL,
+}
+
+// The icon image for this app, displayed on the app store, product pages, checkout, and as the default icon for experiences using this app.
 type ExperienceListItemAppIcon struct {
 	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
@@ -1475,10 +1582,12 @@ func (e *ExperienceListItemAppIcon) GetExtraProperties() map[string]interface{} 
 }
 
 func (e *ExperienceListItemAppIcon) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1500,6 +1609,13 @@ func (e *ExperienceListItemAppIcon) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experienceListItemAppIconNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1530,13 +1646,13 @@ func (e *ExperienceListItemAppIcon) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// The company that owns this experience.
 var (
 	experienceListItemCompanyFieldID    = big.NewInt(1 << 0)
 	experienceListItemCompanyFieldRoute = big.NewInt(1 << 1)
 	experienceListItemCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// The company that owns this experience.
 type ExperienceListItemCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -1581,10 +1697,12 @@ func (e *ExperienceListItemCompany) GetExtraProperties() map[string]interface{} 
 }
 
 func (e *ExperienceListItemCompany) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1650,11 +1768,16 @@ func (e *ExperienceListItemCompany) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// The custom logo image for this experience. Null if no custom logo has been uploaded.
 var (
 	experienceListItemImageFieldURL = big.NewInt(1 << 0)
 )
 
+// experienceListItemImageNullableFields maps the wire names of ExperienceListItemImage's nullable fields (required or optional) to their field bits.
+var experienceListItemImageNullableFields = map[string]*big.Int{
+	"url": experienceListItemImageFieldURL,
+}
+
+// The custom logo image for this experience. Null if no custom logo has been uploaded.
 type ExperienceListItemImage struct {
 	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
@@ -1681,10 +1804,12 @@ func (e *ExperienceListItemImage) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperienceListItemImage) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1706,6 +1831,13 @@ func (e *ExperienceListItemImage) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experienceListItemImageNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1736,13 +1868,13 @@ func (e *ExperienceListItemImage) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// A product is a digital good or service sold on Whop. Products contain plans for pricing and experiences for content delivery.
 var (
 	experienceProductsItemFieldID    = big.NewInt(1 << 0)
 	experienceProductsItemFieldRoute = big.NewInt(1 << 1)
 	experienceProductsItemFieldTitle = big.NewInt(1 << 2)
 )
 
+// A product is a digital good or service sold on Whop. Products contain plans for pricing and experiences for content delivery.
 type ExperienceProductsItem struct {
 	// The unique identifier for the product.
 	ID string `json:"id" url:"id"`
@@ -1787,10 +1919,12 @@ func (e *ExperienceProductsItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *ExperienceProductsItem) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1856,11 +1990,11 @@ func (e *ExperienceProductsItem) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// A logo image displayed alongside the experience name.
 var (
 	createExperiencesRequestLogoFieldID = big.NewInt(1 << 0)
 )
 
+// A logo image displayed alongside the experience name.
 type CreateExperiencesRequestLogo struct {
 	// The ID of an existing file object.
 	ID string `json:"id" url:"id"`
@@ -1887,10 +2021,12 @@ func (c *CreateExperiencesRequestLogo) GetExtraProperties() map[string]interface
 }
 
 func (c *CreateExperiencesRequestLogo) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1942,12 +2078,12 @@ func (c *CreateExperiencesRequestLogo) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for PublicExperience.
 var (
 	listExperiencesResponseFieldData     = big.NewInt(1 << 0)
 	listExperiencesResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for PublicExperience.
 type ListExperiencesResponse struct {
 	// A list of nodes.
 	Data []*ExperienceListItem `json:"data" url:"data"`
@@ -1983,10 +2119,12 @@ func (l *ListExperiencesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListExperiencesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2045,11 +2183,11 @@ func (l *ListExperiencesResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// A logo image displayed alongside the experience name.
 var (
 	updateExperiencesRequestLogoFieldID = big.NewInt(1 << 0)
 )
 
+// A logo image displayed alongside the experience name.
 type UpdateExperiencesRequestLogo struct {
 	// The ID of an existing file object.
 	ID string `json:"id" url:"id"`
@@ -2076,10 +2214,12 @@ func (u *UpdateExperiencesRequestLogo) GetExtraProperties() map[string]interface
 }
 
 func (u *UpdateExperiencesRequestLogo) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2165,10 +2305,12 @@ type UpdateExperiencesRequest struct {
 }
 
 func (u *UpdateExperiencesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

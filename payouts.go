@@ -29,10 +29,12 @@ type CancelPayoutsRequest struct {
 }
 
 func (c *CancelPayoutsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -102,10 +104,12 @@ type CreatePayoutsRequest struct {
 }
 
 func (c *CreatePayoutsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -247,10 +251,12 @@ type CreateQuotePayoutsRequest struct {
 }
 
 func (c *CreateQuotePayoutsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -376,10 +382,12 @@ type ListPayoutsRequest struct {
 }
 
 func (l *ListPayoutsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -485,10 +493,12 @@ type RetrievePayoutsRequest struct {
 }
 
 func (r *RetrievePayoutsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -539,6 +549,22 @@ var (
 	cancelPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 23)
 	cancelPayoutsResponseFieldTraceCode           = big.NewInt(1 << 24)
 )
+
+// cancelPayoutsResponseNullableFields maps the wire names of CancelPayoutsResponse's nullable fields (required or optional) to their field bits.
+var cancelPayoutsResponseNullableFields = map[string]*big.Int{
+	"destination_amount":   cancelPayoutsResponseFieldDestinationAmount,
+	"destination_currency": cancelPayoutsResponseFieldDestinationCurrency,
+	"estimated_arrival":    cancelPayoutsResponseFieldEstimatedArrival,
+	"exchange_rate":        cancelPayoutsResponseFieldExchangeRate,
+	"failure":              cancelPayoutsResponseFieldFailure,
+	"notes":                cancelPayoutsResponseFieldNotes,
+	"payer_name":           cancelPayoutsResponseFieldPayerName,
+	"payout_method":        cancelPayoutsResponseFieldPayoutMethod,
+	"payout_request_id":    cancelPayoutsResponseFieldPayoutRequestID,
+	"source":               cancelPayoutsResponseFieldSource,
+	"statement_descriptor": cancelPayoutsResponseFieldStatementDescriptor,
+	"trace_code":           cancelPayoutsResponseFieldTraceCode,
+}
 
 type CancelPayoutsResponse struct {
 	// The payout amount in whole currency units, as a decimal string.
@@ -781,10 +807,12 @@ func (c *CancelPayoutsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CancelPayoutsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -982,6 +1010,13 @@ func (c *CancelPayoutsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, cancelPayoutsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1016,13 +1051,20 @@ func (c *CancelPayoutsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 var (
 	cancelPayoutsResponseFailureFieldCode            = big.NewInt(1 << 0)
 	cancelPayoutsResponseFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	cancelPayoutsResponseFailureFieldMessage         = big.NewInt(1 << 2)
 )
 
+// cancelPayoutsResponseFailureNullableFields maps the wire names of CancelPayoutsResponseFailure's nullable fields (required or optional) to their field bits.
+var cancelPayoutsResponseFailureNullableFields = map[string]*big.Int{
+	"code":              cancelPayoutsResponseFailureFieldCode,
+	"funds_returned_at": cancelPayoutsResponseFailureFieldFundsReturnedAt,
+	"message":           cancelPayoutsResponseFailureFieldMessage,
+}
+
+// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 type CancelPayoutsResponseFailure struct {
 	// Classified failure code from the maintained error catalog.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
@@ -1067,10 +1109,12 @@ func (c *CancelPayoutsResponseFailure) GetExtraProperties() map[string]interface
 }
 
 func (c *CancelPayoutsResponseFailure) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -1112,6 +1156,13 @@ func (c *CancelPayoutsResponseFailure) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, cancelPayoutsResponseFailureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1186,12 +1237,18 @@ func (c CancelPayoutsResponseObject) Ptr() *CancelPayoutsResponseObject {
 	return &c
 }
 
-// The saved payout method used. Requires payout:destination:read; null without it.
 var (
 	cancelPayoutsResponsePayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	cancelPayoutsResponsePayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
 )
 
+// cancelPayoutsResponsePayoutMethodNullableFields maps the wire names of CancelPayoutsResponsePayoutMethod's nullable fields (required or optional) to their field bits.
+var cancelPayoutsResponsePayoutMethodNullableFields = map[string]*big.Int{
+	"nickname":                cancelPayoutsResponsePayoutMethodFieldNickname,
+	"supported_payout_method": cancelPayoutsResponsePayoutMethodFieldSupportedPayoutMethod,
+}
+
+// The saved payout method used. Requires payout:destination:read; null without it.
 type CancelPayoutsResponsePayoutMethod struct {
 	// Saved payout method nickname.
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
@@ -1227,10 +1284,12 @@ func (c *CancelPayoutsResponsePayoutMethod) GetExtraProperties() map[string]inte
 }
 
 func (c *CancelPayoutsResponsePayoutMethod) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetNickname sets the Nickname field and marks it as non-optional;
@@ -1259,6 +1318,13 @@ func (c *CancelPayoutsResponsePayoutMethod) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, cancelPayoutsResponsePayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1289,13 +1355,19 @@ func (c *CancelPayoutsResponsePayoutMethod) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Supported payout method display details.
 var (
 	cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
 	cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
 	cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
 )
 
+// cancelPayoutsResponsePayoutMethodSupportedPayoutMethodNullableFields maps the wire names of CancelPayoutsResponsePayoutMethodSupportedPayoutMethod's nullable fields (required or optional) to their field bits.
+var cancelPayoutsResponsePayoutMethodSupportedPayoutMethodNullableFields = map[string]*big.Int{
+	"icon_url":   cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldIconURL,
+	"payer_name": cancelPayoutsResponsePayoutMethodSupportedPayoutMethodFieldPayerName,
+}
+
+// Supported payout method display details.
 type CancelPayoutsResponsePayoutMethodSupportedPayoutMethod struct {
 	// How the funds are delivered to the recipient.
 	DeliveryType CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
@@ -1340,10 +1412,12 @@ func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) GetExtraPropert
 }
 
 func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
@@ -1379,6 +1453,13 @@ func (c *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) UnmarshalJSON(d
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, cancelPayoutsResponsePayoutMethodSupportedPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1593,6 +1674,22 @@ var (
 	createPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 23)
 	createPayoutsResponseFieldTraceCode           = big.NewInt(1 << 24)
 )
+
+// createPayoutsResponseNullableFields maps the wire names of CreatePayoutsResponse's nullable fields (required or optional) to their field bits.
+var createPayoutsResponseNullableFields = map[string]*big.Int{
+	"destination_amount":   createPayoutsResponseFieldDestinationAmount,
+	"destination_currency": createPayoutsResponseFieldDestinationCurrency,
+	"estimated_arrival":    createPayoutsResponseFieldEstimatedArrival,
+	"exchange_rate":        createPayoutsResponseFieldExchangeRate,
+	"failure":              createPayoutsResponseFieldFailure,
+	"notes":                createPayoutsResponseFieldNotes,
+	"payer_name":           createPayoutsResponseFieldPayerName,
+	"payout_method":        createPayoutsResponseFieldPayoutMethod,
+	"payout_request_id":    createPayoutsResponseFieldPayoutRequestID,
+	"source":               createPayoutsResponseFieldSource,
+	"statement_descriptor": createPayoutsResponseFieldStatementDescriptor,
+	"trace_code":           createPayoutsResponseFieldTraceCode,
+}
 
 type CreatePayoutsResponse struct {
 	// The payout amount in whole currency units, as a decimal string.
@@ -1835,10 +1932,12 @@ func (c *CreatePayoutsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreatePayoutsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -2036,6 +2135,13 @@ func (c *CreatePayoutsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPayoutsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2070,13 +2176,20 @@ func (c *CreatePayoutsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 var (
 	createPayoutsResponseFailureFieldCode            = big.NewInt(1 << 0)
 	createPayoutsResponseFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	createPayoutsResponseFailureFieldMessage         = big.NewInt(1 << 2)
 )
 
+// createPayoutsResponseFailureNullableFields maps the wire names of CreatePayoutsResponseFailure's nullable fields (required or optional) to their field bits.
+var createPayoutsResponseFailureNullableFields = map[string]*big.Int{
+	"code":              createPayoutsResponseFailureFieldCode,
+	"funds_returned_at": createPayoutsResponseFailureFieldFundsReturnedAt,
+	"message":           createPayoutsResponseFailureFieldMessage,
+}
+
+// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 type CreatePayoutsResponseFailure struct {
 	// Classified failure code from the maintained error catalog.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
@@ -2121,10 +2234,12 @@ func (c *CreatePayoutsResponseFailure) GetExtraProperties() map[string]interface
 }
 
 func (c *CreatePayoutsResponseFailure) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -2166,6 +2281,13 @@ func (c *CreatePayoutsResponseFailure) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPayoutsResponseFailureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2240,12 +2362,18 @@ func (c CreatePayoutsResponseObject) Ptr() *CreatePayoutsResponseObject {
 	return &c
 }
 
-// The saved payout method used. Requires payout:destination:read; null without it.
 var (
 	createPayoutsResponsePayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	createPayoutsResponsePayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
 )
 
+// createPayoutsResponsePayoutMethodNullableFields maps the wire names of CreatePayoutsResponsePayoutMethod's nullable fields (required or optional) to their field bits.
+var createPayoutsResponsePayoutMethodNullableFields = map[string]*big.Int{
+	"nickname":                createPayoutsResponsePayoutMethodFieldNickname,
+	"supported_payout_method": createPayoutsResponsePayoutMethodFieldSupportedPayoutMethod,
+}
+
+// The saved payout method used. Requires payout:destination:read; null without it.
 type CreatePayoutsResponsePayoutMethod struct {
 	// Saved payout method nickname.
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
@@ -2281,10 +2409,12 @@ func (c *CreatePayoutsResponsePayoutMethod) GetExtraProperties() map[string]inte
 }
 
 func (c *CreatePayoutsResponsePayoutMethod) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetNickname sets the Nickname field and marks it as non-optional;
@@ -2313,6 +2443,13 @@ func (c *CreatePayoutsResponsePayoutMethod) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPayoutsResponsePayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2343,13 +2480,19 @@ func (c *CreatePayoutsResponsePayoutMethod) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Supported payout method display details.
 var (
 	createPayoutsResponsePayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
 	createPayoutsResponsePayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
 	createPayoutsResponsePayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
 )
 
+// createPayoutsResponsePayoutMethodSupportedPayoutMethodNullableFields maps the wire names of CreatePayoutsResponsePayoutMethodSupportedPayoutMethod's nullable fields (required or optional) to their field bits.
+var createPayoutsResponsePayoutMethodSupportedPayoutMethodNullableFields = map[string]*big.Int{
+	"icon_url":   createPayoutsResponsePayoutMethodSupportedPayoutMethodFieldIconURL,
+	"payer_name": createPayoutsResponsePayoutMethodSupportedPayoutMethodFieldPayerName,
+}
+
+// Supported payout method display details.
 type CreatePayoutsResponsePayoutMethodSupportedPayoutMethod struct {
 	// How the funds are delivered to the recipient.
 	DeliveryType CreatePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
@@ -2394,10 +2537,12 @@ func (c *CreatePayoutsResponsePayoutMethodSupportedPayoutMethod) GetExtraPropert
 }
 
 func (c *CreatePayoutsResponsePayoutMethodSupportedPayoutMethod) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
@@ -2433,6 +2578,13 @@ func (c *CreatePayoutsResponsePayoutMethodSupportedPayoutMethod) UnmarshalJSON(d
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPayoutsResponsePayoutMethodSupportedPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2729,10 +2881,12 @@ func (c *CreateQuotePayoutsResponse) GetExtraProperties() map[string]interface{}
 }
 
 func (c *CreateQuotePayoutsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -2970,10 +3124,12 @@ func (l *ListPayoutsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPayoutsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3059,6 +3215,22 @@ var (
 	listPayoutsResponseDataItemFieldStatusDetail        = big.NewInt(1 << 23)
 	listPayoutsResponseDataItemFieldTraceCode           = big.NewInt(1 << 24)
 )
+
+// listPayoutsResponseDataItemNullableFields maps the wire names of ListPayoutsResponseDataItem's nullable fields (required or optional) to their field bits.
+var listPayoutsResponseDataItemNullableFields = map[string]*big.Int{
+	"destination_amount":   listPayoutsResponseDataItemFieldDestinationAmount,
+	"destination_currency": listPayoutsResponseDataItemFieldDestinationCurrency,
+	"estimated_arrival":    listPayoutsResponseDataItemFieldEstimatedArrival,
+	"exchange_rate":        listPayoutsResponseDataItemFieldExchangeRate,
+	"failure":              listPayoutsResponseDataItemFieldFailure,
+	"notes":                listPayoutsResponseDataItemFieldNotes,
+	"payer_name":           listPayoutsResponseDataItemFieldPayerName,
+	"payout_method":        listPayoutsResponseDataItemFieldPayoutMethod,
+	"payout_request_id":    listPayoutsResponseDataItemFieldPayoutRequestID,
+	"source":               listPayoutsResponseDataItemFieldSource,
+	"statement_descriptor": listPayoutsResponseDataItemFieldStatementDescriptor,
+	"trace_code":           listPayoutsResponseDataItemFieldTraceCode,
+}
 
 type ListPayoutsResponseDataItem struct {
 	// The payout amount in whole currency units, as a decimal string.
@@ -3301,10 +3473,12 @@ func (l *ListPayoutsResponseDataItem) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListPayoutsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -3502,6 +3676,13 @@ func (l *ListPayoutsResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPayoutsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3536,13 +3717,20 @@ func (l *ListPayoutsResponseDataItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 var (
 	listPayoutsResponseDataItemFailureFieldCode            = big.NewInt(1 << 0)
 	listPayoutsResponseDataItemFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	listPayoutsResponseDataItemFailureFieldMessage         = big.NewInt(1 << 2)
 )
 
+// listPayoutsResponseDataItemFailureNullableFields maps the wire names of ListPayoutsResponseDataItemFailure's nullable fields (required or optional) to their field bits.
+var listPayoutsResponseDataItemFailureNullableFields = map[string]*big.Int{
+	"code":              listPayoutsResponseDataItemFailureFieldCode,
+	"funds_returned_at": listPayoutsResponseDataItemFailureFieldFundsReturnedAt,
+	"message":           listPayoutsResponseDataItemFailureFieldMessage,
+}
+
+// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 type ListPayoutsResponseDataItemFailure struct {
 	// Classified failure code from the maintained error catalog.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
@@ -3587,10 +3775,12 @@ func (l *ListPayoutsResponseDataItemFailure) GetExtraProperties() map[string]int
 }
 
 func (l *ListPayoutsResponseDataItemFailure) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -3632,6 +3822,13 @@ func (l *ListPayoutsResponseDataItemFailure) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPayoutsResponseDataItemFailureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3706,12 +3903,18 @@ func (l ListPayoutsResponseDataItemObject) Ptr() *ListPayoutsResponseDataItemObj
 	return &l
 }
 
-// The saved payout method used. Requires payout:destination:read; null without it.
 var (
 	listPayoutsResponseDataItemPayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	listPayoutsResponseDataItemPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
 )
 
+// listPayoutsResponseDataItemPayoutMethodNullableFields maps the wire names of ListPayoutsResponseDataItemPayoutMethod's nullable fields (required or optional) to their field bits.
+var listPayoutsResponseDataItemPayoutMethodNullableFields = map[string]*big.Int{
+	"nickname":                listPayoutsResponseDataItemPayoutMethodFieldNickname,
+	"supported_payout_method": listPayoutsResponseDataItemPayoutMethodFieldSupportedPayoutMethod,
+}
+
+// The saved payout method used. Requires payout:destination:read; null without it.
 type ListPayoutsResponseDataItemPayoutMethod struct {
 	// Saved payout method nickname.
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
@@ -3747,10 +3950,12 @@ func (l *ListPayoutsResponseDataItemPayoutMethod) GetExtraProperties() map[strin
 }
 
 func (l *ListPayoutsResponseDataItemPayoutMethod) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetNickname sets the Nickname field and marks it as non-optional;
@@ -3779,6 +3984,13 @@ func (l *ListPayoutsResponseDataItemPayoutMethod) UnmarshalJSON(data []byte) err
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPayoutsResponseDataItemPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3809,13 +4021,19 @@ func (l *ListPayoutsResponseDataItemPayoutMethod) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Supported payout method display details.
 var (
 	listPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
 	listPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
 	listPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
 )
 
+// listPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodNullableFields maps the wire names of ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethod's nullable fields (required or optional) to their field bits.
+var listPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodNullableFields = map[string]*big.Int{
+	"icon_url":   listPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodFieldIconURL,
+	"payer_name": listPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodFieldPayerName,
+}
+
+// Supported payout method display details.
 type ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethod struct {
 	// How the funds are delivered to the recipient.
 	DeliveryType ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
@@ -3860,10 +4078,12 @@ func (l *ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethod) GetExtraP
 }
 
 func (l *ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethod) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
@@ -3899,6 +4119,13 @@ func (l *ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethod) Unmarshal
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4070,6 +4297,12 @@ var (
 	listPayoutsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPayoutsResponsePageInfoNullableFields maps the wire names of ListPayoutsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPayoutsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPayoutsResponsePageInfoFieldEndCursor,
+	"start_cursor": listPayoutsResponsePageInfoFieldStartCursor,
+}
+
 type ListPayoutsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -4119,10 +4352,12 @@ func (l *ListPayoutsResponsePageInfo) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListPayoutsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -4165,6 +4400,13 @@ func (l *ListPayoutsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPayoutsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4205,6 +4447,12 @@ var (
 	postPayoutCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postPayoutCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postPayoutCreatedPayloadNullableFields maps the wire names of PostPayoutCreatedPayload's nullable fields (required or optional) to their field bits.
+var postPayoutCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPayoutCreatedPayloadFieldAccountID,
+	"api_version_date": postPayoutCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostPayoutCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -4294,10 +4542,12 @@ func (p *PostPayoutCreatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostPayoutCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -4374,6 +4624,13 @@ func (p *PostPayoutCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4453,6 +4710,22 @@ var (
 	postPayoutCreatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 23)
 	postPayoutCreatedPayloadDataFieldTraceCode           = big.NewInt(1 << 24)
 )
+
+// postPayoutCreatedPayloadDataNullableFields maps the wire names of PostPayoutCreatedPayloadData's nullable fields (required or optional) to their field bits.
+var postPayoutCreatedPayloadDataNullableFields = map[string]*big.Int{
+	"destination_amount":   postPayoutCreatedPayloadDataFieldDestinationAmount,
+	"destination_currency": postPayoutCreatedPayloadDataFieldDestinationCurrency,
+	"estimated_arrival":    postPayoutCreatedPayloadDataFieldEstimatedArrival,
+	"exchange_rate":        postPayoutCreatedPayloadDataFieldExchangeRate,
+	"failure":              postPayoutCreatedPayloadDataFieldFailure,
+	"notes":                postPayoutCreatedPayloadDataFieldNotes,
+	"payer_name":           postPayoutCreatedPayloadDataFieldPayerName,
+	"payout_method":        postPayoutCreatedPayloadDataFieldPayoutMethod,
+	"payout_request_id":    postPayoutCreatedPayloadDataFieldPayoutRequestID,
+	"source":               postPayoutCreatedPayloadDataFieldSource,
+	"statement_descriptor": postPayoutCreatedPayloadDataFieldStatementDescriptor,
+	"trace_code":           postPayoutCreatedPayloadDataFieldTraceCode,
+}
 
 type PostPayoutCreatedPayloadData struct {
 	// The payout amount in whole currency units, as a decimal string.
@@ -4695,10 +4968,12 @@ func (p *PostPayoutCreatedPayloadData) GetExtraProperties() map[string]interface
 }
 
 func (p *PostPayoutCreatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -4896,6 +5171,13 @@ func (p *PostPayoutCreatedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutCreatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4930,13 +5212,20 @@ func (p *PostPayoutCreatedPayloadData) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 var (
 	postPayoutCreatedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
 	postPayoutCreatedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	postPayoutCreatedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
 )
 
+// postPayoutCreatedPayloadDataFailureNullableFields maps the wire names of PostPayoutCreatedPayloadDataFailure's nullable fields (required or optional) to their field bits.
+var postPayoutCreatedPayloadDataFailureNullableFields = map[string]*big.Int{
+	"code":              postPayoutCreatedPayloadDataFailureFieldCode,
+	"funds_returned_at": postPayoutCreatedPayloadDataFailureFieldFundsReturnedAt,
+	"message":           postPayoutCreatedPayloadDataFailureFieldMessage,
+}
+
+// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 type PostPayoutCreatedPayloadDataFailure struct {
 	// Classified failure code from the maintained error catalog.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
@@ -4981,10 +5270,12 @@ func (p *PostPayoutCreatedPayloadDataFailure) GetExtraProperties() map[string]in
 }
 
 func (p *PostPayoutCreatedPayloadDataFailure) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -5026,6 +5317,13 @@ func (p *PostPayoutCreatedPayloadDataFailure) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutCreatedPayloadDataFailureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5100,12 +5398,18 @@ func (p PostPayoutCreatedPayloadDataObject) Ptr() *PostPayoutCreatedPayloadDataO
 	return &p
 }
 
-// The saved payout method used. Requires payout:destination:read; null without it.
 var (
 	postPayoutCreatedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	postPayoutCreatedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
 )
 
+// postPayoutCreatedPayloadDataPayoutMethodNullableFields maps the wire names of PostPayoutCreatedPayloadDataPayoutMethod's nullable fields (required or optional) to their field bits.
+var postPayoutCreatedPayloadDataPayoutMethodNullableFields = map[string]*big.Int{
+	"nickname":                postPayoutCreatedPayloadDataPayoutMethodFieldNickname,
+	"supported_payout_method": postPayoutCreatedPayloadDataPayoutMethodFieldSupportedPayoutMethod,
+}
+
+// The saved payout method used. Requires payout:destination:read; null without it.
 type PostPayoutCreatedPayloadDataPayoutMethod struct {
 	// Saved payout method nickname.
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
@@ -5141,10 +5445,12 @@ func (p *PostPayoutCreatedPayloadDataPayoutMethod) GetExtraProperties() map[stri
 }
 
 func (p *PostPayoutCreatedPayloadDataPayoutMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetNickname sets the Nickname field and marks it as non-optional;
@@ -5173,6 +5479,13 @@ func (p *PostPayoutCreatedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) er
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutCreatedPayloadDataPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5203,13 +5516,19 @@ func (p *PostPayoutCreatedPayloadDataPayoutMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Supported payout method display details.
 var (
 	postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
 	postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
 	postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
 )
 
+// postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodNullableFields maps the wire names of PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod's nullable fields (required or optional) to their field bits.
+var postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodNullableFields = map[string]*big.Int{
+	"icon_url":   postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL,
+	"payer_name": postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName,
+}
+
+// Supported payout method display details.
 type PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod struct {
 	// How the funds are delivered to the recipient.
 	DeliveryType PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
@@ -5254,10 +5573,12 @@ func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) GetExtra
 }
 
 func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
@@ -5293,6 +5614,13 @@ func (p *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) Unmarsha
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5488,6 +5816,12 @@ var (
 	postPayoutMethodCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postPayoutMethodCreatedPayloadNullableFields maps the wire names of PostPayoutMethodCreatedPayload's nullable fields (required or optional) to their field bits.
+var postPayoutMethodCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPayoutMethodCreatedPayloadFieldAccountID,
+	"api_version_date": postPayoutMethodCreatedPayloadFieldAPIVersionDate,
+}
+
 type PostPayoutMethodCreatedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -5576,10 +5910,12 @@ func (p *PostPayoutMethodCreatedPayload) GetExtraProperties() map[string]interfa
 }
 
 func (p *PostPayoutMethodCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -5656,6 +5992,13 @@ func (p *PostPayoutMethodCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutMethodCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5732,6 +6075,22 @@ var (
 	postPayoutMethodCreatedPayloadDataFieldSupportedPayoutMethod = big.NewInt(1 << 20)
 	postPayoutMethodCreatedPayloadDataFieldUnavailableReason     = big.NewInt(1 << 21)
 )
+
+// postPayoutMethodCreatedPayloadDataNullableFields maps the wire names of PostPayoutMethodCreatedPayloadData's nullable fields (required or optional) to their field bits.
+var postPayoutMethodCreatedPayloadDataNullableFields = map[string]*big.Int{
+	"account_reference":       postPayoutMethodCreatedPayloadDataFieldAccountReference,
+	"bank_verification_state": postPayoutMethodCreatedPayloadDataFieldBankVerificationState,
+	"estimated_arrival":       postPayoutMethodCreatedPayloadDataFieldEstimatedArrival,
+	"fee_structure":           postPayoutMethodCreatedPayloadDataFieldFeeStructure,
+	"institution_name":        postPayoutMethodCreatedPayloadDataFieldInstitutionName,
+	"last_paid_out_at":        postPayoutMethodCreatedPayloadDataFieldLastPaidOutAt,
+	"nickname":                postPayoutMethodCreatedPayloadDataFieldNickname,
+	"payer_name":              postPayoutMethodCreatedPayloadDataFieldPayerName,
+	"quote":                   postPayoutMethodCreatedPayloadDataFieldQuote,
+	"status_reason":           postPayoutMethodCreatedPayloadDataFieldStatusReason,
+	"supported_payout_method": postPayoutMethodCreatedPayloadDataFieldSupportedPayoutMethod,
+	"unavailable_reason":      postPayoutMethodCreatedPayloadDataFieldUnavailableReason,
+}
 
 type PostPayoutMethodCreatedPayloadData struct {
 	// Masked identifier for the destination, such as the last four digits of a bank account.
@@ -5947,10 +6306,12 @@ func (p *PostPayoutMethodCreatedPayloadData) GetExtraProperties() map[string]int
 }
 
 func (p *PostPayoutMethodCreatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountReference sets the AccountReference field and marks it as non-optional;
@@ -6127,6 +6488,13 @@ func (p *PostPayoutMethodCreatedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutMethodCreatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6193,12 +6561,18 @@ func (p PostPayoutMethodCreatedPayloadDataBankVerificationState) Ptr() *PostPayo
 	return &p
 }
 
-// Estimated arrival times before an amount-specific quote is requested. Null when the method is not currently eligible.
 var (
 	postPayoutMethodCreatedPayloadDataEstimatedArrivalFieldInstant  = big.NewInt(1 << 0)
 	postPayoutMethodCreatedPayloadDataEstimatedArrivalFieldStandard = big.NewInt(1 << 1)
 )
 
+// postPayoutMethodCreatedPayloadDataEstimatedArrivalNullableFields maps the wire names of PostPayoutMethodCreatedPayloadDataEstimatedArrival's nullable fields (required or optional) to their field bits.
+var postPayoutMethodCreatedPayloadDataEstimatedArrivalNullableFields = map[string]*big.Int{
+	"instant":  postPayoutMethodCreatedPayloadDataEstimatedArrivalFieldInstant,
+	"standard": postPayoutMethodCreatedPayloadDataEstimatedArrivalFieldStandard,
+}
+
+// Estimated arrival times before an amount-specific quote is requested. Null when the method is not currently eligible.
 type PostPayoutMethodCreatedPayloadDataEstimatedArrival struct {
 	// Estimated instant-delivery arrival, or null when unavailable.
 	Instant *time.Time `json:"instant,omitempty" url:"instant,omitempty"`
@@ -6234,10 +6608,12 @@ func (p *PostPayoutMethodCreatedPayloadDataEstimatedArrival) GetExtraProperties(
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataEstimatedArrival) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetInstant sets the Instant field and marks it as non-optional;
@@ -6274,6 +6650,13 @@ func (p *PostPayoutMethodCreatedPayloadDataEstimatedArrival) UnmarshalJSON(data 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutMethodCreatedPayloadDataEstimatedArrivalNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6308,13 +6691,13 @@ func (p *PostPayoutMethodCreatedPayloadDataEstimatedArrival) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Configured fee terms for this payout method. Null when the method is not currently eligible. An amount-specific quote remains authoritative.
 var (
 	postPayoutMethodCreatedPayloadDataFeeStructureFieldCurrency    = big.NewInt(1 << 0)
 	postPayoutMethodCreatedPayloadDataFeeStructureFieldFixedAmount = big.NewInt(1 << 1)
 	postPayoutMethodCreatedPayloadDataFeeStructureFieldPercentage  = big.NewInt(1 << 2)
 )
 
+// Configured fee terms for this payout method. Null when the method is not currently eligible. An amount-specific quote remains authoritative.
 type PostPayoutMethodCreatedPayloadDataFeeStructure struct {
 	// Currency code of fixed_amount.
 	Currency string `json:"currency" url:"currency"`
@@ -6359,10 +6742,12 @@ func (p *PostPayoutMethodCreatedPayloadDataFeeStructure) GetExtraProperties() ma
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataFeeStructure) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -6447,7 +6832,6 @@ func (p PostPayoutMethodCreatedPayloadDataObject) Ptr() *PostPayoutMethodCreated
 	return &p
 }
 
-// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 var (
 	postPayoutMethodCreatedPayloadDataQuoteFieldAmount                   = big.NewInt(1 << 0)
 	postPayoutMethodCreatedPayloadDataQuoteFieldCurrency                 = big.NewInt(1 << 1)
@@ -6459,6 +6843,15 @@ var (
 	postPayoutMethodCreatedPayloadDataQuoteFieldStandard                 = big.NewInt(1 << 7)
 )
 
+// postPayoutMethodCreatedPayloadDataQuoteNullableFields maps the wire names of PostPayoutMethodCreatedPayloadDataQuote's nullable fields (required or optional) to their field bits.
+var postPayoutMethodCreatedPayloadDataQuoteNullableFields = map[string]*big.Int{
+	"instant":                    postPayoutMethodCreatedPayloadDataQuoteFieldInstant,
+	"instant_unavailable_reason": postPayoutMethodCreatedPayloadDataQuoteFieldInstantUnavailableReason,
+	"max_limit":                  postPayoutMethodCreatedPayloadDataQuoteFieldMaxLimit,
+	"standard":                   postPayoutMethodCreatedPayloadDataQuoteFieldStandard,
+}
+
+// Fee and delivery estimate for paying out the requested amount through this method. Null unless an amount was provided, or when the estimate is unavailable.
 type PostPayoutMethodCreatedPayloadDataQuote struct {
 	// The payout amount the quote is for.
 	Amount float64 `json:"amount" url:"amount"`
@@ -6548,10 +6941,12 @@ func (p *PostPayoutMethodCreatedPayloadDataQuote) GetExtraProperties() map[strin
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataQuote) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -6622,6 +7017,13 @@ func (p *PostPayoutMethodCreatedPayloadDataQuote) UnmarshalJSON(data []byte) err
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutMethodCreatedPayloadDataQuoteNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6652,12 +7054,12 @@ func (p *PostPayoutMethodCreatedPayloadDataQuote) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
 var (
 	postPayoutMethodCreatedPayloadDataQuoteInstantFieldFee           = big.NewInt(1 << 0)
 	postPayoutMethodCreatedPayloadDataQuoteInstantFieldTotalReceived = big.NewInt(1 << 1)
 )
 
+// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
 type PostPayoutMethodCreatedPayloadDataQuoteInstant struct {
 	// Total fee charged, in the payout currency.
 	Fee float64 `json:"fee" url:"fee"`
@@ -6693,10 +7095,12 @@ func (p *PostPayoutMethodCreatedPayloadDataQuoteInstant) GetExtraProperties() ma
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataQuoteInstant) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetFee sets the Fee field and marks it as non-optional;
@@ -6775,12 +7179,12 @@ func (p PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason) Ptr() *
 	return &p
 }
 
-// Standard-delivery estimate. Null if the method does not support standard delivery, or the amount does not cover the fee.
 var (
 	postPayoutMethodCreatedPayloadDataQuoteStandardFieldFee           = big.NewInt(1 << 0)
 	postPayoutMethodCreatedPayloadDataQuoteStandardFieldTotalReceived = big.NewInt(1 << 1)
 )
 
+// Standard-delivery estimate. Null if the method does not support standard delivery, or the amount does not cover the fee.
 type PostPayoutMethodCreatedPayloadDataQuoteStandard struct {
 	// Total fee charged, in the payout currency.
 	Fee float64 `json:"fee" url:"fee"`
@@ -6816,10 +7220,12 @@ func (p *PostPayoutMethodCreatedPayloadDataQuoteStandard) GetExtraProperties() m
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataQuoteStandard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetFee sets the Fee field and marks it as non-optional;
@@ -6878,7 +7284,6 @@ func (p *PostPayoutMethodCreatedPayloadDataQuoteStandard) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The recipient of a third-party payout method. Present only for recipient payout methods.
 var (
 	postPayoutMethodCreatedPayloadDataRecipientFieldCountry   = big.NewInt(1 << 0)
 	postPayoutMethodCreatedPayloadDataRecipientFieldFirstName = big.NewInt(1 << 1)
@@ -6886,6 +7291,7 @@ var (
 	postPayoutMethodCreatedPayloadDataRecipientFieldUserID    = big.NewInt(1 << 3)
 )
 
+// The recipient of a third-party payout method. Present only for recipient payout methods.
 type PostPayoutMethodCreatedPayloadDataRecipient struct {
 	// ISO 3166-1 alpha-3 country code.
 	Country   string `json:"country" url:"country"`
@@ -6937,10 +7343,12 @@ func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetExtraProperties() map[s
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataRecipient) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCountry sets the Country field and marks it as non-optional;
@@ -7039,7 +7447,6 @@ func (p PostPayoutMethodCreatedPayloadDataStatus) Ptr() *PostPayoutMethodCreated
 	return &p
 }
 
-// The supported payout method this saved method was created from.
 var (
 	postPayoutMethodCreatedPayloadDataSupportedPayoutMethodFieldCountryCode              = big.NewInt(1 << 0)
 	postPayoutMethodCreatedPayloadDataSupportedPayoutMethodFieldDeliveryType             = big.NewInt(1 << 1)
@@ -7050,6 +7457,14 @@ var (
 	postPayoutMethodCreatedPayloadDataSupportedPayoutMethodFieldSupportsStandardDelivery = big.NewInt(1 << 6)
 )
 
+// postPayoutMethodCreatedPayloadDataSupportedPayoutMethodNullableFields maps the wire names of PostPayoutMethodCreatedPayloadDataSupportedPayoutMethod's nullable fields (required or optional) to their field bits.
+var postPayoutMethodCreatedPayloadDataSupportedPayoutMethodNullableFields = map[string]*big.Int{
+	"country_code": postPayoutMethodCreatedPayloadDataSupportedPayoutMethodFieldCountryCode,
+	"icon_url":     postPayoutMethodCreatedPayloadDataSupportedPayoutMethodFieldIconURL,
+	"name":         postPayoutMethodCreatedPayloadDataSupportedPayoutMethodFieldName,
+}
+
+// The supported payout method this saved method was created from.
 type PostPayoutMethodCreatedPayloadDataSupportedPayoutMethod struct {
 	// ISO 3166-1 alpha-3 country the destination pays out to.
 	CountryCode *string `json:"country_code,omitempty" url:"country_code,omitempty"`
@@ -7128,10 +7543,12 @@ func (p *PostPayoutMethodCreatedPayloadDataSupportedPayoutMethod) GetExtraProper
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataSupportedPayoutMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCountryCode sets the CountryCode field and marks it as non-optional;
@@ -7195,6 +7612,13 @@ func (p *PostPayoutMethodCreatedPayloadDataSupportedPayoutMethod) UnmarshalJSON(
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutMethodCreatedPayloadDataSupportedPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7320,6 +7744,12 @@ var (
 	postPayoutReversedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postPayoutReversedPayloadNullableFields maps the wire names of PostPayoutReversedPayload's nullable fields (required or optional) to their field bits.
+var postPayoutReversedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPayoutReversedPayloadFieldAccountID,
+	"api_version_date": postPayoutReversedPayloadFieldAPIVersionDate,
+}
+
 type PostPayoutReversedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -7408,10 +7838,12 @@ func (p *PostPayoutReversedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostPayoutReversedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -7488,6 +7920,13 @@ func (p *PostPayoutReversedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutReversedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7567,6 +8006,22 @@ var (
 	postPayoutReversedPayloadDataFieldStatusDetail        = big.NewInt(1 << 23)
 	postPayoutReversedPayloadDataFieldTraceCode           = big.NewInt(1 << 24)
 )
+
+// postPayoutReversedPayloadDataNullableFields maps the wire names of PostPayoutReversedPayloadData's nullable fields (required or optional) to their field bits.
+var postPayoutReversedPayloadDataNullableFields = map[string]*big.Int{
+	"destination_amount":   postPayoutReversedPayloadDataFieldDestinationAmount,
+	"destination_currency": postPayoutReversedPayloadDataFieldDestinationCurrency,
+	"estimated_arrival":    postPayoutReversedPayloadDataFieldEstimatedArrival,
+	"exchange_rate":        postPayoutReversedPayloadDataFieldExchangeRate,
+	"failure":              postPayoutReversedPayloadDataFieldFailure,
+	"notes":                postPayoutReversedPayloadDataFieldNotes,
+	"payer_name":           postPayoutReversedPayloadDataFieldPayerName,
+	"payout_method":        postPayoutReversedPayloadDataFieldPayoutMethod,
+	"payout_request_id":    postPayoutReversedPayloadDataFieldPayoutRequestID,
+	"source":               postPayoutReversedPayloadDataFieldSource,
+	"statement_descriptor": postPayoutReversedPayloadDataFieldStatementDescriptor,
+	"trace_code":           postPayoutReversedPayloadDataFieldTraceCode,
+}
 
 type PostPayoutReversedPayloadData struct {
 	// The payout amount in whole currency units, as a decimal string.
@@ -7809,10 +8264,12 @@ func (p *PostPayoutReversedPayloadData) GetExtraProperties() map[string]interfac
 }
 
 func (p *PostPayoutReversedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -8010,6 +8467,13 @@ func (p *PostPayoutReversedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutReversedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8044,13 +8508,20 @@ func (p *PostPayoutReversedPayloadData) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 var (
 	postPayoutReversedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
 	postPayoutReversedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	postPayoutReversedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
 )
 
+// postPayoutReversedPayloadDataFailureNullableFields maps the wire names of PostPayoutReversedPayloadDataFailure's nullable fields (required or optional) to their field bits.
+var postPayoutReversedPayloadDataFailureNullableFields = map[string]*big.Int{
+	"code":              postPayoutReversedPayloadDataFailureFieldCode,
+	"funds_returned_at": postPayoutReversedPayloadDataFailureFieldFundsReturnedAt,
+	"message":           postPayoutReversedPayloadDataFailureFieldMessage,
+}
+
+// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 type PostPayoutReversedPayloadDataFailure struct {
 	// Classified failure code from the maintained error catalog.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
@@ -8095,10 +8566,12 @@ func (p *PostPayoutReversedPayloadDataFailure) GetExtraProperties() map[string]i
 }
 
 func (p *PostPayoutReversedPayloadDataFailure) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -8140,6 +8613,13 @@ func (p *PostPayoutReversedPayloadDataFailure) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutReversedPayloadDataFailureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8214,12 +8694,18 @@ func (p PostPayoutReversedPayloadDataObject) Ptr() *PostPayoutReversedPayloadDat
 	return &p
 }
 
-// The saved payout method used. Requires payout:destination:read; null without it.
 var (
 	postPayoutReversedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	postPayoutReversedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
 )
 
+// postPayoutReversedPayloadDataPayoutMethodNullableFields maps the wire names of PostPayoutReversedPayloadDataPayoutMethod's nullable fields (required or optional) to their field bits.
+var postPayoutReversedPayloadDataPayoutMethodNullableFields = map[string]*big.Int{
+	"nickname":                postPayoutReversedPayloadDataPayoutMethodFieldNickname,
+	"supported_payout_method": postPayoutReversedPayloadDataPayoutMethodFieldSupportedPayoutMethod,
+}
+
+// The saved payout method used. Requires payout:destination:read; null without it.
 type PostPayoutReversedPayloadDataPayoutMethod struct {
 	// Saved payout method nickname.
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
@@ -8255,10 +8741,12 @@ func (p *PostPayoutReversedPayloadDataPayoutMethod) GetExtraProperties() map[str
 }
 
 func (p *PostPayoutReversedPayloadDataPayoutMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetNickname sets the Nickname field and marks it as non-optional;
@@ -8287,6 +8775,13 @@ func (p *PostPayoutReversedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) e
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutReversedPayloadDataPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8317,13 +8812,19 @@ func (p *PostPayoutReversedPayloadDataPayoutMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Supported payout method display details.
 var (
 	postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
 	postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
 	postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
 )
 
+// postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodNullableFields maps the wire names of PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod's nullable fields (required or optional) to their field bits.
+var postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodNullableFields = map[string]*big.Int{
+	"icon_url":   postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL,
+	"payer_name": postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName,
+}
+
+// Supported payout method display details.
 type PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod struct {
 	// How the funds are delivered to the recipient.
 	DeliveryType PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
@@ -8368,10 +8869,12 @@ func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) GetExtr
 }
 
 func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
@@ -8407,6 +8910,13 @@ func (p *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) Unmarsh
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8602,6 +9112,12 @@ var (
 	postPayoutUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
 
+// postPayoutUpdatedPayloadNullableFields maps the wire names of PostPayoutUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postPayoutUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPayoutUpdatedPayloadFieldAccountID,
+	"api_version_date": postPayoutUpdatedPayloadFieldAPIVersionDate,
+}
+
 type PostPayoutUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -8690,10 +9206,12 @@ func (p *PostPayoutUpdatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostPayoutUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -8770,6 +9288,13 @@ func (p *PostPayoutUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8849,6 +9374,22 @@ var (
 	postPayoutUpdatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 23)
 	postPayoutUpdatedPayloadDataFieldTraceCode           = big.NewInt(1 << 24)
 )
+
+// postPayoutUpdatedPayloadDataNullableFields maps the wire names of PostPayoutUpdatedPayloadData's nullable fields (required or optional) to their field bits.
+var postPayoutUpdatedPayloadDataNullableFields = map[string]*big.Int{
+	"destination_amount":   postPayoutUpdatedPayloadDataFieldDestinationAmount,
+	"destination_currency": postPayoutUpdatedPayloadDataFieldDestinationCurrency,
+	"estimated_arrival":    postPayoutUpdatedPayloadDataFieldEstimatedArrival,
+	"exchange_rate":        postPayoutUpdatedPayloadDataFieldExchangeRate,
+	"failure":              postPayoutUpdatedPayloadDataFieldFailure,
+	"notes":                postPayoutUpdatedPayloadDataFieldNotes,
+	"payer_name":           postPayoutUpdatedPayloadDataFieldPayerName,
+	"payout_method":        postPayoutUpdatedPayloadDataFieldPayoutMethod,
+	"payout_request_id":    postPayoutUpdatedPayloadDataFieldPayoutRequestID,
+	"source":               postPayoutUpdatedPayloadDataFieldSource,
+	"statement_descriptor": postPayoutUpdatedPayloadDataFieldStatementDescriptor,
+	"trace_code":           postPayoutUpdatedPayloadDataFieldTraceCode,
+}
 
 type PostPayoutUpdatedPayloadData struct {
 	// The payout amount in whole currency units, as a decimal string.
@@ -9091,10 +9632,12 @@ func (p *PostPayoutUpdatedPayloadData) GetExtraProperties() map[string]interface
 }
 
 func (p *PostPayoutUpdatedPayloadData) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -9292,6 +9835,13 @@ func (p *PostPayoutUpdatedPayloadData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutUpdatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9326,13 +9876,20 @@ func (p *PostPayoutUpdatedPayloadData) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 var (
 	postPayoutUpdatedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
 	postPayoutUpdatedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	postPayoutUpdatedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
 )
 
+// postPayoutUpdatedPayloadDataFailureNullableFields maps the wire names of PostPayoutUpdatedPayloadDataFailure's nullable fields (required or optional) to their field bits.
+var postPayoutUpdatedPayloadDataFailureNullableFields = map[string]*big.Int{
+	"code":              postPayoutUpdatedPayloadDataFailureFieldCode,
+	"funds_returned_at": postPayoutUpdatedPayloadDataFailureFieldFundsReturnedAt,
+	"message":           postPayoutUpdatedPayloadDataFailureFieldMessage,
+}
+
+// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 type PostPayoutUpdatedPayloadDataFailure struct {
 	// Classified failure code from the maintained error catalog.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
@@ -9377,10 +9934,12 @@ func (p *PostPayoutUpdatedPayloadDataFailure) GetExtraProperties() map[string]in
 }
 
 func (p *PostPayoutUpdatedPayloadDataFailure) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -9422,6 +9981,13 @@ func (p *PostPayoutUpdatedPayloadDataFailure) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutUpdatedPayloadDataFailureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9496,12 +10062,18 @@ func (p PostPayoutUpdatedPayloadDataObject) Ptr() *PostPayoutUpdatedPayloadDataO
 	return &p
 }
 
-// The saved payout method used. Requires payout:destination:read; null without it.
 var (
 	postPayoutUpdatedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	postPayoutUpdatedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
 )
 
+// postPayoutUpdatedPayloadDataPayoutMethodNullableFields maps the wire names of PostPayoutUpdatedPayloadDataPayoutMethod's nullable fields (required or optional) to their field bits.
+var postPayoutUpdatedPayloadDataPayoutMethodNullableFields = map[string]*big.Int{
+	"nickname":                postPayoutUpdatedPayloadDataPayoutMethodFieldNickname,
+	"supported_payout_method": postPayoutUpdatedPayloadDataPayoutMethodFieldSupportedPayoutMethod,
+}
+
+// The saved payout method used. Requires payout:destination:read; null without it.
 type PostPayoutUpdatedPayloadDataPayoutMethod struct {
 	// Saved payout method nickname.
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
@@ -9537,10 +10109,12 @@ func (p *PostPayoutUpdatedPayloadDataPayoutMethod) GetExtraProperties() map[stri
 }
 
 func (p *PostPayoutUpdatedPayloadDataPayoutMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetNickname sets the Nickname field and marks it as non-optional;
@@ -9569,6 +10143,13 @@ func (p *PostPayoutUpdatedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) er
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutUpdatedPayloadDataPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9599,13 +10180,19 @@ func (p *PostPayoutUpdatedPayloadDataPayoutMethod) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Supported payout method display details.
 var (
 	postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
 	postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
 	postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
 )
 
+// postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodNullableFields maps the wire names of PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod's nullable fields (required or optional) to their field bits.
+var postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodNullableFields = map[string]*big.Int{
+	"icon_url":   postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldIconURL,
+	"payer_name": postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodFieldPayerName,
+}
+
+// Supported payout method display details.
 type PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod struct {
 	// How the funds are delivered to the recipient.
 	DeliveryType PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
@@ -9650,10 +10237,12 @@ func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) GetExtra
 }
 
 func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
@@ -9689,6 +10278,13 @@ func (p *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) Unmarsha
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9903,6 +10499,23 @@ var (
 	retrievePayoutsResponseFieldTimeline            = big.NewInt(1 << 26)
 	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 27)
 )
+
+// retrievePayoutsResponseNullableFields maps the wire names of RetrievePayoutsResponse's nullable fields (required or optional) to their field bits.
+var retrievePayoutsResponseNullableFields = map[string]*big.Int{
+	"destination_amount":    retrievePayoutsResponseFieldDestinationAmount,
+	"destination_currency":  retrievePayoutsResponseFieldDestinationCurrency,
+	"estimated_arrival":     retrievePayoutsResponseFieldEstimatedArrival,
+	"estimated_arrival_end": retrievePayoutsResponseFieldEstimatedArrivalEnd,
+	"exchange_rate":         retrievePayoutsResponseFieldExchangeRate,
+	"failure":               retrievePayoutsResponseFieldFailure,
+	"notes":                 retrievePayoutsResponseFieldNotes,
+	"payer_name":            retrievePayoutsResponseFieldPayerName,
+	"payout_method":         retrievePayoutsResponseFieldPayoutMethod,
+	"payout_request_id":     retrievePayoutsResponseFieldPayoutRequestID,
+	"source":                retrievePayoutsResponseFieldSource,
+	"statement_descriptor":  retrievePayoutsResponseFieldStatementDescriptor,
+	"trace_code":            retrievePayoutsResponseFieldTraceCode,
+}
 
 type RetrievePayoutsResponse struct {
 	// The payout amount in whole currency units, as a decimal string.
@@ -10172,10 +10785,12 @@ func (r *RetrievePayoutsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *RetrievePayoutsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -10396,6 +11011,13 @@ func (r *RetrievePayoutsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePayoutsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -10432,13 +11054,20 @@ func (r *RetrievePayoutsResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 var (
 	retrievePayoutsResponseFailureFieldCode            = big.NewInt(1 << 0)
 	retrievePayoutsResponseFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	retrievePayoutsResponseFailureFieldMessage         = big.NewInt(1 << 2)
 )
 
+// retrievePayoutsResponseFailureNullableFields maps the wire names of RetrievePayoutsResponseFailure's nullable fields (required or optional) to their field bits.
+var retrievePayoutsResponseFailureNullableFields = map[string]*big.Int{
+	"code":              retrievePayoutsResponseFailureFieldCode,
+	"funds_returned_at": retrievePayoutsResponseFailureFieldFundsReturnedAt,
+	"message":           retrievePayoutsResponseFailureFieldMessage,
+}
+
+// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 type RetrievePayoutsResponseFailure struct {
 	// Classified failure code from the maintained error catalog.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
@@ -10483,10 +11112,12 @@ func (r *RetrievePayoutsResponseFailure) GetExtraProperties() map[string]interfa
 }
 
 func (r *RetrievePayoutsResponseFailure) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -10528,6 +11159,13 @@ func (r *RetrievePayoutsResponseFailure) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePayoutsResponseFailureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -10602,12 +11240,18 @@ func (r RetrievePayoutsResponseObject) Ptr() *RetrievePayoutsResponseObject {
 	return &r
 }
 
-// The saved payout method used. Requires payout:destination:read; null without it.
 var (
 	retrievePayoutsResponsePayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	retrievePayoutsResponsePayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
 )
 
+// retrievePayoutsResponsePayoutMethodNullableFields maps the wire names of RetrievePayoutsResponsePayoutMethod's nullable fields (required or optional) to their field bits.
+var retrievePayoutsResponsePayoutMethodNullableFields = map[string]*big.Int{
+	"nickname":                retrievePayoutsResponsePayoutMethodFieldNickname,
+	"supported_payout_method": retrievePayoutsResponsePayoutMethodFieldSupportedPayoutMethod,
+}
+
+// The saved payout method used. Requires payout:destination:read; null without it.
 type RetrievePayoutsResponsePayoutMethod struct {
 	// Saved payout method nickname.
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
@@ -10643,10 +11287,12 @@ func (r *RetrievePayoutsResponsePayoutMethod) GetExtraProperties() map[string]in
 }
 
 func (r *RetrievePayoutsResponsePayoutMethod) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetNickname sets the Nickname field and marks it as non-optional;
@@ -10675,6 +11321,13 @@ func (r *RetrievePayoutsResponsePayoutMethod) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePayoutsResponsePayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -10705,13 +11358,19 @@ func (r *RetrievePayoutsResponsePayoutMethod) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Supported payout method display details.
 var (
 	retrievePayoutsResponsePayoutMethodSupportedPayoutMethodFieldDeliveryType = big.NewInt(1 << 0)
 	retrievePayoutsResponsePayoutMethodSupportedPayoutMethodFieldIconURL      = big.NewInt(1 << 1)
 	retrievePayoutsResponsePayoutMethodSupportedPayoutMethodFieldPayerName    = big.NewInt(1 << 2)
 )
 
+// retrievePayoutsResponsePayoutMethodSupportedPayoutMethodNullableFields maps the wire names of RetrievePayoutsResponsePayoutMethodSupportedPayoutMethod's nullable fields (required or optional) to their field bits.
+var retrievePayoutsResponsePayoutMethodSupportedPayoutMethodNullableFields = map[string]*big.Int{
+	"icon_url":   retrievePayoutsResponsePayoutMethodSupportedPayoutMethodFieldIconURL,
+	"payer_name": retrievePayoutsResponsePayoutMethodSupportedPayoutMethodFieldPayerName,
+}
+
+// Supported payout method display details.
 type RetrievePayoutsResponsePayoutMethodSupportedPayoutMethod struct {
 	// How the funds are delivered to the recipient.
 	DeliveryType RetrievePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType `json:"delivery_type" url:"delivery_type"`
@@ -10756,10 +11415,12 @@ func (r *RetrievePayoutsResponsePayoutMethodSupportedPayoutMethod) GetExtraPrope
 }
 
 func (r *RetrievePayoutsResponsePayoutMethodSupportedPayoutMethod) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
@@ -10795,6 +11456,13 @@ func (r *RetrievePayoutsResponsePayoutMethodSupportedPayoutMethod) UnmarshalJSON
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePayoutsResponsePayoutMethodSupportedPayoutMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -10967,6 +11635,14 @@ var (
 	retrievePayoutsResponseTimelineItemFieldTimestamp        = big.NewInt(1 << 4)
 )
 
+// retrievePayoutsResponseTimelineItemNullableFields maps the wire names of RetrievePayoutsResponseTimelineItem's nullable fields (required or optional) to their field bits.
+var retrievePayoutsResponseTimelineItemNullableFields = map[string]*big.Int{
+	"error_message":     retrievePayoutsResponseTimelineItemFieldErrorMessage,
+	"estimated_arrival": retrievePayoutsResponseTimelineItemFieldEstimatedArrival,
+	"status_detail":     retrievePayoutsResponseTimelineItemFieldStatusDetail,
+	"timestamp":         retrievePayoutsResponseTimelineItemFieldTimestamp,
+}
+
 type RetrievePayoutsResponseTimelineItem struct {
 	// Failure message, only with payout:destination:read.
 	ErrorMessage     *string                                   `json:"error_message,omitempty" url:"error_message,omitempty"`
@@ -11026,10 +11702,12 @@ func (r *RetrievePayoutsResponseTimelineItem) GetExtraProperties() map[string]in
 }
 
 func (r *RetrievePayoutsResponseTimelineItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetErrorMessage sets the ErrorMessage field and marks it as non-optional;
@@ -11087,6 +11765,13 @@ func (r *RetrievePayoutsResponseTimelineItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePayoutsResponseTimelineItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }

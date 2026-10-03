@@ -25,10 +25,12 @@ type ListPermissionsRequest struct {
 }
 
 func (l *ListPermissionsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetResourceID sets the ResourceID field and marks it as non-optional;
@@ -910,10 +912,12 @@ func (l *ListPermissionsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPermissionsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1004,10 +1008,12 @@ func (l *ListPermissionsResponseDataItem) GetExtraProperties() map[string]interf
 }
 
 func (l *ListPermissionsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;

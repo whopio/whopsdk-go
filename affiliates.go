@@ -23,10 +23,12 @@ type ArchiveAffiliatesRequest struct {
 }
 
 func (a *ArchiveAffiliatesRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -52,10 +54,12 @@ type CreateAffiliatesRequest struct {
 }
 
 func (c *CreateAffiliatesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -127,10 +131,12 @@ type ListAffiliatesRequest struct {
 }
 
 func (l *ListAffiliatesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -209,10 +215,12 @@ type RetrieveAffiliatesRequest struct {
 }
 
 func (r *RetrieveAffiliatesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -222,7 +230,6 @@ func (r *RetrieveAffiliatesRequest) SetID(id string) {
 	r.require(retrieveAffiliatesRequestFieldID)
 }
 
-// An affiliate tracks a user's referral performance and commission earnings for a company, including retention rates, revenue metrics, and payout configurations.
 var (
 	affiliateFieldActiveMembersCount              = big.NewInt(1 << 0)
 	affiliateFieldCompany                         = big.NewInt(1 << 1)
@@ -240,6 +247,12 @@ var (
 	affiliateFieldUser                            = big.NewInt(1 << 13)
 )
 
+// affiliateNullableFields maps the wire names of Affiliate's nullable fields (required or optional) to their field bits.
+var affiliateNullableFields = map[string]*big.Int{
+	"status": affiliateFieldStatus,
+}
+
+// An affiliate tracks a user's referral performance and commission earnings for a company, including retention rates, revenue metrics, and payout configurations.
 type Affiliate struct {
 	// The total active members of the affiliate
 	ActiveMembersCount int `json:"active_members_count" url:"active_members_count"`
@@ -383,10 +396,12 @@ func (a *Affiliate) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *Affiliate) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetActiveMembersCount sets the ActiveMembersCount field and marks it as non-optional;
@@ -507,6 +522,13 @@ func (a *Affiliate) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, affiliateNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -541,12 +563,12 @@ func (a *Affiliate) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// The company attached to this affiliate
 var (
 	affiliateCompanyFieldID    = big.NewInt(1 << 0)
 	affiliateCompanyFieldTitle = big.NewInt(1 << 1)
 )
 
+// The company attached to this affiliate
 type AffiliateCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -582,10 +604,12 @@ func (a *AffiliateCompany) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AffiliateCompany) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -644,7 +668,6 @@ func (a *AffiliateCompany) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// An affiliate tracks a user's referral performance and commission earnings for a company, including retention rates, revenue metrics, and payout configurations.
 var (
 	affiliateListItemFieldActiveMembersCount              = big.NewInt(1 << 0)
 	affiliateListItemFieldCompany                         = big.NewInt(1 << 1)
@@ -662,6 +685,12 @@ var (
 	affiliateListItemFieldUser                            = big.NewInt(1 << 13)
 )
 
+// affiliateListItemNullableFields maps the wire names of AffiliateListItem's nullable fields (required or optional) to their field bits.
+var affiliateListItemNullableFields = map[string]*big.Int{
+	"status": affiliateListItemFieldStatus,
+}
+
+// An affiliate tracks a user's referral performance and commission earnings for a company, including retention rates, revenue metrics, and payout configurations.
 type AffiliateListItem struct {
 	// The total active members of the affiliate
 	ActiveMembersCount int `json:"active_members_count" url:"active_members_count"`
@@ -805,10 +834,12 @@ func (a *AffiliateListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AffiliateListItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetActiveMembersCount sets the ActiveMembersCount field and marks it as non-optional;
@@ -929,6 +960,13 @@ func (a *AffiliateListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, affiliateListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -963,12 +1001,12 @@ func (a *AffiliateListItem) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// The company attached to this affiliate
 var (
 	affiliateListItemCompanyFieldID    = big.NewInt(1 << 0)
 	affiliateListItemCompanyFieldTitle = big.NewInt(1 << 1)
 )
 
+// The company attached to this affiliate
 type AffiliateListItemCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -1004,10 +1042,12 @@ func (a *AffiliateListItemCompany) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AffiliateListItemCompany) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1066,13 +1106,19 @@ func (a *AffiliateListItemCompany) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// The user attached to this affiliate
 var (
 	affiliateListItemUserFieldID       = big.NewInt(1 << 0)
 	affiliateListItemUserFieldName     = big.NewInt(1 << 1)
 	affiliateListItemUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// affiliateListItemUserNullableFields maps the wire names of AffiliateListItemUser's nullable fields (required or optional) to their field bits.
+var affiliateListItemUserNullableFields = map[string]*big.Int{
+	"name":     affiliateListItemUserFieldName,
+	"username": affiliateListItemUserFieldUsername,
+}
+
+// The user attached to this affiliate
 type AffiliateListItemUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1117,10 +1163,12 @@ func (a *AffiliateListItemUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AffiliateListItemUser) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1156,6 +1204,13 @@ func (a *AffiliateListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, affiliateListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1186,13 +1241,19 @@ func (a *AffiliateListItemUser) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// The user attached to this affiliate
 var (
 	affiliateUserFieldID       = big.NewInt(1 << 0)
 	affiliateUserFieldName     = big.NewInt(1 << 1)
 	affiliateUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// affiliateUserNullableFields maps the wire names of AffiliateUser's nullable fields (required or optional) to their field bits.
+var affiliateUserNullableFields = map[string]*big.Int{
+	"name":     affiliateUserFieldName,
+	"username": affiliateUserFieldUsername,
+}
+
+// The user attached to this affiliate
 type AffiliateUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1237,10 +1298,12 @@ func (a *AffiliateUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AffiliateUser) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1276,6 +1339,13 @@ func (a *AffiliateUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, affiliateUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1361,12 +1431,12 @@ func (s Status) Ptr() *Status {
 	return &s
 }
 
-// The connection type for Affiliate.
 var (
 	listAffiliatesResponseFieldData     = big.NewInt(1 << 0)
 	listAffiliatesResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for Affiliate.
 type ListAffiliatesResponse struct {
 	// A list of nodes.
 	Data []*AffiliateListItem `json:"data" url:"data"`
@@ -1402,10 +1472,12 @@ func (l *ListAffiliatesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAffiliatesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1477,10 +1549,12 @@ type UnarchiveAffiliatesRequest struct {
 }
 
 func (u *UnarchiveAffiliatesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

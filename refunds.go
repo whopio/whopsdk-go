@@ -53,10 +53,12 @@ type ListRefundsRequest struct {
 }
 
 func (l *ListRefundsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -149,10 +151,12 @@ type RetrieveRefundsRequest struct {
 }
 
 func (r *RetrieveRefundsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -181,6 +185,19 @@ var (
 	refundFieldUpdatedAt         = big.NewInt(1 << 15)
 	refundFieldVisaRdr           = big.NewInt(1 << 16)
 )
+
+// refundNullableFields maps the wire names of Refund's nullable fields (required or optional) to their field bits.
+var refundNullableFields = map[string]*big.Int{
+	"account_id":          refundFieldAccountID,
+	"amount":              refundFieldAmount,
+	"failure_message":     refundFieldFailureMessage,
+	"failure_reason":      refundFieldFailureReason,
+	"provider_created_at": refundFieldProviderCreatedAt,
+	"reason":              refundFieldReason,
+	"reference_status":    refundFieldReferenceStatus,
+	"reference_type":      refundFieldReferenceType,
+	"reference_value":     refundFieldReferenceValue,
+}
 
 type Refund struct {
 	// The account that issued the refund, prefixed `biz_`.
@@ -352,10 +369,12 @@ func (r *Refund) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *Refund) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -489,6 +508,13 @@ func (r *Refund) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, refundNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -755,10 +781,12 @@ func (l *ListRefundsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListRefundsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -824,6 +852,12 @@ var (
 	listRefundsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listRefundsResponsePageInfoNullableFields maps the wire names of ListRefundsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listRefundsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listRefundsResponsePageInfoFieldEndCursor,
+	"start_cursor": listRefundsResponsePageInfoFieldStartCursor,
+}
+
 type ListRefundsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -873,10 +907,12 @@ func (l *ListRefundsResponsePageInfo) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListRefundsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -919,6 +955,13 @@ func (l *ListRefundsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listRefundsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -959,6 +1002,12 @@ var (
 	postRefundCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postRefundCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postRefundCreatedPayloadNullableFields maps the wire names of PostRefundCreatedPayload's nullable fields (required or optional) to their field bits.
+var postRefundCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postRefundCreatedPayloadFieldAccountID,
+	"api_version_date": postRefundCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostRefundCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1048,10 +1097,12 @@ func (p *PostRefundCreatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostRefundCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1128,6 +1179,13 @@ func (p *PostRefundCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postRefundCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1210,6 +1268,12 @@ var (
 	postRefundUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postRefundUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postRefundUpdatedPayloadNullableFields maps the wire names of PostRefundUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postRefundUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postRefundUpdatedPayloadFieldAccountID,
+	"api_version_date": postRefundUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostRefundUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1299,10 +1363,12 @@ func (p *PostRefundUpdatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostRefundUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1379,6 +1445,13 @@ func (p *PostRefundUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postRefundUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

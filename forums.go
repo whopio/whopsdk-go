@@ -37,10 +37,12 @@ type ListForumsRequest struct {
 }
 
 func (l *ListForumsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -98,10 +100,12 @@ type RetrieveForumsRequest struct {
 }
 
 func (r *RetrieveForumsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -111,7 +115,6 @@ func (r *RetrieveForumsRequest) SetID(id string) {
 	r.require(retrieveForumsRequestFieldID)
 }
 
-// A discussion forum where members can create posts, comment, and react, belonging to an experience.
 var (
 	forumFieldEmailNotificationPreference = big.NewInt(1 << 0)
 	forumFieldExperience                  = big.NewInt(1 << 1)
@@ -120,6 +123,7 @@ var (
 	forumFieldWhoCanPost                  = big.NewInt(1 << 4)
 )
 
+// A discussion forum where members can create posts, comment, and react, belonging to an experience.
 type Forum struct {
 	// The email notification setting that controls which posts trigger email alerts. One of: all_admin_posts, only_weekly_summary, none.
 	EmailNotificationPreference ForumEmailNotificationPreferences `json:"email_notification_preference" url:"email_notification_preference"`
@@ -182,10 +186,12 @@ func (f *Forum) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *Forum) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetEmailNotificationPreference sets the EmailNotificationPreference field and marks it as non-optional;
@@ -291,13 +297,13 @@ func (f ForumEmailNotificationPreferences) Ptr() *ForumEmailNotificationPreferen
 	return &f
 }
 
-// The parent experience that this forum belongs to.
 var (
 	forumExperienceFieldID       = big.NewInt(1 << 0)
 	forumExperienceFieldIsPublic = big.NewInt(1 << 1)
 	forumExperienceFieldName     = big.NewInt(1 << 2)
 )
 
+// The parent experience that this forum belongs to.
 type ForumExperience struct {
 	// The unique identifier for the experience.
 	ID string `json:"id" url:"id"`
@@ -342,10 +348,12 @@ func (f *ForumExperience) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *ForumExperience) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -411,7 +419,6 @@ func (f *ForumExperience) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// A discussion forum where members can create posts, comment, and react, belonging to an experience.
 var (
 	forumListItemFieldEmailNotificationPreference = big.NewInt(1 << 0)
 	forumListItemFieldExperience                  = big.NewInt(1 << 1)
@@ -420,6 +427,7 @@ var (
 	forumListItemFieldWhoCanPost                  = big.NewInt(1 << 4)
 )
 
+// A discussion forum where members can create posts, comment, and react, belonging to an experience.
 type ForumListItem struct {
 	// The email notification setting that controls which posts trigger email alerts. One of: all_admin_posts, only_weekly_summary, none.
 	EmailNotificationPreference ForumEmailNotificationPreferences `json:"email_notification_preference" url:"email_notification_preference"`
@@ -482,10 +490,12 @@ func (f *ForumListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *ForumListItem) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetEmailNotificationPreference sets the EmailNotificationPreference field and marks it as non-optional;
@@ -565,13 +575,13 @@ func (f *ForumListItem) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// The parent experience that this forum belongs to.
 var (
 	forumListItemExperienceFieldID       = big.NewInt(1 << 0)
 	forumListItemExperienceFieldIsPublic = big.NewInt(1 << 1)
 	forumListItemExperienceFieldName     = big.NewInt(1 << 2)
 )
 
+// The parent experience that this forum belongs to.
 type ForumListItemExperience struct {
 	// The unique identifier for the experience.
 	ID string `json:"id" url:"id"`
@@ -616,10 +626,12 @@ func (f *ForumListItemExperience) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *ForumListItemExperience) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -731,12 +743,12 @@ func (f ForumWhoCanPostTypes) Ptr() *ForumWhoCanPostTypes {
 	return &f
 }
 
-// The connection type for ForumFeed.
 var (
 	listForumsResponseFieldData     = big.NewInt(1 << 0)
 	listForumsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for ForumFeed.
 type ListForumsResponse struct {
 	// A list of nodes.
 	Data []*ForumListItem `json:"data" url:"data"`
@@ -772,10 +784,12 @@ func (l *ListForumsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListForumsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -834,11 +848,11 @@ func (l *ListForumsResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The banner image displayed at the top of the forum page. Pass null to remove the existing banner.
 var (
 	updateForumsRequestBannerImageFieldID = big.NewInt(1 << 0)
 )
 
+// The banner image displayed at the top of the forum page. Pass null to remove the existing banner.
 type UpdateForumsRequestBannerImage struct {
 	// The ID of an existing file object.
 	ID string `json:"id" url:"id"`
@@ -865,10 +879,12 @@ func (u *UpdateForumsRequestBannerImage) GetExtraProperties() map[string]interfa
 }
 
 func (u *UpdateForumsRequestBannerImage) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -948,10 +964,12 @@ type UpdateForumsRequest struct {
 }
 
 func (u *UpdateForumsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

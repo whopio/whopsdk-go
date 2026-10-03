@@ -23,10 +23,12 @@ type DeleteInvoicesRequest struct {
 }
 
 func (d *DeleteInvoicesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -80,10 +82,12 @@ type ListInvoicesRequest struct {
 }
 
 func (l *ListInvoicesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -183,10 +187,12 @@ type MarkPaidInvoicesRequest struct {
 }
 
 func (m *MarkPaidInvoicesRequest) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -209,10 +215,12 @@ type MarkUncollectibleInvoicesRequest struct {
 }
 
 func (m *MarkUncollectibleInvoicesRequest) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -235,10 +243,12 @@ type ResendInvoicesRequest struct {
 }
 
 func (r *ResendInvoicesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -261,10 +271,12 @@ type RetrieveInvoicesRequest struct {
 }
 
 func (r *RetrieveInvoicesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -294,7 +306,6 @@ func (c CustomFieldTypes) Ptr() *CustomFieldTypes {
 	return &c
 }
 
-// An invoice represents an itemized bill sent by a company to a customer for a specific product and plan, tracking the amount owed, due date, and payment status.
 var (
 	invoiceFieldAutomaticallyFinalizesAt    = big.NewInt(1 << 0)
 	invoiceFieldChargeBuyerFee              = big.NewInt(1 << 1)
@@ -321,6 +332,21 @@ var (
 	invoiceFieldUser                        = big.NewInt(1 << 22)
 )
 
+// invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
+var invoiceNullableFields = map[string]*big.Int{
+	"automatically_finalizes_at":     invoiceFieldAutomaticallyFinalizesAt,
+	"customer_name":                  invoiceFieldCustomerName,
+	"due_date":                       invoiceFieldDueDate,
+	"email_address":                  invoiceFieldEmailAddress,
+	"mailing_address":                invoiceFieldMailingAddress,
+	"member":                         invoiceFieldMember,
+	"pay_online_url":                 invoiceFieldPayOnlineURL,
+	"payment":                        invoiceFieldPayment,
+	"subscription_billing_anchor_at": invoiceFieldSubscriptionBillingAnchorAt,
+	"user":                           invoiceFieldUser,
+}
+
+// An invoice represents an itemized bill sent by a company to a customer for a specific product and plan, tracking the amount owed, due date, and payment status.
 type Invoice struct {
 	// The date and time when the invoice will be automatically finalized. For charge_automatically, triggers an automatic charge. For send_invoice, sends the invoice email at the specified time.
 	AutomaticallyFinalizesAt *time.Time `json:"automatically_finalizes_at,omitempty" url:"automatically_finalizes_at,omitempty"`
@@ -545,10 +571,12 @@ func (i *Invoice) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *Invoice) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetAutomaticallyFinalizesAt sets the AutomaticallyFinalizesAt field and marks it as non-optional;
@@ -738,6 +766,13 @@ func (i *Invoice) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -801,11 +836,11 @@ func (i InvoiceCollectionMethods) Ptr() *InvoiceCollectionMethods {
 	return &i
 }
 
-// The company that issued this invoice.
 var (
 	invoiceCompanyFieldID = big.NewInt(1 << 0)
 )
 
+// The company that issued this invoice.
 type InvoiceCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -832,10 +867,12 @@ func (i *InvoiceCompany) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *InvoiceCompany) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -887,7 +924,6 @@ func (i *InvoiceCompany) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// The plan that this invoice charges for.
 var (
 	invoiceCurrentPlanFieldCurrency       = big.NewInt(1 << 0)
 	invoiceCurrentPlanFieldDescription    = big.NewInt(1 << 1)
@@ -895,6 +931,12 @@ var (
 	invoiceCurrentPlanFieldID             = big.NewInt(1 << 3)
 )
 
+// invoiceCurrentPlanNullableFields maps the wire names of InvoiceCurrentPlan's nullable fields (required or optional) to their field bits.
+var invoiceCurrentPlanNullableFields = map[string]*big.Int{
+	"description": invoiceCurrentPlanFieldDescription,
+}
+
+// The plan that this invoice charges for.
 type InvoiceCurrentPlan struct {
 	// The currency used for all prices on this plan (e.g., 'usd', 'eur'). All monetary amounts on the plan are denominated in this currency.
 	Currency Currencies `json:"currency" url:"currency"`
@@ -948,10 +990,12 @@ func (i *InvoiceCurrentPlan) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *InvoiceCurrentPlan) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -994,6 +1038,13 @@ func (i *InvoiceCurrentPlan) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceCurrentPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1024,7 +1075,6 @@ func (i *InvoiceCurrentPlan) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// A line item on an invoice, representing a single charge with a label, quantity, and unit price.
 var (
 	invoiceLineItemsItemFieldLabel     = big.NewInt(1 << 0)
 	invoiceLineItemsItemFieldPosition  = big.NewInt(1 << 1)
@@ -1033,6 +1083,7 @@ var (
 	invoiceLineItemsItemFieldUnitPrice = big.NewInt(1 << 4)
 )
 
+// A line item on an invoice, representing a single charge with a label, quantity, and unit price.
 type InvoiceLineItemsItem struct {
 	// The label or description for this line item.
 	Label string `json:"label" url:"label"`
@@ -1095,10 +1146,12 @@ func (i *InvoiceLineItemsItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *InvoiceLineItemsItem) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetLabel sets the Label field and marks it as non-optional;
@@ -1178,7 +1231,6 @@ func (i *InvoiceLineItemsItem) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// An invoice represents an itemized bill sent by a company to a customer for a specific product and plan, tracking the amount owed, due date, and payment status.
 var (
 	invoiceListItemFieldCreatedAt         = big.NewInt(1 << 0)
 	invoiceListItemFieldCurrentPlan       = big.NewInt(1 << 1)
@@ -1193,6 +1245,14 @@ var (
 	invoiceListItemFieldUser              = big.NewInt(1 << 10)
 )
 
+// invoiceListItemNullableFields maps the wire names of InvoiceListItem's nullable fields (required or optional) to their field bits.
+var invoiceListItemNullableFields = map[string]*big.Int{
+	"due_date":      invoiceListItemFieldDueDate,
+	"email_address": invoiceListItemFieldEmailAddress,
+	"user":          invoiceListItemFieldUser,
+}
+
+// An invoice represents an itemized bill sent by a company to a customer for a specific product and plan, tracking the amount owed, due date, and payment status.
 type InvoiceListItem struct {
 	// The datetime the invoice was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -1309,10 +1369,12 @@ func (i *InvoiceListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *InvoiceListItem) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -1412,6 +1474,13 @@ func (i *InvoiceListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1446,13 +1515,13 @@ func (i *InvoiceListItem) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// The plan that this invoice charges for.
 var (
 	invoiceListItemCurrentPlanFieldCurrency       = big.NewInt(1 << 0)
 	invoiceListItemCurrentPlanFieldFormattedPrice = big.NewInt(1 << 1)
 	invoiceListItemCurrentPlanFieldID             = big.NewInt(1 << 2)
 )
 
+// The plan that this invoice charges for.
 type InvoiceListItemCurrentPlan struct {
 	// The currency used for all prices on this plan (e.g., 'usd', 'eur'). All monetary amounts on the plan are denominated in this currency.
 	Currency Currencies `json:"currency" url:"currency"`
@@ -1497,10 +1566,12 @@ func (i *InvoiceListItemCurrentPlan) GetExtraProperties() map[string]interface{}
 }
 
 func (i *InvoiceListItemCurrentPlan) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -1566,7 +1637,6 @@ func (i *InvoiceListItemCurrentPlan) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// A line item on an invoice, representing a single charge with a label, quantity, and unit price.
 var (
 	invoiceListItemLineItemsItemFieldLabel     = big.NewInt(1 << 0)
 	invoiceListItemLineItemsItemFieldPosition  = big.NewInt(1 << 1)
@@ -1575,6 +1645,7 @@ var (
 	invoiceListItemLineItemsItemFieldUnitPrice = big.NewInt(1 << 4)
 )
 
+// A line item on an invoice, representing a single charge with a label, quantity, and unit price.
 type InvoiceListItemLineItemsItem struct {
 	// The label or description for this line item.
 	Label string `json:"label" url:"label"`
@@ -1637,10 +1708,12 @@ func (i *InvoiceListItemLineItemsItem) GetExtraProperties() map[string]interface
 }
 
 func (i *InvoiceListItemLineItemsItem) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetLabel sets the Label field and marks it as non-optional;
@@ -1720,13 +1793,18 @@ func (i *InvoiceListItemLineItemsItem) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// The user this invoice is addressed to. Null if the user account has been removed.
 var (
 	invoiceListItemUserFieldID       = big.NewInt(1 << 0)
 	invoiceListItemUserFieldName     = big.NewInt(1 << 1)
 	invoiceListItemUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// invoiceListItemUserNullableFields maps the wire names of InvoiceListItemUser's nullable fields (required or optional) to their field bits.
+var invoiceListItemUserNullableFields = map[string]*big.Int{
+	"name": invoiceListItemUserFieldName,
+}
+
+// The user this invoice is addressed to. Null if the user account has been removed.
 type InvoiceListItemUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1771,10 +1849,12 @@ func (i *InvoiceListItemUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *InvoiceListItemUser) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1810,6 +1890,13 @@ func (i *InvoiceListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1840,7 +1927,6 @@ func (i *InvoiceListItemUser) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// The billing/mailing address associated with this invoice, if one was provided at creation time.
 var (
 	invoiceMailingAddressFieldCity       = big.NewInt(1 << 0)
 	invoiceMailingAddressFieldCountry    = big.NewInt(1 << 1)
@@ -1852,6 +1938,19 @@ var (
 	invoiceMailingAddressFieldState      = big.NewInt(1 << 7)
 )
 
+// invoiceMailingAddressNullableFields maps the wire names of InvoiceMailingAddress's nullable fields (required or optional) to their field bits.
+var invoiceMailingAddressNullableFields = map[string]*big.Int{
+	"city":        invoiceMailingAddressFieldCity,
+	"country":     invoiceMailingAddressFieldCountry,
+	"line1":       invoiceMailingAddressFieldLine1,
+	"line2":       invoiceMailingAddressFieldLine2,
+	"name":        invoiceMailingAddressFieldName,
+	"phone":       invoiceMailingAddressFieldPhone,
+	"postal_code": invoiceMailingAddressFieldPostalCode,
+	"state":       invoiceMailingAddressFieldState,
+}
+
+// The billing/mailing address associated with this invoice, if one was provided at creation time.
 type InvoiceMailingAddress struct {
 	// The city of the address.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1941,10 +2040,12 @@ func (i *InvoiceMailingAddress) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *InvoiceMailingAddress) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -2015,6 +2116,13 @@ func (i *InvoiceMailingAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceMailingAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2045,11 +2153,11 @@ func (i *InvoiceMailingAddress) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// The member that the invoice was created for. Null when the invoice is addressed to an email address with no member record behind it.
 var (
 	invoiceMemberFieldID = big.NewInt(1 << 0)
 )
 
+// The member that the invoice was created for. Null when the invoice is addressed to an email address with no member record behind it.
 type InvoiceMember struct {
 	// The unique identifier for the company member.
 	ID string `json:"id" url:"id"`
@@ -2076,10 +2184,12 @@ func (i *InvoiceMember) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *InvoiceMember) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2131,11 +2241,11 @@ func (i *InvoiceMember) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// The payment that settled this invoice. Null while the invoice is unpaid, when the invoice was marked paid manually, and on a subscription renewal invoice, where the settling payment cannot yet be identified.
 var (
 	invoicePaymentFieldID = big.NewInt(1 << 0)
 )
 
+// The payment that settled this invoice. Null while the invoice is unpaid, when the invoice was marked paid manually, and on a subscription renewal invoice, where the settling payment cannot yet be identified.
 type InvoicePayment struct {
 	// The unique identifier for the payment.
 	ID string `json:"id" url:"id"`
@@ -2162,10 +2272,12 @@ func (i *InvoicePayment) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *InvoicePayment) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2217,12 +2329,12 @@ func (i *InvoicePayment) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// The product that this invoice was generated for.
 var (
 	invoiceProductFieldID    = big.NewInt(1 << 0)
 	invoiceProductFieldTitle = big.NewInt(1 << 1)
 )
 
+// The product that this invoice was generated for.
 type InvoiceProduct struct {
 	// The unique identifier for the product.
 	ID string `json:"id" url:"id"`
@@ -2258,10 +2370,12 @@ func (i *InvoiceProduct) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *InvoiceProduct) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2355,7 +2469,6 @@ func (i InvoiceStatuses) Ptr() *InvoiceStatuses {
 	return &i
 }
 
-// The user this invoice is addressed to. Null if the user account has been removed.
 var (
 	invoiceUserFieldEmail    = big.NewInt(1 << 0)
 	invoiceUserFieldID       = big.NewInt(1 << 1)
@@ -2363,6 +2476,13 @@ var (
 	invoiceUserFieldUsername = big.NewInt(1 << 3)
 )
 
+// invoiceUserNullableFields maps the wire names of InvoiceUser's nullable fields (required or optional) to their field bits.
+var invoiceUserNullableFields = map[string]*big.Int{
+	"email": invoiceUserFieldEmail,
+	"name":  invoiceUserFieldName,
+}
+
+// The user this invoice is addressed to. Null if the user account has been removed.
 type InvoiceUser struct {
 	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -2416,10 +2536,12 @@ func (i *InvoiceUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (i *InvoiceUser) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -2462,6 +2584,13 @@ func (i *InvoiceUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
 	i.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2974,6 +3103,38 @@ func (c *CreateInvoicesRequest) GetCreateInvoicesRequestProductID() *CreateInvoi
 }
 
 func (c *CreateInvoicesRequest) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"account_id", "automatically_finalizes_at", "billing_address", "charge_buyer_fee", "collection_method", "customer_name", "due_date", "email_address", "line_items", "mailing_address_id", "member_id", "payment_method_id", "payment_token_id", "plan", "product", "save_as_draft", "subscription_billing_anchor_at"}, []string{"account_id", "collection_method", "plan", "product"}) {
+		valueCreateInvoicesRequestProduct := new(CreateInvoicesRequestProduct)
+		if err := json.Unmarshal(data, &valueCreateInvoicesRequestProduct); err == nil {
+			c.typ = "CreateInvoicesRequestProduct"
+			c.CreateInvoicesRequestProduct = valueCreateInvoicesRequestProduct
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"account_id", "automatically_finalizes_at", "billing_address", "charge_buyer_fee", "collection_method", "customer_name", "due_date", "email_address", "line_items", "mailing_address_id", "member_id", "payment_method_id", "payment_token_id", "plan", "product_id", "save_as_draft", "subscription_billing_anchor_at"}, []string{"account_id", "collection_method", "plan", "product_id"}) {
+		valueCreateInvoicesRequestProductID := new(CreateInvoicesRequestProductID)
+		if err := json.Unmarshal(data, &valueCreateInvoicesRequestProductID); err == nil {
+			c.typ = "CreateInvoicesRequestProductID"
+			c.CreateInvoicesRequestProductID = valueCreateInvoicesRequestProductID
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"account_id", "collection_method", "plan", "product"}) {
+		valueCreateInvoicesRequestProduct := new(CreateInvoicesRequestProduct)
+		if err := json.Unmarshal(data, &valueCreateInvoicesRequestProduct); err == nil {
+			c.typ = "CreateInvoicesRequestProduct"
+			c.CreateInvoicesRequestProduct = valueCreateInvoicesRequestProduct
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"account_id", "collection_method", "plan", "product_id"}) {
+		valueCreateInvoicesRequestProductID := new(CreateInvoicesRequestProductID)
+		if err := json.Unmarshal(data, &valueCreateInvoicesRequestProductID); err == nil {
+			c.typ = "CreateInvoicesRequestProductID"
+			c.CreateInvoicesRequestProductID = valueCreateInvoicesRequestProductID
+			return nil
+		}
+	}
 	valueCreateInvoicesRequestProduct := new(CreateInvoicesRequestProduct)
 	if err := json.Unmarshal(data, &valueCreateInvoicesRequestProduct); err == nil {
 		c.typ = "CreateInvoicesRequestProduct"
@@ -3014,7 +3175,6 @@ func (c *CreateInvoicesRequest) Accept(visitor CreateInvoicesRequestVisitor) err
 	return fmt.Errorf("type %T does not include a non-empty union type", c)
 }
 
-// Autogenerated input type of CreateInvoice
 var (
 	createInvoicesRequestProductFieldAccountID                   = big.NewInt(1 << 0)
 	createInvoicesRequestProductFieldAutomaticallyFinalizesAt    = big.NewInt(1 << 1)
@@ -3035,6 +3195,24 @@ var (
 	createInvoicesRequestProductFieldSubscriptionBillingAnchorAt = big.NewInt(1 << 16)
 )
 
+// createInvoicesRequestProductNullableFields maps the wire names of CreateInvoicesRequestProduct's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductNullableFields = map[string]*big.Int{
+	"automatically_finalizes_at":     createInvoicesRequestProductFieldAutomaticallyFinalizesAt,
+	"billing_address":                createInvoicesRequestProductFieldBillingAddress,
+	"charge_buyer_fee":               createInvoicesRequestProductFieldChargeBuyerFee,
+	"customer_name":                  createInvoicesRequestProductFieldCustomerName,
+	"due_date":                       createInvoicesRequestProductFieldDueDate,
+	"email_address":                  createInvoicesRequestProductFieldEmailAddress,
+	"line_items":                     createInvoicesRequestProductFieldLineItems,
+	"mailing_address_id":             createInvoicesRequestProductFieldMailingAddressID,
+	"member_id":                      createInvoicesRequestProductFieldMemberID,
+	"payment_method_id":              createInvoicesRequestProductFieldPaymentMethodID,
+	"payment_token_id":               createInvoicesRequestProductFieldPaymentTokenID,
+	"save_as_draft":                  createInvoicesRequestProductFieldSaveAsDraft,
+	"subscription_billing_anchor_at": createInvoicesRequestProductFieldSubscriptionBillingAnchorAt,
+}
+
+// Autogenerated input type of CreateInvoice
 type CreateInvoicesRequestProduct struct {
 	// The unique identifier of the company to create this invoice for.
 	AccountID string `json:"account_id" url:"account_id"`
@@ -3205,10 +3383,12 @@ func (c *CreateInvoicesRequestProduct) GetExtraProperties() map[string]interface
 }
 
 func (c *CreateInvoicesRequestProduct) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3352,6 +3532,13 @@ func (c *CreateInvoicesRequestProduct) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3388,7 +3575,6 @@ func (c *CreateInvoicesRequestProduct) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Inline billing address to create a new mailing address for this invoice. Cannot be used together with mailing_address_id.
 var (
 	createInvoicesRequestProductBillingAddressFieldCity       = big.NewInt(1 << 0)
 	createInvoicesRequestProductBillingAddressFieldCountry    = big.NewInt(1 << 1)
@@ -3402,6 +3588,21 @@ var (
 	createInvoicesRequestProductBillingAddressFieldTaxIDValue = big.NewInt(1 << 9)
 )
 
+// createInvoicesRequestProductBillingAddressNullableFields maps the wire names of CreateInvoicesRequestProductBillingAddress's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductBillingAddressNullableFields = map[string]*big.Int{
+	"city":         createInvoicesRequestProductBillingAddressFieldCity,
+	"country":      createInvoicesRequestProductBillingAddressFieldCountry,
+	"line1":        createInvoicesRequestProductBillingAddressFieldLine1,
+	"line2":        createInvoicesRequestProductBillingAddressFieldLine2,
+	"name":         createInvoicesRequestProductBillingAddressFieldName,
+	"phone":        createInvoicesRequestProductBillingAddressFieldPhone,
+	"postal_code":  createInvoicesRequestProductBillingAddressFieldPostalCode,
+	"state":        createInvoicesRequestProductBillingAddressFieldState,
+	"tax_id_type":  createInvoicesRequestProductBillingAddressFieldTaxIDType,
+	"tax_id_value": createInvoicesRequestProductBillingAddressFieldTaxIDValue,
+}
+
+// Inline billing address to create a new mailing address for this invoice. Cannot be used together with mailing_address_id.
 type CreateInvoicesRequestProductBillingAddress struct {
 	// The city of the address.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -3509,10 +3710,12 @@ func (c *CreateInvoicesRequestProductBillingAddress) GetExtraProperties() map[st
 }
 
 func (c *CreateInvoicesRequestProductBillingAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -3597,6 +3800,13 @@ func (c *CreateInvoicesRequestProductBillingAddress) UnmarshalJSON(data []byte) 
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductBillingAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3627,7 +3837,6 @@ func (c *CreateInvoicesRequestProductBillingAddress) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Autogenerated input type of CreateInvoice
 var (
 	createInvoicesRequestProductIDFieldAccountID                   = big.NewInt(1 << 0)
 	createInvoicesRequestProductIDFieldAutomaticallyFinalizesAt    = big.NewInt(1 << 1)
@@ -3648,6 +3857,24 @@ var (
 	createInvoicesRequestProductIDFieldSubscriptionBillingAnchorAt = big.NewInt(1 << 16)
 )
 
+// createInvoicesRequestProductIDNullableFields maps the wire names of CreateInvoicesRequestProductID's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductIDNullableFields = map[string]*big.Int{
+	"automatically_finalizes_at":     createInvoicesRequestProductIDFieldAutomaticallyFinalizesAt,
+	"billing_address":                createInvoicesRequestProductIDFieldBillingAddress,
+	"charge_buyer_fee":               createInvoicesRequestProductIDFieldChargeBuyerFee,
+	"customer_name":                  createInvoicesRequestProductIDFieldCustomerName,
+	"due_date":                       createInvoicesRequestProductIDFieldDueDate,
+	"email_address":                  createInvoicesRequestProductIDFieldEmailAddress,
+	"line_items":                     createInvoicesRequestProductIDFieldLineItems,
+	"mailing_address_id":             createInvoicesRequestProductIDFieldMailingAddressID,
+	"member_id":                      createInvoicesRequestProductIDFieldMemberID,
+	"payment_method_id":              createInvoicesRequestProductIDFieldPaymentMethodID,
+	"payment_token_id":               createInvoicesRequestProductIDFieldPaymentTokenID,
+	"save_as_draft":                  createInvoicesRequestProductIDFieldSaveAsDraft,
+	"subscription_billing_anchor_at": createInvoicesRequestProductIDFieldSubscriptionBillingAnchorAt,
+}
+
+// Autogenerated input type of CreateInvoice
 type CreateInvoicesRequestProductID struct {
 	// The unique identifier of the company to create this invoice for.
 	AccountID string `json:"account_id" url:"account_id"`
@@ -3818,10 +4045,12 @@ func (c *CreateInvoicesRequestProductID) GetExtraProperties() map[string]interfa
 }
 
 func (c *CreateInvoicesRequestProductID) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3965,6 +4194,13 @@ func (c *CreateInvoicesRequestProductID) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4001,7 +4237,6 @@ func (c *CreateInvoicesRequestProductID) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Inline billing address to create a new mailing address for this invoice. Cannot be used together with mailing_address_id.
 var (
 	createInvoicesRequestProductIDBillingAddressFieldCity       = big.NewInt(1 << 0)
 	createInvoicesRequestProductIDBillingAddressFieldCountry    = big.NewInt(1 << 1)
@@ -4015,6 +4250,21 @@ var (
 	createInvoicesRequestProductIDBillingAddressFieldTaxIDValue = big.NewInt(1 << 9)
 )
 
+// createInvoicesRequestProductIDBillingAddressNullableFields maps the wire names of CreateInvoicesRequestProductIDBillingAddress's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductIDBillingAddressNullableFields = map[string]*big.Int{
+	"city":         createInvoicesRequestProductIDBillingAddressFieldCity,
+	"country":      createInvoicesRequestProductIDBillingAddressFieldCountry,
+	"line1":        createInvoicesRequestProductIDBillingAddressFieldLine1,
+	"line2":        createInvoicesRequestProductIDBillingAddressFieldLine2,
+	"name":         createInvoicesRequestProductIDBillingAddressFieldName,
+	"phone":        createInvoicesRequestProductIDBillingAddressFieldPhone,
+	"postal_code":  createInvoicesRequestProductIDBillingAddressFieldPostalCode,
+	"state":        createInvoicesRequestProductIDBillingAddressFieldState,
+	"tax_id_type":  createInvoicesRequestProductIDBillingAddressFieldTaxIDType,
+	"tax_id_value": createInvoicesRequestProductIDBillingAddressFieldTaxIDValue,
+}
+
+// Inline billing address to create a new mailing address for this invoice. Cannot be used together with mailing_address_id.
 type CreateInvoicesRequestProductIDBillingAddress struct {
 	// The city of the address.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -4122,10 +4372,12 @@ func (c *CreateInvoicesRequestProductIDBillingAddress) GetExtraProperties() map[
 }
 
 func (c *CreateInvoicesRequestProductIDBillingAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -4210,6 +4462,13 @@ func (c *CreateInvoicesRequestProductIDBillingAddress) UnmarshalJSON(data []byte
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDBillingAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4240,13 +4499,18 @@ func (c *CreateInvoicesRequestProductIDBillingAddress) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A single line item to include on the invoice, with a label, quantity, and unit price.
 var (
 	createInvoicesRequestProductIDLineItemsItemFieldLabel     = big.NewInt(1 << 0)
 	createInvoicesRequestProductIDLineItemsItemFieldQuantity  = big.NewInt(1 << 1)
 	createInvoicesRequestProductIDLineItemsItemFieldUnitPrice = big.NewInt(1 << 2)
 )
 
+// createInvoicesRequestProductIDLineItemsItemNullableFields maps the wire names of CreateInvoicesRequestProductIDLineItemsItem's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductIDLineItemsItemNullableFields = map[string]*big.Int{
+	"quantity": createInvoicesRequestProductIDLineItemsItemFieldQuantity,
+}
+
+// A single line item to include on the invoice, with a label, quantity, and unit price.
 type CreateInvoicesRequestProductIDLineItemsItem struct {
 	// The label or description for this line item.
 	Label string `json:"label" url:"label"`
@@ -4291,10 +4555,12 @@ func (c *CreateInvoicesRequestProductIDLineItemsItem) GetExtraProperties() map[s
 }
 
 func (c *CreateInvoicesRequestProductIDLineItemsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetLabel sets the Label field and marks it as non-optional;
@@ -4330,6 +4596,13 @@ func (c *CreateInvoicesRequestProductIDLineItemsItem) UnmarshalJSON(data []byte)
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDLineItemsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4360,7 +4633,6 @@ func (c *CreateInvoicesRequestProductIDLineItemsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The plan attributes defining the price, currency, and billing interval for this invoice.
 var (
 	createInvoicesRequestProductIDPlanFieldAdaptivePricingEnabled      = big.NewInt(1 << 0)
 	createInvoicesRequestProductIDPlanFieldBillingPeriod               = big.NewInt(1 << 1)
@@ -4381,6 +4653,28 @@ var (
 	createInvoicesRequestProductIDPlanFieldVisibility                  = big.NewInt(1 << 16)
 )
 
+// createInvoicesRequestProductIDPlanNullableFields maps the wire names of CreateInvoicesRequestProductIDPlan's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductIDPlanNullableFields = map[string]*big.Int{
+	"adaptive_pricing_enabled":       createInvoicesRequestProductIDPlanFieldAdaptivePricingEnabled,
+	"billing_period":                 createInvoicesRequestProductIDPlanFieldBillingPeriod,
+	"currency":                       createInvoicesRequestProductIDPlanFieldCurrency,
+	"custom_fields":                  createInvoicesRequestProductIDPlanFieldCustomFields,
+	"description":                    createInvoicesRequestProductIDPlanFieldDescription,
+	"expiration_days":                createInvoicesRequestProductIDPlanFieldExpirationDays,
+	"initial_price":                  createInvoicesRequestProductIDPlanFieldInitialPrice,
+	"internal_notes":                 createInvoicesRequestProductIDPlanFieldInternalNotes,
+	"legacy_payment_method_controls": createInvoicesRequestProductIDPlanFieldLegacyPaymentMethodControls,
+	"payment_method_configuration":   createInvoicesRequestProductIDPlanFieldPaymentMethodConfiguration,
+	"plan_type":                      createInvoicesRequestProductIDPlanFieldPlanType,
+	"release_method":                 createInvoicesRequestProductIDPlanFieldReleaseMethod,
+	"renewal_price":                  createInvoicesRequestProductIDPlanFieldRenewalPrice,
+	"stock":                          createInvoicesRequestProductIDPlanFieldStock,
+	"trial_period_days":              createInvoicesRequestProductIDPlanFieldTrialPeriodDays,
+	"unlimited_stock":                createInvoicesRequestProductIDPlanFieldUnlimitedStock,
+	"visibility":                     createInvoicesRequestProductIDPlanFieldVisibility,
+}
+
+// The plan attributes defining the price, currency, and billing interval for this invoice.
 type CreateInvoicesRequestProductIDPlan struct {
 	// Whether this plan accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled *bool `json:"adaptive_pricing_enabled,omitempty" url:"adaptive_pricing_enabled,omitempty"`
@@ -4551,10 +4845,12 @@ func (c *CreateInvoicesRequestProductIDPlan) GetExtraProperties() map[string]int
 }
 
 func (c *CreateInvoicesRequestProductIDPlan) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
@@ -4688,6 +4984,13 @@ func (c *CreateInvoicesRequestProductIDPlan) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4726,6 +5029,14 @@ var (
 	createInvoicesRequestProductIDPlanCustomFieldsItemFieldPlaceholder = big.NewInt(1 << 4)
 	createInvoicesRequestProductIDPlanCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
 )
+
+// createInvoicesRequestProductIDPlanCustomFieldsItemNullableFields maps the wire names of CreateInvoicesRequestProductIDPlanCustomFieldsItem's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductIDPlanCustomFieldsItemNullableFields = map[string]*big.Int{
+	"id":          createInvoicesRequestProductIDPlanCustomFieldsItemFieldID,
+	"order":       createInvoicesRequestProductIDPlanCustomFieldsItemFieldOrder,
+	"placeholder": createInvoicesRequestProductIDPlanCustomFieldsItemFieldPlaceholder,
+	"required":    createInvoicesRequestProductIDPlanCustomFieldsItemFieldRequired,
+}
 
 type CreateInvoicesRequestProductIDPlanCustomFieldsItem struct {
 	// The type of the custom field.
@@ -4798,10 +5109,12 @@ func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) GetExtraProperties(
 }
 
 func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetFieldType sets the FieldType field and marks it as non-optional;
@@ -4858,6 +5171,13 @@ func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) UnmarshalJSON(data 
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDPlanCustomFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4888,13 +5208,18 @@ func (c *CreateInvoicesRequestProductIDPlanCustomFieldsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
 var (
 	createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// createInvoicesRequestProductIDPlanPaymentMethodConfigurationNullableFields maps the wire names of CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductIDPlanPaymentMethodConfigurationNullableFields = map[string]*big.Int{
+	"include_platform_defaults": createInvoicesRequestProductIDPlanPaymentMethodConfigurationFieldIncludePlatformDefaults,
+}
+
+// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
 type CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration struct {
 	// An array of payment method identifiers that are explicitly disabled. Only applies if the include_platform_defaults is true.
 	Disabled []PaymentMethodTypes `json:"disabled" url:"disabled"`
@@ -4939,10 +5264,12 @@ func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) GetExtraP
 }
 
 func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -4978,6 +5305,13 @@ func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) Unmarshal
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductIDPlanPaymentMethodConfigurationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5008,13 +5342,18 @@ func (c *CreateInvoicesRequestProductIDPlanPaymentMethodConfiguration) String() 
 	return fmt.Sprintf("%#v", c)
 }
 
-// A single line item to include on the invoice, with a label, quantity, and unit price.
 var (
 	createInvoicesRequestProductLineItemsItemFieldLabel     = big.NewInt(1 << 0)
 	createInvoicesRequestProductLineItemsItemFieldQuantity  = big.NewInt(1 << 1)
 	createInvoicesRequestProductLineItemsItemFieldUnitPrice = big.NewInt(1 << 2)
 )
 
+// createInvoicesRequestProductLineItemsItemNullableFields maps the wire names of CreateInvoicesRequestProductLineItemsItem's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductLineItemsItemNullableFields = map[string]*big.Int{
+	"quantity": createInvoicesRequestProductLineItemsItemFieldQuantity,
+}
+
+// A single line item to include on the invoice, with a label, quantity, and unit price.
 type CreateInvoicesRequestProductLineItemsItem struct {
 	// The label or description for this line item.
 	Label string `json:"label" url:"label"`
@@ -5059,10 +5398,12 @@ func (c *CreateInvoicesRequestProductLineItemsItem) GetExtraProperties() map[str
 }
 
 func (c *CreateInvoicesRequestProductLineItemsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetLabel sets the Label field and marks it as non-optional;
@@ -5098,6 +5439,13 @@ func (c *CreateInvoicesRequestProductLineItemsItem) UnmarshalJSON(data []byte) e
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductLineItemsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5128,7 +5476,6 @@ func (c *CreateInvoicesRequestProductLineItemsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The plan attributes defining the price, currency, and billing interval for this invoice.
 var (
 	createInvoicesRequestProductPlanFieldAdaptivePricingEnabled      = big.NewInt(1 << 0)
 	createInvoicesRequestProductPlanFieldBillingPeriod               = big.NewInt(1 << 1)
@@ -5149,6 +5496,28 @@ var (
 	createInvoicesRequestProductPlanFieldVisibility                  = big.NewInt(1 << 16)
 )
 
+// createInvoicesRequestProductPlanNullableFields maps the wire names of CreateInvoicesRequestProductPlan's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductPlanNullableFields = map[string]*big.Int{
+	"adaptive_pricing_enabled":       createInvoicesRequestProductPlanFieldAdaptivePricingEnabled,
+	"billing_period":                 createInvoicesRequestProductPlanFieldBillingPeriod,
+	"currency":                       createInvoicesRequestProductPlanFieldCurrency,
+	"custom_fields":                  createInvoicesRequestProductPlanFieldCustomFields,
+	"description":                    createInvoicesRequestProductPlanFieldDescription,
+	"expiration_days":                createInvoicesRequestProductPlanFieldExpirationDays,
+	"initial_price":                  createInvoicesRequestProductPlanFieldInitialPrice,
+	"internal_notes":                 createInvoicesRequestProductPlanFieldInternalNotes,
+	"legacy_payment_method_controls": createInvoicesRequestProductPlanFieldLegacyPaymentMethodControls,
+	"payment_method_configuration":   createInvoicesRequestProductPlanFieldPaymentMethodConfiguration,
+	"plan_type":                      createInvoicesRequestProductPlanFieldPlanType,
+	"release_method":                 createInvoicesRequestProductPlanFieldReleaseMethod,
+	"renewal_price":                  createInvoicesRequestProductPlanFieldRenewalPrice,
+	"stock":                          createInvoicesRequestProductPlanFieldStock,
+	"trial_period_days":              createInvoicesRequestProductPlanFieldTrialPeriodDays,
+	"unlimited_stock":                createInvoicesRequestProductPlanFieldUnlimitedStock,
+	"visibility":                     createInvoicesRequestProductPlanFieldVisibility,
+}
+
+// The plan attributes defining the price, currency, and billing interval for this invoice.
 type CreateInvoicesRequestProductPlan struct {
 	// Whether this plan accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled *bool `json:"adaptive_pricing_enabled,omitempty" url:"adaptive_pricing_enabled,omitempty"`
@@ -5319,10 +5688,12 @@ func (c *CreateInvoicesRequestProductPlan) GetExtraProperties() map[string]inter
 }
 
 func (c *CreateInvoicesRequestProductPlan) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
@@ -5456,6 +5827,13 @@ func (c *CreateInvoicesRequestProductPlan) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5494,6 +5872,14 @@ var (
 	createInvoicesRequestProductPlanCustomFieldsItemFieldPlaceholder = big.NewInt(1 << 4)
 	createInvoicesRequestProductPlanCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
 )
+
+// createInvoicesRequestProductPlanCustomFieldsItemNullableFields maps the wire names of CreateInvoicesRequestProductPlanCustomFieldsItem's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductPlanCustomFieldsItemNullableFields = map[string]*big.Int{
+	"id":          createInvoicesRequestProductPlanCustomFieldsItemFieldID,
+	"order":       createInvoicesRequestProductPlanCustomFieldsItemFieldOrder,
+	"placeholder": createInvoicesRequestProductPlanCustomFieldsItemFieldPlaceholder,
+	"required":    createInvoicesRequestProductPlanCustomFieldsItemFieldRequired,
+}
 
 type CreateInvoicesRequestProductPlanCustomFieldsItem struct {
 	// The type of the custom field.
@@ -5566,10 +5952,12 @@ func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) GetExtraProperties() 
 }
 
 func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetFieldType sets the FieldType field and marks it as non-optional;
@@ -5626,6 +6014,13 @@ func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) UnmarshalJSON(data []
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductPlanCustomFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5656,13 +6051,18 @@ func (c *CreateInvoicesRequestProductPlanCustomFieldsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
 var (
 	createInvoicesRequestProductPlanPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createInvoicesRequestProductPlanPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	createInvoicesRequestProductPlanPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// createInvoicesRequestProductPlanPaymentMethodConfigurationNullableFields maps the wire names of CreateInvoicesRequestProductPlanPaymentMethodConfiguration's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductPlanPaymentMethodConfigurationNullableFields = map[string]*big.Int{
+	"include_platform_defaults": createInvoicesRequestProductPlanPaymentMethodConfigurationFieldIncludePlatformDefaults,
+}
+
+// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
 type CreateInvoicesRequestProductPlanPaymentMethodConfiguration struct {
 	// An array of payment method identifiers that are explicitly disabled. Only applies if the include_platform_defaults is true.
 	Disabled []PaymentMethodTypes `json:"disabled" url:"disabled"`
@@ -5707,10 +6107,12 @@ func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) GetExtraPro
 }
 
 func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -5746,6 +6148,13 @@ func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) UnmarshalJS
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductPlanPaymentMethodConfigurationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5776,12 +6185,17 @@ func (c *CreateInvoicesRequestProductPlanPaymentMethodConfiguration) String() st
 	return fmt.Sprintf("%#v", c)
 }
 
-// The properties of the product to create for this invoice. Provide this to create a new product inline.
 var (
 	createInvoicesRequestProductProductFieldProductTaxCodeID = big.NewInt(1 << 0)
 	createInvoicesRequestProductProductFieldTitle            = big.NewInt(1 << 1)
 )
 
+// createInvoicesRequestProductProductNullableFields maps the wire names of CreateInvoicesRequestProductProduct's nullable fields (required or optional) to their field bits.
+var createInvoicesRequestProductProductNullableFields = map[string]*big.Int{
+	"product_tax_code_id": createInvoicesRequestProductProductFieldProductTaxCodeID,
+}
+
+// The properties of the product to create for this invoice. Provide this to create a new product inline.
 type CreateInvoicesRequestProductProduct struct {
 	// The ID of the product tax code to apply to this product.
 	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"product_tax_code_id,omitempty"`
@@ -5817,10 +6231,12 @@ func (c *CreateInvoicesRequestProductProduct) GetExtraProperties() map[string]in
 }
 
 func (c *CreateInvoicesRequestProductProduct) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
@@ -5849,6 +6265,13 @@ func (c *CreateInvoicesRequestProductProduct) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createInvoicesRequestProductProductNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5879,12 +6302,12 @@ func (c *CreateInvoicesRequestProductProduct) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for PublicInvoice.
 var (
 	listInvoicesResponseFieldData     = big.NewInt(1 << 0)
 	listInvoicesResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for PublicInvoice.
 type ListInvoicesResponse struct {
 	// A list of nodes.
 	Data []*InvoiceListItem `json:"data" url:"data"`
@@ -5920,10 +6343,12 @@ func (l *ListInvoicesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListInvoicesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -5992,6 +6417,12 @@ var (
 	postInvoiceCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postInvoiceCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postInvoiceCreatedPayloadNullableFields maps the wire names of PostInvoiceCreatedPayload's nullable fields (required or optional) to their field bits.
+var postInvoiceCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postInvoiceCreatedPayloadFieldAccountID,
+	"api_version_date": postInvoiceCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostInvoiceCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -6081,10 +6512,12 @@ func (p *PostInvoiceCreatedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostInvoiceCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -6161,6 +6594,13 @@ func (p *PostInvoiceCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postInvoiceCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6243,6 +6683,12 @@ var (
 	postInvoiceMarkedUncollectiblePayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postInvoiceMarkedUncollectiblePayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postInvoiceMarkedUncollectiblePayloadNullableFields maps the wire names of PostInvoiceMarkedUncollectiblePayload's nullable fields (required or optional) to their field bits.
+var postInvoiceMarkedUncollectiblePayloadNullableFields = map[string]*big.Int{
+	"account_id":       postInvoiceMarkedUncollectiblePayloadFieldAccountID,
+	"api_version_date": postInvoiceMarkedUncollectiblePayloadFieldAPIVersionDate,
+}
 
 type PostInvoiceMarkedUncollectiblePayload struct {
 	// The account ID that this webhook event is associated with
@@ -6332,10 +6778,12 @@ func (p *PostInvoiceMarkedUncollectiblePayload) GetExtraProperties() map[string]
 }
 
 func (p *PostInvoiceMarkedUncollectiblePayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -6412,6 +6860,13 @@ func (p *PostInvoiceMarkedUncollectiblePayload) UnmarshalJSON(data []byte) error
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postInvoiceMarkedUncollectiblePayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6494,6 +6949,12 @@ var (
 	postInvoicePaidPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postInvoicePaidPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postInvoicePaidPayloadNullableFields maps the wire names of PostInvoicePaidPayload's nullable fields (required or optional) to their field bits.
+var postInvoicePaidPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postInvoicePaidPayloadFieldAccountID,
+	"api_version_date": postInvoicePaidPayloadFieldAPIVersionDate,
+}
 
 type PostInvoicePaidPayload struct {
 	// The account ID that this webhook event is associated with
@@ -6583,10 +7044,12 @@ func (p *PostInvoicePaidPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostInvoicePaidPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -6663,6 +7126,13 @@ func (p *PostInvoicePaidPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postInvoicePaidPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6745,6 +7215,12 @@ var (
 	postInvoicePastDuePayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postInvoicePastDuePayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postInvoicePastDuePayloadNullableFields maps the wire names of PostInvoicePastDuePayload's nullable fields (required or optional) to their field bits.
+var postInvoicePastDuePayloadNullableFields = map[string]*big.Int{
+	"account_id":       postInvoicePastDuePayloadFieldAccountID,
+	"api_version_date": postInvoicePastDuePayloadFieldAPIVersionDate,
+}
 
 type PostInvoicePastDuePayload struct {
 	// The account ID that this webhook event is associated with
@@ -6834,10 +7310,12 @@ func (p *PostInvoicePastDuePayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostInvoicePastDuePayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -6914,6 +7392,13 @@ func (p *PostInvoicePastDuePayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postInvoicePastDuePayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6996,6 +7481,12 @@ var (
 	postInvoiceVoidedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postInvoiceVoidedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postInvoiceVoidedPayloadNullableFields maps the wire names of PostInvoiceVoidedPayload's nullable fields (required or optional) to their field bits.
+var postInvoiceVoidedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postInvoiceVoidedPayloadFieldAccountID,
+	"api_version_date": postInvoiceVoidedPayloadFieldAPIVersionDate,
+}
 
 type PostInvoiceVoidedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -7085,10 +7576,12 @@ func (p *PostInvoiceVoidedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostInvoiceVoidedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -7165,6 +7658,13 @@ func (p *PostInvoiceVoidedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postInvoiceVoidedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7237,7 +7737,6 @@ func (p PostInvoiceVoidedPayloadType) Ptr() *PostInvoiceVoidedPayloadType {
 	return &p
 }
 
-// Inline billing address to create or update a mailing address for this invoice.
 var (
 	updateInvoicesRequestBillingAddressFieldCity       = big.NewInt(1 << 0)
 	updateInvoicesRequestBillingAddressFieldCountry    = big.NewInt(1 << 1)
@@ -7251,6 +7750,21 @@ var (
 	updateInvoicesRequestBillingAddressFieldTaxIDValue = big.NewInt(1 << 9)
 )
 
+// updateInvoicesRequestBillingAddressNullableFields maps the wire names of UpdateInvoicesRequestBillingAddress's nullable fields (required or optional) to their field bits.
+var updateInvoicesRequestBillingAddressNullableFields = map[string]*big.Int{
+	"city":         updateInvoicesRequestBillingAddressFieldCity,
+	"country":      updateInvoicesRequestBillingAddressFieldCountry,
+	"line1":        updateInvoicesRequestBillingAddressFieldLine1,
+	"line2":        updateInvoicesRequestBillingAddressFieldLine2,
+	"name":         updateInvoicesRequestBillingAddressFieldName,
+	"phone":        updateInvoicesRequestBillingAddressFieldPhone,
+	"postal_code":  updateInvoicesRequestBillingAddressFieldPostalCode,
+	"state":        updateInvoicesRequestBillingAddressFieldState,
+	"tax_id_type":  updateInvoicesRequestBillingAddressFieldTaxIDType,
+	"tax_id_value": updateInvoicesRequestBillingAddressFieldTaxIDValue,
+}
+
+// Inline billing address to create or update a mailing address for this invoice.
 type UpdateInvoicesRequestBillingAddress struct {
 	// The city of the address.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -7358,10 +7872,12 @@ func (u *UpdateInvoicesRequestBillingAddress) GetExtraProperties() map[string]in
 }
 
 func (u *UpdateInvoicesRequestBillingAddress) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -7446,6 +7962,13 @@ func (u *UpdateInvoicesRequestBillingAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestBillingAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7476,13 +7999,18 @@ func (u *UpdateInvoicesRequestBillingAddress) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// A single line item to include on the invoice, with a label, quantity, and unit price.
 var (
 	updateInvoicesRequestLineItemsItemFieldLabel     = big.NewInt(1 << 0)
 	updateInvoicesRequestLineItemsItemFieldQuantity  = big.NewInt(1 << 1)
 	updateInvoicesRequestLineItemsItemFieldUnitPrice = big.NewInt(1 << 2)
 )
 
+// updateInvoicesRequestLineItemsItemNullableFields maps the wire names of UpdateInvoicesRequestLineItemsItem's nullable fields (required or optional) to their field bits.
+var updateInvoicesRequestLineItemsItemNullableFields = map[string]*big.Int{
+	"quantity": updateInvoicesRequestLineItemsItemFieldQuantity,
+}
+
+// A single line item to include on the invoice, with a label, quantity, and unit price.
 type UpdateInvoicesRequestLineItemsItem struct {
 	// The label or description for this line item.
 	Label string `json:"label" url:"label"`
@@ -7527,10 +8055,12 @@ func (u *UpdateInvoicesRequestLineItemsItem) GetExtraProperties() map[string]int
 }
 
 func (u *UpdateInvoicesRequestLineItemsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetLabel sets the Label field and marks it as non-optional;
@@ -7566,6 +8096,13 @@ func (u *UpdateInvoicesRequestLineItemsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestLineItemsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7596,7 +8133,6 @@ func (u *UpdateInvoicesRequestLineItemsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Updated plan attributes.
 var (
 	updateInvoicesRequestPlanFieldAdaptivePricingEnabled      = big.NewInt(1 << 0)
 	updateInvoicesRequestPlanFieldBillingPeriod               = big.NewInt(1 << 1)
@@ -7617,6 +8153,28 @@ var (
 	updateInvoicesRequestPlanFieldVisibility                  = big.NewInt(1 << 16)
 )
 
+// updateInvoicesRequestPlanNullableFields maps the wire names of UpdateInvoicesRequestPlan's nullable fields (required or optional) to their field bits.
+var updateInvoicesRequestPlanNullableFields = map[string]*big.Int{
+	"adaptive_pricing_enabled":       updateInvoicesRequestPlanFieldAdaptivePricingEnabled,
+	"billing_period":                 updateInvoicesRequestPlanFieldBillingPeriod,
+	"currency":                       updateInvoicesRequestPlanFieldCurrency,
+	"custom_fields":                  updateInvoicesRequestPlanFieldCustomFields,
+	"description":                    updateInvoicesRequestPlanFieldDescription,
+	"expiration_days":                updateInvoicesRequestPlanFieldExpirationDays,
+	"initial_price":                  updateInvoicesRequestPlanFieldInitialPrice,
+	"internal_notes":                 updateInvoicesRequestPlanFieldInternalNotes,
+	"legacy_payment_method_controls": updateInvoicesRequestPlanFieldLegacyPaymentMethodControls,
+	"payment_method_configuration":   updateInvoicesRequestPlanFieldPaymentMethodConfiguration,
+	"plan_type":                      updateInvoicesRequestPlanFieldPlanType,
+	"release_method":                 updateInvoicesRequestPlanFieldReleaseMethod,
+	"renewal_price":                  updateInvoicesRequestPlanFieldRenewalPrice,
+	"stock":                          updateInvoicesRequestPlanFieldStock,
+	"trial_period_days":              updateInvoicesRequestPlanFieldTrialPeriodDays,
+	"unlimited_stock":                updateInvoicesRequestPlanFieldUnlimitedStock,
+	"visibility":                     updateInvoicesRequestPlanFieldVisibility,
+}
+
+// Updated plan attributes.
 type UpdateInvoicesRequestPlan struct {
 	// Whether this plan accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled *bool `json:"adaptive_pricing_enabled,omitempty" url:"adaptive_pricing_enabled,omitempty"`
@@ -7787,10 +8345,12 @@ func (u *UpdateInvoicesRequestPlan) GetExtraProperties() map[string]interface{} 
 }
 
 func (u *UpdateInvoicesRequestPlan) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
@@ -7924,6 +8484,13 @@ func (u *UpdateInvoicesRequestPlan) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -7962,6 +8529,14 @@ var (
 	updateInvoicesRequestPlanCustomFieldsItemFieldPlaceholder = big.NewInt(1 << 4)
 	updateInvoicesRequestPlanCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
 )
+
+// updateInvoicesRequestPlanCustomFieldsItemNullableFields maps the wire names of UpdateInvoicesRequestPlanCustomFieldsItem's nullable fields (required or optional) to their field bits.
+var updateInvoicesRequestPlanCustomFieldsItemNullableFields = map[string]*big.Int{
+	"id":          updateInvoicesRequestPlanCustomFieldsItemFieldID,
+	"order":       updateInvoicesRequestPlanCustomFieldsItemFieldOrder,
+	"placeholder": updateInvoicesRequestPlanCustomFieldsItemFieldPlaceholder,
+	"required":    updateInvoicesRequestPlanCustomFieldsItemFieldRequired,
+}
 
 type UpdateInvoicesRequestPlanCustomFieldsItem struct {
 	// The type of the custom field.
@@ -8034,10 +8609,12 @@ func (u *UpdateInvoicesRequestPlanCustomFieldsItem) GetExtraProperties() map[str
 }
 
 func (u *UpdateInvoicesRequestPlanCustomFieldsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFieldType sets the FieldType field and marks it as non-optional;
@@ -8094,6 +8671,13 @@ func (u *UpdateInvoicesRequestPlanCustomFieldsItem) UnmarshalJSON(data []byte) e
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestPlanCustomFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8124,13 +8708,18 @@ func (u *UpdateInvoicesRequestPlanCustomFieldsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
 var (
 	updateInvoicesRequestPlanPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	updateInvoicesRequestPlanPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	updateInvoicesRequestPlanPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// updateInvoicesRequestPlanPaymentMethodConfigurationNullableFields maps the wire names of UpdateInvoicesRequestPlanPaymentMethodConfiguration's nullable fields (required or optional) to their field bits.
+var updateInvoicesRequestPlanPaymentMethodConfigurationNullableFields = map[string]*big.Int{
+	"include_platform_defaults": updateInvoicesRequestPlanPaymentMethodConfigurationFieldIncludePlatformDefaults,
+}
+
+// The explicit payment method configuration for the plan. If not provided, the platform or company's defaults will apply.
 type UpdateInvoicesRequestPlanPaymentMethodConfiguration struct {
 	// An array of payment method identifiers that are explicitly disabled. Only applies if the include_platform_defaults is true.
 	Disabled []PaymentMethodTypes `json:"disabled" url:"disabled"`
@@ -8175,10 +8764,12 @@ func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) GetExtraProperties
 }
 
 func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -8214,6 +8805,13 @@ func (u *UpdateInvoicesRequestPlanPaymentMethodConfiguration) UnmarshalJSON(data
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateInvoicesRequestPlanPaymentMethodConfigurationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8299,10 +8897,12 @@ type UpdateInvoicesRequest struct {
 }
 
 func (u *UpdateInvoicesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8411,12 +9011,22 @@ func (u *UpdateInvoicesRequest) SetSubscriptionBillingAnchorAt(subscriptionBilli
 }
 
 func (u *UpdateInvoicesRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateInvoicesRequest
-	var body unmarshaler
+	type embed UpdateInvoicesRequest
+	var body = struct {
+		embed
+		AutomaticallyFinalizesAt    *internal.DateTime `json:"automatically_finalizes_at,omitempty"`
+		DueDate                     *internal.DateTime `json:"due_date,omitempty"`
+		SubscriptionBillingAnchorAt *internal.DateTime `json:"subscription_billing_anchor_at,omitempty"`
+	}{
+		embed: embed(*u),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*u = UpdateInvoicesRequest(body)
+	*u = UpdateInvoicesRequest(body.embed)
+	u.AutomaticallyFinalizesAt = body.AutomaticallyFinalizesAt.TimePtr()
+	u.DueDate = body.DueDate.TimePtr()
+	u.SubscriptionBillingAnchorAt = body.SubscriptionBillingAnchorAt.TimePtr()
 	return nil
 }
 
@@ -8450,10 +9060,12 @@ type VoidInvoicesRequest struct {
 }
 
 func (v *VoidInvoicesRequest) require(field *big.Int) {
-	if v.explicitFields == nil {
-		v.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if v.explicitFields != nil {
+		next.Set(v.explicitFields)
 	}
-	v.explicitFields.Or(v.explicitFields, field)
+	next.Or(next, field)
+	v.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

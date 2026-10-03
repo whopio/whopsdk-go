@@ -34,10 +34,12 @@ type CreateDomainsRequest struct {
 }
 
 func (c *CreateDomainsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -109,10 +111,12 @@ type DeleteDomainsRequest struct {
 }
 
 func (d *DeleteDomainsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -165,10 +169,12 @@ type ListDomainsRequest struct {
 }
 
 func (l *ListDomainsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -261,10 +267,12 @@ type RetrieveDomainsRequest struct {
 }
 
 func (r *RetrieveDomainsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -294,6 +302,24 @@ var (
 	domainFieldVerificationExpiresAt = big.NewInt(1 << 16)
 	domainFieldVerifiedAt            = big.NewInt(1 << 17)
 )
+
+// domainNullableFields maps the wire names of Domain's nullable fields (required or optional) to their field bits.
+var domainNullableFields = map[string]*big.Int{
+	"account_id":              domainFieldAccountID,
+	"app_id":                  domainFieldAppID,
+	"certificate_status":      domainFieldCertificateStatus,
+	"created_at":              domainFieldCreatedAt,
+	"dns_status":              domainFieldDNSStatus,
+	"hostname_status":         domainFieldHostnameStatus,
+	"id":                      domainFieldID,
+	"last_checked_at":         domainFieldLastCheckedAt,
+	"public_record":           domainFieldPublicRecord,
+	"registration_quote":      domainFieldRegistrationQuote,
+	"status":                  domainFieldStatus,
+	"updated_at":              domainFieldUpdatedAt,
+	"verification_expires_at": domainFieldVerificationExpiresAt,
+	"verified_at":             domainFieldVerifiedAt,
+}
 
 type Domain struct {
 	// ID of the account claiming or owning this domain, prefixed `biz_`. `null` for a search result.
@@ -472,10 +498,12 @@ func (d *Domain) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *Domain) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -616,6 +644,13 @@ func (d *Domain) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, domainNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -696,10 +731,12 @@ func (d *DomainDNSRecord) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DomainDNSRecord) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -863,10 +900,12 @@ func (d *DomainIssue) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DomainIssue) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -944,6 +983,23 @@ var (
 	domainListItemFieldVerificationExpiresAt = big.NewInt(1 << 15)
 	domainListItemFieldVerifiedAt            = big.NewInt(1 << 16)
 )
+
+// domainListItemNullableFields maps the wire names of DomainListItem's nullable fields (required or optional) to their field bits.
+var domainListItemNullableFields = map[string]*big.Int{
+	"account_id":              domainListItemFieldAccountID,
+	"app_id":                  domainListItemFieldAppID,
+	"certificate_status":      domainListItemFieldCertificateStatus,
+	"created_at":              domainListItemFieldCreatedAt,
+	"dns_status":              domainListItemFieldDNSStatus,
+	"hostname_status":         domainListItemFieldHostnameStatus,
+	"id":                      domainListItemFieldID,
+	"last_checked_at":         domainListItemFieldLastCheckedAt,
+	"registration_quote":      domainListItemFieldRegistrationQuote,
+	"status":                  domainListItemFieldStatus,
+	"updated_at":              domainListItemFieldUpdatedAt,
+	"verification_expires_at": domainListItemFieldVerificationExpiresAt,
+	"verified_at":             domainListItemFieldVerifiedAt,
+}
 
 type DomainListItem struct {
 	// ID of the account claiming or owning this domain, prefixed `biz_`. `null` for a search result.
@@ -1113,10 +1169,12 @@ func (d *DomainListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DomainListItem) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1250,6 +1308,13 @@ func (d *DomainListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, domainListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1355,6 +1420,16 @@ var (
 	domainPublicRecordFieldUpdatedAt    = big.NewInt(1 << 7)
 )
 
+// domainPublicRecordNullableFields maps the wire names of DomainPublicRecord's nullable fields (required or optional) to their field bits.
+var domainPublicRecordNullableFields = map[string]*big.Int{
+	"dnssec":        domainPublicRecordFieldDnssec,
+	"expires_at":    domainPublicRecordFieldExpiresAt,
+	"registered_at": domainPublicRecordFieldRegisteredAt,
+	"registrant":    domainPublicRecordFieldRegistrant,
+	"registrar":     domainPublicRecordFieldRegistrar,
+	"updated_at":    domainPublicRecordFieldUpdatedAt,
+}
+
 type DomainPublicRecord struct {
 	// Whether the domain's delegation is signed with DNSSEC, or `null` when the registry doesn't say.
 	Dnssec *bool `json:"dnssec,omitempty" url:"dnssec,omitempty"`
@@ -1442,10 +1517,12 @@ func (d *DomainPublicRecord) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DomainPublicRecord) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDnssec sets the Dnssec field and marks it as non-optional;
@@ -1516,6 +1593,13 @@ func (d *DomainPublicRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, domainPublicRecordNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1555,6 +1639,17 @@ var (
 	domainRegistrantFieldOrganization = big.NewInt(1 << 5)
 	domainRegistrantFieldPhone        = big.NewInt(1 << 6)
 )
+
+// domainRegistrantNullableFields maps the wire names of DomainRegistrant's nullable fields (required or optional) to their field bits.
+var domainRegistrantNullableFields = map[string]*big.Int{
+	"address":      domainRegistrantFieldAddress,
+	"contact_url":  domainRegistrantFieldContactURL,
+	"country":      domainRegistrantFieldCountry,
+	"email":        domainRegistrantFieldEmail,
+	"name":         domainRegistrantFieldName,
+	"organization": domainRegistrantFieldOrganization,
+	"phone":        domainRegistrantFieldPhone,
+}
 
 type DomainRegistrant struct {
 	// Registrant postal address as published, with lines separated by line breaks. Often only a state or region. `null` when withheld.
@@ -1636,10 +1731,12 @@ func (d *DomainRegistrant) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DomainRegistrant) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -1703,6 +1800,13 @@ func (d *DomainRegistrant) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, domainRegistrantNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1738,6 +1842,12 @@ var (
 	domainRegistrarFieldName   = big.NewInt(1 << 1)
 	domainRegistrarFieldURL    = big.NewInt(1 << 2)
 )
+
+// domainRegistrarNullableFields maps the wire names of DomainRegistrar's nullable fields (required or optional) to their field bits.
+var domainRegistrarNullableFields = map[string]*big.Int{
+	"iana_id": domainRegistrarFieldIanaID,
+	"url":     domainRegistrarFieldURL,
+}
 
 type DomainRegistrar struct {
 	// The registrar's IANA registrar ID, or `null` when the record omits it.
@@ -1783,10 +1893,12 @@ func (d *DomainRegistrar) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DomainRegistrar) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetIanaID sets the IanaID field and marks it as non-optional;
@@ -1822,6 +1934,13 @@ func (d *DomainRegistrar) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, domainRegistrarNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1861,6 +1980,14 @@ var (
 	domainRegistrationQuoteFieldScore         = big.NewInt(1 << 5)
 	domainRegistrationQuoteFieldTransferPrice = big.NewInt(1 << 6)
 )
+
+// domainRegistrationQuoteNullableFields maps the wire names of DomainRegistrationQuote's nullable fields (required or optional) to their field bits.
+var domainRegistrationQuoteNullableFields = map[string]*big.Int{
+	"price":          domainRegistrationQuoteFieldPrice,
+	"purchase_url":   domainRegistrationQuoteFieldPurchaseURL,
+	"renewal_price":  domainRegistrationQuoteFieldRenewalPrice,
+	"transfer_price": domainRegistrationQuoteFieldTransferPrice,
+}
 
 type DomainRegistrationQuote struct {
 	// Whether the domain can be registered now.
@@ -1942,10 +2069,12 @@ func (d *DomainRegistrationQuote) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DomainRegistrationQuote) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAvailable sets the Available field and marks it as non-optional;
@@ -2009,6 +2138,13 @@ func (d *DomainRegistrationQuote) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, domainRegistrationQuoteNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2190,10 +2326,12 @@ func (l *ListDomainsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListDomainsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2259,6 +2397,12 @@ var (
 	listDomainsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listDomainsResponsePageInfoNullableFields maps the wire names of ListDomainsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listDomainsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listDomainsResponsePageInfoFieldEndCursor,
+	"start_cursor": listDomainsResponsePageInfoFieldStartCursor,
+}
+
 type ListDomainsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2308,10 +2452,12 @@ func (l *ListDomainsResponsePageInfo) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListDomainsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2354,6 +2500,13 @@ func (l *ListDomainsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listDomainsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2403,10 +2556,12 @@ type UpdateDomainsRequest struct {
 }
 
 func (u *UpdateDomainsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

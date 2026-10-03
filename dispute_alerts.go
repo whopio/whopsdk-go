@@ -53,10 +53,12 @@ type ListDisputeAlertsRequest struct {
 }
 
 func (l *ListDisputeAlertsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -149,10 +151,12 @@ type RetrieveDisputeAlertsRequest struct {
 }
 
 func (r *RetrieveDisputeAlertsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -179,6 +183,16 @@ var (
 	disputeAlertFieldType          = big.NewInt(1 << 13)
 	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 14)
 )
+
+// disputeAlertNullableFields maps the wire names of DisputeAlert's nullable fields (required or optional) to their field bits.
+var disputeAlertNullableFields = map[string]*big.Int{
+	"account_id":     disputeAlertFieldAccountID,
+	"card_brand":     disputeAlertFieldCardBrand,
+	"issuer":         disputeAlertFieldIssuer,
+	"payment_id":     disputeAlertFieldPaymentID,
+	"product_id":     disputeAlertFieldProductID,
+	"transaction_at": disputeAlertFieldTransactionAt,
+}
 
 type DisputeAlert struct {
 	// The account the alerted payment belongs to, prefixed `biz_`. `null` while the alert is unmatched.
@@ -333,10 +347,12 @@ func (d *DisputeAlert) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeAlert) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -456,6 +472,13 @@ func (d *DisputeAlert) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeAlertNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -622,10 +645,12 @@ func (l *ListDisputeAlertsResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListDisputeAlertsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -691,6 +716,12 @@ var (
 	listDisputeAlertsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listDisputeAlertsResponsePageInfoNullableFields maps the wire names of ListDisputeAlertsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listDisputeAlertsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listDisputeAlertsResponsePageInfoFieldEndCursor,
+	"start_cursor": listDisputeAlertsResponsePageInfoFieldStartCursor,
+}
+
 type ListDisputeAlertsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -740,10 +771,12 @@ func (l *ListDisputeAlertsResponsePageInfo) GetExtraProperties() map[string]inte
 }
 
 func (l *ListDisputeAlertsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -786,6 +819,13 @@ func (l *ListDisputeAlertsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listDisputeAlertsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -826,6 +866,12 @@ var (
 	postDisputeAlertCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postDisputeAlertCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postDisputeAlertCreatedPayloadNullableFields maps the wire names of PostDisputeAlertCreatedPayload's nullable fields (required or optional) to their field bits.
+var postDisputeAlertCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postDisputeAlertCreatedPayloadFieldAccountID,
+	"api_version_date": postDisputeAlertCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostDisputeAlertCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -915,10 +961,12 @@ func (p *PostDisputeAlertCreatedPayload) GetExtraProperties() map[string]interfa
 }
 
 func (p *PostDisputeAlertCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -995,6 +1043,13 @@ func (p *PostDisputeAlertCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postDisputeAlertCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

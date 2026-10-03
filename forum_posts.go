@@ -59,10 +59,12 @@ type CreateForumPostsRequest struct {
 }
 
 func (c *CreateForumPostsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -211,10 +213,12 @@ type ListForumPostsRequest struct {
 }
 
 func (l *ListForumPostsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -286,10 +290,12 @@ type RetrieveForumPostsRequest struct {
 }
 
 func (r *RetrieveForumPostsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -299,7 +305,6 @@ func (r *RetrieveForumPostsRequest) SetID(id string) {
 	r.require(retrieveForumPostsRequestFieldID)
 }
 
-// A post or comment in a forum feed, supporting rich text, attachments, polls, and reactions.
 var (
 	forumPostFieldAttachments   = big.NewInt(1 << 0)
 	forumPostFieldCommentCount  = big.NewInt(1 << 1)
@@ -317,6 +322,16 @@ var (
 	forumPostFieldViewCount     = big.NewInt(1 << 13)
 )
 
+// forumPostNullableFields maps the wire names of ForumPost's nullable fields (required or optional) to their field bits.
+var forumPostNullableFields = map[string]*big.Int{
+	"content":    forumPostFieldContent,
+	"like_count": forumPostFieldLikeCount,
+	"parent_id":  forumPostFieldParentID,
+	"title":      forumPostFieldTitle,
+	"view_count": forumPostFieldViewCount,
+}
+
+// A post or comment in a forum feed, supporting rich text, attachments, polls, and reactions.
 type ForumPost struct {
 	// All file attachments on this post, such as images, documents, and videos.
 	Attachments []*ForumPostAttachmentsItem `json:"attachments" url:"attachments"`
@@ -460,10 +475,12 @@ func (f *ForumPost) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *ForumPost) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetAttachments sets the Attachments field and marks it as non-optional;
@@ -584,6 +601,13 @@ func (f *ForumPost) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, forumPostNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -618,7 +642,6 @@ func (f *ForumPost) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// Represents an image attachment
 var (
 	forumPostAttachmentsItemFieldContentType = big.NewInt(1 << 0)
 	forumPostAttachmentsItemFieldFilename    = big.NewInt(1 << 1)
@@ -626,6 +649,14 @@ var (
 	forumPostAttachmentsItemFieldURL         = big.NewInt(1 << 3)
 )
 
+// forumPostAttachmentsItemNullableFields maps the wire names of ForumPostAttachmentsItem's nullable fields (required or optional) to their field bits.
+var forumPostAttachmentsItemNullableFields = map[string]*big.Int{
+	"content_type": forumPostAttachmentsItemFieldContentType,
+	"filename":     forumPostAttachmentsItemFieldFilename,
+	"url":          forumPostAttachmentsItemFieldURL,
+}
+
+// Represents an image attachment
 type ForumPostAttachmentsItem struct {
 	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
 	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
@@ -679,10 +710,12 @@ func (f *ForumPostAttachmentsItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *ForumPostAttachmentsItem) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -725,6 +758,13 @@ func (f *ForumPostAttachmentsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, forumPostAttachmentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -755,7 +795,6 @@ func (f *ForumPostAttachmentsItem) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// A post or comment in a forum feed, supporting rich text, attachments, polls, and reactions.
 var (
 	forumPostListItemFieldAttachments   = big.NewInt(1 << 0)
 	forumPostListItemFieldCommentCount  = big.NewInt(1 << 1)
@@ -773,6 +812,16 @@ var (
 	forumPostListItemFieldViewCount     = big.NewInt(1 << 13)
 )
 
+// forumPostListItemNullableFields maps the wire names of ForumPostListItem's nullable fields (required or optional) to their field bits.
+var forumPostListItemNullableFields = map[string]*big.Int{
+	"content":    forumPostListItemFieldContent,
+	"like_count": forumPostListItemFieldLikeCount,
+	"parent_id":  forumPostListItemFieldParentID,
+	"title":      forumPostListItemFieldTitle,
+	"view_count": forumPostListItemFieldViewCount,
+}
+
+// A post or comment in a forum feed, supporting rich text, attachments, polls, and reactions.
 type ForumPostListItem struct {
 	// All file attachments on this post, such as images, documents, and videos.
 	Attachments []*ForumPostListItemAttachmentsItem `json:"attachments" url:"attachments"`
@@ -916,10 +965,12 @@ func (f *ForumPostListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *ForumPostListItem) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetAttachments sets the Attachments field and marks it as non-optional;
@@ -1040,6 +1091,13 @@ func (f *ForumPostListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, forumPostListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1074,7 +1132,6 @@ func (f *ForumPostListItem) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// Represents an image attachment
 var (
 	forumPostListItemAttachmentsItemFieldContentType = big.NewInt(1 << 0)
 	forumPostListItemAttachmentsItemFieldFilename    = big.NewInt(1 << 1)
@@ -1082,6 +1139,14 @@ var (
 	forumPostListItemAttachmentsItemFieldURL         = big.NewInt(1 << 3)
 )
 
+// forumPostListItemAttachmentsItemNullableFields maps the wire names of ForumPostListItemAttachmentsItem's nullable fields (required or optional) to their field bits.
+var forumPostListItemAttachmentsItemNullableFields = map[string]*big.Int{
+	"content_type": forumPostListItemAttachmentsItemFieldContentType,
+	"filename":     forumPostListItemAttachmentsItemFieldFilename,
+	"url":          forumPostListItemAttachmentsItemFieldURL,
+}
+
+// Represents an image attachment
 type ForumPostListItemAttachmentsItem struct {
 	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
 	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
@@ -1135,10 +1200,12 @@ func (f *ForumPostListItemAttachmentsItem) GetExtraProperties() map[string]inter
 }
 
 func (f *ForumPostListItemAttachmentsItem) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -1181,6 +1248,13 @@ func (f *ForumPostListItemAttachmentsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, forumPostListItemAttachmentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1211,13 +1285,18 @@ func (f *ForumPostListItemAttachmentsItem) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// The user who authored this forum post.
 var (
 	forumPostListItemUserFieldID       = big.NewInt(1 << 0)
 	forumPostListItemUserFieldName     = big.NewInt(1 << 1)
 	forumPostListItemUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// forumPostListItemUserNullableFields maps the wire names of ForumPostListItemUser's nullable fields (required or optional) to their field bits.
+var forumPostListItemUserNullableFields = map[string]*big.Int{
+	"name": forumPostListItemUserFieldName,
+}
+
+// The user who authored this forum post.
 type ForumPostListItemUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1262,10 +1341,12 @@ func (f *ForumPostListItemUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *ForumPostListItemUser) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1301,6 +1382,13 @@ func (f *ForumPostListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, forumPostListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1331,13 +1419,18 @@ func (f *ForumPostListItemUser) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// The user who authored this forum post.
 var (
 	forumPostUserFieldID       = big.NewInt(1 << 0)
 	forumPostUserFieldName     = big.NewInt(1 << 1)
 	forumPostUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// forumPostUserNullableFields maps the wire names of ForumPostUser's nullable fields (required or optional) to their field bits.
+var forumPostUserNullableFields = map[string]*big.Int{
+	"name": forumPostUserFieldName,
+}
+
+// The user who authored this forum post.
 type ForumPostUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1382,10 +1475,12 @@ func (f *ForumPostUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *ForumPostUser) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1421,6 +1516,13 @@ func (f *ForumPostUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, forumPostUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1474,11 +1576,11 @@ func (f ForumPostVisibilityTypes) Ptr() *ForumPostVisibilityTypes {
 	return &f
 }
 
-// Input for an attachment
 var (
 	createForumPostsRequestAttachmentsItemFieldID = big.NewInt(1 << 0)
 )
 
+// Input for an attachment
 type CreateForumPostsRequestAttachmentsItem struct {
 	// The ID of an existing file object.
 	ID string `json:"id" url:"id"`
@@ -1505,10 +1607,12 @@ func (c *CreateForumPostsRequestAttachmentsItem) GetExtraProperties() map[string
 }
 
 func (c *CreateForumPostsRequestAttachmentsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1560,11 +1664,11 @@ func (c *CreateForumPostsRequestAttachmentsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A poll to attach to this post, allowing members to vote on options.
 var (
 	createForumPostsRequestPollFieldOptions = big.NewInt(1 << 0)
 )
 
+// A poll to attach to this post, allowing members to vote on options.
 type CreateForumPostsRequestPoll struct {
 	// The options for the poll. Must have sequential IDs starting from 1
 	Options []*CreateForumPostsRequestPollOptionsItem `json:"options" url:"options"`
@@ -1591,10 +1695,12 @@ func (c *CreateForumPostsRequestPoll) GetExtraProperties() map[string]interface{
 }
 
 func (c *CreateForumPostsRequestPoll) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetOptions sets the Options field and marks it as non-optional;
@@ -1646,12 +1752,12 @@ func (c *CreateForumPostsRequestPoll) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Input type for a single poll option
 var (
 	createForumPostsRequestPollOptionsItemFieldID   = big.NewInt(1 << 0)
 	createForumPostsRequestPollOptionsItemFieldText = big.NewInt(1 << 1)
 )
 
+// Input type for a single poll option
 type CreateForumPostsRequestPollOptionsItem struct {
 	// Sequential ID for the poll option (starting from '1')
 	ID string `json:"id" url:"id"`
@@ -1687,10 +1793,12 @@ func (c *CreateForumPostsRequestPollOptionsItem) GetExtraProperties() map[string
 }
 
 func (c *CreateForumPostsRequestPollOptionsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1749,12 +1857,12 @@ func (c *CreateForumPostsRequestPollOptionsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for ForumPost.
 var (
 	listForumPostsResponseFieldData     = big.NewInt(1 << 0)
 	listForumPostsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for ForumPost.
 type ListForumPostsResponse struct {
 	// A list of nodes.
 	Data []*ForumPostListItem `json:"data" url:"data"`
@@ -1790,10 +1898,12 @@ func (l *ListForumPostsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListForumPostsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1852,11 +1962,11 @@ func (l *ListForumPostsResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Input for an attachment
 var (
 	updateForumPostsRequestAttachmentsItemFieldID = big.NewInt(1 << 0)
 )
 
+// Input for an attachment
 type UpdateForumPostsRequestAttachmentsItem struct {
 	// The ID of an existing file object.
 	ID string `json:"id" url:"id"`
@@ -1883,10 +1993,12 @@ func (u *UpdateForumPostsRequestAttachmentsItem) GetExtraProperties() map[string
 }
 
 func (u *UpdateForumPostsRequestAttachmentsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1966,10 +2078,12 @@ type UpdateForumPostsRequest struct {
 }
 
 func (u *UpdateForumPostsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

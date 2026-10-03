@@ -29,10 +29,12 @@ type CreateShipmentsRequest struct {
 }
 
 func (c *CreateShipmentsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -120,10 +122,12 @@ type ListShipmentsRequest struct {
 }
 
 func (l *ListShipmentsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -216,10 +220,12 @@ type RetrieveShipmentsRequest struct {
 }
 
 func (r *RetrieveShipmentsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -241,6 +247,11 @@ var (
 	shipmentFieldTrackingURL    = big.NewInt(1 << 8)
 	shipmentFieldUpdatedAt      = big.NewInt(1 << 9)
 )
+
+// shipmentNullableFields maps the wire names of Shipment's nullable fields (required or optional) to their field bits.
+var shipmentNullableFields = map[string]*big.Int{
+	"carrier": shipmentFieldCarrier,
+}
 
 type Shipment struct {
 	// The account that owns this shipment, prefixed `biz_`.
@@ -348,10 +359,12 @@ func (s *Shipment) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *Shipment) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -436,6 +449,13 @@ func (s *Shipment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, shipmentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -472,6 +492,13 @@ var (
 	shipmentCheckpointFieldStatus    = big.NewInt(1 << 2)
 	shipmentCheckpointFieldTimestamp = big.NewInt(1 << 3)
 )
+
+// shipmentCheckpointNullableFields maps the wire names of ShipmentCheckpoint's nullable fields (required or optional) to their field bits.
+var shipmentCheckpointNullableFields = map[string]*big.Int{
+	"location":  shipmentCheckpointFieldLocation,
+	"message":   shipmentCheckpointFieldMessage,
+	"timestamp": shipmentCheckpointFieldTimestamp,
+}
 
 type ShipmentCheckpoint struct {
 	// Where the carrier recorded the scan, such as `PHILADELPHIA, PA`. Null when the carrier sent none.
@@ -526,10 +553,12 @@ func (s *ShipmentCheckpoint) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *ShipmentCheckpoint) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetLocation sets the Location field and marks it as non-optional;
@@ -572,6 +601,13 @@ func (s *ShipmentCheckpoint) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, shipmentCheckpointNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -821,10 +857,12 @@ func (l *ListShipmentsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListShipmentsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -890,6 +928,12 @@ var (
 	listShipmentsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listShipmentsResponsePageInfoNullableFields maps the wire names of ListShipmentsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listShipmentsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listShipmentsResponsePageInfoFieldEndCursor,
+	"start_cursor": listShipmentsResponsePageInfoFieldStartCursor,
+}
+
 type ListShipmentsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -939,10 +983,12 @@ func (l *ListShipmentsResponsePageInfo) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListShipmentsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -985,6 +1031,13 @@ func (l *ListShipmentsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listShipmentsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1025,6 +1078,12 @@ var (
 	postShipmentCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postShipmentCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postShipmentCreatedPayloadNullableFields maps the wire names of PostShipmentCreatedPayload's nullable fields (required or optional) to their field bits.
+var postShipmentCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postShipmentCreatedPayloadFieldAccountID,
+	"api_version_date": postShipmentCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostShipmentCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1114,10 +1173,12 @@ func (p *PostShipmentCreatedPayload) GetExtraProperties() map[string]interface{}
 }
 
 func (p *PostShipmentCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1194,6 +1255,13 @@ func (p *PostShipmentCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postShipmentCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1276,6 +1344,12 @@ var (
 	postShipmentUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postShipmentUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postShipmentUpdatedPayloadNullableFields maps the wire names of PostShipmentUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postShipmentUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postShipmentUpdatedPayloadFieldAccountID,
+	"api_version_date": postShipmentUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostShipmentUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1365,10 +1439,12 @@ func (p *PostShipmentUpdatedPayload) GetExtraProperties() map[string]interface{}
 }
 
 func (p *PostShipmentUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1445,6 +1521,13 @@ func (p *PostShipmentUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postShipmentUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1533,10 +1616,12 @@ type UpdateShipmentsRequest struct {
 }
 
 func (u *UpdateShipmentsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

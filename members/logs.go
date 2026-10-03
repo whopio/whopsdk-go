@@ -35,10 +35,12 @@ type ListLogsRequest struct {
 }
 
 func (l *ListLogsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -114,10 +116,12 @@ func (l *ListLogsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListLogsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -182,6 +186,12 @@ var (
 	listLogsResponseDataItemFieldCreatedAt = big.NewInt(1 << 2)
 )
 
+// listLogsResponseDataItemNullableFields maps the wire names of ListLogsResponseDataItem's nullable fields (required or optional) to their field bits.
+var listLogsResponseDataItemNullableFields = map[string]*big.Int{
+	"action": listLogsResponseDataItemFieldAction,
+	"actor":  listLogsResponseDataItemFieldActor,
+}
+
 type ListLogsResponseDataItem struct {
 	Action    *string                        `json:"action,omitempty" url:"action,omitempty"`
 	Actor     *ListLogsResponseDataItemActor `json:"actor,omitempty" url:"actor,omitempty"`
@@ -223,10 +233,12 @@ func (l *ListLogsResponseDataItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListLogsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -268,6 +280,13 @@ func (l *ListLogsResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listLogsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -305,6 +324,12 @@ var (
 	listLogsResponseDataItemActorFieldName     = big.NewInt(1 << 1)
 	listLogsResponseDataItemActorFieldUsername = big.NewInt(1 << 2)
 )
+
+// listLogsResponseDataItemActorNullableFields maps the wire names of ListLogsResponseDataItemActor's nullable fields (required or optional) to their field bits.
+var listLogsResponseDataItemActorNullableFields = map[string]*big.Int{
+	"name":     listLogsResponseDataItemActorFieldName,
+	"username": listLogsResponseDataItemActorFieldUsername,
+}
 
 type ListLogsResponseDataItemActor struct {
 	ID       string  `json:"id" url:"id"`
@@ -347,10 +372,12 @@ func (l *ListLogsResponseDataItemActor) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListLogsResponseDataItemActor) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -386,6 +413,13 @@ func (l *ListLogsResponseDataItemActor) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listLogsResponseDataItemActorNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -422,6 +456,12 @@ var (
 	listLogsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
 	listLogsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
+
+// listLogsResponsePageInfoNullableFields maps the wire names of ListLogsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listLogsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listLogsResponsePageInfoFieldEndCursor,
+	"start_cursor": listLogsResponsePageInfoFieldStartCursor,
+}
 
 type ListLogsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
@@ -472,10 +512,12 @@ func (l *ListLogsResponsePageInfo) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListLogsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -518,6 +560,13 @@ func (l *ListLogsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listLogsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

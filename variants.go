@@ -32,10 +32,12 @@ type CalculateTaxVariantsRequest struct {
 }
 
 func (c *CalculateTaxVariantsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -178,10 +180,12 @@ type CreateVariantsRequest struct {
 }
 
 func (c *CreateVariantsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -407,10 +411,12 @@ type DeleteVariantsRequest struct {
 }
 
 func (d *DeleteVariantsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -469,10 +475,12 @@ type ListVariantsRequest struct {
 }
 
 func (l *ListVariantsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -579,10 +587,12 @@ type RetrieveVariantsRequest struct {
 }
 
 func (r *RetrieveVariantsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -637,6 +647,36 @@ var (
 	variantFieldUpdatedAt                           = big.NewInt(1 << 41)
 	variantFieldVisibility                          = big.NewInt(1 << 42)
 )
+
+// variantNullableFields maps the wire names of Variant's nullable fields (required or optional) to their field bits.
+var variantNullableFields = map[string]*big.Int{
+	"account":                                variantFieldAccount,
+	"attributes":                             variantFieldAttributes,
+	"billing_period":                         variantFieldBillingPeriod,
+	"cancel_discount_intervals":              variantFieldCancelDiscountIntervals,
+	"cancel_discount_percentage":             variantFieldCancelDiscountPercentage,
+	"checkout_styling":                       variantFieldCheckoutStyling,
+	"deletable":                              variantFieldDeletable,
+	"description":                            variantFieldDescription,
+	"effective_payment_method_configuration": variantFieldEffectivePaymentMethodConfiguration,
+	"expiration_days":                        variantFieldExpirationDays,
+	"image":                                  variantFieldImage,
+	"internal_notes":                         variantFieldInternalNotes,
+	"invoice":                                variantFieldInvoice,
+	"member_count":                           variantFieldMemberCount,
+	"metadata":                               variantFieldMetadata,
+	"offer_cancel_discount":                  variantFieldOfferCancelDiscount,
+	"payment_method_configuration":           variantFieldPaymentMethodConfiguration,
+	"product":                                variantFieldProduct,
+	"sku":                                    variantFieldSku,
+	"split_pay_required_payments":            variantFieldSplitPayRequiredPayments,
+	"stock":                                  variantFieldStock,
+	"strike_through_initial_price":           variantFieldStrikeThroughInitialPrice,
+	"strike_through_renewal_price":           variantFieldStrikeThroughRenewalPrice,
+	"three_ds_level":                         variantFieldThreeDsLevel,
+	"title":                                  variantFieldTitle,
+	"trial_period_days":                      variantFieldTrialPeriodDays,
+}
 
 type Variant struct {
 	// Account that sells this variant; `null` for standalone invoice variants.
@@ -1041,10 +1081,12 @@ func (v *Variant) GetExtraProperties() map[string]interface{} {
 }
 
 func (v *Variant) require(field *big.Int) {
-	if v.explicitFields == nil {
-		v.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if v.explicitFields != nil {
+		next.Set(v.explicitFields)
 	}
-	v.explicitFields.Or(v.explicitFields, field)
+	next.Or(next, field)
+	v.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -1360,6 +1402,13 @@ func (v *Variant) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	v.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, variantNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		v.require(presentFields)
+	}
 	v.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1517,7 +1566,6 @@ func (v VariantVisibility) Ptr() *VariantVisibility {
 	return &v
 }
 
-// Buyer billing address used for tax calculation. Provide either `address.country` or `ip_address`; include state and postal code when available for more accurate results.
 var (
 	calculateTaxVariantsRequestAddressFieldCity       = big.NewInt(1 << 0)
 	calculateTaxVariantsRequestAddressFieldCountry    = big.NewInt(1 << 1)
@@ -1527,6 +1575,16 @@ var (
 	calculateTaxVariantsRequestAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// calculateTaxVariantsRequestAddressNullableFields maps the wire names of CalculateTaxVariantsRequestAddress's nullable fields (required or optional) to their field bits.
+var calculateTaxVariantsRequestAddressNullableFields = map[string]*big.Int{
+	"city":        calculateTaxVariantsRequestAddressFieldCity,
+	"line1":       calculateTaxVariantsRequestAddressFieldLine1,
+	"line2":       calculateTaxVariantsRequestAddressFieldLine2,
+	"postal_code": calculateTaxVariantsRequestAddressFieldPostalCode,
+	"state":       calculateTaxVariantsRequestAddressFieldState,
+}
+
+// Buyer billing address used for tax calculation. Provide either `address.country` or `ip_address`; include state and postal code when available for more accurate results.
 type CalculateTaxVariantsRequestAddress struct {
 	// City name.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -1598,10 +1656,12 @@ func (c *CalculateTaxVariantsRequestAddress) GetExtraProperties() map[string]int
 }
 
 func (c *CalculateTaxVariantsRequestAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -1658,6 +1718,13 @@ func (c *CalculateTaxVariantsRequestAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, calculateTaxVariantsRequestAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1728,10 +1795,12 @@ func (c *CalculateTaxVariantsRequestTaxIDsItem) GetExtraProperties() map[string]
 }
 
 func (c *CalculateTaxVariantsRequestTaxIDsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -2220,10 +2289,12 @@ func (c *CalculateTaxVariantsResponse) GetExtraProperties() map[string]interface
 }
 
 func (c *CalculateTaxVariantsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -2365,6 +2436,11 @@ var (
 	createVariantsRequestCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
 )
 
+// createVariantsRequestCustomFieldsItemNullableFields maps the wire names of CreateVariantsRequestCustomFieldsItem's nullable fields (required or optional) to their field bits.
+var createVariantsRequestCustomFieldsItemNullableFields = map[string]*big.Int{
+	"placeholder": createVariantsRequestCustomFieldsItemFieldPlaceholder,
+}
+
 type CreateVariantsRequestCustomFieldsItem struct {
 	// The type of the custom field.
 	FieldType *CreateVariantsRequestCustomFieldsItemFieldType `json:"field_type,omitempty" url:"field_type,omitempty"`
@@ -2436,10 +2512,12 @@ func (c *CreateVariantsRequestCustomFieldsItem) GetExtraProperties() map[string]
 }
 
 func (c *CreateVariantsRequestCustomFieldsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetFieldType sets the FieldType field and marks it as non-optional;
@@ -2496,6 +2574,13 @@ func (c *CreateVariantsRequestCustomFieldsItem) UnmarshalJSON(data []byte) error
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createVariantsRequestCustomFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2546,12 +2631,12 @@ func (c CreateVariantsRequestCustomFieldsItemFieldType) Ptr() *CreateVariantsReq
 	return &c
 }
 
-// An image displayed on the product page to represent this variant.
 var (
 	createVariantsRequestImageFieldDirectUploadID = big.NewInt(1 << 0)
 	createVariantsRequestImageFieldID             = big.NewInt(1 << 1)
 )
 
+// An image displayed on the product page to represent this variant.
 type CreateVariantsRequestImage struct {
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
 	ID             *string `json:"id,omitempty" url:"id,omitempty"`
@@ -2585,10 +2670,12 @@ func (c *CreateVariantsRequestImage) GetExtraProperties() map[string]interface{}
 }
 
 func (c *CreateVariantsRequestImage) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -2647,13 +2734,13 @@ func (c *CreateVariantsRequestImage) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Explicit payment method configuration for the variant. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
 var (
 	createVariantsRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createVariantsRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	createVariantsRequestPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Explicit payment method configuration for the variant. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
 type CreateVariantsRequestPaymentMethodConfiguration struct {
 	// Payment method types explicitly disabled for this variant — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
 	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -2697,10 +2784,12 @@ func (c *CreateVariantsRequestPaymentMethodConfiguration) GetExtraProperties() m
 }
 
 func (c *CreateVariantsRequestPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -2832,10 +2921,12 @@ func (d *DeleteVariantsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteVariantsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -2985,10 +3076,12 @@ func (l *ListVariantsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListVariantsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3054,6 +3147,12 @@ var (
 	listVariantsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listVariantsResponsePageInfoNullableFields maps the wire names of ListVariantsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listVariantsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listVariantsResponsePageInfoFieldEndCursor,
+	"start_cursor": listVariantsResponsePageInfoFieldStartCursor,
+}
+
 type ListVariantsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -3103,10 +3202,12 @@ func (l *ListVariantsResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListVariantsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3149,6 +3250,13 @@ func (l *ListVariantsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listVariantsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3189,6 +3297,12 @@ var (
 	postPlanCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postPlanCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postPlanCreatedPayloadNullableFields maps the wire names of PostPlanCreatedPayload's nullable fields (required or optional) to their field bits.
+var postPlanCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPlanCreatedPayloadFieldAccountID,
+	"api_version_date": postPlanCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostPlanCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3278,10 +3392,12 @@ func (p *PostPlanCreatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostPlanCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3358,6 +3474,13 @@ func (p *PostPlanCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPlanCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3440,6 +3563,12 @@ var (
 	postPlanDeletedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postPlanDeletedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postPlanDeletedPayloadNullableFields maps the wire names of PostPlanDeletedPayload's nullable fields (required or optional) to their field bits.
+var postPlanDeletedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPlanDeletedPayloadFieldAccountID,
+	"api_version_date": postPlanDeletedPayloadFieldAPIVersionDate,
+}
 
 type PostPlanDeletedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3529,10 +3658,12 @@ func (p *PostPlanDeletedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostPlanDeletedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3609,6 +3740,13 @@ func (p *PostPlanDeletedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPlanDeletedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3691,6 +3829,12 @@ var (
 	postPlanUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postPlanUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postPlanUpdatedPayloadNullableFields maps the wire names of PostPlanUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postPlanUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPlanUpdatedPayloadFieldAccountID,
+	"api_version_date": postPlanUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostPlanUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3780,10 +3924,12 @@ func (p *PostPlanUpdatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostPlanUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3860,6 +4006,13 @@ func (p *PostPlanUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPlanUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3941,6 +4094,11 @@ var (
 	updateVariantsRequestCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
 )
 
+// updateVariantsRequestCustomFieldsItemNullableFields maps the wire names of UpdateVariantsRequestCustomFieldsItem's nullable fields (required or optional) to their field bits.
+var updateVariantsRequestCustomFieldsItemNullableFields = map[string]*big.Int{
+	"placeholder": updateVariantsRequestCustomFieldsItemFieldPlaceholder,
+}
+
 type UpdateVariantsRequestCustomFieldsItem struct {
 	// The type of the custom field.
 	FieldType *UpdateVariantsRequestCustomFieldsItemFieldType `json:"field_type,omitempty" url:"field_type,omitempty"`
@@ -4012,10 +4170,12 @@ func (u *UpdateVariantsRequestCustomFieldsItem) GetExtraProperties() map[string]
 }
 
 func (u *UpdateVariantsRequestCustomFieldsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFieldType sets the FieldType field and marks it as non-optional;
@@ -4072,6 +4232,13 @@ func (u *UpdateVariantsRequestCustomFieldsItem) UnmarshalJSON(data []byte) error
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVariantsRequestCustomFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4122,12 +4289,12 @@ func (u UpdateVariantsRequestCustomFieldsItemFieldType) Ptr() *UpdateVariantsReq
 	return &u
 }
 
-// An image displayed on the product page to represent this variant.
 var (
 	updateVariantsRequestImageFieldDirectUploadID = big.NewInt(1 << 0)
 	updateVariantsRequestImageFieldID             = big.NewInt(1 << 1)
 )
 
+// An image displayed on the product page to represent this variant.
 type UpdateVariantsRequestImage struct {
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
 	ID             *string `json:"id,omitempty" url:"id,omitempty"`
@@ -4161,10 +4328,12 @@ func (u *UpdateVariantsRequestImage) GetExtraProperties() map[string]interface{}
 }
 
 func (u *UpdateVariantsRequestImage) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4223,13 +4392,13 @@ func (u *UpdateVariantsRequestImage) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Explicit payment method configuration for the variant. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
 var (
 	updateVariantsRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	updateVariantsRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	updateVariantsRequestPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Explicit payment method configuration for the variant. When not provided, the account's defaults apply. Send at least one of `enabled` or `disabled`; an omitted one is empty.
 type UpdateVariantsRequestPaymentMethodConfiguration struct {
 	// Payment method types explicitly disabled for this variant — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
 	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -4273,10 +4442,12 @@ func (u *UpdateVariantsRequestPaymentMethodConfiguration) GetExtraProperties() m
 }
 
 func (u *UpdateVariantsRequestPaymentMethodConfiguration) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -4465,10 +4636,12 @@ type UpdateVariantsRequest struct {
 }
 
 func (u *UpdateVariantsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

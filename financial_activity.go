@@ -77,10 +77,12 @@ type ListFinancialActivityRequest struct {
 }
 
 func (l *ListFinancialActivityRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -239,6 +241,24 @@ var (
 	ledgerActivityFieldUserID          = big.NewInt(1 << 19)
 	ledgerActivityFieldUserName        = big.NewInt(1 << 20)
 )
+
+// ledgerActivityNullableFields maps the wire names of LedgerActivity's nullable fields (required or optional) to their field bits.
+var ledgerActivityNullableFields = map[string]*big.Int{
+	"available_at":      ledgerActivityFieldAvailableAt,
+	"ledger_account_id": ledgerActivityFieldLedgerAccountID,
+	"payment":           ledgerActivityFieldPayment,
+	"payment_id":        ledgerActivityFieldPaymentID,
+	"plan_id":           ledgerActivityFieldPlanID,
+	"plan_name":         ledgerActivityFieldPlanName,
+	"product_id":        ledgerActivityFieldProductID,
+	"product_name":      ledgerActivityFieldProductName,
+	"resource":          ledgerActivityFieldResource,
+	"source":            ledgerActivityFieldSource,
+	"usd_amount":        ledgerActivityFieldUsdAmount,
+	"user_email":        ledgerActivityFieldUserEmail,
+	"user_id":           ledgerActivityFieldUserID,
+	"user_name":         ledgerActivityFieldUserName,
+}
 
 type LedgerActivity struct {
 	// The viewer account that owns this row's ledger. Present only when the response aggregates owned accounts (include_owned_accounts=true); omitted otherwise.
@@ -445,10 +465,12 @@ func (l *LedgerActivity) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LedgerActivity) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -618,6 +640,13 @@ func (l *LedgerActivity) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -786,6 +815,13 @@ var (
 	ledgerActivityAccountAccountFieldTitle   = big.NewInt(1 << 3)
 )
 
+// ledgerActivityAccountAccountNullableFields maps the wire names of LedgerActivityAccountAccount's nullable fields (required or optional) to their field bits.
+var ledgerActivityAccountAccountNullableFields = map[string]*big.Int{
+	"logo_url": ledgerActivityAccountAccountFieldLogoURL,
+	"route":    ledgerActivityAccountAccountFieldRoute,
+	"title":    ledgerActivityAccountAccountFieldTitle,
+}
+
 type LedgerActivityAccountAccount struct {
 	// Account ID.
 	ID string `json:"id" url:"id"`
@@ -839,10 +875,12 @@ func (l *LedgerActivityAccountAccount) GetExtraProperties() map[string]interface
 }
 
 func (l *LedgerActivityAccountAccount) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -885,6 +923,13 @@ func (l *LedgerActivityAccountAccount) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityAccountAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -921,6 +966,13 @@ var (
 	ledgerActivityAccountUserFieldProfilePictureURL = big.NewInt(1 << 2)
 	ledgerActivityAccountUserFieldUsername          = big.NewInt(1 << 3)
 )
+
+// ledgerActivityAccountUserNullableFields maps the wire names of LedgerActivityAccountUser's nullable fields (required or optional) to their field bits.
+var ledgerActivityAccountUserNullableFields = map[string]*big.Int{
+	"name":                ledgerActivityAccountUserFieldName,
+	"profile_picture_url": ledgerActivityAccountUserFieldProfilePictureURL,
+	"username":            ledgerActivityAccountUserFieldUsername,
+}
 
 type LedgerActivityAccountUser struct {
 	// User ID.
@@ -975,10 +1027,12 @@ func (l *LedgerActivityAccountUser) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *LedgerActivityAccountUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1021,6 +1075,13 @@ func (l *LedgerActivityAccountUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityAccountUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1051,12 +1112,12 @@ func (l *LedgerActivityAccountUser) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Currency for this ledger activity.
 var (
 	ledgerActivityCurrencyFieldCode      = big.NewInt(1 << 0)
 	ledgerActivityCurrencyFieldPrecision = big.NewInt(1 << 1)
 )
 
+// Currency for this ledger activity.
 type LedgerActivityCurrency struct {
 	// Currency code.
 	Code string `json:"code" url:"code"`
@@ -1092,10 +1153,12 @@ func (l *LedgerActivityCurrency) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LedgerActivityCurrency) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -2107,6 +2170,18 @@ var (
 	ledgerActivityPaymentFieldUser              = big.NewInt(1 << 10)
 )
 
+// ledgerActivityPaymentNullableFields maps the wire names of LedgerActivityPayment's nullable fields (required or optional) to their field bits.
+var ledgerActivityPaymentNullableFields = map[string]*big.Int{
+	"amount":              ledgerActivityPaymentFieldAmount,
+	"card_brand":          ledgerActivityPaymentFieldCardBrand,
+	"card_last4":          ledgerActivityPaymentFieldCardLast4,
+	"payment_method_type": ledgerActivityPaymentFieldPaymentMethodType,
+	"payment_processor":   ledgerActivityPaymentFieldPaymentProcessor,
+	"plan":                ledgerActivityPaymentFieldPlan,
+	"product":             ledgerActivityPaymentFieldProduct,
+	"user":                ledgerActivityPaymentFieldUser,
+}
+
 type LedgerActivityPayment struct {
 	// Total charged by the payment.
 	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
@@ -2222,10 +2297,12 @@ func (l *LedgerActivityPayment) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LedgerActivityPayment) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -2323,6 +2400,13 @@ func (l *LedgerActivityPayment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityPaymentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2374,12 +2458,17 @@ func (l LedgerActivityPaymentObject) Ptr() *LedgerActivityPaymentObject {
 	return &l
 }
 
-// Variant associated with the payment, when applicable.
 var (
 	ledgerActivityPaymentPlanFieldID   = big.NewInt(1 << 0)
 	ledgerActivityPaymentPlanFieldName = big.NewInt(1 << 1)
 )
 
+// ledgerActivityPaymentPlanNullableFields maps the wire names of LedgerActivityPaymentPlan's nullable fields (required or optional) to their field bits.
+var ledgerActivityPaymentPlanNullableFields = map[string]*big.Int{
+	"name": ledgerActivityPaymentPlanFieldName,
+}
+
+// Variant associated with the payment, when applicable.
 type LedgerActivityPaymentPlan struct {
 	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
@@ -2415,10 +2504,12 @@ func (l *LedgerActivityPaymentPlan) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *LedgerActivityPaymentPlan) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2447,6 +2538,13 @@ func (l *LedgerActivityPaymentPlan) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityPaymentPlanNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2477,12 +2575,12 @@ func (l *LedgerActivityPaymentPlan) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Product associated with the payment, when applicable.
 var (
 	ledgerActivityPaymentProductFieldID   = big.NewInt(1 << 0)
 	ledgerActivityPaymentProductFieldName = big.NewInt(1 << 1)
 )
 
+// Product associated with the payment, when applicable.
 type LedgerActivityPaymentProduct struct {
 	// Product ID, prefixed `prod_`.
 	ID string `json:"id" url:"id"`
@@ -2518,10 +2616,12 @@ func (l *LedgerActivityPaymentProduct) GetExtraProperties() map[string]interface
 }
 
 func (l *LedgerActivityPaymentProduct) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2580,13 +2680,18 @@ func (l *LedgerActivityPaymentProduct) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Customer associated with the payment. Email requires member:email:read.
 var (
 	ledgerActivityPaymentUserFieldEmail = big.NewInt(1 << 0)
 	ledgerActivityPaymentUserFieldID    = big.NewInt(1 << 1)
 	ledgerActivityPaymentUserFieldName  = big.NewInt(1 << 2)
 )
 
+// ledgerActivityPaymentUserNullableFields maps the wire names of LedgerActivityPaymentUser's nullable fields (required or optional) to their field bits.
+var ledgerActivityPaymentUserNullableFields = map[string]*big.Int{
+	"email": ledgerActivityPaymentUserFieldEmail,
+}
+
+// Customer associated with the payment. Email requires member:email:read.
 type LedgerActivityPaymentUser struct {
 	// Customer email, or null without member:email:read.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -2631,10 +2736,12 @@ func (l *LedgerActivityPaymentUser) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *LedgerActivityPaymentUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -2670,6 +2777,13 @@ func (l *LedgerActivityPaymentUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityPaymentUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2763,6 +2877,118 @@ func (l *LedgerActivityResource) GetLedgerActivityResourceAuthorizedAt() *Ledger
 }
 
 func (l *LedgerActivityResource) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"id", "logo_url", "object", "route", "title"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceLogoURL := new(LedgerActivityResourceLogoURL)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceLogoURL); err == nil {
+			l.typ = "LedgerActivityResourceLogoURL"
+			l.LedgerActivityResourceLogoURL = valueLedgerActivityResourceLogoURL
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"id", "name", "object", "profile_picture_url", "username"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceName := new(LedgerActivityResourceName)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceName); err == nil {
+			l.typ = "LedgerActivityResourceName"
+			l.LedgerActivityResourceName = valueLedgerActivityResourceName
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"id", "object", "status", "title"}, []string{"id", "object", "status", "title"}) {
+		valueLedgerActivityResourceTwo := new(LedgerActivityResourceTwo)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceTwo); err == nil {
+			l.typ = "LedgerActivityResourceTwo"
+			l.LedgerActivityResourceTwo = valueLedgerActivityResourceTwo
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"id", "object", "owner"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwner := new(LedgerActivityResourceOwner)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwner); err == nil {
+			l.typ = "LedgerActivityResourceOwner"
+			l.LedgerActivityResourceOwner = valueLedgerActivityResourceOwner
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"bank", "card", "email_identifier", "gateway_type", "id", "object", "payment_method_type"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceBank := new(LedgerActivityResourceBank)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceBank); err == nil {
+			l.typ = "LedgerActivityResourceBank"
+			l.LedgerActivityResourceBank = valueLedgerActivityResourceBank
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"account_reference", "destination_currency_code", "id", "institution_name", "nickname", "object", "provider"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceAccountReference := new(LedgerActivityResourceAccountReference)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceAccountReference); err == nil {
+			l.typ = "LedgerActivityResourceAccountReference"
+			l.LedgerActivityResourceAccountReference = valueLedgerActivityResourceAccountReference
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"authorized_at", "card_id", "cashback_usd", "declined_reason", "id", "local_amount", "local_currency", "merchant_category", "merchant_icon_url", "merchant_name", "object", "posted_at", "status", "usd_amount"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceAuthorizedAt := new(LedgerActivityResourceAuthorizedAt)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceAuthorizedAt); err == nil {
+			l.typ = "LedgerActivityResourceAuthorizedAt"
+			l.LedgerActivityResourceAuthorizedAt = valueLedgerActivityResourceAuthorizedAt
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceLogoURL := new(LedgerActivityResourceLogoURL)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceLogoURL); err == nil {
+			l.typ = "LedgerActivityResourceLogoURL"
+			l.LedgerActivityResourceLogoURL = valueLedgerActivityResourceLogoURL
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceName := new(LedgerActivityResourceName)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceName); err == nil {
+			l.typ = "LedgerActivityResourceName"
+			l.LedgerActivityResourceName = valueLedgerActivityResourceName
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object", "status", "title"}) {
+		valueLedgerActivityResourceTwo := new(LedgerActivityResourceTwo)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceTwo); err == nil {
+			l.typ = "LedgerActivityResourceTwo"
+			l.LedgerActivityResourceTwo = valueLedgerActivityResourceTwo
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwner := new(LedgerActivityResourceOwner)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwner); err == nil {
+			l.typ = "LedgerActivityResourceOwner"
+			l.LedgerActivityResourceOwner = valueLedgerActivityResourceOwner
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceBank := new(LedgerActivityResourceBank)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceBank); err == nil {
+			l.typ = "LedgerActivityResourceBank"
+			l.LedgerActivityResourceBank = valueLedgerActivityResourceBank
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceAccountReference := new(LedgerActivityResourceAccountReference)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceAccountReference); err == nil {
+			l.typ = "LedgerActivityResourceAccountReference"
+			l.LedgerActivityResourceAccountReference = valueLedgerActivityResourceAccountReference
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceAuthorizedAt := new(LedgerActivityResourceAuthorizedAt)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceAuthorizedAt); err == nil {
+			l.typ = "LedgerActivityResourceAuthorizedAt"
+			l.LedgerActivityResourceAuthorizedAt = valueLedgerActivityResourceAuthorizedAt
+			return nil
+		}
+	}
 	valueLedgerActivityResourceLogoURL := new(LedgerActivityResourceLogoURL)
 	if err := json.Unmarshal(data, &valueLedgerActivityResourceLogoURL); err == nil {
 		l.typ = "LedgerActivityResourceLogoURL"
@@ -2878,6 +3104,15 @@ var (
 	ledgerActivityResourceAccountReferenceFieldProvider                = big.NewInt(1 << 6)
 )
 
+// ledgerActivityResourceAccountReferenceNullableFields maps the wire names of LedgerActivityResourceAccountReference's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceAccountReferenceNullableFields = map[string]*big.Int{
+	"account_reference":         ledgerActivityResourceAccountReferenceFieldAccountReference,
+	"destination_currency_code": ledgerActivityResourceAccountReferenceFieldDestinationCurrencyCode,
+	"institution_name":          ledgerActivityResourceAccountReferenceFieldInstitutionName,
+	"nickname":                  ledgerActivityResourceAccountReferenceFieldNickname,
+	"provider":                  ledgerActivityResourceAccountReferenceFieldProvider,
+}
+
 type LedgerActivityResourceAccountReference struct {
 	// Masked account reference.
 	AccountReference *string `json:"account_reference,omitempty" url:"account_reference,omitempty"`
@@ -2957,10 +3192,12 @@ func (l *LedgerActivityResourceAccountReference) GetExtraProperties() map[string
 }
 
 func (l *LedgerActivityResourceAccountReference) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountReference sets the AccountReference field and marks it as non-optional;
@@ -3024,6 +3261,13 @@ func (l *LedgerActivityResourceAccountReference) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceAccountReferenceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3089,6 +3333,22 @@ var (
 	ledgerActivityResourceAuthorizedAtFieldStatus           = big.NewInt(1 << 12)
 	ledgerActivityResourceAuthorizedAtFieldUsdAmount        = big.NewInt(1 << 13)
 )
+
+// ledgerActivityResourceAuthorizedAtNullableFields maps the wire names of LedgerActivityResourceAuthorizedAt's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceAuthorizedAtNullableFields = map[string]*big.Int{
+	"authorized_at":     ledgerActivityResourceAuthorizedAtFieldAuthorizedAt,
+	"card_id":           ledgerActivityResourceAuthorizedAtFieldCardID,
+	"cashback_usd":      ledgerActivityResourceAuthorizedAtFieldCashbackUsd,
+	"declined_reason":   ledgerActivityResourceAuthorizedAtFieldDeclinedReason,
+	"local_amount":      ledgerActivityResourceAuthorizedAtFieldLocalAmount,
+	"local_currency":    ledgerActivityResourceAuthorizedAtFieldLocalCurrency,
+	"merchant_category": ledgerActivityResourceAuthorizedAtFieldMerchantCategory,
+	"merchant_icon_url": ledgerActivityResourceAuthorizedAtFieldMerchantIconURL,
+	"merchant_name":     ledgerActivityResourceAuthorizedAtFieldMerchantName,
+	"posted_at":         ledgerActivityResourceAuthorizedAtFieldPostedAt,
+	"status":            ledgerActivityResourceAuthorizedAtFieldStatus,
+	"usd_amount":        ledgerActivityResourceAuthorizedAtFieldUsdAmount,
+}
 
 type LedgerActivityResourceAuthorizedAt struct {
 	// ISO 8601 timestamp the transaction was authorized.
@@ -3232,10 +3492,12 @@ func (l *LedgerActivityResourceAuthorizedAt) GetExtraProperties() map[string]int
 }
 
 func (l *LedgerActivityResourceAuthorizedAt) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAuthorizedAt sets the AuthorizedAt field and marks it as non-optional;
@@ -3356,6 +3618,13 @@ func (l *LedgerActivityResourceAuthorizedAt) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceAuthorizedAtNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3418,6 +3687,15 @@ var (
 	ledgerActivityResourceBankFieldObject            = big.NewInt(1 << 5)
 	ledgerActivityResourceBankFieldPaymentMethodType = big.NewInt(1 << 6)
 )
+
+// ledgerActivityResourceBankNullableFields maps the wire names of LedgerActivityResourceBank's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceBankNullableFields = map[string]*big.Int{
+	"bank":                ledgerActivityResourceBankFieldBank,
+	"card":                ledgerActivityResourceBankFieldCard,
+	"email_identifier":    ledgerActivityResourceBankFieldEmailIdentifier,
+	"gateway_type":        ledgerActivityResourceBankFieldGatewayType,
+	"payment_method_type": ledgerActivityResourceBankFieldPaymentMethodType,
+}
 
 type LedgerActivityResourceBank struct {
 	Bank *LedgerActivityResourceBankBank `json:"bank,omitempty" url:"bank,omitempty"`
@@ -3496,10 +3774,12 @@ func (l *LedgerActivityResourceBank) GetExtraProperties() map[string]interface{}
 }
 
 func (l *LedgerActivityResourceBank) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBank sets the Bank field and marks it as non-optional;
@@ -3563,6 +3843,13 @@ func (l *LedgerActivityResourceBank) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceBankNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3599,6 +3886,14 @@ var (
 	ledgerActivityResourceBankBankFieldBankName    = big.NewInt(1 << 2)
 	ledgerActivityResourceBankBankFieldLast4       = big.NewInt(1 << 3)
 )
+
+// ledgerActivityResourceBankBankNullableFields maps the wire names of LedgerActivityResourceBankBank's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceBankBankNullableFields = map[string]*big.Int{
+	"account_name": ledgerActivityResourceBankBankFieldAccountName,
+	"account_type": ledgerActivityResourceBankBankFieldAccountType,
+	"bank_name":    ledgerActivityResourceBankBankFieldBankName,
+	"last4":        ledgerActivityResourceBankBankFieldLast4,
+}
 
 type LedgerActivityResourceBankBank struct {
 	// Bank account holder name.
@@ -3653,10 +3948,12 @@ func (l *LedgerActivityResourceBankBank) GetExtraProperties() map[string]interfa
 }
 
 func (l *LedgerActivityResourceBankBank) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountName sets the AccountName field and marks it as non-optional;
@@ -3699,6 +3996,13 @@ func (l *LedgerActivityResourceBankBank) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceBankBankNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3735,6 +4039,14 @@ var (
 	ledgerActivityResourceBankCardFieldExpYear  = big.NewInt(1 << 2)
 	ledgerActivityResourceBankCardFieldLast4    = big.NewInt(1 << 3)
 )
+
+// ledgerActivityResourceBankCardNullableFields maps the wire names of LedgerActivityResourceBankCard's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceBankCardNullableFields = map[string]*big.Int{
+	"brand":     ledgerActivityResourceBankCardFieldBrand,
+	"exp_month": ledgerActivityResourceBankCardFieldExpMonth,
+	"exp_year":  ledgerActivityResourceBankCardFieldExpYear,
+	"last4":     ledgerActivityResourceBankCardFieldLast4,
+}
 
 type LedgerActivityResourceBankCard struct {
 	// Card brand.
@@ -3789,10 +4101,12 @@ func (l *LedgerActivityResourceBankCard) GetExtraProperties() map[string]interfa
 }
 
 func (l *LedgerActivityResourceBankCard) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBrand sets the Brand field and marks it as non-optional;
@@ -3835,6 +4149,13 @@ func (l *LedgerActivityResourceBankCard) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceBankCardNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3891,6 +4212,13 @@ var (
 	ledgerActivityResourceLogoURLFieldRoute   = big.NewInt(1 << 3)
 	ledgerActivityResourceLogoURLFieldTitle   = big.NewInt(1 << 4)
 )
+
+// ledgerActivityResourceLogoURLNullableFields maps the wire names of LedgerActivityResourceLogoURL's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceLogoURLNullableFields = map[string]*big.Int{
+	"logo_url": ledgerActivityResourceLogoURLFieldLogoURL,
+	"route":    ledgerActivityResourceLogoURLFieldRoute,
+	"title":    ledgerActivityResourceLogoURLFieldTitle,
+}
 
 type LedgerActivityResourceLogoURL struct {
 	// Account ID.
@@ -3953,10 +4281,12 @@ func (l *LedgerActivityResourceLogoURL) GetExtraProperties() map[string]interfac
 }
 
 func (l *LedgerActivityResourceLogoURL) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4006,6 +4336,13 @@ func (l *LedgerActivityResourceLogoURL) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceLogoURLNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4062,6 +4399,13 @@ var (
 	ledgerActivityResourceNameFieldProfilePictureURL = big.NewInt(1 << 3)
 	ledgerActivityResourceNameFieldUsername          = big.NewInt(1 << 4)
 )
+
+// ledgerActivityResourceNameNullableFields maps the wire names of LedgerActivityResourceName's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceNameNullableFields = map[string]*big.Int{
+	"name":                ledgerActivityResourceNameFieldName,
+	"profile_picture_url": ledgerActivityResourceNameFieldProfilePictureURL,
+	"username":            ledgerActivityResourceNameFieldUsername,
+}
 
 type LedgerActivityResourceName struct {
 	// User ID.
@@ -4124,10 +4468,12 @@ func (l *LedgerActivityResourceName) GetExtraProperties() map[string]interface{}
 }
 
 func (l *LedgerActivityResourceName) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4177,6 +4523,13 @@ func (l *LedgerActivityResourceName) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceNameNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4232,6 +4585,11 @@ var (
 	ledgerActivityResourceOwnerFieldOwner  = big.NewInt(1 << 2)
 )
 
+// ledgerActivityResourceOwnerNullableFields maps the wire names of LedgerActivityResourceOwner's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceOwnerNullableFields = map[string]*big.Int{
+	"owner": ledgerActivityResourceOwnerFieldOwner,
+}
+
 type LedgerActivityResourceOwner struct {
 	// Ledger account ID.
 	ID     string                            `json:"id" url:"id"`
@@ -4274,10 +4632,12 @@ func (l *LedgerActivityResourceOwner) GetExtraProperties() map[string]interface{
 }
 
 func (l *LedgerActivityResourceOwner) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4313,6 +4673,13 @@ func (l *LedgerActivityResourceOwner) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceOwnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4384,6 +4751,38 @@ func (l *LedgerActivityResourceOwnerOwner) GetLedgerActivityResourceOwnerOwnerNa
 }
 
 func (l *LedgerActivityResourceOwnerOwner) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"id", "logo_url", "object", "route", "title"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwnerOwnerLogoURL := new(LedgerActivityResourceOwnerOwnerLogoURL)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerLogoURL); err == nil {
+			l.typ = "LedgerActivityResourceOwnerOwnerLogoURL"
+			l.LedgerActivityResourceOwnerOwnerLogoURL = valueLedgerActivityResourceOwnerOwnerLogoURL
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"id", "name", "object", "profile_picture_url", "username"}, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwnerOwnerName := new(LedgerActivityResourceOwnerOwnerName)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerName); err == nil {
+			l.typ = "LedgerActivityResourceOwnerOwnerName"
+			l.LedgerActivityResourceOwnerOwnerName = valueLedgerActivityResourceOwnerOwnerName
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwnerOwnerLogoURL := new(LedgerActivityResourceOwnerOwnerLogoURL)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerLogoURL); err == nil {
+			l.typ = "LedgerActivityResourceOwnerOwnerLogoURL"
+			l.LedgerActivityResourceOwnerOwnerLogoURL = valueLedgerActivityResourceOwnerOwnerLogoURL
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"id", "object"}) {
+		valueLedgerActivityResourceOwnerOwnerName := new(LedgerActivityResourceOwnerOwnerName)
+		if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerName); err == nil {
+			l.typ = "LedgerActivityResourceOwnerOwnerName"
+			l.LedgerActivityResourceOwnerOwnerName = valueLedgerActivityResourceOwnerOwnerName
+			return nil
+		}
+	}
 	valueLedgerActivityResourceOwnerOwnerLogoURL := new(LedgerActivityResourceOwnerOwnerLogoURL)
 	if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerLogoURL); err == nil {
 		l.typ = "LedgerActivityResourceOwnerOwnerLogoURL"
@@ -4431,6 +4830,13 @@ var (
 	ledgerActivityResourceOwnerOwnerLogoURLFieldRoute   = big.NewInt(1 << 3)
 	ledgerActivityResourceOwnerOwnerLogoURLFieldTitle   = big.NewInt(1 << 4)
 )
+
+// ledgerActivityResourceOwnerOwnerLogoURLNullableFields maps the wire names of LedgerActivityResourceOwnerOwnerLogoURL's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceOwnerOwnerLogoURLNullableFields = map[string]*big.Int{
+	"logo_url": ledgerActivityResourceOwnerOwnerLogoURLFieldLogoURL,
+	"route":    ledgerActivityResourceOwnerOwnerLogoURLFieldRoute,
+	"title":    ledgerActivityResourceOwnerOwnerLogoURLFieldTitle,
+}
 
 type LedgerActivityResourceOwnerOwnerLogoURL struct {
 	// Account ID.
@@ -4493,10 +4899,12 @@ func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetExtraProperties() map[strin
 }
 
 func (l *LedgerActivityResourceOwnerOwnerLogoURL) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4546,6 +4954,13 @@ func (l *LedgerActivityResourceOwnerOwnerLogoURL) UnmarshalJSON(data []byte) err
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceOwnerOwnerLogoURLNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4602,6 +5017,13 @@ var (
 	ledgerActivityResourceOwnerOwnerNameFieldProfilePictureURL = big.NewInt(1 << 3)
 	ledgerActivityResourceOwnerOwnerNameFieldUsername          = big.NewInt(1 << 4)
 )
+
+// ledgerActivityResourceOwnerOwnerNameNullableFields maps the wire names of LedgerActivityResourceOwnerOwnerName's nullable fields (required or optional) to their field bits.
+var ledgerActivityResourceOwnerOwnerNameNullableFields = map[string]*big.Int{
+	"name":                ledgerActivityResourceOwnerOwnerNameFieldName,
+	"profile_picture_url": ledgerActivityResourceOwnerOwnerNameFieldProfilePictureURL,
+	"username":            ledgerActivityResourceOwnerOwnerNameFieldUsername,
+}
 
 type LedgerActivityResourceOwnerOwnerName struct {
 	// User ID.
@@ -4664,10 +5086,12 @@ func (l *LedgerActivityResourceOwnerOwnerName) GetExtraProperties() map[string]i
 }
 
 func (l *LedgerActivityResourceOwnerOwnerName) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4717,6 +5141,13 @@ func (l *LedgerActivityResourceOwnerOwnerName) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivityResourceOwnerOwnerNameNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4825,10 +5256,12 @@ func (l *LedgerActivityResourceTwo) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *LedgerActivityResourceTwo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4920,7 +5353,6 @@ func (l LedgerActivityResourceTwoObject) Ptr() *LedgerActivityResourceTwoObject 
 	return &l
 }
 
-// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
 var (
 	ledgerActivitySourceFieldAmountFloat         = big.NewInt(1 << 0)
 	ledgerActivitySourceFieldCardBrand           = big.NewInt(1 << 1)
@@ -4954,6 +5386,39 @@ var (
 	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 29)
 )
 
+// ledgerActivitySourceNullableFields maps the wire names of LedgerActivitySource's nullable fields (required or optional) to their field bits.
+var ledgerActivitySourceNullableFields = map[string]*big.Int{
+	"amount_float":          ledgerActivitySourceFieldAmountFloat,
+	"card_brand":            ledgerActivitySourceFieldCardBrand,
+	"chain":                 ledgerActivitySourceFieldChain,
+	"claim_url":             ledgerActivitySourceFieldClaimURL,
+	"created_at":            ledgerActivitySourceFieldCreatedAt,
+	"created_by_user":       ledgerActivitySourceFieldCreatedByUser,
+	"estimated_arrival":     ledgerActivitySourceFieldEstimatedArrival,
+	"fee_amount":            ledgerActivitySourceFieldFeeAmount,
+	"fee_kind":              ledgerActivitySourceFieldFeeKind,
+	"fee_type":              ledgerActivitySourceFieldFeeType,
+	"from_amount":           ledgerActivitySourceFieldFromAmount,
+	"from_currency":         ledgerActivitySourceFieldFromCurrency,
+	"notes":                 ledgerActivitySourceFieldNotes,
+	"payer_name":            ledgerActivitySourceFieldPayerName,
+	"payment_amount":        ledgerActivitySourceFieldPaymentAmount,
+	"payment_method_type":   ledgerActivitySourceFieldPaymentMethodType,
+	"payment_processor":     ledgerActivitySourceFieldPaymentProcessor,
+	"payout_amount":         ledgerActivitySourceFieldPayoutAmount,
+	"payout_destination":    ledgerActivitySourceFieldPayoutDestination,
+	"payout_token_nickname": ledgerActivitySourceFieldPayoutTokenNickname,
+	"reason":                ledgerActivitySourceFieldReason,
+	"risk_review_hold":      ledgerActivitySourceFieldRiskReviewHold,
+	"sender_address":        ledgerActivitySourceFieldSenderAddress,
+	"status":                ledgerActivitySourceFieldStatus,
+	"to_amount":             ledgerActivitySourceFieldToAmount,
+	"to_currency":           ledgerActivitySourceFieldToCurrency,
+	"trace_code":            ledgerActivitySourceFieldTraceCode,
+	"tx_hash":               ledgerActivitySourceFieldTxHash,
+}
+
+// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
 type LedgerActivitySource struct {
 	// Payout amount as a decimal number in the destination currency (payout sources only; requires payout:withdrawal:read).
 	AmountFloat *float64 `json:"amount_float,omitempty" url:"amount_float,omitempty"`
@@ -5240,10 +5705,12 @@ func (l *LedgerActivitySource) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LedgerActivitySource) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAmountFloat sets the AmountFloat field and marks it as non-optional;
@@ -5476,6 +5943,13 @@ func (l *LedgerActivitySource) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.ExtraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivitySourceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5565,12 +6039,18 @@ func (l LedgerActivitySourceFeeType) Ptr() *LedgerActivitySourceFeeType {
 	return &l
 }
 
-// Payout destination display info (payout sources only).
 var (
 	ledgerActivitySourcePayoutDestinationFieldIconURL   = big.NewInt(1 << 0)
 	ledgerActivitySourcePayoutDestinationFieldPayerName = big.NewInt(1 << 1)
 )
 
+// ledgerActivitySourcePayoutDestinationNullableFields maps the wire names of LedgerActivitySourcePayoutDestination's nullable fields (required or optional) to their field bits.
+var ledgerActivitySourcePayoutDestinationNullableFields = map[string]*big.Int{
+	"icon_url":   ledgerActivitySourcePayoutDestinationFieldIconURL,
+	"payer_name": ledgerActivitySourcePayoutDestinationFieldPayerName,
+}
+
+// Payout destination display info (payout sources only).
 type LedgerActivitySourcePayoutDestination struct {
 	IconURL   *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
@@ -5604,10 +6084,12 @@ func (l *LedgerActivitySourcePayoutDestination) GetExtraProperties() map[string]
 }
 
 func (l *LedgerActivitySourcePayoutDestination) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetIconURL sets the IconURL field and marks it as non-optional;
@@ -5636,6 +6118,13 @@ func (l *LedgerActivitySourcePayoutDestination) UnmarshalJSON(data []byte) error
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ledgerActivitySourcePayoutDestinationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6181,10 +6670,12 @@ func (l *ListFinancialActivityResponse) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListFinancialActivityResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -6250,6 +6741,12 @@ var (
 	listFinancialActivityResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listFinancialActivityResponsePageInfoNullableFields maps the wire names of ListFinancialActivityResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listFinancialActivityResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listFinancialActivityResponsePageInfoFieldEndCursor,
+	"start_cursor": listFinancialActivityResponsePageInfoFieldStartCursor,
+}
+
 type ListFinancialActivityResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -6299,10 +6796,12 @@ func (l *ListFinancialActivityResponsePageInfo) GetExtraProperties() map[string]
 }
 
 func (l *ListFinancialActivityResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -6345,6 +6844,13 @@ func (l *ListFinancialActivityResponsePageInfo) UnmarshalJSON(data []byte) error
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listFinancialActivityResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

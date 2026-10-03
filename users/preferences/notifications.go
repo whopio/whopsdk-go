@@ -23,10 +23,12 @@ type SetNotificationsRequest struct {
 }
 
 func (s *SetNotificationsRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetPreferences sets the Preferences field and marks it as non-optional;
@@ -61,6 +63,11 @@ var (
 	setNotificationsRequestPreferencesItemFieldLevel = big.NewInt(1 << 0)
 	setNotificationsRequestPreferencesItemFieldScope = big.NewInt(1 << 1)
 )
+
+// setNotificationsRequestPreferencesItemNullableFields maps the wire names of SetNotificationsRequestPreferencesItem's nullable fields (required or optional) to their field bits.
+var setNotificationsRequestPreferencesItemNullableFields = map[string]*big.Int{
+	"level": setNotificationsRequestPreferencesItemFieldLevel,
+}
 
 type SetNotificationsRequestPreferencesItem struct {
 	// What the user is notified about in this scope. `mentions` is only valid for an experience level. `null` clears the preference.
@@ -97,10 +104,12 @@ func (s *SetNotificationsRequestPreferencesItem) GetExtraProperties() map[string
 }
 
 func (s *SetNotificationsRequestPreferencesItem) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetLevel sets the Level field and marks it as non-optional;
@@ -129,6 +138,13 @@ func (s *SetNotificationsRequestPreferencesItem) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, setNotificationsRequestPreferencesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -185,7 +201,6 @@ func (s SetNotificationsRequestPreferencesItemLevel) Ptr() *SetNotificationsRequ
 	return &s
 }
 
-// What the preference applies to. `null` on a dimension means the preference is not narrowed there.
 var (
 	setNotificationsRequestPreferencesItemScopeFieldAccountID     = big.NewInt(1 << 0)
 	setNotificationsRequestPreferencesItemScopeFieldChannel       = big.NewInt(1 << 1)
@@ -194,6 +209,16 @@ var (
 	setNotificationsRequestPreferencesItemScopeFieldTopicID       = big.NewInt(1 << 4)
 )
 
+// setNotificationsRequestPreferencesItemScopeNullableFields maps the wire names of SetNotificationsRequestPreferencesItemScope's nullable fields (required or optional) to their field bits.
+var setNotificationsRequestPreferencesItemScopeNullableFields = map[string]*big.Int{
+	"account_id":      setNotificationsRequestPreferencesItemScopeFieldAccountID,
+	"channel":         setNotificationsRequestPreferencesItemScopeFieldChannel,
+	"experience_id":   setNotificationsRequestPreferencesItemScopeFieldExperienceID,
+	"team_account_id": setNotificationsRequestPreferencesItemScopeFieldTeamAccountID,
+	"topic_id":        setNotificationsRequestPreferencesItemScopeFieldTopicID,
+}
+
+// What the preference applies to. `null` on a dimension means the preference is not narrowed there.
 type SetNotificationsRequestPreferencesItemScope struct {
 	// Account to scope the preference to (member notifications), `biz_` tag.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -256,10 +281,12 @@ func (s *SetNotificationsRequestPreferencesItemScope) GetExtraProperties() map[s
 }
 
 func (s *SetNotificationsRequestPreferencesItemScope) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -309,6 +336,13 @@ func (s *SetNotificationsRequestPreferencesItemScope) UnmarshalJSON(data []byte)
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, setNotificationsRequestPreferencesItemScopeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -391,10 +425,12 @@ func (s *SetNotificationsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SetNotificationsResponse) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

@@ -25,10 +25,12 @@ type CreateCourseChaptersRequest struct {
 }
 
 func (c *CreateCourseChaptersRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCourseID sets the CourseID field and marks it as non-optional;
@@ -79,10 +81,12 @@ type DeleteCourseChaptersRequest struct {
 }
 
 func (d *DeleteCourseChaptersRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -117,10 +121,12 @@ type ListCourseChaptersRequest struct {
 }
 
 func (l *ListCourseChaptersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -171,10 +177,12 @@ type RetrieveCourseChaptersRequest struct {
 }
 
 func (r *RetrieveCourseChaptersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -184,7 +192,6 @@ func (r *RetrieveCourseChaptersRequest) SetID(id string) {
 	r.require(retrieveCourseChaptersRequestFieldID)
 }
 
-// A grouping of related lessons within a course, used to organize content into sections.
 var (
 	courseChapterFieldID      = big.NewInt(1 << 0)
 	courseChapterFieldLessons = big.NewInt(1 << 1)
@@ -192,6 +199,7 @@ var (
 	courseChapterFieldTitle   = big.NewInt(1 << 3)
 )
 
+// A grouping of related lessons within a course, used to organize content into sections.
 type CourseChapter struct {
 	// The unique identifier for the chapter.
 	ID string `json:"id" url:"id"`
@@ -245,10 +253,12 @@ func (c *CourseChapter) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseChapter) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -321,13 +331,13 @@ func (c *CourseChapter) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// An individual learning unit within a chapter, which can contain text, video, PDF, or assessment content.
 var (
 	courseChapterLessonsItemFieldID    = big.NewInt(1 << 0)
 	courseChapterLessonsItemFieldOrder = big.NewInt(1 << 1)
 	courseChapterLessonsItemFieldTitle = big.NewInt(1 << 2)
 )
 
+// An individual learning unit within a chapter, which can contain text, video, PDF, or assessment content.
 type CourseChapterLessonsItem struct {
 	// The unique identifier for the lesson.
 	ID string `json:"id" url:"id"`
@@ -372,10 +382,12 @@ func (c *CourseChapterLessonsItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseChapterLessonsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -441,13 +453,13 @@ func (c *CourseChapterLessonsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A grouping of related lessons within a course, used to organize content into sections.
 var (
 	courseChapterListItemFieldID    = big.NewInt(1 << 0)
 	courseChapterListItemFieldOrder = big.NewInt(1 << 1)
 	courseChapterListItemFieldTitle = big.NewInt(1 << 2)
 )
 
+// A grouping of related lessons within a course, used to organize content into sections.
 type CourseChapterListItem struct {
 	// The unique identifier for the chapter.
 	ID string `json:"id" url:"id"`
@@ -492,10 +504,12 @@ func (c *CourseChapterListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CourseChapterListItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -561,12 +575,12 @@ func (c *CourseChapterListItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for Chapter.
 var (
 	listCourseChaptersResponseFieldData     = big.NewInt(1 << 0)
 	listCourseChaptersResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for Chapter.
 type ListCourseChaptersResponse struct {
 	// A list of nodes.
 	Data []*CourseChapterListItem `json:"data" url:"data"`
@@ -602,10 +616,12 @@ func (l *ListCourseChaptersResponse) GetExtraProperties() map[string]interface{}
 }
 
 func (l *ListCourseChaptersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -680,10 +696,12 @@ type UpdateCourseChaptersRequest struct {
 }
 
 func (u *UpdateCourseChaptersRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
