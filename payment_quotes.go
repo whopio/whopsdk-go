@@ -10,10 +10,11 @@ import (
 )
 
 var (
-	createPaymentQuotesRequestFieldAddress         = big.NewInt(1 << 0)
-	createPaymentQuotesRequestFieldIPAddress       = big.NewInt(1 << 1)
-	createPaymentQuotesRequestFieldShippingAddress = big.NewInt(1 << 2)
-	createPaymentQuotesRequestFieldTaxIDs          = big.NewInt(1 << 3)
+	createPaymentQuotesRequestFieldAddress             = big.NewInt(1 << 0)
+	createPaymentQuotesRequestFieldIPAddress           = big.NewInt(1 << 1)
+	createPaymentQuotesRequestFieldPresentmentCurrency = big.NewInt(1 << 2)
+	createPaymentQuotesRequestFieldShippingAddress     = big.NewInt(1 << 3)
+	createPaymentQuotesRequestFieldTaxIDs              = big.NewInt(1 << 4)
 )
 
 type CreatePaymentQuotesRequest struct {
@@ -31,8 +32,10 @@ type CreatePaymentQuotesRequest struct {
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
 	// The buyer's billing address. Where tax is calculated when no shipping address is given, and the address a tax registration belongs to. A seller that collects tax on this purchase needs the buyer located: provide a `country` here, on `shipping_address`, or an `ip_address`. Only the keys you supply are kept. The payment that consumes the quote must put the buyer in the same place, by country, state and postal code, through its own `shipping_address` or its confirmation token's billing address, or it is refused with `quote_mismatch`.
 	Address *CreatePaymentQuotesRequestAddress `json:"address,omitempty" url:"-"`
-	// The buyer's IP address, when your server makes the call on their behalf. Locates the buyer when neither address carries a country. A quote located this way (`located_by` is `ip_address`) is a preview: a payment refuses it with `quote_preview_only`, so quote again with the buyer's address before paying.
+	// The buyer's IP address, when your server makes the call on their behalf. Locates the buyer when neither address carries a country. A quote located this way (`located_by` is `ip_address`) is a preview: a payment refuses it with `quote_preview_only`, so quote again with the buyer's address before paying. Also where `presentment_currency` `auto` and `recommended_currencies` find the buyer's local currency.
 	IPAddress *string `json:"ip_address,omitempty" url:"-"`
+	// The currency to price and charge the purchase in. Omit it, or send null, to price in the variants' own currency. `auto` prices in the currency of the country Whop places the buyer's `ip_address` in when the purchase can be converted into it and a payment method can collect it, and in the variants' own currency otherwise, including when no `ip_address` is sent or Whop cannot place it in a country. A three-letter ISO 4217 code, such as `eur`, prices in that currency or is refused: with `presentment_currency_unsupported` when the purchase cannot be converted into it (adaptive pricing is off for the variant, the variant is not a one-time purchase, or `plan` describes a variant that does not exist yet), and with `presentment_currency_not_payable` when no payment method can collect it. A converted quote states every amount in this currency at an `exchange_rate` fixed until `expires_at`, and the payment that consumes it is charged in this currency at that rate.
+	PresentmentCurrency *string `json:"presentment_currency,omitempty" url:"-"`
 	// Where physical goods ship. When present it is where tax is calculated; omit it for digital goods. Only the keys you supply are kept. The payment that consumes the quote must ship to the same place, by country, state and postal code, or it is refused with `quote_mismatch`.
 	ShippingAddress *CreatePaymentQuotesRequestShippingAddress `json:"shipping_address,omitempty" url:"-"`
 	// The buyer's tax registration, for a business purchase. One entry. Prices the purchase as business-to-business where that applies (EU reverse charge, for one) and requires an `address` to belong to.
@@ -63,6 +66,13 @@ func (c *CreatePaymentQuotesRequest) SetAddress(address *CreatePaymentQuotesRequ
 func (c *CreatePaymentQuotesRequest) SetIPAddress(ipAddress *string) {
 	c.IPAddress = ipAddress
 	c.require(createPaymentQuotesRequestFieldIPAddress)
+}
+
+// SetPresentmentCurrency sets the PresentmentCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentQuotesRequest) SetPresentmentCurrency(presentmentCurrency *string) {
+	c.PresentmentCurrency = presentmentCurrency
+	c.require(createPaymentQuotesRequestFieldPresentmentCurrency)
 }
 
 // SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
@@ -129,29 +139,34 @@ func (r *RetrievePaymentQuotesRequest) SetID(id string) {
 }
 
 var (
-	paymentQuoteFieldAccountID       = big.NewInt(1 << 0)
-	paymentQuoteFieldAddress         = big.NewInt(1 << 1)
-	paymentQuoteFieldCreatedAt       = big.NewInt(1 << 2)
-	paymentQuoteFieldCurrency        = big.NewInt(1 << 3)
-	paymentQuoteFieldDiscount        = big.NewInt(1 << 4)
-	paymentQuoteFieldExpiresAt       = big.NewInt(1 << 5)
-	paymentQuoteFieldID              = big.NewInt(1 << 6)
-	paymentQuoteFieldLineItems       = big.NewInt(1 << 7)
-	paymentQuoteFieldLocatedBy       = big.NewInt(1 << 8)
-	paymentQuoteFieldPaymentID       = big.NewInt(1 << 9)
-	paymentQuoteFieldPromoCodeID     = big.NewInt(1 << 10)
-	paymentQuoteFieldShippingAddress = big.NewInt(1 << 11)
-	paymentQuoteFieldSubtotal        = big.NewInt(1 << 12)
-	paymentQuoteFieldTaxAmount       = big.NewInt(1 << 13)
-	paymentQuoteFieldTaxBehavior     = big.NewInt(1 << 14)
-	paymentQuoteFieldTaxIDs          = big.NewInt(1 << 15)
-	paymentQuoteFieldTaxStatus       = big.NewInt(1 << 16)
-	paymentQuoteFieldTotal           = big.NewInt(1 << 17)
+	paymentQuoteFieldAccountID             = big.NewInt(1 << 0)
+	paymentQuoteFieldAddress               = big.NewInt(1 << 1)
+	paymentQuoteFieldBaseCurrency          = big.NewInt(1 << 2)
+	paymentQuoteFieldBaseTotal             = big.NewInt(1 << 3)
+	paymentQuoteFieldCreatedAt             = big.NewInt(1 << 4)
+	paymentQuoteFieldCurrency              = big.NewInt(1 << 5)
+	paymentQuoteFieldDiscount              = big.NewInt(1 << 6)
+	paymentQuoteFieldExchangeRate          = big.NewInt(1 << 7)
+	paymentQuoteFieldExpiresAt             = big.NewInt(1 << 8)
+	paymentQuoteFieldID                    = big.NewInt(1 << 9)
+	paymentQuoteFieldLineItems             = big.NewInt(1 << 10)
+	paymentQuoteFieldLocatedBy             = big.NewInt(1 << 11)
+	paymentQuoteFieldPaymentID             = big.NewInt(1 << 12)
+	paymentQuoteFieldPromoCodeID           = big.NewInt(1 << 13)
+	paymentQuoteFieldRecommendedCurrencies = big.NewInt(1 << 14)
+	paymentQuoteFieldShippingAddress       = big.NewInt(1 << 15)
+	paymentQuoteFieldSubtotal              = big.NewInt(1 << 16)
+	paymentQuoteFieldTaxAmount             = big.NewInt(1 << 17)
+	paymentQuoteFieldTaxBehavior           = big.NewInt(1 << 18)
+	paymentQuoteFieldTaxIDs                = big.NewInt(1 << 19)
+	paymentQuoteFieldTaxStatus             = big.NewInt(1 << 20)
+	paymentQuoteFieldTotal                 = big.NewInt(1 << 21)
 )
 
 // paymentQuoteNullableFields maps the wire names of PaymentQuote's nullable fields (required or optional) to their field bits.
 var paymentQuoteNullableFields = map[string]*big.Int{
 	"address":          paymentQuoteFieldAddress,
+	"exchange_rate":    paymentQuoteFieldExchangeRate,
 	"located_by":       paymentQuoteFieldLocatedBy,
 	"payment_id":       paymentQuoteFieldPaymentID,
 	"promo_code_id":    paymentQuoteFieldPromoCodeID,
@@ -164,12 +179,18 @@ type PaymentQuote struct {
 	AccountID string `json:"account_id" url:"account_id"`
 	// The billing address the purchase was priced with, or null. Where tax was calculated when no shipping address was given, and the address the registration belongs to.
 	Address *PaymentAddress `json:"address,omitempty" url:"address,omitempty"`
+	// Three-letter ISO 4217 code of the variants' own currency, lowercase. Equal to `currency` when nothing was converted.
+	BaseCurrency string `json:"base_currency" url:"base_currency"`
+	// `total` in `base_currency` at `exchange_rate`: the variants' own prices after the promo code, plus `tax_amount` converted at `exchange_rate` when tax is added on top. Equal to `total` when nothing was converted. The payment charges `total`, in `currency`.
+	BaseTotal *Money `json:"base_total" url:"base_total"`
 	// When the quote was priced, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// ISO currency the purchase is priced and charged in, lowercase — the variants' own currency.
+	// Three-letter ISO 4217 currency code the purchase is priced and charged in, lowercase: the variants' own currency, or the `presentment_currency` it was converted into.
 	Currency string `json:"currency" url:"currency"`
 	// What the promo code takes off. Zero without a code.
 	Discount *Money `json:"discount" url:"discount"`
+	// How many units of `currency` one unit of `base_currency` buys, as a decimal string such as `"5.4321"`: the rate the variants' prices were converted at, fixed until `expires_at`, and the rate a payment consuming the quote is charged at. A string, like money amounts, so no float rounds it in transit. Null when nothing was converted.
+	ExchangeRate *string `json:"exchange_rate,omitempty" url:"exchange_rate,omitempty"`
 	// When the quote stops being chargeable, as an ISO 8601 timestamp. Quote again after it.
 	ExpiresAt string `json:"expires_at" url:"expires_at"`
 	// Payment quote ID, prefixed `pq_`.
@@ -180,7 +201,8 @@ type PaymentQuote struct {
 	// The payment holding this quote, prefixed `pay_`, or null while it is unspent. A declined payment keeps its quote and can be retried; check that payment's `status`.
 	PaymentID *string `json:"payment_id,omitempty" url:"payment_id,omitempty"`
 	// The promo code the quote applied, prefixed `promo_`, or null.
-	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
+	PromoCodeID           *string  `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
+	RecommendedCurrencies []string `json:"recommended_currencies" url:"recommended_currencies"`
 	// The shipping address the purchase was priced with, or null. When present it is where tax was calculated.
 	ShippingAddress *PaymentAddress `json:"shipping_address,omitempty" url:"shipping_address,omitempty"`
 	// The price of every line before the promo code, tax and fees.
@@ -216,6 +238,20 @@ func (p *PaymentQuote) GetAddress() *PaymentAddress {
 	return p.Address
 }
 
+func (p *PaymentQuote) GetBaseCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.BaseCurrency
+}
+
+func (p *PaymentQuote) GetBaseTotal() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.BaseTotal
+}
+
 func (p *PaymentQuote) GetCreatedAt() string {
 	if p == nil {
 		return ""
@@ -235,6 +271,13 @@ func (p *PaymentQuote) GetDiscount() *Money {
 		return nil
 	}
 	return p.Discount
+}
+
+func (p *PaymentQuote) GetExchangeRate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ExchangeRate
 }
 
 func (p *PaymentQuote) GetExpiresAt() string {
@@ -277,6 +320,13 @@ func (p *PaymentQuote) GetPromoCodeID() *string {
 		return nil
 	}
 	return p.PromoCodeID
+}
+
+func (p *PaymentQuote) GetRecommendedCurrencies() []string {
+	if p == nil {
+		return nil
+	}
+	return p.RecommendedCurrencies
 }
 
 func (p *PaymentQuote) GetShippingAddress() *PaymentAddress {
@@ -358,6 +408,20 @@ func (p *PaymentQuote) SetAddress(address *PaymentAddress) {
 	p.require(paymentQuoteFieldAddress)
 }
 
+// SetBaseCurrency sets the BaseCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentQuote) SetBaseCurrency(baseCurrency string) {
+	p.BaseCurrency = baseCurrency
+	p.require(paymentQuoteFieldBaseCurrency)
+}
+
+// SetBaseTotal sets the BaseTotal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentQuote) SetBaseTotal(baseTotal *Money) {
+	p.BaseTotal = baseTotal
+	p.require(paymentQuoteFieldBaseTotal)
+}
+
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PaymentQuote) SetCreatedAt(createdAt string) {
@@ -377,6 +441,13 @@ func (p *PaymentQuote) SetCurrency(currency string) {
 func (p *PaymentQuote) SetDiscount(discount *Money) {
 	p.Discount = discount
 	p.require(paymentQuoteFieldDiscount)
+}
+
+// SetExchangeRate sets the ExchangeRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentQuote) SetExchangeRate(exchangeRate *string) {
+	p.ExchangeRate = exchangeRate
+	p.require(paymentQuoteFieldExchangeRate)
 }
 
 // SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
@@ -419,6 +490,13 @@ func (p *PaymentQuote) SetPaymentID(paymentID *string) {
 func (p *PaymentQuote) SetPromoCodeID(promoCodeID *string) {
 	p.PromoCodeID = promoCodeID
 	p.require(paymentQuoteFieldPromoCodeID)
+}
+
+// SetRecommendedCurrencies sets the RecommendedCurrencies field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentQuote) SetRecommendedCurrencies(recommendedCurrencies []string) {
+	p.RecommendedCurrencies = recommendedCurrencies
+	p.require(paymentQuoteFieldRecommendedCurrencies)
 }
 
 // SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
