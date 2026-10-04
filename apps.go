@@ -11,13 +11,14 @@ import (
 )
 
 var (
-	createAppsRequestFieldAccountID    = big.NewInt(1 << 0)
-	createAppsRequestFieldAppType      = big.NewInt(1 << 1)
-	createAppsRequestFieldBaseURL      = big.NewInt(1 << 2)
-	createAppsRequestFieldIcon         = big.NewInt(1 << 3)
-	createAppsRequestFieldName         = big.NewInt(1 << 4)
-	createAppsRequestFieldRedirectURIs = big.NewInt(1 << 5)
-	createAppsRequestFieldRoute        = big.NewInt(1 << 6)
+	createAppsRequestFieldAccountID       = big.NewInt(1 << 0)
+	createAppsRequestFieldAppType         = big.NewInt(1 << 1)
+	createAppsRequestFieldBaseURL         = big.NewInt(1 << 2)
+	createAppsRequestFieldIcon            = big.NewInt(1 << 3)
+	createAppsRequestFieldImportedFromURL = big.NewInt(1 << 4)
+	createAppsRequestFieldName            = big.NewInt(1 << 5)
+	createAppsRequestFieldRedirectURIs    = big.NewInt(1 << 6)
+	createAppsRequestFieldRoute           = big.NewInt(1 << 7)
 )
 
 type CreateAppsRequest struct {
@@ -29,6 +30,8 @@ type CreateAppsRequest struct {
 	BaseURL *string `json:"base_url,omitempty" url:"-"`
 	// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 	Icon *CreateAppsRequestIcon `json:"icon,omitempty" url:"-"`
+	// The address of the existing website this app is imported from, such as `https://shop.example.com`. Must be an `http` or `https` URL.
+	ImportedFromURL *string `json:"imported_from_url,omitempty" url:"-"`
 	// The display name for the app, shown to users on the app store and product pages.
 	Name string `json:"name" url:"-"`
 	// The whitelisted OAuth callback URLs that users are redirected to after authorizing the app.
@@ -75,6 +78,13 @@ func (c *CreateAppsRequest) SetBaseURL(baseURL *string) {
 func (c *CreateAppsRequest) SetIcon(icon *CreateAppsRequestIcon) {
 	c.Icon = icon
 	c.require(createAppsRequestFieldIcon)
+}
+
+// SetImportedFromURL sets the ImportedFromURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAppsRequest) SetImportedFromURL(importedFromURL *string) {
+	c.ImportedFromURL = importedFromURL
+	c.require(createAppsRequestFieldImportedFromURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -512,25 +522,26 @@ var (
 	appFieldHostedURL                 = big.NewInt(1 << 18)
 	appFieldIcon                      = big.NewInt(1 << 19)
 	appFieldID                        = big.NewInt(1 << 20)
-	appFieldMarketplaceStatus         = big.NewInt(1 << 21)
-	appFieldName                      = big.NewInt(1 << 22)
-	appFieldOauthClientType           = big.NewInt(1 << 23)
-	appFieldOpenapiPath               = big.NewInt(1 << 24)
-	appFieldOrigin                    = big.NewInt(1 << 25)
-	appFieldPreviewToken              = big.NewInt(1 << 26)
-	appFieldPreviousHostedURLs        = big.NewInt(1 << 27)
-	appFieldProductID                 = big.NewInt(1 << 28)
-	appFieldProductionAndroidBuild    = big.NewInt(1 << 29)
-	appFieldProductionIosBuild        = big.NewInt(1 << 30)
-	appFieldProductionWebBuild        = big.NewInt(1 << 31)
-	appFieldRedirectURIs              = big.NewInt(1 << 32)
-	appFieldRequestedPermissions      = big.NewInt(1 << 33)
-	appFieldRequiredScopes            = big.NewInt(1 << 34)
-	appFieldRoute                     = big.NewInt(1 << 35)
-	appFieldSecrets                   = big.NewInt(1 << 36)
-	appFieldSkillsPath                = big.NewInt(1 << 37)
-	appFieldStatus                    = big.NewInt(1 << 38)
-	appFieldVerified                  = big.NewInt(1 << 39)
+	appFieldImportedFromURL           = big.NewInt(1 << 21)
+	appFieldMarketplaceStatus         = big.NewInt(1 << 22)
+	appFieldName                      = big.NewInt(1 << 23)
+	appFieldOauthClientType           = big.NewInt(1 << 24)
+	appFieldOpenapiPath               = big.NewInt(1 << 25)
+	appFieldOrigin                    = big.NewInt(1 << 26)
+	appFieldPreviewToken              = big.NewInt(1 << 27)
+	appFieldPreviousHostedURLs        = big.NewInt(1 << 28)
+	appFieldProductID                 = big.NewInt(1 << 29)
+	appFieldProductionAndroidBuild    = big.NewInt(1 << 30)
+	appFieldProductionIosBuild        = big.NewInt(1 << 31)
+	appFieldProductionWebBuild        = big.NewInt(1 << 32)
+	appFieldRedirectURIs              = big.NewInt(1 << 33)
+	appFieldRequestedPermissions      = big.NewInt(1 << 34)
+	appFieldRequiredScopes            = big.NewInt(1 << 35)
+	appFieldRoute                     = big.NewInt(1 << 36)
+	appFieldSecrets                   = big.NewInt(1 << 37)
+	appFieldSkillsPath                = big.NewInt(1 << 38)
+	appFieldStatus                    = big.NewInt(1 << 39)
+	appFieldVerified                  = big.NewInt(1 << 40)
 )
 
 // appNullableFields maps the wire names of App's nullable fields (required or optional) to their field bits.
@@ -547,6 +558,7 @@ var appNullableFields = map[string]*big.Int{
 	"domains":                  appFieldDomains,
 	"experience_path":          appFieldExperiencePath,
 	"hosted_url":               appFieldHostedURL,
+	"imported_from_url":        appFieldImportedFromURL,
 	"marketplace_status":       appFieldMarketplaceStatus,
 	"openapi_path":             appFieldOpenapiPath,
 	"origin":                   appFieldOrigin,
@@ -600,6 +612,8 @@ type App struct {
 	Icon *AppIcon `json:"icon" url:"icon"`
 	// App ID, prefixed `app_`.
 	ID string `json:"id" url:"id"`
+	// The address of the existing website this app was imported from, such as `https://shop.example.com`. `null` if the app was not imported from another site, or if the caller lacks the `developer:basic:read` permission on the app's account.
+	ImportedFromURL *string `json:"imported_from_url,omitempty" url:"imported_from_url,omitempty"`
 	// Approval status of the app's product listing on the Whop app store, or `null` when the app has no associated product.
 	MarketplaceStatus *AppMarketplaceStatus `json:"marketplace_status,omitempty" url:"marketplace_status,omitempty"`
 	// Display name shown on the app store and in experience navigation.
@@ -787,6 +801,13 @@ func (a *App) GetID() string {
 		return ""
 	}
 	return a.ID
+}
+
+func (a *App) GetImportedFromURL() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ImportedFromURL
 }
 
 func (a *App) GetMarketplaceStatus() *AppMarketplaceStatus {
@@ -1083,6 +1104,13 @@ func (a *App) SetIcon(icon *AppIcon) {
 func (a *App) SetID(id string) {
 	a.ID = id
 	a.require(appFieldID)
+}
+
+// SetImportedFromURL sets the ImportedFromURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetImportedFromURL(importedFromURL *string) {
+	a.ImportedFromURL = importedFromURL
+	a.require(appFieldImportedFromURL)
 }
 
 // SetMarketplaceStatus sets the MarketplaceStatus field and marks it as non-optional;
@@ -5207,18 +5235,19 @@ var (
 	updateAppsRequestFieldDiscoverPath             = big.NewInt(1 << 6)
 	updateAppsRequestFieldExperiencePath           = big.NewInt(1 << 7)
 	updateAppsRequestFieldIcon                     = big.NewInt(1 << 8)
-	updateAppsRequestFieldName                     = big.NewInt(1 << 9)
-	updateAppsRequestFieldOauthClientType          = big.NewInt(1 << 10)
-	updateAppsRequestFieldOpenapiPath              = big.NewInt(1 << 11)
-	updateAppsRequestFieldProductionAndroidBuildID = big.NewInt(1 << 12)
-	updateAppsRequestFieldProductionIosBuildID     = big.NewInt(1 << 13)
-	updateAppsRequestFieldProductionWebBuildID     = big.NewInt(1 << 14)
-	updateAppsRequestFieldRedirectURIs             = big.NewInt(1 << 15)
-	updateAppsRequestFieldRequiredScopes           = big.NewInt(1 << 16)
-	updateAppsRequestFieldRoute                    = big.NewInt(1 << 17)
-	updateAppsRequestFieldSecrets                  = big.NewInt(1 << 18)
-	updateAppsRequestFieldSkillsPath               = big.NewInt(1 << 19)
-	updateAppsRequestFieldStatus                   = big.NewInt(1 << 20)
+	updateAppsRequestFieldImportedFromURL          = big.NewInt(1 << 9)
+	updateAppsRequestFieldName                     = big.NewInt(1 << 10)
+	updateAppsRequestFieldOauthClientType          = big.NewInt(1 << 11)
+	updateAppsRequestFieldOpenapiPath              = big.NewInt(1 << 12)
+	updateAppsRequestFieldProductionAndroidBuildID = big.NewInt(1 << 13)
+	updateAppsRequestFieldProductionIosBuildID     = big.NewInt(1 << 14)
+	updateAppsRequestFieldProductionWebBuildID     = big.NewInt(1 << 15)
+	updateAppsRequestFieldRedirectURIs             = big.NewInt(1 << 16)
+	updateAppsRequestFieldRequiredScopes           = big.NewInt(1 << 17)
+	updateAppsRequestFieldRoute                    = big.NewInt(1 << 18)
+	updateAppsRequestFieldSecrets                  = big.NewInt(1 << 19)
+	updateAppsRequestFieldSkillsPath               = big.NewInt(1 << 20)
+	updateAppsRequestFieldStatus                   = big.NewInt(1 << 21)
 )
 
 type UpdateAppsRequest struct {
@@ -5240,6 +5269,8 @@ type UpdateAppsRequest struct {
 	ExperiencePath *string `json:"experience_path,omitempty" url:"-"`
 	// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 	Icon *UpdateAppsRequestIcon `json:"icon,omitempty" url:"-"`
+	// The address of the existing website this app is imported from, such as `https://shop.example.com`. Must be an `http` or `https` URL. Set to `null` to clear it.
+	ImportedFromURL *string `json:"imported_from_url,omitempty" url:"-"`
 	// The display name for the app, shown to users on the app store and product pages.
 	Name *string `json:"name,omitempty" url:"-"`
 	// How the app authenticates at the OAuth token endpoint.
@@ -5339,6 +5370,13 @@ func (u *UpdateAppsRequest) SetExperiencePath(experiencePath *string) {
 func (u *UpdateAppsRequest) SetIcon(icon *UpdateAppsRequestIcon) {
 	u.Icon = icon
 	u.require(updateAppsRequestFieldIcon)
+}
+
+// SetImportedFromURL sets the ImportedFromURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAppsRequest) SetImportedFromURL(importedFromURL *string) {
+	u.ImportedFromURL = importedFromURL
+	u.require(updateAppsRequestFieldImportedFromURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;

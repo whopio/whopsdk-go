@@ -7328,6 +7328,14 @@ client.Apps.Create(
 <dl>
 <dd>
 
+**importedFromURL:** `*string` — The address of the existing website this app is imported from, such as `https://shop.example.com`. Must be an `http` or `https` URL.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **name:** `string` — The display name for the app, shown to users on the app store and product pages.
     
 </dd>
@@ -7589,6 +7597,14 @@ client.Apps.Update(
 <dd>
 
 **icon:** `*whopsdk.UpdateAppsRequestIcon` — The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**importedFromURL:** `*string` — The address of the existing website this app is imported from, such as `https://shop.example.com`. Must be an `http` or `https` URL. Set to `null` to clear it.
     
 </dd>
 </dl>
