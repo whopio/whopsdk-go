@@ -1818,6 +1818,7 @@ var (
 	listBusinessesResponseDataItemPayoutPercentagesFieldCardInterchange = big.NewInt(1 << 1)
 	listBusinessesResponseDataItemPayoutPercentagesFieldSales           = big.NewInt(1 << 2)
 	listBusinessesResponseDataItemPayoutPercentagesFieldTransfer        = big.NewInt(1 << 3)
+	listBusinessesResponseDataItemPayoutPercentagesFieldWithdrawal      = big.NewInt(1 << 4)
 )
 
 // listBusinessesResponseDataItemPayoutPercentagesNullableFields maps the wire names of ListBusinessesResponseDataItemPayoutPercentages's nullable fields (required or optional) to their field bits.
@@ -1825,6 +1826,7 @@ var listBusinessesResponseDataItemPayoutPercentagesNullableFields = map[string]*
 	"ad_spend":         listBusinessesResponseDataItemPayoutPercentagesFieldAdSpend,
 	"card_interchange": listBusinessesResponseDataItemPayoutPercentagesFieldCardInterchange,
 	"transfer":         listBusinessesResponseDataItemPayoutPercentagesFieldTransfer,
+	"withdrawal":       listBusinessesResponseDataItemPayoutPercentagesFieldWithdrawal,
 }
 
 // The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
@@ -1837,6 +1839,8 @@ type ListBusinessesResponseDataItemPayoutPercentages struct {
 	Sales float64 `json:"sales" url:"sales"`
 	// Share of Whop's profit from platform balance transfers.
 	Transfer *float64 `json:"transfer,omitempty" url:"transfer,omitempty"`
+	// Share of Whop's profit from withdrawals.
+	Withdrawal *float64 `json:"withdrawal,omitempty" url:"withdrawal,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1871,6 +1875,13 @@ func (l *ListBusinessesResponseDataItemPayoutPercentages) GetTransfer() *float64
 		return nil
 	}
 	return l.Transfer
+}
+
+func (l *ListBusinessesResponseDataItemPayoutPercentages) GetWithdrawal() *float64 {
+	if l == nil {
+		return nil
+	}
+	return l.Withdrawal
 }
 
 func (l *ListBusinessesResponseDataItemPayoutPercentages) GetExtraProperties() map[string]interface{} {
@@ -1915,6 +1926,13 @@ func (l *ListBusinessesResponseDataItemPayoutPercentages) SetSales(sales float64
 func (l *ListBusinessesResponseDataItemPayoutPercentages) SetTransfer(transfer *float64) {
 	l.Transfer = transfer
 	l.require(listBusinessesResponseDataItemPayoutPercentagesFieldTransfer)
+}
+
+// SetWithdrawal sets the Withdrawal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesResponseDataItemPayoutPercentages) SetWithdrawal(withdrawal *float64) {
+	l.Withdrawal = withdrawal
+	l.require(listBusinessesResponseDataItemPayoutPercentagesFieldWithdrawal)
 }
 
 func (l *ListBusinessesResponseDataItemPayoutPercentages) UnmarshalJSON(data []byte) error {
@@ -3978,6 +3996,7 @@ var (
 	retrieveBusinessesResponsePayoutPercentagesFieldCardInterchange = big.NewInt(1 << 1)
 	retrieveBusinessesResponsePayoutPercentagesFieldSales           = big.NewInt(1 << 2)
 	retrieveBusinessesResponsePayoutPercentagesFieldTransfer        = big.NewInt(1 << 3)
+	retrieveBusinessesResponsePayoutPercentagesFieldWithdrawal      = big.NewInt(1 << 4)
 )
 
 // retrieveBusinessesResponsePayoutPercentagesNullableFields maps the wire names of RetrieveBusinessesResponsePayoutPercentages's nullable fields (required or optional) to their field bits.
@@ -3985,6 +4004,7 @@ var retrieveBusinessesResponsePayoutPercentagesNullableFields = map[string]*big.
 	"ad_spend":         retrieveBusinessesResponsePayoutPercentagesFieldAdSpend,
 	"card_interchange": retrieveBusinessesResponsePayoutPercentagesFieldCardInterchange,
 	"transfer":         retrieveBusinessesResponsePayoutPercentagesFieldTransfer,
+	"withdrawal":       retrieveBusinessesResponsePayoutPercentagesFieldWithdrawal,
 }
 
 // The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
@@ -3997,6 +4017,8 @@ type RetrieveBusinessesResponsePayoutPercentages struct {
 	Sales float64 `json:"sales" url:"sales"`
 	// Share of Whop's profit from platform balance transfers.
 	Transfer *float64 `json:"transfer,omitempty" url:"transfer,omitempty"`
+	// Share of Whop's profit from withdrawals.
+	Withdrawal *float64 `json:"withdrawal,omitempty" url:"withdrawal,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4031,6 +4053,13 @@ func (r *RetrieveBusinessesResponsePayoutPercentages) GetTransfer() *float64 {
 		return nil
 	}
 	return r.Transfer
+}
+
+func (r *RetrieveBusinessesResponsePayoutPercentages) GetWithdrawal() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.Withdrawal
 }
 
 func (r *RetrieveBusinessesResponsePayoutPercentages) GetExtraProperties() map[string]interface{} {
@@ -4075,6 +4104,13 @@ func (r *RetrieveBusinessesResponsePayoutPercentages) SetSales(sales float64) {
 func (r *RetrieveBusinessesResponsePayoutPercentages) SetTransfer(transfer *float64) {
 	r.Transfer = transfer
 	r.require(retrieveBusinessesResponsePayoutPercentagesFieldTransfer)
+}
+
+// SetWithdrawal sets the Withdrawal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponsePayoutPercentages) SetWithdrawal(withdrawal *float64) {
+	r.Withdrawal = withdrawal
+	r.require(retrieveBusinessesResponsePayoutPercentagesFieldWithdrawal)
 }
 
 func (r *RetrieveBusinessesResponsePayoutPercentages) UnmarshalJSON(data []byte) error {
