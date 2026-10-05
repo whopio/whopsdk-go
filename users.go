@@ -350,36 +350,40 @@ func (r *RetrieveUsersRequest) SetTimeZone(timeZone *string) {
 }
 
 var (
-	userFieldBalance              = big.NewInt(1 << 0)
-	userFieldBalanceHistory       = big.NewInt(1 << 1)
-	userFieldBanner               = big.NewInt(1 << 2)
-	userFieldBio                  = big.NewInt(1 << 3)
-	userFieldCreatedAt            = big.NewInt(1 << 4)
-	userFieldEarningsUsd          = big.NewInt(1 << 5)
-	userFieldEmail                = big.NewInt(1 << 6)
-	userFieldID                   = big.NewInt(1 << 7)
-	userFieldName                 = big.NewInt(1 << 8)
-	userFieldProfilePicture       = big.NewInt(1 << 9)
-	userFieldSocialAccounts       = big.NewInt(1 << 10)
-	userFieldStaff                = big.NewInt(1 << 11)
-	userFieldTrading              = big.NewInt(1 << 12)
-	userFieldUsername             = big.NewInt(1 << 13)
-	userFieldVerification         = big.NewInt(1 << 14)
-	userFieldWhopPartnerEnabledAt = big.NewInt(1 << 15)
+	userFieldBalance                           = big.NewInt(1 << 0)
+	userFieldBalanceHistory                    = big.NewInt(1 << 1)
+	userFieldBanner                            = big.NewInt(1 << 2)
+	userFieldBio                               = big.NewInt(1 << 3)
+	userFieldCreatedAt                         = big.NewInt(1 << 4)
+	userFieldEarningsUsd                       = big.NewInt(1 << 5)
+	userFieldEmail                             = big.NewInt(1 << 6)
+	userFieldID                                = big.NewInt(1 << 7)
+	userFieldName                              = big.NewInt(1 << 8)
+	userFieldProfilePicture                    = big.NewInt(1 << 9)
+	userFieldSocialAccounts                    = big.NewInt(1 << 10)
+	userFieldStaff                             = big.NewInt(1 << 11)
+	userFieldTrading                           = big.NewInt(1 << 12)
+	userFieldUsername                          = big.NewInt(1 << 13)
+	userFieldVerification                      = big.NewInt(1 << 14)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 15)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 16)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 17)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
 var userNullableFields = map[string]*big.Int{
-	"balance":                 userFieldBalance,
-	"balance_history":         userFieldBalanceHistory,
-	"banner":                  userFieldBanner,
-	"bio":                     userFieldBio,
-	"earnings_usd":            userFieldEarningsUsd,
-	"email":                   userFieldEmail,
-	"name":                    userFieldName,
-	"staff":                   userFieldStaff,
-	"trading":                 userFieldTrading,
-	"whop_partner_enabled_at": userFieldWhopPartnerEnabledAt,
+	"balance":                               userFieldBalance,
+	"balance_history":                       userFieldBalanceHistory,
+	"banner":                                userFieldBanner,
+	"bio":                                   userFieldBio,
+	"earnings_usd":                          userFieldEarningsUsd,
+	"email":                                 userFieldEmail,
+	"name":                                  userFieldName,
+	"staff":                                 userFieldStaff,
+	"trading":                               userFieldTrading,
+	"whop_partner_enabled_at":               userFieldWhopPartnerEnabledAt,
+	"whop_partner_onboarded_accounts_count": userFieldWhopPartnerOnboardedAccountsCount,
+	"whop_partner_verified_at":              userFieldWhopPartnerVerifiedAt,
 }
 
 type User struct {
@@ -414,6 +418,10 @@ type User struct {
 	Verification map[string]any `json:"verification" url:"verification"`
 	// When the user became an enrolled Whop Partner, as an ISO 8601 timestamp. `null` if never enrolled.
 	WhopPartnerEnabledAt *string `json:"whop_partner_enabled_at,omitempty" url:"whop_partner_enabled_at,omitempty"`
+	// Number of accounts the user referred to Whop as a Whop Partner that have processed more than $1 in volume attributed to the user. Populated only when retrieving a single user who is a Verified Whop Partner; `null` otherwise.
+	WhopPartnerOnboardedAccountsCount *int `json:"whop_partner_onboarded_accounts_count,omitempty" url:"whop_partner_onboarded_accounts_count,omitempty"`
+	// When the user became a Verified Whop Partner, as an ISO 8601 timestamp. `null` for users who are not Verified Whop Partners, including partners who left the program and suspended users.
+	WhopPartnerVerifiedAt *string `json:"whop_partner_verified_at,omitempty" url:"whop_partner_verified_at,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -532,6 +540,20 @@ func (u *User) GetWhopPartnerEnabledAt() *string {
 		return nil
 	}
 	return u.WhopPartnerEnabledAt
+}
+
+func (u *User) GetWhopPartnerOnboardedAccountsCount() *int {
+	if u == nil {
+		return nil
+	}
+	return u.WhopPartnerOnboardedAccountsCount
+}
+
+func (u *User) GetWhopPartnerVerifiedAt() *string {
+	if u == nil {
+		return nil
+	}
+	return u.WhopPartnerVerifiedAt
 }
 
 func (u *User) GetExtraProperties() map[string]interface{} {
@@ -660,6 +682,20 @@ func (u *User) SetVerification(verification map[string]any) {
 func (u *User) SetWhopPartnerEnabledAt(whopPartnerEnabledAt *string) {
 	u.WhopPartnerEnabledAt = whopPartnerEnabledAt
 	u.require(userFieldWhopPartnerEnabledAt)
+}
+
+// SetWhopPartnerOnboardedAccountsCount sets the WhopPartnerOnboardedAccountsCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetWhopPartnerOnboardedAccountsCount(whopPartnerOnboardedAccountsCount *int) {
+	u.WhopPartnerOnboardedAccountsCount = whopPartnerOnboardedAccountsCount
+	u.require(userFieldWhopPartnerOnboardedAccountsCount)
+}
+
+// SetWhopPartnerVerifiedAt sets the WhopPartnerVerifiedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetWhopPartnerVerifiedAt(whopPartnerVerifiedAt *string) {
+	u.WhopPartnerVerifiedAt = whopPartnerVerifiedAt
+	u.require(userFieldWhopPartnerVerifiedAt)
 }
 
 func (u *User) UnmarshalJSON(data []byte) error {
