@@ -662,6 +662,7 @@ const (
 	PartnerPayoutRateIncomeSourceTransfer        PartnerPayoutRateIncomeSource = "transfer"
 	PartnerPayoutRateIncomeSourceCardInterchange PartnerPayoutRateIncomeSource = "card_interchange"
 	PartnerPayoutRateIncomeSourceAdSpend         PartnerPayoutRateIncomeSource = "ad_spend"
+	PartnerPayoutRateIncomeSourceWithdrawal      PartnerPayoutRateIncomeSource = "withdrawal"
 )
 
 func NewPartnerPayoutRateIncomeSourceFromString(s string) (PartnerPayoutRateIncomeSource, error) {
@@ -674,6 +675,8 @@ func NewPartnerPayoutRateIncomeSourceFromString(s string) (PartnerPayoutRateInco
 		return PartnerPayoutRateIncomeSourceCardInterchange, nil
 	case "ad_spend":
 		return PartnerPayoutRateIncomeSourceAdSpend, nil
+	case "withdrawal":
+		return PartnerPayoutRateIncomeSourceWithdrawal, nil
 	}
 	var t PartnerPayoutRateIncomeSource
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

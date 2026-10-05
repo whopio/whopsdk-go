@@ -3411,6 +3411,14 @@ func TestSettersListBusinessesResponseDataItemPayoutPercentages(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetWithdrawal", func(t *testing.T) {
+		obj := &ListBusinessesResponseDataItemPayoutPercentages{}
+		var fernTestValueWithdrawal *float64
+		obj.SetWithdrawal(fernTestValueWithdrawal)
+		assert.Equal(t, fernTestValueWithdrawal, obj.Withdrawal)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersListBusinessesResponseDataItemPayoutPercentages(t *testing.T) {
@@ -3536,6 +3544,39 @@ func TestGettersListBusinessesResponseDataItemPayoutPercentages(t *testing.T) {
 		_ = obj.GetTransfer() // Should return zero value
 	})
 
+	t.Run("GetWithdrawal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItemPayoutPercentages{}
+		var expected *float64
+		obj.Withdrawal = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWithdrawal(), "getter should return the property value")
+	})
+
+	t.Run("GetWithdrawal_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItemPayoutPercentages{}
+		obj.Withdrawal = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWithdrawal(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWithdrawal_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListBusinessesResponseDataItemPayoutPercentages
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWithdrawal() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitListBusinessesResponseDataItemPayoutPercentages(t *testing.T) {
@@ -3640,6 +3681,37 @@ func TestSettersMarkExplicitListBusinessesResponseDataItemPayoutPercentages(t *t
 
 		// Act
 		obj.SetTransfer(fernTestValueTransfer)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWithdrawal_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListBusinessesResponseDataItemPayoutPercentages{}
+		var fernTestValueWithdrawal *float64
+
+		// Act
+		obj.SetWithdrawal(fernTestValueWithdrawal)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7413,6 +7485,14 @@ func TestSettersRetrieveBusinessesResponsePayoutPercentages(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetWithdrawal", func(t *testing.T) {
+		obj := &RetrieveBusinessesResponsePayoutPercentages{}
+		var fernTestValueWithdrawal *float64
+		obj.SetWithdrawal(fernTestValueWithdrawal)
+		assert.Equal(t, fernTestValueWithdrawal, obj.Withdrawal)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersRetrieveBusinessesResponsePayoutPercentages(t *testing.T) {
@@ -7538,6 +7618,39 @@ func TestGettersRetrieveBusinessesResponsePayoutPercentages(t *testing.T) {
 		_ = obj.GetTransfer() // Should return zero value
 	})
 
+	t.Run("GetWithdrawal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponsePayoutPercentages{}
+		var expected *float64
+		obj.Withdrawal = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWithdrawal(), "getter should return the property value")
+	})
+
+	t.Run("GetWithdrawal_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponsePayoutPercentages{}
+		obj.Withdrawal = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWithdrawal(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWithdrawal_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBusinessesResponsePayoutPercentages
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWithdrawal() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitRetrieveBusinessesResponsePayoutPercentages(t *testing.T) {
@@ -7642,6 +7755,37 @@ func TestSettersMarkExplicitRetrieveBusinessesResponsePayoutPercentages(t *testi
 
 		// Act
 		obj.SetTransfer(fernTestValueTransfer)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWithdrawal_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponsePayoutPercentages{}
+		var fernTestValueWithdrawal *float64
+
+		// Act
+		obj.SetWithdrawal(fernTestValueWithdrawal)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9423,6 +9567,7 @@ func TestRequiredNullableRoundTripListBusinessesResponseDataItemPayoutPercentage
 		"ad_spend",
 		"card_interchange",
 		"transfer",
+		"withdrawal",
 	}
 	marshalToMap := func(t *testing.T, obj *ListBusinessesResponseDataItemPayoutPercentages) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -9435,7 +9580,7 @@ func TestRequiredNullableRoundTripListBusinessesResponseDataItemPayoutPercentage
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListBusinessesResponseDataItemPayoutPercentages
-		require.NoError(t, json.Unmarshal([]byte(`{"ad_spend":null,"card_interchange":null,"transfer":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ad_spend":null,"card_interchange":null,"transfer":null,"withdrawal":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -9779,6 +9924,7 @@ func TestRequiredNullableRoundTripRetrieveBusinessesResponsePayoutPercentages(t 
 		"ad_spend",
 		"card_interchange",
 		"transfer",
+		"withdrawal",
 	}
 	marshalToMap := func(t *testing.T, obj *RetrieveBusinessesResponsePayoutPercentages) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -9791,7 +9937,7 @@ func TestRequiredNullableRoundTripRetrieveBusinessesResponsePayoutPercentages(t 
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveBusinessesResponsePayoutPercentages
-		require.NoError(t, json.Unmarshal([]byte(`{"ad_spend":null,"card_interchange":null,"transfer":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ad_spend":null,"card_interchange":null,"transfer":null,"withdrawal":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
