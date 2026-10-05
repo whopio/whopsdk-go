@@ -964,34 +964,35 @@ var (
 	adGroupFieldLanguages                    = big.NewInt(1 << 46)
 	adGroupFieldLeadValue                    = big.NewInt(1 << 47)
 	adGroupFieldLeads                        = big.NewInt(1 << 48)
-	adGroupFieldLinkClicks                   = big.NewInt(1 << 49)
-	adGroupFieldMessageApps                  = big.NewInt(1 << 50)
-	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 51)
-	adGroupFieldOptimizationGoal             = big.NewInt(1 << 52)
-	adGroupFieldPlacements                   = big.NewInt(1 << 53)
-	adGroupFieldPlatform                     = big.NewInt(1 << 54)
-	adGroupFieldPurchaseValue                = big.NewInt(1 << 55)
-	adGroupFieldPurchases                    = big.NewInt(1 << 56)
-	adGroupFieldReach                        = big.NewInt(1 << 57)
-	adGroupFieldRegions                      = big.NewInt(1 << 58)
-	adGroupFieldResultEvent                  = big.NewInt(1 << 59)
-	adGroupFieldResultEventName              = big.NewInt(1 << 60)
-	adGroupFieldResults                      = big.NewInt(1 << 61)
-	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 62)
-	adGroupFieldScheduleValue                = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adGroupFieldSchedules                    = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adGroupFieldSpend                        = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adGroupFieldSpendCurrency                = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 73)
-	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 74)
-	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 75)
-	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 76)
+	adGroupFieldLearningProgress             = big.NewInt(1 << 49)
+	adGroupFieldLinkClicks                   = big.NewInt(1 << 50)
+	adGroupFieldMessageApps                  = big.NewInt(1 << 51)
+	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 52)
+	adGroupFieldOptimizationGoal             = big.NewInt(1 << 53)
+	adGroupFieldPlacements                   = big.NewInt(1 << 54)
+	adGroupFieldPlatform                     = big.NewInt(1 << 55)
+	adGroupFieldPurchaseValue                = big.NewInt(1 << 56)
+	adGroupFieldPurchases                    = big.NewInt(1 << 57)
+	adGroupFieldReach                        = big.NewInt(1 << 58)
+	adGroupFieldRegions                      = big.NewInt(1 << 59)
+	adGroupFieldResultEvent                  = big.NewInt(1 << 60)
+	adGroupFieldResultEventName              = big.NewInt(1 << 61)
+	adGroupFieldResults                      = big.NewInt(1 << 62)
+	adGroupFieldReturnOnAdSpend              = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adGroupFieldScheduleValue                = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adGroupFieldSchedules                    = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adGroupFieldSpend                        = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adGroupFieldSpendCurrency                = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 76)
+	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 77)
 )
 
 // adGroupNullableFields maps the wire names of AdGroup's nullable fields (required or optional) to their field bits.
@@ -1017,6 +1018,7 @@ var adGroupNullableFields = map[string]*big.Int{
 	"ends_at":                         adGroupFieldEndsAt,
 	"frequency":                       adGroupFieldFrequency,
 	"frequency_cap":                   adGroupFieldFrequencyCap,
+	"learning_progress":               adGroupFieldLearningProgress,
 	"minimum_daily_spend":             adGroupFieldMinimumDailySpend,
 	"optimization_goal":               adGroupFieldOptimizationGoal,
 	"result_event":                    adGroupFieldResultEvent,
@@ -1124,6 +1126,8 @@ type AdGroup struct {
 	LeadValue float64 `json:"lead_value" url:"lead_value"`
 	// Whop pixel-attributed leads, last-click.
 	Leads float64 `json:"leads" url:"leads"`
+	// Progress toward the ad platform's learning conversion threshold for this ad group. Null unless it is learning or learning limited and the platform reports valid counts. Reaching the threshold does not determine delivery status.
+	LearningProgress *AdGroupLearningProgress `json:"learning_progress,omitempty" url:"learning_progress,omitempty"`
 	// Clicks on links in the ad that lead to your destination, as reported by the ad platform. A subset of clicks, which also counts likes, comments, and other interactions with the ad.
 	LinkClicks  float64                  `json:"link_clicks" url:"link_clicks"`
 	MessageApps []AdGroupMessageAppsItem `json:"message_apps,omitempty" url:"message_apps,omitempty"`
@@ -1527,6 +1531,13 @@ func (a *AdGroup) GetLeads() float64 {
 		return 0
 	}
 	return a.Leads
+}
+
+func (a *AdGroup) GetLearningProgress() *AdGroupLearningProgress {
+	if a == nil {
+		return nil
+	}
+	return a.LearningProgress
 }
 
 func (a *AdGroup) GetLinkClicks() float64 {
@@ -2082,6 +2093,13 @@ func (a *AdGroup) SetLeadValue(leadValue float64) {
 func (a *AdGroup) SetLeads(leads float64) {
 	a.Leads = leads
 	a.require(adGroupFieldLeads)
+}
+
+// SetLearningProgress sets the LearningProgress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetLearningProgress(learningProgress *AdGroupLearningProgress) {
+	a.LearningProgress = learningProgress
+	a.require(adGroupFieldLearningProgress)
 }
 
 // SetLinkClicks sets the LinkClicks field and marks it as non-optional;
@@ -5897,6 +5915,127 @@ func (a *AdGroupGeoLocationsBodyZipsItemKey) MarshalJSON() ([]byte, error) {
 }
 
 func (a *AdGroupGeoLocationsBodyZipsItemKey) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	adGroupLearningProgressFieldConversionThreshold = big.NewInt(1 << 0)
+	adGroupLearningProgressFieldConversions         = big.NewInt(1 << 1)
+	adGroupLearningProgressFieldProgressPercent     = big.NewInt(1 << 2)
+)
+
+type AdGroupLearningProgress struct {
+	// The ad platform's dynamic conversion threshold for this ad group's learning phase.
+	ConversionThreshold int `json:"conversion_threshold" url:"conversion_threshold"`
+	// Conversions reported by the ad platform since the last significant edit during this ad group's learning phase.
+	Conversions int `json:"conversions" url:"conversions"`
+	// Conversions divided by the threshold, as a percentage clamped to 0–100. The platform's learning status remains authoritative.
+	ProgressPercent float64 `json:"progress_percent" url:"progress_percent"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupLearningProgress) GetConversionThreshold() int {
+	if a == nil {
+		return 0
+	}
+	return a.ConversionThreshold
+}
+
+func (a *AdGroupLearningProgress) GetConversions() int {
+	if a == nil {
+		return 0
+	}
+	return a.Conversions
+}
+
+func (a *AdGroupLearningProgress) GetProgressPercent() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.ProgressPercent
+}
+
+func (a *AdGroupLearningProgress) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdGroupLearningProgress) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetConversionThreshold sets the ConversionThreshold field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupLearningProgress) SetConversionThreshold(conversionThreshold int) {
+	a.ConversionThreshold = conversionThreshold
+	a.require(adGroupLearningProgressFieldConversionThreshold)
+}
+
+// SetConversions sets the Conversions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupLearningProgress) SetConversions(conversions int) {
+	a.Conversions = conversions
+	a.require(adGroupLearningProgressFieldConversions)
+}
+
+// SetProgressPercent sets the ProgressPercent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupLearningProgress) SetProgressPercent(progressPercent float64) {
+	a.ProgressPercent = progressPercent
+	a.require(adGroupLearningProgressFieldProgressPercent)
+}
+
+func (a *AdGroupLearningProgress) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdGroupLearningProgress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdGroupLearningProgress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdGroupLearningProgress) MarshalJSON() ([]byte, error) {
+	type embed AdGroupLearningProgress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdGroupLearningProgress) String() string {
 	if a == nil {
 		return "<nil>"
 	}
