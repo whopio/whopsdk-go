@@ -43463,6 +43463,14 @@ client.Users.OauthGrants.Create(
 <dl>
 <dd>
 
+**mcpClient:** `*users.CreateOauthGrantsRequestMcpClient` — The downstream MCP client displayed on the consent screen. Requires explicit consent even when the upstream app already has a grant. Bound to the authorization code and returned on token exchange so the MCP server can verify the approved client.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **nonce:** `*string` — OIDC nonce, echoed into the resulting ID token. Required when `requested_scopes` includes `openid`.
     
 </dd>

@@ -16,11 +16,12 @@ var (
 	createOauthGrantsRequestFieldCodeChallenge       = big.NewInt(1 << 2)
 	createOauthGrantsRequestFieldCodeChallengeMethod = big.NewInt(1 << 3)
 	createOauthGrantsRequestFieldConsentShown        = big.NewInt(1 << 4)
-	createOauthGrantsRequestFieldNonce               = big.NewInt(1 << 5)
-	createOauthGrantsRequestFieldRedirectURI         = big.NewInt(1 << 6)
-	createOauthGrantsRequestFieldRequestedScopes     = big.NewInt(1 << 7)
-	createOauthGrantsRequestFieldResponseType        = big.NewInt(1 << 8)
-	createOauthGrantsRequestFieldState               = big.NewInt(1 << 9)
+	createOauthGrantsRequestFieldMcpClient           = big.NewInt(1 << 5)
+	createOauthGrantsRequestFieldNonce               = big.NewInt(1 << 6)
+	createOauthGrantsRequestFieldRedirectURI         = big.NewInt(1 << 7)
+	createOauthGrantsRequestFieldRequestedScopes     = big.NewInt(1 << 8)
+	createOauthGrantsRequestFieldResponseType        = big.NewInt(1 << 9)
+	createOauthGrantsRequestFieldState               = big.NewInt(1 << 10)
 )
 
 type CreateOauthGrantsRequest struct {
@@ -34,6 +35,8 @@ type CreateOauthGrantsRequest struct {
 	CodeChallengeMethod *CreateOauthGrantsRequestCodeChallengeMethod `json:"code_challenge_method,omitempty" url:"-"`
 	// Whether the consent UI listed these scopes for the user. Sending `false` succeeds only when the user has already granted every scope requested, or when the app is one of Whop's own with the consent skip switched on and asks for `openid` alone.
 	ConsentShown *bool `json:"consent_shown,omitempty" url:"-"`
+	// The downstream MCP client displayed on the consent screen. Requires explicit consent even when the upstream app already has a grant. Bound to the authorization code and returned on token exchange so the MCP server can verify the approved client.
+	McpClient *CreateOauthGrantsRequestMcpClient `json:"mcp_client,omitempty" url:"-"`
 	// OIDC nonce, echoed into the resulting ID token. Required when `requested_scopes` includes `openid`.
 	Nonce *string `json:"nonce,omitempty" url:"-"`
 	// Where to send the user once they have consented. Must match one of the app's registered redirect URIs exactly — it is compared as a string, not normalized.
@@ -91,6 +94,13 @@ func (c *CreateOauthGrantsRequest) SetCodeChallengeMethod(codeChallengeMethod *C
 func (c *CreateOauthGrantsRequest) SetConsentShown(consentShown *bool) {
 	c.ConsentShown = consentShown
 	c.require(createOauthGrantsRequestFieldConsentShown)
+}
+
+// SetMcpClient sets the McpClient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateOauthGrantsRequest) SetMcpClient(mcpClient *CreateOauthGrantsRequestMcpClient) {
+	c.McpClient = mcpClient
+	c.require(createOauthGrantsRequestFieldMcpClient)
 }
 
 // SetNonce sets the Nonce field and marks it as non-optional;
@@ -255,6 +265,128 @@ func NewCreateOauthGrantsRequestCodeChallengeMethodFromString(s string) (CreateO
 
 func (c CreateOauthGrantsRequestCodeChallengeMethod) Ptr() *CreateOauthGrantsRequestCodeChallengeMethod {
 	return &c
+}
+
+var (
+	createOauthGrantsRequestMcpClientFieldClientID    = big.NewInt(1 << 0)
+	createOauthGrantsRequestMcpClientFieldClientName  = big.NewInt(1 << 1)
+	createOauthGrantsRequestMcpClientFieldRedirectURI = big.NewInt(1 << 2)
+)
+
+// The downstream MCP client displayed on the consent screen. Requires explicit consent even when the upstream app already has a grant. Bound to the authorization code and returned on token exchange so the MCP server can verify the approved client.
+type CreateOauthGrantsRequestMcpClient struct {
+	// The requesting MCP client's identifier.
+	ClientID string `json:"client_id" url:"client_id"`
+	// The requesting MCP client's display name.
+	ClientName string `json:"client_name" url:"client_name"`
+	// The downstream redirect URI displayed to the user.
+	RedirectURI string `json:"redirect_uri" url:"redirect_uri"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) GetClientID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ClientID
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) GetClientName() string {
+	if c == nil {
+		return ""
+	}
+	return c.ClientName
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) GetRedirectURI() string {
+	if c == nil {
+		return ""
+	}
+	return c.RedirectURI
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetClientID sets the ClientID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateOauthGrantsRequestMcpClient) SetClientID(clientID string) {
+	c.ClientID = clientID
+	c.require(createOauthGrantsRequestMcpClientFieldClientID)
+}
+
+// SetClientName sets the ClientName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateOauthGrantsRequestMcpClient) SetClientName(clientName string) {
+	c.ClientName = clientName
+	c.require(createOauthGrantsRequestMcpClientFieldClientName)
+}
+
+// SetRedirectURI sets the RedirectURI field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateOauthGrantsRequestMcpClient) SetRedirectURI(redirectURI string) {
+	c.RedirectURI = redirectURI
+	c.require(createOauthGrantsRequestMcpClientFieldRedirectURI)
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateOauthGrantsRequestMcpClient
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateOauthGrantsRequestMcpClient(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) MarshalJSON() ([]byte, error) {
+	type embed CreateOauthGrantsRequestMcpClient
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 // The OAuth response type. Only `code` is accepted; defaults to `code`.
