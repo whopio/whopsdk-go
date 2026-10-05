@@ -311,7 +311,7 @@ func (c *Client) Retry(
 	return response.Body, nil
 }
 
-// Voids or cancels an eligible payment. The request is rejected if the payment is no longer eligible.
+// Voids or cancels an eligible payment. The request is rejected if the payment is no longer eligible. Some processors confirm the release of a card authorization asynchronously: the payment is then returned still `authorized`, and a `payment.canceled` webhook follows once the hold is released.
 //
 // Example:
 //
