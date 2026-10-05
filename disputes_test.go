@@ -856,6 +856,14 @@ func TestSettersDispute(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFee", func(t *testing.T) {
+		obj := &Dispute{}
+		var fernTestValueFee *Money
+		obj.SetFee(fernTestValueFee)
+		assert.Equal(t, fernTestValueFee, obj.Fee)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetID", func(t *testing.T) {
 		obj := &Dispute{}
 		var fernTestValueID string
@@ -1235,6 +1243,39 @@ func TestGettersDispute(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEvidenceSubmittedAt() // Should return zero value
+	})
+
+	t.Run("GetFee", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Dispute{}
+		var expected *Money
+		obj.Fee = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFee(), "getter should return the property value")
+	})
+
+	t.Run("GetFee_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Dispute{}
+		obj.Fee = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFee(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFee_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Dispute
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFee() // Should return zero value
 	})
 
 	t.Run("GetID", func(t *testing.T) {
@@ -1840,6 +1881,37 @@ func TestSettersMarkExplicitDispute(t *testing.T) {
 
 		// Act
 		obj.SetEvidenceSubmittedAt(fernTestValueEvidenceSubmittedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFee_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Dispute{}
+		var fernTestValueFee *Money
+
+		// Act
+		obj.SetFee(fernTestValueFee)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11295,6 +11367,7 @@ func TestRequiredNullableRoundTripDispute(t *testing.T) {
 		"evidence_due_at",
 		"evidence_locked_reason",
 		"evidence_submitted_at",
+		"fee",
 		"plan_id",
 		"product_id",
 		"reason_code",
@@ -11310,7 +11383,7 @@ func TestRequiredNullableRoundTripDispute(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Dispute
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"evidence_due_at":null,"evidence_locked_reason":null,"evidence_submitted_at":null,"plan_id":null,"product_id":null,"reason_code":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"evidence_due_at":null,"evidence_locked_reason":null,"evidence_submitted_at":null,"fee":null,"plan_id":null,"product_id":null,"reason_code":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
