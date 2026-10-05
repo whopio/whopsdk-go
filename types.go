@@ -6236,10 +6236,12 @@ func (a *AdLeadFormQuestionOption) String() string {
 }
 
 var (
-	adPlatformIssueFieldID           = big.NewInt(1 << 0)
-	adPlatformIssueFieldMessage      = big.NewInt(1 << 1)
-	adPlatformIssueFieldResourceID   = big.NewInt(1 << 2)
-	adPlatformIssueFieldResourceType = big.NewInt(1 << 3)
+	adPlatformIssueFieldCategory     = big.NewInt(1 << 0)
+	adPlatformIssueFieldID           = big.NewInt(1 << 1)
+	adPlatformIssueFieldMessage      = big.NewInt(1 << 2)
+	adPlatformIssueFieldResourceID   = big.NewInt(1 << 3)
+	adPlatformIssueFieldResourceType = big.NewInt(1 << 4)
+	adPlatformIssueFieldTitle        = big.NewInt(1 << 5)
 )
 
 // adPlatformIssueNullableFields maps the wire names of AdPlatformIssue's nullable fields (required or optional) to their field bits.
@@ -6248,6 +6250,8 @@ var adPlatformIssueNullableFields = map[string]*big.Int{
 }
 
 type AdPlatformIssue struct {
+	// The kind of issue: information about delivery, a warning, or an error requiring attention.
+	Category AdPlatformIssueCategory `json:"category" url:"category"`
 	// Unique identifier for the issue.
 	ID string `json:"id" url:"id"`
 	// A description of what the issue is and how it can be resolved.
@@ -6256,12 +6260,21 @@ type AdPlatformIssue struct {
 	ResourceID *string `json:"resource_id,omitempty" url:"resource_id,omitempty"`
 	// The type of resource the issue is attached to.
 	ResourceType AdPlatformIssueResourceType `json:"resource_type" url:"resource_type"`
+	// A short, creator-facing title for the issue.
+	Title string `json:"title" url:"title"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AdPlatformIssue) GetCategory() AdPlatformIssueCategory {
+	if a == nil {
+		return ""
+	}
+	return a.Category
 }
 
 func (a *AdPlatformIssue) GetID() string {
@@ -6292,6 +6305,13 @@ func (a *AdPlatformIssue) GetResourceType() AdPlatformIssueResourceType {
 	return a.ResourceType
 }
 
+func (a *AdPlatformIssue) GetTitle() string {
+	if a == nil {
+		return ""
+	}
+	return a.Title
+}
+
 func (a *AdPlatformIssue) GetExtraProperties() map[string]interface{} {
 	if a == nil {
 		return nil
@@ -6306,6 +6326,13 @@ func (a *AdPlatformIssue) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdPlatformIssue) SetCategory(category AdPlatformIssueCategory) {
+	a.Category = category
+	a.require(adPlatformIssueFieldCategory)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6334,6 +6361,13 @@ func (a *AdPlatformIssue) SetResourceID(resourceID *string) {
 func (a *AdPlatformIssue) SetResourceType(resourceType AdPlatformIssueResourceType) {
 	a.ResourceType = resourceType
 	a.require(adPlatformIssueFieldResourceType)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdPlatformIssue) SetTitle(title string) {
+	a.Title = title
+	a.require(adPlatformIssueFieldTitle)
 }
 
 func (a *AdPlatformIssue) UnmarshalJSON(data []byte) error {
@@ -6383,6 +6417,32 @@ func (a *AdPlatformIssue) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// The kind of issue: information about delivery, a warning, or an error requiring attention.
+type AdPlatformIssueCategory string
+
+const (
+	AdPlatformIssueCategoryInformation AdPlatformIssueCategory = "information"
+	AdPlatformIssueCategoryWarning     AdPlatformIssueCategory = "warning"
+	AdPlatformIssueCategoryError       AdPlatformIssueCategory = "error"
+)
+
+func NewAdPlatformIssueCategoryFromString(s string) (AdPlatformIssueCategory, error) {
+	switch s {
+	case "information":
+		return AdPlatformIssueCategoryInformation, nil
+	case "warning":
+		return AdPlatformIssueCategoryWarning, nil
+	case "error":
+		return AdPlatformIssueCategoryError, nil
+	}
+	var t AdPlatformIssueCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdPlatformIssueCategory) Ptr() *AdPlatformIssueCategory {
+	return &a
 }
 
 // The type of resource the issue is attached to.
