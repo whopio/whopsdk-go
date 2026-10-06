@@ -15386,7 +15386,7 @@ client.DmMembers.Update(
 <dl>
 <dd>
 
-Lists your domains. Filter by account, app, or status.
+Lists your domains. Filter by account, app, status, or hostname.
 
 Pass `search` to find domains to buy instead: the exact domain first, even when taken, then your name on popular extensions, then suggestions. Pass `tlds` to check only the extensions you choose. Results aren't reserved.
 </dd>
@@ -15444,7 +15444,7 @@ client.Domains.List(
 <dl>
 <dd>
 
-**status:** `*whopsdk.ListDomainsRequestStatus` — Only domains with this lifecycle status.
+**status:** `*whopsdk.ListDomainsRequestStatus` — Only domains with this lifecycle status. Removed and failed domains aren't listed; retrieve them by ID.
     
 </dd>
 </dl>
@@ -15512,6 +15512,14 @@ client.Domains.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**domain:** `*string` — Only your domain with this hostname, such as `example.com`.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -15532,7 +15540,11 @@ client.Domains.List(
 <dl>
 <dd>
 
-Claims a hostname for an app and returns the DNS records to publish. Verification and certificate setup run automatically, and unverified claims are deleted after 48 hours. A claim doesn't reserve the hostname.
+Buys a domain through Whop, or connects one you registered elsewhere.
+
+A bought domain starts `awaiting_payment`. Pay its `amount_due` at `purchase_url`, or pass `payment_method_id` to charge a saved card. Whop then registers it, hosts its DNS, issues its certificate and serves the app, and renews it every year while `auto_renew` is on. An unpaid purchase is removed after 7 days.
+
+With `mode: external`, Whop returns the DNS records to publish instead. Verification and certificate setup run automatically, and unverified claims are deleted after 48 hours. A claim doesn't reserve the hostname.
 </dd>
 </dl>
 </dd>
@@ -15548,7 +15560,6 @@ Claims a hostname for an app and returns the DNS records to publish. Verificatio
 
 ```go
 request := &whopsdk.CreateDomainsRequest{
-    AppID: "app_xxxxxxxxxxxxxx",
     Domain: "store.example.com",
 }
 client.Domains.Create(
@@ -15577,7 +15588,7 @@ client.Domains.Create(
 <dl>
 <dd>
 
-**appID:** `string` — App ID, prefixed app_. The app must belong to the account.
+**appID:** `*string` — App ID, prefixed app_, for the domain to serve. The app must belong to the account. Required with `mode: external`.
     
 </dd>
 </dl>
@@ -15585,7 +15596,7 @@ client.Domains.Create(
 <dl>
 <dd>
 
-**domain:** `string` — Bare hostname, such as example.com or checkout.example.com. Wildcards, paths, schemes, and ports are not accepted.
+**domain:** `string` — Bare hostname, such as example.com or checkout.example.com. A bought domain must be a root domain. Wildcards, paths, schemes, and ports are not accepted.
     
 </dd>
 </dl>
@@ -15601,7 +15612,23 @@ client.Domains.Create(
 <dl>
 <dd>
 
-**replaceExisting:** `*bool` — Explicitly transfer a domain from its current owner after publishing this new claim's TXT proof. Create the claim after the current owner verified.
+**mode:** `*whopsdk.CreateDomainsRequestMode` — `managed` buys the domain through Whop; `external` connects a domain you registered elsewhere.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethodID:** `*string` — Saved card to charge for a bought domain and its renewals, prefixed `payt_`. It must belong to the signed-in user.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replaceExisting:** `*bool` — With `mode: external`, explicitly transfer a domain from its current owner after publishing this new claim's TXT proof. Create the claim after the current owner verified.
     
 </dd>
 </dl>
@@ -15625,7 +15652,7 @@ client.Domains.Create(
 <dl>
 <dd>
 
-Retrieves a domain's claim, app assignment, DNS records, and hostname and certificate status, and starts a background check if it isn't active yet.
+Retrieves a domain's status, issues, billing, and DNS records, and checks it again in the background if it isn't active yet.
 
 Pass a hostname instead of an ID to look up any domain, with its `registration_quote` and, if registered, its `public_record`.
 </dd>
@@ -15687,7 +15714,7 @@ client.Domains.Retrieve(
 <dl>
 <dd>
 
-Stops routing the domain to its app and starts cleanup. It returns as `deleting`; retrieve it until it's `removed`.
+Stops routing a connected domain to its app and starts cleanup: it returns as `deleting`; retrieve it until it's `removed`. Deleting an unpaid purchase cancels it. A registered domain can't be deleted; turn off `auto_renew` and it's released after it expires.
 </dd>
 </dl>
 </dd>
@@ -15747,7 +15774,7 @@ client.Domains.Delete(
 <dl>
 <dd>
 
-Reassigns a domain to another app in the same account or replaces its metadata. The hostname and owning account cannot be edited.
+Reassigns a domain to another app in the same account, replaces its metadata, or changes how a bought domain renews. The hostname and owning account cannot be edited.
 </dd>
 </dl>
 </dd>
@@ -15791,7 +15818,15 @@ client.Domains.Update(
 <dl>
 <dd>
 
-**appID:** `*string` — App ID, prefixed app_. Must belong to the same account.
+**appID:** `*string` — App ID, prefixed app_. Must belong to the same account. Pass `null` to detach a bought domain from its app; it keeps renewing.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**autoRenew:** `*bool` — For a bought domain, whether Whop charges its saved card to renew it before it expires.
     
 </dd>
 </dl>
@@ -15800,6 +15835,14 @@ client.Domains.Update(
 <dd>
 
 **metadata:** `map[string]string` — Replacement custom string keys and values.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethodID:** `*string` — For a bought domain, the saved card to charge, prefixed `payt_`. It must belong to the signed-in user. Pass `null` to remove it.
     
 </dd>
 </dl>
