@@ -27756,7 +27756,7 @@ client.Payouts.CreateQuote(
 <dl>
 <dd>
 
-Fetches one payout by its `wdrl_` ID, or by the `cofr_` conversion request ID a stablecoin payout carries as `payout_request_id` — both ids answer with the same payout object.
+Fetches one payout by its `wdrl_` ID, or by the `cofr_` conversion request ID a stablecoin payout carries as `payout_request_id` — both ids answer with the same payout object. Authentication is optional. Anyone with the ID can view payout tracking details, including notes, trace code, exchange rate, and payout request ID. Accounting fields require payout:withdrawal:read on the owning ledger. A supplied invalid credential returns 401.
 </dd>
 </dl>
 </dd>
@@ -27800,7 +27800,7 @@ client.Payouts.Retrieve(
 <dl>
 <dd>
 
-**accountID:** `*string` — Owning account ID, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+**accountID:** `*string` — Optional owning account ID, prefixed `biz_`. The payout ID identifies its ledger. If supplied, this must match the owner and cannot be combined with `user_id`.
     
 </dd>
 </dl>
@@ -27808,7 +27808,7 @@ client.Payouts.Retrieve(
 <dl>
 <dd>
 
-**userID:** `*string` — Owning user ID, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+**userID:** `*string` — Optional owning user ID, prefixed `user_`. The payout ID identifies its ledger. If supplied, this must match the owner and cannot be combined with `account_id`.
     
 </dd>
 </dl>
