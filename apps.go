@@ -2312,10 +2312,14 @@ type AppDomainStatus string
 
 const (
 	AppDomainStatusPendingVerification AppDomainStatus = "pending_verification"
+	AppDomainStatusAwaitingPayment     AppDomainStatus = "awaiting_payment"
+	AppDomainStatusRegistering         AppDomainStatus = "registering"
 	AppDomainStatusProvisioning        AppDomainStatus = "provisioning"
 	AppDomainStatusActive              AppDomainStatus = "active"
 	AppDomainStatusActionRequired      AppDomainStatus = "action_required"
 	AppDomainStatusDeleting            AppDomainStatus = "deleting"
+	AppDomainStatusExpired             AppDomainStatus = "expired"
+	AppDomainStatusFailed              AppDomainStatus = "failed"
 	AppDomainStatusRemoved             AppDomainStatus = "removed"
 )
 
@@ -2323,6 +2327,10 @@ func NewAppDomainStatusFromString(s string) (AppDomainStatus, error) {
 	switch s {
 	case "pending_verification":
 		return AppDomainStatusPendingVerification, nil
+	case "awaiting_payment":
+		return AppDomainStatusAwaitingPayment, nil
+	case "registering":
+		return AppDomainStatusRegistering, nil
 	case "provisioning":
 		return AppDomainStatusProvisioning, nil
 	case "active":
@@ -2331,6 +2339,10 @@ func NewAppDomainStatusFromString(s string) (AppDomainStatus, error) {
 		return AppDomainStatusActionRequired, nil
 	case "deleting":
 		return AppDomainStatusDeleting, nil
+	case "expired":
+		return AppDomainStatusExpired, nil
+	case "failed":
+		return AppDomainStatusFailed, nil
 	case "removed":
 		return AppDomainStatusRemoved, nil
 	}

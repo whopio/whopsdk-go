@@ -119,7 +119,6 @@ func TestDomainsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateDomainsRequest{
-		AppID:  "app_xxxxxxxxxxxxxx",
 		Domain: "store.example.com",
 	}
 	_, invocationErr := client.Domains.Create(

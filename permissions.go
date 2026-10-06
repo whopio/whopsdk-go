@@ -56,6 +56,8 @@ const (
 	PermissionActionWaitlistEntryCancel               PermissionAction = "waitlist_entry:cancel"
 	PermissionActionExperimentManage                  PermissionAction = "experiment:manage"
 	PermissionActionExperimentRead                    PermissionAction = "experiment:read"
+	PermissionActionDomainManage                      PermissionAction = "domain:manage"
+	PermissionActionDomainRead                        PermissionAction = "domain:read"
 	PermissionActionAiPromptCreate                    PermissionAction = "ai_prompt:create"
 	PermissionActionAccessPassBasicExport             PermissionAction = "access_pass:basic:export"
 	PermissionActionAccessPassBasicRead               PermissionAction = "access_pass:basic:read"
@@ -338,6 +340,10 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionExperimentManage, nil
 	case "experiment:read":
 		return PermissionActionExperimentRead, nil
+	case "domain:manage":
+		return PermissionActionDomainManage, nil
+	case "domain:read":
+		return PermissionActionDomainRead, nil
 	case "ai_prompt:create":
 		return PermissionActionAiPromptCreate, nil
 	case "access_pass:basic:export":

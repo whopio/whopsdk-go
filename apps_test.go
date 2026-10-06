@@ -13624,6 +13624,20 @@ func TestEnumAppDomainStatus(t *testing.T) {
 		assert.Equal(t, AppDomainStatus("pending_verification"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_awaiting_payment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppDomainStatusFromString("awaiting_payment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppDomainStatus("awaiting_payment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_registering", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppDomainStatusFromString("registering")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppDomainStatus("registering"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_provisioning", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAppDomainStatusFromString("provisioning")
@@ -13650,6 +13664,20 @@ func TestEnumAppDomainStatus(t *testing.T) {
 		val, err := NewAppDomainStatusFromString("deleting")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, AppDomainStatus("deleting"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_expired", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppDomainStatusFromString("expired")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppDomainStatus("expired"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_failed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppDomainStatusFromString("failed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppDomainStatus("failed"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_removed", func(t *testing.T) {
