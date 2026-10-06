@@ -539,6 +539,14 @@ func TestSettersDisputeAlert(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFee", func(t *testing.T) {
+		obj := &DisputeAlert{}
+		var fernTestValueFee *Money
+		obj.SetFee(fernTestValueFee)
+		assert.Equal(t, fernTestValueFee, obj.Fee)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFeeCharged", func(t *testing.T) {
 		obj := &DisputeAlert{}
 		var fernTestValueFeeCharged bool
@@ -770,6 +778,39 @@ func TestGettersDisputeAlert(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCurrency() // Should return zero value
+	})
+
+	t.Run("GetFee", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DisputeAlert{}
+		var expected *Money
+		obj.Fee = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFee(), "getter should return the property value")
+	})
+
+	t.Run("GetFee_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DisputeAlert{}
+		obj.Fee = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFee(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFee_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DisputeAlert
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFee() // Should return zero value
 	})
 
 	t.Run("GetFeeCharged", func(t *testing.T) {
@@ -1185,6 +1226,37 @@ func TestSettersMarkExplicitDisputeAlert(t *testing.T) {
 
 		// Act
 		obj.SetCurrency(fernTestValueCurrency)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFee_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DisputeAlert{}
+		var fernTestValueFee *Money
+
+		// Act
+		obj.SetFee(fernTestValueFee)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2600,6 +2672,7 @@ func TestRequiredNullableRoundTripDisputeAlert(t *testing.T) {
 	requiredNullableKeys := []string{
 		"account_id",
 		"card_brand",
+		"fee",
 		"issuer",
 		"payment_id",
 		"product_id",
@@ -2616,7 +2689,7 @@ func TestRequiredNullableRoundTripDisputeAlert(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj DisputeAlert
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"card_brand":null,"issuer":null,"payment_id":null,"product_id":null,"transaction_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"card_brand":null,"fee":null,"issuer":null,"payment_id":null,"product_id":null,"transaction_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
