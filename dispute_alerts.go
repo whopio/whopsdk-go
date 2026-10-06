@@ -173,21 +173,23 @@ var (
 	disputeAlertFieldCardBrand     = big.NewInt(1 << 3)
 	disputeAlertFieldCreatedAt     = big.NewInt(1 << 4)
 	disputeAlertFieldCurrency      = big.NewInt(1 << 5)
-	disputeAlertFieldFeeCharged    = big.NewInt(1 << 6)
-	disputeAlertFieldID            = big.NewInt(1 << 7)
-	disputeAlertFieldIssuer        = big.NewInt(1 << 8)
-	disputeAlertFieldPaymentID     = big.NewInt(1 << 9)
-	disputeAlertFieldProductID     = big.NewInt(1 << 10)
-	disputeAlertFieldReportedAt    = big.NewInt(1 << 11)
-	disputeAlertFieldTransactionAt = big.NewInt(1 << 12)
-	disputeAlertFieldType          = big.NewInt(1 << 13)
-	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 14)
+	disputeAlertFieldFee           = big.NewInt(1 << 6)
+	disputeAlertFieldFeeCharged    = big.NewInt(1 << 7)
+	disputeAlertFieldID            = big.NewInt(1 << 8)
+	disputeAlertFieldIssuer        = big.NewInt(1 << 9)
+	disputeAlertFieldPaymentID     = big.NewInt(1 << 10)
+	disputeAlertFieldProductID     = big.NewInt(1 << 11)
+	disputeAlertFieldReportedAt    = big.NewInt(1 << 12)
+	disputeAlertFieldTransactionAt = big.NewInt(1 << 13)
+	disputeAlertFieldType          = big.NewInt(1 << 14)
+	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 15)
 )
 
 // disputeAlertNullableFields maps the wire names of DisputeAlert's nullable fields (required or optional) to their field bits.
 var disputeAlertNullableFields = map[string]*big.Int{
 	"account_id":     disputeAlertFieldAccountID,
 	"card_brand":     disputeAlertFieldCardBrand,
+	"fee":            disputeAlertFieldFee,
 	"issuer":         disputeAlertFieldIssuer,
 	"payment_id":     disputeAlertFieldPaymentID,
 	"product_id":     disputeAlertFieldProductID,
@@ -207,6 +209,8 @@ type DisputeAlert struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Three-letter ISO currency code of the alerted amount.
 	Currency string `json:"currency" url:"currency"`
+	// The alert fee charged to the account, in the currency it was collected in. `null` when `fee_charged` is false.
+	Fee *Money `json:"fee,omitempty" url:"fee,omitempty"`
 	// Whether Whop charged the account an alert fee for this one. Always `false` for `early_fraud_warning`, which Whop is not billed for and never passes on.
 	FeeCharged bool `json:"fee_charged" url:"fee_charged"`
 	// Dispute alert ID, prefixed `dspa_`.
@@ -274,6 +278,13 @@ func (d *DisputeAlert) GetCurrency() string {
 		return ""
 	}
 	return d.Currency
+}
+
+func (d *DisputeAlert) GetFee() *Money {
+	if d == nil {
+		return nil
+	}
+	return d.Fee
 }
 
 func (d *DisputeAlert) GetFeeCharged() bool {
@@ -395,6 +406,13 @@ func (d *DisputeAlert) SetCreatedAt(createdAt string) {
 func (d *DisputeAlert) SetCurrency(currency string) {
 	d.Currency = currency
 	d.require(disputeAlertFieldCurrency)
+}
+
+// SetFee sets the Fee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeAlert) SetFee(fee *Money) {
+	d.Fee = fee
+	d.require(disputeAlertFieldFee)
 }
 
 // SetFeeCharged sets the FeeCharged field and marks it as non-optional;
