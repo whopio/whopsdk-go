@@ -27,7 +27,7 @@ type ListEconomicIntelligenceRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Filter recommendations by their current status.
 	Status *ListEconomicIntelligenceRequestStatus `json:"-" url:"status,omitempty"`
-	// What you want recommendations for, in your own words. Up to 1000 characters. Narrows the list to the recommendations that address it.
+	// What you want recommendations for, in your own words. Up to 1000 characters. Narrows the list to the recommendations that address it. Without a `status` filter, when none do and you can update the account, new recommendations start generating for your input, and the list shows that request until they're ready. Repeating the same input while it generates doesn't start another.
 	Input *string `json:"-" url:"input,omitempty"`
 	// When true, only recommendations someone has started running, by any user. Without `account_id`, covers every account you can read that has Economic Intelligence. Can't be combined with `input`.
 	HasRun *bool `json:"-" url:"has_run,omitempty"`

@@ -15917,7 +15917,7 @@ client.EconomicIntelligence.List(
 <dl>
 <dd>
 
-**input:** `*string` — What you want recommendations for, in your own words. Up to 1000 characters. Narrows the list to the recommendations that address it.
+**input:** `*string` — What you want recommendations for, in your own words. Up to 1000 characters. Narrows the list to the recommendations that address it. Without a `status` filter, when none do and you can update the account, new recommendations start generating for your input, and the list shows that request until they're ready. Repeating the same input while it generates doesn't start another.
     
 </dd>
 </dl>
