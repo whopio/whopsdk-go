@@ -360,14 +360,13 @@ var (
 	userFieldID                                = big.NewInt(1 << 7)
 	userFieldName                              = big.NewInt(1 << 8)
 	userFieldProfilePicture                    = big.NewInt(1 << 9)
-	userFieldSocialAccounts                    = big.NewInt(1 << 10)
-	userFieldStaff                             = big.NewInt(1 << 11)
-	userFieldTrading                           = big.NewInt(1 << 12)
-	userFieldUsername                          = big.NewInt(1 << 13)
-	userFieldVerification                      = big.NewInt(1 << 14)
-	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 15)
-	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 16)
-	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 17)
+	userFieldStaff                             = big.NewInt(1 << 10)
+	userFieldTrading                           = big.NewInt(1 << 11)
+	userFieldUsername                          = big.NewInt(1 << 12)
+	userFieldVerification                      = big.NewInt(1 << 13)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 14)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 15)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 16)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
@@ -407,7 +406,6 @@ type User struct {
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
-	SocialAccounts []*SocialAccount    `json:"social_accounts" url:"social_accounts"`
 	// Whop staff access flags. Populated only on the self view (retrieved with the reserved id `me`) for callers with staff-read scope; `null` there for every user who is not Whop staff, and always `null` elsewhere.
 	Staff *UserStaffAccess `json:"staff,omitempty" url:"staff,omitempty"`
 	// Live trading state. Opt in with `include_trading=true` when retrieving `me`; `null` otherwise, without trading permission, or without an Ethereum wallet. Provider failures return an error, not a zero balance.
@@ -498,13 +496,6 @@ func (u *User) GetProfilePicture() *UserProfilePicture {
 		return nil
 	}
 	return u.ProfilePicture
-}
-
-func (u *User) GetSocialAccounts() []*SocialAccount {
-	if u == nil {
-		return nil
-	}
-	return u.SocialAccounts
 }
 
 func (u *User) GetStaff() *UserStaffAccess {
@@ -640,13 +631,6 @@ func (u *User) SetName(name *string) {
 func (u *User) SetProfilePicture(profilePicture *UserProfilePicture) {
 	u.ProfilePicture = profilePicture
 	u.require(userFieldProfilePicture)
-}
-
-// SetSocialAccounts sets the SocialAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *User) SetSocialAccounts(socialAccounts []*SocialAccount) {
-	u.SocialAccounts = socialAccounts
-	u.require(userFieldSocialAccounts)
 }
 
 // SetStaff sets the Staff field and marks it as non-optional;
