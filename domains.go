@@ -987,20 +987,22 @@ func (d *DomainIssue) String() string {
 type DomainIssueCode string
 
 const (
-	DomainIssueCodeOwnershipRequired     DomainIssueCode = "ownership_required"
-	DomainIssueCodeDNSRequired           DomainIssueCode = "dns_required"
-	DomainIssueCodeProviderValidation    DomainIssueCode = "provider_validation"
-	DomainIssueCodeCertificatePending    DomainIssueCode = "certificate_pending"
-	DomainIssueCodeExpiringSoon          DomainIssueCode = "expiring_soon"
-	DomainIssueCodeOwnershipConflict     DomainIssueCode = "ownership_conflict"
-	DomainIssueCodeAccountUnavailable    DomainIssueCode = "account_unavailable"
-	DomainIssueCodeCheckFailed           DomainIssueCode = "check_failed"
-	DomainIssueCodeDomainUnavailable     DomainIssueCode = "domain_unavailable"
-	DomainIssueCodePremiumNotSupported   DomainIssueCode = "premium_not_supported"
-	DomainIssueCodeUnsupportedTld        DomainIssueCode = "unsupported_tld"
-	DomainIssueCodeRegistrationFailed    DomainIssueCode = "registration_failed"
-	DomainIssueCodeRenewalFailed         DomainIssueCode = "renewal_failed"
-	DomainIssueCodePaymentActionRequired DomainIssueCode = "payment_action_required"
+	DomainIssueCodeOwnershipRequired       DomainIssueCode = "ownership_required"
+	DomainIssueCodeDNSRequired             DomainIssueCode = "dns_required"
+	DomainIssueCodeProviderValidation      DomainIssueCode = "provider_validation"
+	DomainIssueCodeCertificatePending      DomainIssueCode = "certificate_pending"
+	DomainIssueCodeExpiringSoon            DomainIssueCode = "expiring_soon"
+	DomainIssueCodeOwnershipConflict       DomainIssueCode = "ownership_conflict"
+	DomainIssueCodeAccountUnavailable      DomainIssueCode = "account_unavailable"
+	DomainIssueCodeCheckFailed             DomainIssueCode = "check_failed"
+	DomainIssueCodeDomainUnavailable       DomainIssueCode = "domain_unavailable"
+	DomainIssueCodePremiumNotSupported     DomainIssueCode = "premium_not_supported"
+	DomainIssueCodeUnsupportedTld          DomainIssueCode = "unsupported_tld"
+	DomainIssueCodeRegistrationUnavailable DomainIssueCode = "registration_unavailable"
+	DomainIssueCodeRegistrationPremium     DomainIssueCode = "registration_premium"
+	DomainIssueCodeRegistrationFailed      DomainIssueCode = "registration_failed"
+	DomainIssueCodeRenewalFailed           DomainIssueCode = "renewal_failed"
+	DomainIssueCodePaymentActionRequired   DomainIssueCode = "payment_action_required"
 )
 
 func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
@@ -1027,6 +1029,10 @@ func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
 		return DomainIssueCodePremiumNotSupported, nil
 	case "unsupported_tld":
 		return DomainIssueCodeUnsupportedTld, nil
+	case "registration_unavailable":
+		return DomainIssueCodeRegistrationUnavailable, nil
+	case "registration_premium":
+		return DomainIssueCodeRegistrationPremium, nil
 	case "registration_failed":
 		return DomainIssueCodeRegistrationFailed, nil
 	case "renewal_failed":
