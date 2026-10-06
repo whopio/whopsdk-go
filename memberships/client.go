@@ -234,6 +234,38 @@ func (c *Client) ApplyPromoCode(
 	return response.Body, nil
 }
 
+// Assigns an affiliate to a membership and pays them the commission you set on its future payments. Name the user with exactly one of `user_id`, `email`, or `username`. A user who is not yet an affiliate of your account becomes one, which also requires `affiliate:create`. Send a new `commission_type` or `commission_value` for the membership's current affiliate to change their commission; a membership that already has a different affiliate returns a conflict. Works for active or trialing memberships with one recurring plan that bill through Stripe or Whop's billing engine, and not for marketplace memberships, paused payments, or a scheduled cancellation. The payout cannot exceed 90% of the next renewal amount, and no past payments are recalculated. You cannot assign yourself.
+//
+// Example:
+//
+//	request := &whopsdk.AssignAffiliateMembershipsRequest{
+//	    ID: "id",
+//	    CommissionType: whopsdk.AssignAffiliateMembershipsRequestCommissionTypeFlatFee,
+//	    CommissionValue: 5,
+//	    Email: whopsdk.String(
+//	        "affiliate@example.com",
+//	    ),
+//	}
+//	client.Memberships.AssignAffiliate(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) AssignAffiliate(
+	ctx context.Context,
+	request *whopsdk.AssignAffiliateMembershipsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Membership, error) {
+	response, err := c.WithRawResponse.AssignAffiliate(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Cancels a membership. Pass `cancel_at_period_end: true` to stop auto-renewal and keep access until the current billing period ends. Omit it (or pass `false`) to revoke access immediately. Buyers cannot cancel buy-now-pay-later (`splitit`, `sezzle`) or non-trial split-pay memberships.
 //
 // Example:

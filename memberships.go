@@ -70,6 +70,105 @@ func (a *ApplyPromoCodeMembershipsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	assignAffiliateMembershipsRequestFieldID              = big.NewInt(1 << 0)
+	assignAffiliateMembershipsRequestFieldCommissionType  = big.NewInt(1 << 1)
+	assignAffiliateMembershipsRequestFieldCommissionValue = big.NewInt(1 << 2)
+	assignAffiliateMembershipsRequestFieldEmail           = big.NewInt(1 << 3)
+	assignAffiliateMembershipsRequestFieldUserID          = big.NewInt(1 << 4)
+	assignAffiliateMembershipsRequestFieldUsername        = big.NewInt(1 << 5)
+)
+
+type AssignAffiliateMembershipsRequest struct {
+	// Membership ID (`mem_` tag).
+	ID string `json:"-" url:"-"`
+	// Whether the commission is a percentage of each payment or a fixed amount per payment.
+	CommissionType AssignAffiliateMembershipsRequestCommissionType `json:"commission_type" url:"-"`
+	// A whole number from 1 to 90 for `percentage`, or an amount greater than 1 in the membership currency for `flat_fee`. Flat fees need matching billing and settlement currencies.
+	CommissionValue float64 `json:"commission_value" url:"-"`
+	// Email address of the user to assign. Pass exactly one of `user_id`, `email`, or `username`.
+	Email *string `json:"email,omitempty" url:"-"`
+	// The user to assign, prefixed `user_`. Pass exactly one of `user_id`, `email`, or `username`.
+	UserID *string `json:"user_id,omitempty" url:"-"`
+	// Whop username of the user to assign. Pass exactly one of `user_id`, `email`, or `username`.
+	Username *string `json:"username,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (a *AssignAffiliateMembershipsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetID(id string) {
+	a.ID = id
+	a.require(assignAffiliateMembershipsRequestFieldID)
+}
+
+// SetCommissionType sets the CommissionType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetCommissionType(commissionType AssignAffiliateMembershipsRequestCommissionType) {
+	a.CommissionType = commissionType
+	a.require(assignAffiliateMembershipsRequestFieldCommissionType)
+}
+
+// SetCommissionValue sets the CommissionValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetCommissionValue(commissionValue float64) {
+	a.CommissionValue = commissionValue
+	a.require(assignAffiliateMembershipsRequestFieldCommissionValue)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetEmail(email *string) {
+	a.Email = email
+	a.require(assignAffiliateMembershipsRequestFieldEmail)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetUserID(userID *string) {
+	a.UserID = userID
+	a.require(assignAffiliateMembershipsRequestFieldUserID)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetUsername(username *string) {
+	a.Username = username
+	a.require(assignAffiliateMembershipsRequestFieldUsername)
+}
+
+func (a *AssignAffiliateMembershipsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler AssignAffiliateMembershipsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*a = AssignAffiliateMembershipsRequest(body)
+	return nil
+}
+
+func (a *AssignAffiliateMembershipsRequest) MarshalJSON() ([]byte, error) {
+	type embed AssignAffiliateMembershipsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	cancelMembershipsRequestFieldID                = big.NewInt(1 << 0)
 	cancelMembershipsRequestFieldCancelAtPeriodEnd = big.NewInt(1 << 1)
 	cancelMembershipsRequestFieldReason            = big.NewInt(1 << 2)
@@ -577,29 +676,31 @@ func (t *TransferMembershipsRequest) SetID(id string) {
 
 var (
 	membershipFieldAccount            = big.NewInt(1 << 0)
-	membershipFieldBillingPeriodDays  = big.NewInt(1 << 1)
-	membershipFieldCancelAtPeriodEnd  = big.NewInt(1 << 2)
-	membershipFieldCanceledAt         = big.NewInt(1 << 3)
-	membershipFieldCancellationReason = big.NewInt(1 << 4)
-	membershipFieldCreatedAt          = big.NewInt(1 << 5)
-	membershipFieldCurrentPeriodEnd   = big.NewInt(1 << 6)
-	membershipFieldCurrentPeriodStart = big.NewInt(1 << 7)
-	membershipFieldID                 = big.NewInt(1 << 8)
-	membershipFieldLicenseKey         = big.NewInt(1 << 9)
-	membershipFieldManageURL          = big.NewInt(1 << 10)
-	membershipFieldMember             = big.NewInt(1 << 11)
-	membershipFieldMetadata           = big.NewInt(1 << 12)
-	membershipFieldPhoneNumber        = big.NewInt(1 << 13)
-	membershipFieldPlanID             = big.NewInt(1 << 14)
-	membershipFieldProductID          = big.NewInt(1 << 15)
-	membershipFieldPromoCodeID        = big.NewInt(1 << 16)
-	membershipFieldStatus             = big.NewInt(1 << 17)
-	membershipFieldUpdatedAt          = big.NewInt(1 << 18)
-	membershipFieldUserID             = big.NewInt(1 << 19)
+	membershipFieldAffiliate          = big.NewInt(1 << 1)
+	membershipFieldBillingPeriodDays  = big.NewInt(1 << 2)
+	membershipFieldCancelAtPeriodEnd  = big.NewInt(1 << 3)
+	membershipFieldCanceledAt         = big.NewInt(1 << 4)
+	membershipFieldCancellationReason = big.NewInt(1 << 5)
+	membershipFieldCreatedAt          = big.NewInt(1 << 6)
+	membershipFieldCurrentPeriodEnd   = big.NewInt(1 << 7)
+	membershipFieldCurrentPeriodStart = big.NewInt(1 << 8)
+	membershipFieldID                 = big.NewInt(1 << 9)
+	membershipFieldLicenseKey         = big.NewInt(1 << 10)
+	membershipFieldManageURL          = big.NewInt(1 << 11)
+	membershipFieldMember             = big.NewInt(1 << 12)
+	membershipFieldMetadata           = big.NewInt(1 << 13)
+	membershipFieldPhoneNumber        = big.NewInt(1 << 14)
+	membershipFieldPlanID             = big.NewInt(1 << 15)
+	membershipFieldProductID          = big.NewInt(1 << 16)
+	membershipFieldPromoCodeID        = big.NewInt(1 << 17)
+	membershipFieldStatus             = big.NewInt(1 << 18)
+	membershipFieldUpdatedAt          = big.NewInt(1 << 19)
+	membershipFieldUserID             = big.NewInt(1 << 20)
 )
 
 // membershipNullableFields maps the wire names of Membership's nullable fields (required or optional) to their field bits.
 var membershipNullableFields = map[string]*big.Int{
+	"affiliate":            membershipFieldAffiliate,
 	"billing_period_days":  membershipFieldBillingPeriodDays,
 	"canceled_at":          membershipFieldCanceledAt,
 	"cancellation_reason":  membershipFieldCancellationReason,
@@ -616,6 +717,8 @@ var membershipNullableFields = map[string]*big.Int{
 type Membership struct {
 	// The account (seller) this membership belongs to.
 	Account *StorefrontAccount `json:"account" url:"account"`
+	// The membership's affiliate commission. `null` without an affiliate, without `affiliate:basic:read` on the account, and always in webhooks.
+	Affiliate *MembershipAffiliate `json:"affiliate,omitempty" url:"affiliate,omitempty"`
 	// Number of days between recurring charges. `null` for non-renewing memberships or memberships with multiple renewal schedules.
 	BillingPeriodDays *int `json:"billing_period_days,omitempty" url:"billing_period_days,omitempty"`
 	// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring variants.
@@ -667,6 +770,13 @@ func (m *Membership) GetAccount() *StorefrontAccount {
 		return nil
 	}
 	return m.Account
+}
+
+func (m *Membership) GetAffiliate() *MembershipAffiliate {
+	if m == nil {
+		return nil
+	}
+	return m.Affiliate
 }
 
 func (m *Membership) GetBillingPeriodDays() *int {
@@ -823,6 +933,13 @@ func (m *Membership) require(field *big.Int) {
 func (m *Membership) SetAccount(account *StorefrontAccount) {
 	m.Account = account
 	m.require(membershipFieldAccount)
+}
+
+// SetAffiliate sets the Affiliate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetAffiliate(affiliate *MembershipAffiliate) {
+	m.Affiliate = affiliate
+	m.require(membershipFieldAffiliate)
 }
 
 // SetBillingPeriodDays sets the BillingPeriodDays field and marks it as non-optional;
@@ -1005,6 +1122,254 @@ func (m *Membership) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", m)
+}
+
+var (
+	membershipAffiliateFieldAppliesToPayments    = big.NewInt(1 << 0)
+	membershipAffiliateFieldCommissionAmount     = big.NewInt(1 << 1)
+	membershipAffiliateFieldCommissionPercentage = big.NewInt(1 << 2)
+	membershipAffiliateFieldCommissionType       = big.NewInt(1 << 3)
+	membershipAffiliateFieldEnabled              = big.NewInt(1 << 4)
+	membershipAffiliateFieldID                   = big.NewInt(1 << 5)
+	membershipAffiliateFieldUserID               = big.NewInt(1 << 6)
+)
+
+// membershipAffiliateNullableFields maps the wire names of MembershipAffiliate's nullable fields (required or optional) to their field bits.
+var membershipAffiliateNullableFields = map[string]*big.Int{
+	"commission_amount":     membershipAffiliateFieldCommissionAmount,
+	"commission_percentage": membershipAffiliateFieldCommissionPercentage,
+}
+
+type MembershipAffiliate struct {
+	// Whether the commission is paid on the membership's first payment only or on all its payments.
+	AppliesToPayments MembershipAffiliateAppliesToPayments `json:"applies_to_payments" url:"applies_to_payments"`
+	// The flat fee commission in the membership currency, or `null` for a percentage.
+	CommissionAmount *Money `json:"commission_amount,omitempty" url:"commission_amount,omitempty"`
+	// The percentage commission in percentage points, so `20` means 20%, or `null` for a flat fee.
+	CommissionPercentage *float64 `json:"commission_percentage,omitempty" url:"commission_percentage,omitempty"`
+	// Whether the commission is a percentage or a flat fee.
+	CommissionType MembershipAffiliateCommissionType `json:"commission_type" url:"commission_type"`
+	// Whether this membership pays affiliate commissions. `false` means the affiliate is kept on the membership but is no longer paid.
+	Enabled bool `json:"enabled" url:"enabled"`
+	// Affiliate ID, prefixed `aff_`.
+	ID string `json:"id" url:"id"`
+	// ID of the affiliate's user, prefixed `user_`.
+	UserID string `json:"user_id" url:"user_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipAffiliate) GetAppliesToPayments() MembershipAffiliateAppliesToPayments {
+	if m == nil {
+		return ""
+	}
+	return m.AppliesToPayments
+}
+
+func (m *MembershipAffiliate) GetCommissionAmount() *Money {
+	if m == nil {
+		return nil
+	}
+	return m.CommissionAmount
+}
+
+func (m *MembershipAffiliate) GetCommissionPercentage() *float64 {
+	if m == nil {
+		return nil
+	}
+	return m.CommissionPercentage
+}
+
+func (m *MembershipAffiliate) GetCommissionType() MembershipAffiliateCommissionType {
+	if m == nil {
+		return ""
+	}
+	return m.CommissionType
+}
+
+func (m *MembershipAffiliate) GetEnabled() bool {
+	if m == nil {
+		return false
+	}
+	return m.Enabled
+}
+
+func (m *MembershipAffiliate) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipAffiliate) GetUserID() string {
+	if m == nil {
+		return ""
+	}
+	return m.UserID
+}
+
+func (m *MembershipAffiliate) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipAffiliate) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetAppliesToPayments sets the AppliesToPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetAppliesToPayments(appliesToPayments MembershipAffiliateAppliesToPayments) {
+	m.AppliesToPayments = appliesToPayments
+	m.require(membershipAffiliateFieldAppliesToPayments)
+}
+
+// SetCommissionAmount sets the CommissionAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetCommissionAmount(commissionAmount *Money) {
+	m.CommissionAmount = commissionAmount
+	m.require(membershipAffiliateFieldCommissionAmount)
+}
+
+// SetCommissionPercentage sets the CommissionPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetCommissionPercentage(commissionPercentage *float64) {
+	m.CommissionPercentage = commissionPercentage
+	m.require(membershipAffiliateFieldCommissionPercentage)
+}
+
+// SetCommissionType sets the CommissionType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetCommissionType(commissionType MembershipAffiliateCommissionType) {
+	m.CommissionType = commissionType
+	m.require(membershipAffiliateFieldCommissionType)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetEnabled(enabled bool) {
+	m.Enabled = enabled
+	m.require(membershipAffiliateFieldEnabled)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetID(id string) {
+	m.ID = id
+	m.require(membershipAffiliateFieldID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetUserID(userID string) {
+	m.UserID = userID
+	m.require(membershipAffiliateFieldUserID)
+}
+
+func (m *MembershipAffiliate) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipAffiliate
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipAffiliate(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, membershipAffiliateNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipAffiliate) MarshalJSON() ([]byte, error) {
+	type embed MembershipAffiliate
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipAffiliate) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// Whether the commission is paid on the membership's first payment only or on all its payments.
+type MembershipAffiliateAppliesToPayments string
+
+const (
+	MembershipAffiliateAppliesToPaymentsFirstPayment MembershipAffiliateAppliesToPayments = "first_payment"
+	MembershipAffiliateAppliesToPaymentsAllPayments  MembershipAffiliateAppliesToPayments = "all_payments"
+)
+
+func NewMembershipAffiliateAppliesToPaymentsFromString(s string) (MembershipAffiliateAppliesToPayments, error) {
+	switch s {
+	case "first_payment":
+		return MembershipAffiliateAppliesToPaymentsFirstPayment, nil
+	case "all_payments":
+		return MembershipAffiliateAppliesToPaymentsAllPayments, nil
+	}
+	var t MembershipAffiliateAppliesToPayments
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipAffiliateAppliesToPayments) Ptr() *MembershipAffiliateAppliesToPayments {
+	return &m
+}
+
+// Whether the commission is a percentage or a flat fee.
+type MembershipAffiliateCommissionType string
+
+const (
+	MembershipAffiliateCommissionTypeFlatFee    MembershipAffiliateCommissionType = "flat_fee"
+	MembershipAffiliateCommissionTypePercentage MembershipAffiliateCommissionType = "percentage"
+)
+
+func NewMembershipAffiliateCommissionTypeFromString(s string) (MembershipAffiliateCommissionType, error) {
+	switch s {
+	case "flat_fee":
+		return MembershipAffiliateCommissionTypeFlatFee, nil
+	case "percentage":
+		return MembershipAffiliateCommissionTypePercentage, nil
+	}
+	var t MembershipAffiliateCommissionType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipAffiliateCommissionType) Ptr() *MembershipAffiliateCommissionType {
+	return &m
 }
 
 var (
@@ -1209,6 +1574,29 @@ func NewMembershipStatusFromString(s string) (MembershipStatus, error) {
 
 func (m MembershipStatus) Ptr() *MembershipStatus {
 	return &m
+}
+
+// Whether the commission is a percentage of each payment or a fixed amount per payment.
+type AssignAffiliateMembershipsRequestCommissionType string
+
+const (
+	AssignAffiliateMembershipsRequestCommissionTypeFlatFee    AssignAffiliateMembershipsRequestCommissionType = "flat_fee"
+	AssignAffiliateMembershipsRequestCommissionTypePercentage AssignAffiliateMembershipsRequestCommissionType = "percentage"
+)
+
+func NewAssignAffiliateMembershipsRequestCommissionTypeFromString(s string) (AssignAffiliateMembershipsRequestCommissionType, error) {
+	switch s {
+	case "flat_fee":
+		return AssignAffiliateMembershipsRequestCommissionTypeFlatFee, nil
+	case "percentage":
+		return AssignAffiliateMembershipsRequestCommissionTypePercentage, nil
+	}
+	var t AssignAffiliateMembershipsRequestCommissionType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AssignAffiliateMembershipsRequestCommissionType) Ptr() *AssignAffiliateMembershipsRequestCommissionType {
+	return &a
 }
 
 type InviteMembershipsRequestBody struct {
