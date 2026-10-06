@@ -921,18 +921,18 @@ func (a *AudienceEngagement) String() string {
 }
 
 var (
-	audienceEngagementFacebookPageRuleFieldEvent           = big.NewInt(1 << 0)
-	audienceEngagementFacebookPageRuleFieldRetentionDays   = big.NewInt(1 << 1)
-	audienceEngagementFacebookPageRuleFieldSocialAccountID = big.NewInt(1 << 2)
+	audienceEngagementFacebookPageRuleFieldEvent             = big.NewInt(1 << 0)
+	audienceEngagementFacebookPageRuleFieldExternalAccountID = big.NewInt(1 << 1)
+	audienceEngagementFacebookPageRuleFieldRetentionDays     = big.NewInt(1 << 2)
 )
 
 type AudienceEngagementFacebookPageRule struct {
 	// Interaction that qualifies a person for this rule.
 	Event AudienceEngagementFacebookPageRuleEvent `json:"event" url:"event"`
+	// Connected external account ID, prefixed `sacc_`, with advertising access.
+	ExternalAccountID string `json:"external_account_id" url:"external_account_id"`
 	// Rolling membership window in days, from 1 to 730. Use 0 for `liked`, which tracks current likes and cannot be combined with other events.
 	RetentionDays int `json:"retention_days" url:"retention_days"`
-	// Connected social account ID, prefixed `sacc_`, with advertising access.
-	SocialAccountID string `json:"social_account_id" url:"social_account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -948,18 +948,18 @@ func (a *AudienceEngagementFacebookPageRule) GetEvent() AudienceEngagementFacebo
 	return a.Event
 }
 
+func (a *AudienceEngagementFacebookPageRule) GetExternalAccountID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ExternalAccountID
+}
+
 func (a *AudienceEngagementFacebookPageRule) GetRetentionDays() int {
 	if a == nil {
 		return 0
 	}
 	return a.RetentionDays
-}
-
-func (a *AudienceEngagementFacebookPageRule) GetSocialAccountID() string {
-	if a == nil {
-		return ""
-	}
-	return a.SocialAccountID
 }
 
 func (a *AudienceEngagementFacebookPageRule) GetExtraProperties() map[string]interface{} {
@@ -985,18 +985,18 @@ func (a *AudienceEngagementFacebookPageRule) SetEvent(event AudienceEngagementFa
 	a.require(audienceEngagementFacebookPageRuleFieldEvent)
 }
 
+// SetExternalAccountID sets the ExternalAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementFacebookPageRule) SetExternalAccountID(externalAccountID string) {
+	a.ExternalAccountID = externalAccountID
+	a.require(audienceEngagementFacebookPageRuleFieldExternalAccountID)
+}
+
 // SetRetentionDays sets the RetentionDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AudienceEngagementFacebookPageRule) SetRetentionDays(retentionDays int) {
 	a.RetentionDays = retentionDays
 	a.require(audienceEngagementFacebookPageRuleFieldRetentionDays)
-}
-
-// SetSocialAccountID sets the SocialAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AudienceEngagementFacebookPageRule) SetSocialAccountID(socialAccountID string) {
-	a.SocialAccountID = socialAccountID
-	a.require(audienceEngagementFacebookPageRuleFieldSocialAccountID)
 }
 
 func (a *AudienceEngagementFacebookPageRule) UnmarshalJSON(data []byte) error {
@@ -1080,18 +1080,18 @@ func (a AudienceEngagementFacebookPageRuleEvent) Ptr() *AudienceEngagementFacebo
 }
 
 var (
-	audienceEngagementInstagramProfileRuleFieldEvent           = big.NewInt(1 << 0)
-	audienceEngagementInstagramProfileRuleFieldRetentionDays   = big.NewInt(1 << 1)
-	audienceEngagementInstagramProfileRuleFieldSocialAccountID = big.NewInt(1 << 2)
+	audienceEngagementInstagramProfileRuleFieldEvent             = big.NewInt(1 << 0)
+	audienceEngagementInstagramProfileRuleFieldExternalAccountID = big.NewInt(1 << 1)
+	audienceEngagementInstagramProfileRuleFieldRetentionDays     = big.NewInt(1 << 2)
 )
 
 type AudienceEngagementInstagramProfileRule struct {
 	// Interaction that qualifies a person for this rule.
 	Event AudienceEngagementInstagramProfileRuleEvent `json:"event" url:"event"`
+	// Connected external account ID, prefixed `sacc_`, with advertising access.
+	ExternalAccountID string `json:"external_account_id" url:"external_account_id"`
 	// Rolling membership window in days, from 1 to 730.
 	RetentionDays int `json:"retention_days" url:"retention_days"`
-	// Connected social account ID, prefixed `sacc_`, with advertising access.
-	SocialAccountID string `json:"social_account_id" url:"social_account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1107,18 +1107,18 @@ func (a *AudienceEngagementInstagramProfileRule) GetEvent() AudienceEngagementIn
 	return a.Event
 }
 
+func (a *AudienceEngagementInstagramProfileRule) GetExternalAccountID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ExternalAccountID
+}
+
 func (a *AudienceEngagementInstagramProfileRule) GetRetentionDays() int {
 	if a == nil {
 		return 0
 	}
 	return a.RetentionDays
-}
-
-func (a *AudienceEngagementInstagramProfileRule) GetSocialAccountID() string {
-	if a == nil {
-		return ""
-	}
-	return a.SocialAccountID
 }
 
 func (a *AudienceEngagementInstagramProfileRule) GetExtraProperties() map[string]interface{} {
@@ -1144,18 +1144,18 @@ func (a *AudienceEngagementInstagramProfileRule) SetEvent(event AudienceEngageme
 	a.require(audienceEngagementInstagramProfileRuleFieldEvent)
 }
 
+// SetExternalAccountID sets the ExternalAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementInstagramProfileRule) SetExternalAccountID(externalAccountID string) {
+	a.ExternalAccountID = externalAccountID
+	a.require(audienceEngagementInstagramProfileRuleFieldExternalAccountID)
+}
+
 // SetRetentionDays sets the RetentionDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AudienceEngagementInstagramProfileRule) SetRetentionDays(retentionDays int) {
 	a.RetentionDays = retentionDays
 	a.require(audienceEngagementInstagramProfileRuleFieldRetentionDays)
-}
-
-// SetSocialAccountID sets the SocialAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AudienceEngagementInstagramProfileRule) SetSocialAccountID(socialAccountID string) {
-	a.SocialAccountID = socialAccountID
-	a.require(audienceEngagementInstagramProfileRuleFieldSocialAccountID)
 }
 
 func (a *AudienceEngagementInstagramProfileRule) UnmarshalJSON(data []byte) error {
@@ -1269,20 +1269,20 @@ func (a AudienceEngagementInstagramProfileRuleEvent) Ptr() *AudienceEngagementIn
 }
 
 var (
-	audienceEngagementLeadFormRuleFieldEvent           = big.NewInt(1 << 0)
-	audienceEngagementLeadFormRuleFieldPlatformFormIDs = big.NewInt(1 << 1)
-	audienceEngagementLeadFormRuleFieldRetentionDays   = big.NewInt(1 << 2)
-	audienceEngagementLeadFormRuleFieldSocialAccountID = big.NewInt(1 << 3)
+	audienceEngagementLeadFormRuleFieldEvent             = big.NewInt(1 << 0)
+	audienceEngagementLeadFormRuleFieldExternalAccountID = big.NewInt(1 << 1)
+	audienceEngagementLeadFormRuleFieldPlatformFormIDs   = big.NewInt(1 << 2)
+	audienceEngagementLeadFormRuleFieldRetentionDays     = big.NewInt(1 << 3)
 )
 
 type AudienceEngagementLeadFormRule struct {
 	// Interaction that qualifies a person for this rule.
-	Event           AudienceEngagementLeadFormRuleEvent `json:"event" url:"event"`
-	PlatformFormIDs []string                            `json:"platform_form_ids" url:"platform_form_ids"`
+	Event AudienceEngagementLeadFormRuleEvent `json:"event" url:"event"`
+	// Connected external account ID, prefixed `sacc_`, with advertising access.
+	ExternalAccountID string   `json:"external_account_id" url:"external_account_id"`
+	PlatformFormIDs   []string `json:"platform_form_ids" url:"platform_form_ids"`
 	// Rolling membership window in days, from 1 to 90.
 	RetentionDays int `json:"retention_days" url:"retention_days"`
-	// Connected social account ID, prefixed `sacc_`, with advertising access.
-	SocialAccountID string `json:"social_account_id" url:"social_account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1298,6 +1298,13 @@ func (a *AudienceEngagementLeadFormRule) GetEvent() AudienceEngagementLeadFormRu
 	return a.Event
 }
 
+func (a *AudienceEngagementLeadFormRule) GetExternalAccountID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ExternalAccountID
+}
+
 func (a *AudienceEngagementLeadFormRule) GetPlatformFormIDs() []string {
 	if a == nil {
 		return nil
@@ -1310,13 +1317,6 @@ func (a *AudienceEngagementLeadFormRule) GetRetentionDays() int {
 		return 0
 	}
 	return a.RetentionDays
-}
-
-func (a *AudienceEngagementLeadFormRule) GetSocialAccountID() string {
-	if a == nil {
-		return ""
-	}
-	return a.SocialAccountID
 }
 
 func (a *AudienceEngagementLeadFormRule) GetExtraProperties() map[string]interface{} {
@@ -1342,6 +1342,13 @@ func (a *AudienceEngagementLeadFormRule) SetEvent(event AudienceEngagementLeadFo
 	a.require(audienceEngagementLeadFormRuleFieldEvent)
 }
 
+// SetExternalAccountID sets the ExternalAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementLeadFormRule) SetExternalAccountID(externalAccountID string) {
+	a.ExternalAccountID = externalAccountID
+	a.require(audienceEngagementLeadFormRuleFieldExternalAccountID)
+}
+
 // SetPlatformFormIDs sets the PlatformFormIDs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AudienceEngagementLeadFormRule) SetPlatformFormIDs(platformFormIDs []string) {
@@ -1354,13 +1361,6 @@ func (a *AudienceEngagementLeadFormRule) SetPlatformFormIDs(platformFormIDs []st
 func (a *AudienceEngagementLeadFormRule) SetRetentionDays(retentionDays int) {
 	a.RetentionDays = retentionDays
 	a.require(audienceEngagementLeadFormRuleFieldRetentionDays)
-}
-
-// SetSocialAccountID sets the SocialAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AudienceEngagementLeadFormRule) SetSocialAccountID(socialAccountID string) {
-	a.SocialAccountID = socialAccountID
-	a.require(audienceEngagementLeadFormRuleFieldSocialAccountID)
 }
 
 func (a *AudienceEngagementLeadFormRule) UnmarshalJSON(data []byte) error {
@@ -1626,20 +1626,20 @@ func (a *AudienceEngagementRule) validate() error {
 }
 
 var (
-	audienceEngagementVideoRuleFieldEvent            = big.NewInt(1 << 0)
-	audienceEngagementVideoRuleFieldPlatformVideoIDs = big.NewInt(1 << 1)
-	audienceEngagementVideoRuleFieldRetentionDays    = big.NewInt(1 << 2)
-	audienceEngagementVideoRuleFieldSocialAccountID  = big.NewInt(1 << 3)
+	audienceEngagementVideoRuleFieldEvent             = big.NewInt(1 << 0)
+	audienceEngagementVideoRuleFieldExternalAccountID = big.NewInt(1 << 1)
+	audienceEngagementVideoRuleFieldPlatformVideoIDs  = big.NewInt(1 << 2)
+	audienceEngagementVideoRuleFieldRetentionDays     = big.NewInt(1 << 3)
 )
 
 type AudienceEngagementVideoRule struct {
 	// Interaction that qualifies a person for this rule.
-	Event            AudienceEngagementVideoRuleEvent `json:"event" url:"event"`
-	PlatformVideoIDs []string                         `json:"platform_video_ids" url:"platform_video_ids"`
+	Event AudienceEngagementVideoRuleEvent `json:"event" url:"event"`
+	// Connected external account ID, prefixed `sacc_`, with advertising access.
+	ExternalAccountID string   `json:"external_account_id" url:"external_account_id"`
+	PlatformVideoIDs  []string `json:"platform_video_ids" url:"platform_video_ids"`
 	// Rolling membership window in days, from 1 to 365.
 	RetentionDays int `json:"retention_days" url:"retention_days"`
-	// Connected social account ID, prefixed `sacc_`, with advertising access.
-	SocialAccountID string `json:"social_account_id" url:"social_account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1655,6 +1655,13 @@ func (a *AudienceEngagementVideoRule) GetEvent() AudienceEngagementVideoRuleEven
 	return a.Event
 }
 
+func (a *AudienceEngagementVideoRule) GetExternalAccountID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ExternalAccountID
+}
+
 func (a *AudienceEngagementVideoRule) GetPlatformVideoIDs() []string {
 	if a == nil {
 		return nil
@@ -1667,13 +1674,6 @@ func (a *AudienceEngagementVideoRule) GetRetentionDays() int {
 		return 0
 	}
 	return a.RetentionDays
-}
-
-func (a *AudienceEngagementVideoRule) GetSocialAccountID() string {
-	if a == nil {
-		return ""
-	}
-	return a.SocialAccountID
 }
 
 func (a *AudienceEngagementVideoRule) GetExtraProperties() map[string]interface{} {
@@ -1699,6 +1699,13 @@ func (a *AudienceEngagementVideoRule) SetEvent(event AudienceEngagementVideoRule
 	a.require(audienceEngagementVideoRuleFieldEvent)
 }
 
+// SetExternalAccountID sets the ExternalAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AudienceEngagementVideoRule) SetExternalAccountID(externalAccountID string) {
+	a.ExternalAccountID = externalAccountID
+	a.require(audienceEngagementVideoRuleFieldExternalAccountID)
+}
+
 // SetPlatformVideoIDs sets the PlatformVideoIDs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AudienceEngagementVideoRule) SetPlatformVideoIDs(platformVideoIDs []string) {
@@ -1711,13 +1718,6 @@ func (a *AudienceEngagementVideoRule) SetPlatformVideoIDs(platformVideoIDs []str
 func (a *AudienceEngagementVideoRule) SetRetentionDays(retentionDays int) {
 	a.RetentionDays = retentionDays
 	a.require(audienceEngagementVideoRuleFieldRetentionDays)
-}
-
-// SetSocialAccountID sets the SocialAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AudienceEngagementVideoRule) SetSocialAccountID(socialAccountID string) {
-	a.SocialAccountID = socialAccountID
-	a.require(audienceEngagementVideoRuleFieldSocialAccountID)
 }
 
 func (a *AudienceEngagementVideoRule) UnmarshalJSON(data []byte) error {

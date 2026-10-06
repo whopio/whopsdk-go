@@ -3163,6 +3163,13 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		assert.Equal(t, CreateExportsRequestResource("events"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_external_accounts", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExportsRequestResourceFromString("external_accounts")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExportsRequestResource("external_accounts"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_financial_activity", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateExportsRequestResourceFromString("financial-activity")
@@ -3428,6 +3435,13 @@ func TestEnumExportResource(t *testing.T) {
 		val, err := NewExportResourceFromString("events")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ExportResource("events"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_external_accounts", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExportResourceFromString("external_accounts")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExportResource("external_accounts"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_financial_activity", func(t *testing.T) {
@@ -3810,6 +3824,13 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		val, err := NewListExportsRequestResourceFromString("events")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExportsRequestResource("events"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_external_accounts", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExportsRequestResourceFromString("external_accounts")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExportsRequestResource("external_accounts"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_financial_activity", func(t *testing.T) {
