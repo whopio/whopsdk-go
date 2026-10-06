@@ -26,15 +26,16 @@ var (
 	createAdGroupsRequestFieldDynamicCreative      = big.NewInt(1 << 13)
 	createAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 14)
 	createAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 15)
-	createAdGroupsRequestFieldLanguages            = big.NewInt(1 << 16)
-	createAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 17)
-	createAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 18)
-	createAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 19)
-	createAdGroupsRequestFieldPlacements           = big.NewInt(1 << 20)
-	createAdGroupsRequestFieldRegions              = big.NewInt(1 << 21)
-	createAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 22)
-	createAdGroupsRequestFieldStatus               = big.NewInt(1 << 23)
-	createAdGroupsRequestFieldTitle                = big.NewInt(1 << 24)
+	createAdGroupsRequestFieldKeywords             = big.NewInt(1 << 16)
+	createAdGroupsRequestFieldLanguages            = big.NewInt(1 << 17)
+	createAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 18)
+	createAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 19)
+	createAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 20)
+	createAdGroupsRequestFieldPlacements           = big.NewInt(1 << 21)
+	createAdGroupsRequestFieldRegions              = big.NewInt(1 << 22)
+	createAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 23)
+	createAdGroupsRequestFieldStatus               = big.NewInt(1 << 24)
+	createAdGroupsRequestFieldTitle                = big.NewInt(1 << 25)
 )
 
 type CreateAdGroupsRequest struct {
@@ -69,6 +70,8 @@ type CreateAdGroupsRequest struct {
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
 	// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Under a campaign budget every ad group must use the same cap, which applies across the whole campaign, and only with the awareness objective (reach or ThruPlay ad groups) or engagement (ThruPlay). Fixed once the campaign launches; `null` clears it before then.
 	FrequencyCap *CreateAdGroupsRequestFrequencyCap `json:"frequency_cap,omitempty" url:"-"`
+	// Search terms the ad group's ads can show for, and terms they never show for. Only search campaigns take keywords, and each of their ad groups needs at least one before launch. Replaces the stored list; omit to keep it.
+	Keywords []*CreateAdGroupsRequestKeywordsItem `json:"keywords,omitempty" url:"-"`
 	// Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
 	Languages []string `json:"languages,omitempty" url:"-"`
 	// Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
@@ -220,6 +223,13 @@ func (c *CreateAdGroupsRequest) SetEndsAt(endsAt *string) {
 func (c *CreateAdGroupsRequest) SetFrequencyCap(frequencyCap *CreateAdGroupsRequestFrequencyCap) {
 	c.FrequencyCap = frequencyCap
 	c.require(createAdGroupsRequestFieldFrequencyCap)
+}
+
+// SetKeywords sets the Keywords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequest) SetKeywords(keywords []*CreateAdGroupsRequestKeywordsItem) {
+	c.Keywords = keywords
+	c.require(createAdGroupsRequestFieldKeywords)
 }
 
 // SetLanguages sets the Languages field and marks it as non-optional;
@@ -961,38 +971,39 @@ var (
 	adGroupFieldID                           = big.NewInt(1 << 43)
 	adGroupFieldImpressions                  = big.NewInt(1 << 44)
 	adGroupFieldIssues                       = big.NewInt(1 << 45)
-	adGroupFieldLanguages                    = big.NewInt(1 << 46)
-	adGroupFieldLeadValue                    = big.NewInt(1 << 47)
-	adGroupFieldLeads                        = big.NewInt(1 << 48)
-	adGroupFieldLearningProgress             = big.NewInt(1 << 49)
-	adGroupFieldLinkClicks                   = big.NewInt(1 << 50)
-	adGroupFieldMessageApps                  = big.NewInt(1 << 51)
-	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 52)
-	adGroupFieldOptimizationGoal             = big.NewInt(1 << 53)
-	adGroupFieldPlacements                   = big.NewInt(1 << 54)
-	adGroupFieldPlatform                     = big.NewInt(1 << 55)
-	adGroupFieldPurchaseValue                = big.NewInt(1 << 56)
-	adGroupFieldPurchases                    = big.NewInt(1 << 57)
-	adGroupFieldReach                        = big.NewInt(1 << 58)
-	adGroupFieldRegions                      = big.NewInt(1 << 59)
-	adGroupFieldResultEvent                  = big.NewInt(1 << 60)
-	adGroupFieldResultEventName              = big.NewInt(1 << 61)
-	adGroupFieldResults                      = big.NewInt(1 << 62)
-	adGroupFieldReturnOnAdSpend              = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adGroupFieldScheduleValue                = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adGroupFieldSchedules                    = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adGroupFieldSpend                        = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adGroupFieldSpendCurrency                = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 73)
-	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 74)
-	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 75)
-	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 76)
-	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 77)
+	adGroupFieldKeywords                     = big.NewInt(1 << 46)
+	adGroupFieldLanguages                    = big.NewInt(1 << 47)
+	adGroupFieldLeadValue                    = big.NewInt(1 << 48)
+	adGroupFieldLeads                        = big.NewInt(1 << 49)
+	adGroupFieldLearningProgress             = big.NewInt(1 << 50)
+	adGroupFieldLinkClicks                   = big.NewInt(1 << 51)
+	adGroupFieldMessageApps                  = big.NewInt(1 << 52)
+	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 53)
+	adGroupFieldOptimizationGoal             = big.NewInt(1 << 54)
+	adGroupFieldPlacements                   = big.NewInt(1 << 55)
+	adGroupFieldPlatform                     = big.NewInt(1 << 56)
+	adGroupFieldPurchaseValue                = big.NewInt(1 << 57)
+	adGroupFieldPurchases                    = big.NewInt(1 << 58)
+	adGroupFieldReach                        = big.NewInt(1 << 59)
+	adGroupFieldRegions                      = big.NewInt(1 << 60)
+	adGroupFieldResultEvent                  = big.NewInt(1 << 61)
+	adGroupFieldResultEventName              = big.NewInt(1 << 62)
+	adGroupFieldResults                      = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adGroupFieldReturnOnAdSpend              = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adGroupFieldScheduleValue                = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adGroupFieldSchedules                    = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adGroupFieldSpend                        = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adGroupFieldSpendCurrency                = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adGroupFieldStartsAt                     = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 76)
+	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 77)
+	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 78)
 )
 
 // adGroupNullableFields maps the wire names of AdGroup's nullable fields (required or optional) to their field bits.
@@ -1121,6 +1132,7 @@ type AdGroup struct {
 	// The number of impressions.
 	Impressions float64            `json:"impressions" url:"impressions"`
 	Issues      []*AdPlatformIssue `json:"issues" url:"issues"`
+	Keywords    []*AdGroupKeyword  `json:"keywords,omitempty" url:"keywords,omitempty"`
 	Languages   []string           `json:"languages" url:"languages"`
 	// USD value attributed to lead events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
 	LeadValue float64 `json:"lead_value" url:"lead_value"`
@@ -1510,6 +1522,13 @@ func (a *AdGroup) GetIssues() []*AdPlatformIssue {
 		return nil
 	}
 	return a.Issues
+}
+
+func (a *AdGroup) GetKeywords() []*AdGroupKeyword {
+	if a == nil {
+		return nil
+	}
+	return a.Keywords
 }
 
 func (a *AdGroup) GetLanguages() []string {
@@ -2072,6 +2091,13 @@ func (a *AdGroup) SetImpressions(impressions float64) {
 func (a *AdGroup) SetIssues(issues []*AdPlatformIssue) {
 	a.Issues = issues
 	a.require(adGroupFieldIssues)
+}
+
+// SetKeywords sets the Keywords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetKeywords(keywords []*AdGroupKeyword) {
+	a.Keywords = keywords
+	a.require(adGroupFieldKeywords)
 }
 
 // SetLanguages sets the Languages field and marks it as non-optional;
@@ -5930,6 +5956,153 @@ func (a *AdGroupGeoLocationsBodyZipsItemKey) String() string {
 }
 
 var (
+	adGroupKeywordFieldMatchType = big.NewInt(1 << 0)
+	adGroupKeywordFieldNegative  = big.NewInt(1 << 1)
+	adGroupKeywordFieldText      = big.NewInt(1 << 2)
+)
+
+type AdGroupKeyword struct {
+	// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+	MatchType AdGroupKeywordMatchType `json:"match_type" url:"match_type"`
+	// Whether this term keeps the ads from showing instead of making them eligible. Defaults to `false`.
+	Negative bool `json:"negative" url:"negative"`
+	// The search term, up to 80 characters and 10 words.
+	Text string `json:"text" url:"text"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupKeyword) GetMatchType() AdGroupKeywordMatchType {
+	if a == nil {
+		return ""
+	}
+	return a.MatchType
+}
+
+func (a *AdGroupKeyword) GetNegative() bool {
+	if a == nil {
+		return false
+	}
+	return a.Negative
+}
+
+func (a *AdGroupKeyword) GetText() string {
+	if a == nil {
+		return ""
+	}
+	return a.Text
+}
+
+func (a *AdGroupKeyword) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdGroupKeyword) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetMatchType sets the MatchType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupKeyword) SetMatchType(matchType AdGroupKeywordMatchType) {
+	a.MatchType = matchType
+	a.require(adGroupKeywordFieldMatchType)
+}
+
+// SetNegative sets the Negative field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupKeyword) SetNegative(negative bool) {
+	a.Negative = negative
+	a.require(adGroupKeywordFieldNegative)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupKeyword) SetText(text string) {
+	a.Text = text
+	a.require(adGroupKeywordFieldText)
+}
+
+func (a *AdGroupKeyword) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdGroupKeyword
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdGroupKeyword(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdGroupKeyword) MarshalJSON() ([]byte, error) {
+	type embed AdGroupKeyword
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdGroupKeyword) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+type AdGroupKeywordMatchType string
+
+const (
+	AdGroupKeywordMatchTypeBroad  AdGroupKeywordMatchType = "broad"
+	AdGroupKeywordMatchTypePhrase AdGroupKeywordMatchType = "phrase"
+	AdGroupKeywordMatchTypeExact  AdGroupKeywordMatchType = "exact"
+)
+
+func NewAdGroupKeywordMatchTypeFromString(s string) (AdGroupKeywordMatchType, error) {
+	switch s {
+	case "broad":
+		return AdGroupKeywordMatchTypeBroad, nil
+	case "phrase":
+		return AdGroupKeywordMatchTypePhrase, nil
+	case "exact":
+		return AdGroupKeywordMatchTypeExact, nil
+	}
+	var t AdGroupKeywordMatchType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdGroupKeywordMatchType) Ptr() *AdGroupKeywordMatchType {
+	return &a
+}
+
+var (
 	adGroupLearningProgressFieldConversionThreshold = big.NewInt(1 << 0)
 	adGroupLearningProgressFieldConversions         = big.NewInt(1 << 1)
 	adGroupLearningProgressFieldProgressPercent     = big.NewInt(1 << 2)
@@ -9119,6 +9292,153 @@ func (c *CreateAdGroupsRequestFrequencyCap) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+var (
+	createAdGroupsRequestKeywordsItemFieldMatchType = big.NewInt(1 << 0)
+	createAdGroupsRequestKeywordsItemFieldNegative  = big.NewInt(1 << 1)
+	createAdGroupsRequestKeywordsItemFieldText      = big.NewInt(1 << 2)
+)
+
+type CreateAdGroupsRequestKeywordsItem struct {
+	// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+	MatchType *CreateAdGroupsRequestKeywordsItemMatchType `json:"match_type,omitempty" url:"match_type,omitempty"`
+	// Set to `true` to keep the ads from showing for this term instead. Defaults to `false`.
+	Negative *bool `json:"negative,omitempty" url:"negative,omitempty"`
+	// The search term, up to 80 characters and 10 words. Symbols such as ! @ % , * = ^ ; ~ | < > ? ( ) { } and quotes aren't allowed: set the match with match_type instead.
+	Text string `json:"text" url:"text"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) GetMatchType() *CreateAdGroupsRequestKeywordsItemMatchType {
+	if c == nil {
+		return nil
+	}
+	return c.MatchType
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) GetNegative() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Negative
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) GetText() string {
+	if c == nil {
+		return ""
+	}
+	return c.Text
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetMatchType sets the MatchType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestKeywordsItem) SetMatchType(matchType *CreateAdGroupsRequestKeywordsItemMatchType) {
+	c.MatchType = matchType
+	c.require(createAdGroupsRequestKeywordsItemFieldMatchType)
+}
+
+// SetNegative sets the Negative field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestKeywordsItem) SetNegative(negative *bool) {
+	c.Negative = negative
+	c.require(createAdGroupsRequestKeywordsItemFieldNegative)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestKeywordsItem) SetText(text string) {
+	c.Text = text
+	c.require(createAdGroupsRequestKeywordsItemFieldText)
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestKeywordsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestKeywordsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestKeywordsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+type CreateAdGroupsRequestKeywordsItemMatchType string
+
+const (
+	CreateAdGroupsRequestKeywordsItemMatchTypeBroad  CreateAdGroupsRequestKeywordsItemMatchType = "broad"
+	CreateAdGroupsRequestKeywordsItemMatchTypePhrase CreateAdGroupsRequestKeywordsItemMatchType = "phrase"
+	CreateAdGroupsRequestKeywordsItemMatchTypeExact  CreateAdGroupsRequestKeywordsItemMatchType = "exact"
+)
+
+func NewCreateAdGroupsRequestKeywordsItemMatchTypeFromString(s string) (CreateAdGroupsRequestKeywordsItemMatchType, error) {
+	switch s {
+	case "broad":
+		return CreateAdGroupsRequestKeywordsItemMatchTypeBroad, nil
+	case "phrase":
+		return CreateAdGroupsRequestKeywordsItemMatchTypePhrase, nil
+	case "exact":
+		return CreateAdGroupsRequestKeywordsItemMatchTypeExact, nil
+	}
+	var t CreateAdGroupsRequestKeywordsItemMatchType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateAdGroupsRequestKeywordsItemMatchType) Ptr() *CreateAdGroupsRequestKeywordsItemMatchType {
+	return &c
+}
+
 type CreateAdGroupsRequestMessageAppsItem string
 
 const (
@@ -11420,6 +11740,153 @@ func (u *UpdateAdGroupsRequestFrequencyCap) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+var (
+	updateAdGroupsRequestKeywordsItemFieldMatchType = big.NewInt(1 << 0)
+	updateAdGroupsRequestKeywordsItemFieldNegative  = big.NewInt(1 << 1)
+	updateAdGroupsRequestKeywordsItemFieldText      = big.NewInt(1 << 2)
+)
+
+type UpdateAdGroupsRequestKeywordsItem struct {
+	// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+	MatchType *UpdateAdGroupsRequestKeywordsItemMatchType `json:"match_type,omitempty" url:"match_type,omitempty"`
+	// Set to `true` to keep the ads from showing for this term instead. Defaults to `false`.
+	Negative *bool `json:"negative,omitempty" url:"negative,omitempty"`
+	// The search term, up to 80 characters and 10 words. Symbols such as ! @ % , * = ^ ; ~ | < > ? ( ) { } and quotes aren't allowed: set the match with match_type instead.
+	Text string `json:"text" url:"text"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) GetMatchType() *UpdateAdGroupsRequestKeywordsItemMatchType {
+	if u == nil {
+		return nil
+	}
+	return u.MatchType
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) GetNegative() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Negative
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) GetText() string {
+	if u == nil {
+		return ""
+	}
+	return u.Text
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetMatchType sets the MatchType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestKeywordsItem) SetMatchType(matchType *UpdateAdGroupsRequestKeywordsItemMatchType) {
+	u.MatchType = matchType
+	u.require(updateAdGroupsRequestKeywordsItemFieldMatchType)
+}
+
+// SetNegative sets the Negative field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestKeywordsItem) SetNegative(negative *bool) {
+	u.Negative = negative
+	u.require(updateAdGroupsRequestKeywordsItemFieldNegative)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestKeywordsItem) SetText(text string) {
+	u.Text = text
+	u.require(updateAdGroupsRequestKeywordsItemFieldText)
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestKeywordsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestKeywordsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestKeywordsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+type UpdateAdGroupsRequestKeywordsItemMatchType string
+
+const (
+	UpdateAdGroupsRequestKeywordsItemMatchTypeBroad  UpdateAdGroupsRequestKeywordsItemMatchType = "broad"
+	UpdateAdGroupsRequestKeywordsItemMatchTypePhrase UpdateAdGroupsRequestKeywordsItemMatchType = "phrase"
+	UpdateAdGroupsRequestKeywordsItemMatchTypeExact  UpdateAdGroupsRequestKeywordsItemMatchType = "exact"
+)
+
+func NewUpdateAdGroupsRequestKeywordsItemMatchTypeFromString(s string) (UpdateAdGroupsRequestKeywordsItemMatchType, error) {
+	switch s {
+	case "broad":
+		return UpdateAdGroupsRequestKeywordsItemMatchTypeBroad, nil
+	case "phrase":
+		return UpdateAdGroupsRequestKeywordsItemMatchTypePhrase, nil
+	case "exact":
+		return UpdateAdGroupsRequestKeywordsItemMatchTypeExact, nil
+	}
+	var t UpdateAdGroupsRequestKeywordsItemMatchType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateAdGroupsRequestKeywordsItemMatchType) Ptr() *UpdateAdGroupsRequestKeywordsItemMatchType {
+	return &u
+}
+
 type UpdateAdGroupsRequestMessageAppsItem string
 
 const (
@@ -11813,15 +12280,16 @@ var (
 	updateAdGroupsRequestFieldDevices              = big.NewInt(1 << 12)
 	updateAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 13)
 	updateAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 14)
-	updateAdGroupsRequestFieldLanguages            = big.NewInt(1 << 15)
-	updateAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 16)
-	updateAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 17)
-	updateAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 18)
-	updateAdGroupsRequestFieldPlacements           = big.NewInt(1 << 19)
-	updateAdGroupsRequestFieldRegions              = big.NewInt(1 << 20)
-	updateAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 21)
-	updateAdGroupsRequestFieldStatus               = big.NewInt(1 << 22)
-	updateAdGroupsRequestFieldTitle                = big.NewInt(1 << 23)
+	updateAdGroupsRequestFieldKeywords             = big.NewInt(1 << 15)
+	updateAdGroupsRequestFieldLanguages            = big.NewInt(1 << 16)
+	updateAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 17)
+	updateAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 18)
+	updateAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 19)
+	updateAdGroupsRequestFieldPlacements           = big.NewInt(1 << 20)
+	updateAdGroupsRequestFieldRegions              = big.NewInt(1 << 21)
+	updateAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 22)
+	updateAdGroupsRequestFieldStatus               = big.NewInt(1 << 23)
+	updateAdGroupsRequestFieldTitle                = big.NewInt(1 << 24)
 )
 
 type UpdateAdGroupsRequest struct {
@@ -11854,6 +12322,8 @@ type UpdateAdGroupsRequest struct {
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
 	// Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Under a campaign budget every ad group must use the same cap, which applies across the whole campaign, and only with the awareness objective (reach or ThruPlay ad groups) or engagement (ThruPlay). Fixed once the campaign launches; `null` clears it before then.
 	FrequencyCap *UpdateAdGroupsRequestFrequencyCap `json:"frequency_cap,omitempty" url:"-"`
+	// Search terms the ad group's ads can show for, and terms they never show for. Only search campaigns take keywords, and each of their ad groups needs at least one before launch. Replaces the stored list; omit to keep it.
+	Keywords []*UpdateAdGroupsRequestKeywordsItem `json:"keywords,omitempty" url:"-"`
 	// Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
 	Languages []string `json:"languages,omitempty" url:"-"`
 	// Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
@@ -11998,6 +12468,13 @@ func (u *UpdateAdGroupsRequest) SetEndsAt(endsAt *string) {
 func (u *UpdateAdGroupsRequest) SetFrequencyCap(frequencyCap *UpdateAdGroupsRequestFrequencyCap) {
 	u.FrequencyCap = frequencyCap
 	u.require(updateAdGroupsRequestFieldFrequencyCap)
+}
+
+// SetKeywords sets the Keywords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequest) SetKeywords(keywords []*UpdateAdGroupsRequestKeywordsItem) {
+	u.Keywords = keywords
+	u.require(updateAdGroupsRequestFieldKeywords)
 }
 
 // SetLanguages sets the Languages field and marks it as non-optional;

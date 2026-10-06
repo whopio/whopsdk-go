@@ -17,13 +17,14 @@ var (
 	createAdCampaignsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 3)
 	createAdCampaignsRequestFieldBudgetOptimization   = big.NewInt(1 << 4)
 	createAdCampaignsRequestFieldBudgetType           = big.NewInt(1 << 5)
-	createAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 6)
-	createAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 7)
-	createAdCampaignsRequestFieldObjective            = big.NewInt(1 << 8)
-	createAdCampaignsRequestFieldPlatform             = big.NewInt(1 << 9)
-	createAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 10)
-	createAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 11)
-	createAdCampaignsRequestFieldTitle                = big.NewInt(1 << 12)
+	createAdCampaignsRequestFieldCampaignType         = big.NewInt(1 << 6)
+	createAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 7)
+	createAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 8)
+	createAdCampaignsRequestFieldObjective            = big.NewInt(1 << 9)
+	createAdCampaignsRequestFieldPlatform             = big.NewInt(1 << 10)
+	createAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 11)
+	createAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 12)
+	createAdCampaignsRequestFieldTitle                = big.NewInt(1 << 13)
 )
 
 type CreateAdCampaignsRequest struct {
@@ -39,6 +40,8 @@ type CreateAdCampaignsRequest struct {
 	BudgetOptimization *CreateAdCampaignsRequestBudgetOptimization `json:"budget_optimization,omitempty" url:"-"`
 	// Whether the budget is spent per day (`daily`) or over the campaign's full run (`lifetime`). Defaults to `daily`.
 	BudgetType *CreateAdCampaignsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
+	// The kind of campaign to create. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
+	CampaignType *CreateAdCampaignsRequestCampaignType `json:"campaign_type,omitempty" url:"-"`
 	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`). Only for campaigns that own the budget.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"-"`
 	// When the campaign stops delivering, as an ISO 8601 timestamp. Only for campaigns that own the budget.
@@ -107,6 +110,13 @@ func (c *CreateAdCampaignsRequest) SetBudgetOptimization(budgetOptimization *Cre
 func (c *CreateAdCampaignsRequest) SetBudgetType(budgetType *CreateAdCampaignsRequestBudgetType) {
 	c.BudgetType = budgetType
 	c.require(createAdCampaignsRequestFieldBudgetType)
+}
+
+// SetCampaignType sets the CampaignType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdCampaignsRequest) SetCampaignType(campaignType *CreateAdCampaignsRequestCampaignType) {
+	c.CampaignType = campaignType
+	c.require(createAdCampaignsRequestFieldCampaignType)
 }
 
 // SetDesiredCostPerResult sets the DesiredCostPerResult field and marks it as non-optional;
@@ -282,16 +292,17 @@ var (
 	listAdCampaignsRequestFieldQuery            = big.NewInt(1 << 2)
 	listAdCampaignsRequestFieldOrder            = big.NewInt(1 << 3)
 	listAdCampaignsRequestFieldDirection        = big.NewInt(1 << 4)
-	listAdCampaignsRequestFieldCreatedBefore    = big.NewInt(1 << 5)
-	listAdCampaignsRequestFieldCreatedAfter     = big.NewInt(1 << 6)
-	listAdCampaignsRequestFieldStatsFrom        = big.NewInt(1 << 7)
-	listAdCampaignsRequestFieldStatsTo          = big.NewInt(1 << 8)
-	listAdCampaignsRequestFieldTimeZone         = big.NewInt(1 << 9)
-	listAdCampaignsRequestFieldAttributionModel = big.NewInt(1 << 10)
-	listAdCampaignsRequestFieldFirst            = big.NewInt(1 << 11)
-	listAdCampaignsRequestFieldAfter            = big.NewInt(1 << 12)
-	listAdCampaignsRequestFieldLast             = big.NewInt(1 << 13)
-	listAdCampaignsRequestFieldBefore           = big.NewInt(1 << 14)
+	listAdCampaignsRequestFieldCampaignType     = big.NewInt(1 << 5)
+	listAdCampaignsRequestFieldCreatedBefore    = big.NewInt(1 << 6)
+	listAdCampaignsRequestFieldCreatedAfter     = big.NewInt(1 << 7)
+	listAdCampaignsRequestFieldStatsFrom        = big.NewInt(1 << 8)
+	listAdCampaignsRequestFieldStatsTo          = big.NewInt(1 << 9)
+	listAdCampaignsRequestFieldTimeZone         = big.NewInt(1 << 10)
+	listAdCampaignsRequestFieldAttributionModel = big.NewInt(1 << 11)
+	listAdCampaignsRequestFieldFirst            = big.NewInt(1 << 12)
+	listAdCampaignsRequestFieldAfter            = big.NewInt(1 << 13)
+	listAdCampaignsRequestFieldLast             = big.NewInt(1 << 14)
+	listAdCampaignsRequestFieldBefore           = big.NewInt(1 << 15)
 )
 
 type ListAdCampaignsRequest struct {
@@ -305,6 +316,8 @@ type ListAdCampaignsRequest struct {
 	Order *ListAdCampaignsRequestOrder `json:"-" url:"order,omitempty"`
 	// The sort direction. Defaults to desc.
 	Direction *ListAdCampaignsRequestDirection `json:"-" url:"direction,omitempty"`
+	// Only return campaigns of this type.
+	CampaignType *ListAdCampaignsRequestCampaignType `json:"-" url:"campaign_type,omitempty"`
 	// Only return campaigns created before this timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return campaigns created after this timestamp.
@@ -372,6 +385,13 @@ func (l *ListAdCampaignsRequest) SetOrder(order *ListAdCampaignsRequestOrder) {
 func (l *ListAdCampaignsRequest) SetDirection(direction *ListAdCampaignsRequestDirection) {
 	l.Direction = direction
 	l.require(listAdCampaignsRequestFieldDirection)
+}
+
+// SetCampaignType sets the CampaignType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAdCampaignsRequest) SetCampaignType(campaignType *ListAdCampaignsRequestCampaignType) {
+	l.CampaignType = campaignType
+	l.require(listAdCampaignsRequestFieldCampaignType)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
@@ -549,63 +569,64 @@ var (
 	adCampaignFieldBudgetCurrency               = big.NewInt(1 << 5)
 	adCampaignFieldBudgetOptimization           = big.NewInt(1 << 6)
 	adCampaignFieldBudgetType                   = big.NewInt(1 << 7)
-	adCampaignFieldClickThroughRate             = big.NewInt(1 << 8)
-	adCampaignFieldClicks                       = big.NewInt(1 << 9)
-	adCampaignFieldCompletedRegistrationValue   = big.NewInt(1 << 10)
-	adCampaignFieldCompletedRegistrations       = big.NewInt(1 << 11)
-	adCampaignFieldContactValue                 = big.NewInt(1 << 12)
-	adCampaignFieldContacts                     = big.NewInt(1 << 13)
-	adCampaignFieldCostPerAddedToCart           = big.NewInt(1 << 14)
-	adCampaignFieldCostPerClick                 = big.NewInt(1 << 15)
-	adCampaignFieldCostPerCompletedRegistration = big.NewInt(1 << 16)
-	adCampaignFieldCostPerContact               = big.NewInt(1 << 17)
-	adCampaignFieldCostPerLead                  = big.NewInt(1 << 18)
-	adCampaignFieldCostPerMille                 = big.NewInt(1 << 19)
-	adCampaignFieldCostPerPurchase              = big.NewInt(1 << 20)
-	adCampaignFieldCostPerResult                = big.NewInt(1 << 21)
-	adCampaignFieldCostPerSchedule              = big.NewInt(1 << 22)
-	adCampaignFieldCostPerSubmittedApplication  = big.NewInt(1 << 23)
-	adCampaignFieldCostPerUniqueClick           = big.NewInt(1 << 24)
-	adCampaignFieldCostPerViewedContent         = big.NewInt(1 << 25)
-	adCampaignFieldCreatedAt                    = big.NewInt(1 << 26)
-	adCampaignFieldCustomConversions            = big.NewInt(1 << 27)
-	adCampaignFieldCustomEventCounts            = big.NewInt(1 << 28)
-	adCampaignFieldCustomEventValues            = big.NewInt(1 << 29)
-	adCampaignFieldDeliveryStatus               = big.NewInt(1 << 30)
-	adCampaignFieldDesiredCostPerResult         = big.NewInt(1 << 31)
-	adCampaignFieldEndsAt                       = big.NewInt(1 << 32)
-	adCampaignFieldFrequency                    = big.NewInt(1 << 33)
-	adCampaignFieldID                           = big.NewInt(1 << 34)
-	adCampaignFieldImpressions                  = big.NewInt(1 << 35)
-	adCampaignFieldIssues                       = big.NewInt(1 << 36)
-	adCampaignFieldLeadValue                    = big.NewInt(1 << 37)
-	adCampaignFieldLeads                        = big.NewInt(1 << 38)
-	adCampaignFieldLinkClicks                   = big.NewInt(1 << 39)
-	adCampaignFieldObjective                    = big.NewInt(1 << 40)
-	adCampaignFieldOptimizationGoal             = big.NewInt(1 << 41)
-	adCampaignFieldPlatform                     = big.NewInt(1 << 42)
-	adCampaignFieldPurchaseValue                = big.NewInt(1 << 43)
-	adCampaignFieldPurchases                    = big.NewInt(1 << 44)
-	adCampaignFieldReach                        = big.NewInt(1 << 45)
-	adCampaignFieldResultEvent                  = big.NewInt(1 << 46)
-	adCampaignFieldResultEventName              = big.NewInt(1 << 47)
-	adCampaignFieldResults                      = big.NewInt(1 << 48)
-	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 49)
-	adCampaignFieldScheduleValue                = big.NewInt(1 << 50)
-	adCampaignFieldSchedules                    = big.NewInt(1 << 51)
-	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 52)
-	adCampaignFieldSpend                        = big.NewInt(1 << 53)
-	adCampaignFieldSpendCurrency                = big.NewInt(1 << 54)
-	adCampaignFieldStartsAt                     = big.NewInt(1 << 55)
-	adCampaignFieldStatus                       = big.NewInt(1 << 56)
-	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 57)
-	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 58)
-	adCampaignFieldTitle                        = big.NewInt(1 << 59)
-	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 60)
-	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 61)
-	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 62)
-	adCampaignFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adCampaignFieldCampaignType                 = big.NewInt(1 << 8)
+	adCampaignFieldClickThroughRate             = big.NewInt(1 << 9)
+	adCampaignFieldClicks                       = big.NewInt(1 << 10)
+	adCampaignFieldCompletedRegistrationValue   = big.NewInt(1 << 11)
+	adCampaignFieldCompletedRegistrations       = big.NewInt(1 << 12)
+	adCampaignFieldContactValue                 = big.NewInt(1 << 13)
+	adCampaignFieldContacts                     = big.NewInt(1 << 14)
+	adCampaignFieldCostPerAddedToCart           = big.NewInt(1 << 15)
+	adCampaignFieldCostPerClick                 = big.NewInt(1 << 16)
+	adCampaignFieldCostPerCompletedRegistration = big.NewInt(1 << 17)
+	adCampaignFieldCostPerContact               = big.NewInt(1 << 18)
+	adCampaignFieldCostPerLead                  = big.NewInt(1 << 19)
+	adCampaignFieldCostPerMille                 = big.NewInt(1 << 20)
+	adCampaignFieldCostPerPurchase              = big.NewInt(1 << 21)
+	adCampaignFieldCostPerResult                = big.NewInt(1 << 22)
+	adCampaignFieldCostPerSchedule              = big.NewInt(1 << 23)
+	adCampaignFieldCostPerSubmittedApplication  = big.NewInt(1 << 24)
+	adCampaignFieldCostPerUniqueClick           = big.NewInt(1 << 25)
+	adCampaignFieldCostPerViewedContent         = big.NewInt(1 << 26)
+	adCampaignFieldCreatedAt                    = big.NewInt(1 << 27)
+	adCampaignFieldCustomConversions            = big.NewInt(1 << 28)
+	adCampaignFieldCustomEventCounts            = big.NewInt(1 << 29)
+	adCampaignFieldCustomEventValues            = big.NewInt(1 << 30)
+	adCampaignFieldDeliveryStatus               = big.NewInt(1 << 31)
+	adCampaignFieldDesiredCostPerResult         = big.NewInt(1 << 32)
+	adCampaignFieldEndsAt                       = big.NewInt(1 << 33)
+	adCampaignFieldFrequency                    = big.NewInt(1 << 34)
+	adCampaignFieldID                           = big.NewInt(1 << 35)
+	adCampaignFieldImpressions                  = big.NewInt(1 << 36)
+	adCampaignFieldIssues                       = big.NewInt(1 << 37)
+	adCampaignFieldLeadValue                    = big.NewInt(1 << 38)
+	adCampaignFieldLeads                        = big.NewInt(1 << 39)
+	adCampaignFieldLinkClicks                   = big.NewInt(1 << 40)
+	adCampaignFieldObjective                    = big.NewInt(1 << 41)
+	adCampaignFieldOptimizationGoal             = big.NewInt(1 << 42)
+	adCampaignFieldPlatform                     = big.NewInt(1 << 43)
+	adCampaignFieldPurchaseValue                = big.NewInt(1 << 44)
+	adCampaignFieldPurchases                    = big.NewInt(1 << 45)
+	adCampaignFieldReach                        = big.NewInt(1 << 46)
+	adCampaignFieldResultEvent                  = big.NewInt(1 << 47)
+	adCampaignFieldResultEventName              = big.NewInt(1 << 48)
+	adCampaignFieldResults                      = big.NewInt(1 << 49)
+	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 50)
+	adCampaignFieldScheduleValue                = big.NewInt(1 << 51)
+	adCampaignFieldSchedules                    = big.NewInt(1 << 52)
+	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 53)
+	adCampaignFieldSpend                        = big.NewInt(1 << 54)
+	adCampaignFieldSpendCurrency                = big.NewInt(1 << 55)
+	adCampaignFieldStartsAt                     = big.NewInt(1 << 56)
+	adCampaignFieldStatus                       = big.NewInt(1 << 57)
+	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 58)
+	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 59)
+	adCampaignFieldTitle                        = big.NewInt(1 << 60)
+	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 61)
+	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 62)
+	adCampaignFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adCampaignFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 65)
 )
 
 // adCampaignNullableFields maps the wire names of AdCampaign's nullable fields (required or optional) to their field bits.
@@ -655,6 +676,8 @@ type AdCampaign struct {
 	BudgetOptimization *AdCampaignBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
 	BudgetType *AdCampaignBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
+	// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+	CampaignType AdCampaignCampaignType `json:"campaign_type" url:"campaign_type"`
 	// Clicks divided by impressions, between 0 and 1.
 	ClickThroughRate float64 `json:"click_through_rate" url:"click_through_rate"`
 	// The number of clicks.
@@ -829,6 +852,13 @@ func (a *AdCampaign) GetBudgetType() *AdCampaignBudgetType {
 		return nil
 	}
 	return a.BudgetType
+}
+
+func (a *AdCampaign) GetCampaignType() AdCampaignCampaignType {
+	if a == nil {
+		return ""
+	}
+	return a.CampaignType
 }
 
 func (a *AdCampaign) GetClickThroughRate() float64 {
@@ -1300,6 +1330,13 @@ func (a *AdCampaign) SetBudgetOptimization(budgetOptimization *AdCampaignBudgetO
 func (a *AdCampaign) SetBudgetType(budgetType *AdCampaignBudgetType) {
 	a.BudgetType = budgetType
 	a.require(adCampaignFieldBudgetType)
+}
+
+// SetCampaignType sets the CampaignType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCampaign) SetCampaignType(campaignType AdCampaignCampaignType) {
+	a.CampaignType = campaignType
+	a.require(adCampaignFieldCampaignType)
 }
 
 // SetClickThroughRate sets the ClickThroughRate field and marks it as non-optional;
@@ -1822,6 +1859,29 @@ func (a AdCampaignBudgetType) Ptr() *AdCampaignBudgetType {
 	return &a
 }
 
+// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+type AdCampaignCampaignType string
+
+const (
+	AdCampaignCampaignTypeStandard AdCampaignCampaignType = "standard"
+	AdCampaignCampaignTypeSearch   AdCampaignCampaignType = "search"
+)
+
+func NewAdCampaignCampaignTypeFromString(s string) (AdCampaignCampaignType, error) {
+	switch s {
+	case "standard":
+		return AdCampaignCampaignTypeStandard, nil
+	case "search":
+		return AdCampaignCampaignTypeSearch, nil
+	}
+	var t AdCampaignCampaignType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdCampaignCampaignType) Ptr() *AdCampaignCampaignType {
+	return &a
+}
+
 // Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 type AdCampaignDeliveryStatus string
 
@@ -2137,6 +2197,29 @@ func (c CreateAdCampaignsRequestBudgetType) Ptr() *CreateAdCampaignsRequestBudge
 	return &c
 }
 
+// The kind of campaign to create. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
+type CreateAdCampaignsRequestCampaignType string
+
+const (
+	CreateAdCampaignsRequestCampaignTypeStandard CreateAdCampaignsRequestCampaignType = "standard"
+	CreateAdCampaignsRequestCampaignTypeSearch   CreateAdCampaignsRequestCampaignType = "search"
+)
+
+func NewCreateAdCampaignsRequestCampaignTypeFromString(s string) (CreateAdCampaignsRequestCampaignType, error) {
+	switch s {
+	case "standard":
+		return CreateAdCampaignsRequestCampaignTypeStandard, nil
+	case "search":
+		return CreateAdCampaignsRequestCampaignTypeSearch, nil
+	}
+	var t CreateAdCampaignsRequestCampaignType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateAdCampaignsRequestCampaignType) Ptr() *CreateAdCampaignsRequestCampaignType {
+	return &c
+}
+
 // The goal the campaign optimizes toward.
 type CreateAdCampaignsRequestObjective string
 
@@ -2426,6 +2509,28 @@ func NewListAdCampaignsRequestAttributionModelFromString(s string) (ListAdCampai
 }
 
 func (l ListAdCampaignsRequestAttributionModel) Ptr() *ListAdCampaignsRequestAttributionModel {
+	return &l
+}
+
+type ListAdCampaignsRequestCampaignType string
+
+const (
+	ListAdCampaignsRequestCampaignTypeStandard ListAdCampaignsRequestCampaignType = "standard"
+	ListAdCampaignsRequestCampaignTypeSearch   ListAdCampaignsRequestCampaignType = "search"
+)
+
+func NewListAdCampaignsRequestCampaignTypeFromString(s string) (ListAdCampaignsRequestCampaignType, error) {
+	switch s {
+	case "standard":
+		return ListAdCampaignsRequestCampaignTypeStandard, nil
+	case "search":
+		return ListAdCampaignsRequestCampaignTypeSearch, nil
+	}
+	var t ListAdCampaignsRequestCampaignType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListAdCampaignsRequestCampaignType) Ptr() *ListAdCampaignsRequestCampaignType {
 	return &l
 }
 
@@ -3042,20 +3147,21 @@ var (
 	postAdCampaignPaymentFailedPayloadDataFieldBudgetCurrency       = big.NewInt(1 << 3)
 	postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization   = big.NewInt(1 << 4)
 	postAdCampaignPaymentFailedPayloadDataFieldBudgetType           = big.NewInt(1 << 5)
-	postAdCampaignPaymentFailedPayloadDataFieldCreatedAt            = big.NewInt(1 << 6)
-	postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 7)
-	postAdCampaignPaymentFailedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 8)
-	postAdCampaignPaymentFailedPayloadDataFieldEndsAt               = big.NewInt(1 << 9)
-	postAdCampaignPaymentFailedPayloadDataFieldID                   = big.NewInt(1 << 10)
-	postAdCampaignPaymentFailedPayloadDataFieldIssues               = big.NewInt(1 << 11)
-	postAdCampaignPaymentFailedPayloadDataFieldObjective            = big.NewInt(1 << 12)
-	postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal     = big.NewInt(1 << 13)
-	postAdCampaignPaymentFailedPayloadDataFieldPlatform             = big.NewInt(1 << 14)
-	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 15)
-	postAdCampaignPaymentFailedPayloadDataFieldStartsAt             = big.NewInt(1 << 16)
-	postAdCampaignPaymentFailedPayloadDataFieldStatus               = big.NewInt(1 << 17)
-	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 18)
-	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 19)
+	postAdCampaignPaymentFailedPayloadDataFieldCampaignType         = big.NewInt(1 << 6)
+	postAdCampaignPaymentFailedPayloadDataFieldCreatedAt            = big.NewInt(1 << 7)
+	postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 8)
+	postAdCampaignPaymentFailedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 9)
+	postAdCampaignPaymentFailedPayloadDataFieldEndsAt               = big.NewInt(1 << 10)
+	postAdCampaignPaymentFailedPayloadDataFieldID                   = big.NewInt(1 << 11)
+	postAdCampaignPaymentFailedPayloadDataFieldIssues               = big.NewInt(1 << 12)
+	postAdCampaignPaymentFailedPayloadDataFieldObjective            = big.NewInt(1 << 13)
+	postAdCampaignPaymentFailedPayloadDataFieldOptimizationGoal     = big.NewInt(1 << 14)
+	postAdCampaignPaymentFailedPayloadDataFieldPlatform             = big.NewInt(1 << 15)
+	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 16)
+	postAdCampaignPaymentFailedPayloadDataFieldStartsAt             = big.NewInt(1 << 17)
+	postAdCampaignPaymentFailedPayloadDataFieldStatus               = big.NewInt(1 << 18)
+	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 19)
+	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 20)
 )
 
 // postAdCampaignPaymentFailedPayloadDataNullableFields maps the wire names of PostAdCampaignPaymentFailedPayloadData's nullable fields (required or optional) to their field bits.
@@ -3085,6 +3191,8 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	BudgetOptimization *PostAdCampaignPaymentFailedPayloadDataBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
 	BudgetType *PostAdCampaignPaymentFailedPayloadDataBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
+	// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+	CampaignType PostAdCampaignPaymentFailedPayloadDataCampaignType `json:"campaign_type" url:"campaign_type"`
 	// When the campaign was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
@@ -3159,6 +3267,13 @@ func (p *PostAdCampaignPaymentFailedPayloadData) GetBudgetType() *PostAdCampaign
 		return nil
 	}
 	return p.BudgetType
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetCampaignType() PostAdCampaignPaymentFailedPayloadDataCampaignType {
+	if p == nil {
+		return ""
+	}
+	return p.CampaignType
 }
 
 func (p *PostAdCampaignPaymentFailedPayloadData) GetCreatedAt() string {
@@ -3315,6 +3430,13 @@ func (p *PostAdCampaignPaymentFailedPayloadData) SetBudgetOptimization(budgetOpt
 func (p *PostAdCampaignPaymentFailedPayloadData) SetBudgetType(budgetType *PostAdCampaignPaymentFailedPayloadDataBudgetType) {
 	p.BudgetType = budgetType
 	p.require(postAdCampaignPaymentFailedPayloadDataFieldBudgetType)
+}
+
+// SetCampaignType sets the CampaignType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetCampaignType(campaignType PostAdCampaignPaymentFailedPayloadDataCampaignType) {
+	p.CampaignType = campaignType
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldCampaignType)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -3533,6 +3655,29 @@ func NewPostAdCampaignPaymentFailedPayloadDataBudgetTypeFromString(s string) (Po
 }
 
 func (p PostAdCampaignPaymentFailedPayloadDataBudgetType) Ptr() *PostAdCampaignPaymentFailedPayloadDataBudgetType {
+	return &p
+}
+
+// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+type PostAdCampaignPaymentFailedPayloadDataCampaignType string
+
+const (
+	PostAdCampaignPaymentFailedPayloadDataCampaignTypeStandard PostAdCampaignPaymentFailedPayloadDataCampaignType = "standard"
+	PostAdCampaignPaymentFailedPayloadDataCampaignTypeSearch   PostAdCampaignPaymentFailedPayloadDataCampaignType = "search"
+)
+
+func NewPostAdCampaignPaymentFailedPayloadDataCampaignTypeFromString(s string) (PostAdCampaignPaymentFailedPayloadDataCampaignType, error) {
+	switch s {
+	case "standard":
+		return PostAdCampaignPaymentFailedPayloadDataCampaignTypeStandard, nil
+	case "search":
+		return PostAdCampaignPaymentFailedPayloadDataCampaignTypeSearch, nil
+	}
+	var t PostAdCampaignPaymentFailedPayloadDataCampaignType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignPaymentFailedPayloadDataCampaignType) Ptr() *PostAdCampaignPaymentFailedPayloadDataCampaignType {
 	return &p
 }
 
@@ -4005,20 +4150,21 @@ var (
 	postAdCampaignUpdatedPayloadDataFieldBudgetCurrency       = big.NewInt(1 << 3)
 	postAdCampaignUpdatedPayloadDataFieldBudgetOptimization   = big.NewInt(1 << 4)
 	postAdCampaignUpdatedPayloadDataFieldBudgetType           = big.NewInt(1 << 5)
-	postAdCampaignUpdatedPayloadDataFieldCreatedAt            = big.NewInt(1 << 6)
-	postAdCampaignUpdatedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 7)
-	postAdCampaignUpdatedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 8)
-	postAdCampaignUpdatedPayloadDataFieldEndsAt               = big.NewInt(1 << 9)
-	postAdCampaignUpdatedPayloadDataFieldID                   = big.NewInt(1 << 10)
-	postAdCampaignUpdatedPayloadDataFieldIssues               = big.NewInt(1 << 11)
-	postAdCampaignUpdatedPayloadDataFieldObjective            = big.NewInt(1 << 12)
-	postAdCampaignUpdatedPayloadDataFieldOptimizationGoal     = big.NewInt(1 << 13)
-	postAdCampaignUpdatedPayloadDataFieldPlatform             = big.NewInt(1 << 14)
-	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 15)
-	postAdCampaignUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 16)
-	postAdCampaignUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 17)
-	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 18)
-	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 19)
+	postAdCampaignUpdatedPayloadDataFieldCampaignType         = big.NewInt(1 << 6)
+	postAdCampaignUpdatedPayloadDataFieldCreatedAt            = big.NewInt(1 << 7)
+	postAdCampaignUpdatedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 8)
+	postAdCampaignUpdatedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 9)
+	postAdCampaignUpdatedPayloadDataFieldEndsAt               = big.NewInt(1 << 10)
+	postAdCampaignUpdatedPayloadDataFieldID                   = big.NewInt(1 << 11)
+	postAdCampaignUpdatedPayloadDataFieldIssues               = big.NewInt(1 << 12)
+	postAdCampaignUpdatedPayloadDataFieldObjective            = big.NewInt(1 << 13)
+	postAdCampaignUpdatedPayloadDataFieldOptimizationGoal     = big.NewInt(1 << 14)
+	postAdCampaignUpdatedPayloadDataFieldPlatform             = big.NewInt(1 << 15)
+	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 16)
+	postAdCampaignUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 17)
+	postAdCampaignUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 18)
+	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 19)
+	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 20)
 )
 
 // postAdCampaignUpdatedPayloadDataNullableFields maps the wire names of PostAdCampaignUpdatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -4048,6 +4194,8 @@ type PostAdCampaignUpdatedPayloadData struct {
 	BudgetOptimization *PostAdCampaignUpdatedPayloadDataBudgetOptimization `json:"budget_optimization,omitempty" url:"budget_optimization,omitempty"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`).
 	BudgetType *PostAdCampaignUpdatedPayloadDataBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
+	// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+	CampaignType PostAdCampaignUpdatedPayloadDataCampaignType `json:"campaign_type" url:"campaign_type"`
 	// When the campaign was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
@@ -4122,6 +4270,13 @@ func (p *PostAdCampaignUpdatedPayloadData) GetBudgetType() *PostAdCampaignUpdate
 		return nil
 	}
 	return p.BudgetType
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetCampaignType() PostAdCampaignUpdatedPayloadDataCampaignType {
+	if p == nil {
+		return ""
+	}
+	return p.CampaignType
 }
 
 func (p *PostAdCampaignUpdatedPayloadData) GetCreatedAt() string {
@@ -4278,6 +4433,13 @@ func (p *PostAdCampaignUpdatedPayloadData) SetBudgetOptimization(budgetOptimizat
 func (p *PostAdCampaignUpdatedPayloadData) SetBudgetType(budgetType *PostAdCampaignUpdatedPayloadDataBudgetType) {
 	p.BudgetType = budgetType
 	p.require(postAdCampaignUpdatedPayloadDataFieldBudgetType)
+}
+
+// SetCampaignType sets the CampaignType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetCampaignType(campaignType PostAdCampaignUpdatedPayloadDataCampaignType) {
+	p.CampaignType = campaignType
+	p.require(postAdCampaignUpdatedPayloadDataFieldCampaignType)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -4496,6 +4658,29 @@ func NewPostAdCampaignUpdatedPayloadDataBudgetTypeFromString(s string) (PostAdCa
 }
 
 func (p PostAdCampaignUpdatedPayloadDataBudgetType) Ptr() *PostAdCampaignUpdatedPayloadDataBudgetType {
+	return &p
+}
+
+// The kind of campaign, fixed at creation. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords.
+type PostAdCampaignUpdatedPayloadDataCampaignType string
+
+const (
+	PostAdCampaignUpdatedPayloadDataCampaignTypeStandard PostAdCampaignUpdatedPayloadDataCampaignType = "standard"
+	PostAdCampaignUpdatedPayloadDataCampaignTypeSearch   PostAdCampaignUpdatedPayloadDataCampaignType = "search"
+)
+
+func NewPostAdCampaignUpdatedPayloadDataCampaignTypeFromString(s string) (PostAdCampaignUpdatedPayloadDataCampaignType, error) {
+	switch s {
+	case "standard":
+		return PostAdCampaignUpdatedPayloadDataCampaignTypeStandard, nil
+	case "search":
+		return PostAdCampaignUpdatedPayloadDataCampaignTypeSearch, nil
+	}
+	var t PostAdCampaignUpdatedPayloadDataCampaignType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdCampaignUpdatedPayloadDataCampaignType) Ptr() *PostAdCampaignUpdatedPayloadDataCampaignType {
 	return &p
 }
 
@@ -4809,6 +4994,29 @@ func (u UpdateAdCampaignsRequestBudgetType) Ptr() *UpdateAdCampaignsRequestBudge
 	return &u
 }
 
+// Accepted only when it matches the campaign's current type, so a read can be sent back unchanged. The type is fixed at creation.
+type UpdateAdCampaignsRequestCampaignType string
+
+const (
+	UpdateAdCampaignsRequestCampaignTypeStandard UpdateAdCampaignsRequestCampaignType = "standard"
+	UpdateAdCampaignsRequestCampaignTypeSearch   UpdateAdCampaignsRequestCampaignType = "search"
+)
+
+func NewUpdateAdCampaignsRequestCampaignTypeFromString(s string) (UpdateAdCampaignsRequestCampaignType, error) {
+	switch s {
+	case "standard":
+		return UpdateAdCampaignsRequestCampaignTypeStandard, nil
+	case "search":
+		return UpdateAdCampaignsRequestCampaignTypeSearch, nil
+	}
+	var t UpdateAdCampaignsRequestCampaignType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateAdCampaignsRequestCampaignType) Ptr() *UpdateAdCampaignsRequestCampaignType {
+	return &u
+}
+
 type UpdateAdCampaignsRequestSpecialAdCategoriesItem string
 
 const (
@@ -4892,11 +5100,12 @@ var (
 	updateAdCampaignsRequestFieldBudgetAmountLocal   = big.NewInt(1 << 3)
 	updateAdCampaignsRequestFieldBudgetOptimization  = big.NewInt(1 << 4)
 	updateAdCampaignsRequestFieldBudgetType          = big.NewInt(1 << 5)
-	updateAdCampaignsRequestFieldEndsAt              = big.NewInt(1 << 6)
-	updateAdCampaignsRequestFieldSpecialAdCategories = big.NewInt(1 << 7)
-	updateAdCampaignsRequestFieldStartsAt            = big.NewInt(1 << 8)
-	updateAdCampaignsRequestFieldStatus              = big.NewInt(1 << 9)
-	updateAdCampaignsRequestFieldTitle               = big.NewInt(1 << 10)
+	updateAdCampaignsRequestFieldCampaignType        = big.NewInt(1 << 6)
+	updateAdCampaignsRequestFieldEndsAt              = big.NewInt(1 << 7)
+	updateAdCampaignsRequestFieldSpecialAdCategories = big.NewInt(1 << 8)
+	updateAdCampaignsRequestFieldStartsAt            = big.NewInt(1 << 9)
+	updateAdCampaignsRequestFieldStatus              = big.NewInt(1 << 10)
+	updateAdCampaignsRequestFieldTitle               = big.NewInt(1 << 11)
 )
 
 type UpdateAdCampaignsRequest struct {
@@ -4912,6 +5121,8 @@ type UpdateAdCampaignsRequest struct {
 	BudgetOptimization *UpdateAdCampaignsRequestBudgetOptimization `json:"budget_optimization,omitempty" url:"-"`
 	// Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`). Only changeable while the campaign is a draft; send budget_amount in the same request so the amount lands on the new type.
 	BudgetType *UpdateAdCampaignsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
+	// Accepted only when it matches the campaign's current type, so a read can be sent back unchanged. The type is fixed at creation.
+	CampaignType *UpdateAdCampaignsRequestCampaignType `json:"campaign_type,omitempty" url:"-"`
 	// When the campaign stops delivering, as an ISO 8601 timestamp. Only for campaigns that own the budget.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
 	// Regulated categories the campaign falls under. Editable on any campaign, draft or launched; pass an empty array to clear.
@@ -4976,6 +5187,13 @@ func (u *UpdateAdCampaignsRequest) SetBudgetOptimization(budgetOptimization *Upd
 func (u *UpdateAdCampaignsRequest) SetBudgetType(budgetType *UpdateAdCampaignsRequestBudgetType) {
 	u.BudgetType = budgetType
 	u.require(updateAdCampaignsRequestFieldBudgetType)
+}
+
+// SetCampaignType sets the CampaignType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdCampaignsRequest) SetCampaignType(campaignType *UpdateAdCampaignsRequestCampaignType) {
+	u.CampaignType = campaignType
+	u.require(updateAdCampaignsRequestFieldCampaignType)
 }
 
 // SetEndsAt sets the EndsAt field and marks it as non-optional;
