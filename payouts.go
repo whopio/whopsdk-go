@@ -483,9 +483,9 @@ var (
 type RetrievePayoutsRequest struct {
 	// Payout ID, prefixed `wdrl_` for a payout returned by `GET /payouts` or `cofr_` for the payout request returned by `POST /payouts`.
 	ID string `json:"-" url:"-"`
-	// Owning account ID, prefixed `biz_`. Provide exactly one of `account_id` or `user_id`.
+	// Optional owning account ID, prefixed `biz_`. The payout ID identifies its ledger. If supplied, this must match the owner and cannot be combined with `user_id`.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// Owning user ID, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
+	// Optional owning user ID, prefixed `user_`. The payout ID identifies its ledger. If supplied, this must match the owner and cannot be combined with `account_id`.
 	UserID *string `json:"-" url:"user_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -10491,13 +10491,15 @@ var (
 	retrievePayoutsResponseFieldPayerName           = big.NewInt(1 << 18)
 	retrievePayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 19)
 	retrievePayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 20)
-	retrievePayoutsResponseFieldSource              = big.NewInt(1 << 21)
-	retrievePayoutsResponseFieldSpeed               = big.NewInt(1 << 22)
-	retrievePayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 23)
-	retrievePayoutsResponseFieldStatus              = big.NewInt(1 << 24)
-	retrievePayoutsResponseFieldStatusDetail        = big.NewInt(1 << 25)
-	retrievePayoutsResponseFieldTimeline            = big.NewInt(1 << 26)
-	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 27)
+	retrievePayoutsResponseFieldRecipientName       = big.NewInt(1 << 21)
+	retrievePayoutsResponseFieldSenderName          = big.NewInt(1 << 22)
+	retrievePayoutsResponseFieldSource              = big.NewInt(1 << 23)
+	retrievePayoutsResponseFieldSpeed               = big.NewInt(1 << 24)
+	retrievePayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 25)
+	retrievePayoutsResponseFieldStatus              = big.NewInt(1 << 26)
+	retrievePayoutsResponseFieldStatusDetail        = big.NewInt(1 << 27)
+	retrievePayoutsResponseFieldTimeline            = big.NewInt(1 << 28)
+	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 29)
 )
 
 // retrievePayoutsResponseNullableFields maps the wire names of RetrievePayoutsResponse's nullable fields (required or optional) to their field bits.
@@ -10512,14 +10514,16 @@ var retrievePayoutsResponseNullableFields = map[string]*big.Int{
 	"payer_name":            retrievePayoutsResponseFieldPayerName,
 	"payout_method":         retrievePayoutsResponseFieldPayoutMethod,
 	"payout_request_id":     retrievePayoutsResponseFieldPayoutRequestID,
+	"recipient_name":        retrievePayoutsResponseFieldRecipientName,
+	"sender_name":           retrievePayoutsResponseFieldSenderName,
 	"source":                retrievePayoutsResponseFieldSource,
 	"statement_descriptor":  retrievePayoutsResponseFieldStatementDescriptor,
 	"trace_code":            retrievePayoutsResponseFieldTraceCode,
 }
 
 type RetrievePayoutsResponse struct {
-	// The payout amount in whole currency units, as a decimal string.
-	Amount string `json:"amount" url:"amount"`
+	// The payout amount in whole currency units, as a decimal string. Only returned to callers with payout:withdrawal:read on the owning ledger.
+	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -10538,16 +10542,16 @@ type RetrievePayoutsResponse struct {
 	ExchangeRate *float64 `json:"exchange_rate,omitempty" url:"exchange_rate,omitempty"`
 	// Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
 	Failure *RetrievePayoutsResponseFailure `json:"failure,omitempty" url:"failure,omitempty"`
-	// The fee charged for the payout, in the payout currency, as a decimal string.
-	FeeAmount string `json:"fee_amount" url:"fee_amount"`
-	// Who bore the payout fee: the account itself, or its parent platform.
-	FeePaidBy RetrievePayoutsResponseFeePaidBy `json:"fee_paid_by" url:"fee_paid_by"`
+	// The fee charged for the payout, in the payout currency, as a decimal string. Only returned to callers with payout:withdrawal:read on the owning ledger.
+	FeeAmount *string `json:"fee_amount,omitempty" url:"fee_amount,omitempty"`
+	// Who bore the payout fee: the account itself, or its parent platform. Only returned to callers with payout:withdrawal:read on the owning ledger.
+	FeePaidBy *RetrievePayoutsResponseFeePaidBy `json:"fee_paid_by,omitempty" url:"fee_paid_by,omitempty"`
 	// Payout ID, prefixed `wdrl_` for a payout returned by `GET /payouts` or `cofr_` for a payout request returned by `POST /payouts`.
 	ID string `json:"id" url:"id"`
-	// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies.
-	MarkupFee string `json:"markup_fee" url:"markup_fee"`
-	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters.
-	Metadata map[string]string `json:"metadata" url:"metadata"`
+	// Whop's markup on the provider fee, in the payout currency, as a decimal string. `"0.0"` when none applies. Only returned to callers with payout:withdrawal:read on the owning ledger.
+	MarkupFee *string `json:"markup_fee,omitempty" url:"markup_fee,omitempty"`
+	// Key-value data attached at creation and echoed on every read. At most 50 keys, key names up to 40 characters, string values up to 500 characters. Only returned to callers with payout:withdrawal:read on the owning ledger.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The planned net for the destination, in the payout currency: amount minus fee_amount minus markup_fee when fee_paid_by is `self`; equal to amount when the platform covers the fees. A payout that ends denied, canceled, or failed delivered nothing — most keep the planned figure and `failure` says where the funds are, but a canceled stablecoin payout can report the settled outcome instead: `amount` carries what stayed in the balance, fees are zero because none were charged, and `net_amount` is 0 because nothing was delivered.
 	NetAmount string `json:"net_amount" url:"net_amount"`
 	// Free-form notes attached by the payout creator, or `null` when none were provided. Maximum 255 characters.
@@ -10555,21 +10559,25 @@ type RetrievePayoutsResponse struct {
 	Object RetrievePayoutsResponseObject `json:"object" url:"object"`
 	// Name of the entity processing the payout.
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
-	// The saved payout method used. Requires payout:destination:read; null without it.
+	// Payout method display details. The nickname requires payout:destination:read on the owning ledger; otherwise it is null.
 	PayoutMethod *RetrievePayoutsResponsePayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
 	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. For a request retrieved by its own `cofr_` ID, this equals `id`. Returns `null` for payouts not created by `POST /payouts`.
 	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
-	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+	// The recipient's first name and last initial, or null when no recipient name is available.
+	RecipientName *string `json:"recipient_name,omitempty" url:"recipient_name,omitempty"`
+	// The sending business's display name, or a personal sender's first name and last initial.
+	SenderName *string `json:"sender_name,omitempty" url:"sender_name,omitempty"`
+	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling. Only returned to callers with payout:withdrawal:read on the owning ledger.
 	Source *RetrievePayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed RetrievePayoutsResponseSpeed `json:"speed" url:"speed"`
-	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9).
+	// Text that appears on the recipient's bank statement, or `null` if no descriptor was set. When set, 5-22 alphanumeric characters (A-Z, a-z, 0-9). Only returned to callers with payout:withdrawal:read on the owning ledger.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Current payout status.
 	Status RetrievePayoutsResponseStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the stablecoin conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
-	// Completed lifecycle events in chronological order. Present when retrieving a withdrawal ID.
+	// Completed lifecycle events in chronological order. Present once the payout has a withdrawal record.
 	Timeline []*RetrievePayoutsResponseTimelineItem `json:"timeline,omitempty" url:"timeline,omitempty"`
 	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
@@ -10581,9 +10589,9 @@ type RetrievePayoutsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *RetrievePayoutsResponse) GetAmount() string {
+func (r *RetrievePayoutsResponse) GetAmount() *string {
 	if r == nil {
-		return ""
+		return nil
 	}
 	return r.Amount
 }
@@ -10651,16 +10659,16 @@ func (r *RetrievePayoutsResponse) GetFailure() *RetrievePayoutsResponseFailure {
 	return r.Failure
 }
 
-func (r *RetrievePayoutsResponse) GetFeeAmount() string {
+func (r *RetrievePayoutsResponse) GetFeeAmount() *string {
 	if r == nil {
-		return ""
+		return nil
 	}
 	return r.FeeAmount
 }
 
-func (r *RetrievePayoutsResponse) GetFeePaidBy() RetrievePayoutsResponseFeePaidBy {
+func (r *RetrievePayoutsResponse) GetFeePaidBy() *RetrievePayoutsResponseFeePaidBy {
 	if r == nil {
-		return ""
+		return nil
 	}
 	return r.FeePaidBy
 }
@@ -10672,9 +10680,9 @@ func (r *RetrievePayoutsResponse) GetID() string {
 	return r.ID
 }
 
-func (r *RetrievePayoutsResponse) GetMarkupFee() string {
+func (r *RetrievePayoutsResponse) GetMarkupFee() *string {
 	if r == nil {
-		return ""
+		return nil
 	}
 	return r.MarkupFee
 }
@@ -10726,6 +10734,20 @@ func (r *RetrievePayoutsResponse) GetPayoutRequestID() *string {
 		return nil
 	}
 	return r.PayoutRequestID
+}
+
+func (r *RetrievePayoutsResponse) GetRecipientName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.RecipientName
+}
+
+func (r *RetrievePayoutsResponse) GetSenderName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.SenderName
 }
 
 func (r *RetrievePayoutsResponse) GetSource() *RetrievePayoutsResponseSource {
@@ -10795,7 +10817,7 @@ func (r *RetrievePayoutsResponse) require(field *big.Int) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePayoutsResponse) SetAmount(amount string) {
+func (r *RetrievePayoutsResponse) SetAmount(amount *string) {
 	r.Amount = amount
 	r.require(retrievePayoutsResponseFieldAmount)
 }
@@ -10865,14 +10887,14 @@ func (r *RetrievePayoutsResponse) SetFailure(failure *RetrievePayoutsResponseFai
 
 // SetFeeAmount sets the FeeAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePayoutsResponse) SetFeeAmount(feeAmount string) {
+func (r *RetrievePayoutsResponse) SetFeeAmount(feeAmount *string) {
 	r.FeeAmount = feeAmount
 	r.require(retrievePayoutsResponseFieldFeeAmount)
 }
 
 // SetFeePaidBy sets the FeePaidBy field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePayoutsResponse) SetFeePaidBy(feePaidBy RetrievePayoutsResponseFeePaidBy) {
+func (r *RetrievePayoutsResponse) SetFeePaidBy(feePaidBy *RetrievePayoutsResponseFeePaidBy) {
 	r.FeePaidBy = feePaidBy
 	r.require(retrievePayoutsResponseFieldFeePaidBy)
 }
@@ -10886,7 +10908,7 @@ func (r *RetrievePayoutsResponse) SetID(id string) {
 
 // SetMarkupFee sets the MarkupFee field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePayoutsResponse) SetMarkupFee(markupFee string) {
+func (r *RetrievePayoutsResponse) SetMarkupFee(markupFee *string) {
 	r.MarkupFee = markupFee
 	r.require(retrievePayoutsResponseFieldMarkupFee)
 }
@@ -10938,6 +10960,20 @@ func (r *RetrievePayoutsResponse) SetPayoutMethod(payoutMethod *RetrievePayoutsR
 func (r *RetrievePayoutsResponse) SetPayoutRequestID(payoutRequestID *string) {
 	r.PayoutRequestID = payoutRequestID
 	r.require(retrievePayoutsResponseFieldPayoutRequestID)
+}
+
+// SetRecipientName sets the RecipientName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponse) SetRecipientName(recipientName *string) {
+	r.RecipientName = recipientName
+	r.require(retrievePayoutsResponseFieldRecipientName)
+}
+
+// SetSenderName sets the SenderName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponse) SetSenderName(senderName *string) {
+	r.SenderName = senderName
+	r.require(retrievePayoutsResponseFieldSenderName)
 }
 
 // SetSource sets the Source field and marks it as non-optional;
@@ -11198,7 +11234,7 @@ func (r *RetrievePayoutsResponseFailure) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Who bore the payout fee: the account itself, or its parent platform.
+// Who bore the payout fee: the account itself, or its parent platform. Only returned to callers with payout:withdrawal:read on the owning ledger.
 type RetrievePayoutsResponseFeePaidBy string
 
 const (
@@ -11251,7 +11287,7 @@ var retrievePayoutsResponsePayoutMethodNullableFields = map[string]*big.Int{
 	"supported_payout_method": retrievePayoutsResponsePayoutMethodFieldSupportedPayoutMethod,
 }
 
-// The saved payout method used. Requires payout:destination:read; null without it.
+// Payout method display details. The nickname requires payout:destination:read on the owning ledger; otherwise it is null.
 type RetrievePayoutsResponsePayoutMethod struct {
 	// Saved payout method nickname.
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
@@ -11537,7 +11573,7 @@ func (r RetrievePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType) Pt
 	return &r
 }
 
-// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling. Only returned to callers with payout:withdrawal:read on the owning ledger.
 type RetrievePayoutsResponseSource string
 
 const (

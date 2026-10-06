@@ -21826,7 +21826,7 @@ func TestSettersMarkExplicitPostPayoutUpdatedPayloadDataPayoutMethodSupportedPay
 func TestSettersRetrievePayoutsResponse(t *testing.T) {
 	t.Run("SetAmount", func(t *testing.T) {
 		obj := &RetrievePayoutsResponse{}
-		var fernTestValueAmount string
+		var fernTestValueAmount *string
 		obj.SetAmount(fernTestValueAmount)
 		assert.Equal(t, fernTestValueAmount, obj.Amount)
 		assert.NotNil(t, obj.explicitFields)
@@ -21906,7 +21906,7 @@ func TestSettersRetrievePayoutsResponse(t *testing.T) {
 
 	t.Run("SetFeeAmount", func(t *testing.T) {
 		obj := &RetrievePayoutsResponse{}
-		var fernTestValueFeeAmount string
+		var fernTestValueFeeAmount *string
 		obj.SetFeeAmount(fernTestValueFeeAmount)
 		assert.Equal(t, fernTestValueFeeAmount, obj.FeeAmount)
 		assert.NotNil(t, obj.explicitFields)
@@ -21914,7 +21914,7 @@ func TestSettersRetrievePayoutsResponse(t *testing.T) {
 
 	t.Run("SetFeePaidBy", func(t *testing.T) {
 		obj := &RetrievePayoutsResponse{}
-		var fernTestValueFeePaidBy RetrievePayoutsResponseFeePaidBy
+		var fernTestValueFeePaidBy *RetrievePayoutsResponseFeePaidBy
 		obj.SetFeePaidBy(fernTestValueFeePaidBy)
 		assert.Equal(t, fernTestValueFeePaidBy, obj.FeePaidBy)
 		assert.NotNil(t, obj.explicitFields)
@@ -21930,7 +21930,7 @@ func TestSettersRetrievePayoutsResponse(t *testing.T) {
 
 	t.Run("SetMarkupFee", func(t *testing.T) {
 		obj := &RetrievePayoutsResponse{}
-		var fernTestValueMarkupFee string
+		var fernTestValueMarkupFee *string
 		obj.SetMarkupFee(fernTestValueMarkupFee)
 		assert.Equal(t, fernTestValueMarkupFee, obj.MarkupFee)
 		assert.NotNil(t, obj.explicitFields)
@@ -21989,6 +21989,22 @@ func TestSettersRetrievePayoutsResponse(t *testing.T) {
 		var fernTestValuePayoutRequestID *string
 		obj.SetPayoutRequestID(fernTestValuePayoutRequestID)
 		assert.Equal(t, fernTestValuePayoutRequestID, obj.PayoutRequestID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRecipientName", func(t *testing.T) {
+		obj := &RetrievePayoutsResponse{}
+		var fernTestValueRecipientName *string
+		obj.SetRecipientName(fernTestValueRecipientName)
+		assert.Equal(t, fernTestValueRecipientName, obj.RecipientName)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSenderName", func(t *testing.T) {
+		obj := &RetrievePayoutsResponse{}
+		var fernTestValueSenderName *string
+		obj.SetSenderName(fernTestValueSenderName)
+		assert.Equal(t, fernTestValueSenderName, obj.SenderName)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -22055,11 +22071,21 @@ func TestGettersRetrievePayoutsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePayoutsResponse{}
-		var expected string
+		var expected *string
 		obj.Amount = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetAmount(), "getter should return the property value")
+	})
+
+	t.Run("GetAmount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponse{}
+		obj.Amount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAmount(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetAmount_NilReceiver", func(t *testing.T) {
@@ -22355,11 +22381,21 @@ func TestGettersRetrievePayoutsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePayoutsResponse{}
-		var expected string
+		var expected *string
 		obj.FeeAmount = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetFeeAmount(), "getter should return the property value")
+	})
+
+	t.Run("GetFeeAmount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponse{}
+		obj.FeeAmount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFeeAmount(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetFeeAmount_NilReceiver", func(t *testing.T) {
@@ -22378,11 +22414,21 @@ func TestGettersRetrievePayoutsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePayoutsResponse{}
-		var expected RetrievePayoutsResponseFeePaidBy
+		var expected *RetrievePayoutsResponseFeePaidBy
 		obj.FeePaidBy = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetFeePaidBy(), "getter should return the property value")
+	})
+
+	t.Run("GetFeePaidBy_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponse{}
+		obj.FeePaidBy = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFeePaidBy(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetFeePaidBy_NilReceiver", func(t *testing.T) {
@@ -22424,11 +22470,21 @@ func TestGettersRetrievePayoutsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePayoutsResponse{}
-		var expected string
+		var expected *string
 		obj.MarkupFee = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetMarkupFee(), "getter should return the property value")
+	})
+
+	t.Run("GetMarkupFee_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponse{}
+		obj.MarkupFee = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMarkupFee(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetMarkupFee_NilReceiver", func(t *testing.T) {
@@ -22654,6 +22710,72 @@ func TestGettersRetrievePayoutsResponse(t *testing.T) {
 		_ = obj.GetPayoutRequestID() // Should return zero value
 	})
 
+	t.Run("GetRecipientName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponse{}
+		var expected *string
+		obj.RecipientName = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRecipientName(), "getter should return the property value")
+	})
+
+	t.Run("GetRecipientName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponse{}
+		obj.RecipientName = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRecipientName(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRecipientName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePayoutsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRecipientName() // Should return zero value
+	})
+
+	t.Run("GetSenderName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponse{}
+		var expected *string
+		obj.SenderName = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSenderName(), "getter should return the property value")
+	})
+
+	t.Run("GetSenderName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponse{}
+		obj.SenderName = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSenderName(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSenderName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePayoutsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSenderName() // Should return zero value
+	})
+
 	t.Run("GetSource", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -22862,7 +22984,7 @@ func TestSettersMarkExplicitRetrievePayoutsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePayoutsResponse{}
-		var fernTestValueAmount string
+		var fernTestValueAmount *string
 
 		// Act
 		obj.SetAmount(fernTestValueAmount)
@@ -23172,7 +23294,7 @@ func TestSettersMarkExplicitRetrievePayoutsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePayoutsResponse{}
-		var fernTestValueFeeAmount string
+		var fernTestValueFeeAmount *string
 
 		// Act
 		obj.SetFeeAmount(fernTestValueFeeAmount)
@@ -23203,7 +23325,7 @@ func TestSettersMarkExplicitRetrievePayoutsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePayoutsResponse{}
-		var fernTestValueFeePaidBy RetrievePayoutsResponseFeePaidBy
+		var fernTestValueFeePaidBy *RetrievePayoutsResponseFeePaidBy
 
 		// Act
 		obj.SetFeePaidBy(fernTestValueFeePaidBy)
@@ -23265,7 +23387,7 @@ func TestSettersMarkExplicitRetrievePayoutsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePayoutsResponse{}
-		var fernTestValueMarkupFee string
+		var fernTestValueMarkupFee *string
 
 		// Act
 		obj.SetMarkupFee(fernTestValueMarkupFee)
@@ -23486,6 +23608,68 @@ func TestSettersMarkExplicitRetrievePayoutsResponse(t *testing.T) {
 
 		// Act
 		obj.SetPayoutRequestID(fernTestValuePayoutRequestID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRecipientName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponse{}
+		var fernTestValueRecipientName *string
+
+		// Act
+		obj.SetRecipientName(fernTestValueRecipientName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSenderName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponse{}
+		var fernTestValueSenderName *string
+
+		// Act
+		obj.SetSenderName(fernTestValueSenderName)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -27670,8 +27854,6 @@ func TestRequiredNullableRoundTripRetrievePayoutsResponse(t *testing.T) {
 		"payer_name",
 		"payout_method",
 		"payout_request_id",
-		"source",
-		"statement_descriptor",
 		"trace_code",
 	}
 	marshalToMap := func(t *testing.T, obj *RetrievePayoutsResponse) map[string]json.RawMessage {
@@ -27685,7 +27867,7 @@ func TestRequiredNullableRoundTripRetrievePayoutsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrievePayoutsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"destination_amount":null,"destination_currency":null,"estimated_arrival":null,"exchange_rate":null,"failure":null,"notes":null,"payer_name":null,"payout_method":null,"payout_request_id":null,"source":null,"statement_descriptor":null,"trace_code":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"destination_amount":null,"destination_currency":null,"estimated_arrival":null,"exchange_rate":null,"failure":null,"notes":null,"payer_name":null,"payout_method":null,"payout_request_id":null,"trace_code":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -28067,6 +28249,10 @@ func TestOptionalNullableRoundTripPostPayoutUpdatedPayload(t *testing.T) {
 func TestOptionalNullableRoundTripRetrievePayoutsResponse(t *testing.T) {
 	optionalNullableKeys := []string{
 		"estimated_arrival_end",
+		"recipient_name",
+		"sender_name",
+		"source",
+		"statement_descriptor",
 	}
 	marshalToMap := func(t *testing.T, obj *RetrievePayoutsResponse) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -28079,7 +28265,7 @@ func TestOptionalNullableRoundTripRetrievePayoutsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrievePayoutsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"estimated_arrival_end":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"estimated_arrival_end":null,"recipient_name":null,"sender_name":null,"source":null,"statement_descriptor":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
