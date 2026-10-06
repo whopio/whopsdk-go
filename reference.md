@@ -22952,6 +22952,111 @@ client.Memberships.ApplyPromoCode(
 </dl>
 </details>
 
+<details><summary><code>client.Memberships.AssignAffiliate(ID, request) -> *whopsdk.Membership</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Assigns an affiliate to a membership and pays them the commission you set on its future payments. Name the user with exactly one of `user_id`, `email`, or `username`. A user who is not yet an affiliate of your account becomes one, which also requires `affiliate:create`. Send a new `commission_type` or `commission_value` for the membership's current affiliate to change their commission; a membership that already has a different affiliate returns a conflict. Works for active or trialing memberships with one recurring plan that bill through Stripe or Whop's billing engine, and not for marketplace memberships, paused payments, or a scheduled cancellation. The payout cannot exceed 90% of the next renewal amount, and no past payments are recalculated. You cannot assign yourself.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.AssignAffiliateMembershipsRequest{
+    ID: "id",
+    CommissionType: whopsdk.AssignAffiliateMembershipsRequestCommissionTypeFlatFee,
+    CommissionValue: 5,
+    Email: whopsdk.String(
+        "affiliate@example.com",
+    ),
+}
+client.Memberships.AssignAffiliate(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Membership ID (`mem_` tag).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**commissionType:** `whopsdk.AssignAffiliateMembershipsRequestCommissionType` — Whether the commission is a percentage of each payment or a fixed amount per payment.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**commissionValue:** `float64` — A whole number from 1 to 90 for `percentage`, or an amount greater than 1 in the membership currency for `flat_fee`. Flat fees need matching billing and settlement currencies.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `*string` — Email address of the user to assign. Pass exactly one of `user_id`, `email`, or `username`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The user to assign, prefixed `user_`. Pass exactly one of `user_id`, `email`, or `username`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**username:** `*string` — Whop username of the user to assign. Pass exactly one of `user_id`, `email`, or `username`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Memberships.Cancel(ID, request) -> *whopsdk.Membership</code></summary>
 <dl>
 <dd>
