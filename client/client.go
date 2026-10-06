@@ -45,6 +45,7 @@ import (
 	experiments "github.com/whopio/whopsdk-go/v2/experiments"
 	exports "github.com/whopio/whopsdk-go/v2/exports"
 	externalaccountsclient "github.com/whopio/whopsdk-go/v2/externalaccounts/client"
+	feedbacksubmissions "github.com/whopio/whopsdk-go/v2/feedbacksubmissions"
 	feemarkups "github.com/whopio/whopsdk-go/v2/feemarkups"
 	files "github.com/whopio/whopsdk-go/v2/files"
 	financialactivity "github.com/whopio/whopsdk-go/v2/financialactivity"
@@ -142,6 +143,7 @@ type Whop struct {
 	Exports                  *exports.Client
 	ExternalAccounts         *externalaccountsclient.Client
 	FeeMarkups               *feemarkups.Client
+	FeedbackSubmissions      *feedbacksubmissions.Client
 	Files                    *files.Client
 	FinancialActivity        *financialactivity.Client
 	FinancialReports         *financialreportsclient.Client
@@ -246,6 +248,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Exports:                  exports.NewClient(options),
 		ExternalAccounts:         externalaccountsclient.NewClient(options),
 		FeeMarkups:               feemarkups.NewClient(options),
+		FeedbackSubmissions:      feedbacksubmissions.NewClient(options),
 		Files:                    files.NewClient(options),
 		FinancialActivity:        financialactivity.NewClient(options),
 		FinancialReports:         financialreportsclient.NewClient(options),

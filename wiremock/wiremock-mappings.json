@@ -6904,6 +6904,37 @@
       }
     },
     {
+      "id": "f3414be9-ff02-4abe-bfcd-55e760cf3491",
+      "name": "Submit Feedback - default",
+      "request": {
+        "urlPathTemplate": "/feedback_submissions",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00Z\",\n  \"id\": \"fbk_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "f3414be9-ff02-4abe-bfcd-55e760cf3491",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "30159063-c6b3-4d0a-8a78-9d362c4c4df2",
       "name": "List Files - default",
       "request": {
@@ -16624,6 +16655,6 @@
     }
   ],
   "meta": {
-    "total": 465
+    "total": 466
   }
 }
