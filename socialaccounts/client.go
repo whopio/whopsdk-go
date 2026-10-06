@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-05-1"
+		apiVersionDateDefault := "2026-10-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists the social accounts linked to an account or user.
+// Deprecated compatibility endpoint. List external accounts with `GET /external_accounts` instead.
 //
 // Example:
 //
@@ -94,7 +94,6 @@ func (c *Client) List(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
 	readPageResponse := func(response *whopsdk.ListSocialAccountsResponse) *core.PageResponse[*string, *whopsdk.SocialAccount, *whopsdk.ListSocialAccountsResponse] {
@@ -119,7 +118,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates or returns a Whop-managed Facebook page or TikTok account for an account.
+// Deprecated compatibility endpoint. Create external accounts with `POST /external_accounts` instead.
 //
 // Example:
 //
@@ -146,7 +145,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Starts an OAuth connection flow and returns an authorize_url where the user can connect a social account. LinkedIn supports personal profiles only, with scopes omitted. TikTok connects the authenticated user’s profile when scopes are omitted or company advertising assets with advertise. Meta Business and Snapchat support advertising connections only and require advertise. Personal profile connections must be completed in a browser signed in as the initiating Whop user.
+// Deprecated compatibility endpoint. Connect external accounts with `POST /external_accounts/connect` instead.
 //
 // Example:
 //
@@ -174,7 +173,7 @@ func (c *Client) Connect(
 	return response.Body, nil
 }
 
-// Disconnects a social account from an account or user without deleting the underlying platform account.
+// Deprecated compatibility endpoint. Disconnect external accounts with `DELETE /external_accounts/{id}` instead.
 //
 // Example:
 //
@@ -201,7 +200,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Lists the active lead (instant) forms that already exist on a connected Facebook page, so an ad can reuse one as its `lead_gen_form_id` instead of authoring a new form. Every active form comes back in a single response — the list is not paginated.
+// Deprecated compatibility endpoint. List lead forms with `GET /external_accounts/{id}/lead_forms` instead.
 //
 // Example:
 //
@@ -229,7 +228,7 @@ func (c *Client) LeadForms(
 	return response.Body, nil
 }
 
-// Lists the creators an Instagram account runs partnership ads with, and where each creator's permission stands.
+// Deprecated compatibility endpoint. List partners with `GET /external_accounts/{external_account_id}/partners` instead.
 //
 // Example:
 //
@@ -289,7 +288,6 @@ func (c *Client) Partners(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
 	readPageResponse := func(response *whopsdk.PartnersSocialAccountsResponse) *core.PageResponse[*string, *whopsdk.SocialAccount, *whopsdk.PartnersSocialAccountsResponse] {
@@ -314,7 +312,7 @@ func (c *Client) Partners(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Invites an Instagram creator to run partnership ads with an Instagram account. The creator approves the invitation in the Instagram app, and `partnership_status` stays `pending` until they do; [refresh](/api-reference/beta/social-accounts/refresh) the partner to pick up their answer.
+// Deprecated compatibility endpoint. Add partners with `POST /external_accounts/{external_account_id}/partners` instead.
 //
 // Example:
 //
@@ -342,7 +340,7 @@ func (c *Client) AddPartner(
 	return response.Body, nil
 }
 
-// Revokes a creator's permission to run partnership ads with an Instagram account. Every account that advertises as the Instagram account loses the partner, since the permission belongs to the Instagram account.
+// Deprecated compatibility endpoint. Remove partners with `DELETE /external_accounts/{external_account_id}/partners/{id}` instead.
 //
 // Example:
 //
@@ -370,7 +368,7 @@ func (c *Client) RemovePartner(
 	return response.Body, nil
 }
 
-// Lists the existing posts of a connected Facebook page, Instagram account, or TikTok account.
+// Deprecated compatibility endpoint. List posts with `GET /external_accounts/{id}/posts` instead.
 //
 // Example:
 //
@@ -431,7 +429,6 @@ func (c *Client) Posts(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
 	readPageResponse := func(response *whopsdk.PostsSocialAccountsResponse) *core.PageResponse[*string, *whopsdk.SocialAccountPost, *whopsdk.PostsSocialAccountsResponse] {
@@ -456,7 +453,7 @@ func (c *Client) Posts(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Refreshes the state of a social account. Use it to clear an `error` that has been resolved.
+// Deprecated compatibility endpoint. Refresh external accounts with `POST /external_accounts/{id}/refresh` instead.
 //
 // Example:
 //

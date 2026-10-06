@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-05-1"
+		apiVersionDateDefault := "2026-10-06"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -132,8 +132,8 @@ func (c *Client) List(
 //	            &whopsdk.AudienceEngagementRule{
 //	                FacebookPage: &whopsdk.AudienceEngagementFacebookPageRule{
 //	                    Event: whopsdk.AudienceEngagementFacebookPageRuleEventEngaged,
+//	                    ExternalAccountID: "sacc_xxxxxxxxxxxxxx",
 //	                    RetentionDays: 30,
-//	                    SocialAccountID: "sacc_xxxxxxxxxxxxxx",
 //	                },
 //	            },
 //	        },

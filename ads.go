@@ -17,15 +17,15 @@ var (
 	createAdsRequestFieldCreatives          = big.NewInt(1 << 3)
 	createAdsRequestFieldDescriptions       = big.NewInt(1 << 4)
 	createAdsRequestFieldExistingPostID     = big.NewInt(1 << 5)
-	createAdsRequestFieldHeadlines          = big.NewInt(1 << 6)
-	createAdsRequestFieldLeadForm           = big.NewInt(1 << 7)
-	createAdsRequestFieldLeadFormID         = big.NewInt(1 << 8)
-	createAdsRequestFieldMessagingConfig    = big.NewInt(1 << 9)
-	createAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 10)
-	createAdsRequestFieldMusic              = big.NewInt(1 << 11)
-	createAdsRequestFieldPostSource         = big.NewInt(1 << 12)
-	createAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 13)
-	createAdsRequestFieldSocialAccounts     = big.NewInt(1 << 14)
+	createAdsRequestFieldExternalAccounts   = big.NewInt(1 << 6)
+	createAdsRequestFieldHeadlines          = big.NewInt(1 << 7)
+	createAdsRequestFieldLeadForm           = big.NewInt(1 << 8)
+	createAdsRequestFieldLeadFormID         = big.NewInt(1 << 9)
+	createAdsRequestFieldMessagingConfig    = big.NewInt(1 << 10)
+	createAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 11)
+	createAdsRequestFieldMusic              = big.NewInt(1 << 12)
+	createAdsRequestFieldPostSource         = big.NewInt(1 << 13)
+	createAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 14)
 	createAdsRequestFieldTitle              = big.NewInt(1 << 15)
 	createAdsRequestFieldTranslations       = big.NewInt(1 << 16)
 	createAdsRequestFieldURL                = big.NewInt(1 << 17)
@@ -45,6 +45,8 @@ type CreateAdsRequest struct {
 	Descriptions []*CreateAdsRequestDescriptionsItem `json:"descriptions,omitempty" url:"-"`
 	// Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
 	ExistingPostID *string `json:"existing_post_id,omitempty" url:"-"`
+	// The external accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
+	ExternalAccounts []*CreateAdsRequestExternalAccountsItem `json:"external_accounts,omitempty" url:"-"`
 	// The headline shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
 	Headlines []*CreateAdsRequestHeadlinesItem `json:"headlines,omitempty" url:"-"`
 	// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
@@ -61,8 +63,6 @@ type CreateAdsRequest struct {
 	PostSource *CreateAdsRequestPostSource `json:"post_source,omitempty" url:"-"`
 	// The primary text shown in the ad body. Entries without a language are the ad's own copy (several make text variations); add one entry per other language on a Meta ad with `translations`.
 	PrimaryTexts []*CreateAdsRequestPrimaryTextsItem `json:"primary_texts,omitempty" url:"-"`
-	// The social accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
-	SocialAccounts []*CreateAdsRequestSocialAccountsItem `json:"social_accounts,omitempty" url:"-"`
 	// The display name of the ad.
 	Title *string `json:"title,omitempty" url:"-"`
 	// Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
@@ -127,6 +127,13 @@ func (c *CreateAdsRequest) SetExistingPostID(existingPostID *string) {
 	c.require(createAdsRequestFieldExistingPostID)
 }
 
+// SetExternalAccounts sets the ExternalAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequest) SetExternalAccounts(externalAccounts []*CreateAdsRequestExternalAccountsItem) {
+	c.ExternalAccounts = externalAccounts
+	c.require(createAdsRequestFieldExternalAccounts)
+}
+
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAdsRequest) SetHeadlines(headlines []*CreateAdsRequestHeadlinesItem) {
@@ -181,13 +188,6 @@ func (c *CreateAdsRequest) SetPostSource(postSource *CreateAdsRequestPostSource)
 func (c *CreateAdsRequest) SetPrimaryTexts(primaryTexts []*CreateAdsRequestPrimaryTextsItem) {
 	c.PrimaryTexts = primaryTexts
 	c.require(createAdsRequestFieldPrimaryTexts)
-}
-
-// SetSocialAccounts sets the SocialAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetSocialAccounts(socialAccounts []*CreateAdsRequestSocialAccountsItem) {
-	c.SocialAccounts = socialAccounts
-	c.require(createAdsRequestFieldSocialAccounts)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
@@ -682,34 +682,34 @@ var (
 	adFieldDeliveryStatus               = big.NewInt(1 << 28)
 	adFieldDescriptions                 = big.NewInt(1 << 29)
 	adFieldExistingPostID               = big.NewInt(1 << 30)
-	adFieldFrequency                    = big.NewInt(1 << 31)
-	adFieldHeadlines                    = big.NewInt(1 << 32)
-	adFieldID                           = big.NewInt(1 << 33)
-	adFieldImpressions                  = big.NewInt(1 << 34)
-	adFieldIssues                       = big.NewInt(1 << 35)
-	adFieldLeadForm                     = big.NewInt(1 << 36)
-	adFieldLeadFormID                   = big.NewInt(1 << 37)
-	adFieldLeadValue                    = big.NewInt(1 << 38)
-	adFieldLeads                        = big.NewInt(1 << 39)
-	adFieldLinkClicks                   = big.NewInt(1 << 40)
-	adFieldMessagingConfig              = big.NewInt(1 << 41)
-	adFieldMultiAdvertiserAds           = big.NewInt(1 << 42)
-	adFieldMusic                        = big.NewInt(1 << 43)
-	adFieldPlatform                     = big.NewInt(1 << 44)
-	adFieldPostID                       = big.NewInt(1 << 45)
-	adFieldPostSource                   = big.NewInt(1 << 46)
-	adFieldPostThumbnailURL             = big.NewInt(1 << 47)
-	adFieldPrimaryTexts                 = big.NewInt(1 << 48)
-	adFieldPurchaseValue                = big.NewInt(1 << 49)
-	adFieldPurchases                    = big.NewInt(1 << 50)
-	adFieldReach                        = big.NewInt(1 << 51)
-	adFieldResultEvent                  = big.NewInt(1 << 52)
-	adFieldResultEventName              = big.NewInt(1 << 53)
-	adFieldResults                      = big.NewInt(1 << 54)
-	adFieldReturnOnAdSpend              = big.NewInt(1 << 55)
-	adFieldScheduleValue                = big.NewInt(1 << 56)
-	adFieldSchedules                    = big.NewInt(1 << 57)
-	adFieldSocialAccounts               = big.NewInt(1 << 58)
+	adFieldExternalAccounts             = big.NewInt(1 << 31)
+	adFieldFrequency                    = big.NewInt(1 << 32)
+	adFieldHeadlines                    = big.NewInt(1 << 33)
+	adFieldID                           = big.NewInt(1 << 34)
+	adFieldImpressions                  = big.NewInt(1 << 35)
+	adFieldIssues                       = big.NewInt(1 << 36)
+	adFieldLeadForm                     = big.NewInt(1 << 37)
+	adFieldLeadFormID                   = big.NewInt(1 << 38)
+	adFieldLeadValue                    = big.NewInt(1 << 39)
+	adFieldLeads                        = big.NewInt(1 << 40)
+	adFieldLinkClicks                   = big.NewInt(1 << 41)
+	adFieldMessagingConfig              = big.NewInt(1 << 42)
+	adFieldMultiAdvertiserAds           = big.NewInt(1 << 43)
+	adFieldMusic                        = big.NewInt(1 << 44)
+	adFieldPlatform                     = big.NewInt(1 << 45)
+	adFieldPostID                       = big.NewInt(1 << 46)
+	adFieldPostSource                   = big.NewInt(1 << 47)
+	adFieldPostThumbnailURL             = big.NewInt(1 << 48)
+	adFieldPrimaryTexts                 = big.NewInt(1 << 49)
+	adFieldPurchaseValue                = big.NewInt(1 << 50)
+	adFieldPurchases                    = big.NewInt(1 << 51)
+	adFieldReach                        = big.NewInt(1 << 52)
+	adFieldResultEvent                  = big.NewInt(1 << 53)
+	adFieldResultEventName              = big.NewInt(1 << 54)
+	adFieldResults                      = big.NewInt(1 << 55)
+	adFieldReturnOnAdSpend              = big.NewInt(1 << 56)
+	adFieldScheduleValue                = big.NewInt(1 << 57)
+	adFieldSchedules                    = big.NewInt(1 << 58)
 	adFieldSpend                        = big.NewInt(1 << 59)
 	adFieldSpendCurrency                = big.NewInt(1 << 60)
 	adFieldStatus                       = big.NewInt(1 << 61)
@@ -818,7 +818,8 @@ type Ad struct {
 	DeliveryStatus AdDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	Descriptions   []*AdText        `json:"descriptions" url:"descriptions"`
 	// The post you pointed this ad at, when it promotes one you already published — a Facebook post, Instagram media, or TikTok video ID. `null` when the ad uses uploaded creatives.
-	ExistingPostID *string `json:"existing_post_id,omitempty" url:"existing_post_id,omitempty"`
+	ExistingPostID   *string              `json:"existing_post_id,omitempty" url:"existing_post_id,omitempty"`
+	ExternalAccounts []*AdEntityReference `json:"external_accounts" url:"external_accounts"`
 	// Platform-reported impressions divided by reach.
 	Frequency *float64  `json:"frequency,omitempty" url:"frequency,omitempty"`
 	Headlines []*AdText `json:"headlines" url:"headlines"`
@@ -869,8 +870,7 @@ type Ad struct {
 	// USD value attributed to schedule events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
 	ScheduleValue float64 `json:"schedule_value" url:"schedule_value"`
 	// Whop pixel-attributed schedule events, last-click.
-	Schedules      float64              `json:"schedules" url:"schedules"`
-	SocialAccounts []*AdEntityReference `json:"social_accounts" url:"social_accounts"`
+	Schedules float64 `json:"schedules" url:"schedules"`
 	// The amount charged, in spend_currency.
 	Spend float64 `json:"spend" url:"spend"`
 	// The ISO 4217 currency code of all monetary metrics.
@@ -1124,6 +1124,13 @@ func (a *Ad) GetExistingPostID() *string {
 	return a.ExistingPostID
 }
 
+func (a *Ad) GetExternalAccounts() []*AdEntityReference {
+	if a == nil {
+		return nil
+	}
+	return a.ExternalAccounts
+}
+
 func (a *Ad) GetFrequency() *float64 {
 	if a == nil {
 		return nil
@@ -1311,13 +1318,6 @@ func (a *Ad) GetSchedules() float64 {
 		return 0
 	}
 	return a.Schedules
-}
-
-func (a *Ad) GetSocialAccounts() []*AdEntityReference {
-	if a == nil {
-		return nil
-	}
-	return a.SocialAccounts
 }
 
 func (a *Ad) GetSpend() float64 {
@@ -1651,6 +1651,13 @@ func (a *Ad) SetExistingPostID(existingPostID *string) {
 	a.require(adFieldExistingPostID)
 }
 
+// SetExternalAccounts sets the ExternalAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Ad) SetExternalAccounts(externalAccounts []*AdEntityReference) {
+	a.ExternalAccounts = externalAccounts
+	a.require(adFieldExternalAccounts)
+}
+
 // SetFrequency sets the Frequency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Ad) SetFrequency(frequency *float64) {
@@ -1838,13 +1845,6 @@ func (a *Ad) SetScheduleValue(scheduleValue float64) {
 func (a *Ad) SetSchedules(schedules float64) {
 	a.Schedules = schedules
 	a.require(adFieldSchedules)
-}
-
-// SetSocialAccounts sets the SocialAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetSocialAccounts(socialAccounts []*AdEntityReference) {
-	a.SocialAccounts = socialAccounts
-	a.require(adFieldSocialAccounts)
 }
 
 // SetSpend sets the Spend field and marks it as non-optional;
@@ -3982,6 +3982,93 @@ func (c *CreateAdsRequestDescriptionsItem) String() string {
 }
 
 var (
+	createAdsRequestExternalAccountsItemFieldID = big.NewInt(1 << 0)
+)
+
+type CreateAdsRequestExternalAccountsItem struct {
+	// External account ID, prefixed `sacc_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdsRequestExternalAccountsItem) GetID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ID
+}
+
+func (c *CreateAdsRequestExternalAccountsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdsRequestExternalAccountsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequestExternalAccountsItem) SetID(id *string) {
+	c.ID = id
+	c.require(createAdsRequestExternalAccountsItemFieldID)
+}
+
+func (c *CreateAdsRequestExternalAccountsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdsRequestExternalAccountsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdsRequestExternalAccountsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdsRequestExternalAccountsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdsRequestExternalAccountsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdsRequestExternalAccountsItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
 	createAdsRequestHeadlinesItemFieldLanguage = big.NewInt(1 << 0)
 	createAdsRequestHeadlinesItemFieldText     = big.NewInt(1 << 1)
 )
@@ -5824,93 +5911,6 @@ func (c *CreateAdsRequestPrimaryTextsItem) String() string {
 }
 
 var (
-	createAdsRequestSocialAccountsItemFieldID = big.NewInt(1 << 0)
-)
-
-type CreateAdsRequestSocialAccountsItem struct {
-	// Social account ID, prefixed `sacc_`.
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) GetID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ID
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestSocialAccountsItem) SetID(id *string) {
-	c.ID = id
-	c.require(createAdsRequestSocialAccountsItemFieldID)
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestSocialAccountsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestSocialAccountsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestSocialAccountsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
 	createAdsRequestTranslationsFieldAutomaticLanguages = big.NewInt(1 << 0)
 	createAdsRequestTranslationsFieldSourceLanguage     = big.NewInt(1 << 1)
 )
@@ -6842,20 +6842,20 @@ var (
 	postAdUpdatedPayloadDataFieldDeliveryStatus     = big.NewInt(1 << 5)
 	postAdUpdatedPayloadDataFieldDescriptions       = big.NewInt(1 << 6)
 	postAdUpdatedPayloadDataFieldExistingPostID     = big.NewInt(1 << 7)
-	postAdUpdatedPayloadDataFieldHeadlines          = big.NewInt(1 << 8)
-	postAdUpdatedPayloadDataFieldID                 = big.NewInt(1 << 9)
-	postAdUpdatedPayloadDataFieldIssues             = big.NewInt(1 << 10)
-	postAdUpdatedPayloadDataFieldLeadForm           = big.NewInt(1 << 11)
-	postAdUpdatedPayloadDataFieldLeadFormID         = big.NewInt(1 << 12)
-	postAdUpdatedPayloadDataFieldMessagingConfig    = big.NewInt(1 << 13)
-	postAdUpdatedPayloadDataFieldMultiAdvertiserAds = big.NewInt(1 << 14)
-	postAdUpdatedPayloadDataFieldMusic              = big.NewInt(1 << 15)
-	postAdUpdatedPayloadDataFieldPlatform           = big.NewInt(1 << 16)
-	postAdUpdatedPayloadDataFieldPostID             = big.NewInt(1 << 17)
-	postAdUpdatedPayloadDataFieldPostSource         = big.NewInt(1 << 18)
-	postAdUpdatedPayloadDataFieldPostThumbnailURL   = big.NewInt(1 << 19)
-	postAdUpdatedPayloadDataFieldPrimaryTexts       = big.NewInt(1 << 20)
-	postAdUpdatedPayloadDataFieldSocialAccounts     = big.NewInt(1 << 21)
+	postAdUpdatedPayloadDataFieldExternalAccounts   = big.NewInt(1 << 8)
+	postAdUpdatedPayloadDataFieldHeadlines          = big.NewInt(1 << 9)
+	postAdUpdatedPayloadDataFieldID                 = big.NewInt(1 << 10)
+	postAdUpdatedPayloadDataFieldIssues             = big.NewInt(1 << 11)
+	postAdUpdatedPayloadDataFieldLeadForm           = big.NewInt(1 << 12)
+	postAdUpdatedPayloadDataFieldLeadFormID         = big.NewInt(1 << 13)
+	postAdUpdatedPayloadDataFieldMessagingConfig    = big.NewInt(1 << 14)
+	postAdUpdatedPayloadDataFieldMultiAdvertiserAds = big.NewInt(1 << 15)
+	postAdUpdatedPayloadDataFieldMusic              = big.NewInt(1 << 16)
+	postAdUpdatedPayloadDataFieldPlatform           = big.NewInt(1 << 17)
+	postAdUpdatedPayloadDataFieldPostID             = big.NewInt(1 << 18)
+	postAdUpdatedPayloadDataFieldPostSource         = big.NewInt(1 << 19)
+	postAdUpdatedPayloadDataFieldPostThumbnailURL   = big.NewInt(1 << 20)
+	postAdUpdatedPayloadDataFieldPrimaryTexts       = big.NewInt(1 << 21)
 	postAdUpdatedPayloadDataFieldStatus             = big.NewInt(1 << 22)
 	postAdUpdatedPayloadDataFieldTitle              = big.NewInt(1 << 23)
 	postAdUpdatedPayloadDataFieldTranslations       = big.NewInt(1 << 24)
@@ -6894,8 +6894,9 @@ type PostAdUpdatedPayloadData struct {
 	DeliveryStatus PostAdUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	Descriptions   []*AdText                              `json:"descriptions" url:"descriptions"`
 	// The post you pointed this ad at, when it promotes one you already published — a Facebook post, Instagram media, or TikTok video ID. `null` when the ad uses uploaded creatives.
-	ExistingPostID *string   `json:"existing_post_id,omitempty" url:"existing_post_id,omitempty"`
-	Headlines      []*AdText `json:"headlines" url:"headlines"`
+	ExistingPostID   *string              `json:"existing_post_id,omitempty" url:"existing_post_id,omitempty"`
+	ExternalAccounts []*AdEntityReference `json:"external_accounts" url:"external_accounts"`
+	Headlines        []*AdText            `json:"headlines" url:"headlines"`
 	// Unique identifier for the ad, prefixed `ad_`.
 	ID     string             `json:"id" url:"id"`
 	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
@@ -6916,9 +6917,8 @@ type PostAdUpdatedPayloadData struct {
 	// Identifies the network that owns `existing_post_id`; `null` when the ad uses uploaded creatives.
 	PostSource *PostAdUpdatedPayloadDataPostSource `json:"post_source,omitempty" url:"post_source,omitempty"`
 	// Preview image of the post named by `existing_post_id`. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
-	PostThumbnailURL *string              `json:"post_thumbnail_url,omitempty" url:"post_thumbnail_url,omitempty"`
-	PrimaryTexts     []*AdText            `json:"primary_texts" url:"primary_texts"`
-	SocialAccounts   []*AdEntityReference `json:"social_accounts" url:"social_accounts"`
+	PostThumbnailURL *string   `json:"post_thumbnail_url,omitempty" url:"post_thumbnail_url,omitempty"`
+	PrimaryTexts     []*AdText `json:"primary_texts" url:"primary_texts"`
 	// Whether the ad is enabled. `active` and `paused` are set by you; `in_review` and `rejected` come from ad review.
 	Status PostAdUpdatedPayloadDataStatus `json:"status" url:"status"`
 	// Display title of the ad.
@@ -6993,6 +6993,13 @@ func (p *PostAdUpdatedPayloadData) GetExistingPostID() *string {
 		return nil
 	}
 	return p.ExistingPostID
+}
+
+func (p *PostAdUpdatedPayloadData) GetExternalAccounts() []*AdEntityReference {
+	if p == nil {
+		return nil
+	}
+	return p.ExternalAccounts
 }
 
 func (p *PostAdUpdatedPayloadData) GetHeadlines() []*AdText {
@@ -7084,13 +7091,6 @@ func (p *PostAdUpdatedPayloadData) GetPrimaryTexts() []*AdText {
 		return nil
 	}
 	return p.PrimaryTexts
-}
-
-func (p *PostAdUpdatedPayloadData) GetSocialAccounts() []*AdEntityReference {
-	if p == nil {
-		return nil
-	}
-	return p.SocialAccounts
 }
 
 func (p *PostAdUpdatedPayloadData) GetStatus() PostAdUpdatedPayloadDataStatus {
@@ -7207,6 +7207,13 @@ func (p *PostAdUpdatedPayloadData) SetExistingPostID(existingPostID *string) {
 	p.require(postAdUpdatedPayloadDataFieldExistingPostID)
 }
 
+// SetExternalAccounts sets the ExternalAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetExternalAccounts(externalAccounts []*AdEntityReference) {
+	p.ExternalAccounts = externalAccounts
+	p.require(postAdUpdatedPayloadDataFieldExternalAccounts)
+}
+
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostAdUpdatedPayloadData) SetHeadlines(headlines []*AdText) {
@@ -7296,13 +7303,6 @@ func (p *PostAdUpdatedPayloadData) SetPostThumbnailURL(postThumbnailURL *string)
 func (p *PostAdUpdatedPayloadData) SetPrimaryTexts(primaryTexts []*AdText) {
 	p.PrimaryTexts = primaryTexts
 	p.require(postAdUpdatedPayloadDataFieldPrimaryTexts)
-}
-
-// SetSocialAccounts sets the SocialAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdUpdatedPayloadData) SetSocialAccounts(socialAccounts []*AdEntityReference) {
-	p.SocialAccounts = socialAccounts
-	p.require(postAdUpdatedPayloadDataFieldSocialAccounts)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -8182,6 +8182,93 @@ func (u *UpdateAdsRequestDescriptionsItem) MarshalJSON() ([]byte, error) {
 }
 
 func (u *UpdateAdsRequestDescriptionsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdsRequestExternalAccountsItemFieldID = big.NewInt(1 << 0)
+)
+
+type UpdateAdsRequestExternalAccountsItem struct {
+	// External account ID, prefixed `sacc_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdsRequestExternalAccountsItem) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAdsRequestExternalAccountsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdsRequestExternalAccountsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdsRequestExternalAccountsItem) SetID(id *string) {
+	u.ID = id
+	u.require(updateAdsRequestExternalAccountsItemFieldID)
+}
+
+func (u *UpdateAdsRequestExternalAccountsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdsRequestExternalAccountsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdsRequestExternalAccountsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdsRequestExternalAccountsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdsRequestExternalAccountsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdsRequestExternalAccountsItem) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -10039,93 +10126,6 @@ func (u *UpdateAdsRequestPrimaryTextsItem) String() string {
 }
 
 var (
-	updateAdsRequestSocialAccountsItemFieldID = big.NewInt(1 << 0)
-)
-
-type UpdateAdsRequestSocialAccountsItem struct {
-	// Social account ID, prefixed `sacc_`.
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) GetID() *string {
-	if u == nil {
-		return nil
-	}
-	return u.ID
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if u.explicitFields != nil {
-		next.Set(u.explicitFields)
-	}
-	next.Or(next, field)
-	u.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestSocialAccountsItem) SetID(id *string) {
-	u.ID = id
-	u.require(updateAdsRequestSocialAccountsItemFieldID)
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestSocialAccountsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestSocialAccountsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestSocialAccountsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-var (
 	updateAdsRequestTranslationsFieldAutomaticLanguages = big.NewInt(1 << 0)
 	updateAdsRequestTranslationsFieldSourceLanguage     = big.NewInt(1 << 1)
 )
@@ -10264,15 +10264,15 @@ var (
 	updateAdsRequestFieldCreatives          = big.NewInt(1 << 2)
 	updateAdsRequestFieldDescriptions       = big.NewInt(1 << 3)
 	updateAdsRequestFieldExistingPostID     = big.NewInt(1 << 4)
-	updateAdsRequestFieldHeadlines          = big.NewInt(1 << 5)
-	updateAdsRequestFieldLeadForm           = big.NewInt(1 << 6)
-	updateAdsRequestFieldLeadFormID         = big.NewInt(1 << 7)
-	updateAdsRequestFieldMessagingConfig    = big.NewInt(1 << 8)
-	updateAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 9)
-	updateAdsRequestFieldMusic              = big.NewInt(1 << 10)
-	updateAdsRequestFieldPostSource         = big.NewInt(1 << 11)
-	updateAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 12)
-	updateAdsRequestFieldSocialAccounts     = big.NewInt(1 << 13)
+	updateAdsRequestFieldExternalAccounts   = big.NewInt(1 << 5)
+	updateAdsRequestFieldHeadlines          = big.NewInt(1 << 6)
+	updateAdsRequestFieldLeadForm           = big.NewInt(1 << 7)
+	updateAdsRequestFieldLeadFormID         = big.NewInt(1 << 8)
+	updateAdsRequestFieldMessagingConfig    = big.NewInt(1 << 9)
+	updateAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 10)
+	updateAdsRequestFieldMusic              = big.NewInt(1 << 11)
+	updateAdsRequestFieldPostSource         = big.NewInt(1 << 12)
+	updateAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 13)
 	updateAdsRequestFieldTitle              = big.NewInt(1 << 14)
 	updateAdsRequestFieldTranslations       = big.NewInt(1 << 15)
 	updateAdsRequestFieldURL                = big.NewInt(1 << 16)
@@ -10290,6 +10290,8 @@ type UpdateAdsRequest struct {
 	Descriptions []*UpdateAdsRequestDescriptionsItem `json:"descriptions,omitempty" url:"-"`
 	// Promote a post you already published instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
 	ExistingPostID *string `json:"existing_post_id,omitempty" url:"-"`
+	// The external accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
+	ExternalAccounts []*UpdateAdsRequestExternalAccountsItem `json:"external_accounts,omitempty" url:"-"`
 	// The headline shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
 	Headlines []*UpdateAdsRequestHeadlinesItem `json:"headlines,omitempty" url:"-"`
 	// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
@@ -10306,8 +10308,6 @@ type UpdateAdsRequest struct {
 	PostSource *UpdateAdsRequestPostSource `json:"post_source,omitempty" url:"-"`
 	// The primary text shown in the ad body. Entries without a language are the ad's own copy (several make text variations); add one entry per other language on a Meta ad with `translations`.
 	PrimaryTexts []*UpdateAdsRequestPrimaryTextsItem `json:"primary_texts,omitempty" url:"-"`
-	// The social accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
-	SocialAccounts []*UpdateAdsRequestSocialAccountsItem `json:"social_accounts,omitempty" url:"-"`
 	// The display name of the ad.
 	Title *string `json:"title,omitempty" url:"-"`
 	// Shows a Meta ad in other languages. Each viewer sees the version for their language; everyone else sees the ad's own copy. Tag every copy and creatives entry with its language: the ad's own with `source_language`, and give every other language a `primary_texts` and `headlines` entry (a `descriptions` entry and a `creatives` entry are optional), or list it in `automatic_languages`. Needs a website destination, one image or video, and exactly one primary text and headline of the ad's own (and at most one description), with no Dynamic Creative or crops. Replaced as a whole when sent, so send `automatic_languages` with `source_language`. null turns translations off and deletes their media. Meta-only.
@@ -10365,6 +10365,13 @@ func (u *UpdateAdsRequest) SetExistingPostID(existingPostID *string) {
 	u.require(updateAdsRequestFieldExistingPostID)
 }
 
+// SetExternalAccounts sets the ExternalAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdsRequest) SetExternalAccounts(externalAccounts []*UpdateAdsRequestExternalAccountsItem) {
+	u.ExternalAccounts = externalAccounts
+	u.require(updateAdsRequestFieldExternalAccounts)
+}
+
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAdsRequest) SetHeadlines(headlines []*UpdateAdsRequestHeadlinesItem) {
@@ -10419,13 +10426,6 @@ func (u *UpdateAdsRequest) SetPostSource(postSource *UpdateAdsRequestPostSource)
 func (u *UpdateAdsRequest) SetPrimaryTexts(primaryTexts []*UpdateAdsRequestPrimaryTextsItem) {
 	u.PrimaryTexts = primaryTexts
 	u.require(updateAdsRequestFieldPrimaryTexts)
-}
-
-// SetSocialAccounts sets the SocialAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetSocialAccounts(socialAccounts []*UpdateAdsRequestSocialAccountsItem) {
-	u.SocialAccounts = socialAccounts
-	u.require(updateAdsRequestFieldSocialAccounts)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;

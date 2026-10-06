@@ -4551,6 +4551,14 @@ client.Ads.Create(
 <dl>
 <dd>
 
+**externalAccounts:** `[]*whopsdk.CreateAdsRequestExternalAccountsItem` — The external accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **headlines:** `[]*whopsdk.CreateAdsRequestHeadlinesItem` — The headline shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
     
 </dd>
@@ -4608,14 +4616,6 @@ client.Ads.Create(
 <dd>
 
 **primaryTexts:** `[]*whopsdk.CreateAdsRequestPrimaryTextsItem` — The primary text shown in the ad body. Entries without a language are the ad's own copy (several make text variations); add one entry per other language on a Meta ad with `translations`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**socialAccounts:** `[]*whopsdk.CreateAdsRequestSocialAccountsItem` — The social accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
     
 </dd>
 </dl>
@@ -4899,6 +4899,14 @@ client.Ads.Update(
 <dl>
 <dd>
 
+**externalAccounts:** `[]*whopsdk.UpdateAdsRequestExternalAccountsItem` — The external accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **headlines:** `[]*whopsdk.UpdateAdsRequestHeadlinesItem` — The headline shown on the ad. Entries without a language are the ad's own copy; add one entry per other language on a Meta ad with `translations`.
     
 </dd>
@@ -4956,14 +4964,6 @@ client.Ads.Update(
 <dd>
 
 **primaryTexts:** `[]*whopsdk.UpdateAdsRequestPrimaryTextsItem` — The primary text shown in the ad body. Entries without a language are the ad's own copy (several make text variations); add one entry per other language on a Meta ad with `translations`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**socialAccounts:** `[]*whopsdk.UpdateAdsRequestSocialAccountsItem` — The social accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
     
 </dd>
 </dl>
@@ -8114,8 +8114,8 @@ request := &whopsdk.CreateAudiencesRequest{
             &whopsdk.AudienceEngagementRule{
                 FacebookPage: &whopsdk.AudienceEngagementFacebookPageRule{
                     Event: whopsdk.AudienceEngagementFacebookPageRuleEventEngaged,
+                    ExternalAccountID: "sacc_xxxxxxxxxxxxxx",
                     RetentionDays: 30,
-                    SocialAccountID: "sacc_xxxxxxxxxxxxxx",
                 },
             },
         },
@@ -18362,6 +18362,450 @@ client.Exports.Retrieve(
 <dd>
 
 **id:** `string` — The export ID, prefixed `exprt_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## External Accounts
+<details><summary><code>client.ExternalAccounts.List() -> *whopsdk.ListExternalAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the external accounts linked to an account or user.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListExternalAccountsRequest{}
+client.ExternalAccounts.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account that the external accounts are connected to. Provide either this or user_id.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The User that the external accounts are connected to. Provide either this or account_id.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `*whopsdk.ListExternalAccountsRequestPlatform` — Only return external accounts for the platform that is specified.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trustLevel:** `*whopsdk.ListExternalAccountsRequestTrustLevel` — Only return external accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verified:** `*bool` — Only return external accounts that are verified on the platform.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scopes:** `*whopsdk.ListExternalAccountsRequestScopesItem` — Only return external accounts that have these scopes.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListExternalAccountsRequestOrder` — The field to sort external accounts by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListExternalAccountsRequestDirection` — Sort direction.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ExternalAccounts.Create(request) -> *whopsdk.ExternalAccount</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates or returns a Whop-managed Facebook page or TikTok account for an account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateExternalAccountsRequest{
+    Platform: whopsdk.CreateExternalAccountsRequestPlatformFacebook,
+}
+client.ExternalAccounts.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `whopsdk.CreateExternalAccountsRequestPlatform` — The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ExternalAccounts.Connect(request) -> *whopsdk.ConnectExternalAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts an OAuth connection flow and returns an authorize_url where the user can connect an external account. LinkedIn supports personal profiles only, with scopes omitted. TikTok connects the authenticated user’s profile when scopes are omitted or company advertising assets with advertise. Meta Business and Snapchat support advertising connections only and require advertise. Personal profile connections must be completed in a browser signed in as the initiating Whop user.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ConnectExternalAccountsRequest{
+    Platform: whopsdk.ConnectExternalAccountsRequestPlatformMetaBusiness,
+    RedirectURL: "https://example.com/settings/social-accounts",
+}
+client.ExternalAccounts.Connect(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account (biz_ identifier) to connect the external account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `whopsdk.ConnectExternalAccountsRequestPlatform` — The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, or `youtube` to connect their YouTube channel.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**redirectURL:** `string` — Where to send the user once they finish connecting their accounts. Any `http` or `https` URL. If the connection fails, the user is redirected with a `social_account_error` query param.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scopes:** `[]whopsdk.ConnectExternalAccountsRequestScopesItem` — The connection purpose. For `meta_business` and `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin` and `youtube`, omit scopes to connect the authenticated user’s profile; advertising is not supported. For `tiktok`, omit scopes to connect the authenticated user’s profile, or pass `advertise` to connect company advertising assets. Profile connections still request the platform permissions needed to read the profile.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ExternalAccounts.Delete(ID) -> *whopsdk.DeleteExternalAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Disconnects an external account from an account or user without deleting the underlying platform account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.DeleteExternalAccountsRequest{
+    ID: "id",
+}
+client.ExternalAccounts.Delete(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The ID of the external account to disconnect.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account that the external account is connected to. Provide either this or user_id.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The User that the external account is connected to. Provide either this or account_id.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ExternalAccounts.Refresh(ID, request) -> *whopsdk.ExternalAccount</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Refreshes the state of an external account. Use it to clear an `error` that has been resolved.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RefreshExternalAccountsRequest{
+    ID: "id",
+}
+client.ExternalAccounts.Refresh(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The external account (a sacc_ identifier) to refresh.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account (biz_ identifier) the external account is connected to. An account-scoped API key may omit this to default to its own account.
     
 </dd>
 </dl>
@@ -33372,7 +33816,7 @@ client.Shipments.Update(
 <dl>
 <dd>
 
-Lists the social accounts linked to an account or user.
+Deprecated compatibility endpoint. List external accounts with `GET /external_accounts` instead.
 </dd>
 </dl>
 </dd>
@@ -33406,7 +33850,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**accountID:** `*string` — The Account that the social accounts are connected to. Provide either this or user_id.
+**accountID:** `*string` — The Account that the external accounts are connected to. Provide either this or user_id.
     
 </dd>
 </dl>
@@ -33414,7 +33858,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**userID:** `*string` — The User that the social accounts are connected to. Provide either this or account_id.
+**userID:** `*string` — The User that the external accounts are connected to. Provide either this or account_id.
     
 </dd>
 </dl>
@@ -33422,7 +33866,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**platform:** `*whopsdk.ListSocialAccountsRequestPlatform` — Only return social accounts for the platform that is specified.
+**platform:** `*whopsdk.ListSocialAccountsRequestPlatform` — Only return external accounts for the platform that is specified.
     
 </dd>
 </dl>
@@ -33430,7 +33874,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**trustLevel:** `*whopsdk.ListSocialAccountsRequestTrustLevel` — Only return social accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
+**trustLevel:** `*whopsdk.ListSocialAccountsRequestTrustLevel` — Only return external accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
     
 </dd>
 </dl>
@@ -33438,7 +33882,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**verified:** `*bool` — Only return social accounts that are verified on the platform.
+**verified:** `*bool` — Only return external accounts that are verified on the platform.
     
 </dd>
 </dl>
@@ -33446,7 +33890,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**scopes:** `*whopsdk.ListSocialAccountsRequestScopesItem` — Only return social accounts that have these scopes.
+**scopes:** `*whopsdk.ListSocialAccountsRequestScopesItem` — Only return external accounts that have these scopes.
     
 </dd>
 </dl>
@@ -33486,7 +33930,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.ListSocialAccountsRequestOrder` — The field to sort social accounts by.
+**order:** `*whopsdk.ListSocialAccountsRequestOrder` — The field to sort external accounts by.
     
 </dd>
 </dl>
@@ -33518,7 +33962,7 @@ client.SocialAccounts.List(
 <dl>
 <dd>
 
-Creates or returns a Whop-managed Facebook page or TikTok account for an account.
+Deprecated compatibility endpoint. Create external accounts with `POST /external_accounts` instead.
 </dd>
 </dl>
 </dd>
@@ -33554,7 +33998,7 @@ client.SocialAccounts.Create(
 <dl>
 <dd>
 
-**accountID:** `*string` — The Account (biz_ identifier) to create the social account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+**accountID:** `*string` — The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
     
 </dd>
 </dl>
@@ -33562,7 +34006,7 @@ client.SocialAccounts.Create(
 <dl>
 <dd>
 
-**platform:** `whopsdk.CreateSocialAccountsRequestPlatform` — The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+**platform:** `whopsdk.CreateSocialAccountsRequestPlatform` — The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
     
 </dd>
 </dl>
@@ -33586,7 +34030,7 @@ client.SocialAccounts.Create(
 <dl>
 <dd>
 
-Starts an OAuth connection flow and returns an authorize_url where the user can connect a social account. LinkedIn supports personal profiles only, with scopes omitted. TikTok connects the authenticated user’s profile when scopes are omitted or company advertising assets with advertise. Meta Business and Snapchat support advertising connections only and require advertise. Personal profile connections must be completed in a browser signed in as the initiating Whop user.
+Deprecated compatibility endpoint. Connect external accounts with `POST /external_accounts/connect` instead.
 </dd>
 </dl>
 </dd>
@@ -33623,7 +34067,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**accountID:** `*string` — The Account (biz_ identifier) to connect the social account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
+**accountID:** `*string` — The Account (biz_ identifier) to connect the external account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
     
 </dd>
 </dl>
@@ -33631,7 +34075,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**platform:** `whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, or `youtube` to connect their YouTube channel.
+**platform:** `whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, or `youtube` to connect their YouTube channel.
     
 </dd>
 </dl>
@@ -33671,7 +34115,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-Disconnects a social account from an account or user without deleting the underlying platform account.
+Deprecated compatibility endpoint. Disconnect external accounts with `DELETE /external_accounts/{id}` instead.
 </dd>
 </dl>
 </dd>
@@ -33715,7 +34159,7 @@ client.SocialAccounts.Delete(
 <dl>
 <dd>
 
-**accountID:** `*string` — The Account that the social account is connected to. Provide either this or user_id.
+**accountID:** `*string` 
     
 </dd>
 </dl>
@@ -33723,7 +34167,7 @@ client.SocialAccounts.Delete(
 <dl>
 <dd>
 
-**userID:** `*string` — The User that the social account is connected to. Provide either this or account_id.
+**userID:** `*string` 
     
 </dd>
 </dl>
@@ -33747,7 +34191,7 @@ client.SocialAccounts.Delete(
 <dl>
 <dd>
 
-Lists the active lead (instant) forms that already exist on a connected Facebook page, so an ad can reuse one as its `lead_gen_form_id` instead of authoring a new form. Every active form comes back in a single response — the list is not paginated.
+Deprecated compatibility endpoint. List lead forms with `GET /external_accounts/{id}/lead_forms` instead.
 </dd>
 </dl>
 </dd>
@@ -33792,7 +34236,7 @@ client.SocialAccounts.LeadForms(
 <dl>
 <dd>
 
-**accountID:** `string` — The Account (a biz_ identifier) the social account is connected to.
+**accountID:** `string` 
     
 </dd>
 </dl>
@@ -33816,7 +34260,7 @@ client.SocialAccounts.LeadForms(
 <dl>
 <dd>
 
-Lists the creators an Instagram account runs partnership ads with, and where each creator's permission stands.
+Deprecated compatibility endpoint. List partners with `GET /external_accounts/{external_account_id}/partners` instead.
 </dd>
 </dl>
 </dd>
@@ -33852,7 +34296,7 @@ client.SocialAccounts.Partners(
 <dl>
 <dd>
 
-**id:** `string` — The Instagram account (a sacc_ identifier) the partners run partnership ads with.
+**id:** `string` — The brand's Instagram social account (a sacc_ identifier).
     
 </dd>
 </dl>
@@ -33900,7 +34344,7 @@ client.SocialAccounts.Partners(
 <dl>
 <dd>
 
-Invites an Instagram creator to run partnership ads with an Instagram account. The creator approves the invitation in the Instagram app, and `partnership_status` stays `pending` until they do; [refresh](/api-reference/beta/social-accounts/refresh) the partner to pick up their answer.
+Deprecated compatibility endpoint. Add partners with `POST /external_accounts/{external_account_id}/partners` instead.
 </dd>
 </dl>
 </dd>
@@ -33937,7 +34381,7 @@ client.SocialAccounts.AddPartner(
 <dl>
 <dd>
 
-**id:** `string` — The Instagram account (a sacc_ identifier) the partners run partnership ads with.
+**id:** `string` — The brand's Instagram social account (a sacc_ identifier).
     
 </dd>
 </dl>
@@ -33977,7 +34421,7 @@ client.SocialAccounts.AddPartner(
 <dl>
 <dd>
 
-Revokes a creator's permission to run partnership ads with an Instagram account. Every account that advertises as the Instagram account loses the partner, since the permission belongs to the Instagram account.
+Deprecated compatibility endpoint. Remove partners with `DELETE /external_accounts/{external_account_id}/partners/{id}` instead.
 </dd>
 </dl>
 </dd>
@@ -34014,7 +34458,7 @@ client.SocialAccounts.RemovePartner(
 <dl>
 <dd>
 
-**id:** `string` — The Instagram account (a sacc_ identifier) the partner runs partnership ads with.
+**id:** `string` — The brand's Instagram social account (a sacc_ identifier).
     
 </dd>
 </dl>
@@ -34054,7 +34498,7 @@ client.SocialAccounts.RemovePartner(
 <dl>
 <dd>
 
-Lists the existing posts of a connected Facebook page, Instagram account, or TikTok account.
+Deprecated compatibility endpoint. List posts with `GET /external_accounts/{id}/posts` instead.
 </dd>
 </dl>
 </dd>
@@ -34099,7 +34543,7 @@ client.SocialAccounts.Posts(
 <dl>
 <dd>
 
-**accountID:** `string` — The Account (a biz_ identifier) the social account is connected to.
+**accountID:** `string` 
     
 </dd>
 </dl>
@@ -34107,7 +34551,7 @@ client.SocialAccounts.Posts(
 <dl>
 <dd>
 
-**postID:** `*string` — Return only the single post with this platform id, instead of the full list.
+**postID:** `*string` 
     
 </dd>
 </dl>
@@ -34147,7 +34591,7 @@ client.SocialAccounts.Posts(
 <dl>
 <dd>
 
-Refreshes the state of a social account. Use it to clear an `error` that has been resolved.
+Deprecated compatibility endpoint. Refresh external accounts with `POST /external_accounts/{id}/refresh` instead.
 </dd>
 </dl>
 </dd>
@@ -34191,7 +34635,7 @@ client.SocialAccounts.Refresh(
 <dl>
 <dd>
 
-**accountID:** `*string` — The Account (biz_ identifier) the social account is connected to. An account-scoped API key may omit this to default to its own account.
+**accountID:** `*string` — The Account (biz_ identifier) the external account is connected to. An account-scoped API key may omit this to default to its own account.
     
 </dd>
 </dl>
@@ -41785,6 +42229,409 @@ client.Bounties.Submissions.Retrieve(
 <dd>
 
 **id:** `string` — The submission to retrieve (`btys_` tag).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## ExternalAccounts Partners
+<details><summary><code>client.ExternalAccounts.Partners.List(ExternalAccountID) -> *externalaccounts.ListPartnersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the creators an Instagram account runs partnership ads with, and where each creator's permission stands.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &externalaccounts.ListPartnersRequest{
+    ExternalAccountID: "external_account_id",
+}
+client.ExternalAccounts.Partners.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalAccountID:** `string` — The Instagram account (a sacc_ identifier) the partners run partnership ads with.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ExternalAccounts.Partners.Create(ExternalAccountID, request) -> *whopsdk.ExternalAccount</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Invites an Instagram creator to run partnership ads with an Instagram account. The creator approves the invitation in the Instagram app, and `partnership_status` stays `pending` until they do; [refresh](/api-reference/beta/external-accounts/refresh) the partner to pick up their answer.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &externalaccounts.CreatePartnersRequest{
+    ExternalAccountID: "external_account_id",
+    Username: "@luverahealth",
+}
+client.ExternalAccounts.Partners.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalAccountID:** `string` — The Instagram account (a sacc_ identifier) the partners run partnership ads with.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**username:** `string` — The creator's Instagram username, with or without the leading `@`. The creator needs a professional (Business or Creator) Instagram account.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ExternalAccounts.Partners.Delete(ExternalAccountID, ID) -> *externalaccounts.DeletePartnersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Revokes a creator's permission to run partnership ads with an Instagram account. Every account that advertises as the Instagram account loses the partner, since the permission belongs to the Instagram account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &externalaccounts.DeletePartnersRequest{
+    ExternalAccountID: "external_account_id",
+    ID: "id",
+}
+client.ExternalAccounts.Partners.Delete(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalAccountID:** `string` — The Instagram account (a sacc_ identifier) the partner runs partnership ads with.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**id:** `string` — The partner creator's external account (a sacc_ identifier).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## ExternalAccounts LeadForms
+<details><summary><code>client.ExternalAccounts.LeadForms.List(ID) -> *externalaccounts.ListLeadFormsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the active lead (instant) forms that already exist on a connected Facebook page, so an ad can reuse one as its `lead_gen_form_id` instead of authoring a new form. Every active form comes back in a single response — the list is not paginated.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &externalaccounts.ListLeadFormsRequest{
+    ID: "id",
+    AccountID: "account_id",
+}
+client.ExternalAccounts.LeadForms.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The external account (a sacc_ identifier) whose lead forms to list.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The Account (a biz_ identifier) the external account is connected to.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## ExternalAccounts Posts
+<details><summary><code>client.ExternalAccounts.Posts.List(ID) -> *externalaccounts.ListPostsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the existing posts of a connected Facebook page, Instagram account, or TikTok account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &externalaccounts.ListPostsRequest{
+    ID: "id",
+    AccountID: "account_id",
+}
+client.ExternalAccounts.Posts.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The external account (a sacc_ identifier) whose posts to list.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The Account (a biz_ identifier) the external account is connected to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**postID:** `*string` — Return only the single post with this platform id, instead of the full list.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
     
 </dd>
 </dl>

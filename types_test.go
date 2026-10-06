@@ -33337,6 +33337,2832 @@ func TestSettersMarkExplicitExperienceNotificationPreference(t *testing.T) {
 
 }
 
+func TestSettersExternalAccount(t *testing.T) {
+	t.Run("SetError", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueError *string
+		obj.SetError(fernTestValueError)
+		assert.Equal(t, fernTestValueError, obj.Error)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetExternalID", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueExternalID *string
+		obj.SetExternalID(fernTestValueExternalID)
+		assert.Equal(t, fernTestValueExternalID, obj.ExternalID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetID", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetName", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueName *string
+		obj.SetName(fernTestValueName)
+		assert.Equal(t, fernTestValueName, obj.Name)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetParentExternalAccount", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueParentExternalAccount *ExternalAccountParent
+		obj.SetParentExternalAccount(fernTestValueParentExternalAccount)
+		assert.Equal(t, fernTestValueParentExternalAccount, obj.ParentExternalAccount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPartnershipStatus", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValuePartnershipStatus *ExternalAccountPartnershipStatus
+		obj.SetPartnershipStatus(fernTestValuePartnershipStatus)
+		assert.Equal(t, fernTestValuePartnershipStatus, obj.PartnershipStatus)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPlatform", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValuePlatform ExternalAccountPlatform
+		obj.SetPlatform(fernTestValuePlatform)
+		assert.Equal(t, fernTestValuePlatform, obj.Platform)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProfilePictureURL", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueProfilePictureURL *string
+		obj.SetProfilePictureURL(fernTestValueProfilePictureURL)
+		assert.Equal(t, fernTestValueProfilePictureURL, obj.ProfilePictureURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetScopes", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueScopes []string
+		obj.SetScopes(fernTestValueScopes)
+		assert.Equal(t, fernTestValueScopes, obj.Scopes)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetURL", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueURL *string
+		obj.SetURL(fernTestValueURL)
+		assert.Equal(t, fernTestValueURL, obj.URL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUsername", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueUsername *string
+		obj.SetUsername(fernTestValueUsername)
+		assert.Equal(t, fernTestValueUsername, obj.Username)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVerified", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueVerified bool
+		obj.SetVerified(fernTestValueVerified)
+		assert.Equal(t, fernTestValueVerified, obj.Verified)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersExternalAccount(t *testing.T) {
+	t.Run("GetError", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected *string
+		obj.Error = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetError(), "getter should return the property value")
+	})
+
+	t.Run("GetError_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		obj.Error = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetError(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetError_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetError() // Should return zero value
+	})
+
+	t.Run("GetExternalID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected *string
+		obj.ExternalID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetExternalID(), "getter should return the property value")
+	})
+
+	t.Run("GetExternalID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		obj.ExternalID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetExternalID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetExternalID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetExternalID() // Should return zero value
+	})
+
+	t.Run("GetID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected string
+		obj.ID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
+	})
+
+	t.Run("GetID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected *string
+		obj.Name = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetName(), "getter should return the property value")
+	})
+
+	t.Run("GetName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		obj.Name = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetName(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetName() // Should return zero value
+	})
+
+	t.Run("GetParentExternalAccount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected *ExternalAccountParent
+		obj.ParentExternalAccount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetParentExternalAccount(), "getter should return the property value")
+	})
+
+	t.Run("GetParentExternalAccount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		obj.ParentExternalAccount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetParentExternalAccount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetParentExternalAccount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetParentExternalAccount() // Should return zero value
+	})
+
+	t.Run("GetPartnershipStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected *ExternalAccountPartnershipStatus
+		obj.PartnershipStatus = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPartnershipStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetPartnershipStatus_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		obj.PartnershipStatus = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPartnershipStatus(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPartnershipStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPartnershipStatus() // Should return zero value
+	})
+
+	t.Run("GetPlatform", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected ExternalAccountPlatform
+		obj.Platform = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
+	})
+
+	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlatform() // Should return zero value
+	})
+
+	t.Run("GetProfilePictureURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected *string
+		obj.ProfilePictureURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProfilePictureURL(), "getter should return the property value")
+	})
+
+	t.Run("GetProfilePictureURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		obj.ProfilePictureURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProfilePictureURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProfilePictureURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProfilePictureURL() // Should return zero value
+	})
+
+	t.Run("GetScopes", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected []string
+		obj.Scopes = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetScopes(), "getter should return the property value")
+	})
+
+	t.Run("GetScopes_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		obj.Scopes = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetScopes(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetScopes_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetScopes() // Should return zero value
+	})
+
+	t.Run("GetURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected *string
+		obj.URL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetURL(), "getter should return the property value")
+	})
+
+	t.Run("GetURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		obj.URL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetURL() // Should return zero value
+	})
+
+	t.Run("GetUsername", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected *string
+		obj.Username = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUsername(), "getter should return the property value")
+	})
+
+	t.Run("GetUsername_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		obj.Username = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUsername(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUsername_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUsername() // Should return zero value
+	})
+
+	t.Run("GetVerified", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected bool
+		obj.Verified = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVerified(), "getter should return the property value")
+	})
+
+	t.Run("GetVerified_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVerified() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitExternalAccount(t *testing.T) {
+	t.Run("SetError_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueError *string
+
+		// Act
+		obj.SetError(fernTestValueError)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetExternalID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueExternalID *string
+
+		// Act
+		obj.SetExternalID(fernTestValueExternalID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueName *string
+
+		// Act
+		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetParentExternalAccount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueParentExternalAccount *ExternalAccountParent
+
+		// Act
+		obj.SetParentExternalAccount(fernTestValueParentExternalAccount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPartnershipStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValuePartnershipStatus *ExternalAccountPartnershipStatus
+
+		// Act
+		obj.SetPartnershipStatus(fernTestValuePartnershipStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValuePlatform ExternalAccountPlatform
+
+		// Act
+		obj.SetPlatform(fernTestValuePlatform)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProfilePictureURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueProfilePictureURL *string
+
+		// Act
+		obj.SetProfilePictureURL(fernTestValueProfilePictureURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetScopes_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueScopes []string
+
+		// Act
+		obj.SetScopes(fernTestValueScopes)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueURL *string
+
+		// Act
+		obj.SetURL(fernTestValueURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUsername_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueUsername *string
+
+		// Act
+		obj.SetUsername(fernTestValueUsername)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVerified_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueVerified bool
+
+		// Act
+		obj.SetVerified(fernTestValueVerified)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersExternalAccountLeadForm(t *testing.T) {
+	t.Run("SetCompletion", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueCompletion *AdLeadFormCompletion
+		obj.SetCompletion(fernTestValueCompletion)
+		assert.Equal(t, fernTestValueCompletion, obj.Completion)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCreatedAt", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueCreatedAt *string
+		obj.SetCreatedAt(fernTestValueCreatedAt)
+		assert.Equal(t, fernTestValueCreatedAt, obj.CreatedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDisclaimer", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueDisclaimer *AdLeadFormDisclaimer
+		obj.SetDisclaimer(fernTestValueDisclaimer)
+		assert.Equal(t, fernTestValueDisclaimer, obj.Disclaimer)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFormType", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueFormType ExternalAccountLeadFormFormType
+		obj.SetFormType(fernTestValueFormType)
+		assert.Equal(t, fernTestValueFormType, obj.FormType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetID", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetIntro", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueIntro *AdLeadFormIntro
+		obj.SetIntro(fernTestValueIntro)
+		assert.Equal(t, fernTestValueIntro, obj.Intro)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetLocale", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueLocale *string
+		obj.SetLocale(fernTestValueLocale)
+		assert.Equal(t, fernTestValueLocale, obj.Locale)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetName", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueName *string
+		obj.SetName(fernTestValueName)
+		assert.Equal(t, fernTestValueName, obj.Name)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPrivacyPolicyLinkText", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValuePrivacyPolicyLinkText *string
+		obj.SetPrivacyPolicyLinkText(fernTestValuePrivacyPolicyLinkText)
+		assert.Equal(t, fernTestValuePrivacyPolicyLinkText, obj.PrivacyPolicyLinkText)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPrivacyPolicyURL", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValuePrivacyPolicyURL *string
+		obj.SetPrivacyPolicyURL(fernTestValuePrivacyPolicyURL)
+		assert.Equal(t, fernTestValuePrivacyPolicyURL, obj.PrivacyPolicyURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQuestionLabels", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueQuestionLabels []string
+		obj.SetQuestionLabels(fernTestValueQuestionLabels)
+		assert.Equal(t, fernTestValueQuestionLabels, obj.QuestionLabels)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQuestions", func(t *testing.T) {
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueQuestions []*AdLeadFormQuestion
+		obj.SetQuestions(fernTestValueQuestions)
+		assert.Equal(t, fernTestValueQuestions, obj.Questions)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersExternalAccountLeadForm(t *testing.T) {
+	t.Run("GetCompletion", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected *AdLeadFormCompletion
+		obj.Completion = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCompletion(), "getter should return the property value")
+	})
+
+	t.Run("GetCompletion_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		obj.Completion = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCompletion(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCompletion_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCompletion() // Should return zero value
+	})
+
+	t.Run("GetCreatedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected *string
+		obj.CreatedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCreatedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetCreatedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		obj.CreatedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCreatedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCreatedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDisclaimer", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected *AdLeadFormDisclaimer
+		obj.Disclaimer = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDisclaimer(), "getter should return the property value")
+	})
+
+	t.Run("GetDisclaimer_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		obj.Disclaimer = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDisclaimer(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDisclaimer_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDisclaimer() // Should return zero value
+	})
+
+	t.Run("GetFormType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected ExternalAccountLeadFormFormType
+		obj.FormType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFormType(), "getter should return the property value")
+	})
+
+	t.Run("GetFormType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFormType() // Should return zero value
+	})
+
+	t.Run("GetID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected string
+		obj.ID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
+	})
+
+	t.Run("GetID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetIntro", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected *AdLeadFormIntro
+		obj.Intro = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIntro(), "getter should return the property value")
+	})
+
+	t.Run("GetIntro_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		obj.Intro = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIntro(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIntro_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIntro() // Should return zero value
+	})
+
+	t.Run("GetLocale", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected *string
+		obj.Locale = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLocale(), "getter should return the property value")
+	})
+
+	t.Run("GetLocale_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		obj.Locale = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetLocale(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetLocale_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLocale() // Should return zero value
+	})
+
+	t.Run("GetName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected *string
+		obj.Name = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetName(), "getter should return the property value")
+	})
+
+	t.Run("GetName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		obj.Name = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetName(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetName() // Should return zero value
+	})
+
+	t.Run("GetPrivacyPolicyLinkText", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected *string
+		obj.PrivacyPolicyLinkText = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPrivacyPolicyLinkText(), "getter should return the property value")
+	})
+
+	t.Run("GetPrivacyPolicyLinkText_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		obj.PrivacyPolicyLinkText = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPrivacyPolicyLinkText(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPrivacyPolicyLinkText_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPrivacyPolicyLinkText() // Should return zero value
+	})
+
+	t.Run("GetPrivacyPolicyURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected *string
+		obj.PrivacyPolicyURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPrivacyPolicyURL(), "getter should return the property value")
+	})
+
+	t.Run("GetPrivacyPolicyURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		obj.PrivacyPolicyURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPrivacyPolicyURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPrivacyPolicyURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPrivacyPolicyURL() // Should return zero value
+	})
+
+	t.Run("GetQuestionLabels", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected []string
+		obj.QuestionLabels = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuestionLabels(), "getter should return the property value")
+	})
+
+	t.Run("GetQuestionLabels_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		obj.QuestionLabels = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQuestionLabels(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQuestionLabels_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuestionLabels() // Should return zero value
+	})
+
+	t.Run("GetQuestions", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var expected []*AdLeadFormQuestion
+		obj.Questions = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuestions(), "getter should return the property value")
+	})
+
+	t.Run("GetQuestions_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		obj.Questions = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQuestions(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQuestions_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuestions() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitExternalAccountLeadForm(t *testing.T) {
+	t.Run("SetCompletion_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueCompletion *AdLeadFormCompletion
+
+		// Act
+		obj.SetCompletion(fernTestValueCompletion)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCreatedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueCreatedAt *string
+
+		// Act
+		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDisclaimer_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueDisclaimer *AdLeadFormDisclaimer
+
+		// Act
+		obj.SetDisclaimer(fernTestValueDisclaimer)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFormType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueFormType ExternalAccountLeadFormFormType
+
+		// Act
+		obj.SetFormType(fernTestValueFormType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIntro_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueIntro *AdLeadFormIntro
+
+		// Act
+		obj.SetIntro(fernTestValueIntro)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLocale_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueLocale *string
+
+		// Act
+		obj.SetLocale(fernTestValueLocale)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueName *string
+
+		// Act
+		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPrivacyPolicyLinkText_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValuePrivacyPolicyLinkText *string
+
+		// Act
+		obj.SetPrivacyPolicyLinkText(fernTestValuePrivacyPolicyLinkText)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPrivacyPolicyURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValuePrivacyPolicyURL *string
+
+		// Act
+		obj.SetPrivacyPolicyURL(fernTestValuePrivacyPolicyURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuestionLabels_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueQuestionLabels []string
+
+		// Act
+		obj.SetQuestionLabels(fernTestValueQuestionLabels)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuestions_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+		var fernTestValueQuestions []*AdLeadFormQuestion
+
+		// Act
+		obj.SetQuestions(fernTestValueQuestions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersExternalAccountParent(t *testing.T) {
+	t.Run("SetExternalID", func(t *testing.T) {
+		obj := &ExternalAccountParent{}
+		var fernTestValueExternalID *string
+		obj.SetExternalID(fernTestValueExternalID)
+		assert.Equal(t, fernTestValueExternalID, obj.ExternalID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetID", func(t *testing.T) {
+		obj := &ExternalAccountParent{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetName", func(t *testing.T) {
+		obj := &ExternalAccountParent{}
+		var fernTestValueName *string
+		obj.SetName(fernTestValueName)
+		assert.Equal(t, fernTestValueName, obj.Name)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPlatform", func(t *testing.T) {
+		obj := &ExternalAccountParent{}
+		var fernTestValuePlatform ExternalAccountParentPlatform
+		obj.SetPlatform(fernTestValuePlatform)
+		assert.Equal(t, fernTestValuePlatform, obj.Platform)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProfilePictureURL", func(t *testing.T) {
+		obj := &ExternalAccountParent{}
+		var fernTestValueProfilePictureURL *string
+		obj.SetProfilePictureURL(fernTestValueProfilePictureURL)
+		assert.Equal(t, fernTestValueProfilePictureURL, obj.ProfilePictureURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUsername", func(t *testing.T) {
+		obj := &ExternalAccountParent{}
+		var fernTestValueUsername *string
+		obj.SetUsername(fernTestValueUsername)
+		assert.Equal(t, fernTestValueUsername, obj.Username)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVerified", func(t *testing.T) {
+		obj := &ExternalAccountParent{}
+		var fernTestValueVerified bool
+		obj.SetVerified(fernTestValueVerified)
+		assert.Equal(t, fernTestValueVerified, obj.Verified)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersExternalAccountParent(t *testing.T) {
+	t.Run("GetExternalID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var expected *string
+		obj.ExternalID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetExternalID(), "getter should return the property value")
+	})
+
+	t.Run("GetExternalID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		obj.ExternalID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetExternalID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetExternalID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountParent
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetExternalID() // Should return zero value
+	})
+
+	t.Run("GetID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var expected string
+		obj.ID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
+	})
+
+	t.Run("GetID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountParent
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var expected *string
+		obj.Name = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetName(), "getter should return the property value")
+	})
+
+	t.Run("GetName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		obj.Name = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetName(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountParent
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetName() // Should return zero value
+	})
+
+	t.Run("GetPlatform", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var expected ExternalAccountParentPlatform
+		obj.Platform = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
+	})
+
+	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountParent
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlatform() // Should return zero value
+	})
+
+	t.Run("GetProfilePictureURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var expected *string
+		obj.ProfilePictureURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProfilePictureURL(), "getter should return the property value")
+	})
+
+	t.Run("GetProfilePictureURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		obj.ProfilePictureURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProfilePictureURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProfilePictureURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountParent
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProfilePictureURL() // Should return zero value
+	})
+
+	t.Run("GetUsername", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var expected *string
+		obj.Username = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUsername(), "getter should return the property value")
+	})
+
+	t.Run("GetUsername_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		obj.Username = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUsername(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUsername_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountParent
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUsername() // Should return zero value
+	})
+
+	t.Run("GetVerified", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var expected bool
+		obj.Verified = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVerified(), "getter should return the property value")
+	})
+
+	t.Run("GetVerified_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountParent
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVerified() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitExternalAccountParent(t *testing.T) {
+	t.Run("SetExternalID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var fernTestValueExternalID *string
+
+		// Act
+		obj.SetExternalID(fernTestValueExternalID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var fernTestValueName *string
+
+		// Act
+		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var fernTestValuePlatform ExternalAccountParentPlatform
+
+		// Act
+		obj.SetPlatform(fernTestValuePlatform)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProfilePictureURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var fernTestValueProfilePictureURL *string
+
+		// Act
+		obj.SetProfilePictureURL(fernTestValueProfilePictureURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUsername_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var fernTestValueUsername *string
+
+		// Act
+		obj.SetUsername(fernTestValueUsername)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVerified_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+		var fernTestValueVerified bool
+
+		// Act
+		obj.SetVerified(fernTestValueVerified)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersExternalAccountPost(t *testing.T) {
+	t.Run("SetCallToAction", func(t *testing.T) {
+		obj := &ExternalAccountPost{}
+		var fernTestValueCallToAction *ExternalAccountPostCallToAction
+		obj.SetCallToAction(fernTestValueCallToAction)
+		assert.Equal(t, fernTestValueCallToAction, obj.CallToAction)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCaption", func(t *testing.T) {
+		obj := &ExternalAccountPost{}
+		var fernTestValueCaption *string
+		obj.SetCaption(fernTestValueCaption)
+		assert.Equal(t, fernTestValueCaption, obj.Caption)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDestinationURL", func(t *testing.T) {
+		obj := &ExternalAccountPost{}
+		var fernTestValueDestinationURL *string
+		obj.SetDestinationURL(fernTestValueDestinationURL)
+		assert.Equal(t, fernTestValueDestinationURL, obj.DestinationURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetEmbedURL", func(t *testing.T) {
+		obj := &ExternalAccountPost{}
+		var fernTestValueEmbedURL *string
+		obj.SetEmbedURL(fernTestValueEmbedURL)
+		assert.Equal(t, fernTestValueEmbedURL, obj.EmbedURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetID", func(t *testing.T) {
+		obj := &ExternalAccountPost{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMediaURL", func(t *testing.T) {
+		obj := &ExternalAccountPost{}
+		var fernTestValueMediaURL *string
+		obj.SetMediaURL(fernTestValueMediaURL)
+		assert.Equal(t, fernTestValueMediaURL, obj.MediaURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRestrictions", func(t *testing.T) {
+		obj := &ExternalAccountPost{}
+		var fernTestValueRestrictions []ExternalAccountPostRestrictionsItem
+		obj.SetRestrictions(fernTestValueRestrictions)
+		assert.Equal(t, fernTestValueRestrictions, obj.Restrictions)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetThumbnailURL", func(t *testing.T) {
+		obj := &ExternalAccountPost{}
+		var fernTestValueThumbnailURL *string
+		obj.SetThumbnailURL(fernTestValueThumbnailURL)
+		assert.Equal(t, fernTestValueThumbnailURL, obj.ThumbnailURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVideoID", func(t *testing.T) {
+		obj := &ExternalAccountPost{}
+		var fernTestValueVideoID *string
+		obj.SetVideoID(fernTestValueVideoID)
+		assert.Equal(t, fernTestValueVideoID, obj.VideoID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersExternalAccountPost(t *testing.T) {
+	t.Run("GetCallToAction", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var expected *ExternalAccountPostCallToAction
+		obj.CallToAction = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCallToAction(), "getter should return the property value")
+	})
+
+	t.Run("GetCallToAction_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		obj.CallToAction = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCallToAction(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCallToAction_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCallToAction() // Should return zero value
+	})
+
+	t.Run("GetCaption", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var expected *string
+		obj.Caption = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCaption(), "getter should return the property value")
+	})
+
+	t.Run("GetCaption_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		obj.Caption = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCaption(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCaption_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCaption() // Should return zero value
+	})
+
+	t.Run("GetDestinationURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var expected *string
+		obj.DestinationURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDestinationURL(), "getter should return the property value")
+	})
+
+	t.Run("GetDestinationURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		obj.DestinationURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDestinationURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDestinationURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDestinationURL() // Should return zero value
+	})
+
+	t.Run("GetEmbedURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var expected *string
+		obj.EmbedURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEmbedURL(), "getter should return the property value")
+	})
+
+	t.Run("GetEmbedURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		obj.EmbedURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEmbedURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEmbedURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEmbedURL() // Should return zero value
+	})
+
+	t.Run("GetID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var expected string
+		obj.ID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
+	})
+
+	t.Run("GetID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetMediaURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var expected *string
+		obj.MediaURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMediaURL(), "getter should return the property value")
+	})
+
+	t.Run("GetMediaURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		obj.MediaURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMediaURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMediaURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMediaURL() // Should return zero value
+	})
+
+	t.Run("GetRestrictions", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var expected []ExternalAccountPostRestrictionsItem
+		obj.Restrictions = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRestrictions(), "getter should return the property value")
+	})
+
+	t.Run("GetRestrictions_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		obj.Restrictions = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRestrictions(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRestrictions_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRestrictions() // Should return zero value
+	})
+
+	t.Run("GetThumbnailURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var expected *string
+		obj.ThumbnailURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetThumbnailURL(), "getter should return the property value")
+	})
+
+	t.Run("GetThumbnailURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		obj.ThumbnailURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetThumbnailURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetThumbnailURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetThumbnailURL() // Should return zero value
+	})
+
+	t.Run("GetVideoID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var expected *string
+		obj.VideoID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVideoID(), "getter should return the property value")
+	})
+
+	t.Run("GetVideoID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		obj.VideoID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetVideoID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetVideoID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVideoID() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitExternalAccountPost(t *testing.T) {
+	t.Run("SetCallToAction_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var fernTestValueCallToAction *ExternalAccountPostCallToAction
+
+		// Act
+		obj.SetCallToAction(fernTestValueCallToAction)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCaption_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var fernTestValueCaption *string
+
+		// Act
+		obj.SetCaption(fernTestValueCaption)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDestinationURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var fernTestValueDestinationURL *string
+
+		// Act
+		obj.SetDestinationURL(fernTestValueDestinationURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmbedURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var fernTestValueEmbedURL *string
+
+		// Act
+		obj.SetEmbedURL(fernTestValueEmbedURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMediaURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var fernTestValueMediaURL *string
+
+		// Act
+		obj.SetMediaURL(fernTestValueMediaURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRestrictions_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var fernTestValueRestrictions []ExternalAccountPostRestrictionsItem
+
+		// Act
+		obj.SetRestrictions(fernTestValueRestrictions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetThumbnailURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var fernTestValueThumbnailURL *string
+
+		// Act
+		obj.SetThumbnailURL(fernTestValueThumbnailURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVideoID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+		var fernTestValueVideoID *string
+
+		// Act
+		obj.SetVideoID(fernTestValueVideoID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersFile(t *testing.T) {
 	t.Run("SetContentType", func(t *testing.T) {
 		obj := &File{}
@@ -117385,6 +120211,138 @@ func TestJSONMarshalingExperienceNotificationPreference(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingExternalAccount(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ExternalAccount
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccount
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccount
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingExternalAccountLeadForm(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountLeadForm{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ExternalAccountLeadForm
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountLeadForm
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountLeadForm
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingExternalAccountParent(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountParent{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ExternalAccountParent
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountParent
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountParent
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingExternalAccountPost(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccountPost{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ExternalAccountPost
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountPost
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountPost
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingFile(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -125964,6 +128922,201 @@ func TestRequiredNullableRoundTripEntryUser(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripExternalAccount(t *testing.T) {
+	requiredNullableKeys := []string{
+		"error",
+		"external_id",
+		"name",
+		"parent_external_account",
+		"partnership_status",
+		"profile_picture_url",
+		"url",
+		"username",
+	}
+	marshalToMap := func(t *testing.T, obj *ExternalAccount) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccount
+		require.NoError(t, json.Unmarshal([]byte(`{"error":null,"external_id":null,"name":null,"parent_external_account":null,"partnership_status":null,"profile_picture_url":null,"url":null,"username":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccount
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ExternalAccount{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripExternalAccountLeadForm(t *testing.T) {
+	requiredNullableKeys := []string{
+		"completion",
+		"created_at",
+		"disclaimer",
+		"intro",
+		"locale",
+		"name",
+		"privacy_policy_link_text",
+		"privacy_policy_url",
+	}
+	marshalToMap := func(t *testing.T, obj *ExternalAccountLeadForm) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountLeadForm
+		require.NoError(t, json.Unmarshal([]byte(`{"completion":null,"created_at":null,"disclaimer":null,"intro":null,"locale":null,"name":null,"privacy_policy_link_text":null,"privacy_policy_url":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountLeadForm
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ExternalAccountLeadForm{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripExternalAccountParent(t *testing.T) {
+	requiredNullableKeys := []string{
+		"external_id",
+		"name",
+		"profile_picture_url",
+		"username",
+	}
+	marshalToMap := func(t *testing.T, obj *ExternalAccountParent) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountParent
+		require.NoError(t, json.Unmarshal([]byte(`{"external_id":null,"name":null,"profile_picture_url":null,"username":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountParent
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ExternalAccountParent{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripExternalAccountPost(t *testing.T) {
+	requiredNullableKeys := []string{
+		"call_to_action",
+		"caption",
+		"destination_url",
+		"embed_url",
+		"media_url",
+		"thumbnail_url",
+		"video_id",
+	}
+	marshalToMap := func(t *testing.T, obj *ExternalAccountPost) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountPost
+		require.NoError(t, json.Unmarshal([]byte(`{"call_to_action":null,"caption":null,"destination_url":null,"embed_url":null,"media_url":null,"thumbnail_url":null,"video_id":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ExternalAccountPost
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ExternalAccountPost{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestRequiredNullableRoundTripFile(t *testing.T) {
 	requiredNullableKeys := []string{
 		"content_type",
@@ -132976,6 +136129,70 @@ func TestStringExperienceNotificationPreference(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ExperienceNotificationPreference
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringExternalAccount(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ExternalAccount{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringExternalAccountLeadForm(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ExternalAccountLeadForm{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringExternalAccountParent(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ExternalAccountParent{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountParent
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringExternalAccountPost(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ExternalAccountPost{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -140549,6 +143766,488 @@ func TestEnumExperienceNotificationPreferenceObject(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewExperienceNotificationPreferenceObjectFromString("experience_notification_preference")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumExternalAccountLeadFormFormType(t *testing.T) {
+	t.Run("NewFromString_more_volume", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountLeadFormFormTypeFromString("more_volume")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountLeadFormFormType("more_volume"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_higher_intent", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountLeadFormFormTypeFromString("higher_intent")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountLeadFormFormType("higher_intent"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewExternalAccountLeadFormFormTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewExternalAccountLeadFormFormTypeFromString("more_volume")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumExternalAccountParentPlatform(t *testing.T) {
+	t.Run("NewFromString_x", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountParentPlatformFromString("x")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountParentPlatform("x"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_instagram", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountParentPlatformFromString("instagram")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountParentPlatform("instagram"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_youtube", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountParentPlatformFromString("youtube")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountParentPlatform("youtube"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tiktok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountParentPlatformFromString("tiktok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountParentPlatform("tiktok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_facebook", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountParentPlatformFromString("facebook")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountParentPlatform("facebook"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_linkedin", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountParentPlatformFromString("linkedin")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountParentPlatform("linkedin"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_snapchat", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountParentPlatformFromString("snapchat")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountParentPlatform("snapchat"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewExternalAccountParentPlatformFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewExternalAccountParentPlatformFromString("x")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumExternalAccountPartnershipStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPartnershipStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPartnershipStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPartnershipStatusFromString("approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPartnershipStatus("approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_revoked", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPartnershipStatusFromString("revoked")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPartnershipStatus("revoked"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewExternalAccountPartnershipStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewExternalAccountPartnershipStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumExternalAccountPlatform(t *testing.T) {
+	t.Run("NewFromString_x", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPlatformFromString("x")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPlatform("x"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_instagram", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPlatformFromString("instagram")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPlatform("instagram"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_youtube", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPlatformFromString("youtube")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPlatform("youtube"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tiktok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPlatformFromString("tiktok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPlatform("tiktok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_facebook", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPlatformFromString("facebook")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPlatform("facebook"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_linkedin", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPlatformFromString("linkedin")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPlatform("linkedin"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_snapchat", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPlatformFromString("snapchat")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPlatform("snapchat"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewExternalAccountPlatformFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewExternalAccountPlatformFromString("x")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumExternalAccountPostCallToAction(t *testing.T) {
+	t.Run("NewFromString_learn_more", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("learn_more")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("learn_more"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_shop_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("shop_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("shop_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sign_up", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("sign_up")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("sign_up"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subscribe", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("subscribe")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("subscribe"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_get_started", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("get_started")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("get_started"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_book_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("book_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("book_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_apply_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("apply_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("apply_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_us", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("contact_us")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("contact_us"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_download", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("download")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("download"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_order_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("order_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("order_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_buy_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("buy_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("buy_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_get_quote", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("get_quote")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("get_quote"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_message_page", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("message_page")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("message_page"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whatsapp_message", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("whatsapp_message")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("whatsapp_message"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_instagram_message", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("instagram_message")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("instagram_message"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_call_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("call_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("call_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_get_directions", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("get_directions")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("get_directions"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_send_updates", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("send_updates")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("send_updates"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_get_offer", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("get_offer")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("get_offer"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_watch_more", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("watch_more")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("watch_more"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_listen_now", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("listen_now")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("listen_now"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_play_game", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("play_game")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("play_game"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_open_link", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("open_link")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("open_link"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_no_button", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("no_button")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("no_button"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_get_offer_view", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("get_offer_view")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("get_offer_view"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_get_event_tickets", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("get_event_tickets")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("get_event_tickets"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_see_menu", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("see_menu")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("see_menu"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_request_time", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("request_time")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("request_time"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_event_rsvp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("event_rsvp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("event_rsvp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_see_details", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("see_details")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("see_details"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_view_instagram_profile", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostCallToActionFromString("view_instagram_profile")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostCallToAction("view_instagram_profile"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewExternalAccountPostCallToActionFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewExternalAccountPostCallToActionFromString("learn_more")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumExternalAccountPostRestrictionsItem(t *testing.T) {
+	t.Run("NewFromString_lead_form_ineligible", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostRestrictionsItemFromString("lead_form_ineligible")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostRestrictionsItem("lead_form_ineligible"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_promotion_ineligible", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostRestrictionsItemFromString("promotion_ineligible")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostRestrictionsItem("promotion_ineligible"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_copyrighted_music", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostRestrictionsItemFromString("copyrighted_music")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostRestrictionsItem("copyrighted_music"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_messenger_destination", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostRestrictionsItemFromString("messenger_destination")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostRestrictionsItem("messenger_destination"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_instagram_destination", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostRestrictionsItemFromString("instagram_destination")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostRestrictionsItem("instagram_destination"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whatsapp_destination", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPostRestrictionsItemFromString("whatsapp_destination")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPostRestrictionsItem("whatsapp_destination"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewExternalAccountPostRestrictionsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewExternalAccountPostRestrictionsItemFromString("lead_form_ineligible")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -149748,6 +153447,98 @@ func TestExtraPropertiesExperienceNotificationPreference(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ExperienceNotificationPreference
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesExternalAccount(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ExternalAccount{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesExternalAccountLeadForm(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ExternalAccountLeadForm{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountLeadForm
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesExternalAccountParent(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ExternalAccountParent{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountParent
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesExternalAccountPost(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ExternalAccountPost{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccountPost
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

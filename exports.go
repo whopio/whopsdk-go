@@ -449,6 +449,7 @@ const (
 	ExportResourceCheckoutConfigurations    ExportResource = "checkout_configurations"
 	ExportResourceDisputes                  ExportResource = "disputes"
 	ExportResourceEvents                    ExportResource = "events"
+	ExportResourceExternalAccounts          ExportResource = "external_accounts"
 	ExportResourceFinancialActivity         ExportResource = "financial-activity"
 	ExportResourcePayoutMethods             ExportResource = "payout_methods"
 	ExportResourcePayouts                   ExportResource = "payouts"
@@ -502,6 +503,8 @@ func NewExportResourceFromString(s string) (ExportResource, error) {
 		return ExportResourceDisputes, nil
 	case "events":
 		return ExportResourceEvents, nil
+	case "external_accounts":
+		return ExportResourceExternalAccounts, nil
 	case "financial-activity":
 		return ExportResourceFinancialActivity, nil
 	case "payout_methods":
@@ -612,6 +615,7 @@ const (
 	CreateExportsRequestResourceCheckoutConfigurations    CreateExportsRequestResource = "checkout_configurations"
 	CreateExportsRequestResourceDisputes                  CreateExportsRequestResource = "disputes"
 	CreateExportsRequestResourceEvents                    CreateExportsRequestResource = "events"
+	CreateExportsRequestResourceExternalAccounts          CreateExportsRequestResource = "external_accounts"
 	CreateExportsRequestResourceFinancialActivity         CreateExportsRequestResource = "financial-activity"
 	CreateExportsRequestResourcePayoutMethods             CreateExportsRequestResource = "payout_methods"
 	CreateExportsRequestResourcePayouts                   CreateExportsRequestResource = "payouts"
@@ -663,6 +667,8 @@ func NewCreateExportsRequestResourceFromString(s string) (CreateExportsRequestRe
 		return CreateExportsRequestResourceDisputes, nil
 	case "events":
 		return CreateExportsRequestResourceEvents, nil
+	case "external_accounts":
+		return CreateExportsRequestResourceExternalAccounts, nil
 	case "financial-activity":
 		return CreateExportsRequestResourceFinancialActivity, nil
 	case "payout_methods":
@@ -777,6 +783,7 @@ const (
 	ListExportsRequestResourceCheckoutConfigurations    ListExportsRequestResource = "checkout_configurations"
 	ListExportsRequestResourceDisputes                  ListExportsRequestResource = "disputes"
 	ListExportsRequestResourceEvents                    ListExportsRequestResource = "events"
+	ListExportsRequestResourceExternalAccounts          ListExportsRequestResource = "external_accounts"
 	ListExportsRequestResourceFinancialActivity         ListExportsRequestResource = "financial-activity"
 	ListExportsRequestResourcePayoutMethods             ListExportsRequestResource = "payout_methods"
 	ListExportsRequestResourcePayouts                   ListExportsRequestResource = "payouts"
@@ -830,6 +837,8 @@ func NewListExportsRequestResourceFromString(s string) (ListExportsRequestResour
 		return ListExportsRequestResourceDisputes, nil
 	case "events":
 		return ListExportsRequestResourceEvents, nil
+	case "external_accounts":
+		return ListExportsRequestResourceExternalAccounts, nil
 	case "financial-activity":
 		return ListExportsRequestResourceFinancialActivity, nil
 	case "payout_methods":

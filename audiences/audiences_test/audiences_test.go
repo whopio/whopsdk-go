@@ -120,9 +120,9 @@ func TestAudiencesCreateWithWireMock(
 			Include: []*whopsdk.AudienceEngagementRule{
 				&whopsdk.AudienceEngagementRule{
 					FacebookPage: &whopsdk.AudienceEngagementFacebookPageRule{
-						Event:           whopsdk.AudienceEngagementFacebookPageRuleEventEngaged,
-						RetentionDays:   30,
-						SocialAccountID: "sacc_xxxxxxxxxxxxxx",
+						Event:             whopsdk.AudienceEngagementFacebookPageRuleEventEngaged,
+						ExternalAccountID: "sacc_xxxxxxxxxxxxxx",
+						RetentionDays:     30,
 					},
 				},
 			},

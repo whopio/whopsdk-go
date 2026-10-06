@@ -16,7 +16,7 @@ var (
 )
 
 type AddPartnerSocialAccountsRequest struct {
-	// The Instagram account (a sacc_ identifier) the partners run partnership ads with.
+	// The brand's Instagram social account (a sacc_ identifier).
 	ID string `json:"-" url:"-"`
 	// The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
@@ -86,9 +86,9 @@ var (
 )
 
 type ConnectSocialAccountsRequest struct {
-	// The Account (biz_ identifier) to connect the social account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
+	// The Account (biz_ identifier) to connect the external account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, or `youtube` to connect their YouTube channel.
+	// The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, or `youtube` to connect their YouTube channel.
 	Platform ConnectSocialAccountsRequestPlatform `json:"platform" url:"-"`
 	// Where to send the user once they finish connecting their accounts. Any `http` or `https` URL. If the connection fails, the user is redirected with a `social_account_error` query param.
 	RedirectURL string `json:"redirect_url" url:"-"`
@@ -163,9 +163,9 @@ var (
 )
 
 type CreateSocialAccountsRequest struct {
-	// The Account (biz_ identifier) to create the social account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+	// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
 	Platform CreateSocialAccountsRequestPlatform `json:"platform" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -224,11 +224,9 @@ var (
 
 type DeleteSocialAccountsRequest struct {
 	// The ID of the social account to disconnect.
-	ID string `json:"-" url:"-"`
-	// The Account that the social account is connected to. Provide either this or user_id.
+	ID        string  `json:"-" url:"-"`
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// The User that the social account is connected to. Provide either this or account_id.
-	UserID *string `json:"-" url:"user_id,omitempty"`
+	UserID    *string `json:"-" url:"user_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -271,8 +269,7 @@ var (
 
 type LeadFormsSocialAccountsRequest struct {
 	// The social account (a sacc_ identifier) whose lead forms to list.
-	ID string `json:"-" url:"-"`
-	// The Account (a biz_ identifier) the social account is connected to.
+	ID        string `json:"-" url:"-"`
 	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -318,17 +315,17 @@ var (
 )
 
 type ListSocialAccountsRequest struct {
-	// The Account that the social accounts are connected to. Provide either this or user_id.
+	// The Account that the external accounts are connected to. Provide either this or user_id.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// The User that the social accounts are connected to. Provide either this or account_id.
+	// The User that the external accounts are connected to. Provide either this or account_id.
 	UserID *string `json:"-" url:"user_id,omitempty"`
-	// Only return social accounts for the platform that is specified.
+	// Only return external accounts for the platform that is specified.
 	Platform *ListSocialAccountsRequestPlatform `json:"-" url:"platform,omitempty"`
-	// Only return social accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
+	// Only return external accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
 	TrustLevel *ListSocialAccountsRequestTrustLevel `json:"-" url:"trust_level,omitempty"`
-	// Only return social accounts that are verified on the platform.
+	// Only return external accounts that are verified on the platform.
 	Verified *bool `json:"-" url:"verified,omitempty"`
-	// Only return social accounts that have these scopes.
+	// Only return external accounts that have these scopes.
 	Scopes []*ListSocialAccountsRequestScopesItem `json:"-" url:"scopes,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
@@ -338,7 +335,7 @@ type ListSocialAccountsRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
-	// The field to sort social accounts by.
+	// The field to sort external accounts by.
 	Order *ListSocialAccountsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListSocialAccountsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -448,7 +445,7 @@ var (
 )
 
 type PartnersSocialAccountsRequest struct {
-	// The Instagram account (a sacc_ identifier) the partners run partnership ads with.
+	// The brand's Instagram social account (a sacc_ identifier).
 	ID string `json:"-" url:"-"`
 	// The Account (biz_ identifier) that advertises as the Instagram account. An account-scoped API key may omit this to default to its own account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
@@ -508,11 +505,9 @@ var (
 
 type PostsSocialAccountsRequest struct {
 	// The social account (a sacc_ identifier) whose posts to list.
-	ID string `json:"-" url:"-"`
-	// The Account (a biz_ identifier) the social account is connected to.
-	AccountID string `json:"-" url:"account_id"`
-	// Return only the single post with this platform id, instead of the full list.
-	PostID *string `json:"-" url:"post_id,omitempty"`
+	ID        string  `json:"-" url:"-"`
+	AccountID string  `json:"-" url:"account_id"`
+	PostID    *string `json:"-" url:"post_id,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -574,7 +569,7 @@ var (
 type RefreshSocialAccountsRequest struct {
 	// The social account (a sacc_ identifier) to refresh.
 	ID string `json:"-" url:"-"`
-	// The Account (biz_ identifier) the social account is connected to. An account-scoped API key may omit this to default to its own account.
+	// The Account (biz_ identifier) the external account is connected to. An account-scoped API key may omit this to default to its own account.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -632,7 +627,7 @@ var (
 )
 
 type RemovePartnerSocialAccountsRequest struct {
-	// The Instagram account (a sacc_ identifier) the partner runs partnership ads with.
+	// The brand's Instagram social account (a sacc_ identifier).
 	ID string `json:"-" url:"-"`
 	// The partner creator's social account (a sacc_ identifier).
 	PartnerID string `json:"-" url:"-"`
@@ -1982,7 +1977,7 @@ func (s SocialAccountPostRestrictionsItem) Ptr() *SocialAccountPostRestrictionsI
 	return &s
 }
 
-// The platform to connect the social account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, or `youtube` to connect their YouTube channel.
+// The platform to connect the external account on. Use `meta_business` to connect Meta Business assets, which is how Facebook Pages and Instagram accounts are connected — there is no separate `instagram` value. Use `tiktok` for TikTok accounts, `snapchat` for Snapchat Public Profiles, `linkedin` to connect the authenticated user’s LinkedIn profile, or `youtube` to connect their YouTube channel.
 type ConnectSocialAccountsRequestPlatform string
 
 const (
@@ -2038,7 +2033,6 @@ var (
 )
 
 type ConnectSocialAccountsResponse struct {
-	// The OAuth authorization URL to redirect the user to.
 	AuthorizeURL string `json:"authorize_url" url:"authorize_url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2120,7 +2114,7 @@ func (c *ConnectSocialAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+// The platform to create the external account on. `facebook` requires the account's `banner_image`, `logo`, and `description`, and `tiktok` requires its `logo`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before the platform has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
 type CreateSocialAccountsRequestPlatform string
 
 const (
@@ -2149,10 +2143,8 @@ var (
 )
 
 type DeleteSocialAccountsResponse struct {
-	// Always true.
-	Deleted bool `json:"deleted" url:"deleted"`
-	// ID of the disconnected social account.
-	ID string `json:"id" url:"id"`
+	Deleted bool   `json:"deleted" url:"deleted"`
+	ID      string `json:"id" url:"id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3190,10 +3182,8 @@ var (
 )
 
 type RemovePartnerSocialAccountsResponse struct {
-	// Always true.
-	Deleted bool `json:"deleted" url:"deleted"`
-	// ID of the removed partner's social account.
-	ID string `json:"id" url:"id"`
+	Deleted bool   `json:"deleted" url:"deleted"`
+	ID      string `json:"id" url:"id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
