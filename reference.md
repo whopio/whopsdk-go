@@ -15907,7 +15907,7 @@ client.Domains.Update(
 <dl>
 <dd>
 
-Lists an account's recommendations and generation requests, newest first by default. Without an account, signed-out visitors receive a business-setup template and eligible users receive their saved setup recommendation. With `has_run` and no account, users receive the recommendations run on every account they can read, including accounts whose Economic Intelligence is off. Executed recommendations, runs, and recommendations that were attributed stay listed after Economic Intelligence turns off. New recommendations are offered only while it is on. Visitor countries, page views, ad impressions and clicks, and payment volume for a time range come from `GET /stats/time_series/{metric}`.
+Lists an account's recommendations and generation requests, newest first by default. Without an account, signed-out visitors receive a business-setup template and eligible users receive their saved setup recommendation. With `has_run` and no account, users receive the recommendations run on every account they can read.
 </dd>
 </dl>
 </dd>
@@ -15965,7 +15965,7 @@ client.EconomicIntelligence.List(
 <dl>
 <dd>
 
-**hasRun:** `*bool` — When true, only recommendations someone has started running, by any user. Without `account_id`, covers every account you can read, including accounts whose Economic Intelligence is off. Can't be combined with `input`.
+**hasRun:** `*bool` — When true, only recommendations someone has started running, by any user. Without `account_id`, covers every account you can read that has Economic Intelligence. Can't be combined with `input`.
     
 </dd>
 </dl>
