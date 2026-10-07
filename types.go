@@ -3418,28 +3418,32 @@ func (a *AccountParentFeesValue) String() string {
 }
 
 var (
-	accountPreferencesFieldAdsAgreement                      = big.NewInt(1 << 0)
-	accountPreferencesFieldAdsCertifications                 = big.NewInt(1 << 1)
-	accountPreferencesFieldAdsPaymentMethods                 = big.NewInt(1 << 2)
-	accountPreferencesFieldAdsReportingCurrency              = big.NewInt(1 << 3)
-	accountPreferencesFieldAdsSchedulingTimezone             = big.NewInt(1 << 4)
-	accountPreferencesFieldAdsTripleWhaleIntegration         = big.NewInt(1 << 5)
-	accountPreferencesFieldCardsAutoTopUp                    = big.NewInt(1 << 6)
-	accountPreferencesFieldCardsNotifications                = big.NewInt(1 << 7)
-	accountPreferencesFieldDisputeFighterEnabled             = big.NewInt(1 << 8)
-	accountPreferencesFieldEconomicIntelligence              = big.NewInt(1 << 9)
-	accountPreferencesFieldEconomicIntelligenceEndsAt        = big.NewInt(1 << 10)
-	accountPreferencesFieldEconomicIntelligenceFeePercentage = big.NewInt(1 << 11)
-	accountPreferencesFieldEconomicIntelligenceOffers        = big.NewInt(1 << 12)
-	accountPreferencesFieldSubscriptionFailureBehavior       = big.NewInt(1 << 13)
+	accountPreferencesFieldAdsAgreement                            = big.NewInt(1 << 0)
+	accountPreferencesFieldAdsCertifications                       = big.NewInt(1 << 1)
+	accountPreferencesFieldAdsPaymentMethods                       = big.NewInt(1 << 2)
+	accountPreferencesFieldAdsReportingCurrency                    = big.NewInt(1 << 3)
+	accountPreferencesFieldAdsSchedulingTimezone                   = big.NewInt(1 << 4)
+	accountPreferencesFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
+	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
+	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 7)
+	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 8)
+	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 9)
+	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 10)
+	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 11)
+	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 12)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 13)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 14)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 15)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
 var accountPreferencesNullableFields = map[string]*big.Int{
-	"ads_payment_methods":                  accountPreferencesFieldAdsPaymentMethods,
-	"economic_intelligence_ends_at":        accountPreferencesFieldEconomicIntelligenceEndsAt,
-	"economic_intelligence_fee_percentage": accountPreferencesFieldEconomicIntelligenceFeePercentage,
-	"economic_intelligence_offers":         accountPreferencesFieldEconomicIntelligenceOffers,
+	"ads_payment_methods":                         accountPreferencesFieldAdsPaymentMethods,
+	"economic_intelligence_ends_at":               accountPreferencesFieldEconomicIntelligenceEndsAt,
+	"economic_intelligence_fee_percentage":        accountPreferencesFieldEconomicIntelligenceFeePercentage,
+	"economic_intelligence_offers":                accountPreferencesFieldEconomicIntelligenceOffers,
+	"preferred_settlement_currency":               accountPreferencesFieldPreferredSettlementCurrency,
+	"preferred_settlement_currency_changeable_at": accountPreferencesFieldPreferredSettlementCurrencyChangeableAt,
 }
 
 type AccountPreferences struct {
@@ -3467,6 +3471,10 @@ type AccountPreferences struct {
 	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
 	EconomicIntelligenceFeePercentage *float64                            `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
 	EconomicIntelligenceOffers        []*AccountEconomicIntelligenceOffer `json:"economic_intelligence_offers,omitempty" url:"economic_intelligence_offers,omitempty"`
+	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
+	PreferredSettlementCurrency *AccountPreferencesPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
+	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once every 7 days. `null` when it may change now.
+	PreferredSettlementCurrencyChangeableAt *string `json:"preferred_settlement_currency_changeable_at,omitempty" url:"preferred_settlement_currency_changeable_at,omitempty"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
 	SubscriptionFailureBehavior AccountPreferencesSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
@@ -3566,6 +3574,20 @@ func (a *AccountPreferences) GetEconomicIntelligenceOffers() []*AccountEconomicI
 		return nil
 	}
 	return a.EconomicIntelligenceOffers
+}
+
+func (a *AccountPreferences) GetPreferredSettlementCurrency() *AccountPreferencesPreferredSettlementCurrency {
+	if a == nil {
+		return nil
+	}
+	return a.PreferredSettlementCurrency
+}
+
+func (a *AccountPreferences) GetPreferredSettlementCurrencyChangeableAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.PreferredSettlementCurrencyChangeableAt
 }
 
 func (a *AccountPreferences) GetSubscriptionFailureBehavior() AccountPreferencesSubscriptionFailureBehavior {
@@ -3682,6 +3704,20 @@ func (a *AccountPreferences) SetEconomicIntelligenceOffers(economicIntelligenceO
 	a.require(accountPreferencesFieldEconomicIntelligenceOffers)
 }
 
+// SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetPreferredSettlementCurrency(preferredSettlementCurrency *AccountPreferencesPreferredSettlementCurrency) {
+	a.PreferredSettlementCurrency = preferredSettlementCurrency
+	a.require(accountPreferencesFieldPreferredSettlementCurrency)
+}
+
+// SetPreferredSettlementCurrencyChangeableAt sets the PreferredSettlementCurrencyChangeableAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetPreferredSettlementCurrencyChangeableAt(preferredSettlementCurrencyChangeableAt *string) {
+	a.PreferredSettlementCurrencyChangeableAt = preferredSettlementCurrencyChangeableAt
+	a.require(accountPreferencesFieldPreferredSettlementCurrencyChangeableAt)
+}
+
 // SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AccountPreferences) SetSubscriptionFailureBehavior(subscriptionFailureBehavior AccountPreferencesSubscriptionFailureBehavior) {
@@ -3736,6 +3772,38 @@ func (a *AccountPreferences) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
+type AccountPreferencesPreferredSettlementCurrency string
+
+const (
+	AccountPreferencesPreferredSettlementCurrencyUsd AccountPreferencesPreferredSettlementCurrency = "usd"
+	AccountPreferencesPreferredSettlementCurrencyEur AccountPreferencesPreferredSettlementCurrency = "eur"
+	AccountPreferencesPreferredSettlementCurrencyGbp AccountPreferencesPreferredSettlementCurrency = "gbp"
+	AccountPreferencesPreferredSettlementCurrencyCad AccountPreferencesPreferredSettlementCurrency = "cad"
+	AccountPreferencesPreferredSettlementCurrencyAud AccountPreferencesPreferredSettlementCurrency = "aud"
+)
+
+func NewAccountPreferencesPreferredSettlementCurrencyFromString(s string) (AccountPreferencesPreferredSettlementCurrency, error) {
+	switch s {
+	case "usd":
+		return AccountPreferencesPreferredSettlementCurrencyUsd, nil
+	case "eur":
+		return AccountPreferencesPreferredSettlementCurrencyEur, nil
+	case "gbp":
+		return AccountPreferencesPreferredSettlementCurrencyGbp, nil
+	case "cad":
+		return AccountPreferencesPreferredSettlementCurrencyCad, nil
+	case "aud":
+		return AccountPreferencesPreferredSettlementCurrencyAud, nil
+	}
+	var t AccountPreferencesPreferredSettlementCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountPreferencesPreferredSettlementCurrency) Ptr() *AccountPreferencesPreferredSettlementCurrency {
+	return &a
 }
 
 // What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
