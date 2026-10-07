@@ -54965,10 +54965,8 @@ var (
 	tradingAccountFieldHyperliquid = big.NewInt(1 << 1)
 	tradingAccountFieldID          = big.NewInt(1 << 2)
 	tradingAccountFieldObject      = big.NewInt(1 << 3)
-	tradingAccountFieldOpenOrders  = big.NewInt(1 << 4)
-	tradingAccountFieldPositions   = big.NewInt(1 << 5)
-	tradingAccountFieldProvider    = big.NewInt(1 << 6)
-	tradingAccountFieldUserID      = big.NewInt(1 << 7)
+	tradingAccountFieldProvider    = big.NewInt(1 << 4)
+	tradingAccountFieldUserID      = big.NewInt(1 << 5)
 )
 
 // tradingAccountNullableFields maps the wire names of TradingAccount's nullable fields (required or optional) to their field bits.
@@ -54984,10 +54982,8 @@ type TradingAccount struct {
 	// Hyperliquid-specific state. Present when `provider` is `hyperliquid`, otherwise `null`.
 	Hyperliquid *TradingHyperliquidAccount `json:"hyperliquid,omitempty" url:"hyperliquid,omitempty"`
 	// The Whop wallet ID backing this trading account, prefixed `cwal_`.
-	ID         string               `json:"id" url:"id"`
-	Object     TradingAccountObject `json:"object" url:"object"`
-	OpenOrders []*TradingOrder      `json:"open_orders" url:"open_orders"`
-	Positions  []*TradingPosition   `json:"positions" url:"positions"`
+	ID     string               `json:"id" url:"id"`
+	Object TradingAccountObject `json:"object" url:"object"`
 	// Trading venue that holds the positions and orders.
 	Provider TradingAccountProvider `json:"provider" url:"provider"`
 	// The user who owns this trading account, prefixed `user_`. `null` when an account owns it.
@@ -55026,20 +55022,6 @@ func (t *TradingAccount) GetObject() TradingAccountObject {
 		return ""
 	}
 	return t.Object
-}
-
-func (t *TradingAccount) GetOpenOrders() []*TradingOrder {
-	if t == nil {
-		return nil
-	}
-	return t.OpenOrders
-}
-
-func (t *TradingAccount) GetPositions() []*TradingPosition {
-	if t == nil {
-		return nil
-	}
-	return t.Positions
 }
 
 func (t *TradingAccount) GetProvider() TradingAccountProvider {
@@ -55098,20 +55080,6 @@ func (t *TradingAccount) SetID(id string) {
 func (t *TradingAccount) SetObject(object TradingAccountObject) {
 	t.Object = object
 	t.require(tradingAccountFieldObject)
-}
-
-// SetOpenOrders sets the OpenOrders field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TradingAccount) SetOpenOrders(openOrders []*TradingOrder) {
-	t.OpenOrders = openOrders
-	t.require(tradingAccountFieldOpenOrders)
-}
-
-// SetPositions sets the Positions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TradingAccount) SetPositions(positions []*TradingPosition) {
-	t.Positions = positions
-	t.require(tradingAccountFieldPositions)
 }
 
 // SetProvider sets the Provider field and marks it as non-optional;
@@ -55353,24 +55321,13 @@ func (t *TradingCumulativeFunding) String() string {
 
 var (
 	tradingHyperliquidAccountFieldAddress                = big.NewInt(1 << 0)
-	tradingHyperliquidAccountFieldBuilderFeeBps          = big.NewInt(1 << 1)
-	tradingHyperliquidAccountFieldMarginSummary          = big.NewInt(1 << 2)
-	tradingHyperliquidAccountFieldWebsocketSubscriptions = big.NewInt(1 << 3)
-	tradingHyperliquidAccountFieldWebsocketURL           = big.NewInt(1 << 4)
+	tradingHyperliquidAccountFieldWebsocketSubscriptions = big.NewInt(1 << 1)
+	tradingHyperliquidAccountFieldWebsocketURL           = big.NewInt(1 << 2)
 )
-
-// tradingHyperliquidAccountNullableFields maps the wire names of TradingHyperliquidAccount's nullable fields (required or optional) to their field bits.
-var tradingHyperliquidAccountNullableFields = map[string]*big.Int{
-	"builder_fee_bps": tradingHyperliquidAccountFieldBuilderFeeBps,
-}
 
 type TradingHyperliquidAccount struct {
 	// Lowercase wallet address that holds the Hyperliquid account.
-	Address string `json:"address" url:"address"`
-	// Builder fee Whop charges on orders, in basis points as a decimal string, or `null` when no fee is configured.
-	BuilderFeeBps *string `json:"builder_fee_bps,omitempty" url:"builder_fee_bps,omitempty"`
-	// Account value, margin, and withdrawable balance, all in USD.
-	MarginSummary          *TradingMarginSummary           `json:"margin_summary" url:"margin_summary"`
+	Address                string                          `json:"address" url:"address"`
 	WebsocketSubscriptions []*TradingWebsocketSubscription `json:"websocket_subscriptions" url:"websocket_subscriptions"`
 	// Hyperliquid WebSocket URL to connect to directly for live updates.
 	WebsocketURL string `json:"websocket_url" url:"websocket_url"`
@@ -55387,20 +55344,6 @@ func (t *TradingHyperliquidAccount) GetAddress() string {
 		return ""
 	}
 	return t.Address
-}
-
-func (t *TradingHyperliquidAccount) GetBuilderFeeBps() *string {
-	if t == nil {
-		return nil
-	}
-	return t.BuilderFeeBps
-}
-
-func (t *TradingHyperliquidAccount) GetMarginSummary() *TradingMarginSummary {
-	if t == nil {
-		return nil
-	}
-	return t.MarginSummary
 }
 
 func (t *TradingHyperliquidAccount) GetWebsocketSubscriptions() []*TradingWebsocketSubscription {
@@ -55440,20 +55383,6 @@ func (t *TradingHyperliquidAccount) SetAddress(address string) {
 	t.require(tradingHyperliquidAccountFieldAddress)
 }
 
-// SetBuilderFeeBps sets the BuilderFeeBps field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TradingHyperliquidAccount) SetBuilderFeeBps(builderFeeBps *string) {
-	t.BuilderFeeBps = builderFeeBps
-	t.require(tradingHyperliquidAccountFieldBuilderFeeBps)
-}
-
-// SetMarginSummary sets the MarginSummary field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TradingHyperliquidAccount) SetMarginSummary(marginSummary *TradingMarginSummary) {
-	t.MarginSummary = marginSummary
-	t.require(tradingHyperliquidAccountFieldMarginSummary)
-}
-
 // SetWebsocketSubscriptions sets the WebsocketSubscriptions field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *TradingHyperliquidAccount) SetWebsocketSubscriptions(websocketSubscriptions []*TradingWebsocketSubscription) {
@@ -55480,13 +55409,6 @@ func (t *TradingHyperliquidAccount) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradingHyperliquidAccountNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		t.require(presentFields)
-	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -55503,123 +55425,6 @@ func (t *TradingHyperliquidAccount) MarshalJSON() ([]byte, error) {
 }
 
 func (t *TradingHyperliquidAccount) String() string {
-	if t == nil {
-		return "<nil>"
-	}
-	if len(t.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(t); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", t)
-}
-
-var (
-	tradingHyperliquidOrderFieldReduceOnly   = big.NewInt(1 << 0)
-	tradingHyperliquidOrderFieldTriggerPrice = big.NewInt(1 << 1)
-)
-
-// tradingHyperliquidOrderNullableFields maps the wire names of TradingHyperliquidOrder's nullable fields (required or optional) to their field bits.
-var tradingHyperliquidOrderNullableFields = map[string]*big.Int{
-	"reduce_only":   tradingHyperliquidOrderFieldReduceOnly,
-	"trigger_price": tradingHyperliquidOrderFieldTriggerPrice,
-}
-
-type TradingHyperliquidOrder struct {
-	// Whether the order can only reduce an existing position, or `null` when Hyperliquid omits it.
-	ReduceOnly *bool `json:"reduce_only,omitempty" url:"reduce_only,omitempty"`
-	// Trigger price in USD for take-profit and stop-loss orders, or `null` for orders without a trigger.
-	TriggerPrice *Money `json:"trigger_price,omitempty" url:"trigger_price,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (t *TradingHyperliquidOrder) GetReduceOnly() *bool {
-	if t == nil {
-		return nil
-	}
-	return t.ReduceOnly
-}
-
-func (t *TradingHyperliquidOrder) GetTriggerPrice() *Money {
-	if t == nil {
-		return nil
-	}
-	return t.TriggerPrice
-}
-
-func (t *TradingHyperliquidOrder) GetExtraProperties() map[string]interface{} {
-	if t == nil {
-		return nil
-	}
-	return t.extraProperties
-}
-
-func (t *TradingHyperliquidOrder) require(field *big.Int) {
-	next := new(big.Int)
-	if t.explicitFields != nil {
-		next.Set(t.explicitFields)
-	}
-	next.Or(next, field)
-	t.explicitFields = next
-}
-
-// SetReduceOnly sets the ReduceOnly field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TradingHyperliquidOrder) SetReduceOnly(reduceOnly *bool) {
-	t.ReduceOnly = reduceOnly
-	t.require(tradingHyperliquidOrderFieldReduceOnly)
-}
-
-// SetTriggerPrice sets the TriggerPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TradingHyperliquidOrder) SetTriggerPrice(triggerPrice *Money) {
-	t.TriggerPrice = triggerPrice
-	t.require(tradingHyperliquidOrderFieldTriggerPrice)
-}
-
-func (t *TradingHyperliquidOrder) UnmarshalJSON(data []byte) error {
-	type unmarshaler TradingHyperliquidOrder
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*t = TradingHyperliquidOrder(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *t)
-	if err != nil {
-		return err
-	}
-	t.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradingHyperliquidOrderNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		t.require(presentFields)
-	}
-	t.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (t *TradingHyperliquidOrder) MarshalJSON() ([]byte, error) {
-	type embed TradingHyperliquidOrder
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*t),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (t *TradingHyperliquidOrder) String() string {
 	if t == nil {
 		return "<nil>"
 	}

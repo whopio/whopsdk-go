@@ -100,6 +100,37 @@ func (f *ForbiddenError) GetBody() any {
 	return f.Body
 }
 
+// order batches are retired
+type GoneError struct {
+	*core.APIError
+	Body *V1ErrorResponse
+}
+
+func (g *GoneError) UnmarshalJSON(data []byte) error {
+	var body *V1ErrorResponse
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	g.StatusCode = 410
+	g.Body = body
+	return nil
+}
+
+func (g *GoneError) MarshalJSON() ([]byte, error) {
+	return json.Marshal(g.Body)
+}
+
+func (g *GoneError) Unwrap() error {
+	return g.APIError
+}
+
+func (g *GoneError) GetBody() *V1ErrorResponse {
+	if g == nil {
+		return nil
+	}
+	return g.Body
+}
+
 // Internal server error
 type InternalServerError struct {
 	*core.APIError

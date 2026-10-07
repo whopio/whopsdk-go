@@ -112,21 +112,8 @@ func TestTradesCreateWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.CreateTradesRequest{
-		AccountID:      "biz_xxxxxxxxxxxxxx",
-		InstrumentType: whopsdk.CreateTradesRequestInstrumentTypePerpetual,
-		Orders: []*whopsdk.CreateTradesRequestOrdersItem{
-			&whopsdk.CreateTradesRequestOrdersItem{
-				Market: "ETH",
-				Side:   whopsdk.CreateTradesRequestOrdersItemSideBuy,
-				Size:   "0.02",
-			},
-		},
-		Provider: whopsdk.CreateTradesRequestProviderHyperliquid,
-	}
-	_, invocationErr := client.Trades.Create(
+	invocationErr := client.Trades.Create(
 		context.TODO(),
-		request,
 		option.WithHTTPHeader(
 			http.Header{"X-Test-Id": []string{"TestTradesCreateWithWireMock"}},
 		),
@@ -147,16 +134,8 @@ func TestTradesUpdateLeverageWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.UpdateLeverageTradesRequest{
-		AccountID:  "biz_xxxxxxxxxxxxxx",
-		Leverage:   5,
-		MarginMode: whopsdk.UpdateLeverageTradesRequestMarginModeCross,
-		Market:     "ETH",
-		Provider:   whopsdk.UpdateLeverageTradesRequestProviderHyperliquid,
-	}
-	_, invocationErr := client.Trades.UpdateLeverage(
+	invocationErr := client.Trades.UpdateLeverage(
 		context.TODO(),
-		request,
 		option.WithHTTPHeader(
 			http.Header{"X-Test-Id": []string{"TestTradesUpdateLeverageWithWireMock"}},
 		),
@@ -206,7 +185,7 @@ func TestTradesCancelWithWireMock(
 	request := &whopsdk.CancelTradesRequest{
 		ID: "id",
 	}
-	_, invocationErr := client.Trades.Cancel(
+	invocationErr := client.Trades.Cancel(
 		context.TODO(),
 		request,
 		option.WithHTTPHeader(
