@@ -32,7 +32,7 @@ type CreateMethodsRequest struct {
 	IsDefault *bool `json:"is_default,omitempty" url:"-"`
 	// A label for the payout method, unique per destination.
 	Nickname *string `json:"nickname,omitempty" url:"-"`
-	// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. The MassPay email is generated when omitted. Recipient methods cannot be default or recurring methods and cannot use Plaid.
+	// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. A valid recipient email is required. Recipient methods cannot be default or recurring methods and cannot use Plaid.
 	Recipient *CreateMethodsRequestRecipient `json:"recipient,omitempty" url:"-"`
 	// The supported payout method to save (a podst_ identifier from a previous listing).
 	SupportedPayoutMethodID string `json:"supported_payout_method_id" url:"-"`
@@ -292,17 +292,12 @@ var (
 	createMethodsRequestRecipientFieldLastName  = big.NewInt(1 << 3)
 )
 
-// createMethodsRequestRecipientNullableFields maps the wire names of CreateMethodsRequestRecipient's nullable fields (required or optional) to their field bits.
-var createMethodsRequestRecipientNullableFields = map[string]*big.Int{
-	"email": createMethodsRequestRecipientFieldEmail,
-}
-
-// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. The MassPay email is generated when omitted. Recipient methods cannot be default or recurring methods and cannot use Plaid.
+// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. A valid recipient email is required. Recipient methods cannot be default or recurring methods and cannot use Plaid.
 type CreateMethodsRequestRecipient struct {
 	// ISO 3166-1 alpha-2 or alpha-3 country code.
 	Country string `json:"country" url:"country"`
-	// Optional email for the recipient's MassPay payout account. Trimmed and lowercased. When omitted or null, generates a random address ending in `_bp@payouts.whop.com`.
-	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// Required email for the recipient's MassPay payout account. Trimmed and lowercased.
+	Email string `json:"email" url:"email"`
 	// Recipient's first name, at most 120 UTF-8 bytes. The trimmed full name, including a space between the names, must be at most 100 characters and cannot contain angle brackets or double quotes.
 	FirstName string `json:"first_name" url:"first_name"`
 	// Recipient's last name, at most 120 UTF-8 bytes. The combined full name follows the same 100-character limit as a Whop user name.
@@ -322,9 +317,9 @@ func (c *CreateMethodsRequestRecipient) GetCountry() string {
 	return c.Country
 }
 
-func (c *CreateMethodsRequestRecipient) GetEmail() *string {
+func (c *CreateMethodsRequestRecipient) GetEmail() string {
 	if c == nil {
-		return nil
+		return ""
 	}
 	return c.Email
 }
@@ -368,7 +363,7 @@ func (c *CreateMethodsRequestRecipient) SetCountry(country string) {
 
 // SetEmail sets the Email field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateMethodsRequestRecipient) SetEmail(email *string) {
+func (c *CreateMethodsRequestRecipient) SetEmail(email string) {
 	c.Email = email
 	c.require(createMethodsRequestRecipientFieldEmail)
 }
@@ -399,13 +394,6 @@ func (c *CreateMethodsRequestRecipient) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createMethodsRequestRecipientNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
