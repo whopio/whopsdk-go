@@ -11,18 +11,15 @@ import (
 )
 
 var (
-	createAppBuildsRequestFieldAiPromptID            = big.NewInt(1 << 0)
-	createAppBuildsRequestFieldAppID                 = big.NewInt(1 << 1)
-	createAppBuildsRequestFieldAttachment            = big.NewInt(1 << 2)
-	createAppBuildsRequestFieldChecksum              = big.NewInt(1 << 3)
-	createAppBuildsRequestFieldPlatform              = big.NewInt(1 << 4)
-	createAppBuildsRequestFieldSourceAttachment      = big.NewInt(1 << 5)
-	createAppBuildsRequestFieldSupportedAppViewTypes = big.NewInt(1 << 6)
+	createAppBuildsRequestFieldAppID                 = big.NewInt(1 << 0)
+	createAppBuildsRequestFieldAttachment            = big.NewInt(1 << 1)
+	createAppBuildsRequestFieldChecksum              = big.NewInt(1 << 2)
+	createAppBuildsRequestFieldPlatform              = big.NewInt(1 << 3)
+	createAppBuildsRequestFieldSourceAttachment      = big.NewInt(1 << 4)
+	createAppBuildsRequestFieldSupportedAppViewTypes = big.NewInt(1 << 5)
 )
 
 type CreateAppBuildsRequest struct {
-	// The AI prompt that generated this build, if applicable.
-	AiPromptID *string `json:"ai_prompt_id,omitempty" url:"-"`
 	// The app to create the build for, prefixed `app_`. Defaults to the app behind the presented credential.
 	AppID *string `json:"app_id,omitempty" url:"-"`
 	// The uploaded build file: `{ id }` for an existing file or `{ direct_upload_id }` for a completed direct upload.
@@ -47,13 +44,6 @@ func (c *CreateAppBuildsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
-}
-
-// SetAiPromptID sets the AiPromptID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAppBuildsRequest) SetAiPromptID(aiPromptID *string) {
-	c.AiPromptID = aiPromptID
-	c.require(createAppBuildsRequestFieldAiPromptID)
 }
 
 // SetAppID sets the AppID field and marks it as non-optional;

@@ -6953,14 +6953,6 @@ client.AppBuilds.Create(
 <dl>
 <dd>
 
-**aiPromptID:** `*string` — The AI prompt that generated this build, if applicable.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **appID:** `*string` — The app to create the build for, prefixed `app_`. Defaults to the app behind the presented credential.
     
 </dd>
