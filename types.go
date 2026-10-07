@@ -1111,23 +1111,26 @@ func (a *AccountCoveredPayoutFees) String() string {
 }
 
 var (
-	accountEconomicIntelligenceOfferFieldDuration      = big.NewInt(1 << 0)
-	accountEconomicIntelligenceOfferFieldDurationUnit  = big.NewInt(1 << 1)
-	accountEconomicIntelligenceOfferFieldFeePercentage = big.NewInt(1 << 2)
-	accountEconomicIntelligenceOfferFieldKey           = big.NewInt(1 << 3)
-	accountEconomicIntelligenceOfferFieldRecommended   = big.NewInt(1 << 4)
+	accountEconomicIntelligenceOfferFieldAutoRenew     = big.NewInt(1 << 0)
+	accountEconomicIntelligenceOfferFieldDuration      = big.NewInt(1 << 1)
+	accountEconomicIntelligenceOfferFieldDurationUnit  = big.NewInt(1 << 2)
+	accountEconomicIntelligenceOfferFieldFeePercentage = big.NewInt(1 << 3)
+	accountEconomicIntelligenceOfferFieldKey           = big.NewInt(1 << 4)
+	accountEconomicIntelligenceOfferFieldRecommended   = big.NewInt(1 << 5)
 )
 
 type AccountEconomicIntelligenceOffer struct {
-	// What period of time Economic Intelligence stays on.
+	// Whether this offer renews every period until auto-renew is turned off, rather than ending after one.
+	AutoRenew bool `json:"auto_renew" url:"auto_renew"`
+	// What period of time Economic Intelligence stays on. For an auto-renew offer, the length of each period it renews for.
 	Duration int `json:"duration" url:"duration"`
 	// The unit of time the duration is in (hours or days)
 	DurationUnit AccountEconomicIntelligenceOfferDurationUnit `json:"duration_unit" url:"duration_unit"`
 	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
 	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
-	// The unique identifier for this duration. Pass this value as `economic_intelligence_duration_key` to turn it on.
+	// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
 	Key AccountEconomicIntelligenceOfferKey `json:"key" url:"key"`
-	// Whether Whop recommends this duration. Exactly one offer is recommended.
+	// Whether Whop recommends this offer. At most one offer is recommended.
 	Recommended bool `json:"recommended" url:"recommended"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1135,6 +1138,13 @@ type AccountEconomicIntelligenceOffer struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AccountEconomicIntelligenceOffer) GetAutoRenew() bool {
+	if a == nil {
+		return false
+	}
+	return a.AutoRenew
 }
 
 func (a *AccountEconomicIntelligenceOffer) GetDuration() int {
@@ -1186,6 +1196,13 @@ func (a *AccountEconomicIntelligenceOffer) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
+}
+
+// SetAutoRenew sets the AutoRenew field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountEconomicIntelligenceOffer) SetAutoRenew(autoRenew bool) {
+	a.AutoRenew = autoRenew
+	a.require(accountEconomicIntelligenceOfferFieldAutoRenew)
 }
 
 // SetDuration sets the Duration field and marks it as non-optional;
@@ -1288,10 +1305,11 @@ func (a AccountEconomicIntelligenceOfferDurationUnit) Ptr() *AccountEconomicInte
 	return &a
 }
 
-// The unique identifier for this duration. Pass this value as `economic_intelligence_duration_key` to turn it on.
+// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
 type AccountEconomicIntelligenceOfferKey string
 
 const (
+	AccountEconomicIntelligenceOfferKeyWeekly    AccountEconomicIntelligenceOfferKey = "weekly"
 	AccountEconomicIntelligenceOfferKeySevenDays AccountEconomicIntelligenceOfferKey = "7_days"
 	AccountEconomicIntelligenceOfferKeyOneDay    AccountEconomicIntelligenceOfferKey = "1_day"
 	AccountEconomicIntelligenceOfferKeyOneHour   AccountEconomicIntelligenceOfferKey = "1_hour"
@@ -1299,6 +1317,8 @@ const (
 
 func NewAccountEconomicIntelligenceOfferKeyFromString(s string) (AccountEconomicIntelligenceOfferKey, error) {
 	switch s {
+	case "weekly":
+		return AccountEconomicIntelligenceOfferKeyWeekly, nil
 	case "7_days":
 		return AccountEconomicIntelligenceOfferKeySevenDays, nil
 	case "1_day":
@@ -1312,6 +1332,110 @@ func NewAccountEconomicIntelligenceOfferKeyFromString(s string) (AccountEconomic
 
 func (a AccountEconomicIntelligenceOfferKey) Ptr() *AccountEconomicIntelligenceOfferKey {
 	return &a
+}
+
+var (
+	accountEconomicIntelligencePreviousPeriodFieldEndedAt       = big.NewInt(1 << 0)
+	accountEconomicIntelligencePreviousPeriodFieldFeePercentage = big.NewInt(1 << 1)
+)
+
+type AccountEconomicIntelligencePreviousPeriod struct {
+	// When the period ended, as an ISO 8601 timestamp.
+	EndedAt string `json:"ended_at" url:"ended_at"`
+	// Percentage of volume charged during the period, such as `3` for 3%.
+	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountEconomicIntelligencePreviousPeriod) GetEndedAt() string {
+	if a == nil {
+		return ""
+	}
+	return a.EndedAt
+}
+
+func (a *AccountEconomicIntelligencePreviousPeriod) GetFeePercentage() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.FeePercentage
+}
+
+func (a *AccountEconomicIntelligencePreviousPeriod) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountEconomicIntelligencePreviousPeriod) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetEndedAt sets the EndedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountEconomicIntelligencePreviousPeriod) SetEndedAt(endedAt string) {
+	a.EndedAt = endedAt
+	a.require(accountEconomicIntelligencePreviousPeriodFieldEndedAt)
+}
+
+// SetFeePercentage sets the FeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountEconomicIntelligencePreviousPeriod) SetFeePercentage(feePercentage float64) {
+	a.FeePercentage = feePercentage
+	a.require(accountEconomicIntelligencePreviousPeriodFieldFeePercentage)
+}
+
+func (a *AccountEconomicIntelligencePreviousPeriod) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountEconomicIntelligencePreviousPeriod
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountEconomicIntelligencePreviousPeriod(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountEconomicIntelligencePreviousPeriod) MarshalJSON() ([]byte, error) {
+	type embed AccountEconomicIntelligencePreviousPeriod
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountEconomicIntelligencePreviousPeriod) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
 }
 
 var (
@@ -3431,12 +3555,14 @@ var (
 	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 7)
 	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 8)
 	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 9)
-	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 10)
-	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 11)
-	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 12)
-	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 13)
-	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 14)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 15)
+	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 10)
+	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 11)
+	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 12)
+	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 13)
+	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 14)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 15)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 16)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 17)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
@@ -3444,7 +3570,7 @@ var accountPreferencesNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         accountPreferencesFieldAdsPaymentMethods,
 	"economic_intelligence_ends_at":               accountPreferencesFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        accountPreferencesFieldEconomicIntelligenceFeePercentage,
-	"economic_intelligence_offers":                accountPreferencesFieldEconomicIntelligenceOffers,
+	"economic_intelligence_previous_period":       accountPreferencesFieldEconomicIntelligencePreviousPeriod,
 	"preferred_settlement_currency":               accountPreferencesFieldPreferredSettlementCurrency,
 	"preferred_settlement_currency_changeable_at": accountPreferencesFieldPreferredSettlementCurrencyChangeableAt,
 }
@@ -3469,11 +3595,15 @@ type AccountPreferences struct {
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
-	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or has no end date.
+	// Whether Economic Intelligence renews itself every week, with no end date. Turn it on with the `weekly` offer. Set it to `false` to stop renewing, which keeps Economic Intelligence on until the end of the current week, shown in `economic_intelligence_ends_at`; set it back to `true` before then to keep renewing.
+	EconomicIntelligenceAutoRenew bool `json:"economic_intelligence_auto_renew" url:"economic_intelligence_auto_renew"`
+	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or renews automatically.
 	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
 	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
 	EconomicIntelligenceFeePercentage *float64                            `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
-	EconomicIntelligenceOffers        []*AccountEconomicIntelligenceOffer `json:"economic_intelligence_offers,omitempty" url:"economic_intelligence_offers,omitempty"`
+	EconomicIntelligenceOffers        []*AccountEconomicIntelligenceOffer `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
+	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
+	EconomicIntelligencePreviousPeriod *AccountEconomicIntelligencePreviousPeriod `json:"economic_intelligence_previous_period,omitempty" url:"economic_intelligence_previous_period,omitempty"`
 	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 	PreferredSettlementCurrency *AccountPreferencesPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once every 7 days. `null` when it may change now.
@@ -3558,6 +3688,13 @@ func (a *AccountPreferences) GetEconomicIntelligence() bool {
 	return a.EconomicIntelligence
 }
 
+func (a *AccountPreferences) GetEconomicIntelligenceAutoRenew() bool {
+	if a == nil {
+		return false
+	}
+	return a.EconomicIntelligenceAutoRenew
+}
+
 func (a *AccountPreferences) GetEconomicIntelligenceEndsAt() *string {
 	if a == nil {
 		return nil
@@ -3577,6 +3714,13 @@ func (a *AccountPreferences) GetEconomicIntelligenceOffers() []*AccountEconomicI
 		return nil
 	}
 	return a.EconomicIntelligenceOffers
+}
+
+func (a *AccountPreferences) GetEconomicIntelligencePreviousPeriod() *AccountEconomicIntelligencePreviousPeriod {
+	if a == nil {
+		return nil
+	}
+	return a.EconomicIntelligencePreviousPeriod
 }
 
 func (a *AccountPreferences) GetPreferredSettlementCurrency() *AccountPreferencesPreferredSettlementCurrency {
@@ -3686,6 +3830,13 @@ func (a *AccountPreferences) SetEconomicIntelligence(economicIntelligence bool) 
 	a.require(accountPreferencesFieldEconomicIntelligence)
 }
 
+// SetEconomicIntelligenceAutoRenew sets the EconomicIntelligenceAutoRenew field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetEconomicIntelligenceAutoRenew(economicIntelligenceAutoRenew bool) {
+	a.EconomicIntelligenceAutoRenew = economicIntelligenceAutoRenew
+	a.require(accountPreferencesFieldEconomicIntelligenceAutoRenew)
+}
+
 // SetEconomicIntelligenceEndsAt sets the EconomicIntelligenceEndsAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AccountPreferences) SetEconomicIntelligenceEndsAt(economicIntelligenceEndsAt *string) {
@@ -3705,6 +3856,13 @@ func (a *AccountPreferences) SetEconomicIntelligenceFeePercentage(economicIntell
 func (a *AccountPreferences) SetEconomicIntelligenceOffers(economicIntelligenceOffers []*AccountEconomicIntelligenceOffer) {
 	a.EconomicIntelligenceOffers = economicIntelligenceOffers
 	a.require(accountPreferencesFieldEconomicIntelligenceOffers)
+}
+
+// SetEconomicIntelligencePreviousPeriod sets the EconomicIntelligencePreviousPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetEconomicIntelligencePreviousPeriod(economicIntelligencePreviousPeriod *AccountEconomicIntelligencePreviousPeriod) {
+	a.EconomicIntelligencePreviousPeriod = economicIntelligencePreviousPeriod
+	a.require(accountPreferencesFieldEconomicIntelligencePreviousPeriod)
 }
 
 // SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
