@@ -44,14 +44,16 @@ var (
 	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 2)
 	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 3)
 	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 4)
-	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 5)
-	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 6)
-	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 7)
-	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 8)
-	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 9)
-	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 10)
-	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 11)
-	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 12)
+	createPaymentsRequestFieldIPAddress               = big.NewInt(1 << 5)
+	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 6)
+	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 7)
+	createPaymentsRequestFieldOffSession              = big.NewInt(1 << 8)
+	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 9)
+	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 10)
+	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 11)
+	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 12)
+	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 13)
+	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 14)
 )
 
 type CreatePaymentsRequest struct {
@@ -77,17 +79,21 @@ type CreatePaymentsRequest struct {
 	ConfirmationToken *string `json:"confirmation_token,omitempty" url:"-"`
 	// The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached. Ignored with `member_id`.
 	Email *string `json:"email,omitempty" url:"-"`
+	// The buyer's IPv4 or IPv6 address, used to assess the charge's risk and passed to the processor. Ignored unless a saved payment method is charged with `off_session` set to false.
+	IPAddress *string `json:"ip_address,omitempty" url:"-"`
 	// The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// Custom metadata to attach to the payment.
 	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
+	// Whether the buyer is absent from your checkout and can't authenticate. Pass true when you charge the card without the buyer, such as a renewal on your own schedule. Pass false when the buyer is present, such as a one-click upsell right after checkout: the charge is processed as a customer-initiated card-on-file payment, and if the issuer asks the buyer to authenticate, the payment's status is `requires_action` with a `next_action` to send them to, after which they return to `return_url`. From API version 2026-10-07-1 it defaults to false when `return_url` is provided and to true otherwise; before that version it defaults to true. A saved Apple Pay, Google Pay or PayPal payment method is always charged with `off_session` true. Ignored unless `member_id` and `payment_method_id` are provided.
+	OffSession *bool `json:"off_session,omitempty" url:"-"`
 	// A payment method collected on the seller's device rather than described by a confirmation token. `type` names it and the member named after it carries what the device needs. Today only `card_present` (Tap to Pay): nothing is collected on this call, the payment is created first and the reader then collects against it with the client secret the status endpoint serves in `next_action`. Mutually exclusive with `confirmation_token`, `member_id` and `payment_method_id`.
 	PaymentMethod *CreatePaymentsRequestPaymentMethod `json:"payment_method,omitempty" url:"-"`
 	// The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `plan` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `plan` takes only the same `plan` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `plan_id` or `line_items`, and a quote that priced variants by id never takes `plan`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address (`located_by` is `ip_address`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged through PayPal; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment method cannot pay a quote, as with PayPal; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
 	QuoteID *string `json:"quote_id,omitempty" url:"-"`
-	// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Ignored unless `confirmation_token` is provided.
+	// Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters. Required when a saved payment method is charged with `off_session` false; otherwise ignored unless `confirmation_token` is provided.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
 	// Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
 	ShippingAddress *CreatePaymentsRequestShippingAddress `json:"shipping_address,omitempty" url:"-"`
@@ -142,6 +148,13 @@ func (c *CreatePaymentsRequest) SetEmail(email *string) {
 	c.require(createPaymentsRequestFieldEmail)
 }
 
+// SetIPAddress sets the IPAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetIPAddress(ipAddress *string) {
+	c.IPAddress = ipAddress
+	c.require(createPaymentsRequestFieldIPAddress)
+}
+
 // SetMemberID sets the MemberID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreatePaymentsRequest) SetMemberID(memberID *string) {
@@ -154,6 +167,13 @@ func (c *CreatePaymentsRequest) SetMemberID(memberID *string) {
 func (c *CreatePaymentsRequest) SetMetadata(metadata map[string]*string) {
 	c.Metadata = metadata
 	c.require(createPaymentsRequestFieldMetadata)
+}
+
+// SetOffSession sets the OffSession field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetOffSession(offSession *bool) {
+	c.OffSession = offSession
+	c.require(createPaymentsRequestFieldOffSession)
 }
 
 // SetPaymentMethod sets the PaymentMethod field and marks it as non-optional;
