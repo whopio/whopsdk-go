@@ -2211,6 +2211,7 @@ const (
 	AccountFeeRegionBr  AccountFeeRegion = "br"
 	AccountFeeRegionPh  AccountFeeRegion = "ph"
 	AccountFeeRegionNg  AccountFeeRegion = "ng"
+	AccountFeeRegionMy  AccountFeeRegion = "my"
 )
 
 func NewAccountFeeRegionFromString(s string) (AccountFeeRegion, error) {
@@ -2249,6 +2250,8 @@ func NewAccountFeeRegionFromString(s string) (AccountFeeRegion, error) {
 		return AccountFeeRegionPh, nil
 	case "ng":
 		return AccountFeeRegionNg, nil
+	case "my":
+		return AccountFeeRegionMy, nil
 	}
 	var t AccountFeeRegion
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -41695,6 +41698,7 @@ const (
 	PaymentMethodTypesCustom                 PaymentMethodTypes = "custom"
 	PaymentMethodTypesCustomerBalance        PaymentMethodTypes = "customer_balance"
 	PaymentMethodTypesDemoPay                PaymentMethodTypes = "demo_pay"
+	PaymentMethodTypesDuitnowQr              PaymentMethodTypes = "duitnow_qr"
 	PaymentMethodTypesEfecty                 PaymentMethodTypes = "efecty"
 	PaymentMethodTypesEps                    PaymentMethodTypes = "eps"
 	PaymentMethodTypesEuBankTransfer         PaymentMethodTypes = "eu_bank_transfer"
@@ -41865,6 +41869,8 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesCustomerBalance, nil
 	case "demo_pay":
 		return PaymentMethodTypesDemoPay, nil
+	case "duitnow_qr":
+		return PaymentMethodTypesDuitnowQr, nil
 	case "efecty":
 		return PaymentMethodTypesEfecty, nil
 	case "eps":
