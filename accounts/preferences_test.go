@@ -159,6 +159,22 @@ func TestSettersRetrievePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPreferredSettlementCurrency", func(t *testing.T) {
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValuePreferredSettlementCurrency *RetrievePreferencesResponsePreferredSettlementCurrency
+		obj.SetPreferredSettlementCurrency(fernTestValuePreferredSettlementCurrency)
+		assert.Equal(t, fernTestValuePreferredSettlementCurrency, obj.PreferredSettlementCurrency)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPreferredSettlementCurrencyChangeableAt", func(t *testing.T) {
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValuePreferredSettlementCurrencyChangeableAt *string
+		obj.SetPreferredSettlementCurrencyChangeableAt(fernTestValuePreferredSettlementCurrencyChangeableAt)
+		assert.Equal(t, fernTestValuePreferredSettlementCurrencyChangeableAt, obj.PreferredSettlementCurrencyChangeableAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSubscriptionFailureBehavior", func(t *testing.T) {
 		obj := &RetrievePreferencesResponse{}
 		var fernTestValueSubscriptionFailureBehavior RetrievePreferencesResponseSubscriptionFailureBehavior
@@ -537,6 +553,72 @@ func TestGettersRetrievePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEconomicIntelligenceOffers() // Should return zero value
+	})
+
+	t.Run("GetPreferredSettlementCurrency", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var expected *RetrievePreferencesResponsePreferredSettlementCurrency
+		obj.PreferredSettlementCurrency = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPreferredSettlementCurrency(), "getter should return the property value")
+	})
+
+	t.Run("GetPreferredSettlementCurrency_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		obj.PreferredSettlementCurrency = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPreferredSettlementCurrency(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPreferredSettlementCurrency_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPreferredSettlementCurrency() // Should return zero value
+	})
+
+	t.Run("GetPreferredSettlementCurrencyChangeableAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var expected *string
+		obj.PreferredSettlementCurrencyChangeableAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPreferredSettlementCurrencyChangeableAt(), "getter should return the property value")
+	})
+
+	t.Run("GetPreferredSettlementCurrencyChangeableAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		obj.PreferredSettlementCurrencyChangeableAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPreferredSettlementCurrencyChangeableAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPreferredSettlementCurrencyChangeableAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPreferredSettlementCurrencyChangeableAt() // Should return zero value
 	})
 
 	t.Run("GetSubscriptionFailureBehavior", func(t *testing.T) {
@@ -945,6 +1027,68 @@ func TestSettersMarkExplicitRetrievePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetEconomicIntelligenceOffers(fernTestValueEconomicIntelligenceOffers)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPreferredSettlementCurrency_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValuePreferredSettlementCurrency *RetrievePreferencesResponsePreferredSettlementCurrency
+
+		// Act
+		obj.SetPreferredSettlementCurrency(fernTestValuePreferredSettlementCurrency)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPreferredSettlementCurrencyChangeableAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValuePreferredSettlementCurrencyChangeableAt *string
+
+		// Act
+		obj.SetPreferredSettlementCurrencyChangeableAt(fernTestValuePreferredSettlementCurrencyChangeableAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4510,6 +4654,22 @@ func TestSettersUpdatePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPreferredSettlementCurrency", func(t *testing.T) {
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValuePreferredSettlementCurrency *UpdatePreferencesResponsePreferredSettlementCurrency
+		obj.SetPreferredSettlementCurrency(fernTestValuePreferredSettlementCurrency)
+		assert.Equal(t, fernTestValuePreferredSettlementCurrency, obj.PreferredSettlementCurrency)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPreferredSettlementCurrencyChangeableAt", func(t *testing.T) {
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValuePreferredSettlementCurrencyChangeableAt *string
+		obj.SetPreferredSettlementCurrencyChangeableAt(fernTestValuePreferredSettlementCurrencyChangeableAt)
+		assert.Equal(t, fernTestValuePreferredSettlementCurrencyChangeableAt, obj.PreferredSettlementCurrencyChangeableAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSubscriptionFailureBehavior", func(t *testing.T) {
 		obj := &UpdatePreferencesResponse{}
 		var fernTestValueSubscriptionFailureBehavior UpdatePreferencesResponseSubscriptionFailureBehavior
@@ -4888,6 +5048,72 @@ func TestGettersUpdatePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEconomicIntelligenceOffers() // Should return zero value
+	})
+
+	t.Run("GetPreferredSettlementCurrency", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var expected *UpdatePreferencesResponsePreferredSettlementCurrency
+		obj.PreferredSettlementCurrency = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPreferredSettlementCurrency(), "getter should return the property value")
+	})
+
+	t.Run("GetPreferredSettlementCurrency_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		obj.PreferredSettlementCurrency = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPreferredSettlementCurrency(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPreferredSettlementCurrency_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPreferredSettlementCurrency() // Should return zero value
+	})
+
+	t.Run("GetPreferredSettlementCurrencyChangeableAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var expected *string
+		obj.PreferredSettlementCurrencyChangeableAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPreferredSettlementCurrencyChangeableAt(), "getter should return the property value")
+	})
+
+	t.Run("GetPreferredSettlementCurrencyChangeableAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		obj.PreferredSettlementCurrencyChangeableAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPreferredSettlementCurrencyChangeableAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPreferredSettlementCurrencyChangeableAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPreferredSettlementCurrencyChangeableAt() // Should return zero value
 	})
 
 	t.Run("GetSubscriptionFailureBehavior", func(t *testing.T) {
@@ -5296,6 +5522,68 @@ func TestSettersMarkExplicitUpdatePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetEconomicIntelligenceOffers(fernTestValueEconomicIntelligenceOffers)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPreferredSettlementCurrency_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValuePreferredSettlementCurrency *UpdatePreferencesResponsePreferredSettlementCurrency
+
+		// Act
+		obj.SetPreferredSettlementCurrency(fernTestValuePreferredSettlementCurrency)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPreferredSettlementCurrencyChangeableAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValuePreferredSettlementCurrencyChangeableAt *string
+
+		// Act
+		obj.SetPreferredSettlementCurrencyChangeableAt(fernTestValuePreferredSettlementCurrencyChangeableAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -8174,6 +8462,14 @@ func TestSettersUpdatePreferencesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPreferredSettlementCurrency", func(t *testing.T) {
+		obj := &UpdatePreferencesRequest{}
+		var fernTestValuePreferredSettlementCurrency *UpdatePreferencesRequestPreferredSettlementCurrency
+		obj.SetPreferredSettlementCurrency(fernTestValuePreferredSettlementCurrency)
+		assert.Equal(t, fernTestValuePreferredSettlementCurrency, obj.PreferredSettlementCurrency)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSubscriptionFailureBehavior", func(t *testing.T) {
 		obj := &UpdatePreferencesRequest{}
 		var fernTestValueSubscriptionFailureBehavior *UpdatePreferencesRequestSubscriptionFailureBehavior
@@ -8472,6 +8768,37 @@ func TestSettersMarkExplicitUpdatePreferencesRequest(t *testing.T) {
 
 		// Act
 		obj.SetEconomicIntelligenceDurationKey(fernTestValueEconomicIntelligenceDurationKey)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPreferredSettlementCurrency_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequest{}
+		var fernTestValuePreferredSettlementCurrency *UpdatePreferencesRequestPreferredSettlementCurrency
+
+		// Act
+		obj.SetPreferredSettlementCurrency(fernTestValuePreferredSettlementCurrency)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9227,6 +9554,8 @@ func TestRequiredNullableRoundTripRetrievePreferencesResponse(t *testing.T) {
 		"economic_intelligence_ends_at",
 		"economic_intelligence_fee_percentage",
 		"economic_intelligence_offers",
+		"preferred_settlement_currency",
+		"preferred_settlement_currency_changeable_at",
 	}
 	marshalToMap := func(t *testing.T, obj *RetrievePreferencesResponse) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -9239,7 +9568,7 @@ func TestRequiredNullableRoundTripRetrievePreferencesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrievePreferencesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_offers":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_offers":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -9453,6 +9782,8 @@ func TestRequiredNullableRoundTripUpdatePreferencesResponse(t *testing.T) {
 		"economic_intelligence_ends_at",
 		"economic_intelligence_fee_percentage",
 		"economic_intelligence_offers",
+		"preferred_settlement_currency",
+		"preferred_settlement_currency_changeable_at",
 	}
 	marshalToMap := func(t *testing.T, obj *UpdatePreferencesResponse) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -9465,7 +9796,7 @@ func TestRequiredNullableRoundTripUpdatePreferencesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj UpdatePreferencesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_offers":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_offers":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -10547,6 +10878,56 @@ func TestEnumRetrievePreferencesResponseEconomicIntelligenceOffersItemKey(t *tes
 	})
 }
 
+func TestEnumRetrievePreferencesResponsePreferredSettlementCurrency(t *testing.T) {
+	t.Run("NewFromString_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponsePreferredSettlementCurrencyFromString("usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponsePreferredSettlementCurrency("usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponsePreferredSettlementCurrencyFromString("eur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponsePreferredSettlementCurrency("eur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gbp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponsePreferredSettlementCurrencyFromString("gbp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponsePreferredSettlementCurrency("gbp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponsePreferredSettlementCurrencyFromString("cad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponsePreferredSettlementCurrency("cad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aud", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponsePreferredSettlementCurrencyFromString("aud")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponsePreferredSettlementCurrency("aud"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrievePreferencesResponsePreferredSettlementCurrencyFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrievePreferencesResponsePreferredSettlementCurrencyFromString("usd")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumRetrievePreferencesResponseSubscriptionFailureBehavior(t *testing.T) {
 	t.Run("NewFromString_cancel", func(t *testing.T) {
 		t.Parallel()
@@ -10685,6 +11066,56 @@ func TestEnumUpdatePreferencesRequestEconomicIntelligenceDurationKey(t *testing.
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdatePreferencesRequestEconomicIntelligenceDurationKeyFromString("7_days")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdatePreferencesRequestPreferredSettlementCurrency(t *testing.T) {
+	t.Run("NewFromString_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesRequestPreferredSettlementCurrencyFromString("usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesRequestPreferredSettlementCurrency("usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesRequestPreferredSettlementCurrencyFromString("eur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesRequestPreferredSettlementCurrency("eur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gbp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesRequestPreferredSettlementCurrencyFromString("gbp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesRequestPreferredSettlementCurrency("gbp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesRequestPreferredSettlementCurrencyFromString("cad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesRequestPreferredSettlementCurrency("cad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aud", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesRequestPreferredSettlementCurrencyFromString("aud")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesRequestPreferredSettlementCurrency("aud"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdatePreferencesRequestPreferredSettlementCurrencyFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdatePreferencesRequestPreferredSettlementCurrencyFromString("usd")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -11017,6 +11448,56 @@ func TestEnumUpdatePreferencesResponseEconomicIntelligenceOffersItemKey(t *testi
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdatePreferencesResponseEconomicIntelligenceOffersItemKeyFromString("7_days")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdatePreferencesResponsePreferredSettlementCurrency(t *testing.T) {
+	t.Run("NewFromString_usd", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponsePreferredSettlementCurrencyFromString("usd")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponsePreferredSettlementCurrency("usd"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_eur", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponsePreferredSettlementCurrencyFromString("eur")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponsePreferredSettlementCurrency("eur"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_gbp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponsePreferredSettlementCurrencyFromString("gbp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponsePreferredSettlementCurrency("gbp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cad", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponsePreferredSettlementCurrencyFromString("cad")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponsePreferredSettlementCurrency("cad"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_aud", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponsePreferredSettlementCurrencyFromString("aud")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponsePreferredSettlementCurrency("aud"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdatePreferencesResponsePreferredSettlementCurrencyFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdatePreferencesResponsePreferredSettlementCurrencyFromString("usd")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
