@@ -3456,7 +3456,7 @@ type AccountPreferences struct {
 	AdsReportingCurrency string `json:"ads_reporting_currency" url:"ads_reporting_currency"`
 	// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Defaults to `America/New_York` until explicitly overridden.
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
-	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel, and tags ad click-through URLs with `tw_source`/`tw_adid` so Triple Whale's pixel attributes conversions back to the right ad. `status` is `connected`, `not_connected`, or `requires_shop_domain` (Triple Whale keys records by shop, so spend only flows once one is set — either explicitly via `shop_domain`, which every non-Shopify merchant needs, or by connecting a Shopify store). `masked_api_key` shows the leading characters of the stored key; the full key is never returned. `shop_domain` is the shop spend is reported for: the explicit value, or (if unset) a connected Shopify store's domain.
+	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel, and tags ad click-through URLs with `tw_source`/`tw_adid` so Triple Whale's pixel attributes conversions back to the right ad. `status` is `connected`, `not_connected`, or `requires_shop_domain` (Triple Whale keys records by shop, so spend only flows once `shop_domain` is set). `masked_api_key` shows the leading characters of the stored key; the full key is never returned. `shop_domain` is the shop spend is reported for.
 	AdsTripleWhaleIntegration map[string]any `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
@@ -4411,7 +4411,6 @@ const (
 	AccountRequiredActionActionVerifyIdentity                  AccountRequiredActionAction = "verify_identity"
 	AccountRequiredActionActionScaleAccountSetup               AccountRequiredActionAction = "scale_account_setup"
 	AccountRequiredActionActionSignFormationDocuments          AccountRequiredActionAction = "sign_formation_documents"
-	AccountRequiredActionActionConnectFulfillmentTracker       AccountRequiredActionAction = "connect_fulfillment_tracker"
 	AccountRequiredActionActionSetupApplePayDomains            AccountRequiredActionAction = "setup_apple_pay_domains"
 	AccountRequiredActionActionConfigureTaxRemitter            AccountRequiredActionAction = "configure_tax_remitter"
 	AccountRequiredActionActionAddVatRegistration              AccountRequiredActionAction = "add_vat_registration"
@@ -4441,8 +4440,6 @@ func NewAccountRequiredActionActionFromString(s string) (AccountRequiredActionAc
 		return AccountRequiredActionActionScaleAccountSetup, nil
 	case "sign_formation_documents":
 		return AccountRequiredActionActionSignFormationDocuments, nil
-	case "connect_fulfillment_tracker":
-		return AccountRequiredActionActionConnectFulfillmentTracker, nil
 	case "setup_apple_pay_domains":
 		return AccountRequiredActionActionSetupApplePayDomains, nil
 	case "configure_tax_remitter":

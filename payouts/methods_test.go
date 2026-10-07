@@ -12855,13 +12855,6 @@ func TestEnumListMethodsResponseLimitsStandardErrorCode(t *testing.T) {
 		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("guardian_id_clear"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_ecommerce_fulfillment_connected", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("ecommerce_fulfillment_connected")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListMethodsResponseLimitsStandardErrorCode("ecommerce_fulfillment_connected"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_block_move_money_out", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListMethodsResponseLimitsStandardErrorCodeFromString("block_move_money_out")
