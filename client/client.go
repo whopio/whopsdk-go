@@ -86,7 +86,7 @@ import (
 	setupintentsclient "github.com/whopio/whopsdk-go/v2/setupintents/client"
 	shipments "github.com/whopio/whopsdk-go/v2/shipments"
 	socialaccounts "github.com/whopio/whopsdk-go/v2/socialaccounts"
-	stats "github.com/whopio/whopsdk-go/v2/stats"
+	statsclient "github.com/whopio/whopsdk-go/v2/stats/client"
 	supportchannels "github.com/whopio/whopsdk-go/v2/supportchannels"
 	swaps "github.com/whopio/whopsdk-go/v2/swaps"
 	teammembers "github.com/whopio/whopsdk-go/v2/teammembers"
@@ -181,7 +181,7 @@ type Whop struct {
 	SetupIntents             *setupintentsclient.Client
 	Shipments                *shipments.Client
 	SocialAccounts           *socialaccounts.Client
-	Stats                    *stats.Client
+	Stats                    *statsclient.Client
 	SupportChannels          *supportchannels.Client
 	Swaps                    *swaps.Client
 	TeamMembers              *teammembers.Client
@@ -202,7 +202,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-06"
+		apiVersionDateDefault := "2026-10-06-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -286,7 +286,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		SetupIntents:             setupintentsclient.NewClient(options),
 		Shipments:                shipments.NewClient(options),
 		SocialAccounts:           socialaccounts.NewClient(options),
-		Stats:                    stats.NewClient(options),
+		Stats:                    statsclient.NewClient(options),
 		SupportChannels:          supportchannels.NewClient(options),
 		Swaps:                    swaps.NewClient(options),
 		TeamMembers:              teammembers.NewClient(options),

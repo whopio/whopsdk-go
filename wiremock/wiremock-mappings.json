@@ -13013,7 +13013,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"breakdowns\": [\n        \"breakdowns\"\n      ],\n      \"description\": \"Share of paid receipts in the selected sales cohort disputed within 14 days of purchase.\",\n      \"key\": \"snapshot_cohorted_dispute_rate_14d_attr\",\n      \"name\": \"Cohorted dispute rate (14-day attribution)\",\n      \"properties\": [\n        \"source\"\n      ],\n      \"unit\": \"count\",\n      \"windows\": [\n        \"7d\"\n      ]\n    }\n  ]\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"breakdowns\": [\n        \"breakdowns\"\n      ],\n      \"description\": \"Ad platform delivery over time (spend, impressions, clicks) on the unified source language: source scopes by a whop:<campaign>:<group>:<ad> path, exact or with a trailing :* prefix (whop alone or no source = the whole account), and group_by=source groups one path segment deeper than the filter prefix. Only whop:* paths report delivery today; other roots return nothing. breakdown_by=metric returns each delivery measure per bucket plus whole-window data.totals. breakdown_by can instead split delivery by a dimension — age, gender, age_gender, placement, publisher_platform, country, region, device_platform, or impression_device — with the metric parameter picking the measure (spend, impressions, or clicks; defaults to spend). On the placement and publisher_platform dimensions the metric parameter also accepts results, roas, and cost_per_result: conversion-side measures attributed from your own tracked events rather than reported by the ad platform, with results counting conversions that match each ad group's conversion event. Dimension entries don't sum exactly to the totals (the ad platform withholds tiny cells) and are grouped by the ad account's calendar day — they can't re-bucket into time_zone. Spend converts to convert_to (defaults to usd). Whole-account attribution numbers live in the events and people metrics.\",\n      \"key\": \"ad_xxxxxxxxxxxxxx\",\n      \"name\": \"Ad delivery\",\n      \"properties\": [\n        \"source\"\n      ],\n      \"unit\": \"count\",\n      \"windows\": [\n        \"7d\"\n      ]\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13079,7 +13079,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": {\n    \"currency\": \"usd\",\n    \"points\": [\n      {\n        \"breakdown\": [\n          {\n            \"name\": \"spend\",\n            \"steps\": [\n              {\n                \"conversion_rate\": 100,\n                \"count\": 100,\n                \"step\": 1\n              }\n            ],\n            \"value\": 2.82\n          }\n        ],\n        \"steps\": [\n          {\n            \"conversion_rate\": 100,\n            \"count\": 100,\n            \"step\": 1\n          }\n        ],\n        \"timestamp\": 1767268800,\n        \"value\": 3\n      }\n    ],\n    \"totals\": [\n      {\n        \"name\": \"wins\",\n        \"steps\": [\n          {\n            \"conversion_rate\": 100,\n            \"count\": 100,\n            \"step\": 1\n          }\n        ],\n        \"value\": 4\n      }\n    ]\n  }\n}",
+        "body": "{\n  \"data\": {\n    \"currency\": \"usd\",\n    \"points\": [\n      {\n        \"breakdown\": [\n          {\n            \"name\": \"control\",\n            \"steps\": [\n              {\n                \"conversion_rate\": 100,\n                \"count\": 100,\n                \"step\": 1\n              }\n            ],\n            \"value\": 10\n          }\n        ],\n        \"steps\": [\n          {\n            \"conversion_rate\": 100,\n            \"count\": 100,\n            \"step\": 1\n          }\n        ],\n        \"timestamp\": 1767268800,\n        \"value\": 12\n      }\n    ],\n    \"totals\": [\n      {\n        \"name\": \"funnel\",\n        \"steps\": [\n          {\n            \"conversion_rate\": 100,\n            \"count\": 100,\n            \"step\": 1\n          }\n        ],\n        \"value\": 12\n      }\n    ]\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14711,7 +14711,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-01-01\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"api_version\": \"v1\",\n      \"api_version_date\": \"2026-10-06-1\",\n      \"child_resource_events\": false,\n      \"consecutive_failures\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n      \"disabled_reason\": \"delivery_failures\",\n      \"enabled\": false,\n      \"events\": [\n        \"account.updated\"\n      ],\n      \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"hook_xxxxxxxxxxxxxx\",\n      \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n      \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"url\": \"https://example.com/shine-time/whop\",\n      \"webhook_secret\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14743,7 +14743,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-01-01\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-06-1\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14779,7 +14779,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-01-01\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-06-1\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14851,7 +14851,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-01-01\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
+        "body": "{\n  \"api_version\": \"v1\",\n  \"api_version_date\": \"2026-10-06-1\",\n  \"child_resource_events\": false,\n  \"consecutive_failures\": 9,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_at\": \"2026-01-01T12:00:00.000Z\",\n  \"disabled_reason\": \"delivery_failures\",\n  \"enabled\": false,\n  \"events\": [\n    \"account.updated\"\n  ],\n  \"failing_since\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"hook_xxxxxxxxxxxxxx\",\n  \"last_failure_at\": \"2026-01-01T12:00:00.000Z\",\n  \"resource_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"testable_events\": [\n    \"account.updated\"\n  ],\n  \"url\": \"https://example.com/hooks\",\n  \"webhook_secret\": \"ws_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -16303,6 +16303,103 @@
       }
     },
     {
+      "id": "1bae2257-3712-4436-80cf-de387e82deda",
+      "name": "List Time Series Metrics - default",
+      "request": {
+        "urlPathTemplate": "/stats/time_series",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"breakdowns\": [\n        \"breakdowns\"\n      ],\n      \"description\": \"Ad platform delivery over time (spend, impressions, clicks) on the unified source language: source scopes by a whop:<campaign>:<group>:<ad> path, exact or with a trailing :* prefix (whop alone or no source = the whole account), and group_by=source groups one path segment deeper than the filter prefix. Only whop:* paths report delivery today; other roots return nothing. breakdown_by=metric returns each delivery measure per bucket plus whole-window data.totals. breakdown_by can instead split delivery by a dimension — age, gender, age_gender, placement, publisher_platform, country, region, device_platform, or impression_device — with the metric parameter picking the measure (spend, impressions, or clicks; defaults to spend). On the placement and publisher_platform dimensions the metric parameter also accepts results, roas, and cost_per_result: conversion-side measures attributed from your own tracked events rather than reported by the ad platform, with results counting conversions that match each ad group's conversion event. Dimension entries don't sum exactly to the totals (the ad platform withholds tiny cells) and are grouped by the ad account's calendar day — they can't re-bucket into time_zone. Spend converts to convert_to (defaults to usd). Whole-account attribution numbers live in the events and people metrics.\",\n      \"key\": \"ad_xxxxxxxxxxxxxx\",\n      \"name\": \"Ad delivery\",\n      \"properties\": [\n        \"source\"\n      ],\n      \"unit\": \"count\",\n      \"windows\": [\n        \"7d\"\n      ]\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "1bae2257-3712-4436-80cf-de387e82deda",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "5c689939-2fc1-4f33-85a4-17db9dffab4d",
+      "name": "Retrieve Metric Time Series - default",
+      "request": {
+        "urlPathTemplate": "/stats/time_series/{metric}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "metric": {
+            "equalTo": "metric"
+          }
+        },
+        "queryParameters": {
+          "from": {
+            "equalTo": "from"
+          },
+          "to": {
+            "equalTo": "to"
+          },
+          "ad_campaign_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "adcamp_xxxxxxxxxxxxxx"
+              }
+            ]
+          },
+          "ad_group_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "adgrp_xxxxxxxxxxxxxx"
+              }
+            ]
+          },
+          "ad_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "ad_xxxxxxxxxxxxxx"
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": {\n    \"currency\": \"usd\",\n    \"points\": [\n      {\n        \"breakdown\": [\n          {\n            \"name\": \"spend\",\n            \"steps\": [\n              {\n                \"conversion_rate\": 100,\n                \"count\": 100,\n                \"step\": 1\n              }\n            ],\n            \"value\": 2.82\n          }\n        ],\n        \"steps\": [\n          {\n            \"conversion_rate\": 100,\n            \"count\": 100,\n            \"step\": 1\n          }\n        ],\n        \"timestamp\": 1767268800,\n        \"value\": 3\n      }\n    ],\n    \"totals\": [\n      {\n        \"name\": \"wins\",\n        \"steps\": [\n          {\n            \"conversion_rate\": 100,\n            \"count\": 100,\n            \"step\": 1\n          }\n        ],\n        \"value\": 4\n      }\n    ]\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5c689939-2fc1-4f33-85a4-17db9dffab4d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "061d1415-6f21-4b6a-8b4a-0e2308b378dc",
       "name": "List OAuth Grants - default",
       "request": {
@@ -16655,6 +16752,6 @@
     }
   ],
   "meta": {
-    "total": 466
+    "total": 468
   }
 }

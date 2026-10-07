@@ -20604,6 +20604,753 @@ func (f FriendlyReceiptStatus) Ptr() *FriendlyReceiptStatus {
 	return &f
 }
 
+var (
+	funnelComparisonFieldBaseline                     = big.NewInt(1 << 0)
+	funnelComparisonFieldDifferenceConfidenceInterval = big.NewInt(1 << 1)
+	funnelComparisonFieldDifferencePercentagePoints   = big.NewInt(1 << 2)
+	funnelComparisonFieldRelativeLiftPercent          = big.NewInt(1 << 3)
+)
+
+// funnelComparisonNullableFields maps the wire names of FunnelComparison's nullable fields (required or optional) to their field bits.
+var funnelComparisonNullableFields = map[string]*big.Int{
+	"difference_confidence_interval": funnelComparisonFieldDifferenceConfidenceInterval,
+	"relative_lift_percent":          funnelComparisonFieldRelativeLiftPercent,
+}
+
+type FunnelComparison struct {
+	// The reference group's name.
+	Baseline string `json:"baseline" url:"baseline"`
+	// Adjusted Wald interval for the difference in percentage points, with Bonferroni correction across comparisons.
+	DifferenceConfidenceInterval *FunnelConfidenceInterval `json:"difference_confidence_interval,omitempty" url:"difference_confidence_interval,omitempty"`
+	// This group's conversion percentage minus the baseline's.
+	DifferencePercentagePoints float64 `json:"difference_percentage_points" url:"difference_percentage_points"`
+	// Relative conversion improvement in percent; null if baseline conversion is zero.
+	RelativeLiftPercent *float64 `json:"relative_lift_percent,omitempty" url:"relative_lift_percent,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FunnelComparison) GetBaseline() string {
+	if f == nil {
+		return ""
+	}
+	return f.Baseline
+}
+
+func (f *FunnelComparison) GetDifferenceConfidenceInterval() *FunnelConfidenceInterval {
+	if f == nil {
+		return nil
+	}
+	return f.DifferenceConfidenceInterval
+}
+
+func (f *FunnelComparison) GetDifferencePercentagePoints() float64 {
+	if f == nil {
+		return 0
+	}
+	return f.DifferencePercentagePoints
+}
+
+func (f *FunnelComparison) GetRelativeLiftPercent() *float64 {
+	if f == nil {
+		return nil
+	}
+	return f.RelativeLiftPercent
+}
+
+func (f *FunnelComparison) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FunnelComparison) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetBaseline sets the Baseline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelComparison) SetBaseline(baseline string) {
+	f.Baseline = baseline
+	f.require(funnelComparisonFieldBaseline)
+}
+
+// SetDifferenceConfidenceInterval sets the DifferenceConfidenceInterval field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelComparison) SetDifferenceConfidenceInterval(differenceConfidenceInterval *FunnelConfidenceInterval) {
+	f.DifferenceConfidenceInterval = differenceConfidenceInterval
+	f.require(funnelComparisonFieldDifferenceConfidenceInterval)
+}
+
+// SetDifferencePercentagePoints sets the DifferencePercentagePoints field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelComparison) SetDifferencePercentagePoints(differencePercentagePoints float64) {
+	f.DifferencePercentagePoints = differencePercentagePoints
+	f.require(funnelComparisonFieldDifferencePercentagePoints)
+}
+
+// SetRelativeLiftPercent sets the RelativeLiftPercent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelComparison) SetRelativeLiftPercent(relativeLiftPercent *float64) {
+	f.RelativeLiftPercent = relativeLiftPercent
+	f.require(funnelComparisonFieldRelativeLiftPercent)
+}
+
+func (f *FunnelComparison) UnmarshalJSON(data []byte) error {
+	type unmarshaler FunnelComparison
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FunnelComparison(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, funnelComparisonNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FunnelComparison) MarshalJSON() ([]byte, error) {
+	type embed FunnelComparison
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FunnelComparison) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	funnelConfidenceIntervalFieldLower = big.NewInt(1 << 0)
+	funnelConfidenceIntervalFieldUpper = big.NewInt(1 << 1)
+)
+
+type FunnelConfidenceInterval struct {
+	// The lower confidence bound, in percent or percentage points for a difference.
+	Lower float64 `json:"lower" url:"lower"`
+	// The upper confidence bound, in percent or percentage points for a difference.
+	Upper float64 `json:"upper" url:"upper"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FunnelConfidenceInterval) GetLower() float64 {
+	if f == nil {
+		return 0
+	}
+	return f.Lower
+}
+
+func (f *FunnelConfidenceInterval) GetUpper() float64 {
+	if f == nil {
+		return 0
+	}
+	return f.Upper
+}
+
+func (f *FunnelConfidenceInterval) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FunnelConfidenceInterval) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetLower sets the Lower field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelConfidenceInterval) SetLower(lower float64) {
+	f.Lower = lower
+	f.require(funnelConfidenceIntervalFieldLower)
+}
+
+// SetUpper sets the Upper field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelConfidenceInterval) SetUpper(upper float64) {
+	f.Upper = upper
+	f.require(funnelConfidenceIntervalFieldUpper)
+}
+
+func (f *FunnelConfidenceInterval) UnmarshalJSON(data []byte) error {
+	type unmarshaler FunnelConfidenceInterval
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FunnelConfidenceInterval(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FunnelConfidenceInterval) MarshalJSON() ([]byte, error) {
+	type embed FunnelConfidenceInterval
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FunnelConfidenceInterval) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	funnelStepFieldAppBuildID   = big.NewInt(1 << 0)
+	funnelStepFieldAppID        = big.NewInt(1 << 1)
+	funnelStepFieldBrowser      = big.NewInt(1 << 2)
+	funnelStepFieldCity         = big.NewInt(1 << 3)
+	funnelStepFieldCountry      = big.NewInt(1 << 4)
+	funnelStepFieldCustomName   = big.NewInt(1 << 5)
+	funnelStepFieldDevice       = big.NewInt(1 << 6)
+	funnelStepFieldEvent        = big.NewInt(1 << 7)
+	funnelStepFieldExperimentID = big.NewInt(1 << 8)
+	funnelStepFieldHostname     = big.NewInt(1 << 9)
+	funnelStepFieldOs           = big.NewInt(1 << 10)
+	funnelStepFieldPage         = big.NewInt(1 << 11)
+	funnelStepFieldPlanID       = big.NewInt(1 << 12)
+	funnelStepFieldProductID    = big.NewInt(1 << 13)
+	funnelStepFieldSource       = big.NewInt(1 << 14)
+	funnelStepFieldUtmSource    = big.NewInt(1 << 15)
+	funnelStepFieldVariant      = big.NewInt(1 << 16)
+)
+
+type FunnelStep struct {
+	// The Whop app build ID attached to the event. Comma-separated alternatives are ORed; different filters are ANDed.
+	AppBuildID *string `json:"app_build_id,omitempty" url:"app_build_id,omitempty"`
+	// The event's app id. Comma-separated alternatives are ORed; different filters are ANDed.
+	AppID *string `json:"app_id,omitempty" url:"app_id,omitempty"`
+	// The event's browser. Comma-separated alternatives are ORed; different filters are ANDed.
+	Browser *string `json:"browser,omitempty" url:"browser,omitempty"`
+	// The event's city. Comma-separated alternatives are ORed; different filters are ANDed.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// The event's country. Comma-separated alternatives are ORed; different filters are ANDed.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The custom event name. Requires event=pixel.custom. Comma-separated alternatives are ORed; different filters are ANDed.
+	CustomName *string `json:"custom_name,omitempty" url:"custom_name,omitempty"`
+	// The event's device. Comma-separated alternatives are ORed; different filters are ANDed.
+	Device *string `json:"device,omitempty" url:"device,omitempty"`
+	// The event name, such as pixel.page, pixel.custom, experiment.exposure, or payment.completed. Exactly one event per step.
+	Event string `json:"event" url:"event"`
+	// An experiment ID owned by account_id. Requires event=experiment.exposure. Comma-separated alternatives are ORed; different filters are ANDed.
+	ExperimentID *string `json:"experiment_id,omitempty" url:"experiment_id,omitempty"`
+	// The event's hostname. Comma-separated alternatives are ORed; different filters are ANDed.
+	Hostname *string `json:"hostname,omitempty" url:"hostname,omitempty"`
+	// The event's os. Comma-separated alternatives are ORed; different filters are ANDed.
+	Os *string `json:"os,omitempty" url:"os,omitempty"`
+	// The URL pathname. Use * to match zero or more characters, including slashes. Other characters match literally. Missing pages do not match. Comma-separated alternatives are ORed; different filters are ANDed.
+	Page *string `json:"page,omitempty" url:"page,omitempty"`
+	// The plan ID attached to the event. Comma-separated alternatives are ORed; different filters are ANDed.
+	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
+	// The product ID attached to the event. Comma-separated alternatives are ORed; different filters are ANDed.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// The Whop ad-click source of this page view, not conversion attribution. Use whop:* for any Whop ad click, whop:<campaign>:* for a campaign, or whop:<campaign>:<group>:<ad> for an exact ad. Only ad-click page-view events support source. With breakdown_by=source, trailing :* levels select campaign, ad-group, or ad detail. Comma-separated alternatives are ORed; different filters are ANDed.
+	Source *string `json:"source,omitempty" url:"source,omitempty"`
+	// The event's utm source. Comma-separated alternatives are ORed; different filters are ANDed.
+	UtmSource *string `json:"utm_source,omitempty" url:"utm_source,omitempty"`
+	// The exposed variant name. Requires event=experiment.exposure. Comma-separated alternatives are ORed; different filters are ANDed.
+	Variant *string `json:"variant,omitempty" url:"variant,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FunnelStep) GetAppBuildID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.AppBuildID
+}
+
+func (f *FunnelStep) GetAppID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.AppID
+}
+
+func (f *FunnelStep) GetBrowser() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Browser
+}
+
+func (f *FunnelStep) GetCity() *string {
+	if f == nil {
+		return nil
+	}
+	return f.City
+}
+
+func (f *FunnelStep) GetCountry() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Country
+}
+
+func (f *FunnelStep) GetCustomName() *string {
+	if f == nil {
+		return nil
+	}
+	return f.CustomName
+}
+
+func (f *FunnelStep) GetDevice() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Device
+}
+
+func (f *FunnelStep) GetEvent() string {
+	if f == nil {
+		return ""
+	}
+	return f.Event
+}
+
+func (f *FunnelStep) GetExperimentID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.ExperimentID
+}
+
+func (f *FunnelStep) GetHostname() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Hostname
+}
+
+func (f *FunnelStep) GetOs() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Os
+}
+
+func (f *FunnelStep) GetPage() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Page
+}
+
+func (f *FunnelStep) GetPlanID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.PlanID
+}
+
+func (f *FunnelStep) GetProductID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.ProductID
+}
+
+func (f *FunnelStep) GetSource() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Source
+}
+
+func (f *FunnelStep) GetUtmSource() *string {
+	if f == nil {
+		return nil
+	}
+	return f.UtmSource
+}
+
+func (f *FunnelStep) GetVariant() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Variant
+}
+
+func (f *FunnelStep) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FunnelStep) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetAppBuildID sets the AppBuildID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetAppBuildID(appBuildID *string) {
+	f.AppBuildID = appBuildID
+	f.require(funnelStepFieldAppBuildID)
+}
+
+// SetAppID sets the AppID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetAppID(appID *string) {
+	f.AppID = appID
+	f.require(funnelStepFieldAppID)
+}
+
+// SetBrowser sets the Browser field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetBrowser(browser *string) {
+	f.Browser = browser
+	f.require(funnelStepFieldBrowser)
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetCity(city *string) {
+	f.City = city
+	f.require(funnelStepFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetCountry(country *string) {
+	f.Country = country
+	f.require(funnelStepFieldCountry)
+}
+
+// SetCustomName sets the CustomName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetCustomName(customName *string) {
+	f.CustomName = customName
+	f.require(funnelStepFieldCustomName)
+}
+
+// SetDevice sets the Device field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetDevice(device *string) {
+	f.Device = device
+	f.require(funnelStepFieldDevice)
+}
+
+// SetEvent sets the Event field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetEvent(event string) {
+	f.Event = event
+	f.require(funnelStepFieldEvent)
+}
+
+// SetExperimentID sets the ExperimentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetExperimentID(experimentID *string) {
+	f.ExperimentID = experimentID
+	f.require(funnelStepFieldExperimentID)
+}
+
+// SetHostname sets the Hostname field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetHostname(hostname *string) {
+	f.Hostname = hostname
+	f.require(funnelStepFieldHostname)
+}
+
+// SetOs sets the Os field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetOs(os *string) {
+	f.Os = os
+	f.require(funnelStepFieldOs)
+}
+
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetPage(page *string) {
+	f.Page = page
+	f.require(funnelStepFieldPage)
+}
+
+// SetPlanID sets the PlanID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetPlanID(planID *string) {
+	f.PlanID = planID
+	f.require(funnelStepFieldPlanID)
+}
+
+// SetProductID sets the ProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetProductID(productID *string) {
+	f.ProductID = productID
+	f.require(funnelStepFieldProductID)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetSource(source *string) {
+	f.Source = source
+	f.require(funnelStepFieldSource)
+}
+
+// SetUtmSource sets the UtmSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetUtmSource(utmSource *string) {
+	f.UtmSource = utmSource
+	f.require(funnelStepFieldUtmSource)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStep) SetVariant(variant *string) {
+	f.Variant = variant
+	f.require(funnelStepFieldVariant)
+}
+
+func (f *FunnelStep) UnmarshalJSON(data []byte) error {
+	type unmarshaler FunnelStep
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FunnelStep(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FunnelStep) MarshalJSON() ([]byte, error) {
+	type embed FunnelStep
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FunnelStep) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	funnelStepResultFieldConversionRate = big.NewInt(1 << 0)
+	funnelStepResultFieldCount          = big.NewInt(1 << 1)
+	funnelStepResultFieldStep           = big.NewInt(1 << 2)
+)
+
+// funnelStepResultNullableFields maps the wire names of FunnelStepResult's nullable fields (required or optional) to their field bits.
+var funnelStepResultNullableFields = map[string]*big.Int{
+	"conversion_rate": funnelStepResultFieldConversionRate,
+}
+
+type FunnelStepResult struct {
+	// The percentage of first-step entrants reaching this step; null when there are no entrants.
+	ConversionRate *float64 `json:"conversion_rate,omitempty" url:"conversion_rate,omitempty"`
+	// The number of distinct people reaching this step.
+	Count int `json:"count" url:"count"`
+	// The one-based step number.
+	Step int `json:"step" url:"step"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FunnelStepResult) GetConversionRate() *float64 {
+	if f == nil {
+		return nil
+	}
+	return f.ConversionRate
+}
+
+func (f *FunnelStepResult) GetCount() int {
+	if f == nil {
+		return 0
+	}
+	return f.Count
+}
+
+func (f *FunnelStepResult) GetStep() int {
+	if f == nil {
+		return 0
+	}
+	return f.Step
+}
+
+func (f *FunnelStepResult) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FunnelStepResult) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetConversionRate sets the ConversionRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStepResult) SetConversionRate(conversionRate *float64) {
+	f.ConversionRate = conversionRate
+	f.require(funnelStepResultFieldConversionRate)
+}
+
+// SetCount sets the Count field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStepResult) SetCount(count int) {
+	f.Count = count
+	f.require(funnelStepResultFieldCount)
+}
+
+// SetStep sets the Step field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FunnelStepResult) SetStep(step int) {
+	f.Step = step
+	f.require(funnelStepResultFieldStep)
+}
+
+func (f *FunnelStepResult) UnmarshalJSON(data []byte) error {
+	type unmarshaler FunnelStepResult
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FunnelStepResult(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, funnelStepResultNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FunnelStepResult) MarshalJSON() ([]byte, error) {
+	type embed FunnelStepResult
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FunnelStepResult) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
 // The different statuses of the global affiliate program for a product.
 type GlobalAffiliateStatuses string
 
@@ -49428,6 +50175,236 @@ func NewResolutionCenterCaseStatusesFromString(s string) (ResolutionCenterCaseSt
 
 func (r ResolutionCenterCaseStatuses) Ptr() *ResolutionCenterCaseStatuses {
 	return &r
+}
+
+var (
+	retrieveTimeSeriesRequestStepsFieldField1  = big.NewInt(1 << 0)
+	retrieveTimeSeriesRequestStepsFieldField2  = big.NewInt(1 << 1)
+	retrieveTimeSeriesRequestStepsFieldField3  = big.NewInt(1 << 2)
+	retrieveTimeSeriesRequestStepsFieldField4  = big.NewInt(1 << 3)
+	retrieveTimeSeriesRequestStepsFieldField5  = big.NewInt(1 << 4)
+	retrieveTimeSeriesRequestStepsFieldField6  = big.NewInt(1 << 5)
+	retrieveTimeSeriesRequestStepsFieldField7  = big.NewInt(1 << 6)
+	retrieveTimeSeriesRequestStepsFieldField8  = big.NewInt(1 << 7)
+	retrieveTimeSeriesRequestStepsFieldField9  = big.NewInt(1 << 8)
+	retrieveTimeSeriesRequestStepsFieldField10 = big.NewInt(1 << 9)
+)
+
+type RetrieveTimeSeriesRequestSteps struct {
+	Field1  *FunnelStep `json:"1" url:"1"`
+	Field2  *FunnelStep `json:"2" url:"2"`
+	Field3  *FunnelStep `json:"3,omitempty" url:"3,omitempty"`
+	Field4  *FunnelStep `json:"4,omitempty" url:"4,omitempty"`
+	Field5  *FunnelStep `json:"5,omitempty" url:"5,omitempty"`
+	Field6  *FunnelStep `json:"6,omitempty" url:"6,omitempty"`
+	Field7  *FunnelStep `json:"7,omitempty" url:"7,omitempty"`
+	Field8  *FunnelStep `json:"8,omitempty" url:"8,omitempty"`
+	Field9  *FunnelStep `json:"9,omitempty" url:"9,omitempty"`
+	Field10 *FunnelStep `json:"10,omitempty" url:"10,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetField1() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field1
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetField2() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field2
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetField3() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field3
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetField4() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field4
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetField5() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field5
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetField6() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field6
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetField7() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field7
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetField8() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field8
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetField9() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field9
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetField10() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field10
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetField1 sets the Field1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequestSteps) SetField1(_1 *FunnelStep) {
+	r.Field1 = _1
+	r.require(retrieveTimeSeriesRequestStepsFieldField1)
+}
+
+// SetField2 sets the Field2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequestSteps) SetField2(_2 *FunnelStep) {
+	r.Field2 = _2
+	r.require(retrieveTimeSeriesRequestStepsFieldField2)
+}
+
+// SetField3 sets the Field3 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequestSteps) SetField3(_3 *FunnelStep) {
+	r.Field3 = _3
+	r.require(retrieveTimeSeriesRequestStepsFieldField3)
+}
+
+// SetField4 sets the Field4 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequestSteps) SetField4(_4 *FunnelStep) {
+	r.Field4 = _4
+	r.require(retrieveTimeSeriesRequestStepsFieldField4)
+}
+
+// SetField5 sets the Field5 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequestSteps) SetField5(_5 *FunnelStep) {
+	r.Field5 = _5
+	r.require(retrieveTimeSeriesRequestStepsFieldField5)
+}
+
+// SetField6 sets the Field6 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequestSteps) SetField6(_6 *FunnelStep) {
+	r.Field6 = _6
+	r.require(retrieveTimeSeriesRequestStepsFieldField6)
+}
+
+// SetField7 sets the Field7 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequestSteps) SetField7(_7 *FunnelStep) {
+	r.Field7 = _7
+	r.require(retrieveTimeSeriesRequestStepsFieldField7)
+}
+
+// SetField8 sets the Field8 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequestSteps) SetField8(_8 *FunnelStep) {
+	r.Field8 = _8
+	r.require(retrieveTimeSeriesRequestStepsFieldField8)
+}
+
+// SetField9 sets the Field9 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequestSteps) SetField9(_9 *FunnelStep) {
+	r.Field9 = _9
+	r.require(retrieveTimeSeriesRequestStepsFieldField9)
+}
+
+// SetField10 sets the Field10 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequestSteps) SetField10(_10 *FunnelStep) {
+	r.Field10 = _10
+	r.require(retrieveTimeSeriesRequestStepsFieldField10)
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveTimeSeriesRequestSteps
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveTimeSeriesRequestSteps(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) MarshalJSON() ([]byte, error) {
+	type embed RetrieveTimeSeriesRequestSteps
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveTimeSeriesRequestSteps) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
 }
 
 // How often a scheduled bounty republishes a new bounty.
