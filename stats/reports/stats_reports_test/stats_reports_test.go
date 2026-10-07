@@ -13,6 +13,7 @@ import (
 	require "github.com/stretchr/testify/require"
 	client "github.com/whopio/whopsdk-go/v2/client"
 	option "github.com/whopio/whopsdk-go/v2/option"
+	stats "github.com/whopio/whopsdk-go/v2/stats"
 )
 
 func VerifyRequestCount(
@@ -96,4 +97,28 @@ func TestStatsReportsListWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestStatsReportsListWithWireMock", "GET", "/stats/reports", nil, 1)
+}
+
+func TestStatsReportsPlatformTrendsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &stats.PlatformTrendsReportsRequest{}
+	_, invocationErr := client.Stats.Reports.PlatformTrends(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestStatsReportsPlatformTrendsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestStatsReportsPlatformTrendsWithWireMock", "GET", "/stats/reports/platform_trends", nil, 1)
 }

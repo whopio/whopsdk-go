@@ -5,9 +5,158 @@ package stats
 import (
 	json "encoding/json"
 	fmt "fmt"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
+
+var (
+	platformTrendsReportsRequestFieldBreakdownBy     = big.NewInt(1 << 0)
+	platformTrendsReportsRequestFieldColumns         = big.NewInt(1 << 1)
+	platformTrendsReportsRequestFieldWindows         = big.NewInt(1 << 2)
+	platformTrendsReportsRequestFieldTimeZone        = big.NewInt(1 << 3)
+	platformTrendsReportsRequestFieldOrder           = big.NewInt(1 << 4)
+	platformTrendsReportsRequestFieldDirection       = big.NewInt(1 << 5)
+	platformTrendsReportsRequestFieldConvertTo       = big.NewInt(1 << 6)
+	platformTrendsReportsRequestFieldBusinessType    = big.NewInt(1 << 7)
+	platformTrendsReportsRequestFieldIndustryType    = big.NewInt(1 << 8)
+	platformTrendsReportsRequestFieldAccountCountry  = big.NewInt(1 << 9)
+	platformTrendsReportsRequestFieldCustomerCountry = big.NewInt(1 << 10)
+	platformTrendsReportsRequestFieldFirst           = big.NewInt(1 << 11)
+	platformTrendsReportsRequestFieldAfter           = big.NewInt(1 << 12)
+)
+
+type PlatformTrendsReportsRequest struct {
+	// What each row is. Omit it for one row per window, holding the window's total.
+	BreakdownBy *PlatformTrendsReportsRequestBreakdownBy `json:"-" url:"breakdown_by,omitempty"`
+	// Comma-separated properties and metrics to return on each row. Defaults to `gross_revenue,businesses`.
+	Columns *string `json:"-" url:"columns,omitempty"`
+	// Comma-separated windows, at most four: `1d`, `7d`, `30d`, `90d`, `365d`, `mtd`, `qtd`, `ytd`, `all_time`, an explicit `2026-09-01..2026-10-01`, any of these prefixed `prev:` for the equal-length period before, or suffixed `@2026-09-01` to end earlier. Defaults to `30d`.
+	Windows *string `json:"-" url:"windows,omitempty"`
+	// IANA zone that day, month, quarter and year boundaries fall in. Defaults to `Etc/UTC`.
+	TimeZone *string `json:"-" url:"time_zone,omitempty"`
+	// The requested metric that ranks rows, by its value in the first window. Defaults to the first requested metric.
+	Order *PlatformTrendsReportsRequestOrder `json:"-" url:"order,omitempty"`
+	// Ranking direction. Defaults to `desc`.
+	Direction *PlatformTrendsReportsRequestDirection `json:"-" url:"direction,omitempty"`
+	// Currency every money metric is converted into. Defaults to `usd`.
+	ConvertTo *string `json:"-" url:"convert_to,omitempty"`
+	// Only counts payments to businesses of these comma-separated business types, such as `education`.
+	BusinessType *string `json:"-" url:"business_type,omitempty"`
+	// Only counts payments to businesses in these comma-separated industry types, such as `options_trading`.
+	IndustryType *string `json:"-" url:"industry_type,omitempty"`
+	// Only counts payments to accounts located in these comma-separated countries, as ISO 3166-1 alpha-2 codes such as `US`.
+	AccountCountry *string `json:"-" url:"account_country,omitempty"`
+	// Only counts payments from customers in these comma-separated countries, as ISO 3166-1 alpha-2 codes such as `US`.
+	CustomerCountry *string `json:"-" url:"customer_country,omitempty"`
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (p *PlatformTrendsReportsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetBreakdownBy sets the BreakdownBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetBreakdownBy(breakdownBy *PlatformTrendsReportsRequestBreakdownBy) {
+	p.BreakdownBy = breakdownBy
+	p.require(platformTrendsReportsRequestFieldBreakdownBy)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetColumns(columns *string) {
+	p.Columns = columns
+	p.require(platformTrendsReportsRequestFieldColumns)
+}
+
+// SetWindows sets the Windows field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetWindows(windows *string) {
+	p.Windows = windows
+	p.require(platformTrendsReportsRequestFieldWindows)
+}
+
+// SetTimeZone sets the TimeZone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetTimeZone(timeZone *string) {
+	p.TimeZone = timeZone
+	p.require(platformTrendsReportsRequestFieldTimeZone)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetOrder(order *PlatformTrendsReportsRequestOrder) {
+	p.Order = order
+	p.require(platformTrendsReportsRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetDirection(direction *PlatformTrendsReportsRequestDirection) {
+	p.Direction = direction
+	p.require(platformTrendsReportsRequestFieldDirection)
+}
+
+// SetConvertTo sets the ConvertTo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetConvertTo(convertTo *string) {
+	p.ConvertTo = convertTo
+	p.require(platformTrendsReportsRequestFieldConvertTo)
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetBusinessType(businessType *string) {
+	p.BusinessType = businessType
+	p.require(platformTrendsReportsRequestFieldBusinessType)
+}
+
+// SetIndustryType sets the IndustryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetIndustryType(industryType *string) {
+	p.IndustryType = industryType
+	p.require(platformTrendsReportsRequestFieldIndustryType)
+}
+
+// SetAccountCountry sets the AccountCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetAccountCountry(accountCountry *string) {
+	p.AccountCountry = accountCountry
+	p.require(platformTrendsReportsRequestFieldAccountCountry)
+}
+
+// SetCustomerCountry sets the CustomerCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetCustomerCountry(customerCountry *string) {
+	p.CustomerCountry = customerCountry
+	p.require(platformTrendsReportsRequestFieldCustomerCountry)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetFirst(first *int) {
+	p.First = first
+	p.require(platformTrendsReportsRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetAfter(after *string) {
+	p.After = after
+	p.require(platformTrendsReportsRequestFieldAfter)
+}
 
 var (
 	listReportsResponseFieldData = big.NewInt(1 << 0)
@@ -692,4 +841,1860 @@ func NewListReportsResponseDataItemWindowKindFromString(s string) (ListReportsRe
 
 func (l ListReportsResponseDataItemWindowKind) Ptr() *ListReportsResponseDataItemWindowKind {
 	return &l
+}
+
+type PlatformTrendsReportsRequestBreakdownBy string
+
+const (
+	PlatformTrendsReportsRequestBreakdownByBusinessType    PlatformTrendsReportsRequestBreakdownBy = "business_type"
+	PlatformTrendsReportsRequestBreakdownByIndustryType    PlatformTrendsReportsRequestBreakdownBy = "industry_type"
+	PlatformTrendsReportsRequestBreakdownByAccountCountry  PlatformTrendsReportsRequestBreakdownBy = "account_country"
+	PlatformTrendsReportsRequestBreakdownByCustomerCountry PlatformTrendsReportsRequestBreakdownBy = "customer_country"
+)
+
+func NewPlatformTrendsReportsRequestBreakdownByFromString(s string) (PlatformTrendsReportsRequestBreakdownBy, error) {
+	switch s {
+	case "business_type":
+		return PlatformTrendsReportsRequestBreakdownByBusinessType, nil
+	case "industry_type":
+		return PlatformTrendsReportsRequestBreakdownByIndustryType, nil
+	case "account_country":
+		return PlatformTrendsReportsRequestBreakdownByAccountCountry, nil
+	case "customer_country":
+		return PlatformTrendsReportsRequestBreakdownByCustomerCountry, nil
+	}
+	var t PlatformTrendsReportsRequestBreakdownBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlatformTrendsReportsRequestBreakdownBy) Ptr() *PlatformTrendsReportsRequestBreakdownBy {
+	return &p
+}
+
+type PlatformTrendsReportsRequestDirection string
+
+const (
+	PlatformTrendsReportsRequestDirectionAsc  PlatformTrendsReportsRequestDirection = "asc"
+	PlatformTrendsReportsRequestDirectionDesc PlatformTrendsReportsRequestDirection = "desc"
+)
+
+func NewPlatformTrendsReportsRequestDirectionFromString(s string) (PlatformTrendsReportsRequestDirection, error) {
+	switch s {
+	case "asc":
+		return PlatformTrendsReportsRequestDirectionAsc, nil
+	case "desc":
+		return PlatformTrendsReportsRequestDirectionDesc, nil
+	}
+	var t PlatformTrendsReportsRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlatformTrendsReportsRequestDirection) Ptr() *PlatformTrendsReportsRequestDirection {
+	return &p
+}
+
+type PlatformTrendsReportsRequestOrder string
+
+const (
+	PlatformTrendsReportsRequestOrderGrossRevenue    PlatformTrendsReportsRequestOrder = "gross_revenue"
+	PlatformTrendsReportsRequestOrderBusinesses      PlatformTrendsReportsRequestOrder = "businesses"
+	PlatformTrendsReportsRequestOrderPayments        PlatformTrendsReportsRequestOrder = "payments"
+	PlatformTrendsReportsRequestOrderCustomers       PlatformTrendsReportsRequestOrder = "customers"
+	PlatformTrendsReportsRequestOrderAov             PlatformTrendsReportsRequestOrder = "aov"
+	PlatformTrendsReportsRequestOrderRepeatRate      PlatformTrendsReportsRequestOrder = "repeat_rate"
+	PlatformTrendsReportsRequestOrderP99GrossRevenue PlatformTrendsReportsRequestOrder = "p99_gross_revenue"
+	PlatformTrendsReportsRequestOrderNewBusinesses   PlatformTrendsReportsRequestOrder = "new_businesses"
+	PlatformTrendsReportsRequestOrderAvgBusinessAge  PlatformTrendsReportsRequestOrder = "avg_business_age"
+	PlatformTrendsReportsRequestOrderAvgOwnerAge     PlatformTrendsReportsRequestOrder = "avg_owner_age"
+	PlatformTrendsReportsRequestOrderAvgCustomerAge  PlatformTrendsReportsRequestOrder = "avg_customer_age"
+)
+
+func NewPlatformTrendsReportsRequestOrderFromString(s string) (PlatformTrendsReportsRequestOrder, error) {
+	switch s {
+	case "gross_revenue":
+		return PlatformTrendsReportsRequestOrderGrossRevenue, nil
+	case "businesses":
+		return PlatformTrendsReportsRequestOrderBusinesses, nil
+	case "payments":
+		return PlatformTrendsReportsRequestOrderPayments, nil
+	case "customers":
+		return PlatformTrendsReportsRequestOrderCustomers, nil
+	case "aov":
+		return PlatformTrendsReportsRequestOrderAov, nil
+	case "repeat_rate":
+		return PlatformTrendsReportsRequestOrderRepeatRate, nil
+	case "p99_gross_revenue":
+		return PlatformTrendsReportsRequestOrderP99GrossRevenue, nil
+	case "new_businesses":
+		return PlatformTrendsReportsRequestOrderNewBusinesses, nil
+	case "avg_business_age":
+		return PlatformTrendsReportsRequestOrderAvgBusinessAge, nil
+	case "avg_owner_age":
+		return PlatformTrendsReportsRequestOrderAvgOwnerAge, nil
+	case "avg_customer_age":
+		return PlatformTrendsReportsRequestOrderAvgCustomerAge, nil
+	}
+	var t PlatformTrendsReportsRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlatformTrendsReportsRequestOrder) Ptr() *PlatformTrendsReportsRequestOrder {
+	return &p
+}
+
+var (
+	platformTrendsReportsResponseFieldData     = big.NewInt(1 << 0)
+	platformTrendsReportsResponseFieldPageInfo = big.NewInt(1 << 1)
+)
+
+type PlatformTrendsReportsResponse struct {
+	Data     *PlatformTrendsReportsResponseData     `json:"data" url:"data"`
+	PageInfo *PlatformTrendsReportsResponsePageInfo `json:"page_info" url:"page_info"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponse) GetData() *PlatformTrendsReportsResponseData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PlatformTrendsReportsResponse) GetPageInfo() *PlatformTrendsReportsResponsePageInfo {
+	if p == nil {
+		return nil
+	}
+	return p.PageInfo
+}
+
+func (p *PlatformTrendsReportsResponse) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponse) SetData(data *PlatformTrendsReportsResponseData) {
+	p.Data = data
+	p.require(platformTrendsReportsResponseFieldData)
+}
+
+// SetPageInfo sets the PageInfo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponse) SetPageInfo(pageInfo *PlatformTrendsReportsResponsePageInfo) {
+	p.PageInfo = pageInfo
+	p.require(platformTrendsReportsResponseFieldPageInfo)
+}
+
+func (p *PlatformTrendsReportsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponse) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	platformTrendsReportsResponseDataFieldBreakdownBy = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataFieldColumns     = big.NewInt(1 << 1)
+	platformTrendsReportsResponseDataFieldDataAsOf    = big.NewInt(1 << 2)
+	platformTrendsReportsResponseDataFieldReport      = big.NewInt(1 << 3)
+	platformTrendsReportsResponseDataFieldReports     = big.NewInt(1 << 4)
+)
+
+// platformTrendsReportsResponseDataNullableFields maps the wire names of PlatformTrendsReportsResponseData's nullable fields (required or optional) to their field bits.
+var platformTrendsReportsResponseDataNullableFields = map[string]*big.Int{
+	"breakdown_by": platformTrendsReportsResponseDataFieldBreakdownBy,
+}
+
+type PlatformTrendsReportsResponseData struct {
+	// What each row is, or `null` for one total row per window.
+	BreakdownBy *string `json:"breakdown_by,omitempty" url:"breakdown_by,omitempty"`
+	// The breakdown first, then each requested property and metric, in row order.
+	Columns []*PlatformTrendsReportsResponseDataColumnsItem `json:"columns" url:"columns"`
+	// When the data was read, as an ISO 8601 timestamp.
+	DataAsOf string `json:"data_as_of" url:"data_as_of"`
+	// The report's key.
+	Report string `json:"report" url:"report"`
+	// One entry per requested window, in request order. Rows line up by index across entries.
+	Reports []*PlatformTrendsReportsResponseDataReportsItem `json:"reports" url:"reports"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponseData) GetBreakdownBy() *string {
+	if p == nil {
+		return nil
+	}
+	return p.BreakdownBy
+}
+
+func (p *PlatformTrendsReportsResponseData) GetColumns() []*PlatformTrendsReportsResponseDataColumnsItem {
+	if p == nil {
+		return nil
+	}
+	return p.Columns
+}
+
+func (p *PlatformTrendsReportsResponseData) GetDataAsOf() string {
+	if p == nil {
+		return ""
+	}
+	return p.DataAsOf
+}
+
+func (p *PlatformTrendsReportsResponseData) GetReport() string {
+	if p == nil {
+		return ""
+	}
+	return p.Report
+}
+
+func (p *PlatformTrendsReportsResponseData) GetReports() []*PlatformTrendsReportsResponseDataReportsItem {
+	if p == nil {
+		return nil
+	}
+	return p.Reports
+}
+
+func (p *PlatformTrendsReportsResponseData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponseData) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetBreakdownBy sets the BreakdownBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseData) SetBreakdownBy(breakdownBy *string) {
+	p.BreakdownBy = breakdownBy
+	p.require(platformTrendsReportsResponseDataFieldBreakdownBy)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseData) SetColumns(columns []*PlatformTrendsReportsResponseDataColumnsItem) {
+	p.Columns = columns
+	p.require(platformTrendsReportsResponseDataFieldColumns)
+}
+
+// SetDataAsOf sets the DataAsOf field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseData) SetDataAsOf(dataAsOf string) {
+	p.DataAsOf = dataAsOf
+	p.require(platformTrendsReportsResponseDataFieldDataAsOf)
+}
+
+// SetReport sets the Report field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseData) SetReport(report string) {
+	p.Report = report
+	p.require(platformTrendsReportsResponseDataFieldReport)
+}
+
+// SetReports sets the Reports field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseData) SetReports(reports []*PlatformTrendsReportsResponseDataReportsItem) {
+	p.Reports = reports
+	p.require(platformTrendsReportsResponseDataFieldReports)
+}
+
+func (p *PlatformTrendsReportsResponseData) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponseData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponseData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, platformTrendsReportsResponseDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponseData) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponseData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponseData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	platformTrendsReportsResponseDataColumnsItemFieldAggregate = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataColumnsItemFieldKey       = big.NewInt(1 << 1)
+	platformTrendsReportsResponseDataColumnsItemFieldName      = big.NewInt(1 << 2)
+	platformTrendsReportsResponseDataColumnsItemFieldType      = big.NewInt(1 << 3)
+	platformTrendsReportsResponseDataColumnsItemFieldUnit      = big.NewInt(1 << 4)
+	platformTrendsReportsResponseDataColumnsItemFieldWeight    = big.NewInt(1 << 5)
+)
+
+// platformTrendsReportsResponseDataColumnsItemNullableFields maps the wire names of PlatformTrendsReportsResponseDataColumnsItem's nullable fields (required or optional) to their field bits.
+var platformTrendsReportsResponseDataColumnsItemNullableFields = map[string]*big.Int{
+	"weight": platformTrendsReportsResponseDataColumnsItemFieldWeight,
+}
+
+type PlatformTrendsReportsResponseDataColumnsItem struct {
+	// Metrics only. How to combine the metric across rows.
+	Aggregate *PlatformTrendsReportsResponseDataColumnsItemAggregate `json:"aggregate,omitempty" url:"aggregate,omitempty"`
+	// The column's key on each row.
+	Key string `json:"key" url:"key"`
+	// The column's display name.
+	Name string `json:"name" url:"name"`
+	// An attribute of the row, or a number measured over it.
+	Type PlatformTrendsReportsResponseDataColumnsItemType `json:"type" url:"type"`
+	// Metrics only. Sets the value's JSON type.
+	Unit *PlatformTrendsReportsResponseDataColumnsItemUnit `json:"unit,omitempty" url:"unit,omitempty"`
+	// Metrics only. The column an `average` metric is weighted by.
+	Weight *string `json:"weight,omitempty" url:"weight,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) GetAggregate() *PlatformTrendsReportsResponseDataColumnsItemAggregate {
+	if p == nil {
+		return nil
+	}
+	return p.Aggregate
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) GetKey() string {
+	if p == nil {
+		return ""
+	}
+	return p.Key
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) GetType() PlatformTrendsReportsResponseDataColumnsItemType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) GetUnit() *PlatformTrendsReportsResponseDataColumnsItemUnit {
+	if p == nil {
+		return nil
+	}
+	return p.Unit
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) GetWeight() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Weight
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAggregate sets the Aggregate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataColumnsItem) SetAggregate(aggregate *PlatformTrendsReportsResponseDataColumnsItemAggregate) {
+	p.Aggregate = aggregate
+	p.require(platformTrendsReportsResponseDataColumnsItemFieldAggregate)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataColumnsItem) SetKey(key string) {
+	p.Key = key
+	p.require(platformTrendsReportsResponseDataColumnsItemFieldKey)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataColumnsItem) SetName(name string) {
+	p.Name = name
+	p.require(platformTrendsReportsResponseDataColumnsItemFieldName)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataColumnsItem) SetType(type_ PlatformTrendsReportsResponseDataColumnsItemType) {
+	p.Type = type_
+	p.require(platformTrendsReportsResponseDataColumnsItemFieldType)
+}
+
+// SetUnit sets the Unit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataColumnsItem) SetUnit(unit *PlatformTrendsReportsResponseDataColumnsItemUnit) {
+	p.Unit = unit
+	p.require(platformTrendsReportsResponseDataColumnsItemFieldUnit)
+}
+
+// SetWeight sets the Weight field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataColumnsItem) SetWeight(weight *string) {
+	p.Weight = weight
+	p.require(platformTrendsReportsResponseDataColumnsItemFieldWeight)
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponseDataColumnsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponseDataColumnsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, platformTrendsReportsResponseDataColumnsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponseDataColumnsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponseDataColumnsItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Metrics only. How to combine the metric across rows.
+type PlatformTrendsReportsResponseDataColumnsItemAggregate string
+
+const (
+	PlatformTrendsReportsResponseDataColumnsItemAggregateSum     PlatformTrendsReportsResponseDataColumnsItemAggregate = "sum"
+	PlatformTrendsReportsResponseDataColumnsItemAggregateAverage PlatformTrendsReportsResponseDataColumnsItemAggregate = "average"
+	PlatformTrendsReportsResponseDataColumnsItemAggregateNone    PlatformTrendsReportsResponseDataColumnsItemAggregate = "none"
+)
+
+func NewPlatformTrendsReportsResponseDataColumnsItemAggregateFromString(s string) (PlatformTrendsReportsResponseDataColumnsItemAggregate, error) {
+	switch s {
+	case "sum":
+		return PlatformTrendsReportsResponseDataColumnsItemAggregateSum, nil
+	case "average":
+		return PlatformTrendsReportsResponseDataColumnsItemAggregateAverage, nil
+	case "none":
+		return PlatformTrendsReportsResponseDataColumnsItemAggregateNone, nil
+	}
+	var t PlatformTrendsReportsResponseDataColumnsItemAggregate
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlatformTrendsReportsResponseDataColumnsItemAggregate) Ptr() *PlatformTrendsReportsResponseDataColumnsItemAggregate {
+	return &p
+}
+
+// An attribute of the row, or a number measured over it.
+type PlatformTrendsReportsResponseDataColumnsItemType string
+
+const (
+	PlatformTrendsReportsResponseDataColumnsItemTypeProperty PlatformTrendsReportsResponseDataColumnsItemType = "property"
+	PlatformTrendsReportsResponseDataColumnsItemTypeMetric   PlatformTrendsReportsResponseDataColumnsItemType = "metric"
+)
+
+func NewPlatformTrendsReportsResponseDataColumnsItemTypeFromString(s string) (PlatformTrendsReportsResponseDataColumnsItemType, error) {
+	switch s {
+	case "property":
+		return PlatformTrendsReportsResponseDataColumnsItemTypeProperty, nil
+	case "metric":
+		return PlatformTrendsReportsResponseDataColumnsItemTypeMetric, nil
+	}
+	var t PlatformTrendsReportsResponseDataColumnsItemType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlatformTrendsReportsResponseDataColumnsItemType) Ptr() *PlatformTrendsReportsResponseDataColumnsItemType {
+	return &p
+}
+
+// Metrics only. Sets the value's JSON type.
+type PlatformTrendsReportsResponseDataColumnsItemUnit string
+
+const (
+	PlatformTrendsReportsResponseDataColumnsItemUnitMoney  PlatformTrendsReportsResponseDataColumnsItemUnit = "money"
+	PlatformTrendsReportsResponseDataColumnsItemUnitCount  PlatformTrendsReportsResponseDataColumnsItemUnit = "count"
+	PlatformTrendsReportsResponseDataColumnsItemUnitRate   PlatformTrendsReportsResponseDataColumnsItemUnit = "rate"
+	PlatformTrendsReportsResponseDataColumnsItemUnitMonths PlatformTrendsReportsResponseDataColumnsItemUnit = "months"
+	PlatformTrendsReportsResponseDataColumnsItemUnitYears  PlatformTrendsReportsResponseDataColumnsItemUnit = "years"
+)
+
+func NewPlatformTrendsReportsResponseDataColumnsItemUnitFromString(s string) (PlatformTrendsReportsResponseDataColumnsItemUnit, error) {
+	switch s {
+	case "money":
+		return PlatformTrendsReportsResponseDataColumnsItemUnitMoney, nil
+	case "count":
+		return PlatformTrendsReportsResponseDataColumnsItemUnitCount, nil
+	case "rate":
+		return PlatformTrendsReportsResponseDataColumnsItemUnitRate, nil
+	case "months":
+		return PlatformTrendsReportsResponseDataColumnsItemUnitMonths, nil
+	case "years":
+		return PlatformTrendsReportsResponseDataColumnsItemUnitYears, nil
+	}
+	var t PlatformTrendsReportsResponseDataColumnsItemUnit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlatformTrendsReportsResponseDataColumnsItemUnit) Ptr() *PlatformTrendsReportsResponseDataColumnsItemUnit {
+	return &p
+}
+
+var (
+	platformTrendsReportsResponseDataReportsItemFieldRows   = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataReportsItemFieldWindow = big.NewInt(1 << 1)
+)
+
+type PlatformTrendsReportsResponseDataReportsItem struct {
+	// The page of rows. Only the requested columns are present.
+	Rows   []*PlatformTrendsReportsResponseDataReportsItemRowsItem `json:"rows" url:"rows"`
+	Window *PlatformTrendsReportsResponseDataReportsItemWindow     `json:"window" url:"window"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItem) GetRows() []*PlatformTrendsReportsResponseDataReportsItemRowsItem {
+	if p == nil {
+		return nil
+	}
+	return p.Rows
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItem) GetWindow() *PlatformTrendsReportsResponseDataReportsItemWindow {
+	if p == nil {
+		return nil
+	}
+	return p.Window
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetRows sets the Rows field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItem) SetRows(rows []*PlatformTrendsReportsResponseDataReportsItemRowsItem) {
+	p.Rows = rows
+	p.require(platformTrendsReportsResponseDataReportsItemFieldRows)
+}
+
+// SetWindow sets the Window field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItem) SetWindow(window *PlatformTrendsReportsResponseDataReportsItemWindow) {
+	p.Window = window
+	p.require(platformTrendsReportsResponseDataReportsItemFieldWindow)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponseDataReportsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponseDataReportsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItem) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponseDataReportsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldAccountCountry  = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldAov             = big.NewInt(1 << 1)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgBusinessAge  = big.NewInt(1 << 2)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgCustomerAge  = big.NewInt(1 << 3)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgOwnerAge     = big.NewInt(1 << 4)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinessType    = big.NewInt(1 << 5)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinesses      = big.NewInt(1 << 6)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomerCountry = big.NewInt(1 << 7)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomers       = big.NewInt(1 << 8)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldGrossRevenue    = big.NewInt(1 << 9)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldIndustryType    = big.NewInt(1 << 10)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses   = big.NewInt(1 << 11)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldP99GrossRevenue = big.NewInt(1 << 12)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments        = big.NewInt(1 << 13)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate      = big.NewInt(1 << 14)
+)
+
+// platformTrendsReportsResponseDataReportsItemRowsItemNullableFields maps the wire names of PlatformTrendsReportsResponseDataReportsItemRowsItem's nullable fields (required or optional) to their field bits.
+var platformTrendsReportsResponseDataReportsItemRowsItemNullableFields = map[string]*big.Int{
+	"account_country":   platformTrendsReportsResponseDataReportsItemRowsItemFieldAccountCountry,
+	"aov":               platformTrendsReportsResponseDataReportsItemRowsItemFieldAov,
+	"avg_business_age":  platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgBusinessAge,
+	"avg_customer_age":  platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgCustomerAge,
+	"avg_owner_age":     platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgOwnerAge,
+	"business_type":     platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinessType,
+	"businesses":        platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinesses,
+	"customer_country":  platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomerCountry,
+	"customers":         platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomers,
+	"gross_revenue":     platformTrendsReportsResponseDataReportsItemRowsItemFieldGrossRevenue,
+	"industry_type":     platformTrendsReportsResponseDataReportsItemRowsItemFieldIndustryType,
+	"new_businesses":    platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses,
+	"p99_gross_revenue": platformTrendsReportsResponseDataReportsItemRowsItemFieldP99GrossRevenue,
+	"payments":          platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments,
+	"repeat_rate":       platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate,
+}
+
+type PlatformTrendsReportsResponseDataReportsItemRowsItem struct {
+	AccountCountry *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry `json:"account_country,omitempty" url:"account_country,omitempty"`
+	// Gross revenue per payment.
+	Aov *v2.Money `json:"aov,omitempty" url:"aov,omitempty"`
+	// Average age in months of the businesses that sold.
+	AvgBusinessAge *float64 `json:"avg_business_age,omitempty" url:"avg_business_age,omitempty"`
+	// Average age in years of the paying customers.
+	AvgCustomerAge *float64 `json:"avg_customer_age,omitempty" url:"avg_customer_age,omitempty"`
+	// Average age in years of those businesses' owners.
+	AvgOwnerAge  *float64                                                          `json:"avg_owner_age,omitempty" url:"avg_owner_age,omitempty"`
+	BusinessType *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType `json:"business_type,omitempty" url:"business_type,omitempty"`
+	// Businesses with a paid payment.
+	Businesses      *int                                                                 `json:"businesses,omitempty" url:"businesses,omitempty"`
+	CustomerCountry *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry `json:"customer_country,omitempty" url:"customer_country,omitempty"`
+	// Distinct paying customers. A customer who pays in two groups counts in both.
+	Customers *int `json:"customers,omitempty" url:"customers,omitempty"`
+	// Paid sales, before refunds and fees, measured the way an account's gross revenue is.
+	GrossRevenue *v2.Money                                                         `json:"gross_revenue,omitempty" url:"gross_revenue,omitempty"`
+	IndustryType *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType `json:"industry_type,omitempty" url:"industry_type,omitempty"`
+	// Businesses created in the window that also sold in it.
+	NewBusinesses *int `json:"new_businesses,omitempty" url:"new_businesses,omitempty"`
+	// The 99th percentile of paid volume per business. `null` when fewer than 100 businesses sold, since below that it is the top seller's own volume.
+	P99GrossRevenue *v2.Money `json:"p99_gross_revenue,omitempty" url:"p99_gross_revenue,omitempty"`
+	// Paid payments.
+	Payments *int `json:"payments,omitempty" url:"payments,omitempty"`
+	// Share of customers who paid more than once, as a fraction.
+	RepeatRate *float64 `json:"repeat_rate,omitempty" url:"repeat_rate,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetAccountCountry() *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry {
+	if p == nil {
+		return nil
+	}
+	return p.AccountCountry
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetAov() *v2.Money {
+	if p == nil {
+		return nil
+	}
+	return p.Aov
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetAvgBusinessAge() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.AvgBusinessAge
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetAvgCustomerAge() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.AvgCustomerAge
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetAvgOwnerAge() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.AvgOwnerAge
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetBusinessType() *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType {
+	if p == nil {
+		return nil
+	}
+	return p.BusinessType
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetBusinesses() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Businesses
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetCustomerCountry() *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry {
+	if p == nil {
+		return nil
+	}
+	return p.CustomerCountry
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetCustomers() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Customers
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetGrossRevenue() *v2.Money {
+	if p == nil {
+		return nil
+	}
+	return p.GrossRevenue
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetIndustryType() *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType {
+	if p == nil {
+		return nil
+	}
+	return p.IndustryType
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetNewBusinesses() *int {
+	if p == nil {
+		return nil
+	}
+	return p.NewBusinesses
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetP99GrossRevenue() *v2.Money {
+	if p == nil {
+		return nil
+	}
+	return p.P99GrossRevenue
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetPayments() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Payments
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetRepeatRate() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.RepeatRate
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountCountry sets the AccountCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetAccountCountry(accountCountry *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry) {
+	p.AccountCountry = accountCountry
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldAccountCountry)
+}
+
+// SetAov sets the Aov field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetAov(aov *v2.Money) {
+	p.Aov = aov
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldAov)
+}
+
+// SetAvgBusinessAge sets the AvgBusinessAge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetAvgBusinessAge(avgBusinessAge *float64) {
+	p.AvgBusinessAge = avgBusinessAge
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgBusinessAge)
+}
+
+// SetAvgCustomerAge sets the AvgCustomerAge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetAvgCustomerAge(avgCustomerAge *float64) {
+	p.AvgCustomerAge = avgCustomerAge
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgCustomerAge)
+}
+
+// SetAvgOwnerAge sets the AvgOwnerAge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetAvgOwnerAge(avgOwnerAge *float64) {
+	p.AvgOwnerAge = avgOwnerAge
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgOwnerAge)
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetBusinessType(businessType *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType) {
+	p.BusinessType = businessType
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinessType)
+}
+
+// SetBusinesses sets the Businesses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetBusinesses(businesses *int) {
+	p.Businesses = businesses
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinesses)
+}
+
+// SetCustomerCountry sets the CustomerCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetCustomerCountry(customerCountry *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry) {
+	p.CustomerCountry = customerCountry
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomerCountry)
+}
+
+// SetCustomers sets the Customers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetCustomers(customers *int) {
+	p.Customers = customers
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomers)
+}
+
+// SetGrossRevenue sets the GrossRevenue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetGrossRevenue(grossRevenue *v2.Money) {
+	p.GrossRevenue = grossRevenue
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldGrossRevenue)
+}
+
+// SetIndustryType sets the IndustryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetIndustryType(industryType *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) {
+	p.IndustryType = industryType
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldIndustryType)
+}
+
+// SetNewBusinesses sets the NewBusinesses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetNewBusinesses(newBusinesses *int) {
+	p.NewBusinesses = newBusinesses
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses)
+}
+
+// SetP99GrossRevenue sets the P99GrossRevenue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetP99GrossRevenue(p99GrossRevenue *v2.Money) {
+	p.P99GrossRevenue = p99GrossRevenue
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldP99GrossRevenue)
+}
+
+// SetPayments sets the Payments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetPayments(payments *int) {
+	p.Payments = payments
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments)
+}
+
+// SetRepeatRate sets the RepeatRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetRepeatRate(repeatRate *float64) {
+	p.RepeatRate = repeatRate
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponseDataReportsItemRowsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponseDataReportsItemRowsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, platformTrendsReportsResponseDataReportsItemRowsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponseDataReportsItemRowsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	platformTrendsReportsResponseDataReportsItemRowsItemAccountCountryFieldID   = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataReportsItemRowsItemAccountCountryFieldName = big.NewInt(1 << 1)
+)
+
+type PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry struct {
+	// The value's id, such as `options_trading`.
+	ID string `json:"id" url:"id"`
+	// The value's display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry) SetID(id string) {
+	p.ID = id
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemAccountCountryFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry) SetName(name string) {
+	p.Name = name
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemAccountCountryFieldName)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemAccountCountry) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	platformTrendsReportsResponseDataReportsItemRowsItemBusinessTypeFieldID   = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataReportsItemRowsItemBusinessTypeFieldName = big.NewInt(1 << 1)
+)
+
+type PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType struct {
+	// The value's id, such as `options_trading`.
+	ID string `json:"id" url:"id"`
+	// The value's display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType) SetID(id string) {
+	p.ID = id
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemBusinessTypeFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType) SetName(name string) {
+	p.Name = name
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemBusinessTypeFieldName)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemBusinessType) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	platformTrendsReportsResponseDataReportsItemRowsItemCustomerCountryFieldID   = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataReportsItemRowsItemCustomerCountryFieldName = big.NewInt(1 << 1)
+)
+
+type PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry struct {
+	// The value's id, such as `options_trading`.
+	ID string `json:"id" url:"id"`
+	// The value's display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry) SetID(id string) {
+	p.ID = id
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemCustomerCountryFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry) SetName(name string) {
+	p.Name = name
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemCustomerCountryFieldName)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemCustomerCountry) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	platformTrendsReportsResponseDataReportsItemRowsItemIndustryTypeFieldID   = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataReportsItemRowsItemIndustryTypeFieldName = big.NewInt(1 << 1)
+)
+
+type PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType struct {
+	// The value's id, such as `options_trading`.
+	ID string `json:"id" url:"id"`
+	// The value's display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) SetID(id string) {
+	p.ID = id
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemIndustryTypeFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) SetName(name string) {
+	p.Name = name
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemIndustryTypeFieldName)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	platformTrendsReportsResponseDataReportsItemWindowFieldAsOf     = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataReportsItemWindowFieldFrom     = big.NewInt(1 << 1)
+	platformTrendsReportsResponseDataReportsItemWindowFieldKey      = big.NewInt(1 << 2)
+	platformTrendsReportsResponseDataReportsItemWindowFieldKind     = big.NewInt(1 << 3)
+	platformTrendsReportsResponseDataReportsItemWindowFieldTimeZone = big.NewInt(1 << 4)
+	platformTrendsReportsResponseDataReportsItemWindowFieldTo       = big.NewInt(1 << 5)
+)
+
+// platformTrendsReportsResponseDataReportsItemWindowNullableFields maps the wire names of PlatformTrendsReportsResponseDataReportsItemWindow's nullable fields (required or optional) to their field bits.
+var platformTrendsReportsResponseDataReportsItemWindowNullableFields = map[string]*big.Int{
+	"as_of": platformTrendsReportsResponseDataReportsItemWindowFieldAsOf,
+	"from":  platformTrendsReportsResponseDataReportsItemWindowFieldFrom,
+	"to":    platformTrendsReportsResponseDataReportsItemWindowFieldTo,
+}
+
+type PlatformTrendsReportsResponseDataReportsItemWindow struct {
+	// Always `null` for a range window.
+	AsOf *string `json:"as_of,omitempty" url:"as_of,omitempty"`
+	// Start of the data that answered the window, as an ISO 8601 timestamp. `null` for `all_time`.
+	From *string `json:"from,omitempty" url:"from,omitempty"`
+	// The window as requested, such as `30d` or `prev:7d`.
+	Key string `json:"key" url:"key"`
+	// Always `range` for this report.
+	Kind PlatformTrendsReportsResponseDataReportsItemWindowKind `json:"kind" url:"kind"`
+	// The zone the window's boundaries fall in.
+	TimeZone string `json:"time_zone" url:"time_zone"`
+	// End of the data that answered the window, exclusive, as an ISO 8601 timestamp.
+	To *string `json:"to,omitempty" url:"to,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) GetAsOf() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AsOf
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) GetFrom() *string {
+	if p == nil {
+		return nil
+	}
+	return p.From
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) GetKey() string {
+	if p == nil {
+		return ""
+	}
+	return p.Key
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) GetKind() PlatformTrendsReportsResponseDataReportsItemWindowKind {
+	if p == nil {
+		return ""
+	}
+	return p.Kind
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) GetTimeZone() string {
+	if p == nil {
+		return ""
+	}
+	return p.TimeZone
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) GetTo() *string {
+	if p == nil {
+		return nil
+	}
+	return p.To
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAsOf sets the AsOf field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) SetAsOf(asOf *string) {
+	p.AsOf = asOf
+	p.require(platformTrendsReportsResponseDataReportsItemWindowFieldAsOf)
+}
+
+// SetFrom sets the From field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) SetFrom(from *string) {
+	p.From = from
+	p.require(platformTrendsReportsResponseDataReportsItemWindowFieldFrom)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) SetKey(key string) {
+	p.Key = key
+	p.require(platformTrendsReportsResponseDataReportsItemWindowFieldKey)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) SetKind(kind PlatformTrendsReportsResponseDataReportsItemWindowKind) {
+	p.Kind = kind
+	p.require(platformTrendsReportsResponseDataReportsItemWindowFieldKind)
+}
+
+// SetTimeZone sets the TimeZone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) SetTimeZone(timeZone string) {
+	p.TimeZone = timeZone
+	p.require(platformTrendsReportsResponseDataReportsItemWindowFieldTimeZone)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) SetTo(to *string) {
+	p.To = to
+	p.require(platformTrendsReportsResponseDataReportsItemWindowFieldTo)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponseDataReportsItemWindow
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponseDataReportsItemWindow(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, platformTrendsReportsResponseDataReportsItemWindowNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponseDataReportsItemWindow
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemWindow) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Always `range` for this report.
+type PlatformTrendsReportsResponseDataReportsItemWindowKind string
+
+const (
+	PlatformTrendsReportsResponseDataReportsItemWindowKindRange PlatformTrendsReportsResponseDataReportsItemWindowKind = "range"
+)
+
+func NewPlatformTrendsReportsResponseDataReportsItemWindowKindFromString(s string) (PlatformTrendsReportsResponseDataReportsItemWindowKind, error) {
+	switch s {
+	case "range":
+		return PlatformTrendsReportsResponseDataReportsItemWindowKindRange, nil
+	}
+	var t PlatformTrendsReportsResponseDataReportsItemWindowKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlatformTrendsReportsResponseDataReportsItemWindowKind) Ptr() *PlatformTrendsReportsResponseDataReportsItemWindowKind {
+	return &p
+}
+
+var (
+	platformTrendsReportsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	platformTrendsReportsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	platformTrendsReportsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	platformTrendsReportsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// platformTrendsReportsResponsePageInfoNullableFields maps the wire names of PlatformTrendsReportsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var platformTrendsReportsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   platformTrendsReportsResponsePageInfoFieldEndCursor,
+	"start_cursor": platformTrendsReportsResponsePageInfoFieldStartCursor,
+}
+
+type PlatformTrendsReportsResponsePageInfo struct {
+	// Pass as `after` for the next page.
+	EndCursor *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	// Whether more rows follow this page.
+	HasNextPage bool `json:"has_next_page" url:"has_next_page"`
+	// Whether rows precede this page.
+	HasPreviousPage bool `json:"has_previous_page" url:"has_previous_page"`
+	// The cursor of the first row on this page.
+	StartCursor *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PlatformTrendsReportsResponsePageInfo) GetEndCursor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.EndCursor
+}
+
+func (p *PlatformTrendsReportsResponsePageInfo) GetHasNextPage() bool {
+	if p == nil {
+		return false
+	}
+	return p.HasNextPage
+}
+
+func (p *PlatformTrendsReportsResponsePageInfo) GetHasPreviousPage() bool {
+	if p == nil {
+		return false
+	}
+	return p.HasPreviousPage
+}
+
+func (p *PlatformTrendsReportsResponsePageInfo) GetStartCursor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StartCursor
+}
+
+func (p *PlatformTrendsReportsResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PlatformTrendsReportsResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponsePageInfo) SetEndCursor(endCursor *string) {
+	p.EndCursor = endCursor
+	p.require(platformTrendsReportsResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	p.HasNextPage = hasNextPage
+	p.require(platformTrendsReportsResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	p.HasPreviousPage = hasPreviousPage
+	p.require(platformTrendsReportsResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponsePageInfo) SetStartCursor(startCursor *string) {
+	p.StartCursor = startCursor
+	p.require(platformTrendsReportsResponsePageInfoFieldStartCursor)
+}
+
+func (p *PlatformTrendsReportsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler PlatformTrendsReportsResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PlatformTrendsReportsResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, platformTrendsReportsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PlatformTrendsReportsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed PlatformTrendsReportsResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PlatformTrendsReportsResponsePageInfo) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }

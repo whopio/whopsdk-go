@@ -58,3 +58,28 @@ func (c *Client) List(
 	}
 	return response.Body, nil
 }
+
+// Payments across all of Whop, for up to four windows at once. Break rows down by business type, industry type, account country or customer country, and let the business type ride along on industry type rows. The report covers the whole platform, so it takes no `account_id` and any authenticated caller can read it. A breakdown value with fewer than three businesses behind it is left out, and a filtered total that small comes back with every metric `null`.
+//
+// Example:
+//
+//	request := &stats.PlatformTrendsReportsRequest{}
+//	client.Stats.Reports.PlatformTrends(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) PlatformTrends(
+	ctx context.Context,
+	request *stats.PlatformTrendsReportsRequest,
+	opts ...option.RequestOption,
+) (*stats.PlatformTrendsReportsResponse, error) {
+	response, err := c.WithRawResponse.PlatformTrends(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
