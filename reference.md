@@ -34926,7 +34926,7 @@ client.SocialAccounts.Refresh(
 <dl>
 <dd>
 
-Deprecated. Lists every metric, which no longer says which of them a projection accepts. List the ones you can chart with `GET /stats/time_series`, or the ones you can rank with `GET /stats/reports`.
+Deprecated. Lists every metric, which no longer says which of them a projection accepts. List the ones you can chart with `GET /stats/time_series`. Aggregates that are not bucketed over time are reports, listed at `GET /stats/reports`.
 </dd>
 </dl>
 </dd>
@@ -34967,7 +34967,7 @@ client.Stats.List(
 <dl>
 <dd>
 
-Deprecated compatibility endpoint. Retrieve a metric's time series with `GET /stats/time_series/{metric}` instead, or rank one across a breakdown with `GET /stats/reports/{metric}`.
+Deprecated compatibility endpoint. Retrieve a metric's time series with `GET /stats/time_series/{metric}` instead.
 </dd>
 </dl>
 </dd>
@@ -44385,6 +44385,48 @@ client.SetupIntents.Direct.Create(
 </dl>
 </details>
 
+## Stats Reports
+<details><summary><code>client.Stats.Reports.List() -> *stats.ListReportsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists every report: the aggregates that are not bucketed over time. Each entry names the report's path, its window kind, the breakdowns it accepts and its columns. A property column is an attribute of the row and lists the breakdowns it can ride along with. A metric column is a number measured over the row, with the unit that sets its JSON type, the aggregate that says how to combine it across rows, and the breakdowns and windows it supports. For a bucketed series, use `GET /stats/time_series`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.Stats.Reports.List(
+    context.TODO(),
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Stats TimeSeries
 <details><summary><code>client.Stats.TimeSeries.List() -> *stats.ListTimeSeriesResponse</code></summary>
 <dl>
@@ -44398,7 +44440,7 @@ client.SetupIntents.Direct.Create(
 <dl>
 <dd>
 
-Lists the metrics you can chart over time, with the unit each reports and the properties you can filter or break it down by. Every metric can be charted, so this is the whole catalog; the metrics you can rank are the narrower list at `GET /stats/reports`.
+Lists the metrics you can chart over time, with the unit each reports and the properties you can filter or break it down by. Aggregates that are not bucketed over time are reports, listed at `GET /stats/reports`.
 </dd>
 </dl>
 </dd>
@@ -44439,7 +44481,7 @@ client.Stats.TimeSeries.List(
 <dl>
 <dd>
 
-Retrieves a metric as a time series of points for an account or user over a time range. To rank a metric across one of its breakdowns instead of charting it, use `GET /stats/reports/{metric}`. The `market_prices` metric is public and requires no authentication. The `funnel` metric measures 2 to 10 ordered events per person. Its first matching event inside from/to anchors the cohort, breakdown and conversion window; later entries do not restart it. Intervening events are allowed, and conversions may occur after to. Funnel values are final conversion percentages; steps include counts and cumulative conversion percentages. Experiment funnels use experiment.exposure as step 1 and breakdown_by=variant. Pass steps using bracket parameters such as steps[1][event]=pixel.page&steps[1][page]=/pricing*&steps[2][event]=payment.completed.
+Retrieves a metric as a time series of points for an account or user over a time range. For an aggregate that is not bucketed over time, use a report from `GET /stats/reports`. The `market_prices` metric is public and requires no authentication. The `funnel` metric measures 2 to 10 ordered events per person. Its first matching event inside from/to anchors the cohort, breakdown and conversion window; later entries do not restart it. Intervening events are allowed, and conversions may occur after to. Funnel values are final conversion percentages; steps include counts and cumulative conversion percentages. Experiment funnels use experiment.exposure as step 1 and breakdown_by=variant. Pass steps using bracket parameters such as steps[1][event]=pixel.page&steps[1][page]=/pricing*&steps[2][event]=payment.completed.
 </dd>
 </dl>
 </dd>
