@@ -16303,6 +16303,38 @@
       }
     },
     {
+      "id": "bfec10bb-f87d-4ca0-bc04-46ec33cd03f8",
+      "name": "List Reports - default",
+      "request": {
+        "urlPathTemplate": "/stats/reports",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"breakdowns\": [\n        \"breakdowns\"\n      ],\n      \"columns\": [\n        {\n          \"key\": \"key\",\n          \"name\": \"name\",\n          \"type\": \"property\"\n        }\n      ],\n      \"description\": \"description\",\n      \"key\": \"key\",\n      \"path\": \"path\",\n      \"window_field\": \"window_field\",\n      \"window_kind\": \"range\"\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "bfec10bb-f87d-4ca0-bc04-46ec33cd03f8",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "1bae2257-3712-4436-80cf-de387e82deda",
       "name": "List Time Series Metrics - default",
       "request": {
@@ -16752,6 +16784,6 @@
     }
   ],
   "meta": {
-    "total": 468
+    "total": 469
   }
 }

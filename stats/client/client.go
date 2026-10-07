@@ -9,11 +9,13 @@ import (
 	core "github.com/whopio/whopsdk-go/v2/core"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	option "github.com/whopio/whopsdk-go/v2/option"
+	reports "github.com/whopio/whopsdk-go/v2/stats/reports"
 	timeseries "github.com/whopio/whopsdk-go/v2/stats/timeseries"
 )
 
 type Client struct {
 	WithRawResponse *RawClient
+	Reports         *reports.Client
 	TimeSeries      *timeseries.Client
 
 	options *core.RequestOptions
@@ -27,6 +29,7 @@ func NewClient(options *core.RequestOptions) *Client {
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
+		Reports:         reports.NewClient(options),
 		TimeSeries:      timeseries.NewClient(options),
 		WithRawResponse: NewRawClient(options),
 		options:         options,
@@ -41,7 +44,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Deprecated. Lists every metric, which no longer says which of them a projection accepts. List the ones you can chart with `GET /stats/time_series`, or the ones you can rank with `GET /stats/reports`.
+// Deprecated. Lists every metric, which no longer says which of them a projection accepts. List the ones you can chart with `GET /stats/time_series`. Aggregates that are not bucketed over time are reports, listed at `GET /stats/reports`.
 //
 // Example:
 //
@@ -62,7 +65,7 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
-// Deprecated compatibility endpoint. Retrieve a metric's time series with `GET /stats/time_series/{metric}` instead, or rank one across a breakdown with `GET /stats/reports/{metric}`.
+// Deprecated compatibility endpoint. Retrieve a metric's time series with `GET /stats/time_series/{metric}` instead.
 //
 // Example:
 //
