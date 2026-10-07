@@ -202,13 +202,13 @@ type EconomicIntelligence struct {
 	ResultURL *string `json:"result_url,omitempty" url:"result_url,omitempty"`
 	// The user who started the run, prefixed `user_`, or `null` if it has not run or was started without a user, such as with an API key.
 	RunByUserID *string `json:"run_by_user_id,omitempty" url:"run_by_user_id,omitempty"`
-	// When Whop AI's run ended, whether executed or incomplete, as an ISO 8601 timestamp, or `null` if it has not ended.
+	// When the run ended, whether executed or incomplete, as an ISO 8601 timestamp, or `null` if it has not ended.
 	RunEndedAt *string `json:"run_ended_at,omitempty" url:"run_ended_at,omitempty"`
-	// When Whop AI started carrying out the recommendation, as an ISO 8601 timestamp, or `null` if it has not run.
+	// When the run started, by Whop AI or the recommendation's API calls, as an ISO 8601 timestamp, or `null` if it has not run.
 	RunStartedAt *string `json:"run_started_at,omitempty" url:"run_started_at,omitempty"`
 	// How the user rated this recommendation, or `null` if they have not rated it
 	Sentiment *EconomicIntelligenceSentiment `json:"sentiment,omitempty" url:"sentiment,omitempty"`
-	// `queued` when awaiting generation; `pending` while generating; `ready` when available to run; `running` while Whop AI carries it out; `executed` when carried out; `incomplete` when Whop AI's run ended without carrying it out; `superseded` when rejected or replaced.
+	// `queued` when awaiting generation; `pending` while generating; `ready` when available to run; `running` while Whop AI or the recommendation's API calls carry it out; `executed` when carried out; `incomplete` when the run ended without carrying it out; `superseded` when rejected or replaced.
 	Status EconomicIntelligenceStatus `json:"status" url:"status"`
 	// When the recommendation was rejected or replaced, as an ISO 8601 timestamp, or `null` if neither has occurred.
 	SupersededAt *string `json:"superseded_at,omitempty" url:"superseded_at,omitempty"`
@@ -613,7 +613,7 @@ var economicIntelligenceInputNullableFields = map[string]*big.Int{
 }
 
 type EconomicIntelligenceInput struct {
-	// What Whop AI ran with: one of the options or your own text. `null` until a run starts.
+	// What the run used: one of the options, or your own text for a `whop_ai` recommendation. `null` until a run starts.
 	Answer *string `json:"answer,omitempty" url:"answer,omitempty"`
 	// Identifies the input when you answer it.
 	ID string `json:"id" url:"id"`
@@ -904,7 +904,7 @@ func (e EconomicIntelligenceSentiment) Ptr() *EconomicIntelligenceSentiment {
 	return &e
 }
 
-// `queued` when awaiting generation; `pending` while generating; `ready` when available to run; `running` while Whop AI carries it out; `executed` when carried out; `incomplete` when Whop AI's run ended without carrying it out; `superseded` when rejected or replaced.
+// `queued` when awaiting generation; `pending` while generating; `ready` when available to run; `running` while Whop AI or the recommendation's API calls carry it out; `executed` when carried out; `incomplete` when the run ended without carrying it out; `superseded` when rejected or replaced.
 type EconomicIntelligenceStatus string
 
 const (
