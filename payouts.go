@@ -7288,7 +7288,6 @@ var (
 	postPayoutMethodCreatedPayloadDataRecipientFieldCountry   = big.NewInt(1 << 0)
 	postPayoutMethodCreatedPayloadDataRecipientFieldFirstName = big.NewInt(1 << 1)
 	postPayoutMethodCreatedPayloadDataRecipientFieldLastName  = big.NewInt(1 << 2)
-	postPayoutMethodCreatedPayloadDataRecipientFieldUserID    = big.NewInt(1 << 3)
 )
 
 // The recipient of a third-party payout method. Present only for recipient payout methods.
@@ -7297,8 +7296,6 @@ type PostPayoutMethodCreatedPayloadDataRecipient struct {
 	Country   string `json:"country" url:"country"`
 	FirstName string `json:"first_name" url:"first_name"`
 	LastName  string `json:"last_name" url:"last_name"`
-	// The recipient's Whop user ID, prefixed `user_`.
-	UserID string `json:"user_id" url:"user_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7326,13 +7323,6 @@ func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetLastName() string {
 		return ""
 	}
 	return p.LastName
-}
-
-func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetUserID() string {
-	if p == nil {
-		return ""
-	}
-	return p.UserID
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetExtraProperties() map[string]interface{} {
@@ -7370,13 +7360,6 @@ func (p *PostPayoutMethodCreatedPayloadDataRecipient) SetFirstName(firstName str
 func (p *PostPayoutMethodCreatedPayloadDataRecipient) SetLastName(lastName string) {
 	p.LastName = lastName
 	p.require(postPayoutMethodCreatedPayloadDataRecipientFieldLastName)
-}
-
-// SetUserID sets the UserID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPayoutMethodCreatedPayloadDataRecipient) SetUserID(userID string) {
-	p.UserID = userID
-	p.require(postPayoutMethodCreatedPayloadDataRecipientFieldUserID)
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataRecipient) UnmarshalJSON(data []byte) error {
