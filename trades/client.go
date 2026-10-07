@@ -119,74 +119,49 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Submits perpetual orders from a funded trading wallet. Send several limit orders for a ladder, or attach `take_profit` and `stop_loss` to a single entry order. Whop's builder fee is approved and attached automatically. The returned `trop_` ID identifies the submission, not a position, and `completed` doesn't mean filled: check each order acknowledgement, and read live orders and positions from the account's `trading` field. Requires an `Idempotency-Key`. Early beta: email support@whop.com for access.
+// Retired. Order batches can no longer be placed. Every caller gets `410 Gone`, whatever the body, and nothing is sent to the trading provider. List and retrieve earlier trades with `GET /trades`.
 //
 // Example:
 //
-//	request := &whopsdk.CreateTradesRequest{
-//	    AccountID: "biz_xxxxxxxxxxxxxx",
-//	    InstrumentType: whopsdk.CreateTradesRequestInstrumentTypePerpetual,
-//	    Orders: []*whopsdk.CreateTradesRequestOrdersItem{
-//	        &whopsdk.CreateTradesRequestOrdersItem{
-//	            Market: "ETH",
-//	            Side: whopsdk.CreateTradesRequestOrdersItemSideBuy,
-//	            Size: "0.02",
-//	        },
-//	    },
-//	    Provider: whopsdk.CreateTradesRequestProviderHyperliquid,
-//	}
 //	client.Trades.Create(
 //	    context.TODO(),
-//	    request,
 //	)
 func (c *Client) Create(
 	ctx context.Context,
-	request *whopsdk.CreateTradesRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Trade, error) {
-	response, err := c.WithRawResponse.Create(
+) error {
+	_, err := c.WithRawResponse.Create(
 		ctx,
-		request,
 		opts...,
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return response.Body, nil
+	return nil
 }
 
-// Sets cross or isolated leverage for a perpetual market, up to that market's maximum. Returns a trade recording the submission. Requires an `Idempotency-Key`.
+// Retired. Every caller gets `410 Gone`, and no leverage change is sent to the trading provider.
 //
 // Example:
 //
-//	request := &whopsdk.UpdateLeverageTradesRequest{
-//	    AccountID: "biz_xxxxxxxxxxxxxx",
-//	    Leverage: 5,
-//	    MarginMode: whopsdk.UpdateLeverageTradesRequestMarginModeCross,
-//	    Market: "ETH",
-//	    Provider: whopsdk.UpdateLeverageTradesRequestProviderHyperliquid,
-//	}
 //	client.Trades.UpdateLeverage(
 //	    context.TODO(),
-//	    request,
 //	)
 func (c *Client) UpdateLeverage(
 	ctx context.Context,
-	request *whopsdk.UpdateLeverageTradesRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Trade, error) {
-	response, err := c.WithRawResponse.UpdateLeverage(
+) error {
+	_, err := c.WithRawResponse.UpdateLeverage(
 		ctx,
-		request,
 		opts...,
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return response.Body, nil
+	return nil
 }
 
-// Retrieves a trade. Order acknowledgements don't update as orders fill; read live orders and positions from the account's `trading` field. Never resubmit a `submission_unknown` trade with a new idempotency key.
+// Retrieves a trade. Order acknowledgements don't update as orders fill. Never resubmit a `submission_unknown` trade with a new idempotency key.
 //
 // Example:
 //
@@ -213,7 +188,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Cancels every order in an order trade, including attached take-profit and stop-loss. This doesn't close filled positions. Returns a new cancellation trade whose `trade_id` points to the original, which is left unchanged. Cancellation works even while opening new positions is disabled. Requires an `Idempotency-Key`.
+// Retired. Every caller gets `410 Gone`, and no cancellation is sent to the trading provider.
 //
 // Example:
 //
@@ -228,14 +203,14 @@ func (c *Client) Cancel(
 	ctx context.Context,
 	request *whopsdk.CancelTradesRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Trade, error) {
-	response, err := c.WithRawResponse.Cancel(
+) error {
+	_, err := c.WithRawResponse.Cancel(
 		ctx,
 		request,
 		opts...,
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return response.Body, nil
+	return nil
 }

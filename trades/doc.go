@@ -2,5 +2,7 @@
 
 // A Trade records an order batch, cancellation, or leverage change submitted to a trading provider from an account or user's Whop-managed wallet. Its `status` tracks the submission, not whether orders filled.
 //
-// Use the Trades API to place limit or market orders with optional take-profit and stop-loss protection, cancel a submitted batch, set leverage, and list or retrieve past submissions. Read live margin, positions, and open orders by passing `include_trading=true` to Retrieve Account or Retrieve User with `id=me`. Whop's builder fee is added to each order. Hyperliquid perpetuals are currently supported; email support@whop.com to request access.
+// Use the Trades API to list and retrieve earlier submissions. The order, cancel, and leverage writes are retired: they return `410 Gone` to every caller, and the API cannot place trades now. Hyperliquid perpetuals are the only supported provider.
+//
+// The trading API, including `include_trading` on accounts and users, is in beta. It can change without a new API version date.
 package trades

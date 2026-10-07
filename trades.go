@@ -10,15 +10,12 @@ import (
 )
 
 var (
-	cancelTradesRequestFieldID       = big.NewInt(1 << 0)
-	cancelTradesRequestFieldMetadata = big.NewInt(1 << 1)
+	cancelTradesRequestFieldID = big.NewInt(1 << 0)
 )
 
 type CancelTradesRequest struct {
 	// ID of the order trade to cancel, prefixed `trop_`.
 	ID string `json:"-" url:"-"`
-	// Free-form string-to-string annotations stored on the trade.
-	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -38,132 +35,6 @@ func (c *CancelTradesRequest) require(field *big.Int) {
 func (c *CancelTradesRequest) SetID(id string) {
 	c.ID = id
 	c.require(cancelTradesRequestFieldID)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CancelTradesRequest) SetMetadata(metadata map[string]*string) {
-	c.Metadata = metadata
-	c.require(cancelTradesRequestFieldMetadata)
-}
-
-func (c *CancelTradesRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CancelTradesRequest
-	var body unmarshaler
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*c = CancelTradesRequest(body)
-	return nil
-}
-
-func (c *CancelTradesRequest) MarshalJSON() ([]byte, error) {
-	type embed CancelTradesRequest
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-var (
-	createTradesRequestFieldAccountID      = big.NewInt(1 << 0)
-	createTradesRequestFieldInstrumentType = big.NewInt(1 << 1)
-	createTradesRequestFieldMetadata       = big.NewInt(1 << 2)
-	createTradesRequestFieldOrders         = big.NewInt(1 << 3)
-	createTradesRequestFieldProvider       = big.NewInt(1 << 4)
-	createTradesRequestFieldSlippageBps    = big.NewInt(1 << 5)
-)
-
-type CreateTradesRequest struct {
-	// The account or user that owns the trading wallet, prefixed `biz_` or `user_`.
-	AccountID string `json:"account_id" url:"-"`
-	// The kind of instrument to trade.
-	InstrumentType CreateTradesRequestInstrumentType `json:"instrument_type" url:"-"`
-	// Free-form string-to-string annotations stored on the trade.
-	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
-	// Orders to submit together. Attached take-profit and stop-loss are supported only with a single entry order.
-	Orders   []*CreateTradesRequestOrdersItem `json:"orders" url:"-"`
-	Provider CreateTradesRequestProvider      `json:"provider" url:"-"`
-	// Default slippage cap in basis points for market orders and market-triggered take-profit and stop-loss.
-	SlippageBps *int `json:"slippage_bps,omitempty" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (c *CreateTradesRequest) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequest) SetAccountID(accountID string) {
-	c.AccountID = accountID
-	c.require(createTradesRequestFieldAccountID)
-}
-
-// SetInstrumentType sets the InstrumentType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequest) SetInstrumentType(instrumentType CreateTradesRequestInstrumentType) {
-	c.InstrumentType = instrumentType
-	c.require(createTradesRequestFieldInstrumentType)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequest) SetMetadata(metadata map[string]*string) {
-	c.Metadata = metadata
-	c.require(createTradesRequestFieldMetadata)
-}
-
-// SetOrders sets the Orders field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequest) SetOrders(orders []*CreateTradesRequestOrdersItem) {
-	c.Orders = orders
-	c.require(createTradesRequestFieldOrders)
-}
-
-// SetProvider sets the Provider field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequest) SetProvider(provider CreateTradesRequestProvider) {
-	c.Provider = provider
-	c.require(createTradesRequestFieldProvider)
-}
-
-// SetSlippageBps sets the SlippageBps field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequest) SetSlippageBps(slippageBps *int) {
-	c.SlippageBps = slippageBps
-	c.require(createTradesRequestFieldSlippageBps)
-}
-
-func (c *CreateTradesRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTradesRequest
-	var body unmarshaler
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*c = CreateTradesRequest(body)
-	return nil
-}
-
-func (c *CreateTradesRequest) MarshalJSON() ([]byte, error) {
-	type embed CreateTradesRequest
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
 }
 
 var (
@@ -1975,70 +1846,22 @@ func (t TradeStatus) Ptr() *TradeStatus {
 	return &t
 }
 
-// The kind of instrument to trade.
-type CreateTradesRequestInstrumentType string
-
-const (
-	CreateTradesRequestInstrumentTypePerpetual CreateTradesRequestInstrumentType = "perpetual"
-)
-
-func NewCreateTradesRequestInstrumentTypeFromString(s string) (CreateTradesRequestInstrumentType, error) {
-	switch s {
-	case "perpetual":
-		return CreateTradesRequestInstrumentTypePerpetual, nil
-	}
-	var t CreateTradesRequestInstrumentType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateTradesRequestInstrumentType) Ptr() *CreateTradesRequestInstrumentType {
-	return &c
-}
-
 var (
-	createTradesRequestOrdersItemFieldMarket       = big.NewInt(1 << 0)
-	createTradesRequestOrdersItemFieldOrderType    = big.NewInt(1 << 1)
-	createTradesRequestOrdersItemFieldPrice        = big.NewInt(1 << 2)
-	createTradesRequestOrdersItemFieldReduceOnly   = big.NewInt(1 << 3)
-	createTradesRequestOrdersItemFieldSide         = big.NewInt(1 << 4)
-	createTradesRequestOrdersItemFieldSize         = big.NewInt(1 << 5)
-	createTradesRequestOrdersItemFieldSlippageBps  = big.NewInt(1 << 6)
-	createTradesRequestOrdersItemFieldStopLoss     = big.NewInt(1 << 7)
-	createTradesRequestOrdersItemFieldTakeProfit   = big.NewInt(1 << 8)
-	createTradesRequestOrdersItemFieldTimeInForce  = big.NewInt(1 << 9)
-	createTradesRequestOrdersItemFieldTriggerPrice = big.NewInt(1 << 10)
+	tradingHyperliquidOrderFieldReduceOnly   = big.NewInt(1 << 0)
+	tradingHyperliquidOrderFieldTriggerPrice = big.NewInt(1 << 1)
 )
 
-// createTradesRequestOrdersItemNullableFields maps the wire names of CreateTradesRequestOrdersItem's nullable fields (required or optional) to their field bits.
-var createTradesRequestOrdersItemNullableFields = map[string]*big.Int{
-	"price":         createTradesRequestOrdersItemFieldPrice,
-	"slippage_bps":  createTradesRequestOrdersItemFieldSlippageBps,
-	"stop_loss":     createTradesRequestOrdersItemFieldStopLoss,
-	"take_profit":   createTradesRequestOrdersItemFieldTakeProfit,
-	"trigger_price": createTradesRequestOrdersItemFieldTriggerPrice,
+// tradingHyperliquidOrderNullableFields maps the wire names of TradingHyperliquidOrder's nullable fields (required or optional) to their field bits.
+var tradingHyperliquidOrderNullableFields = map[string]*big.Int{
+	"reduce_only":   tradingHyperliquidOrderFieldReduceOnly,
+	"trigger_price": tradingHyperliquidOrderFieldTriggerPrice,
 }
 
-type CreateTradesRequestOrdersItem struct {
-	// Perpetual market on the selected provider, such as `ETH`.
-	Market    string                                  `json:"market" url:"market"`
-	OrderType *CreateTradesRequestOrdersItemOrderType `json:"order_type,omitempty" url:"order_type,omitempty"`
-	// Limit price as a decimal string. Required for a limit order; for a take-profit or stop-loss, omit it to trigger a market order.
-	Price *string `json:"price,omitempty" url:"price,omitempty"`
-	// Whether the order can only reduce an existing position. Take-profit and stop-loss orders are always reduce-only.
-	ReduceOnly *bool                             `json:"reduce_only,omitempty" url:"reduce_only,omitempty"`
-	Side       CreateTradesRequestOrdersItemSide `json:"side" url:"side"`
-	// Order size as a decimal string.
-	Size string `json:"size" url:"size"`
-	// Slippage cap for this order in basis points, overriding the request's `slippage_bps`.
-	SlippageBps *int `json:"slippage_bps,omitempty" url:"slippage_bps,omitempty"`
-	// Stop-loss to attach to a single entry order.
-	StopLoss *CreateTradesRequestOrdersItemStopLoss `json:"stop_loss,omitempty" url:"stop_loss,omitempty"`
-	// Take-profit to attach to a single entry order.
-	TakeProfit *CreateTradesRequestOrdersItemTakeProfit `json:"take_profit,omitempty" url:"take_profit,omitempty"`
-	// How long a limit order stays active. Ignored for other order types.
-	TimeInForce *CreateTradesRequestOrdersItemTimeInForce `json:"time_in_force,omitempty" url:"time_in_force,omitempty"`
-	// Trigger price as a decimal string. Required for standalone take-profit and stop-loss orders.
-	TriggerPrice *string `json:"trigger_price,omitempty" url:"trigger_price,omitempty"`
+type TradingHyperliquidOrder struct {
+	// Whether the order can only reduce an existing position, or `null` when Hyperliquid omits it.
+	ReduceOnly *bool `json:"reduce_only,omitempty" url:"reduce_only,omitempty"`
+	// Trigger price in USD for take-profit and stop-loss orders, or `null` for orders without a trigger.
+	TriggerPrice *Money `json:"trigger_price,omitempty" url:"trigger_price,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2047,550 +1870,97 @@ type CreateTradesRequestOrdersItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateTradesRequestOrdersItem) GetMarket() string {
-	if c == nil {
-		return ""
-	}
-	return c.Market
-}
-
-func (c *CreateTradesRequestOrdersItem) GetOrderType() *CreateTradesRequestOrdersItemOrderType {
-	if c == nil {
+func (t *TradingHyperliquidOrder) GetReduceOnly() *bool {
+	if t == nil {
 		return nil
 	}
-	return c.OrderType
+	return t.ReduceOnly
 }
 
-func (c *CreateTradesRequestOrdersItem) GetPrice() *string {
-	if c == nil {
+func (t *TradingHyperliquidOrder) GetTriggerPrice() *Money {
+	if t == nil {
 		return nil
 	}
-	return c.Price
+	return t.TriggerPrice
 }
 
-func (c *CreateTradesRequestOrdersItem) GetReduceOnly() *bool {
-	if c == nil {
+func (t *TradingHyperliquidOrder) GetExtraProperties() map[string]interface{} {
+	if t == nil {
 		return nil
 	}
-	return c.ReduceOnly
+	return t.extraProperties
 }
 
-func (c *CreateTradesRequestOrdersItem) GetSide() CreateTradesRequestOrdersItemSide {
-	if c == nil {
-		return ""
-	}
-	return c.Side
-}
-
-func (c *CreateTradesRequestOrdersItem) GetSize() string {
-	if c == nil {
-		return ""
-	}
-	return c.Size
-}
-
-func (c *CreateTradesRequestOrdersItem) GetSlippageBps() *int {
-	if c == nil {
-		return nil
-	}
-	return c.SlippageBps
-}
-
-func (c *CreateTradesRequestOrdersItem) GetStopLoss() *CreateTradesRequestOrdersItemStopLoss {
-	if c == nil {
-		return nil
-	}
-	return c.StopLoss
-}
-
-func (c *CreateTradesRequestOrdersItem) GetTakeProfit() *CreateTradesRequestOrdersItemTakeProfit {
-	if c == nil {
-		return nil
-	}
-	return c.TakeProfit
-}
-
-func (c *CreateTradesRequestOrdersItem) GetTimeInForce() *CreateTradesRequestOrdersItemTimeInForce {
-	if c == nil {
-		return nil
-	}
-	return c.TimeInForce
-}
-
-func (c *CreateTradesRequestOrdersItem) GetTriggerPrice() *string {
-	if c == nil {
-		return nil
-	}
-	return c.TriggerPrice
-}
-
-func (c *CreateTradesRequestOrdersItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateTradesRequestOrdersItem) require(field *big.Int) {
+func (t *TradingHyperliquidOrder) require(field *big.Int) {
 	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
 	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetMarket sets the Market field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetMarket(market string) {
-	c.Market = market
-	c.require(createTradesRequestOrdersItemFieldMarket)
-}
-
-// SetOrderType sets the OrderType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetOrderType(orderType *CreateTradesRequestOrdersItemOrderType) {
-	c.OrderType = orderType
-	c.require(createTradesRequestOrdersItemFieldOrderType)
-}
-
-// SetPrice sets the Price field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetPrice(price *string) {
-	c.Price = price
-	c.require(createTradesRequestOrdersItemFieldPrice)
+	t.explicitFields = next
 }
 
 // SetReduceOnly sets the ReduceOnly field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetReduceOnly(reduceOnly *bool) {
-	c.ReduceOnly = reduceOnly
-	c.require(createTradesRequestOrdersItemFieldReduceOnly)
-}
-
-// SetSide sets the Side field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetSide(side CreateTradesRequestOrdersItemSide) {
-	c.Side = side
-	c.require(createTradesRequestOrdersItemFieldSide)
-}
-
-// SetSize sets the Size field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetSize(size string) {
-	c.Size = size
-	c.require(createTradesRequestOrdersItemFieldSize)
-}
-
-// SetSlippageBps sets the SlippageBps field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetSlippageBps(slippageBps *int) {
-	c.SlippageBps = slippageBps
-	c.require(createTradesRequestOrdersItemFieldSlippageBps)
-}
-
-// SetStopLoss sets the StopLoss field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetStopLoss(stopLoss *CreateTradesRequestOrdersItemStopLoss) {
-	c.StopLoss = stopLoss
-	c.require(createTradesRequestOrdersItemFieldStopLoss)
-}
-
-// SetTakeProfit sets the TakeProfit field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetTakeProfit(takeProfit *CreateTradesRequestOrdersItemTakeProfit) {
-	c.TakeProfit = takeProfit
-	c.require(createTradesRequestOrdersItemFieldTakeProfit)
-}
-
-// SetTimeInForce sets the TimeInForce field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetTimeInForce(timeInForce *CreateTradesRequestOrdersItemTimeInForce) {
-	c.TimeInForce = timeInForce
-	c.require(createTradesRequestOrdersItemFieldTimeInForce)
+func (t *TradingHyperliquidOrder) SetReduceOnly(reduceOnly *bool) {
+	t.ReduceOnly = reduceOnly
+	t.require(tradingHyperliquidOrderFieldReduceOnly)
 }
 
 // SetTriggerPrice sets the TriggerPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItem) SetTriggerPrice(triggerPrice *string) {
-	c.TriggerPrice = triggerPrice
-	c.require(createTradesRequestOrdersItemFieldTriggerPrice)
+func (t *TradingHyperliquidOrder) SetTriggerPrice(triggerPrice *Money) {
+	t.TriggerPrice = triggerPrice
+	t.require(tradingHyperliquidOrderFieldTriggerPrice)
 }
 
-func (c *CreateTradesRequestOrdersItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTradesRequestOrdersItem
+func (t *TradingHyperliquidOrder) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingHyperliquidOrder
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateTradesRequestOrdersItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	*t = TradingHyperliquidOrder(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
 	if err != nil {
 		return err
 	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTradesRequestOrdersItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateTradesRequestOrdersItem) MarshalJSON() ([]byte, error) {
-	type embed CreateTradesRequestOrdersItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateTradesRequestOrdersItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-type CreateTradesRequestOrdersItemOrderType string
-
-const (
-	CreateTradesRequestOrdersItemOrderTypeLimit      CreateTradesRequestOrdersItemOrderType = "limit"
-	CreateTradesRequestOrdersItemOrderTypeMarket     CreateTradesRequestOrdersItemOrderType = "market"
-	CreateTradesRequestOrdersItemOrderTypeTakeProfit CreateTradesRequestOrdersItemOrderType = "take_profit"
-	CreateTradesRequestOrdersItemOrderTypeStopLoss   CreateTradesRequestOrdersItemOrderType = "stop_loss"
-)
-
-func NewCreateTradesRequestOrdersItemOrderTypeFromString(s string) (CreateTradesRequestOrdersItemOrderType, error) {
-	switch s {
-	case "limit":
-		return CreateTradesRequestOrdersItemOrderTypeLimit, nil
-	case "market":
-		return CreateTradesRequestOrdersItemOrderTypeMarket, nil
-	case "take_profit":
-		return CreateTradesRequestOrdersItemOrderTypeTakeProfit, nil
-	case "stop_loss":
-		return CreateTradesRequestOrdersItemOrderTypeStopLoss, nil
-	}
-	var t CreateTradesRequestOrdersItemOrderType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateTradesRequestOrdersItemOrderType) Ptr() *CreateTradesRequestOrdersItemOrderType {
-	return &c
-}
-
-type CreateTradesRequestOrdersItemSide string
-
-const (
-	CreateTradesRequestOrdersItemSideBuy  CreateTradesRequestOrdersItemSide = "buy"
-	CreateTradesRequestOrdersItemSideSell CreateTradesRequestOrdersItemSide = "sell"
-)
-
-func NewCreateTradesRequestOrdersItemSideFromString(s string) (CreateTradesRequestOrdersItemSide, error) {
-	switch s {
-	case "buy":
-		return CreateTradesRequestOrdersItemSideBuy, nil
-	case "sell":
-		return CreateTradesRequestOrdersItemSideSell, nil
-	}
-	var t CreateTradesRequestOrdersItemSide
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateTradesRequestOrdersItemSide) Ptr() *CreateTradesRequestOrdersItemSide {
-	return &c
-}
-
-var (
-	createTradesRequestOrdersItemStopLossFieldLimitPrice   = big.NewInt(1 << 0)
-	createTradesRequestOrdersItemStopLossFieldTriggerPrice = big.NewInt(1 << 1)
-)
-
-// createTradesRequestOrdersItemStopLossNullableFields maps the wire names of CreateTradesRequestOrdersItemStopLoss's nullable fields (required or optional) to their field bits.
-var createTradesRequestOrdersItemStopLossNullableFields = map[string]*big.Int{
-	"limit_price": createTradesRequestOrdersItemStopLossFieldLimitPrice,
-}
-
-type CreateTradesRequestOrdersItemStopLoss struct {
-	// Limit price once triggered, as a decimal string. Omit or pass `null` for a market order with the request's slippage cap.
-	LimitPrice *string `json:"limit_price,omitempty" url:"limit_price,omitempty"`
-	// Price that triggers the order, as a decimal string.
-	TriggerPrice string `json:"trigger_price" url:"trigger_price"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateTradesRequestOrdersItemStopLoss) GetLimitPrice() *string {
-	if c == nil {
-		return nil
-	}
-	return c.LimitPrice
-}
-
-func (c *CreateTradesRequestOrdersItemStopLoss) GetTriggerPrice() string {
-	if c == nil {
-		return ""
-	}
-	return c.TriggerPrice
-}
-
-func (c *CreateTradesRequestOrdersItemStopLoss) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateTradesRequestOrdersItemStopLoss) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetLimitPrice sets the LimitPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItemStopLoss) SetLimitPrice(limitPrice *string) {
-	c.LimitPrice = limitPrice
-	c.require(createTradesRequestOrdersItemStopLossFieldLimitPrice)
-}
-
-// SetTriggerPrice sets the TriggerPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItemStopLoss) SetTriggerPrice(triggerPrice string) {
-	c.TriggerPrice = triggerPrice
-	c.require(createTradesRequestOrdersItemStopLossFieldTriggerPrice)
-}
-
-func (c *CreateTradesRequestOrdersItemStopLoss) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTradesRequestOrdersItemStopLoss
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateTradesRequestOrdersItemStopLoss(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTradesRequestOrdersItemStopLossNullableFields)
+	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradingHyperliquidOrderNullableFields)
 	if err != nil {
 		return err
 	}
 	if presentFields != nil {
-		c.require(presentFields)
+		t.require(presentFields)
 	}
-	c.rawJSON = json.RawMessage(data)
+	t.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (c *CreateTradesRequestOrdersItemStopLoss) MarshalJSON() ([]byte, error) {
-	type embed CreateTradesRequestOrdersItemStopLoss
+func (t *TradingHyperliquidOrder) MarshalJSON() ([]byte, error) {
+	type embed TradingHyperliquidOrder
 	var marshaler = struct {
 		embed
 	}{
-		embed: embed(*c),
+		embed: embed(*t),
 	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateTradesRequestOrdersItemStopLoss) String() string {
-	if c == nil {
+func (t *TradingHyperliquidOrder) String() string {
+	if t == nil {
 		return "<nil>"
 	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := internal.StringifyJSON(c); err == nil {
+	if value, err := internal.StringifyJSON(t); err == nil {
 		return value
 	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createTradesRequestOrdersItemTakeProfitFieldLimitPrice   = big.NewInt(1 << 0)
-	createTradesRequestOrdersItemTakeProfitFieldTriggerPrice = big.NewInt(1 << 1)
-)
-
-// createTradesRequestOrdersItemTakeProfitNullableFields maps the wire names of CreateTradesRequestOrdersItemTakeProfit's nullable fields (required or optional) to their field bits.
-var createTradesRequestOrdersItemTakeProfitNullableFields = map[string]*big.Int{
-	"limit_price": createTradesRequestOrdersItemTakeProfitFieldLimitPrice,
-}
-
-type CreateTradesRequestOrdersItemTakeProfit struct {
-	// Limit price once triggered, as a decimal string. Omit or pass `null` for a market order with the request's slippage cap.
-	LimitPrice *string `json:"limit_price,omitempty" url:"limit_price,omitempty"`
-	// Price that triggers the order, as a decimal string.
-	TriggerPrice string `json:"trigger_price" url:"trigger_price"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateTradesRequestOrdersItemTakeProfit) GetLimitPrice() *string {
-	if c == nil {
-		return nil
-	}
-	return c.LimitPrice
-}
-
-func (c *CreateTradesRequestOrdersItemTakeProfit) GetTriggerPrice() string {
-	if c == nil {
-		return ""
-	}
-	return c.TriggerPrice
-}
-
-func (c *CreateTradesRequestOrdersItemTakeProfit) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateTradesRequestOrdersItemTakeProfit) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetLimitPrice sets the LimitPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItemTakeProfit) SetLimitPrice(limitPrice *string) {
-	c.LimitPrice = limitPrice
-	c.require(createTradesRequestOrdersItemTakeProfitFieldLimitPrice)
-}
-
-// SetTriggerPrice sets the TriggerPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTradesRequestOrdersItemTakeProfit) SetTriggerPrice(triggerPrice string) {
-	c.TriggerPrice = triggerPrice
-	c.require(createTradesRequestOrdersItemTakeProfitFieldTriggerPrice)
-}
-
-func (c *CreateTradesRequestOrdersItemTakeProfit) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTradesRequestOrdersItemTakeProfit
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateTradesRequestOrdersItemTakeProfit(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTradesRequestOrdersItemTakeProfitNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateTradesRequestOrdersItemTakeProfit) MarshalJSON() ([]byte, error) {
-	type embed CreateTradesRequestOrdersItemTakeProfit
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateTradesRequestOrdersItemTakeProfit) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// How long a limit order stays active. Ignored for other order types.
-type CreateTradesRequestOrdersItemTimeInForce string
-
-const (
-	CreateTradesRequestOrdersItemTimeInForceAddLiquidityOnly  CreateTradesRequestOrdersItemTimeInForce = "add_liquidity_only"
-	CreateTradesRequestOrdersItemTimeInForceGoodTilCanceled   CreateTradesRequestOrdersItemTimeInForce = "good_til_canceled"
-	CreateTradesRequestOrdersItemTimeInForceImmediateOrCancel CreateTradesRequestOrdersItemTimeInForce = "immediate_or_cancel"
-)
-
-func NewCreateTradesRequestOrdersItemTimeInForceFromString(s string) (CreateTradesRequestOrdersItemTimeInForce, error) {
-	switch s {
-	case "add_liquidity_only":
-		return CreateTradesRequestOrdersItemTimeInForceAddLiquidityOnly, nil
-	case "good_til_canceled":
-		return CreateTradesRequestOrdersItemTimeInForceGoodTilCanceled, nil
-	case "immediate_or_cancel":
-		return CreateTradesRequestOrdersItemTimeInForceImmediateOrCancel, nil
-	}
-	var t CreateTradesRequestOrdersItemTimeInForce
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateTradesRequestOrdersItemTimeInForce) Ptr() *CreateTradesRequestOrdersItemTimeInForce {
-	return &c
-}
-
-type CreateTradesRequestProvider string
-
-const (
-	CreateTradesRequestProviderHyperliquid CreateTradesRequestProvider = "hyperliquid"
-)
-
-func NewCreateTradesRequestProviderFromString(s string) (CreateTradesRequestProvider, error) {
-	switch s {
-	case "hyperliquid":
-		return CreateTradesRequestProviderHyperliquid, nil
-	}
-	var t CreateTradesRequestProvider
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateTradesRequestProvider) Ptr() *CreateTradesRequestProvider {
-	return &c
+	return fmt.Sprintf("%#v", t)
 }
 
 type ListTradesRequestDirection string
@@ -2940,144 +2310,4 @@ func (l *ListTradesResponsePageInfo) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
-}
-
-// `cross` shares margin across positions; `isolated` limits margin to this market's position.
-type UpdateLeverageTradesRequestMarginMode string
-
-const (
-	UpdateLeverageTradesRequestMarginModeCross    UpdateLeverageTradesRequestMarginMode = "cross"
-	UpdateLeverageTradesRequestMarginModeIsolated UpdateLeverageTradesRequestMarginMode = "isolated"
-)
-
-func NewUpdateLeverageTradesRequestMarginModeFromString(s string) (UpdateLeverageTradesRequestMarginMode, error) {
-	switch s {
-	case "cross":
-		return UpdateLeverageTradesRequestMarginModeCross, nil
-	case "isolated":
-		return UpdateLeverageTradesRequestMarginModeIsolated, nil
-	}
-	var t UpdateLeverageTradesRequestMarginMode
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateLeverageTradesRequestMarginMode) Ptr() *UpdateLeverageTradesRequestMarginMode {
-	return &u
-}
-
-type UpdateLeverageTradesRequestProvider string
-
-const (
-	UpdateLeverageTradesRequestProviderHyperliquid UpdateLeverageTradesRequestProvider = "hyperliquid"
-)
-
-func NewUpdateLeverageTradesRequestProviderFromString(s string) (UpdateLeverageTradesRequestProvider, error) {
-	switch s {
-	case "hyperliquid":
-		return UpdateLeverageTradesRequestProviderHyperliquid, nil
-	}
-	var t UpdateLeverageTradesRequestProvider
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateLeverageTradesRequestProvider) Ptr() *UpdateLeverageTradesRequestProvider {
-	return &u
-}
-
-var (
-	updateLeverageTradesRequestFieldAccountID  = big.NewInt(1 << 0)
-	updateLeverageTradesRequestFieldLeverage   = big.NewInt(1 << 1)
-	updateLeverageTradesRequestFieldMarginMode = big.NewInt(1 << 2)
-	updateLeverageTradesRequestFieldMarket     = big.NewInt(1 << 3)
-	updateLeverageTradesRequestFieldMetadata   = big.NewInt(1 << 4)
-	updateLeverageTradesRequestFieldProvider   = big.NewInt(1 << 5)
-)
-
-type UpdateLeverageTradesRequest struct {
-	// The account or user that owns the trading wallet, prefixed `biz_` or `user_`.
-	AccountID string `json:"account_id" url:"-"`
-	// Leverage multiplier, such as `10` for 10x. Capped at the market's maximum.
-	Leverage int `json:"leverage" url:"-"`
-	// `cross` shares margin across positions; `isolated` limits margin to this market's position.
-	MarginMode UpdateLeverageTradesRequestMarginMode `json:"margin_mode" url:"-"`
-	// Perpetual market on the provider, such as `ETH`.
-	Market string `json:"market" url:"-"`
-	// Free-form string-to-string annotations stored on the trade.
-	Metadata map[string]*string                  `json:"metadata,omitempty" url:"-"`
-	Provider UpdateLeverageTradesRequestProvider `json:"provider" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (u *UpdateLeverageTradesRequest) require(field *big.Int) {
-	next := new(big.Int)
-	if u.explicitFields != nil {
-		next.Set(u.explicitFields)
-	}
-	next.Or(next, field)
-	u.explicitFields = next
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateLeverageTradesRequest) SetAccountID(accountID string) {
-	u.AccountID = accountID
-	u.require(updateLeverageTradesRequestFieldAccountID)
-}
-
-// SetLeverage sets the Leverage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateLeverageTradesRequest) SetLeverage(leverage int) {
-	u.Leverage = leverage
-	u.require(updateLeverageTradesRequestFieldLeverage)
-}
-
-// SetMarginMode sets the MarginMode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateLeverageTradesRequest) SetMarginMode(marginMode UpdateLeverageTradesRequestMarginMode) {
-	u.MarginMode = marginMode
-	u.require(updateLeverageTradesRequestFieldMarginMode)
-}
-
-// SetMarket sets the Market field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateLeverageTradesRequest) SetMarket(market string) {
-	u.Market = market
-	u.require(updateLeverageTradesRequestFieldMarket)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateLeverageTradesRequest) SetMetadata(metadata map[string]*string) {
-	u.Metadata = metadata
-	u.require(updateLeverageTradesRequestFieldMetadata)
-}
-
-// SetProvider sets the Provider field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateLeverageTradesRequest) SetProvider(provider UpdateLeverageTradesRequestProvider) {
-	u.Provider = provider
-	u.require(updateLeverageTradesRequestFieldProvider)
-}
-
-func (u *UpdateLeverageTradesRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateLeverageTradesRequest
-	var body unmarshaler
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*u = UpdateLeverageTradesRequest(body)
-	return nil
-}
-
-func (u *UpdateLeverageTradesRequest) MarshalJSON() ([]byte, error) {
-	type embed UpdateLeverageTradesRequest
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
 }

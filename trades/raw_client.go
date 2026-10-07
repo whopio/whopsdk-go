@@ -34,9 +34,8 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 
 func (r *RawClient) Create(
 	ctx context.Context,
-	request *whopsdk.CreateTradesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.Trade], error) {
+) (*core.Response[any], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -56,8 +55,6 @@ func (r *RawClient) Create(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	headers.Add("Content-Type", "application/json")
-	var response *whopsdk.Trade
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -69,26 +66,23 @@ func (r *RawClient) Create(
 			BodyProperties:  options.BodyProperties,
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
-			Request:         request,
-			Response:        &response,
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.Trade]{
+	return &core.Response[any]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
-		Body:       response,
+		Body:       nil,
 	}, nil
 }
 
 func (r *RawClient) UpdateLeverage(
 	ctx context.Context,
-	request *whopsdk.UpdateLeverageTradesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.Trade], error) {
+) (*core.Response[any], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -108,8 +102,6 @@ func (r *RawClient) UpdateLeverage(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	headers.Add("Content-Type", "application/json")
-	var response *whopsdk.Trade
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -121,18 +113,16 @@ func (r *RawClient) UpdateLeverage(
 			BodyProperties:  options.BodyProperties,
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
-			Request:         request,
-			Response:        &response,
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.Trade]{
+	return &core.Response[any]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
-		Body:       response,
+		Body:       nil,
 	}, nil
 }
 
@@ -193,7 +183,7 @@ func (r *RawClient) Cancel(
 	ctx context.Context,
 	request *whopsdk.CancelTradesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.Trade], error) {
+) (*core.Response[any], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -216,8 +206,6 @@ func (r *RawClient) Cancel(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	headers.Add("Content-Type", "application/json")
-	var response *whopsdk.Trade
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -229,17 +217,15 @@ func (r *RawClient) Cancel(
 			BodyProperties:  options.BodyProperties,
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
-			Request:         request,
-			Response:        &response,
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.Trade]{
+	return &core.Response[any]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
-		Body:       response,
+		Body:       nil,
 	}, nil
 }

@@ -127,7 +127,7 @@ var (
 )
 
 type MeUsersRequest struct {
-	// Also retrieve live trading state under `trading`. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet. Provider failures return 503.
+	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
 	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 	// When set, returns your account-specific profile overrides for this account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
@@ -256,7 +256,7 @@ var (
 type RetrieveUsersRequest struct {
 	// User ID (prefixed `user_`), username, or `me` for the authenticated user.
 	ID string `json:"-" url:"-"`
-	// Also retrieve live trading state under `trading`. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet. Provider failures return 503.
+	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
 	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 	// When set, returns the user's account-specific profile overrides for this account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
@@ -408,7 +408,7 @@ type User struct {
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
 	// Whop staff access flags. Populated only on the self view (retrieved with the reserved id `me`) for callers with staff-read scope; `null` there for every user who is not Whop staff, and always `null` elsewhere.
 	Staff *UserStaffAccess `json:"staff,omitempty" url:"staff,omitempty"`
-	// Live trading state. Opt in with `include_trading=true` when retrieving `me`; `null` otherwise, without trading permission, or without an Ethereum wallet. Provider failures return an error, not a zero balance.
+	// The trading account address and its WebSocket subscriptions. Opt in with `include_trading=true` when retrieving `me`. `null` otherwise, without trading permission, or without an Ethereum wallet.
 	Trading *TradingAccount `json:"trading,omitempty" url:"trading,omitempty"`
 	// The user's unique username
 	Username string `json:"username" url:"username"`
