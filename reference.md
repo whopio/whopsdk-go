@@ -1605,6 +1605,14 @@ client.AdCampaigns.List(
 <dl>
 <dd>
 
+**campaignType:** `*whopsdk.ListAdCampaignsRequestCampaignType` — Only return campaigns of this type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **createdBefore:** `*string` — Only return campaigns created before this timestamp.
     
 </dd>
@@ -1780,6 +1788,14 @@ client.AdCampaigns.Create(
 <dd>
 
 **budgetType:** `*whopsdk.CreateAdCampaignsRequestBudgetType` — Whether the budget is spent per day (`daily`) or over the campaign's full run (`lifetime`). Defaults to `daily`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**campaignType:** `*whopsdk.CreateAdCampaignsRequestCampaignType` — The kind of campaign to create. `standard` is the ad network's standard campaign; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
     
 </dd>
 </dl>
@@ -2088,6 +2104,14 @@ client.AdCampaigns.Update(
 <dd>
 
 **budgetType:** `*whopsdk.UpdateAdCampaignsRequestBudgetType` — Whether `budget_amount` is spent per day (`daily`) or over the campaign's full run (`lifetime`). Only changeable while the campaign is a draft; send budget_amount in the same request so the amount lands on the new type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**campaignType:** `*whopsdk.UpdateAdCampaignsRequestCampaignType` — Accepted only when it matches the campaign's current type, so a read can be sent back unchanged. The type is fixed at creation.
     
 </dd>
 </dl>
@@ -3313,6 +3337,14 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
+**keywords:** `[]*whopsdk.CreateAdGroupsRequestKeywordsItem` — Search terms the ad group's ads can show for, and terms they never show for. Only search campaigns take keywords, and each of their ad groups needs at least one before launch. Replaces the stored list; omit to keep it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **languages:** `[]string` — Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
     
 </dd>
@@ -3945,6 +3977,14 @@ client.AdGroups.Update(
 <dd>
 
 **frequencyCap:** `*whopsdk.UpdateAdGroupsRequestFrequencyCap` — Cap on how often one person sees ads from this ad group. Only available when the ad group optimizes for reach or ThruPlay. Under a campaign budget every ad group must use the same cap, which applies across the whole campaign, and only with the awareness objective (reach or ThruPlay ad groups) or engagement (ThruPlay). Fixed once the campaign launches; `null` clears it before then.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**keywords:** `[]*whopsdk.UpdateAdGroupsRequestKeywordsItem` — Search terms the ad group's ads can show for, and terms they never show for. Only search campaigns take keywords, and each of their ad groups needs at least one before launch. Replaces the stored list; omit to keep it.
     
 </dd>
 </dl>
