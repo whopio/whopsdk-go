@@ -32,7 +32,7 @@ type CreateMethodsRequest struct {
 	IsDefault *bool `json:"is_default,omitempty" url:"-"`
 	// A label for the payout method, unique per destination.
 	Nickname *string `json:"nickname,omitempty" url:"-"`
-	// Creates an external recipient and saves the bank method on their payout account, bound to the funding account. The MassPay email is generated when omitted; the recipient does not need a Whop login or Sumsub verification. Recipient methods cannot be default or recurring methods and cannot use Plaid.
+	// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. The MassPay email is generated when omitted. Recipient methods cannot be default or recurring methods and cannot use Plaid.
 	Recipient *CreateMethodsRequestRecipient `json:"recipient,omitempty" url:"-"`
 	// The supported payout method to save (a podst_ identifier from a previous listing).
 	SupportedPayoutMethodID string `json:"supported_payout_method_id" url:"-"`
@@ -297,7 +297,7 @@ var createMethodsRequestRecipientNullableFields = map[string]*big.Int{
 	"email": createMethodsRequestRecipientFieldEmail,
 }
 
-// Creates an external recipient and saves the bank method on their payout account, bound to the funding account. The MassPay email is generated when omitted; the recipient does not need a Whop login or Sumsub verification. Recipient methods cannot be default or recurring methods and cannot use Plaid.
+// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. The MassPay email is generated when omitted. Recipient methods cannot be default or recurring methods and cannot use Plaid.
 type CreateMethodsRequestRecipient struct {
 	// ISO 3166-1 alpha-2 or alpha-3 country code.
 	Country string `json:"country" url:"country"`
@@ -963,7 +963,6 @@ var (
 	createMethodsResponseRecipientFieldCountry   = big.NewInt(1 << 0)
 	createMethodsResponseRecipientFieldFirstName = big.NewInt(1 << 1)
 	createMethodsResponseRecipientFieldLastName  = big.NewInt(1 << 2)
-	createMethodsResponseRecipientFieldUserID    = big.NewInt(1 << 3)
 )
 
 // The recipient of a third-party payout method. Present only for recipient payout methods.
@@ -972,8 +971,6 @@ type CreateMethodsResponseRecipient struct {
 	Country   string `json:"country" url:"country"`
 	FirstName string `json:"first_name" url:"first_name"`
 	LastName  string `json:"last_name" url:"last_name"`
-	// The recipient's Whop user ID, prefixed `user_`.
-	UserID string `json:"user_id" url:"user_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1001,13 +998,6 @@ func (c *CreateMethodsResponseRecipient) GetLastName() string {
 		return ""
 	}
 	return c.LastName
-}
-
-func (c *CreateMethodsResponseRecipient) GetUserID() string {
-	if c == nil {
-		return ""
-	}
-	return c.UserID
 }
 
 func (c *CreateMethodsResponseRecipient) GetExtraProperties() map[string]interface{} {
@@ -1045,13 +1035,6 @@ func (c *CreateMethodsResponseRecipient) SetFirstName(firstName string) {
 func (c *CreateMethodsResponseRecipient) SetLastName(lastName string) {
 	c.LastName = lastName
 	c.require(createMethodsResponseRecipientFieldLastName)
-}
-
-// SetUserID sets the UserID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateMethodsResponseRecipient) SetUserID(userID string) {
-	c.UserID = userID
-	c.require(createMethodsResponseRecipientFieldUserID)
 }
 
 func (c *CreateMethodsResponseRecipient) UnmarshalJSON(data []byte) error {
@@ -2870,7 +2853,6 @@ var (
 	listMethodsResponseDataItemRecipientFieldCountry   = big.NewInt(1 << 0)
 	listMethodsResponseDataItemRecipientFieldFirstName = big.NewInt(1 << 1)
 	listMethodsResponseDataItemRecipientFieldLastName  = big.NewInt(1 << 2)
-	listMethodsResponseDataItemRecipientFieldUserID    = big.NewInt(1 << 3)
 )
 
 // The recipient of a third-party payout method. Present only for recipient payout methods.
@@ -2879,8 +2861,6 @@ type ListMethodsResponseDataItemRecipient struct {
 	Country   string `json:"country" url:"country"`
 	FirstName string `json:"first_name" url:"first_name"`
 	LastName  string `json:"last_name" url:"last_name"`
-	// The recipient's Whop user ID, prefixed `user_`.
-	UserID string `json:"user_id" url:"user_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2908,13 +2888,6 @@ func (l *ListMethodsResponseDataItemRecipient) GetLastName() string {
 		return ""
 	}
 	return l.LastName
-}
-
-func (l *ListMethodsResponseDataItemRecipient) GetUserID() string {
-	if l == nil {
-		return ""
-	}
-	return l.UserID
 }
 
 func (l *ListMethodsResponseDataItemRecipient) GetExtraProperties() map[string]interface{} {
@@ -2952,13 +2925,6 @@ func (l *ListMethodsResponseDataItemRecipient) SetFirstName(firstName string) {
 func (l *ListMethodsResponseDataItemRecipient) SetLastName(lastName string) {
 	l.LastName = lastName
 	l.require(listMethodsResponseDataItemRecipientFieldLastName)
-}
-
-// SetUserID sets the UserID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMethodsResponseDataItemRecipient) SetUserID(userID string) {
-	l.UserID = userID
-	l.require(listMethodsResponseDataItemRecipientFieldUserID)
 }
 
 func (l *ListMethodsResponseDataItemRecipient) UnmarshalJSON(data []byte) error {
@@ -4519,7 +4485,6 @@ var (
 	updateMethodsResponseRecipientFieldCountry   = big.NewInt(1 << 0)
 	updateMethodsResponseRecipientFieldFirstName = big.NewInt(1 << 1)
 	updateMethodsResponseRecipientFieldLastName  = big.NewInt(1 << 2)
-	updateMethodsResponseRecipientFieldUserID    = big.NewInt(1 << 3)
 )
 
 // The recipient of a third-party payout method. Present only for recipient payout methods.
@@ -4528,8 +4493,6 @@ type UpdateMethodsResponseRecipient struct {
 	Country   string `json:"country" url:"country"`
 	FirstName string `json:"first_name" url:"first_name"`
 	LastName  string `json:"last_name" url:"last_name"`
-	// The recipient's Whop user ID, prefixed `user_`.
-	UserID string `json:"user_id" url:"user_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4557,13 +4520,6 @@ func (u *UpdateMethodsResponseRecipient) GetLastName() string {
 		return ""
 	}
 	return u.LastName
-}
-
-func (u *UpdateMethodsResponseRecipient) GetUserID() string {
-	if u == nil {
-		return ""
-	}
-	return u.UserID
 }
 
 func (u *UpdateMethodsResponseRecipient) GetExtraProperties() map[string]interface{} {
@@ -4601,13 +4557,6 @@ func (u *UpdateMethodsResponseRecipient) SetFirstName(firstName string) {
 func (u *UpdateMethodsResponseRecipient) SetLastName(lastName string) {
 	u.LastName = lastName
 	u.require(updateMethodsResponseRecipientFieldLastName)
-}
-
-// SetUserID sets the UserID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateMethodsResponseRecipient) SetUserID(userID string) {
-	u.UserID = userID
-	u.require(updateMethodsResponseRecipientFieldUserID)
 }
 
 func (u *UpdateMethodsResponseRecipient) UnmarshalJSON(data []byte) error {
