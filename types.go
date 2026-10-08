@@ -55640,6 +55640,123 @@ func (t *TradingHyperliquidAccount) String() string {
 }
 
 var (
+	tradingHyperliquidOrderFieldReduceOnly   = big.NewInt(1 << 0)
+	tradingHyperliquidOrderFieldTriggerPrice = big.NewInt(1 << 1)
+)
+
+// tradingHyperliquidOrderNullableFields maps the wire names of TradingHyperliquidOrder's nullable fields (required or optional) to their field bits.
+var tradingHyperliquidOrderNullableFields = map[string]*big.Int{
+	"reduce_only":   tradingHyperliquidOrderFieldReduceOnly,
+	"trigger_price": tradingHyperliquidOrderFieldTriggerPrice,
+}
+
+type TradingHyperliquidOrder struct {
+	// Whether the order can only reduce an existing position, or `null` when Hyperliquid omits it.
+	ReduceOnly *bool `json:"reduce_only,omitempty" url:"reduce_only,omitempty"`
+	// Trigger price in USD for take-profit and stop-loss orders, or `null` for orders without a trigger.
+	TriggerPrice *Money `json:"trigger_price,omitempty" url:"trigger_price,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingHyperliquidOrder) GetReduceOnly() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.ReduceOnly
+}
+
+func (t *TradingHyperliquidOrder) GetTriggerPrice() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.TriggerPrice
+}
+
+func (t *TradingHyperliquidOrder) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingHyperliquidOrder) require(field *big.Int) {
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
+	}
+	next.Or(next, field)
+	t.explicitFields = next
+}
+
+// SetReduceOnly sets the ReduceOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidOrder) SetReduceOnly(reduceOnly *bool) {
+	t.ReduceOnly = reduceOnly
+	t.require(tradingHyperliquidOrderFieldReduceOnly)
+}
+
+// SetTriggerPrice sets the TriggerPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidOrder) SetTriggerPrice(triggerPrice *Money) {
+	t.TriggerPrice = triggerPrice
+	t.require(tradingHyperliquidOrderFieldTriggerPrice)
+}
+
+func (t *TradingHyperliquidOrder) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingHyperliquidOrder
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingHyperliquidOrder(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradingHyperliquidOrderNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingHyperliquidOrder) MarshalJSON() ([]byte, error) {
+	type embed TradingHyperliquidOrder
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingHyperliquidOrder) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
 	tradingHyperliquidPositionFieldCumulativeFunding = big.NewInt(1 << 0)
 	tradingHyperliquidPositionFieldLeverage          = big.NewInt(1 << 1)
 	tradingHyperliquidPositionFieldLiquidationPrice  = big.NewInt(1 << 2)

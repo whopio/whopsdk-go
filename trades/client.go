@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists trades you can access, newest first. User credentials see their own trades and those of accounts they belong to, including connected accounts; account credentials see their account and its connected accounts. These are submission records, not fill or position history.
+// Lists trades you can access, newest first. User credentials see their own trades and those of accounts they belong to, including connected accounts; account credentials see their account and its connected accounts.
 //
 // Example:
 //
@@ -119,49 +119,36 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Retired. Order batches can no longer be placed. Every caller gets `410 Gone`, whatever the body, and nothing is sent to the trading provider. List and retrieve earlier trades with `GET /trades`.
+// Creates a trade on the Whop-managed wallet of an account or user and answers `201` with the trade in `pending`. The trade runs in the background; read it with `GET /trades/{id}` until it is `completed`, `failed` or `in_review`. A `buy` bridges `amount` USDT0 to the trading account, sets `leverage` (cross) on `market`, and places one market buy. If the buy does not fill, its money goes back to the wallet. A `close` closes the position in `market`, if one is open, and sends all withdrawable USDC back to the wallet. One trade runs at a time for each wallet. A retry with the same `Idempotency-Key` returns the same trade.
 //
 // Example:
 //
+//	request := &whopsdk.CreateTradesRequest{
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
+//	    Market: "BTC",
+//	    Type: whopsdk.CreateTradesRequestTypeBuy,
+//	}
 //	client.Trades.Create(
 //	    context.TODO(),
+//	    request,
 //	)
 func (c *Client) Create(
 	ctx context.Context,
+	request *whopsdk.CreateTradesRequest,
 	opts ...option.RequestOption,
-) error {
-	_, err := c.WithRawResponse.Create(
+) (*whopsdk.Trade, error) {
+	response, err := c.WithRawResponse.Create(
 		ctx,
+		request,
 		opts...,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return response.Body, nil
 }
 
-// Retired. Every caller gets `410 Gone`, and no leverage change is sent to the trading provider.
-//
-// Example:
-//
-//	client.Trades.UpdateLeverage(
-//	    context.TODO(),
-//	)
-func (c *Client) UpdateLeverage(
-	ctx context.Context,
-	opts ...option.RequestOption,
-) error {
-	_, err := c.WithRawResponse.UpdateLeverage(
-		ctx,
-		opts...,
-	)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// Retrieves a trade. Order acknowledgements don't update as orders fill. Never resubmit a `submission_unknown` trade with a new idempotency key.
+// Retrieves a trade. Read it until its `status` is `completed`, `failed` or `in_review`.
 //
 // Example:
 //
@@ -186,31 +173,4 @@ func (c *Client) Retrieve(
 		return nil, err
 	}
 	return response.Body, nil
-}
-
-// Retired. Every caller gets `410 Gone`, and no cancellation is sent to the trading provider.
-//
-// Example:
-//
-//	request := &whopsdk.CancelTradesRequest{
-//	    ID: "id",
-//	}
-//	client.Trades.Cancel(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) Cancel(
-	ctx context.Context,
-	request *whopsdk.CancelTradesRequest,
-	opts ...option.RequestOption,
-) error {
-	_, err := c.WithRawResponse.Cancel(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return err
-	}
-	return nil
 }

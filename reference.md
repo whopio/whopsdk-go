@@ -36906,7 +36906,7 @@ client.Topups.Create(
 <dl>
 <dd>
 
-Lists trades you can access, newest first. User credentials see their own trades and those of accounts they belong to, including connected accounts; account credentials see their account and its connected accounts. These are submission records, not fill or position history.
+Lists trades you can access, newest first. User credentials see their own trades and those of accounts they belong to, including connected accounts; account credentials see their account and its connected accounts.
 </dd>
 </dl>
 </dd>
@@ -36948,7 +36948,7 @@ client.Trades.List(
 <dl>
 <dd>
 
-**status:** `*whopsdk.ListTradesRequestStatus` — Only return trades with this submission status.
+**status:** `*whopsdk.ListTradesRequestStatus` — Only return trades with this status.
     
 </dd>
 </dl>
@@ -36956,7 +36956,7 @@ client.Trades.List(
 <dl>
 <dd>
 
-**operationType:** `*whopsdk.ListTradesRequestOperationType` — Only return trades of this kind, such as `create_orders` for order submissions.
+**type_:** `*whopsdk.ListTradesRequestType` — Only return trades of this type.
     
 </dd>
 </dl>
@@ -37016,7 +37016,7 @@ client.Trades.List(
 </dl>
 </details>
 
-<details><summary><code>client.Trades.Create() -> error</code></summary>
+<details><summary><code>client.Trades.Create(request) -> *whopsdk.Trade</code></summary>
 <dl>
 <dd>
 
@@ -37028,7 +37028,7 @@ client.Trades.List(
 <dl>
 <dd>
 
-Retired. Order batches can no longer be placed. Every caller gets `410 Gone`, whatever the body, and nothing is sent to the trading provider. List and retrieve earlier trades with `GET /trades`.
+Creates a trade on the Whop-managed wallet of an account or user and answers `201` with the trade in `pending`. The trade runs in the background; read it with `GET /trades/{id}` until it is `completed`, `failed` or `in_review`. A `buy` bridges `amount` USDT0 to the trading account, sets `leverage` (cross) on `market`, and places one market buy. If the buy does not fill, its money goes back to the wallet. A `close` closes the position in `market`, if one is open, and sends all withdrawable USDC back to the wallet. One trade runs at a time for each wallet. A retry with the same `Idempotency-Key` returns the same trade.
 </dd>
 </dl>
 </dd>
@@ -37043,8 +37043,14 @@ Retired. Order batches can no longer be placed. Every caller gets `410 Gone`, wh
 <dd>
 
 ```go
+request := &whopsdk.CreateTradesRequest{
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    Market: "BTC",
+    Type: whopsdk.CreateTradesRequestTypeBuy,
+}
 client.Trades.Create(
     context.TODO(),
+    request,
 )
 ```
 </dd>
@@ -37052,16 +37058,7 @@ client.Trades.Create(
 </dd>
 </dl>
 
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Trades.UpdateLeverage() -> error</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
+#### ⚙️ Parameters
 
 <dl>
 <dd>
@@ -37069,25 +37066,40 @@ client.Trades.Create(
 <dl>
 <dd>
 
-Retired. Every caller gets `410 Gone`, and no leverage change is sent to the trading provider.
-</dd>
-</dl>
+**accountID:** `string` — The account or user whose wallet trades, prefixed `biz_` or `user_`.
+    
 </dd>
 </dl>
 
-#### 🔌 Usage
+<dl>
+<dd>
+
+**amount:** `*string` — The USDT0 to send from the wallet for a buy, with at most 6 decimals. Required for a buy.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
 
+**leverage:** `*int` — The cross leverage for a buy, from 1 to the market's maximum. Required for a buy.
+    
+</dd>
+</dl>
+
 <dl>
 <dd>
 
-```go
-client.Trades.UpdateLeverage(
-    context.TODO(),
-)
-```
+**market:** `string` — The perpetual market, for example `BTC`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type_:** `whopsdk.CreateTradesRequestType` — `buy` or `close`.
+    
 </dd>
 </dl>
 </dd>
@@ -37110,7 +37122,7 @@ client.Trades.UpdateLeverage(
 <dl>
 <dd>
 
-Retrieves a trade. Order acknowledgements don't update as orders fill. Never resubmit a `submission_unknown` trade with a new idempotency key.
+Retrieves a trade. Read it until its `status` is `completed`, `failed` or `in_review`.
 </dd>
 </dl>
 </dd>
@@ -37146,67 +37158,7 @@ client.Trades.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — Trade ID, prefixed `trop_`.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.Trades.Cancel(ID) -> error</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Retired. Every caller gets `410 Gone`, and no cancellation is sent to the trading provider.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.CancelTradesRequest{
-    ID: "id",
-}
-client.Trades.Cancel(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — ID of the order trade to cancel, prefixed `trop_`.
+**id:** `string` — Trade ID, prefixed `tint_`.
     
 </dd>
 </dl>

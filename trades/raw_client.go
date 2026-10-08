@@ -34,8 +34,9 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 
 func (r *RawClient) Create(
 	ctx context.Context,
+	request *whopsdk.CreateTradesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[any], error) {
+) (*core.Response[*whopsdk.Trade], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -55,6 +56,8 @@ func (r *RawClient) Create(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.Trade
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -66,63 +69,18 @@ func (r *RawClient) Create(
 			BodyProperties:  options.BodyProperties,
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[any]{
+	return &core.Response[*whopsdk.Trade]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
-		Body:       nil,
-	}, nil
-}
-
-func (r *RawClient) UpdateLeverage(
-	ctx context.Context,
-	opts ...option.RequestOption,
-) (*core.Response[any], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		internal.ResolveEnvironmentBaseURL(
-			options.Environment,
-			"API",
-		),
-		r.baseURL,
-		internal.ResolveEnvironmentBaseURL(
-			r.options.Environment,
-			"API",
-		),
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := baseURL + "/trades/leverage"
-	headers := internal.MergeHeaders(
-		r.options.ToHeader(),
-		options.ToHeader(),
-	)
-	raw, err := r.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodPost,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &core.Response[any]{
-		StatusCode: raw.StatusCode,
-		Header:     raw.Header,
-		Body:       nil,
+		Body:       response,
 	}, nil
 }
 
@@ -176,56 +134,5 @@ func (r *RawClient) Retrieve(
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
-	}, nil
-}
-
-func (r *RawClient) Cancel(
-	ctx context.Context,
-	request *whopsdk.CancelTradesRequest,
-	opts ...option.RequestOption,
-) (*core.Response[any], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		internal.ResolveEnvironmentBaseURL(
-			options.Environment,
-			"API",
-		),
-		r.baseURL,
-		internal.ResolveEnvironmentBaseURL(
-			r.options.Environment,
-			"API",
-		),
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/trades/%v/cancel",
-		request.ID,
-	)
-	headers := internal.MergeHeaders(
-		r.options.ToHeader(),
-		options.ToHeader(),
-	)
-	raw, err := r.caller.Call(
-		ctx,
-		&internal.CallParams{
-			URL:             endpointURL,
-			Method:          http.MethodPost,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &core.Response[any]{
-		StatusCode: raw.StatusCode,
-		Header:     raw.Header,
-		Body:       nil,
 	}, nil
 }
