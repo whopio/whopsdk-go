@@ -35036,7 +35036,7 @@ client.Stats.Retrieve(
 <dl>
 <dd>
 
-**accountID:** `*string` — The account this query concerns, for example biz_AbC123.
+**accountID:** `*string` — Account this query concerns, prefixed `biz_`, or `platform` for all of Whop.
     
 </dd>
 </dl>
@@ -35301,6 +35301,22 @@ client.Stats.Retrieve(
 <dd>
 
 **event:** `*string` — Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**businessType:** `*string` — Filter to one business type, for example `education`. Pair with `breakdown_by=business_type` to split by business type. Available on metrics that list `business_type`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**industryType:** `*string` — Filter to one industry type, for example `options_trading`. Pair with `breakdown_by=industry_type` to split by industry type. Available on metrics that list `industry_type`.
     
 </dd>
 </dl>
@@ -44573,7 +44589,7 @@ client.Stats.TimeSeries.Retrieve(
 <dl>
 <dd>
 
-**accountID:** `*string` — The account this query concerns, for example biz_AbC123.
+**accountID:** `*string` — Account this query concerns, prefixed `biz_`, or `platform` for all of Whop.
     
 </dd>
 </dl>
@@ -44838,6 +44854,22 @@ client.Stats.TimeSeries.Retrieve(
 <dd>
 
 **event:** `*string` — Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**businessType:** `*string` — Filter to one business type, for example `education`. Pair with `breakdown_by=business_type` to split by business type. Available on metrics that list `business_type`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**industryType:** `*string` — Filter to one industry type, for example `options_trading`. Pair with `breakdown_by=industry_type` to split by industry type. Available on metrics that list `industry_type`.
     
 </dd>
 </dl>
