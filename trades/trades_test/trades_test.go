@@ -112,8 +112,14 @@ func TestTradesCreateWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	invocationErr := client.Trades.Create(
+	request := &whopsdk.CreateTradesRequest{
+		AccountID: "biz_xxxxxxxxxxxxxx",
+		Market:    "BTC",
+		Type:      whopsdk.CreateTradesRequestTypeBuy,
+	}
+	_, invocationErr := client.Trades.Create(
 		context.TODO(),
+		request,
 		option.WithHTTPHeader(
 			http.Header{"X-Test-Id": []string{"TestTradesCreateWithWireMock"}},
 		),
@@ -121,28 +127,6 @@ func TestTradesCreateWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestTradesCreateWithWireMock", "POST", "/trades", nil, 1)
-}
-
-func TestTradesUpdateLeverageWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	invocationErr := client.Trades.UpdateLeverage(
-		context.TODO(),
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestTradesUpdateLeverageWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestTradesUpdateLeverageWithWireMock", "POST", "/trades/leverage", nil, 1)
 }
 
 func TestTradesRetrieveWithWireMock(
@@ -169,30 +153,4 @@ func TestTradesRetrieveWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestTradesRetrieveWithWireMock", "GET", "/trades/id", nil, 1)
-}
-
-func TestTradesCancelWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.CancelTradesRequest{
-		ID: "id",
-	}
-	invocationErr := client.Trades.Cancel(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestTradesCancelWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestTradesCancelWithWireMock", "POST", "/trades/id/cancel", nil, 1)
 }
