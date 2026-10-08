@@ -3003,19 +3003,19 @@ func TestSettersPlatformTrendsReportsResponseDataReportsItemRowsItem(t *testing.
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMedianGrossRevenue", func(t *testing.T) {
+		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
+		var fernTestValueMedianGrossRevenue *v2.Money
+		obj.SetMedianGrossRevenue(fernTestValueMedianGrossRevenue)
+		assert.Equal(t, fernTestValueMedianGrossRevenue, obj.MedianGrossRevenue)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetNewBusinesses", func(t *testing.T) {
 		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
 		var fernTestValueNewBusinesses *int
 		obj.SetNewBusinesses(fernTestValueNewBusinesses)
 		assert.Equal(t, fernTestValueNewBusinesses, obj.NewBusinesses)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetP99GrossRevenue", func(t *testing.T) {
-		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
-		var fernTestValueP99GrossRevenue *v2.Money
-		obj.SetP99GrossRevenue(fernTestValueP99GrossRevenue)
-		assert.Equal(t, fernTestValueP99GrossRevenue, obj.P99GrossRevenue)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3401,6 +3401,39 @@ func TestGettersPlatformTrendsReportsResponseDataReportsItemRowsItem(t *testing.
 		_ = obj.GetIndustryType() // Should return zero value
 	})
 
+	t.Run("GetMedianGrossRevenue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
+		var expected *v2.Money
+		obj.MedianGrossRevenue = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMedianGrossRevenue(), "getter should return the property value")
+	})
+
+	t.Run("GetMedianGrossRevenue_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
+		obj.MedianGrossRevenue = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMedianGrossRevenue(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMedianGrossRevenue_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PlatformTrendsReportsResponseDataReportsItemRowsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMedianGrossRevenue() // Should return zero value
+	})
+
 	t.Run("GetNewBusinesses", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3432,39 +3465,6 @@ func TestGettersPlatformTrendsReportsResponseDataReportsItemRowsItem(t *testing.
 			}
 		}()
 		_ = obj.GetNewBusinesses() // Should return zero value
-	})
-
-	t.Run("GetP99GrossRevenue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
-		var expected *v2.Money
-		obj.P99GrossRevenue = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetP99GrossRevenue(), "getter should return the property value")
-	})
-
-	t.Run("GetP99GrossRevenue_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
-		obj.P99GrossRevenue = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetP99GrossRevenue(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetP99GrossRevenue_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *PlatformTrendsReportsResponseDataReportsItemRowsItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetP99GrossRevenue() // Should return zero value
 	})
 
 	t.Run("GetPayments", func(t *testing.T) {
@@ -3877,14 +3877,14 @@ func TestSettersMarkExplicitPlatformTrendsReportsResponseDataReportsItemRowsItem
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetNewBusinesses_MarksExplicit", func(t *testing.T) {
+	t.Run("SetMedianGrossRevenue_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
-		var fernTestValueNewBusinesses *int
+		var fernTestValueMedianGrossRevenue *v2.Money
 
 		// Act
-		obj.SetNewBusinesses(fernTestValueNewBusinesses)
+		obj.SetMedianGrossRevenue(fernTestValueMedianGrossRevenue)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3908,14 +3908,14 @@ func TestSettersMarkExplicitPlatformTrendsReportsResponseDataReportsItemRowsItem
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetP99GrossRevenue_MarksExplicit", func(t *testing.T) {
+	t.Run("SetNewBusinesses_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &PlatformTrendsReportsResponseDataReportsItemRowsItem{}
-		var fernTestValueP99GrossRevenue *v2.Money
+		var fernTestValueNewBusinesses *int
 
 		// Act
-		obj.SetP99GrossRevenue(fernTestValueP99GrossRevenue)
+		obj.SetNewBusinesses(fernTestValueNewBusinesses)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5961,8 +5961,8 @@ func TestOptionalNullableRoundTripPlatformTrendsReportsResponseDataReportsItemRo
 		"customers",
 		"gross_revenue",
 		"industry_type",
+		"median_gross_revenue",
 		"new_businesses",
-		"p99_gross_revenue",
 		"payments",
 		"repeat_rate",
 	}
@@ -5977,7 +5977,7 @@ func TestOptionalNullableRoundTripPlatformTrendsReportsResponseDataReportsItemRo
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PlatformTrendsReportsResponseDataReportsItemRowsItem
-		require.NoError(t, json.Unmarshal([]byte(`{"account_country":null,"aov":null,"avg_business_age":null,"avg_customer_age":null,"avg_owner_age":null,"business_type":null,"businesses":null,"customer_country":null,"customers":null,"gross_revenue":null,"industry_type":null,"new_businesses":null,"p99_gross_revenue":null,"payments":null,"repeat_rate":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_country":null,"aov":null,"avg_business_age":null,"avg_customer_age":null,"avg_owner_age":null,"business_type":null,"businesses":null,"customer_country":null,"customers":null,"gross_revenue":null,"industry_type":null,"median_gross_revenue":null,"new_businesses":null,"payments":null,"repeat_rate":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -6517,11 +6517,11 @@ func TestEnumPlatformTrendsReportsRequestOrder(t *testing.T) {
 		assert.Equal(t, PlatformTrendsReportsRequestOrder("repeat_rate"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_p99_gross_revenue", func(t *testing.T) {
+	t.Run("NewFromString_median_gross_revenue", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPlatformTrendsReportsRequestOrderFromString("p99_gross_revenue")
+		val, err := NewPlatformTrendsReportsRequestOrderFromString("median_gross_revenue")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PlatformTrendsReportsRequestOrder("p99_gross_revenue"), val, "enum value should match expected wire value")
+		assert.Equal(t, PlatformTrendsReportsRequestOrder("median_gross_revenue"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_new_businesses", func(t *testing.T) {
