@@ -25,6 +25,7 @@ import (
 	cashbackrules "github.com/whopio/whopsdk-go/v2/cashbackrules"
 	chatchannels "github.com/whopio/whopsdk-go/v2/chatchannels"
 	checkoutconfigurations "github.com/whopio/whopsdk-go/v2/checkoutconfigurations"
+	claimlinks "github.com/whopio/whopsdk-go/v2/claimlinks"
 	companytokentransactions "github.com/whopio/whopsdk-go/v2/companytokentransactions"
 	confirmationtokens "github.com/whopio/whopsdk-go/v2/confirmationtokens"
 	core "github.com/whopio/whopsdk-go/v2/core"
@@ -123,6 +124,7 @@ type Whop struct {
 	CashbackRules            *cashbackrules.Client
 	ChatChannels             *chatchannels.Client
 	CheckoutConfigurations   *checkoutconfigurations.Client
+	ClaimLinks               *claimlinks.Client
 	CompanyTokenTransactions *companytokentransactions.Client
 	ConfirmationTokens       *confirmationtokens.Client
 	CourseChapters           *coursechapters.Client
@@ -228,6 +230,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		CashbackRules:            cashbackrules.NewClient(options),
 		ChatChannels:             chatchannels.NewClient(options),
 		CheckoutConfigurations:   checkoutconfigurations.NewClient(options),
+		ClaimLinks:               claimlinks.NewClient(options),
 		CompanyTokenTransactions: companytokentransactions.NewClient(options),
 		ConfirmationTokens:       confirmationtokens.NewClient(options),
 		CourseChapters:           coursechapters.NewClient(options),
