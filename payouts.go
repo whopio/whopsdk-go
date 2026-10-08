@@ -2782,7 +2782,13 @@ var (
 	createQuotePayoutsResponseFieldNetAmount         = big.NewInt(1 << 6)
 	createQuotePayoutsResponseFieldObject            = big.NewInt(1 << 7)
 	createQuotePayoutsResponseFieldQuoteToken        = big.NewInt(1 << 8)
+	createQuotePayoutsResponseFieldRecommendedMethod = big.NewInt(1 << 9)
 )
+
+// createQuotePayoutsResponseNullableFields maps the wire names of CreateQuotePayoutsResponse's nullable fields (required or optional) to their field bits.
+var createQuotePayoutsResponseNullableFields = map[string]*big.Int{
+	"recommended_method": createQuotePayoutsResponseFieldRecommendedMethod,
+}
 
 type CreateQuotePayoutsResponse struct {
 	// Gross payout amount.
@@ -2802,6 +2808,8 @@ type CreateQuotePayoutsResponse struct {
 	Object    CreateQuotePayoutsResponseObject `json:"object" url:"object"`
 	// Server-signed quote token to submit to POST /payouts.
 	QuoteToken string `json:"quote_token" url:"quote_token"`
+	// An optional payout method to connect for estimated savings. The quote still uses the requested saved method.
+	RecommendedMethod *CreateQuotePayoutsResponseRecommendedMethod `json:"recommended_method,omitempty" url:"recommended_method,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2871,6 +2879,13 @@ func (c *CreateQuotePayoutsResponse) GetQuoteToken() string {
 		return ""
 	}
 	return c.QuoteToken
+}
+
+func (c *CreateQuotePayoutsResponse) GetRecommendedMethod() *CreateQuotePayoutsResponseRecommendedMethod {
+	if c == nil {
+		return nil
+	}
+	return c.RecommendedMethod
 }
 
 func (c *CreateQuotePayoutsResponse) GetExtraProperties() map[string]interface{} {
@@ -2952,6 +2967,13 @@ func (c *CreateQuotePayoutsResponse) SetQuoteToken(quoteToken string) {
 	c.require(createQuotePayoutsResponseFieldQuoteToken)
 }
 
+// SetRecommendedMethod sets the RecommendedMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetRecommendedMethod(recommendedMethod *CreateQuotePayoutsResponseRecommendedMethod) {
+	c.RecommendedMethod = recommendedMethod
+	c.require(createQuotePayoutsResponseFieldRecommendedMethod)
+}
+
 func (c *CreateQuotePayoutsResponse) UnmarshalJSON(data []byte) error {
 	type embed CreateQuotePayoutsResponse
 	var unmarshaler = struct {
@@ -2970,6 +2992,13 @@ func (c *CreateQuotePayoutsResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createQuotePayoutsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3019,6 +3048,216 @@ func NewCreateQuotePayoutsResponseObjectFromString(s string) (CreateQuotePayouts
 
 func (c CreateQuotePayoutsResponseObject) Ptr() *CreateQuotePayoutsResponseObject {
 	return &c
+}
+
+var (
+	createQuotePayoutsResponseRecommendedMethodFieldCountry                 = big.NewInt(1 << 0)
+	createQuotePayoutsResponseRecommendedMethodFieldDestinationCurrency     = big.NewInt(1 << 1)
+	createQuotePayoutsResponseRecommendedMethodFieldEstimatedArrival        = big.NewInt(1 << 2)
+	createQuotePayoutsResponseRecommendedMethodFieldEstimatedFee            = big.NewInt(1 << 3)
+	createQuotePayoutsResponseRecommendedMethodFieldEstimatedSavings        = big.NewInt(1 << 4)
+	createQuotePayoutsResponseRecommendedMethodFieldName                    = big.NewInt(1 << 5)
+	createQuotePayoutsResponseRecommendedMethodFieldSupportedPayoutMethodID = big.NewInt(1 << 6)
+)
+
+// createQuotePayoutsResponseRecommendedMethodNullableFields maps the wire names of CreateQuotePayoutsResponseRecommendedMethod's nullable fields (required or optional) to their field bits.
+var createQuotePayoutsResponseRecommendedMethodNullableFields = map[string]*big.Int{
+	"estimated_arrival": createQuotePayoutsResponseRecommendedMethodFieldEstimatedArrival,
+}
+
+// An optional payout method to connect for estimated savings. The quote still uses the requested saved method.
+type CreateQuotePayoutsResponseRecommendedMethod struct {
+	// Two-letter ISO country code for connecting the method.
+	Country string `json:"country" url:"country"`
+	// Currency to select when connecting the method.
+	DestinationCurrency string `json:"destination_currency" url:"destination_currency"`
+	// Estimated arrival when paying out with the suggested method, when available.
+	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
+	// Estimated total cost, including same-currency exchange-rate loss.
+	EstimatedFee *Money `json:"estimated_fee" url:"estimated_fee"`
+	// Estimated increase in the delivered amount after fees compared with this quote.
+	EstimatedSavings *Money `json:"estimated_savings" url:"estimated_savings"`
+	// Display name of the suggested payout method.
+	Name string `json:"name" url:"name"`
+	// Supported payout method to connect, prefixed `podst_`.
+	SupportedPayoutMethodID string `json:"supported_payout_method_id" url:"supported_payout_method_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) GetCountry() string {
+	if c == nil {
+		return ""
+	}
+	return c.Country
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) GetDestinationCurrency() string {
+	if c == nil {
+		return ""
+	}
+	return c.DestinationCurrency
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) GetEstimatedArrival() *time.Time {
+	if c == nil {
+		return nil
+	}
+	return c.EstimatedArrival
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) GetEstimatedFee() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.EstimatedFee
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) GetEstimatedSavings() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.EstimatedSavings
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) GetName() string {
+	if c == nil {
+		return ""
+	}
+	return c.Name
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) GetSupportedPayoutMethodID() string {
+	if c == nil {
+		return ""
+	}
+	return c.SupportedPayoutMethodID
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponseRecommendedMethod) SetCountry(country string) {
+	c.Country = country
+	c.require(createQuotePayoutsResponseRecommendedMethodFieldCountry)
+}
+
+// SetDestinationCurrency sets the DestinationCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponseRecommendedMethod) SetDestinationCurrency(destinationCurrency string) {
+	c.DestinationCurrency = destinationCurrency
+	c.require(createQuotePayoutsResponseRecommendedMethodFieldDestinationCurrency)
+}
+
+// SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponseRecommendedMethod) SetEstimatedArrival(estimatedArrival *time.Time) {
+	c.EstimatedArrival = estimatedArrival
+	c.require(createQuotePayoutsResponseRecommendedMethodFieldEstimatedArrival)
+}
+
+// SetEstimatedFee sets the EstimatedFee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponseRecommendedMethod) SetEstimatedFee(estimatedFee *Money) {
+	c.EstimatedFee = estimatedFee
+	c.require(createQuotePayoutsResponseRecommendedMethodFieldEstimatedFee)
+}
+
+// SetEstimatedSavings sets the EstimatedSavings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponseRecommendedMethod) SetEstimatedSavings(estimatedSavings *Money) {
+	c.EstimatedSavings = estimatedSavings
+	c.require(createQuotePayoutsResponseRecommendedMethodFieldEstimatedSavings)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponseRecommendedMethod) SetName(name string) {
+	c.Name = name
+	c.require(createQuotePayoutsResponseRecommendedMethodFieldName)
+}
+
+// SetSupportedPayoutMethodID sets the SupportedPayoutMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponseRecommendedMethod) SetSupportedPayoutMethodID(supportedPayoutMethodID string) {
+	c.SupportedPayoutMethodID = supportedPayoutMethodID
+	c.require(createQuotePayoutsResponseRecommendedMethodFieldSupportedPayoutMethodID)
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) UnmarshalJSON(data []byte) error {
+	type embed CreateQuotePayoutsResponseRecommendedMethod
+	var unmarshaler = struct {
+		embed
+		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = CreateQuotePayoutsResponseRecommendedMethod(unmarshaler.embed)
+	c.EstimatedArrival = unmarshaler.EstimatedArrival.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createQuotePayoutsResponseRecommendedMethodNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) MarshalJSON() ([]byte, error) {
+	type embed CreateQuotePayoutsResponseRecommendedMethod
+	var marshaler = struct {
+		embed
+		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
+	}{
+		embed:            embed(*c),
+		EstimatedArrival: internal.NewOptionalDateTime(c.EstimatedArrival),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateQuotePayoutsResponseRecommendedMethod) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 type ListPayoutsRequestSource string
