@@ -7286,14 +7286,16 @@ func (p *PostPayoutMethodCreatedPayloadDataQuoteStandard) String() string {
 
 var (
 	postPayoutMethodCreatedPayloadDataRecipientFieldCountry   = big.NewInt(1 << 0)
-	postPayoutMethodCreatedPayloadDataRecipientFieldFirstName = big.NewInt(1 << 1)
-	postPayoutMethodCreatedPayloadDataRecipientFieldLastName  = big.NewInt(1 << 2)
+	postPayoutMethodCreatedPayloadDataRecipientFieldEmail     = big.NewInt(1 << 1)
+	postPayoutMethodCreatedPayloadDataRecipientFieldFirstName = big.NewInt(1 << 2)
+	postPayoutMethodCreatedPayloadDataRecipientFieldLastName  = big.NewInt(1 << 3)
 )
 
 // The recipient of a third-party payout method. Present only for recipient payout methods.
 type PostPayoutMethodCreatedPayloadDataRecipient struct {
 	// ISO 3166-1 alpha-3 country code.
 	Country   string `json:"country" url:"country"`
+	Email     string `json:"email" url:"email"`
 	FirstName string `json:"first_name" url:"first_name"`
 	LastName  string `json:"last_name" url:"last_name"`
 
@@ -7309,6 +7311,13 @@ func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetCountry() string {
 		return ""
 	}
 	return p.Country
+}
+
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetEmail() string {
+	if p == nil {
+		return ""
+	}
+	return p.Email
 }
 
 func (p *PostPayoutMethodCreatedPayloadDataRecipient) GetFirstName() string {
@@ -7346,6 +7355,13 @@ func (p *PostPayoutMethodCreatedPayloadDataRecipient) require(field *big.Int) {
 func (p *PostPayoutMethodCreatedPayloadDataRecipient) SetCountry(country string) {
 	p.Country = country
 	p.require(postPayoutMethodCreatedPayloadDataRecipientFieldCountry)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutMethodCreatedPayloadDataRecipient) SetEmail(email string) {
+	p.Email = email
+	p.require(postPayoutMethodCreatedPayloadDataRecipientFieldEmail)
 }
 
 // SetFirstName sets the FirstName field and marks it as non-optional;
