@@ -896,17 +896,17 @@ func (p PlatformTrendsReportsRequestDirection) Ptr() *PlatformTrendsReportsReque
 type PlatformTrendsReportsRequestOrder string
 
 const (
-	PlatformTrendsReportsRequestOrderGrossRevenue    PlatformTrendsReportsRequestOrder = "gross_revenue"
-	PlatformTrendsReportsRequestOrderBusinesses      PlatformTrendsReportsRequestOrder = "businesses"
-	PlatformTrendsReportsRequestOrderPayments        PlatformTrendsReportsRequestOrder = "payments"
-	PlatformTrendsReportsRequestOrderCustomers       PlatformTrendsReportsRequestOrder = "customers"
-	PlatformTrendsReportsRequestOrderAov             PlatformTrendsReportsRequestOrder = "aov"
-	PlatformTrendsReportsRequestOrderRepeatRate      PlatformTrendsReportsRequestOrder = "repeat_rate"
-	PlatformTrendsReportsRequestOrderP99GrossRevenue PlatformTrendsReportsRequestOrder = "p99_gross_revenue"
-	PlatformTrendsReportsRequestOrderNewBusinesses   PlatformTrendsReportsRequestOrder = "new_businesses"
-	PlatformTrendsReportsRequestOrderAvgBusinessAge  PlatformTrendsReportsRequestOrder = "avg_business_age"
-	PlatformTrendsReportsRequestOrderAvgOwnerAge     PlatformTrendsReportsRequestOrder = "avg_owner_age"
-	PlatformTrendsReportsRequestOrderAvgCustomerAge  PlatformTrendsReportsRequestOrder = "avg_customer_age"
+	PlatformTrendsReportsRequestOrderGrossRevenue       PlatformTrendsReportsRequestOrder = "gross_revenue"
+	PlatformTrendsReportsRequestOrderBusinesses         PlatformTrendsReportsRequestOrder = "businesses"
+	PlatformTrendsReportsRequestOrderPayments           PlatformTrendsReportsRequestOrder = "payments"
+	PlatformTrendsReportsRequestOrderCustomers          PlatformTrendsReportsRequestOrder = "customers"
+	PlatformTrendsReportsRequestOrderAov                PlatformTrendsReportsRequestOrder = "aov"
+	PlatformTrendsReportsRequestOrderRepeatRate         PlatformTrendsReportsRequestOrder = "repeat_rate"
+	PlatformTrendsReportsRequestOrderMedianGrossRevenue PlatformTrendsReportsRequestOrder = "median_gross_revenue"
+	PlatformTrendsReportsRequestOrderNewBusinesses      PlatformTrendsReportsRequestOrder = "new_businesses"
+	PlatformTrendsReportsRequestOrderAvgBusinessAge     PlatformTrendsReportsRequestOrder = "avg_business_age"
+	PlatformTrendsReportsRequestOrderAvgOwnerAge        PlatformTrendsReportsRequestOrder = "avg_owner_age"
+	PlatformTrendsReportsRequestOrderAvgCustomerAge     PlatformTrendsReportsRequestOrder = "avg_customer_age"
 )
 
 func NewPlatformTrendsReportsRequestOrderFromString(s string) (PlatformTrendsReportsRequestOrder, error) {
@@ -923,8 +923,8 @@ func NewPlatformTrendsReportsRequestOrderFromString(s string) (PlatformTrendsRep
 		return PlatformTrendsReportsRequestOrderAov, nil
 	case "repeat_rate":
 		return PlatformTrendsReportsRequestOrderRepeatRate, nil
-	case "p99_gross_revenue":
-		return PlatformTrendsReportsRequestOrderP99GrossRevenue, nil
+	case "median_gross_revenue":
+		return PlatformTrendsReportsRequestOrderMedianGrossRevenue, nil
 	case "new_businesses":
 		return PlatformTrendsReportsRequestOrderNewBusinesses, nil
 	case "avg_business_age":
@@ -1580,40 +1580,40 @@ func (p *PlatformTrendsReportsResponseDataReportsItem) String() string {
 }
 
 var (
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldAccountCountry  = big.NewInt(1 << 0)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldAov             = big.NewInt(1 << 1)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgBusinessAge  = big.NewInt(1 << 2)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgCustomerAge  = big.NewInt(1 << 3)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgOwnerAge     = big.NewInt(1 << 4)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinessType    = big.NewInt(1 << 5)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinesses      = big.NewInt(1 << 6)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomerCountry = big.NewInt(1 << 7)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomers       = big.NewInt(1 << 8)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldGrossRevenue    = big.NewInt(1 << 9)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldIndustryType    = big.NewInt(1 << 10)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses   = big.NewInt(1 << 11)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldP99GrossRevenue = big.NewInt(1 << 12)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments        = big.NewInt(1 << 13)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate      = big.NewInt(1 << 14)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldAccountCountry     = big.NewInt(1 << 0)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldAov                = big.NewInt(1 << 1)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgBusinessAge     = big.NewInt(1 << 2)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgCustomerAge     = big.NewInt(1 << 3)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgOwnerAge        = big.NewInt(1 << 4)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinessType       = big.NewInt(1 << 5)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinesses         = big.NewInt(1 << 6)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomerCountry    = big.NewInt(1 << 7)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomers          = big.NewInt(1 << 8)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldGrossRevenue       = big.NewInt(1 << 9)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldIndustryType       = big.NewInt(1 << 10)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldMedianGrossRevenue = big.NewInt(1 << 11)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses      = big.NewInt(1 << 12)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments           = big.NewInt(1 << 13)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate         = big.NewInt(1 << 14)
 )
 
 // platformTrendsReportsResponseDataReportsItemRowsItemNullableFields maps the wire names of PlatformTrendsReportsResponseDataReportsItemRowsItem's nullable fields (required or optional) to their field bits.
 var platformTrendsReportsResponseDataReportsItemRowsItemNullableFields = map[string]*big.Int{
-	"account_country":   platformTrendsReportsResponseDataReportsItemRowsItemFieldAccountCountry,
-	"aov":               platformTrendsReportsResponseDataReportsItemRowsItemFieldAov,
-	"avg_business_age":  platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgBusinessAge,
-	"avg_customer_age":  platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgCustomerAge,
-	"avg_owner_age":     platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgOwnerAge,
-	"business_type":     platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinessType,
-	"businesses":        platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinesses,
-	"customer_country":  platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomerCountry,
-	"customers":         platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomers,
-	"gross_revenue":     platformTrendsReportsResponseDataReportsItemRowsItemFieldGrossRevenue,
-	"industry_type":     platformTrendsReportsResponseDataReportsItemRowsItemFieldIndustryType,
-	"new_businesses":    platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses,
-	"p99_gross_revenue": platformTrendsReportsResponseDataReportsItemRowsItemFieldP99GrossRevenue,
-	"payments":          platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments,
-	"repeat_rate":       platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate,
+	"account_country":      platformTrendsReportsResponseDataReportsItemRowsItemFieldAccountCountry,
+	"aov":                  platformTrendsReportsResponseDataReportsItemRowsItemFieldAov,
+	"avg_business_age":     platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgBusinessAge,
+	"avg_customer_age":     platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgCustomerAge,
+	"avg_owner_age":        platformTrendsReportsResponseDataReportsItemRowsItemFieldAvgOwnerAge,
+	"business_type":        platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinessType,
+	"businesses":           platformTrendsReportsResponseDataReportsItemRowsItemFieldBusinesses,
+	"customer_country":     platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomerCountry,
+	"customers":            platformTrendsReportsResponseDataReportsItemRowsItemFieldCustomers,
+	"gross_revenue":        platformTrendsReportsResponseDataReportsItemRowsItemFieldGrossRevenue,
+	"industry_type":        platformTrendsReportsResponseDataReportsItemRowsItemFieldIndustryType,
+	"median_gross_revenue": platformTrendsReportsResponseDataReportsItemRowsItemFieldMedianGrossRevenue,
+	"new_businesses":       platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses,
+	"payments":             platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments,
+	"repeat_rate":          platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate,
 }
 
 type PlatformTrendsReportsResponseDataReportsItemRowsItem struct {
@@ -1635,10 +1635,10 @@ type PlatformTrendsReportsResponseDataReportsItemRowsItem struct {
 	// Paid sales, before refunds and fees, measured the way an account's gross revenue is.
 	GrossRevenue *v2.Money                                                         `json:"gross_revenue,omitempty" url:"gross_revenue,omitempty"`
 	IndustryType *PlatformTrendsReportsResponseDataReportsItemRowsItemIndustryType `json:"industry_type,omitempty" url:"industry_type,omitempty"`
+	// The median paid volume per business that sold.
+	MedianGrossRevenue *v2.Money `json:"median_gross_revenue,omitempty" url:"median_gross_revenue,omitempty"`
 	// Businesses created in the window that also sold in it.
 	NewBusinesses *int `json:"new_businesses,omitempty" url:"new_businesses,omitempty"`
-	// The 99th percentile of paid volume per business. `null` when fewer than 100 businesses sold, since below that it is the top seller's own volume.
-	P99GrossRevenue *v2.Money `json:"p99_gross_revenue,omitempty" url:"p99_gross_revenue,omitempty"`
 	// Paid payments.
 	Payments *int `json:"payments,omitempty" url:"payments,omitempty"`
 	// Share of customers who paid more than once, as a fraction.
@@ -1728,18 +1728,18 @@ func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetIndustryType()
 	return p.IndustryType
 }
 
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetMedianGrossRevenue() *v2.Money {
+	if p == nil {
+		return nil
+	}
+	return p.MedianGrossRevenue
+}
+
 func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetNewBusinesses() *int {
 	if p == nil {
 		return nil
 	}
 	return p.NewBusinesses
-}
-
-func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetP99GrossRevenue() *v2.Money {
-	if p == nil {
-		return nil
-	}
-	return p.P99GrossRevenue
 }
 
 func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetPayments() *int {
@@ -1849,18 +1849,18 @@ func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetIndustryType(i
 	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldIndustryType)
 }
 
+// SetMedianGrossRevenue sets the MedianGrossRevenue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetMedianGrossRevenue(medianGrossRevenue *v2.Money) {
+	p.MedianGrossRevenue = medianGrossRevenue
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldMedianGrossRevenue)
+}
+
 // SetNewBusinesses sets the NewBusinesses field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetNewBusinesses(newBusinesses *int) {
 	p.NewBusinesses = newBusinesses
 	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses)
-}
-
-// SetP99GrossRevenue sets the P99GrossRevenue field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetP99GrossRevenue(p99GrossRevenue *v2.Money) {
-	p.P99GrossRevenue = p99GrossRevenue
-	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldP99GrossRevenue)
 }
 
 // SetPayments sets the Payments field and marks it as non-optional;
