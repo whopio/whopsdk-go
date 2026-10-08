@@ -88,9 +88,7 @@ func TestWebhooksListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListWebhooksRequest{
-		AccountID: "account_id",
-	}
+	request := &whopsdk.ListWebhooksRequest{}
 	_, invocationErr := client.Webhooks.List(
 		context.TODO(),
 		request,
@@ -100,7 +98,7 @@ func TestWebhooksListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestWebhooksListWithWireMock", "GET", "/webhooks", map[string]interface{}{"account_id": "account_id"}, 1)
+	VerifyRequestCount(t, "TestWebhooksListWithWireMock", "GET", "/webhooks", nil, 1)
 }
 
 func TestWebhooksCreateWithWireMock(

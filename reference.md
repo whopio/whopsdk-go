@@ -40045,9 +40045,7 @@ Returns a paginated list of webhook endpoints configured for an account, ordered
 <dd>
 
 ```go
-request := &whopsdk.ListWebhooksRequest{
-    AccountID: "account_id",
-}
+request := &whopsdk.ListWebhooksRequest{}
 client.Webhooks.List(
     context.TODO(),
     request,
@@ -40066,7 +40064,7 @@ client.Webhooks.List(
 <dl>
 <dd>
 
-**accountID:** `string` — The unique identifier of the account to list webhooks for.
+**accountID:** `*string` — The unique identifier of the account to list webhooks for.
     
 </dd>
 </dl>
