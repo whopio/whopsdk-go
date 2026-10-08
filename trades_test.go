@@ -2664,6 +2664,13 @@ func TestEnumTradeFailureCode(t *testing.T) {
 		assert.Equal(t, TradeFailureCode("margin_unavailable"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_builder_fee_unapproved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeFailureCodeFromString("builder_fee_unapproved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeFailureCode("builder_fee_unapproved"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_leverage_rejected", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewTradeFailureCodeFromString("leverage_rejected")

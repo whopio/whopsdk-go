@@ -624,6 +624,7 @@ const (
 	TradeFailureCodeTradingPaused        TradeFailureCode = "trading_paused"
 	TradeFailureCodeFundingFailed        TradeFailureCode = "funding_failed"
 	TradeFailureCodeMarginUnavailable    TradeFailureCode = "margin_unavailable"
+	TradeFailureCodeBuilderFeeUnapproved TradeFailureCode = "builder_fee_unapproved"
 	TradeFailureCodeLeverageRejected     TradeFailureCode = "leverage_rejected"
 	TradeFailureCodeLeverageUnconfirmed  TradeFailureCode = "leverage_unconfirmed"
 	TradeFailureCodeOrderRejected        TradeFailureCode = "order_rejected"
@@ -647,6 +648,8 @@ func NewTradeFailureCodeFromString(s string) (TradeFailureCode, error) {
 		return TradeFailureCodeFundingFailed, nil
 	case "margin_unavailable":
 		return TradeFailureCodeMarginUnavailable, nil
+	case "builder_fee_unapproved":
+		return TradeFailureCodeBuilderFeeUnapproved, nil
 	case "leverage_rejected":
 		return TradeFailureCodeLeverageRejected, nil
 	case "leverage_unconfirmed":
