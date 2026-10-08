@@ -388,7 +388,7 @@ type Domain struct {
 	Status *DomainStatus `json:"status,omitempty" url:"status,omitempty"`
 	// When the domain was last updated, as an ISO 8601 timestamp. `null` for a search result.
 	UpdatedAt *string `json:"updated_at,omitempty" url:"updated_at,omitempty"`
-	// When an unverified claim is automatically deleted, 48 hours after creation, as an ISO 8601 timestamp.
+	// When an unverified claim is automatically removed, 48 hours after it was claimed, as an ISO 8601 timestamp.
 	VerificationExpiresAt *string `json:"verification_expires_at,omitempty" url:"verification_expires_at,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1120,7 +1120,7 @@ type DomainListItem struct {
 	Status *DomainListItemStatus `json:"status,omitempty" url:"status,omitempty"`
 	// When the domain was last updated, as an ISO 8601 timestamp. `null` for a search result.
 	UpdatedAt *string `json:"updated_at,omitempty" url:"updated_at,omitempty"`
-	// When an unverified claim is automatically deleted, 48 hours after creation, as an ISO 8601 timestamp.
+	// When an unverified claim is automatically removed, 48 hours after it was claimed, as an ISO 8601 timestamp.
 	VerificationExpiresAt *string `json:"verification_expires_at,omitempty" url:"verification_expires_at,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
