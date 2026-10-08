@@ -149,7 +149,7 @@ var (
 
 type ListWebhooksRequest struct {
 	// The unique identifier of the account to list webhooks for.
-	AccountID string `json:"-" url:"account_id"`
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only return webhooks attached to this app. Omit to list the account's own webhooks.
 	AppID *string `json:"-" url:"app_id,omitempty"`
 	// Also return webhooks attached to the account's apps, not just the account's own. Cannot be combined with `app_id`.
@@ -180,7 +180,7 @@ func (l *ListWebhooksRequest) require(field *big.Int) {
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListWebhooksRequest) SetAccountID(accountID string) {
+func (l *ListWebhooksRequest) SetAccountID(accountID *string) {
 	l.AccountID = accountID
 	l.require(listWebhooksRequestFieldAccountID)
 }

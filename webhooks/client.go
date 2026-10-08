@@ -43,9 +43,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //
 // Example:
 //
-//	request := &whopsdk.ListWebhooksRequest{
-//	    AccountID: "account_id",
-//	}
+//	request := &whopsdk.ListWebhooksRequest{}
 //	client.Webhooks.List(
 //	    context.TODO(),
 //	    request,

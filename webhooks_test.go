@@ -297,7 +297,7 @@ func TestSettersMarkExplicitDeleteWebhooksRequest(t *testing.T) {
 func TestSettersListWebhooksRequest(t *testing.T) {
 	t.Run("SetAccountID", func(t *testing.T) {
 		obj := &ListWebhooksRequest{}
-		var fernTestValueAccountID string
+		var fernTestValueAccountID *string
 		obj.SetAccountID(fernTestValueAccountID)
 		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
 		assert.NotNil(t, obj.explicitFields)
@@ -366,7 +366,7 @@ func TestSettersMarkExplicitListWebhooksRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListWebhooksRequest{}
-		var fernTestValueAccountID string
+		var fernTestValueAccountID *string
 
 		// Act
 		obj.SetAccountID(fernTestValueAccountID)

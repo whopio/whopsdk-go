@@ -14707,11 +14707,6 @@
           "Authorization": {
             "matches": "Bearer .+"
           }
-        },
-        "queryParameters": {
-          "account_id": {
-            "equalTo": "account_id"
-          }
         }
       },
       "response": {
