@@ -949,14 +949,16 @@ func (c CreateMethodsResponseObject) Ptr() *CreateMethodsResponseObject {
 
 var (
 	createMethodsResponseRecipientFieldCountry   = big.NewInt(1 << 0)
-	createMethodsResponseRecipientFieldFirstName = big.NewInt(1 << 1)
-	createMethodsResponseRecipientFieldLastName  = big.NewInt(1 << 2)
+	createMethodsResponseRecipientFieldEmail     = big.NewInt(1 << 1)
+	createMethodsResponseRecipientFieldFirstName = big.NewInt(1 << 2)
+	createMethodsResponseRecipientFieldLastName  = big.NewInt(1 << 3)
 )
 
 // The recipient of a third-party payout method. Present only for recipient payout methods.
 type CreateMethodsResponseRecipient struct {
 	// ISO 3166-1 alpha-3 country code.
 	Country   string `json:"country" url:"country"`
+	Email     string `json:"email" url:"email"`
 	FirstName string `json:"first_name" url:"first_name"`
 	LastName  string `json:"last_name" url:"last_name"`
 
@@ -972,6 +974,13 @@ func (c *CreateMethodsResponseRecipient) GetCountry() string {
 		return ""
 	}
 	return c.Country
+}
+
+func (c *CreateMethodsResponseRecipient) GetEmail() string {
+	if c == nil {
+		return ""
+	}
+	return c.Email
 }
 
 func (c *CreateMethodsResponseRecipient) GetFirstName() string {
@@ -1009,6 +1018,13 @@ func (c *CreateMethodsResponseRecipient) require(field *big.Int) {
 func (c *CreateMethodsResponseRecipient) SetCountry(country string) {
 	c.Country = country
 	c.require(createMethodsResponseRecipientFieldCountry)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsResponseRecipient) SetEmail(email string) {
+	c.Email = email
+	c.require(createMethodsResponseRecipientFieldEmail)
 }
 
 // SetFirstName sets the FirstName field and marks it as non-optional;
@@ -2839,14 +2855,16 @@ func (l *ListMethodsResponseDataItemQuoteStandard) String() string {
 
 var (
 	listMethodsResponseDataItemRecipientFieldCountry   = big.NewInt(1 << 0)
-	listMethodsResponseDataItemRecipientFieldFirstName = big.NewInt(1 << 1)
-	listMethodsResponseDataItemRecipientFieldLastName  = big.NewInt(1 << 2)
+	listMethodsResponseDataItemRecipientFieldEmail     = big.NewInt(1 << 1)
+	listMethodsResponseDataItemRecipientFieldFirstName = big.NewInt(1 << 2)
+	listMethodsResponseDataItemRecipientFieldLastName  = big.NewInt(1 << 3)
 )
 
 // The recipient of a third-party payout method. Present only for recipient payout methods.
 type ListMethodsResponseDataItemRecipient struct {
 	// ISO 3166-1 alpha-3 country code.
 	Country   string `json:"country" url:"country"`
+	Email     string `json:"email" url:"email"`
 	FirstName string `json:"first_name" url:"first_name"`
 	LastName  string `json:"last_name" url:"last_name"`
 
@@ -2862,6 +2880,13 @@ func (l *ListMethodsResponseDataItemRecipient) GetCountry() string {
 		return ""
 	}
 	return l.Country
+}
+
+func (l *ListMethodsResponseDataItemRecipient) GetEmail() string {
+	if l == nil {
+		return ""
+	}
+	return l.Email
 }
 
 func (l *ListMethodsResponseDataItemRecipient) GetFirstName() string {
@@ -2899,6 +2924,13 @@ func (l *ListMethodsResponseDataItemRecipient) require(field *big.Int) {
 func (l *ListMethodsResponseDataItemRecipient) SetCountry(country string) {
 	l.Country = country
 	l.require(listMethodsResponseDataItemRecipientFieldCountry)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseDataItemRecipient) SetEmail(email string) {
+	l.Email = email
+	l.require(listMethodsResponseDataItemRecipientFieldEmail)
 }
 
 // SetFirstName sets the FirstName field and marks it as non-optional;
@@ -4471,14 +4503,16 @@ func (u UpdateMethodsResponseObject) Ptr() *UpdateMethodsResponseObject {
 
 var (
 	updateMethodsResponseRecipientFieldCountry   = big.NewInt(1 << 0)
-	updateMethodsResponseRecipientFieldFirstName = big.NewInt(1 << 1)
-	updateMethodsResponseRecipientFieldLastName  = big.NewInt(1 << 2)
+	updateMethodsResponseRecipientFieldEmail     = big.NewInt(1 << 1)
+	updateMethodsResponseRecipientFieldFirstName = big.NewInt(1 << 2)
+	updateMethodsResponseRecipientFieldLastName  = big.NewInt(1 << 3)
 )
 
 // The recipient of a third-party payout method. Present only for recipient payout methods.
 type UpdateMethodsResponseRecipient struct {
 	// ISO 3166-1 alpha-3 country code.
 	Country   string `json:"country" url:"country"`
+	Email     string `json:"email" url:"email"`
 	FirstName string `json:"first_name" url:"first_name"`
 	LastName  string `json:"last_name" url:"last_name"`
 
@@ -4494,6 +4528,13 @@ func (u *UpdateMethodsResponseRecipient) GetCountry() string {
 		return ""
 	}
 	return u.Country
+}
+
+func (u *UpdateMethodsResponseRecipient) GetEmail() string {
+	if u == nil {
+		return ""
+	}
+	return u.Email
 }
 
 func (u *UpdateMethodsResponseRecipient) GetFirstName() string {
@@ -4531,6 +4572,13 @@ func (u *UpdateMethodsResponseRecipient) require(field *big.Int) {
 func (u *UpdateMethodsResponseRecipient) SetCountry(country string) {
 	u.Country = country
 	u.require(updateMethodsResponseRecipientFieldCountry)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsResponseRecipient) SetEmail(email string) {
+	u.Email = email
+	u.require(updateMethodsResponseRecipientFieldEmail)
 }
 
 // SetFirstName sets the FirstName field and marks it as non-optional;
