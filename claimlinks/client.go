@@ -64,3 +64,30 @@ func (c *Client) Retrieve(
 	}
 	return response.Body, nil
 }
+
+// Claims a funded link into the authenticated user's personal balance and returns the updated link. Requires a signed-in user and the public claim code; company API keys cannot claim on a recipient's behalf. Each user can claim a link once. Reuse the same Idempotency-Key when retrying the same request. On-chain claims wait for the existing transfer workflow and may take several minutes.
+//
+// Example:
+//
+//	request := &whopsdk.ClaimClaimLinksRequest{
+//	    ID: "id",
+//	}
+//	client.ClaimLinks.Claim(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Claim(
+	ctx context.Context,
+	request *whopsdk.ClaimClaimLinksRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.ClaimClaimLinksResponse, error) {
+	response, err := c.WithRawResponse.Claim(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
