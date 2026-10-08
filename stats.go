@@ -46,44 +46,46 @@ var (
 	retrieveStatsRequestFieldAdIDs               = big.NewInt(1 << 32)
 	retrieveStatsRequestFieldSnapshotWindow      = big.NewInt(1 << 33)
 	retrieveStatsRequestFieldEvent               = big.NewInt(1 << 34)
-	retrieveStatsRequestFieldConversionWindow    = big.NewInt(1 << 35)
-	retrieveStatsRequestFieldMatureOnly          = big.NewInt(1 << 36)
-	retrieveStatsRequestFieldSteps               = big.NewInt(1 << 37)
-	retrieveStatsRequestFieldCompareTo           = big.NewInt(1 << 38)
-	retrieveStatsRequestFieldConfidenceLevel     = big.NewInt(1 << 39)
-	retrieveStatsRequestFieldContactable         = big.NewInt(1 << 40)
-	retrieveStatsRequestFieldHasPurchased        = big.NewInt(1 << 41)
-	retrieveStatsRequestFieldFirstSeenAfter      = big.NewInt(1 << 42)
-	retrieveStatsRequestFieldFirstSeenBefore     = big.NewInt(1 << 43)
-	retrieveStatsRequestFieldLastSeenAfter       = big.NewInt(1 << 44)
-	retrieveStatsRequestFieldLastSeenBefore      = big.NewInt(1 << 45)
-	retrieveStatsRequestFieldFirstSeenWithinDays = big.NewInt(1 << 46)
-	retrieveStatsRequestFieldLastSeenWithinDays  = big.NewInt(1 << 47)
-	retrieveStatsRequestFieldKnown               = big.NewInt(1 << 48)
-	retrieveStatsRequestFieldHasEmail            = big.NewInt(1 << 49)
-	retrieveStatsRequestFieldHasPhone            = big.NewInt(1 << 50)
-	retrieveStatsRequestFieldLtvGt               = big.NewInt(1 << 51)
-	retrieveStatsRequestFieldLtvGte              = big.NewInt(1 << 52)
-	retrieveStatsRequestFieldLtvLt               = big.NewInt(1 << 53)
-	retrieveStatsRequestFieldLtvLte              = big.NewInt(1 << 54)
-	retrieveStatsRequestFieldAovGt               = big.NewInt(1 << 55)
-	retrieveStatsRequestFieldAovGte              = big.NewInt(1 << 56)
-	retrieveStatsRequestFieldAovLt               = big.NewInt(1 << 57)
-	retrieveStatsRequestFieldAovLte              = big.NewInt(1 << 58)
-	retrieveStatsRequestFieldPurchaseCountGt     = big.NewInt(1 << 59)
-	retrieveStatsRequestFieldPurchaseCountGte    = big.NewInt(1 << 60)
-	retrieveStatsRequestFieldPurchaseCountLt     = big.NewInt(1 << 61)
-	retrieveStatsRequestFieldPurchaseCountLte    = big.NewInt(1 << 62)
-	retrieveStatsRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	retrieveStatsRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	retrieveStatsRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	retrieveStatsRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	retrieveStatsRequestFieldBusinessType        = big.NewInt(1 << 35)
+	retrieveStatsRequestFieldIndustryType        = big.NewInt(1 << 36)
+	retrieveStatsRequestFieldConversionWindow    = big.NewInt(1 << 37)
+	retrieveStatsRequestFieldMatureOnly          = big.NewInt(1 << 38)
+	retrieveStatsRequestFieldSteps               = big.NewInt(1 << 39)
+	retrieveStatsRequestFieldCompareTo           = big.NewInt(1 << 40)
+	retrieveStatsRequestFieldConfidenceLevel     = big.NewInt(1 << 41)
+	retrieveStatsRequestFieldContactable         = big.NewInt(1 << 42)
+	retrieveStatsRequestFieldHasPurchased        = big.NewInt(1 << 43)
+	retrieveStatsRequestFieldFirstSeenAfter      = big.NewInt(1 << 44)
+	retrieveStatsRequestFieldFirstSeenBefore     = big.NewInt(1 << 45)
+	retrieveStatsRequestFieldLastSeenAfter       = big.NewInt(1 << 46)
+	retrieveStatsRequestFieldLastSeenBefore      = big.NewInt(1 << 47)
+	retrieveStatsRequestFieldFirstSeenWithinDays = big.NewInt(1 << 48)
+	retrieveStatsRequestFieldLastSeenWithinDays  = big.NewInt(1 << 49)
+	retrieveStatsRequestFieldKnown               = big.NewInt(1 << 50)
+	retrieveStatsRequestFieldHasEmail            = big.NewInt(1 << 51)
+	retrieveStatsRequestFieldHasPhone            = big.NewInt(1 << 52)
+	retrieveStatsRequestFieldLtvGt               = big.NewInt(1 << 53)
+	retrieveStatsRequestFieldLtvGte              = big.NewInt(1 << 54)
+	retrieveStatsRequestFieldLtvLt               = big.NewInt(1 << 55)
+	retrieveStatsRequestFieldLtvLte              = big.NewInt(1 << 56)
+	retrieveStatsRequestFieldAovGt               = big.NewInt(1 << 57)
+	retrieveStatsRequestFieldAovGte              = big.NewInt(1 << 58)
+	retrieveStatsRequestFieldAovLt               = big.NewInt(1 << 59)
+	retrieveStatsRequestFieldAovLte              = big.NewInt(1 << 60)
+	retrieveStatsRequestFieldPurchaseCountGt     = big.NewInt(1 << 61)
+	retrieveStatsRequestFieldPurchaseCountGte    = big.NewInt(1 << 62)
+	retrieveStatsRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	retrieveStatsRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	retrieveStatsRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	retrieveStatsRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	retrieveStatsRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	retrieveStatsRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 68)
 )
 
 type RetrieveStatsRequest struct {
 	// The metric to retrieve, for example net_revenue.
 	Metric string `json:"-" url:"-"`
-	// The account this query concerns, for example biz_AbC123.
+	// Account this query concerns, prefixed `biz_`, or `platform` for all of Whop.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The user this query concerns, for example user_AbC123. Available on metrics that support user subjects, such as account_balance.
 	UserID *string `json:"-" url:"user_id,omitempty"`
@@ -151,6 +153,10 @@ type RetrieveStatsRequest struct {
 	SnapshotWindow *RetrieveStatsRequestSnapshotWindow `json:"-" url:"snapshot_window,omitempty"`
 	// Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
 	Event *string `json:"-" url:"event,omitempty"`
+	// Filter to one business type, for example `education`. Pair with `breakdown_by=business_type` to split by business type. Available on metrics that list `business_type`.
+	BusinessType *string `json:"-" url:"business_type,omitempty"`
+	// Filter to one industry type, for example `options_trading`. Pair with `breakdown_by=industry_type` to split by industry type. Available on metrics that list `industry_type`.
+	IndustryType *string `json:"-" url:"industry_type,omitempty"`
 	// Funnel only. Time allowed from the first event to the final event: integer minutes, hours, or days, up to 30d.
 	ConversionWindow *string `json:"-" url:"conversion_window,omitempty"`
 	// Funnel only. Include only entrants whose full conversion window has elapsed. Required for confidence intervals and comparisons.
@@ -472,6 +478,20 @@ func (r *RetrieveStatsRequest) SetSnapshotWindow(snapshotWindow *RetrieveStatsRe
 func (r *RetrieveStatsRequest) SetEvent(event *string) {
 	r.Event = event
 	r.require(retrieveStatsRequestFieldEvent)
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetBusinessType(businessType *string) {
+	r.BusinessType = businessType
+	r.require(retrieveStatsRequestFieldBusinessType)
+}
+
+// SetIndustryType sets the IndustryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetIndustryType(industryType *string) {
+	r.IndustryType = industryType
+	r.require(retrieveStatsRequestFieldIndustryType)
 }
 
 // SetConversionWindow sets the ConversionWindow field and marks it as non-optional;

@@ -47,44 +47,46 @@ var (
 	retrieveTimeSeriesRequestFieldAdIDs               = big.NewInt(1 << 32)
 	retrieveTimeSeriesRequestFieldSnapshotWindow      = big.NewInt(1 << 33)
 	retrieveTimeSeriesRequestFieldEvent               = big.NewInt(1 << 34)
-	retrieveTimeSeriesRequestFieldConversionWindow    = big.NewInt(1 << 35)
-	retrieveTimeSeriesRequestFieldMatureOnly          = big.NewInt(1 << 36)
-	retrieveTimeSeriesRequestFieldSteps               = big.NewInt(1 << 37)
-	retrieveTimeSeriesRequestFieldCompareTo           = big.NewInt(1 << 38)
-	retrieveTimeSeriesRequestFieldConfidenceLevel     = big.NewInt(1 << 39)
-	retrieveTimeSeriesRequestFieldContactable         = big.NewInt(1 << 40)
-	retrieveTimeSeriesRequestFieldHasPurchased        = big.NewInt(1 << 41)
-	retrieveTimeSeriesRequestFieldFirstSeenAfter      = big.NewInt(1 << 42)
-	retrieveTimeSeriesRequestFieldFirstSeenBefore     = big.NewInt(1 << 43)
-	retrieveTimeSeriesRequestFieldLastSeenAfter       = big.NewInt(1 << 44)
-	retrieveTimeSeriesRequestFieldLastSeenBefore      = big.NewInt(1 << 45)
-	retrieveTimeSeriesRequestFieldFirstSeenWithinDays = big.NewInt(1 << 46)
-	retrieveTimeSeriesRequestFieldLastSeenWithinDays  = big.NewInt(1 << 47)
-	retrieveTimeSeriesRequestFieldKnown               = big.NewInt(1 << 48)
-	retrieveTimeSeriesRequestFieldHasEmail            = big.NewInt(1 << 49)
-	retrieveTimeSeriesRequestFieldHasPhone            = big.NewInt(1 << 50)
-	retrieveTimeSeriesRequestFieldLtvGt               = big.NewInt(1 << 51)
-	retrieveTimeSeriesRequestFieldLtvGte              = big.NewInt(1 << 52)
-	retrieveTimeSeriesRequestFieldLtvLt               = big.NewInt(1 << 53)
-	retrieveTimeSeriesRequestFieldLtvLte              = big.NewInt(1 << 54)
-	retrieveTimeSeriesRequestFieldAovGt               = big.NewInt(1 << 55)
-	retrieveTimeSeriesRequestFieldAovGte              = big.NewInt(1 << 56)
-	retrieveTimeSeriesRequestFieldAovLt               = big.NewInt(1 << 57)
-	retrieveTimeSeriesRequestFieldAovLte              = big.NewInt(1 << 58)
-	retrieveTimeSeriesRequestFieldPurchaseCountGt     = big.NewInt(1 << 59)
-	retrieveTimeSeriesRequestFieldPurchaseCountGte    = big.NewInt(1 << 60)
-	retrieveTimeSeriesRequestFieldPurchaseCountLt     = big.NewInt(1 << 61)
-	retrieveTimeSeriesRequestFieldPurchaseCountLte    = big.NewInt(1 << 62)
-	retrieveTimeSeriesRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	retrieveTimeSeriesRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	retrieveTimeSeriesRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	retrieveTimeSeriesRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	retrieveTimeSeriesRequestFieldBusinessType        = big.NewInt(1 << 35)
+	retrieveTimeSeriesRequestFieldIndustryType        = big.NewInt(1 << 36)
+	retrieveTimeSeriesRequestFieldConversionWindow    = big.NewInt(1 << 37)
+	retrieveTimeSeriesRequestFieldMatureOnly          = big.NewInt(1 << 38)
+	retrieveTimeSeriesRequestFieldSteps               = big.NewInt(1 << 39)
+	retrieveTimeSeriesRequestFieldCompareTo           = big.NewInt(1 << 40)
+	retrieveTimeSeriesRequestFieldConfidenceLevel     = big.NewInt(1 << 41)
+	retrieveTimeSeriesRequestFieldContactable         = big.NewInt(1 << 42)
+	retrieveTimeSeriesRequestFieldHasPurchased        = big.NewInt(1 << 43)
+	retrieveTimeSeriesRequestFieldFirstSeenAfter      = big.NewInt(1 << 44)
+	retrieveTimeSeriesRequestFieldFirstSeenBefore     = big.NewInt(1 << 45)
+	retrieveTimeSeriesRequestFieldLastSeenAfter       = big.NewInt(1 << 46)
+	retrieveTimeSeriesRequestFieldLastSeenBefore      = big.NewInt(1 << 47)
+	retrieveTimeSeriesRequestFieldFirstSeenWithinDays = big.NewInt(1 << 48)
+	retrieveTimeSeriesRequestFieldLastSeenWithinDays  = big.NewInt(1 << 49)
+	retrieveTimeSeriesRequestFieldKnown               = big.NewInt(1 << 50)
+	retrieveTimeSeriesRequestFieldHasEmail            = big.NewInt(1 << 51)
+	retrieveTimeSeriesRequestFieldHasPhone            = big.NewInt(1 << 52)
+	retrieveTimeSeriesRequestFieldLtvGt               = big.NewInt(1 << 53)
+	retrieveTimeSeriesRequestFieldLtvGte              = big.NewInt(1 << 54)
+	retrieveTimeSeriesRequestFieldLtvLt               = big.NewInt(1 << 55)
+	retrieveTimeSeriesRequestFieldLtvLte              = big.NewInt(1 << 56)
+	retrieveTimeSeriesRequestFieldAovGt               = big.NewInt(1 << 57)
+	retrieveTimeSeriesRequestFieldAovGte              = big.NewInt(1 << 58)
+	retrieveTimeSeriesRequestFieldAovLt               = big.NewInt(1 << 59)
+	retrieveTimeSeriesRequestFieldAovLte              = big.NewInt(1 << 60)
+	retrieveTimeSeriesRequestFieldPurchaseCountGt     = big.NewInt(1 << 61)
+	retrieveTimeSeriesRequestFieldPurchaseCountGte    = big.NewInt(1 << 62)
+	retrieveTimeSeriesRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	retrieveTimeSeriesRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	retrieveTimeSeriesRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	retrieveTimeSeriesRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	retrieveTimeSeriesRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	retrieveTimeSeriesRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 68)
 )
 
 type RetrieveTimeSeriesRequest struct {
 	// The metric to retrieve, for example net_revenue. Use GET /stats/time_series to see every metric key. The metric sets the unit and the properties you can filter or break down by.
 	Metric string `json:"-" url:"-"`
-	// The account this query concerns, for example biz_AbC123.
+	// Account this query concerns, prefixed `biz_`, or `platform` for all of Whop.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The user this query concerns, for example user_AbC123. Available on metrics that support user subjects, such as account_balance.
 	UserID *string `json:"-" url:"user_id,omitempty"`
@@ -152,6 +154,10 @@ type RetrieveTimeSeriesRequest struct {
 	SnapshotWindow *RetrieveTimeSeriesRequestSnapshotWindow `json:"-" url:"snapshot_window,omitempty"`
 	// Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
 	Event *string `json:"-" url:"event,omitempty"`
+	// Filter to one business type, for example `education`. Pair with `breakdown_by=business_type` to split by business type. Available on metrics that list `business_type`.
+	BusinessType *string `json:"-" url:"business_type,omitempty"`
+	// Filter to one industry type, for example `options_trading`. Pair with `breakdown_by=industry_type` to split by industry type. Available on metrics that list `industry_type`.
+	IndustryType *string `json:"-" url:"industry_type,omitempty"`
 	// Funnel only. Time allowed from the first event to the final event: integer minutes, hours, or days, up to 30d.
 	ConversionWindow *string `json:"-" url:"conversion_window,omitempty"`
 	// Funnel only. Include only entrants whose full conversion window has elapsed. Required for confidence intervals and comparisons.
@@ -473,6 +479,20 @@ func (r *RetrieveTimeSeriesRequest) SetSnapshotWindow(snapshotWindow *RetrieveTi
 func (r *RetrieveTimeSeriesRequest) SetEvent(event *string) {
 	r.Event = event
 	r.require(retrieveTimeSeriesRequestFieldEvent)
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequest) SetBusinessType(businessType *string) {
+	r.BusinessType = businessType
+	r.require(retrieveTimeSeriesRequestFieldBusinessType)
+}
+
+// SetIndustryType sets the IndustryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequest) SetIndustryType(industryType *string) {
+	r.IndustryType = industryType
+	r.require(retrieveTimeSeriesRequestFieldIndustryType)
 }
 
 // SetConversionWindow sets the ConversionWindow field and marks it as non-optional;
