@@ -159,6 +159,14 @@ func TestSettersRetrievePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEconomicIntelligenceFirstRenewalAt", func(t *testing.T) {
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValueEconomicIntelligenceFirstRenewalAt *string
+		obj.SetEconomicIntelligenceFirstRenewalAt(fernTestValueEconomicIntelligenceFirstRenewalAt)
+		assert.Equal(t, fernTestValueEconomicIntelligenceFirstRenewalAt, obj.EconomicIntelligenceFirstRenewalAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEconomicIntelligenceOffers", func(t *testing.T) {
 		obj := &RetrievePreferencesResponse{}
 		var fernTestValueEconomicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem
@@ -559,6 +567,39 @@ func TestGettersRetrievePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEconomicIntelligenceFeePercentage() // Should return zero value
+	})
+
+	t.Run("GetEconomicIntelligenceFirstRenewalAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var expected *string
+		obj.EconomicIntelligenceFirstRenewalAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEconomicIntelligenceFirstRenewalAt(), "getter should return the property value")
+	})
+
+	t.Run("GetEconomicIntelligenceFirstRenewalAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		obj.EconomicIntelligenceFirstRenewalAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEconomicIntelligenceFirstRenewalAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEconomicIntelligenceFirstRenewalAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEconomicIntelligenceFirstRenewalAt() // Should return zero value
 	})
 
 	t.Run("GetEconomicIntelligenceOffers", func(t *testing.T) {
@@ -1099,6 +1140,37 @@ func TestSettersMarkExplicitRetrievePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetEconomicIntelligenceFeePercentage(fernTestValueEconomicIntelligenceFeePercentage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEconomicIntelligenceFirstRenewalAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValueEconomicIntelligenceFirstRenewalAt *string
+
+		// Act
+		obj.SetEconomicIntelligenceFirstRenewalAt(fernTestValueEconomicIntelligenceFirstRenewalAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4983,6 +5055,14 @@ func TestSettersUpdatePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEconomicIntelligenceFirstRenewalAt", func(t *testing.T) {
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValueEconomicIntelligenceFirstRenewalAt *string
+		obj.SetEconomicIntelligenceFirstRenewalAt(fernTestValueEconomicIntelligenceFirstRenewalAt)
+		assert.Equal(t, fernTestValueEconomicIntelligenceFirstRenewalAt, obj.EconomicIntelligenceFirstRenewalAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEconomicIntelligenceOffers", func(t *testing.T) {
 		obj := &UpdatePreferencesResponse{}
 		var fernTestValueEconomicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem
@@ -5383,6 +5463,39 @@ func TestGettersUpdatePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEconomicIntelligenceFeePercentage() // Should return zero value
+	})
+
+	t.Run("GetEconomicIntelligenceFirstRenewalAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var expected *string
+		obj.EconomicIntelligenceFirstRenewalAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEconomicIntelligenceFirstRenewalAt(), "getter should return the property value")
+	})
+
+	t.Run("GetEconomicIntelligenceFirstRenewalAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		obj.EconomicIntelligenceFirstRenewalAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEconomicIntelligenceFirstRenewalAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEconomicIntelligenceFirstRenewalAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEconomicIntelligenceFirstRenewalAt() // Should return zero value
 	})
 
 	t.Run("GetEconomicIntelligenceOffers", func(t *testing.T) {
@@ -5923,6 +6036,37 @@ func TestSettersMarkExplicitUpdatePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetEconomicIntelligenceFeePercentage(fernTestValueEconomicIntelligenceFeePercentage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEconomicIntelligenceFirstRenewalAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValueEconomicIntelligenceFirstRenewalAt *string
+
+		// Act
+		obj.SetEconomicIntelligenceFirstRenewalAt(fernTestValueEconomicIntelligenceFirstRenewalAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -10316,6 +10460,7 @@ func TestRequiredNullableRoundTripRetrievePreferencesResponse(t *testing.T) {
 		"ads_payment_methods",
 		"economic_intelligence_ends_at",
 		"economic_intelligence_fee_percentage",
+		"economic_intelligence_first_renewal_at",
 		"economic_intelligence_previous_period",
 		"preferred_settlement_currency",
 		"preferred_settlement_currency_changeable_at",
@@ -10331,7 +10476,7 @@ func TestRequiredNullableRoundTripRetrievePreferencesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrievePreferencesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -10544,6 +10689,7 @@ func TestRequiredNullableRoundTripUpdatePreferencesResponse(t *testing.T) {
 		"ads_payment_methods",
 		"economic_intelligence_ends_at",
 		"economic_intelligence_fee_percentage",
+		"economic_intelligence_first_renewal_at",
 		"economic_intelligence_previous_period",
 		"preferred_settlement_currency",
 		"preferred_settlement_currency_changeable_at",
@@ -10559,7 +10705,7 @@ func TestRequiredNullableRoundTripUpdatePreferencesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj UpdatePreferencesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

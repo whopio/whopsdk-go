@@ -51,11 +51,12 @@ var (
 	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 10)
 	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 11)
 	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 12)
-	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 13)
-	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 14)
-	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 15)
-	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 16)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 17)
+	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 13)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 14)
+	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 15)
+	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 16)
+	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 17)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 18)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -63,6 +64,7 @@ var retrievePreferencesResponseNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         retrievePreferencesResponseFieldAdsPaymentMethods,
 	"economic_intelligence_ends_at":               retrievePreferencesResponseFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage,
+	"economic_intelligence_first_renewal_at":      retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt,
 	"economic_intelligence_previous_period":       retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod,
 	"preferred_settlement_currency":               retrievePreferencesResponseFieldPreferredSettlementCurrency,
 	"preferred_settlement_currency_changeable_at": retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt,
@@ -89,12 +91,14 @@ type RetrievePreferencesResponse struct {
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
-	// Whether Economic Intelligence renews itself every week, with no end date. Turn it on with the `weekly` offer. Set it to `false` to stop renewing, which keeps Economic Intelligence on until the end of the current week, shown in `economic_intelligence_ends_at`; set it back to `true` before then to keep renewing.
+	// Whether Economic Intelligence renews itself every week, with no end date. Turn it on with the `weekly` offer. Set it to `false` to stop renewing, which keeps Economic Intelligence on until the end of the current week, shown in `economic_intelligence_ends_at`; stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. Set it back to `true` before then to keep renewing at the weekly fee.
 	EconomicIntelligenceAutoRenew bool `json:"economic_intelligence_auto_renew" url:"economic_intelligence_auto_renew"`
 	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or renews automatically.
 	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
 	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
 	EconomicIntelligenceFeePercentage *float64 `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
+	// When auto-renew first renews, as an ISO 8601 timestamp. Turning auto-renew off before then charges the rest of that week at the `7_days` offer's fee. `null` when auto-renew is off.
+	EconomicIntelligenceFirstRenewalAt *string `json:"economic_intelligence_first_renewal_at,omitempty" url:"economic_intelligence_first_renewal_at,omitempty"`
 	// What the account can choose now to turn on Economic Intelligence, each with its fee. Every offer while Economic Intelligence is off; only the `weekly` auto-renew offer while a committed period is running, as an upgrade; empty while it renews automatically.
 	EconomicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
 	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
@@ -202,6 +206,13 @@ func (r *RetrievePreferencesResponse) GetEconomicIntelligenceFeePercentage() *fl
 		return nil
 	}
 	return r.EconomicIntelligenceFeePercentage
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligenceFirstRenewalAt() *string {
+	if r == nil {
+		return nil
+	}
+	return r.EconomicIntelligenceFirstRenewalAt
 }
 
 func (r *RetrievePreferencesResponse) GetEconomicIntelligenceOffers() []*RetrievePreferencesResponseEconomicIntelligenceOffersItem {
@@ -344,6 +355,13 @@ func (r *RetrievePreferencesResponse) SetEconomicIntelligenceEndsAt(economicInte
 func (r *RetrievePreferencesResponse) SetEconomicIntelligenceFeePercentage(economicIntelligenceFeePercentage *float64) {
 	r.EconomicIntelligenceFeePercentage = economicIntelligenceFeePercentage
 	r.require(retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage)
+}
+
+// SetEconomicIntelligenceFirstRenewalAt sets the EconomicIntelligenceFirstRenewalAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligenceFirstRenewalAt(economicIntelligenceFirstRenewalAt *string) {
+	r.EconomicIntelligenceFirstRenewalAt = economicIntelligenceFirstRenewalAt
+	r.require(retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt)
 }
 
 // SetEconomicIntelligenceOffers sets the EconomicIntelligenceOffers field and marks it as non-optional;
@@ -2760,11 +2778,12 @@ var (
 	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 10)
 	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 11)
 	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 12)
-	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 13)
-	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 14)
-	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 15)
-	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 16)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 17)
+	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 13)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 14)
+	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 15)
+	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 16)
+	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 17)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 18)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -2772,6 +2791,7 @@ var updatePreferencesResponseNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         updatePreferencesResponseFieldAdsPaymentMethods,
 	"economic_intelligence_ends_at":               updatePreferencesResponseFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        updatePreferencesResponseFieldEconomicIntelligenceFeePercentage,
+	"economic_intelligence_first_renewal_at":      updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt,
 	"economic_intelligence_previous_period":       updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod,
 	"preferred_settlement_currency":               updatePreferencesResponseFieldPreferredSettlementCurrency,
 	"preferred_settlement_currency_changeable_at": updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt,
@@ -2798,12 +2818,14 @@ type UpdatePreferencesResponse struct {
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
-	// Whether Economic Intelligence renews itself every week, with no end date. Turn it on with the `weekly` offer. Set it to `false` to stop renewing, which keeps Economic Intelligence on until the end of the current week, shown in `economic_intelligence_ends_at`; set it back to `true` before then to keep renewing.
+	// Whether Economic Intelligence renews itself every week, with no end date. Turn it on with the `weekly` offer. Set it to `false` to stop renewing, which keeps Economic Intelligence on until the end of the current week, shown in `economic_intelligence_ends_at`; stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. Set it back to `true` before then to keep renewing at the weekly fee.
 	EconomicIntelligenceAutoRenew bool `json:"economic_intelligence_auto_renew" url:"economic_intelligence_auto_renew"`
 	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or renews automatically.
 	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
 	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
 	EconomicIntelligenceFeePercentage *float64 `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
+	// When auto-renew first renews, as an ISO 8601 timestamp. Turning auto-renew off before then charges the rest of that week at the `7_days` offer's fee. `null` when auto-renew is off.
+	EconomicIntelligenceFirstRenewalAt *string `json:"economic_intelligence_first_renewal_at,omitempty" url:"economic_intelligence_first_renewal_at,omitempty"`
 	// What the account can choose now to turn on Economic Intelligence, each with its fee. Every offer while Economic Intelligence is off; only the `weekly` auto-renew offer while a committed period is running, as an upgrade; empty while it renews automatically.
 	EconomicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
 	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
@@ -2911,6 +2933,13 @@ func (u *UpdatePreferencesResponse) GetEconomicIntelligenceFeePercentage() *floa
 		return nil
 	}
 	return u.EconomicIntelligenceFeePercentage
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligenceFirstRenewalAt() *string {
+	if u == nil {
+		return nil
+	}
+	return u.EconomicIntelligenceFirstRenewalAt
 }
 
 func (u *UpdatePreferencesResponse) GetEconomicIntelligenceOffers() []*UpdatePreferencesResponseEconomicIntelligenceOffersItem {
@@ -3053,6 +3082,13 @@ func (u *UpdatePreferencesResponse) SetEconomicIntelligenceEndsAt(economicIntell
 func (u *UpdatePreferencesResponse) SetEconomicIntelligenceFeePercentage(economicIntelligenceFeePercentage *float64) {
 	u.EconomicIntelligenceFeePercentage = economicIntelligenceFeePercentage
 	u.require(updatePreferencesResponseFieldEconomicIntelligenceFeePercentage)
+}
+
+// SetEconomicIntelligenceFirstRenewalAt sets the EconomicIntelligenceFirstRenewalAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligenceFirstRenewalAt(economicIntelligenceFirstRenewalAt *string) {
+	u.EconomicIntelligenceFirstRenewalAt = economicIntelligenceFirstRenewalAt
+	u.require(updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt)
 }
 
 // SetEconomicIntelligenceOffers sets the EconomicIntelligenceOffers field and marks it as non-optional;
@@ -4823,7 +4859,7 @@ type UpdatePreferencesRequest struct {
 	CardsNotifications *bool `json:"cards_notifications,omitempty" url:"-"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins. Requires the `payment:dispute` scope on your API key.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
-	// `false` stops renewing: Economic Intelligence stays on until the end of the current week. `true` keeps it renewing again before then, or turns it on like the `weekly` offer. Can't be combined with `economic_intelligence_duration_key`. Requires the `company:update` scope on your API key.
+	// `false` stops renewing: Economic Intelligence stays on until the end of the current week, and stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. `true` keeps it renewing again before then, or turns it on like the `weekly` offer. Can't be combined with `economic_intelligence_duration_key`. Requires the `company:update` scope on your API key.
 	EconomicIntelligenceAutoRenew *bool `json:"economic_intelligence_auto_renew,omitempty" url:"-"`
 	// Turns on Economic Intelligence with the offer that has this `key` in `economic_intelligence_offers`, at that offer's fee. A committed duration can't be changed or turned off until `economic_intelligence_ends_at`, except to upgrade to `weekly`, which switches to auto-renew right away. Requires the `company:update` scope on your API key.
 	EconomicIntelligenceDurationKey *UpdatePreferencesRequestEconomicIntelligenceDurationKey `json:"economic_intelligence_duration_key,omitempty" url:"-"`

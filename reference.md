@@ -41803,7 +41803,7 @@ client.Accounts.Preferences.Update(
 <dl>
 <dd>
 
-**economicIntelligenceAutoRenew:** `*bool` — `false` stops renewing: Economic Intelligence stays on until the end of the current week. `true` keeps it renewing again before then, or turns it on like the `weekly` offer. Can't be combined with `economic_intelligence_duration_key`. Requires the `company:update` scope on your API key.
+**economicIntelligenceAutoRenew:** `*bool` — `false` stops renewing: Economic Intelligence stays on until the end of the current week, and stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. `true` keeps it renewing again before then, or turns it on like the `weekly` offer. Can't be combined with `economic_intelligence_duration_key`. Requires the `company:update` scope on your API key.
     
 </dd>
 </dl>
