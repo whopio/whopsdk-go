@@ -11617,6 +11617,66 @@ client.ClaimLinks.Retrieve(
 </dl>
 </details>
 
+<details><summary><code>client.ClaimLinks.Claim(ID) -> *whopsdk.ClaimClaimLinksResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Claims a funded link into the authenticated user's personal balance and returns the updated link. Requires a signed-in user and the public claim code; company API keys cannot claim on a recipient's behalf. Each user can claim a link once. Reuse the same Idempotency-Key when retrying the same request. On-chain claims wait for the existing transfer workflow and may take several minutes.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ClaimClaimLinksRequest{
+    ID: "id",
+}
+client.ClaimLinks.Claim(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The public claim code from the `c` parameter in the claim URL. A claim-link ID does not authorize redemption.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## CompanyTokenTransactions
 <details><summary><code>client.CompanyTokenTransactions.List() -> *whopsdk.ListCompanyTokenTransactionsResponse</code></summary>
 <dl>

@@ -11,6 +11,34 @@ import (
 )
 
 var (
+	claimClaimLinksRequestFieldID = big.NewInt(1 << 0)
+)
+
+type ClaimClaimLinksRequest struct {
+	// The public claim code from the `c` parameter in the claim URL. A claim-link ID does not authorize redemption.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *ClaimClaimLinksRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksRequest) SetID(id string) {
+	c.ID = id
+	c.require(claimClaimLinksRequestFieldID)
+}
+
+var (
 	retrieveClaimLinksRequestFieldID = big.NewInt(1 << 0)
 )
 
@@ -36,6 +64,918 @@ func (r *RetrieveClaimLinksRequest) require(field *big.Int) {
 func (r *RetrieveClaimLinksRequest) SetID(id string) {
 	r.ID = id
 	r.require(retrieveClaimLinksRequestFieldID)
+}
+
+var (
+	claimClaimLinksResponseFieldAmount          = big.NewInt(1 << 0)
+	claimClaimLinksResponseFieldClaimURL        = big.NewInt(1 << 1)
+	claimClaimLinksResponseFieldClaimable       = big.NewInt(1 << 2)
+	claimClaimLinksResponseFieldCode            = big.NewInt(1 << 3)
+	claimClaimLinksResponseFieldCreatedAt       = big.NewInt(1 << 4)
+	claimClaimLinksResponseFieldCurrency        = big.NewInt(1 << 5)
+	claimClaimLinksResponseFieldExpiresAt       = big.NewInt(1 << 6)
+	claimClaimLinksResponseFieldID              = big.NewInt(1 << 7)
+	claimClaimLinksResponseFieldObject          = big.NewInt(1 << 8)
+	claimClaimLinksResponseFieldRedeemableCount = big.NewInt(1 << 9)
+	claimClaimLinksResponseFieldRedeemedCount   = big.NewInt(1 << 10)
+	claimClaimLinksResponseFieldRemainingClaims = big.NewInt(1 << 11)
+	claimClaimLinksResponseFieldSender          = big.NewInt(1 << 12)
+	claimClaimLinksResponseFieldSource          = big.NewInt(1 << 13)
+	claimClaimLinksResponseFieldStatus          = big.NewInt(1 << 14)
+)
+
+// claimClaimLinksResponseNullableFields maps the wire names of ClaimClaimLinksResponse's nullable fields (required or optional) to their field bits.
+var claimClaimLinksResponseNullableFields = map[string]*big.Int{
+	"claim_url":  claimClaimLinksResponseFieldClaimURL,
+	"code":       claimClaimLinksResponseFieldCode,
+	"expires_at": claimClaimLinksResponseFieldExpiresAt,
+}
+
+// A shareable link anyone holding its code can open to claim the funds.
+type ClaimClaimLinksResponse struct {
+	// Amount each claim receives.
+	Amount string `json:"amount" url:"amount"`
+	// Shareable claim URL. Null when retrieving by ID without claim-link management access.
+	ClaimURL *string `json:"claim_url,omitempty" url:"claim_url,omitempty"`
+	// Whether this link can currently be claimed.
+	Claimable bool `json:"claimable" url:"claimable"`
+	// Redeemable claim code. Null when retrieving by ID without claim-link management access.
+	Code      *string    `json:"code,omitempty" url:"code,omitempty"`
+	CreatedAt time.Time  `json:"created_at" url:"created_at"`
+	Currency  string     `json:"currency" url:"currency"`
+	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"expires_at,omitempty"`
+	// Claim-link ID, prefixed `airdrp_`.
+	ID     string                        `json:"id" url:"id"`
+	Object ClaimClaimLinksResponseObject `json:"object" url:"object"`
+	// Maximum number of claims.
+	RedeemableCount int `json:"redeemable_count" url:"redeemable_count"`
+	// Number of completed claims.
+	RedeemedCount int `json:"redeemed_count" url:"redeemed_count"`
+	// Number of available claims, excluding slots reserved by pending claims.
+	RemainingClaims int `json:"remaining_claims" url:"remaining_claims"`
+	// The public account or user funding the claim link.
+	Sender *ClaimClaimLinksResponseSender `json:"sender" url:"sender"`
+	Source *ClaimClaimLinksResponseSource `json:"source" url:"source"`
+	// The link's lifecycle status. A newly funded link is `pending`. Check `claimable` for current availability, including expiry and reserved claims.
+	Status ClaimClaimLinksResponseStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *ClaimClaimLinksResponse) GetAmount() string {
+	if c == nil {
+		return ""
+	}
+	return c.Amount
+}
+
+func (c *ClaimClaimLinksResponse) GetClaimURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ClaimURL
+}
+
+func (c *ClaimClaimLinksResponse) GetClaimable() bool {
+	if c == nil {
+		return false
+	}
+	return c.Claimable
+}
+
+func (c *ClaimClaimLinksResponse) GetCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Code
+}
+
+func (c *ClaimClaimLinksResponse) GetCreatedAt() time.Time {
+	if c == nil {
+		return time.Time{}
+	}
+	return c.CreatedAt
+}
+
+func (c *ClaimClaimLinksResponse) GetCurrency() string {
+	if c == nil {
+		return ""
+	}
+	return c.Currency
+}
+
+func (c *ClaimClaimLinksResponse) GetExpiresAt() *time.Time {
+	if c == nil {
+		return nil
+	}
+	return c.ExpiresAt
+}
+
+func (c *ClaimClaimLinksResponse) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *ClaimClaimLinksResponse) GetObject() ClaimClaimLinksResponseObject {
+	if c == nil {
+		return ""
+	}
+	return c.Object
+}
+
+func (c *ClaimClaimLinksResponse) GetRedeemableCount() int {
+	if c == nil {
+		return 0
+	}
+	return c.RedeemableCount
+}
+
+func (c *ClaimClaimLinksResponse) GetRedeemedCount() int {
+	if c == nil {
+		return 0
+	}
+	return c.RedeemedCount
+}
+
+func (c *ClaimClaimLinksResponse) GetRemainingClaims() int {
+	if c == nil {
+		return 0
+	}
+	return c.RemainingClaims
+}
+
+func (c *ClaimClaimLinksResponse) GetSender() *ClaimClaimLinksResponseSender {
+	if c == nil {
+		return nil
+	}
+	return c.Sender
+}
+
+func (c *ClaimClaimLinksResponse) GetSource() *ClaimClaimLinksResponseSource {
+	if c == nil {
+		return nil
+	}
+	return c.Source
+}
+
+func (c *ClaimClaimLinksResponse) GetStatus() ClaimClaimLinksResponseStatus {
+	if c == nil {
+		return ""
+	}
+	return c.Status
+}
+
+func (c *ClaimClaimLinksResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *ClaimClaimLinksResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetAmount(amount string) {
+	c.Amount = amount
+	c.require(claimClaimLinksResponseFieldAmount)
+}
+
+// SetClaimURL sets the ClaimURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetClaimURL(claimURL *string) {
+	c.ClaimURL = claimURL
+	c.require(claimClaimLinksResponseFieldClaimURL)
+}
+
+// SetClaimable sets the Claimable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetClaimable(claimable bool) {
+	c.Claimable = claimable
+	c.require(claimClaimLinksResponseFieldClaimable)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetCode(code *string) {
+	c.Code = code
+	c.require(claimClaimLinksResponseFieldCode)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetCreatedAt(createdAt time.Time) {
+	c.CreatedAt = createdAt
+	c.require(claimClaimLinksResponseFieldCreatedAt)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetCurrency(currency string) {
+	c.Currency = currency
+	c.require(claimClaimLinksResponseFieldCurrency)
+}
+
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetExpiresAt(expiresAt *time.Time) {
+	c.ExpiresAt = expiresAt
+	c.require(claimClaimLinksResponseFieldExpiresAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetID(id string) {
+	c.ID = id
+	c.require(claimClaimLinksResponseFieldID)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetObject(object ClaimClaimLinksResponseObject) {
+	c.Object = object
+	c.require(claimClaimLinksResponseFieldObject)
+}
+
+// SetRedeemableCount sets the RedeemableCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetRedeemableCount(redeemableCount int) {
+	c.RedeemableCount = redeemableCount
+	c.require(claimClaimLinksResponseFieldRedeemableCount)
+}
+
+// SetRedeemedCount sets the RedeemedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetRedeemedCount(redeemedCount int) {
+	c.RedeemedCount = redeemedCount
+	c.require(claimClaimLinksResponseFieldRedeemedCount)
+}
+
+// SetRemainingClaims sets the RemainingClaims field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetRemainingClaims(remainingClaims int) {
+	c.RemainingClaims = remainingClaims
+	c.require(claimClaimLinksResponseFieldRemainingClaims)
+}
+
+// SetSender sets the Sender field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetSender(sender *ClaimClaimLinksResponseSender) {
+	c.Sender = sender
+	c.require(claimClaimLinksResponseFieldSender)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetSource(source *ClaimClaimLinksResponseSource) {
+	c.Source = source
+	c.require(claimClaimLinksResponseFieldSource)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponse) SetStatus(status ClaimClaimLinksResponseStatus) {
+	c.Status = status
+	c.require(claimClaimLinksResponseFieldStatus)
+}
+
+func (c *ClaimClaimLinksResponse) UnmarshalJSON(data []byte) error {
+	type embed ClaimClaimLinksResponse
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = ClaimClaimLinksResponse(unmarshaler.embed)
+	c.CreatedAt = unmarshaler.CreatedAt.Time()
+	c.ExpiresAt = unmarshaler.ExpiresAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, claimClaimLinksResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ClaimClaimLinksResponse) MarshalJSON() ([]byte, error) {
+	type embed ClaimClaimLinksResponse
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
+	}{
+		embed:     embed(*c),
+		CreatedAt: internal.NewDateTime(c.CreatedAt),
+		ExpiresAt: internal.NewOptionalDateTime(c.ExpiresAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *ClaimClaimLinksResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type ClaimClaimLinksResponseObject string
+
+const (
+	ClaimClaimLinksResponseObjectClaimLink ClaimClaimLinksResponseObject = "claim_link"
+)
+
+func NewClaimClaimLinksResponseObjectFromString(s string) (ClaimClaimLinksResponseObject, error) {
+	switch s {
+	case "claim_link":
+		return ClaimClaimLinksResponseObjectClaimLink, nil
+	}
+	var t ClaimClaimLinksResponseObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c ClaimClaimLinksResponseObject) Ptr() *ClaimClaimLinksResponseObject {
+	return &c
+}
+
+// The public account or user funding the claim link.
+type ClaimClaimLinksResponseSender struct {
+	Object  string
+	Account *ClaimClaimLinksResponseSenderAccount
+	User    *ClaimClaimLinksResponseSenderUser
+
+	rawJSON json.RawMessage
+}
+
+func (c *ClaimClaimLinksResponseSender) GetObject() string {
+	if c == nil {
+		return ""
+	}
+	return c.Object
+}
+
+func (c *ClaimClaimLinksResponseSender) GetAccount() *ClaimClaimLinksResponseSenderAccount {
+	if c == nil {
+		return nil
+	}
+	return c.Account
+}
+
+func (c *ClaimClaimLinksResponseSender) GetUser() *ClaimClaimLinksResponseSenderUser {
+	if c == nil {
+		return nil
+	}
+	return c.User
+}
+
+func (c *ClaimClaimLinksResponseSender) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Object string `json:"object"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	c.Object = unmarshaler.Object
+	if unmarshaler.Object == "" {
+		return fmt.Errorf("%T did not include discriminant object", c)
+	}
+	switch unmarshaler.Object {
+	case "account":
+		value := new(ClaimClaimLinksResponseSenderAccount)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Account = value
+	case "user":
+		value := new(ClaimClaimLinksResponseSenderUser)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.User = value
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c ClaimClaimLinksResponseSender) MarshalJSON() ([]byte, error) {
+	if err := c.validate(); err != nil {
+		return nil, err
+	}
+	if c.Account != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Account, "object", "account")
+	}
+	if c.User != nil {
+		return internal.MarshalJSONWithExtraProperty(c.User, "object", "user")
+	}
+	if len(c.rawJSON) > 0 {
+		return c.rawJSON, nil
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", c)
+}
+
+type ClaimClaimLinksResponseSenderVisitor interface {
+	VisitAccount(*ClaimClaimLinksResponseSenderAccount) error
+	VisitUser(*ClaimClaimLinksResponseSenderUser) error
+}
+
+func (c *ClaimClaimLinksResponseSender) Accept(visitor ClaimClaimLinksResponseSenderVisitor) error {
+	if c.Account != nil {
+		return visitor.VisitAccount(c.Account)
+	}
+	if c.User != nil {
+		return visitor.VisitUser(c.User)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", c)
+}
+
+func (c *ClaimClaimLinksResponseSender) validate() error {
+	if c == nil {
+		return fmt.Errorf("type %T is nil", c)
+	}
+	var fields []string
+	if c.Account != nil {
+		fields = append(fields, "account")
+	}
+	if c.User != nil {
+		fields = append(fields, "user")
+	}
+	if len(fields) == 0 {
+		if c.Object != "" {
+			if len(c.rawJSON) > 0 {
+				return nil
+			}
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", c, c.Object)
+		}
+		return fmt.Errorf("type %T is empty", c)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", c, fields)
+	}
+	if c.Object != "" {
+		field := fields[0]
+		if c.Object != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				c,
+				c.Object,
+				c,
+			)
+		}
+	}
+	return nil
+}
+
+var (
+	claimClaimLinksResponseSenderAccountFieldID      = big.NewInt(1 << 0)
+	claimClaimLinksResponseSenderAccountFieldLogoURL = big.NewInt(1 << 1)
+	claimClaimLinksResponseSenderAccountFieldRoute   = big.NewInt(1 << 2)
+	claimClaimLinksResponseSenderAccountFieldTitle   = big.NewInt(1 << 3)
+)
+
+// claimClaimLinksResponseSenderAccountNullableFields maps the wire names of ClaimClaimLinksResponseSenderAccount's nullable fields (required or optional) to their field bits.
+var claimClaimLinksResponseSenderAccountNullableFields = map[string]*big.Int{
+	"logo_url": claimClaimLinksResponseSenderAccountFieldLogoURL,
+	"route":    claimClaimLinksResponseSenderAccountFieldRoute,
+	"title":    claimClaimLinksResponseSenderAccountFieldTitle,
+}
+
+type ClaimClaimLinksResponseSenderAccount struct {
+	// Account ID.
+	ID string `json:"id" url:"id"`
+	// Account logo URL.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Account route.
+	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Account display name.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *ClaimClaimLinksResponseSenderAccount) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *ClaimClaimLinksResponseSenderAccount) GetLogoURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.LogoURL
+}
+
+func (c *ClaimClaimLinksResponseSenderAccount) GetRoute() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Route
+}
+
+func (c *ClaimClaimLinksResponseSenderAccount) GetTitle() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Title
+}
+
+func (c *ClaimClaimLinksResponseSenderAccount) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *ClaimClaimLinksResponseSenderAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponseSenderAccount) SetID(id string) {
+	c.ID = id
+	c.require(claimClaimLinksResponseSenderAccountFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponseSenderAccount) SetLogoURL(logoURL *string) {
+	c.LogoURL = logoURL
+	c.require(claimClaimLinksResponseSenderAccountFieldLogoURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponseSenderAccount) SetRoute(route *string) {
+	c.Route = route
+	c.require(claimClaimLinksResponseSenderAccountFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponseSenderAccount) SetTitle(title *string) {
+	c.Title = title
+	c.require(claimClaimLinksResponseSenderAccountFieldTitle)
+}
+
+func (c *ClaimClaimLinksResponseSenderAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler ClaimClaimLinksResponseSenderAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ClaimClaimLinksResponseSenderAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, claimClaimLinksResponseSenderAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ClaimClaimLinksResponseSenderAccount) MarshalJSON() ([]byte, error) {
+	type embed ClaimClaimLinksResponseSenderAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *ClaimClaimLinksResponseSenderAccount) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	claimClaimLinksResponseSenderUserFieldID                = big.NewInt(1 << 0)
+	claimClaimLinksResponseSenderUserFieldName              = big.NewInt(1 << 1)
+	claimClaimLinksResponseSenderUserFieldProfilePictureURL = big.NewInt(1 << 2)
+	claimClaimLinksResponseSenderUserFieldUsername          = big.NewInt(1 << 3)
+)
+
+// claimClaimLinksResponseSenderUserNullableFields maps the wire names of ClaimClaimLinksResponseSenderUser's nullable fields (required or optional) to their field bits.
+var claimClaimLinksResponseSenderUserNullableFields = map[string]*big.Int{
+	"name":                claimClaimLinksResponseSenderUserFieldName,
+	"profile_picture_url": claimClaimLinksResponseSenderUserFieldProfilePictureURL,
+	"username":            claimClaimLinksResponseSenderUserFieldUsername,
+}
+
+type ClaimClaimLinksResponseSenderUser struct {
+	// User ID.
+	ID string `json:"id" url:"id"`
+	// User display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// User profile image URL.
+	ProfilePictureURL *string `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
+	// User's username.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *ClaimClaimLinksResponseSenderUser) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *ClaimClaimLinksResponseSenderUser) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *ClaimClaimLinksResponseSenderUser) GetProfilePictureURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ProfilePictureURL
+}
+
+func (c *ClaimClaimLinksResponseSenderUser) GetUsername() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Username
+}
+
+func (c *ClaimClaimLinksResponseSenderUser) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *ClaimClaimLinksResponseSenderUser) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponseSenderUser) SetID(id string) {
+	c.ID = id
+	c.require(claimClaimLinksResponseSenderUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponseSenderUser) SetName(name *string) {
+	c.Name = name
+	c.require(claimClaimLinksResponseSenderUserFieldName)
+}
+
+// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponseSenderUser) SetProfilePictureURL(profilePictureURL *string) {
+	c.ProfilePictureURL = profilePictureURL
+	c.require(claimClaimLinksResponseSenderUserFieldProfilePictureURL)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponseSenderUser) SetUsername(username *string) {
+	c.Username = username
+	c.require(claimClaimLinksResponseSenderUserFieldUsername)
+}
+
+func (c *ClaimClaimLinksResponseSenderUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler ClaimClaimLinksResponseSenderUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ClaimClaimLinksResponseSenderUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, claimClaimLinksResponseSenderUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ClaimClaimLinksResponseSenderUser) MarshalJSON() ([]byte, error) {
+	type embed ClaimClaimLinksResponseSenderUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *ClaimClaimLinksResponseSenderUser) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	claimClaimLinksResponseSourceFieldAccountID = big.NewInt(1 << 0)
+)
+
+type ClaimClaimLinksResponseSource struct {
+	AccountID string `json:"account_id" url:"account_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *ClaimClaimLinksResponseSource) GetAccountID() string {
+	if c == nil {
+		return ""
+	}
+	return c.AccountID
+}
+
+func (c *ClaimClaimLinksResponseSource) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *ClaimClaimLinksResponseSource) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimClaimLinksResponseSource) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(claimClaimLinksResponseSourceFieldAccountID)
+}
+
+func (c *ClaimClaimLinksResponseSource) UnmarshalJSON(data []byte) error {
+	type unmarshaler ClaimClaimLinksResponseSource
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ClaimClaimLinksResponseSource(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ClaimClaimLinksResponseSource) MarshalJSON() ([]byte, error) {
+	type embed ClaimClaimLinksResponseSource
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *ClaimClaimLinksResponseSource) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// The link's lifecycle status. A newly funded link is `pending`. Check `claimable` for current availability, including expiry and reserved claims.
+type ClaimClaimLinksResponseStatus string
+
+const (
+	ClaimClaimLinksResponseStatusPending      ClaimClaimLinksResponseStatus = "pending"
+	ClaimClaimLinksResponseStatusFullyClaimed ClaimClaimLinksResponseStatus = "fully_claimed"
+	ClaimClaimLinksResponseStatusCanceled     ClaimClaimLinksResponseStatus = "canceled"
+	ClaimClaimLinksResponseStatusExpired      ClaimClaimLinksResponseStatus = "expired"
+)
+
+func NewClaimClaimLinksResponseStatusFromString(s string) (ClaimClaimLinksResponseStatus, error) {
+	switch s {
+	case "pending":
+		return ClaimClaimLinksResponseStatusPending, nil
+	case "fully_claimed":
+		return ClaimClaimLinksResponseStatusFullyClaimed, nil
+	case "canceled":
+		return ClaimClaimLinksResponseStatusCanceled, nil
+	case "expired":
+		return ClaimClaimLinksResponseStatusExpired, nil
+	}
+	var t ClaimClaimLinksResponseStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c ClaimClaimLinksResponseStatus) Ptr() *ClaimClaimLinksResponseStatus {
+	return &c
 }
 
 var (
