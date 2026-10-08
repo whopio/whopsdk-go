@@ -11556,6 +11556,67 @@ client.CheckoutConfigurations.Delete(
 </dl>
 </details>
 
+## ClaimLinks
+<details><summary><code>client.ClaimLinks.Retrieve(ID) -> *whopsdk.RetrieveClaimLinksResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a funded claim link. IDs require `airdrop_link:basic:read` on the funding account, or the personal account's owner. Claim codes allow unauthenticated previews of the sender, amount, expiry, and claim availability. Treat codes as secrets: anyone holding one can claim after signing in. By ID, the code and URL require `airdrop_link:manage` on the funding company or `payout:withdraw_funds` on the personal account; read-only credentials receive null values.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveClaimLinksRequest{
+    ID: "id",
+}
+client.ClaimLinks.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — A claim-link ID (`airdrp_…`), or the public claim code from the `c` parameter in the claim URL.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## CompanyTokenTransactions
 <details><summary><code>client.CompanyTokenTransactions.List() -> *whopsdk.ListCompanyTokenTransactionsResponse</code></summary>
 <dl>

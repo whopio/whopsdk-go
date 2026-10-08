@@ -448,7 +448,7 @@ type CreateTransfersResponse struct {
 	Transfer *CreateTransfersResponseTransfer
 	// Returned for a wallet_send: an onchain USDT send to a recipient.
 	Send *CreateTransfersResponseSend
-	// Returned for a claim_link: a shareable URL anyone can open to claim the funds.
+	// A shareable link anyone holding its code can open to claim the funds.
 	ClaimLink *CreateTransfersResponseClaimLink
 
 	rawJSON json.RawMessage
@@ -598,12 +598,18 @@ func (c *CreateTransfersResponse) validate() error {
 var (
 	createTransfersResponseClaimLinkFieldAmount          = big.NewInt(1 << 0)
 	createTransfersResponseClaimLinkFieldClaimURL        = big.NewInt(1 << 1)
-	createTransfersResponseClaimLinkFieldCurrency        = big.NewInt(1 << 2)
-	createTransfersResponseClaimLinkFieldExpiresAt       = big.NewInt(1 << 3)
-	createTransfersResponseClaimLinkFieldID              = big.NewInt(1 << 4)
-	createTransfersResponseClaimLinkFieldRedeemableCount = big.NewInt(1 << 5)
-	createTransfersResponseClaimLinkFieldSource          = big.NewInt(1 << 6)
-	createTransfersResponseClaimLinkFieldStatus          = big.NewInt(1 << 7)
+	createTransfersResponseClaimLinkFieldClaimable       = big.NewInt(1 << 2)
+	createTransfersResponseClaimLinkFieldCode            = big.NewInt(1 << 3)
+	createTransfersResponseClaimLinkFieldCreatedAt       = big.NewInt(1 << 4)
+	createTransfersResponseClaimLinkFieldCurrency        = big.NewInt(1 << 5)
+	createTransfersResponseClaimLinkFieldExpiresAt       = big.NewInt(1 << 6)
+	createTransfersResponseClaimLinkFieldID              = big.NewInt(1 << 7)
+	createTransfersResponseClaimLinkFieldRedeemableCount = big.NewInt(1 << 8)
+	createTransfersResponseClaimLinkFieldRedeemedCount   = big.NewInt(1 << 9)
+	createTransfersResponseClaimLinkFieldRemainingClaims = big.NewInt(1 << 10)
+	createTransfersResponseClaimLinkFieldSender          = big.NewInt(1 << 11)
+	createTransfersResponseClaimLinkFieldSource          = big.NewInt(1 << 12)
+	createTransfersResponseClaimLinkFieldStatus          = big.NewInt(1 << 13)
 )
 
 // createTransfersResponseClaimLinkNullableFields maps the wire names of CreateTransfersResponseClaimLink's nullable fields (required or optional) to their field bits.
@@ -611,16 +617,31 @@ var createTransfersResponseClaimLinkNullableFields = map[string]*big.Int{
 	"expires_at": createTransfersResponseClaimLinkFieldExpiresAt,
 }
 
-// Returned for a claim_link: a shareable URL anyone can open to claim the funds.
+// A shareable link anyone holding its code can open to claim the funds.
 type CreateTransfersResponseClaimLink struct {
-	Amount          string                                  `json:"amount" url:"amount"`
-	ClaimURL        string                                  `json:"claim_url" url:"claim_url"`
-	Currency        string                                  `json:"currency" url:"currency"`
-	ExpiresAt       *time.Time                              `json:"expires_at,omitempty" url:"expires_at,omitempty"`
-	ID              string                                  `json:"id" url:"id"`
-	RedeemableCount int                                     `json:"redeemable_count" url:"redeemable_count"`
-	Source          *CreateTransfersResponseClaimLinkSource `json:"source" url:"source"`
-	// A newly funded claim link is always `pending` — it stays claimable until it is fully claimed, canceled, or expires.
+	// Amount each claim receives.
+	Amount string `json:"amount" url:"amount"`
+	// Shareable claim URL.
+	ClaimURL string `json:"claim_url" url:"claim_url"`
+	// Whether this link can currently be claimed.
+	Claimable bool `json:"claimable" url:"claimable"`
+	// Redeemable claim code.
+	Code      string     `json:"code" url:"code"`
+	CreatedAt time.Time  `json:"created_at" url:"created_at"`
+	Currency  string     `json:"currency" url:"currency"`
+	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"expires_at,omitempty"`
+	// Claim-link ID, prefixed `airdrp_`.
+	ID string `json:"id" url:"id"`
+	// Maximum number of claims.
+	RedeemableCount int `json:"redeemable_count" url:"redeemable_count"`
+	// Number of completed claims.
+	RedeemedCount int `json:"redeemed_count" url:"redeemed_count"`
+	// Number of available claims, excluding slots reserved by pending claims.
+	RemainingClaims int `json:"remaining_claims" url:"remaining_claims"`
+	// The public account or user funding the claim link.
+	Sender *CreateTransfersResponseClaimLinkSender `json:"sender" url:"sender"`
+	Source *CreateTransfersResponseClaimLinkSource `json:"source" url:"source"`
+	// The newly funded link is ready to claim.
 	Status CreateTransfersResponseClaimLinkStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -642,6 +663,27 @@ func (c *CreateTransfersResponseClaimLink) GetClaimURL() string {
 		return ""
 	}
 	return c.ClaimURL
+}
+
+func (c *CreateTransfersResponseClaimLink) GetClaimable() bool {
+	if c == nil {
+		return false
+	}
+	return c.Claimable
+}
+
+func (c *CreateTransfersResponseClaimLink) GetCode() string {
+	if c == nil {
+		return ""
+	}
+	return c.Code
+}
+
+func (c *CreateTransfersResponseClaimLink) GetCreatedAt() time.Time {
+	if c == nil {
+		return time.Time{}
+	}
+	return c.CreatedAt
 }
 
 func (c *CreateTransfersResponseClaimLink) GetCurrency() string {
@@ -670,6 +712,27 @@ func (c *CreateTransfersResponseClaimLink) GetRedeemableCount() int {
 		return 0
 	}
 	return c.RedeemableCount
+}
+
+func (c *CreateTransfersResponseClaimLink) GetRedeemedCount() int {
+	if c == nil {
+		return 0
+	}
+	return c.RedeemedCount
+}
+
+func (c *CreateTransfersResponseClaimLink) GetRemainingClaims() int {
+	if c == nil {
+		return 0
+	}
+	return c.RemainingClaims
+}
+
+func (c *CreateTransfersResponseClaimLink) GetSender() *CreateTransfersResponseClaimLinkSender {
+	if c == nil {
+		return nil
+	}
+	return c.Sender
 }
 
 func (c *CreateTransfersResponseClaimLink) GetSource() *CreateTransfersResponseClaimLinkSource {
@@ -716,6 +779,27 @@ func (c *CreateTransfersResponseClaimLink) SetClaimURL(claimURL string) {
 	c.require(createTransfersResponseClaimLinkFieldClaimURL)
 }
 
+// SetClaimable sets the Claimable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLink) SetClaimable(claimable bool) {
+	c.Claimable = claimable
+	c.require(createTransfersResponseClaimLinkFieldClaimable)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLink) SetCode(code string) {
+	c.Code = code
+	c.require(createTransfersResponseClaimLinkFieldCode)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLink) SetCreatedAt(createdAt time.Time) {
+	c.CreatedAt = createdAt
+	c.require(createTransfersResponseClaimLinkFieldCreatedAt)
+}
+
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateTransfersResponseClaimLink) SetCurrency(currency string) {
@@ -744,6 +828,27 @@ func (c *CreateTransfersResponseClaimLink) SetRedeemableCount(redeemableCount in
 	c.require(createTransfersResponseClaimLinkFieldRedeemableCount)
 }
 
+// SetRedeemedCount sets the RedeemedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLink) SetRedeemedCount(redeemedCount int) {
+	c.RedeemedCount = redeemedCount
+	c.require(createTransfersResponseClaimLinkFieldRedeemedCount)
+}
+
+// SetRemainingClaims sets the RemainingClaims field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLink) SetRemainingClaims(remainingClaims int) {
+	c.RemainingClaims = remainingClaims
+	c.require(createTransfersResponseClaimLinkFieldRemainingClaims)
+}
+
+// SetSender sets the Sender field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLink) SetSender(sender *CreateTransfersResponseClaimLinkSender) {
+	c.Sender = sender
+	c.require(createTransfersResponseClaimLinkFieldSender)
+}
+
 // SetSource sets the Source field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateTransfersResponseClaimLink) SetSource(source *CreateTransfersResponseClaimLinkSource) {
@@ -762,6 +867,7 @@ func (c *CreateTransfersResponseClaimLink) UnmarshalJSON(data []byte) error {
 	type embed CreateTransfersResponseClaimLink
 	var unmarshaler = struct {
 		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
 		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
 	}{
 		embed: embed(*c),
@@ -770,6 +876,7 @@ func (c *CreateTransfersResponseClaimLink) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*c = CreateTransfersResponseClaimLink(unmarshaler.embed)
+	c.CreatedAt = unmarshaler.CreatedAt.Time()
 	c.ExpiresAt = unmarshaler.ExpiresAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
@@ -791,9 +898,11 @@ func (c *CreateTransfersResponseClaimLink) MarshalJSON() ([]byte, error) {
 	type embed CreateTransfersResponseClaimLink
 	var marshaler = struct {
 		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
 		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
 	}{
 		embed:     embed(*c),
+		CreatedAt: internal.NewDateTime(c.CreatedAt),
 		ExpiresAt: internal.NewOptionalDateTime(c.ExpiresAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
@@ -801,6 +910,437 @@ func (c *CreateTransfersResponseClaimLink) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreateTransfersResponseClaimLink) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// The public account or user funding the claim link.
+type CreateTransfersResponseClaimLinkSender struct {
+	Object  string
+	Account *CreateTransfersResponseClaimLinkSenderAccount
+	User    *CreateTransfersResponseClaimLinkSenderUser
+
+	rawJSON json.RawMessage
+}
+
+func (c *CreateTransfersResponseClaimLinkSender) GetObject() string {
+	if c == nil {
+		return ""
+	}
+	return c.Object
+}
+
+func (c *CreateTransfersResponseClaimLinkSender) GetAccount() *CreateTransfersResponseClaimLinkSenderAccount {
+	if c == nil {
+		return nil
+	}
+	return c.Account
+}
+
+func (c *CreateTransfersResponseClaimLinkSender) GetUser() *CreateTransfersResponseClaimLinkSenderUser {
+	if c == nil {
+		return nil
+	}
+	return c.User
+}
+
+func (c *CreateTransfersResponseClaimLinkSender) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Object string `json:"object"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	c.Object = unmarshaler.Object
+	if unmarshaler.Object == "" {
+		return fmt.Errorf("%T did not include discriminant object", c)
+	}
+	switch unmarshaler.Object {
+	case "account":
+		value := new(CreateTransfersResponseClaimLinkSenderAccount)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Account = value
+	case "user":
+		value := new(CreateTransfersResponseClaimLinkSenderUser)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.User = value
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c CreateTransfersResponseClaimLinkSender) MarshalJSON() ([]byte, error) {
+	if err := c.validate(); err != nil {
+		return nil, err
+	}
+	if c.Account != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Account, "object", "account")
+	}
+	if c.User != nil {
+		return internal.MarshalJSONWithExtraProperty(c.User, "object", "user")
+	}
+	if len(c.rawJSON) > 0 {
+		return c.rawJSON, nil
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", c)
+}
+
+type CreateTransfersResponseClaimLinkSenderVisitor interface {
+	VisitAccount(*CreateTransfersResponseClaimLinkSenderAccount) error
+	VisitUser(*CreateTransfersResponseClaimLinkSenderUser) error
+}
+
+func (c *CreateTransfersResponseClaimLinkSender) Accept(visitor CreateTransfersResponseClaimLinkSenderVisitor) error {
+	if c.Account != nil {
+		return visitor.VisitAccount(c.Account)
+	}
+	if c.User != nil {
+		return visitor.VisitUser(c.User)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", c)
+}
+
+func (c *CreateTransfersResponseClaimLinkSender) validate() error {
+	if c == nil {
+		return fmt.Errorf("type %T is nil", c)
+	}
+	var fields []string
+	if c.Account != nil {
+		fields = append(fields, "account")
+	}
+	if c.User != nil {
+		fields = append(fields, "user")
+	}
+	if len(fields) == 0 {
+		if c.Object != "" {
+			if len(c.rawJSON) > 0 {
+				return nil
+			}
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", c, c.Object)
+		}
+		return fmt.Errorf("type %T is empty", c)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", c, fields)
+	}
+	if c.Object != "" {
+		field := fields[0]
+		if c.Object != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				c,
+				c.Object,
+				c,
+			)
+		}
+	}
+	return nil
+}
+
+var (
+	createTransfersResponseClaimLinkSenderAccountFieldID      = big.NewInt(1 << 0)
+	createTransfersResponseClaimLinkSenderAccountFieldLogoURL = big.NewInt(1 << 1)
+	createTransfersResponseClaimLinkSenderAccountFieldRoute   = big.NewInt(1 << 2)
+	createTransfersResponseClaimLinkSenderAccountFieldTitle   = big.NewInt(1 << 3)
+)
+
+// createTransfersResponseClaimLinkSenderAccountNullableFields maps the wire names of CreateTransfersResponseClaimLinkSenderAccount's nullable fields (required or optional) to their field bits.
+var createTransfersResponseClaimLinkSenderAccountNullableFields = map[string]*big.Int{
+	"logo_url": createTransfersResponseClaimLinkSenderAccountFieldLogoURL,
+	"route":    createTransfersResponseClaimLinkSenderAccountFieldRoute,
+	"title":    createTransfersResponseClaimLinkSenderAccountFieldTitle,
+}
+
+type CreateTransfersResponseClaimLinkSenderAccount struct {
+	// Account ID.
+	ID string `json:"id" url:"id"`
+	// Account logo URL.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Account route.
+	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Account display name.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderAccount) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderAccount) GetLogoURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.LogoURL
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderAccount) GetRoute() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Route
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderAccount) GetTitle() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Title
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderAccount) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLinkSenderAccount) SetID(id string) {
+	c.ID = id
+	c.require(createTransfersResponseClaimLinkSenderAccountFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLinkSenderAccount) SetLogoURL(logoURL *string) {
+	c.LogoURL = logoURL
+	c.require(createTransfersResponseClaimLinkSenderAccountFieldLogoURL)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLinkSenderAccount) SetRoute(route *string) {
+	c.Route = route
+	c.require(createTransfersResponseClaimLinkSenderAccountFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLinkSenderAccount) SetTitle(title *string) {
+	c.Title = title
+	c.require(createTransfersResponseClaimLinkSenderAccountFieldTitle)
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateTransfersResponseClaimLinkSenderAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateTransfersResponseClaimLinkSenderAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseClaimLinkSenderAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderAccount) MarshalJSON() ([]byte, error) {
+	type embed CreateTransfersResponseClaimLinkSenderAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderAccount) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createTransfersResponseClaimLinkSenderUserFieldID                = big.NewInt(1 << 0)
+	createTransfersResponseClaimLinkSenderUserFieldName              = big.NewInt(1 << 1)
+	createTransfersResponseClaimLinkSenderUserFieldProfilePictureURL = big.NewInt(1 << 2)
+	createTransfersResponseClaimLinkSenderUserFieldUsername          = big.NewInt(1 << 3)
+)
+
+// createTransfersResponseClaimLinkSenderUserNullableFields maps the wire names of CreateTransfersResponseClaimLinkSenderUser's nullable fields (required or optional) to their field bits.
+var createTransfersResponseClaimLinkSenderUserNullableFields = map[string]*big.Int{
+	"name":                createTransfersResponseClaimLinkSenderUserFieldName,
+	"profile_picture_url": createTransfersResponseClaimLinkSenderUserFieldProfilePictureURL,
+	"username":            createTransfersResponseClaimLinkSenderUserFieldUsername,
+}
+
+type CreateTransfersResponseClaimLinkSenderUser struct {
+	// User ID.
+	ID string `json:"id" url:"id"`
+	// User display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// User profile image URL.
+	ProfilePictureURL *string `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
+	// User's username.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderUser) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderUser) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderUser) GetProfilePictureURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ProfilePictureURL
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderUser) GetUsername() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Username
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderUser) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderUser) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLinkSenderUser) SetID(id string) {
+	c.ID = id
+	c.require(createTransfersResponseClaimLinkSenderUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLinkSenderUser) SetName(name *string) {
+	c.Name = name
+	c.require(createTransfersResponseClaimLinkSenderUserFieldName)
+}
+
+// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLinkSenderUser) SetProfilePictureURL(profilePictureURL *string) {
+	c.ProfilePictureURL = profilePictureURL
+	c.require(createTransfersResponseClaimLinkSenderUserFieldProfilePictureURL)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseClaimLinkSenderUser) SetUsername(username *string) {
+	c.Username = username
+	c.require(createTransfersResponseClaimLinkSenderUserFieldUsername)
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateTransfersResponseClaimLinkSenderUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateTransfersResponseClaimLinkSenderUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseClaimLinkSenderUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderUser) MarshalJSON() ([]byte, error) {
+	type embed CreateTransfersResponseClaimLinkSenderUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateTransfersResponseClaimLinkSenderUser) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -901,7 +1441,7 @@ func (c *CreateTransfersResponseClaimLinkSource) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A newly funded claim link is always `pending` — it stays claimable until it is fully claimed, canceled, or expires.
+// The newly funded link is ready to claim.
 type CreateTransfersResponseClaimLinkStatus string
 
 const (
