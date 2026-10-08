@@ -1397,6 +1397,8 @@ const (
 	LedgerActivityLineTypeAdIncomeReceipt                           LedgerActivityLineType = "ad_income_receipt"
 	LedgerActivityLineTypeAdBudgetRelease                           LedgerActivityLineType = "ad_budget_release"
 	LedgerActivityLineTypeAdNetworkSettlement                       LedgerActivityLineType = "ad_network_settlement"
+	LedgerActivityLineTypeAdAffiliatePayout                         LedgerActivityLineType = "ad_affiliate_payout"
+	LedgerActivityLineTypeAdAffiliatePayoutReceived                 LedgerActivityLineType = "ad_affiliate_payout_received"
 	LedgerActivityLineTypeAdBalanceFundingReceipt                   LedgerActivityLineType = "ad_balance_funding_receipt"
 	LedgerActivityLineTypeMiscReversal                              LedgerActivityLineType = "misc_reversal"
 	LedgerActivityLineTypeFxGainLoss                                LedgerActivityLineType = "fx_gain_loss"
@@ -1878,6 +1880,10 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeAdBudgetRelease, nil
 	case "ad_network_settlement":
 		return LedgerActivityLineTypeAdNetworkSettlement, nil
+	case "ad_affiliate_payout":
+		return LedgerActivityLineTypeAdAffiliatePayout, nil
+	case "ad_affiliate_payout_received":
+		return LedgerActivityLineTypeAdAffiliatePayoutReceived, nil
 	case "ad_balance_funding_receipt":
 		return LedgerActivityLineTypeAdBalanceFundingReceipt, nil
 	case "misc_reversal":
@@ -6203,6 +6209,7 @@ type ListFinancialActivityRequestLineTypesItem string
 
 const (
 	ListFinancialActivityRequestLineTypesItemAccountSettlement                         ListFinancialActivityRequestLineTypesItem = "account_settlement"
+	ListFinancialActivityRequestLineTypesItemAdAffiliatePayoutReceived                 ListFinancialActivityRequestLineTypesItem = "ad_affiliate_payout_received"
 	ListFinancialActivityRequestLineTypesItemAdBudgetRelease                           ListFinancialActivityRequestLineTypesItem = "ad_budget_release"
 	ListFinancialActivityRequestLineTypesItemAdCampaignBudget                          ListFinancialActivityRequestLineTypesItem = "ad_campaign_budget"
 	ListFinancialActivityRequestLineTypesItemAdPublisherPayout                         ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout"
@@ -6347,6 +6354,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 	switch s {
 	case "account_settlement":
 		return ListFinancialActivityRequestLineTypesItemAccountSettlement, nil
+	case "ad_affiliate_payout_received":
+		return ListFinancialActivityRequestLineTypesItemAdAffiliatePayoutReceived, nil
 	case "ad_budget_release":
 		return ListFinancialActivityRequestLineTypesItemAdBudgetRelease, nil
 	case "ad_campaign_budget":

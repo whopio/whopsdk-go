@@ -2329,6 +2329,13 @@ func TestEnumRetrieveFinancialReportsRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("account_settlement"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_ad_affiliate_payout_received", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("ad_affiliate_payout_received")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("ad_affiliate_payout_received"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_ad_budget_release", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("ad_budget_release")
@@ -3662,6 +3669,20 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemLineCategory(t *testing.T) 
 		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("account_settlement")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("account_settlement"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_affiliate_payout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("ad_affiliate_payout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("ad_affiliate_payout"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_affiliate_payout_received", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("ad_affiliate_payout_received")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("ad_affiliate_payout_received"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_ad_balance_funding_receipt", func(t *testing.T) {

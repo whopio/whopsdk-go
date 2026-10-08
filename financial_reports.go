@@ -222,6 +222,7 @@ type RetrieveFinancialReportsRequestLineTypesItem string
 
 const (
 	RetrieveFinancialReportsRequestLineTypesItemAccountSettlement                         RetrieveFinancialReportsRequestLineTypesItem = "account_settlement"
+	RetrieveFinancialReportsRequestLineTypesItemAdAffiliatePayoutReceived                 RetrieveFinancialReportsRequestLineTypesItem = "ad_affiliate_payout_received"
 	RetrieveFinancialReportsRequestLineTypesItemAdBudgetRelease                           RetrieveFinancialReportsRequestLineTypesItem = "ad_budget_release"
 	RetrieveFinancialReportsRequestLineTypesItemAdCampaignBudget                          RetrieveFinancialReportsRequestLineTypesItem = "ad_campaign_budget"
 	RetrieveFinancialReportsRequestLineTypesItemAdPublisherPayout                         RetrieveFinancialReportsRequestLineTypesItem = "ad_publisher_payout"
@@ -366,6 +367,8 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 	switch s {
 	case "account_settlement":
 		return RetrieveFinancialReportsRequestLineTypesItemAccountSettlement, nil
+	case "ad_affiliate_payout_received":
+		return RetrieveFinancialReportsRequestLineTypesItemAdAffiliatePayoutReceived, nil
 	case "ad_budget_release":
 		return RetrieveFinancialReportsRequestLineTypesItemAdBudgetRelease, nil
 	case "ad_campaign_budget":
@@ -1430,6 +1433,8 @@ type RetrieveFinancialReportsResponseRowsItemLineCategory string
 const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAcceleratedSettlementFee                  RetrieveFinancialReportsResponseRowsItemLineCategory = "accelerated_settlement_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAccountSettlement                         RetrieveFinancialReportsResponseRowsItemLineCategory = "account_settlement"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryAdAffiliatePayout                         RetrieveFinancialReportsResponseRowsItemLineCategory = "ad_affiliate_payout"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryAdAffiliatePayoutReceived                 RetrieveFinancialReportsResponseRowsItemLineCategory = "ad_affiliate_payout_received"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAdBalanceFundingReceipt                   RetrieveFinancialReportsResponseRowsItemLineCategory = "ad_balance_funding_receipt"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAdBudgetRelease                           RetrieveFinancialReportsResponseRowsItemLineCategory = "ad_budget_release"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryAdCampaignBudget                          RetrieveFinancialReportsResponseRowsItemLineCategory = "ad_campaign_budget"
@@ -1736,6 +1741,10 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryAcceleratedSettlementFee, nil
 	case "account_settlement":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryAccountSettlement, nil
+	case "ad_affiliate_payout":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryAdAffiliatePayout, nil
+	case "ad_affiliate_payout_received":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryAdAffiliatePayoutReceived, nil
 	case "ad_balance_funding_receipt":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryAdBalanceFundingReceipt, nil
 	case "ad_budget_release":
