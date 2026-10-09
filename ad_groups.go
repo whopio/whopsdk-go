@@ -10,35 +10,38 @@ import (
 )
 
 var (
-	createAdGroupsRequestFieldAdCampaignID         = big.NewInt(1 << 0)
-	createAdGroupsRequestFieldAudiences            = big.NewInt(1 << 1)
-	createAdGroupsRequestFieldBidType              = big.NewInt(1 << 2)
-	createAdGroupsRequestFieldBudgetAmount         = big.NewInt(1 << 3)
-	createAdGroupsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 4)
-	createAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 5)
-	createAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 6)
-	createAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 7)
-	createAdGroupsRequestFieldDeliverySchedule     = big.NewInt(1 << 8)
-	createAdGroupsRequestFieldDemographics         = big.NewInt(1 << 9)
-	createAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 10)
-	createAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 11)
-	createAdGroupsRequestFieldDevices              = big.NewInt(1 << 12)
-	createAdGroupsRequestFieldDynamicCreative      = big.NewInt(1 << 13)
-	createAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 14)
-	createAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 15)
-	createAdGroupsRequestFieldKeywords             = big.NewInt(1 << 16)
-	createAdGroupsRequestFieldLanguages            = big.NewInt(1 << 17)
-	createAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 18)
-	createAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 19)
-	createAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 20)
-	createAdGroupsRequestFieldPlacements           = big.NewInt(1 << 21)
-	createAdGroupsRequestFieldRegions              = big.NewInt(1 << 22)
-	createAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 23)
-	createAdGroupsRequestFieldStatus               = big.NewInt(1 << 24)
-	createAdGroupsRequestFieldTitle                = big.NewInt(1 << 25)
+	createAdGroupsRequestFieldAdsPlatform          = big.NewInt(1 << 0)
+	createAdGroupsRequestFieldAdCampaignID         = big.NewInt(1 << 1)
+	createAdGroupsRequestFieldAudiences            = big.NewInt(1 << 2)
+	createAdGroupsRequestFieldBidType              = big.NewInt(1 << 3)
+	createAdGroupsRequestFieldBudgetAmount         = big.NewInt(1 << 4)
+	createAdGroupsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 5)
+	createAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 6)
+	createAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 7)
+	createAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 8)
+	createAdGroupsRequestFieldDeliverySchedule     = big.NewInt(1 << 9)
+	createAdGroupsRequestFieldDemographics         = big.NewInt(1 << 10)
+	createAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 11)
+	createAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 12)
+	createAdGroupsRequestFieldDevices              = big.NewInt(1 << 13)
+	createAdGroupsRequestFieldDynamicCreative      = big.NewInt(1 << 14)
+	createAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 15)
+	createAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 16)
+	createAdGroupsRequestFieldKeywords             = big.NewInt(1 << 17)
+	createAdGroupsRequestFieldLanguages            = big.NewInt(1 << 18)
+	createAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 19)
+	createAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 20)
+	createAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 21)
+	createAdGroupsRequestFieldPlacements           = big.NewInt(1 << 22)
+	createAdGroupsRequestFieldRegions              = big.NewInt(1 << 23)
+	createAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 24)
+	createAdGroupsRequestFieldStatus               = big.NewInt(1 << 25)
+	createAdGroupsRequestFieldTitle                = big.NewInt(1 << 26)
 )
 
 type CreateAdGroupsRequest struct {
+	// The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
+	AdsPlatform *CreateAdGroupsRequestXAdsPlatform `json:"-" url:"-"`
 	// The ad campaign to create the ad group in, prefixed `adcamp_`.
 	AdCampaignID string `json:"ad_campaign_id" url:"-"`
 	// Saved audiences to deliver to or exclude. Can't be combined with demographics.automatic.
@@ -111,6 +114,13 @@ func (c *CreateAdGroupsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
+}
+
+// SetAdsPlatform sets the AdsPlatform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequest) SetAdsPlatform(adsPlatform *CreateAdGroupsRequestXAdsPlatform) {
+	c.AdsPlatform = adsPlatform
+	c.require(createAdGroupsRequestFieldAdsPlatform)
 }
 
 // SetAdCampaignID sets the AdCampaignID field and marks it as non-optional;
@@ -9788,6 +9798,31 @@ func (c CreateAdGroupsRequestStatus) Ptr() *CreateAdGroupsRequestStatus {
 	return &c
 }
 
+type CreateAdGroupsRequestXAdsPlatform string
+
+const (
+	CreateAdGroupsRequestXAdsPlatformMeta   CreateAdGroupsRequestXAdsPlatform = "meta"
+	CreateAdGroupsRequestXAdsPlatformGoogle CreateAdGroupsRequestXAdsPlatform = "google"
+	CreateAdGroupsRequestXAdsPlatformTiktok CreateAdGroupsRequestXAdsPlatform = "tiktok"
+)
+
+func NewCreateAdGroupsRequestXAdsPlatformFromString(s string) (CreateAdGroupsRequestXAdsPlatform, error) {
+	switch s {
+	case "meta":
+		return CreateAdGroupsRequestXAdsPlatformMeta, nil
+	case "google":
+		return CreateAdGroupsRequestXAdsPlatformGoogle, nil
+	case "tiktok":
+		return CreateAdGroupsRequestXAdsPlatformTiktok, nil
+	}
+	var t CreateAdGroupsRequestXAdsPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateAdGroupsRequestXAdsPlatform) Ptr() *CreateAdGroupsRequestXAdsPlatform {
+	return &c
+}
+
 var (
 	deleteAdGroupsResponseFieldDeleted = big.NewInt(1 << 0)
 	deleteAdGroupsResponseFieldID      = big.NewInt(1 << 1)
@@ -12236,6 +12271,31 @@ func (u UpdateAdGroupsRequestStatus) Ptr() *UpdateAdGroupsRequestStatus {
 	return &u
 }
 
+type UpdateAdGroupsRequestXAdsPlatform string
+
+const (
+	UpdateAdGroupsRequestXAdsPlatformMeta   UpdateAdGroupsRequestXAdsPlatform = "meta"
+	UpdateAdGroupsRequestXAdsPlatformGoogle UpdateAdGroupsRequestXAdsPlatform = "google"
+	UpdateAdGroupsRequestXAdsPlatformTiktok UpdateAdGroupsRequestXAdsPlatform = "tiktok"
+)
+
+func NewUpdateAdGroupsRequestXAdsPlatformFromString(s string) (UpdateAdGroupsRequestXAdsPlatform, error) {
+	switch s {
+	case "meta":
+		return UpdateAdGroupsRequestXAdsPlatformMeta, nil
+	case "google":
+		return UpdateAdGroupsRequestXAdsPlatformGoogle, nil
+	case "tiktok":
+		return UpdateAdGroupsRequestXAdsPlatformTiktok, nil
+	}
+	var t UpdateAdGroupsRequestXAdsPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateAdGroupsRequestXAdsPlatform) Ptr() *UpdateAdGroupsRequestXAdsPlatform {
+	return &u
+}
+
 var (
 	unpauseAdGroupsRequestFieldID = big.NewInt(1 << 0)
 )
@@ -12265,34 +12325,37 @@ func (u *UnpauseAdGroupsRequest) SetID(id string) {
 }
 
 var (
-	updateAdGroupsRequestFieldID                   = big.NewInt(1 << 0)
-	updateAdGroupsRequestFieldAudiences            = big.NewInt(1 << 1)
-	updateAdGroupsRequestFieldBidType              = big.NewInt(1 << 2)
-	updateAdGroupsRequestFieldBudgetAmount         = big.NewInt(1 << 3)
-	updateAdGroupsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 4)
-	updateAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 5)
-	updateAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 6)
-	updateAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 7)
-	updateAdGroupsRequestFieldDeliverySchedule     = big.NewInt(1 << 8)
-	updateAdGroupsRequestFieldDemographics         = big.NewInt(1 << 9)
-	updateAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 10)
-	updateAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 11)
-	updateAdGroupsRequestFieldDevices              = big.NewInt(1 << 12)
-	updateAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 13)
-	updateAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 14)
-	updateAdGroupsRequestFieldKeywords             = big.NewInt(1 << 15)
-	updateAdGroupsRequestFieldLanguages            = big.NewInt(1 << 16)
-	updateAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 17)
-	updateAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 18)
-	updateAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 19)
-	updateAdGroupsRequestFieldPlacements           = big.NewInt(1 << 20)
-	updateAdGroupsRequestFieldRegions              = big.NewInt(1 << 21)
-	updateAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 22)
-	updateAdGroupsRequestFieldStatus               = big.NewInt(1 << 23)
-	updateAdGroupsRequestFieldTitle                = big.NewInt(1 << 24)
+	updateAdGroupsRequestFieldAdsPlatform          = big.NewInt(1 << 0)
+	updateAdGroupsRequestFieldID                   = big.NewInt(1 << 1)
+	updateAdGroupsRequestFieldAudiences            = big.NewInt(1 << 2)
+	updateAdGroupsRequestFieldBidType              = big.NewInt(1 << 3)
+	updateAdGroupsRequestFieldBudgetAmount         = big.NewInt(1 << 4)
+	updateAdGroupsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 5)
+	updateAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 6)
+	updateAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 7)
+	updateAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 8)
+	updateAdGroupsRequestFieldDeliverySchedule     = big.NewInt(1 << 9)
+	updateAdGroupsRequestFieldDemographics         = big.NewInt(1 << 10)
+	updateAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 11)
+	updateAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 12)
+	updateAdGroupsRequestFieldDevices              = big.NewInt(1 << 13)
+	updateAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 14)
+	updateAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 15)
+	updateAdGroupsRequestFieldKeywords             = big.NewInt(1 << 16)
+	updateAdGroupsRequestFieldLanguages            = big.NewInt(1 << 17)
+	updateAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 18)
+	updateAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 19)
+	updateAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 20)
+	updateAdGroupsRequestFieldPlacements           = big.NewInt(1 << 21)
+	updateAdGroupsRequestFieldRegions              = big.NewInt(1 << 22)
+	updateAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 23)
+	updateAdGroupsRequestFieldStatus               = big.NewInt(1 << 24)
+	updateAdGroupsRequestFieldTitle                = big.NewInt(1 << 25)
 )
 
 type UpdateAdGroupsRequest struct {
+	// The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
+	AdsPlatform *UpdateAdGroupsRequestXAdsPlatform `json:"-" url:"-"`
 	// The ad group ID.
 	ID string `json:"-" url:"-"`
 	// Saved audiences to deliver to or exclude. Can't be combined with demographics.automatic.
@@ -12363,6 +12426,13 @@ func (u *UpdateAdGroupsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
+}
+
+// SetAdsPlatform sets the AdsPlatform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequest) SetAdsPlatform(adsPlatform *UpdateAdGroupsRequestXAdsPlatform) {
+	u.AdsPlatform = adsPlatform
+	u.require(updateAdGroupsRequestFieldAdsPlatform)
 }
 
 // SetID sets the ID field and marks it as non-optional;

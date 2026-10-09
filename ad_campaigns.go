@@ -5065,6 +5065,31 @@ func (u UpdateAdCampaignsRequestStatus) Ptr() *UpdateAdCampaignsRequestStatus {
 	return &u
 }
 
+type UpdateAdCampaignsRequestXAdsPlatform string
+
+const (
+	UpdateAdCampaignsRequestXAdsPlatformMeta   UpdateAdCampaignsRequestXAdsPlatform = "meta"
+	UpdateAdCampaignsRequestXAdsPlatformGoogle UpdateAdCampaignsRequestXAdsPlatform = "google"
+	UpdateAdCampaignsRequestXAdsPlatformTiktok UpdateAdCampaignsRequestXAdsPlatform = "tiktok"
+)
+
+func NewUpdateAdCampaignsRequestXAdsPlatformFromString(s string) (UpdateAdCampaignsRequestXAdsPlatform, error) {
+	switch s {
+	case "meta":
+		return UpdateAdCampaignsRequestXAdsPlatformMeta, nil
+	case "google":
+		return UpdateAdCampaignsRequestXAdsPlatformGoogle, nil
+	case "tiktok":
+		return UpdateAdCampaignsRequestXAdsPlatformTiktok, nil
+	}
+	var t UpdateAdCampaignsRequestXAdsPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateAdCampaignsRequestXAdsPlatform) Ptr() *UpdateAdCampaignsRequestXAdsPlatform {
+	return &u
+}
+
 var (
 	unpauseAdCampaignsRequestFieldID = big.NewInt(1 << 0)
 )
@@ -5094,21 +5119,24 @@ func (u *UnpauseAdCampaignsRequest) SetID(id string) {
 }
 
 var (
-	updateAdCampaignsRequestFieldID                  = big.NewInt(1 << 0)
-	updateAdCampaignsRequestFieldBidType             = big.NewInt(1 << 1)
-	updateAdCampaignsRequestFieldBudgetAmount        = big.NewInt(1 << 2)
-	updateAdCampaignsRequestFieldBudgetAmountLocal   = big.NewInt(1 << 3)
-	updateAdCampaignsRequestFieldBudgetOptimization  = big.NewInt(1 << 4)
-	updateAdCampaignsRequestFieldBudgetType          = big.NewInt(1 << 5)
-	updateAdCampaignsRequestFieldCampaignType        = big.NewInt(1 << 6)
-	updateAdCampaignsRequestFieldEndsAt              = big.NewInt(1 << 7)
-	updateAdCampaignsRequestFieldSpecialAdCategories = big.NewInt(1 << 8)
-	updateAdCampaignsRequestFieldStartsAt            = big.NewInt(1 << 9)
-	updateAdCampaignsRequestFieldStatus              = big.NewInt(1 << 10)
-	updateAdCampaignsRequestFieldTitle               = big.NewInt(1 << 11)
+	updateAdCampaignsRequestFieldAdsPlatform         = big.NewInt(1 << 0)
+	updateAdCampaignsRequestFieldID                  = big.NewInt(1 << 1)
+	updateAdCampaignsRequestFieldBidType             = big.NewInt(1 << 2)
+	updateAdCampaignsRequestFieldBudgetAmount        = big.NewInt(1 << 3)
+	updateAdCampaignsRequestFieldBudgetAmountLocal   = big.NewInt(1 << 4)
+	updateAdCampaignsRequestFieldBudgetOptimization  = big.NewInt(1 << 5)
+	updateAdCampaignsRequestFieldBudgetType          = big.NewInt(1 << 6)
+	updateAdCampaignsRequestFieldCampaignType        = big.NewInt(1 << 7)
+	updateAdCampaignsRequestFieldEndsAt              = big.NewInt(1 << 8)
+	updateAdCampaignsRequestFieldSpecialAdCategories = big.NewInt(1 << 9)
+	updateAdCampaignsRequestFieldStartsAt            = big.NewInt(1 << 10)
+	updateAdCampaignsRequestFieldStatus              = big.NewInt(1 << 11)
+	updateAdCampaignsRequestFieldTitle               = big.NewInt(1 << 12)
 )
 
 type UpdateAdCampaignsRequest struct {
+	// The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
+	AdsPlatform *UpdateAdCampaignsRequestXAdsPlatform `json:"-" url:"-"`
 	// The ad campaign ID.
 	ID string `json:"-" url:"-"`
 	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Switching to `minimum_cost` clears the cap amounts stored on the campaign's ad groups. Only for campaigns that own the budget.
@@ -5145,6 +5173,13 @@ func (u *UpdateAdCampaignsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
+}
+
+// SetAdsPlatform sets the AdsPlatform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdCampaignsRequest) SetAdsPlatform(adsPlatform *UpdateAdCampaignsRequestXAdsPlatform) {
+	u.AdsPlatform = adsPlatform
+	u.require(updateAdCampaignsRequestFieldAdsPlatform)
 }
 
 // SetID sets the ID field and marks it as non-optional;

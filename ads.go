@@ -11,28 +11,31 @@ import (
 )
 
 var (
-	createAdsRequestFieldAdGroup            = big.NewInt(1 << 0)
-	createAdsRequestFieldAdGroupID          = big.NewInt(1 << 1)
-	createAdsRequestFieldCallToAction       = big.NewInt(1 << 2)
-	createAdsRequestFieldCreatives          = big.NewInt(1 << 3)
-	createAdsRequestFieldDescriptions       = big.NewInt(1 << 4)
-	createAdsRequestFieldExistingPostID     = big.NewInt(1 << 5)
-	createAdsRequestFieldExternalAccounts   = big.NewInt(1 << 6)
-	createAdsRequestFieldHeadlines          = big.NewInt(1 << 7)
-	createAdsRequestFieldLeadForm           = big.NewInt(1 << 8)
-	createAdsRequestFieldLeadFormID         = big.NewInt(1 << 9)
-	createAdsRequestFieldMessagingConfig    = big.NewInt(1 << 10)
-	createAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 11)
-	createAdsRequestFieldMusic              = big.NewInt(1 << 12)
-	createAdsRequestFieldPostSource         = big.NewInt(1 << 13)
-	createAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 14)
-	createAdsRequestFieldTitle              = big.NewInt(1 << 15)
-	createAdsRequestFieldTranslations       = big.NewInt(1 << 16)
-	createAdsRequestFieldURL                = big.NewInt(1 << 17)
-	createAdsRequestFieldURLParameters      = big.NewInt(1 << 18)
+	createAdsRequestFieldAdsPlatform        = big.NewInt(1 << 0)
+	createAdsRequestFieldAdGroup            = big.NewInt(1 << 1)
+	createAdsRequestFieldAdGroupID          = big.NewInt(1 << 2)
+	createAdsRequestFieldCallToAction       = big.NewInt(1 << 3)
+	createAdsRequestFieldCreatives          = big.NewInt(1 << 4)
+	createAdsRequestFieldDescriptions       = big.NewInt(1 << 5)
+	createAdsRequestFieldExistingPostID     = big.NewInt(1 << 6)
+	createAdsRequestFieldExternalAccounts   = big.NewInt(1 << 7)
+	createAdsRequestFieldHeadlines          = big.NewInt(1 << 8)
+	createAdsRequestFieldLeadForm           = big.NewInt(1 << 9)
+	createAdsRequestFieldLeadFormID         = big.NewInt(1 << 10)
+	createAdsRequestFieldMessagingConfig    = big.NewInt(1 << 11)
+	createAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 12)
+	createAdsRequestFieldMusic              = big.NewInt(1 << 13)
+	createAdsRequestFieldPostSource         = big.NewInt(1 << 14)
+	createAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 15)
+	createAdsRequestFieldTitle              = big.NewInt(1 << 16)
+	createAdsRequestFieldTranslations       = big.NewInt(1 << 17)
+	createAdsRequestFieldURL                = big.NewInt(1 << 18)
+	createAdsRequestFieldURLParameters      = big.NewInt(1 << 19)
 )
 
 type CreateAdsRequest struct {
+	// The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
+	AdsPlatform *CreateAdsRequestXAdsPlatform `json:"-" url:"-"`
 	// An inline ad group to create (same shape as POST /ad_groups, including ad_campaign_id). Creates the ad group and the ad together. Provide this OR ad_group_id.
 	AdGroup map[string]any `json:"ad_group,omitempty" url:"-"`
 	// The existing ad group to create the ad in. Provide this OR ad_group, not both.
@@ -83,6 +86,13 @@ func (c *CreateAdsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
+}
+
+// SetAdsPlatform sets the AdsPlatform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequest) SetAdsPlatform(adsPlatform *CreateAdsRequestXAdsPlatform) {
+	c.AdsPlatform = adsPlatform
+	c.require(createAdsRequestFieldAdsPlatform)
 }
 
 // SetAdGroup sets the AdGroup field and marks it as non-optional;
@@ -6015,6 +6025,31 @@ func (c *CreateAdsRequestTranslations) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+type CreateAdsRequestXAdsPlatform string
+
+const (
+	CreateAdsRequestXAdsPlatformMeta   CreateAdsRequestXAdsPlatform = "meta"
+	CreateAdsRequestXAdsPlatformGoogle CreateAdsRequestXAdsPlatform = "google"
+	CreateAdsRequestXAdsPlatformTiktok CreateAdsRequestXAdsPlatform = "tiktok"
+)
+
+func NewCreateAdsRequestXAdsPlatformFromString(s string) (CreateAdsRequestXAdsPlatform, error) {
+	switch s {
+	case "meta":
+		return CreateAdsRequestXAdsPlatformMeta, nil
+	case "google":
+		return CreateAdsRequestXAdsPlatformGoogle, nil
+	case "tiktok":
+		return CreateAdsRequestXAdsPlatformTiktok, nil
+	}
+	var t CreateAdsRequestXAdsPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateAdsRequestXAdsPlatform) Ptr() *CreateAdsRequestXAdsPlatform {
+	return &c
+}
+
 var (
 	deleteAdsResponseFieldDeleted = big.NewInt(1 << 0)
 	deleteAdsResponseFieldID      = big.NewInt(1 << 1)
@@ -10230,6 +10265,31 @@ func (u *UpdateAdsRequestTranslations) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+type UpdateAdsRequestXAdsPlatform string
+
+const (
+	UpdateAdsRequestXAdsPlatformMeta   UpdateAdsRequestXAdsPlatform = "meta"
+	UpdateAdsRequestXAdsPlatformGoogle UpdateAdsRequestXAdsPlatform = "google"
+	UpdateAdsRequestXAdsPlatformTiktok UpdateAdsRequestXAdsPlatform = "tiktok"
+)
+
+func NewUpdateAdsRequestXAdsPlatformFromString(s string) (UpdateAdsRequestXAdsPlatform, error) {
+	switch s {
+	case "meta":
+		return UpdateAdsRequestXAdsPlatformMeta, nil
+	case "google":
+		return UpdateAdsRequestXAdsPlatformGoogle, nil
+	case "tiktok":
+		return UpdateAdsRequestXAdsPlatformTiktok, nil
+	}
+	var t UpdateAdsRequestXAdsPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateAdsRequestXAdsPlatform) Ptr() *UpdateAdsRequestXAdsPlatform {
+	return &u
+}
+
 var (
 	unpauseAdsRequestFieldID = big.NewInt(1 << 0)
 )
@@ -10259,27 +10319,30 @@ func (u *UnpauseAdsRequest) SetID(id string) {
 }
 
 var (
-	updateAdsRequestFieldID                 = big.NewInt(1 << 0)
-	updateAdsRequestFieldCallToAction       = big.NewInt(1 << 1)
-	updateAdsRequestFieldCreatives          = big.NewInt(1 << 2)
-	updateAdsRequestFieldDescriptions       = big.NewInt(1 << 3)
-	updateAdsRequestFieldExistingPostID     = big.NewInt(1 << 4)
-	updateAdsRequestFieldExternalAccounts   = big.NewInt(1 << 5)
-	updateAdsRequestFieldHeadlines          = big.NewInt(1 << 6)
-	updateAdsRequestFieldLeadForm           = big.NewInt(1 << 7)
-	updateAdsRequestFieldLeadFormID         = big.NewInt(1 << 8)
-	updateAdsRequestFieldMessagingConfig    = big.NewInt(1 << 9)
-	updateAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 10)
-	updateAdsRequestFieldMusic              = big.NewInt(1 << 11)
-	updateAdsRequestFieldPostSource         = big.NewInt(1 << 12)
-	updateAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 13)
-	updateAdsRequestFieldTitle              = big.NewInt(1 << 14)
-	updateAdsRequestFieldTranslations       = big.NewInt(1 << 15)
-	updateAdsRequestFieldURL                = big.NewInt(1 << 16)
-	updateAdsRequestFieldURLParameters      = big.NewInt(1 << 17)
+	updateAdsRequestFieldAdsPlatform        = big.NewInt(1 << 0)
+	updateAdsRequestFieldID                 = big.NewInt(1 << 1)
+	updateAdsRequestFieldCallToAction       = big.NewInt(1 << 2)
+	updateAdsRequestFieldCreatives          = big.NewInt(1 << 3)
+	updateAdsRequestFieldDescriptions       = big.NewInt(1 << 4)
+	updateAdsRequestFieldExistingPostID     = big.NewInt(1 << 5)
+	updateAdsRequestFieldExternalAccounts   = big.NewInt(1 << 6)
+	updateAdsRequestFieldHeadlines          = big.NewInt(1 << 7)
+	updateAdsRequestFieldLeadForm           = big.NewInt(1 << 8)
+	updateAdsRequestFieldLeadFormID         = big.NewInt(1 << 9)
+	updateAdsRequestFieldMessagingConfig    = big.NewInt(1 << 10)
+	updateAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 11)
+	updateAdsRequestFieldMusic              = big.NewInt(1 << 12)
+	updateAdsRequestFieldPostSource         = big.NewInt(1 << 13)
+	updateAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 14)
+	updateAdsRequestFieldTitle              = big.NewInt(1 << 15)
+	updateAdsRequestFieldTranslations       = big.NewInt(1 << 16)
+	updateAdsRequestFieldURL                = big.NewInt(1 << 17)
+	updateAdsRequestFieldURLParameters      = big.NewInt(1 << 18)
 )
 
 type UpdateAdsRequest struct {
+	// The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
+	AdsPlatform *UpdateAdsRequestXAdsPlatform `json:"-" url:"-"`
 	// The ad ID.
 	ID string `json:"-" url:"-"`
 	// The call-to-action button shown on the ad.
@@ -10328,6 +10391,13 @@ func (u *UpdateAdsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
+}
+
+// SetAdsPlatform sets the AdsPlatform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdsRequest) SetAdsPlatform(adsPlatform *UpdateAdsRequestXAdsPlatform) {
+	u.AdsPlatform = adsPlatform
+	u.require(updateAdsRequestFieldAdsPlatform)
 }
 
 // SetID sets the ID field and marks it as non-optional;

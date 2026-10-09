@@ -56,6 +56,9 @@ func (r *RawClient) Create(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	if request.AdsPlatform != nil {
+		headers.Add("X-Ads-Platform", string(*request.AdsPlatform))
+	}
 	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.AdGroup
 	raw, err := r.caller.Call(
@@ -333,6 +336,9 @@ func (r *RawClient) Update(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	if request.AdsPlatform != nil {
+		headers.Add("X-Ads-Platform", string(*request.AdsPlatform))
+	}
 	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.AdGroup
 	raw, err := r.caller.Call(

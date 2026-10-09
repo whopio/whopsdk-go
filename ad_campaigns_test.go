@@ -10649,6 +10649,14 @@ func TestSettersMarkExplicitUnpauseAdCampaignsRequest(t *testing.T) {
 }
 
 func TestSettersUpdateAdCampaignsRequest(t *testing.T) {
+	t.Run("SetAdsPlatform", func(t *testing.T) {
+		obj := &UpdateAdCampaignsRequest{}
+		var fernTestValueAdsPlatform *UpdateAdCampaignsRequestXAdsPlatform
+		obj.SetAdsPlatform(fernTestValueAdsPlatform)
+		assert.Equal(t, fernTestValueAdsPlatform, obj.AdsPlatform)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetID", func(t *testing.T) {
 		obj := &UpdateAdCampaignsRequest{}
 		var fernTestValueID string
@@ -10748,6 +10756,37 @@ func TestSettersUpdateAdCampaignsRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitUpdateAdCampaignsRequest(t *testing.T) {
+	t.Run("SetAdsPlatform_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAdCampaignsRequest{}
+		var fernTestValueAdsPlatform *UpdateAdCampaignsRequestXAdsPlatform
+
+		// Act
+		obj.SetAdsPlatform(fernTestValueAdsPlatform)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -14319,6 +14358,42 @@ func TestEnumUpdateAdCampaignsRequestStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateAdCampaignsRequestStatusFromString("active")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateAdCampaignsRequestXAdsPlatform(t *testing.T) {
+	t.Run("NewFromString_meta", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAdCampaignsRequestXAdsPlatformFromString("meta")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAdCampaignsRequestXAdsPlatform("meta"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAdCampaignsRequestXAdsPlatformFromString("google")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAdCampaignsRequestXAdsPlatform("google"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tiktok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAdCampaignsRequestXAdsPlatformFromString("tiktok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAdCampaignsRequestXAdsPlatform("tiktok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateAdCampaignsRequestXAdsPlatformFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateAdCampaignsRequestXAdsPlatformFromString("meta")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
