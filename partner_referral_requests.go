@@ -832,7 +832,7 @@ type CreatePartnerReferralRequestsRequestBody struct {
 	CreatePartnerReferralRequestsRequestBodyTargetUserID   *CreatePartnerReferralRequestsRequestBodyTargetUserID
 	CreatePartnerReferralRequestsRequestBodyTargetUsername *CreatePartnerReferralRequestsRequestBodyTargetUsername
 	CreatePartnerReferralRequestsRequestBodyTargetEmail    *CreatePartnerReferralRequestsRequestBodyTargetEmail
-	// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link or creates one with a random code. Only authorized staff can configure rewards or select another partner.
+	// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link for the selected team membership, or your personal context when `authorized_user_id` is omitted, creating a random code when none exists. Only authorized staff can configure rewards or select another partner.
 	CreatePartnerReferralRequestsRequestBodyCode *CreatePartnerReferralRequestsRequestBodyCode
 
 	typ string
@@ -1290,7 +1290,7 @@ var createPartnerReferralRequestsRequestBodyCodeNullableFields = map[string]*big
 	"max_redemptions": createPartnerReferralRequestsRequestBodyCodeFieldMaxRedemptions,
 }
 
-// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link or creates one with a random code. Only authorized staff can configure rewards or select another partner.
+// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link for the selected team membership, or your personal context when `authorized_user_id` is omitted, creating a random code when none exists. Only authorized staff can configure rewards or select another partner.
 type CreatePartnerReferralRequestsRequestBodyCode struct {
 	// The partner's team membership on the business this link is made for, prefixed `ausr_`. Omit for a personal link.
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"authorized_user_id,omitempty"`

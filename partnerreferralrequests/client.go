@@ -119,7 +119,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates a referral link or sends a verified partner's attribution request to an existing business or user for approval. Recipients do not need to join the partner program.
+// Creates a referral link or sends a verified partner's attribution request to an existing business or user for approval. Whop sessions creating a link with their own active `authorized_user_id` enroll automatically. Manual requests always require a verified partner. Recipients do not need to join the partner program.
 //
 // Example:
 //

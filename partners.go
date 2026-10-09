@@ -42,15 +42,16 @@ var (
 	referredUsersPartnersRequestFieldUserID                 = big.NewInt(1 << 0)
 	referredUsersPartnersRequestFieldEarningPartnerID       = big.NewInt(1 << 1)
 	referredUsersPartnersRequestFieldEarningPartnerUsername = big.NewInt(1 << 2)
-	referredUsersPartnersRequestFieldQuery                  = big.NewInt(1 << 3)
-	referredUsersPartnersRequestFieldHasBusinesses          = big.NewInt(1 << 4)
-	referredUsersPartnersRequestFieldHasEarningBusinesses   = big.NewInt(1 << 5)
-	referredUsersPartnersRequestFieldOrder                  = big.NewInt(1 << 6)
-	referredUsersPartnersRequestFieldDirection              = big.NewInt(1 << 7)
-	referredUsersPartnersRequestFieldFirst                  = big.NewInt(1 << 8)
-	referredUsersPartnersRequestFieldAfter                  = big.NewInt(1 << 9)
-	referredUsersPartnersRequestFieldLast                   = big.NewInt(1 << 10)
-	referredUsersPartnersRequestFieldBefore                 = big.NewInt(1 << 11)
+	referredUsersPartnersRequestFieldReferringAccountID     = big.NewInt(1 << 3)
+	referredUsersPartnersRequestFieldQuery                  = big.NewInt(1 << 4)
+	referredUsersPartnersRequestFieldHasBusinesses          = big.NewInt(1 << 5)
+	referredUsersPartnersRequestFieldHasEarningBusinesses   = big.NewInt(1 << 6)
+	referredUsersPartnersRequestFieldOrder                  = big.NewInt(1 << 7)
+	referredUsersPartnersRequestFieldDirection              = big.NewInt(1 << 8)
+	referredUsersPartnersRequestFieldFirst                  = big.NewInt(1 << 9)
+	referredUsersPartnersRequestFieldAfter                  = big.NewInt(1 << 10)
+	referredUsersPartnersRequestFieldLast                   = big.NewInt(1 << 11)
+	referredUsersPartnersRequestFieldBefore                 = big.NewInt(1 << 12)
 )
 
 type ReferredUsersPartnersRequest struct {
@@ -60,6 +61,8 @@ type ReferredUsersPartnersRequest struct {
 	EarningPartnerID *string `json:"-" url:"earning_partner_id,omitempty"`
 	// The selected referring partner's exact username. Requires user_id=global; cannot be combined with earning_partner_id.
 	EarningPartnerUsername *string `json:"-" url:"earning_partner_username,omitempty"`
+	// List the users this business's team members referred, past members included, instead of the caller's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id. earning_partner_id or earning_partner_username then narrows to one team member.
+	ReferringAccountID *string `json:"-" url:"referring_account_id,omitempty"`
 	// Search referred users by name or username. In global mode, matches the beginning of usernames only.
 	Query *string `json:"-" url:"query,omitempty"`
 	// When true, only referred users who brought at least one business onto Whop.
@@ -111,6 +114,13 @@ func (r *ReferredUsersPartnersRequest) SetEarningPartnerID(earningPartnerID *str
 func (r *ReferredUsersPartnersRequest) SetEarningPartnerUsername(earningPartnerUsername *string) {
 	r.EarningPartnerUsername = earningPartnerUsername
 	r.require(referredUsersPartnersRequestFieldEarningPartnerUsername)
+}
+
+// SetReferringAccountID sets the ReferringAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReferredUsersPartnersRequest) SetReferringAccountID(referringAccountID *string) {
+	r.ReferringAccountID = referringAccountID
+	r.require(referredUsersPartnersRequestFieldReferringAccountID)
 }
 
 // SetQuery sets the Query field and marks it as non-optional;

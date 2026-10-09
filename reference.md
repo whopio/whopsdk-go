@@ -24916,7 +24916,7 @@ client.PartnerReferralRequests.List(
 <dl>
 <dd>
 
-Creates a referral link or sends a verified partner's attribution request to an existing business or user for approval. Recipients do not need to join the partner program.
+Creates a referral link or sends a verified partner's attribution request to an existing business or user for approval. Whop sessions creating a link with their own active `authorized_user_id` enroll automatically. Manual requests always require a verified partner. Recipients do not need to join the partner program.
 </dd>
 </dl>
 </dd>
@@ -25369,6 +25369,14 @@ client.Partners.ReferredUsers(
 <dd>
 
 **earningPartnerUsername:** `*string` — The selected referring partner's exact username. Requires user_id=global; cannot be combined with earning_partner_id.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**referringAccountID:** `*string` — List the users this business's team members referred, past members included, instead of the caller's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id. earning_partner_id or earning_partner_username then narrows to one team member.
     
 </dd>
 </dl>
@@ -35823,6 +35831,14 @@ client.Stats.Retrieve(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**referringAccountID:** `*string` — Read a referral metric for a business instead of the caller: the referrals its team members made, past members included, for example biz_AbC123. Requires company:basic:read on that business and cannot be combined with user_id. Available on metrics that list referring_account_id.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -36509,7 +36525,7 @@ client.Swaps.Retrieve(
 <dl>
 <dd>
 
-Lists an account's team members, including pending invites (`status: "pending"`, `ausri_` ids; `user` is `null` for invites sent to an email with no Whop account yet). For accepted members, `email` requires the `company:authorized_user:email:read` scope and is `null` otherwise. Listing `role=workforce` is also allowed with the `bounty:create` scope.
+Lists an account's team members, including pending invites (`status: "pending"`, `ausri_` ids; `user` is `null` for invites sent to an email with no Whop account yet). For accepted members, `email` requires the `company:authorized_user:email:read` scope and is `null` otherwise. A user credential with `company:basic:read` may list only its own joined membership by passing its own `user_id` and `status=joined`. Listing `role=workforce` is also allowed with the `bounty:create` scope.
 </dd>
 </dl>
 </dd>
@@ -43348,6 +43364,14 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
+**referringAccountID:** `*string` — List the referrals this business's team members made, past members included, instead of the authenticated user's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **status:** `*partners.ListBusinessesRequestStatus` — Filter by referral status.
     
 </dd>
@@ -45331,6 +45355,14 @@ client.Stats.TimeSeries.Retrieve(
 <dd>
 
 **eventCountLte:** `*float64` — People metric only: event_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**referringAccountID:** `*string` — Read a referral metric for a business instead of the caller: the referrals its team members made, past members included, for example biz_AbC123. Requires company:basic:read on that business and cannot be combined with user_id. Available on metrics that list referring_account_id.
     
 </dd>
 </dl>
