@@ -438,7 +438,7 @@ func TestSettersListDomainsRequest(t *testing.T) {
 
 	t.Run("SetVerification", func(t *testing.T) {
 		obj := &ListDomainsRequest{}
-		var fernTestValueVerification *string
+		var fernTestValueVerification *ListDomainsRequestVerification
 		obj.SetVerification(fernTestValueVerification)
 		assert.Equal(t, fernTestValueVerification, obj.Verification)
 		assert.NotNil(t, obj.explicitFields)
@@ -446,15 +446,23 @@ func TestSettersListDomainsRequest(t *testing.T) {
 
 	t.Run("SetRegistration", func(t *testing.T) {
 		obj := &ListDomainsRequest{}
-		var fernTestValueRegistration *string
+		var fernTestValueRegistration *ListDomainsRequestRegistration
 		obj.SetRegistration(fernTestValueRegistration)
 		assert.Equal(t, fernTestValueRegistration, obj.Registration)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPlatform", func(t *testing.T) {
+		obj := &ListDomainsRequest{}
+		var fernTestValuePlatform *ListDomainsRequestPlatform
+		obj.SetPlatform(fernTestValuePlatform)
+		assert.Equal(t, fernTestValuePlatform, obj.Platform)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetWebsite", func(t *testing.T) {
 		obj := &ListDomainsRequest{}
-		var fernTestValueWebsite *string
+		var fernTestValueWebsite *ListDomainsRequestWebsite
 		obj.SetWebsite(fernTestValueWebsite)
 		assert.Equal(t, fernTestValueWebsite, obj.Website)
 		assert.NotNil(t, obj.explicitFields)
@@ -839,7 +847,7 @@ func TestSettersMarkExplicitListDomainsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListDomainsRequest{}
-		var fernTestValueVerification *string
+		var fernTestValueVerification *ListDomainsRequestVerification
 
 		// Act
 		obj.SetVerification(fernTestValueVerification)
@@ -870,10 +878,41 @@ func TestSettersMarkExplicitListDomainsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListDomainsRequest{}
-		var fernTestValueRegistration *string
+		var fernTestValueRegistration *ListDomainsRequestRegistration
 
 		// Act
 		obj.SetRegistration(fernTestValueRegistration)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListDomainsRequest{}
+		var fernTestValuePlatform *ListDomainsRequestPlatform
+
+		// Act
+		obj.SetPlatform(fernTestValuePlatform)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -901,7 +940,7 @@ func TestSettersMarkExplicitListDomainsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListDomainsRequest{}
-		var fernTestValueWebsite *string
+		var fernTestValueWebsite *ListDomainsRequestWebsite
 
 		// Act
 		obj.SetWebsite(fernTestValueWebsite)
@@ -1037,6 +1076,14 @@ func TestSettersDomain(t *testing.T) {
 		var fernTestValueOwnedBy *DomainOwner
 		obj.SetOwnedBy(fernTestValueOwnedBy)
 		assert.Equal(t, fernTestValueOwnedBy, obj.OwnedBy)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPlatform", func(t *testing.T) {
+		obj := &Domain{}
+		var fernTestValuePlatform *DomainPlatform
+		obj.SetPlatform(fernTestValuePlatform)
+		assert.Equal(t, fernTestValuePlatform, obj.Platform)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1343,6 +1390,39 @@ func TestGettersDomain(t *testing.T) {
 			}
 		}()
 		_ = obj.GetOwnedBy() // Should return zero value
+	})
+
+	t.Run("GetPlatform", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Domain{}
+		var expected *DomainPlatform
+		obj.Platform = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
+	})
+
+	t.Run("GetPlatform_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Domain{}
+		obj.Platform = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPlatform(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Domain
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlatform() // Should return zero value
 	})
 
 	t.Run("GetPublicRecord", func(t *testing.T) {
@@ -1771,6 +1851,37 @@ func TestSettersMarkExplicitDomain(t *testing.T) {
 
 		// Act
 		obj.SetOwnedBy(fernTestValueOwnedBy)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Domain{}
+		var fernTestValuePlatform *DomainPlatform
+
+		// Act
+		obj.SetPlatform(fernTestValuePlatform)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2920,6 +3031,14 @@ func TestSettersDomainListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPlatform", func(t *testing.T) {
+		obj := &DomainListItem{}
+		var fernTestValuePlatform *DomainPlatform
+		obj.SetPlatform(fernTestValuePlatform)
+		assert.Equal(t, fernTestValuePlatform, obj.Platform)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRegistration", func(t *testing.T) {
 		obj := &DomainListItem{}
 		var fernTestValueRegistration *DomainRegistration
@@ -3215,6 +3334,39 @@ func TestGettersDomainListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetOwnedBy() // Should return zero value
+	})
+
+	t.Run("GetPlatform", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainListItem{}
+		var expected *DomainPlatform
+		obj.Platform = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlatform(), "getter should return the property value")
+	})
+
+	t.Run("GetPlatform_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainListItem{}
+		obj.Platform = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPlatform(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPlatform_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlatform() // Should return zero value
 	})
 
 	t.Run("GetRegistration", func(t *testing.T) {
@@ -3610,6 +3762,37 @@ func TestSettersMarkExplicitDomainListItem(t *testing.T) {
 
 		// Act
 		obj.SetOwnedBy(fernTestValueOwnedBy)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlatform_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainListItem{}
+		var fernTestValuePlatform *DomainPlatform
+
+		// Act
+		obj.SetPlatform(fernTestValuePlatform)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4032,6 +4215,77 @@ func TestSettersMarkExplicitDomainOwner(t *testing.T) {
 
 		// Act
 		obj.SetTitle(fernTestValueTitle)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersDomainPlatform(t *testing.T) {
+	t.Run("SetState", func(t *testing.T) {
+		obj := &DomainPlatform{}
+		var fernTestValueState DomainPlatformState
+		obj.SetState(fernTestValueState)
+		assert.Equal(t, fernTestValueState, obj.State)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersDomainPlatform(t *testing.T) {
+	t.Run("GetState", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainPlatform{}
+		var expected DomainPlatformState
+		obj.State = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetState(), "getter should return the property value")
+	})
+
+	t.Run("GetState_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainPlatform
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetState() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitDomainPlatform(t *testing.T) {
+	t.Run("SetState_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainPlatform{}
+		var fernTestValueState DomainPlatformState
+
+		// Act
+		obj.SetState(fernTestValueState)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7525,6 +7779,39 @@ func TestJSONMarshalingDomainOwner(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingDomainPlatform(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainPlatform{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled DomainPlatform
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj DomainPlatform
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj DomainPlatform
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingDomainPublicRecord(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -7895,6 +8182,7 @@ func TestRequiredNullableRoundTripDomain(t *testing.T) {
 		"created_at",
 		"id",
 		"owned_by",
+		"platform",
 		"public_record",
 		"registration",
 		"status",
@@ -7913,7 +8201,7 @@ func TestRequiredNullableRoundTripDomain(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Domain
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"availability":null,"created_at":null,"id":null,"owned_by":null,"public_record":null,"registration":null,"status":null,"updated_at":null,"verification":null,"website":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"availability":null,"created_at":null,"id":null,"owned_by":null,"platform":null,"public_record":null,"registration":null,"status":null,"updated_at":null,"verification":null,"website":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -7993,6 +8281,7 @@ func TestRequiredNullableRoundTripDomainListItem(t *testing.T) {
 		"created_at",
 		"id",
 		"owned_by",
+		"platform",
 		"registration",
 		"status",
 		"updated_at",
@@ -8010,7 +8299,7 @@ func TestRequiredNullableRoundTripDomainListItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj DomainListItem
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"availability":null,"created_at":null,"id":null,"owned_by":null,"registration":null,"status":null,"updated_at":null,"verification":null,"website":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"availability":null,"created_at":null,"id":null,"owned_by":null,"platform":null,"registration":null,"status":null,"updated_at":null,"verification":null,"website":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -8585,6 +8874,22 @@ func TestStringDomainOwner(t *testing.T) {
 	})
 }
 
+func TestStringDomainPlatform(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &DomainPlatform{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainPlatform
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringDomainPublicRecord(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -8819,6 +9124,13 @@ func TestEnumDomainIssueCapability(t *testing.T) {
 		assert.Equal(t, DomainIssueCapability("registration"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_platform", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCapabilityFromString("platform")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCapability("platform"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_website", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewDomainIssueCapabilityFromString("website")
@@ -9031,6 +9343,49 @@ func TestEnumDomainListItemStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewDomainListItemStatusFromString("idle")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumDomainPlatformState(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainPlatformStateFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainPlatformState("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ready", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainPlatformStateFromString("ready")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainPlatformState("ready"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_action_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainPlatformStateFromString("action_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainPlatformState("action_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_releasing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainPlatformStateFromString("releasing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainPlatformState("releasing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewDomainPlatformStateFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewDomainPlatformStateFromString("pending")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -9339,6 +9694,106 @@ func TestEnumListDomainsRequestOrder(t *testing.T) {
 	})
 }
 
+func TestEnumListDomainsRequestPlatform(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestPlatformFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestPlatform("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ready", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestPlatformFromString("ready")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestPlatform("ready"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_action_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestPlatformFromString("action_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestPlatform("action_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_releasing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestPlatformFromString("releasing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestPlatform("releasing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_any", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestPlatformFromString("any")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestPlatform("any"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListDomainsRequestPlatformFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListDomainsRequestPlatformFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListDomainsRequestRegistration(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestRegistrationFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestRegistration("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ready", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestRegistrationFromString("ready")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestRegistration("ready"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_action_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestRegistrationFromString("action_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestRegistration("action_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_releasing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestRegistrationFromString("releasing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestRegistration("releasing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_any", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestRegistrationFromString("any")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestRegistration("any"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListDomainsRequestRegistrationFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListDomainsRequestRegistrationFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListDomainsRequestStatus(t *testing.T) {
 	t.Run("NewFromString_idle", func(t *testing.T) {
 		t.Parallel()
@@ -9382,6 +9837,106 @@ func TestEnumListDomainsRequestStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewListDomainsRequestStatusFromString("idle")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListDomainsRequestVerification(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestVerificationFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestVerification("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ready", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestVerificationFromString("ready")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestVerification("ready"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_action_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestVerificationFromString("action_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestVerification("action_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_releasing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestVerificationFromString("releasing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestVerification("releasing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_any", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestVerificationFromString("any")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestVerification("any"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListDomainsRequestVerificationFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListDomainsRequestVerificationFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListDomainsRequestWebsite(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestWebsiteFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestWebsite("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ready", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestWebsiteFromString("ready")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestWebsite("ready"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_action_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestWebsiteFromString("action_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestWebsite("action_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_releasing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestWebsiteFromString("releasing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestWebsite("releasing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_any", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestWebsiteFromString("any")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestWebsite("any"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListDomainsRequestWebsiteFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListDomainsRequestWebsiteFromString("pending")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -9591,6 +10146,29 @@ func TestExtraPropertiesDomainOwner(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *DomainOwner
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesDomainPlatform(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &DomainPlatform{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainPlatform
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
