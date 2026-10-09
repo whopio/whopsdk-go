@@ -76,6 +76,7 @@ const (
 	PermissionActionAdCampaignRead                    PermissionAction = "ad_campaign:read"
 	PermissionActionAdCampaignStatsRead               PermissionAction = "ad_campaign:stats:read"
 	PermissionActionAdCampaignUpdate                  PermissionAction = "ad_campaign:update"
+	PermissionActionAdPixelManage                     PermissionAction = "ad_pixel:manage"
 	PermissionActionAudienceBasicRead                 PermissionAction = "audience:basic:read"
 	PermissionActionAudienceUpdate                    PermissionAction = "audience:update"
 	PermissionActionAdPublisherRead                   PermissionAction = "ad_publisher:read"
@@ -380,6 +381,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionAdCampaignStatsRead, nil
 	case "ad_campaign:update":
 		return PermissionActionAdCampaignUpdate, nil
+	case "ad_pixel:manage":
+		return PermissionActionAdPixelManage, nil
 	case "audience:basic:read":
 		return PermissionActionAudienceBasicRead, nil
 	case "audience:update":

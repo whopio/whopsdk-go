@@ -1288,6 +1288,177 @@
       }
     },
     {
+      "id": "876431e0-36b3-4981-94c6-f0d2a34cf91f",
+      "name": "List ad pixels - default",
+      "request": {
+        "urlPathTemplate": "/ad_pixels",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"error_message\": \"error_message\",\n      \"external_id\": \"111222001\",\n      \"id\": \"adpx_xxxxxxxxxxxxxx\",\n      \"name\": \"Supplier pixel\",\n      \"platform\": \"meta\",\n      \"status\": \"active\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "876431e0-36b3-4981-94c6-f0d2a34cf91f",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "6fe9bdd3-ebff-46aa-a6c4-7b8af5f310cf",
+      "name": "Create an ad pixel - default",
+      "request": {
+        "urlPathTemplate": "/ad_pixels",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"error_message\": \"error_message\",\n  \"external_id\": \"111222001\",\n  \"id\": \"adpx_xxxxxxxxxxxxxx\",\n  \"name\": \"Supplier pixel\",\n  \"platform\": \"meta\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "6fe9bdd3-ebff-46aa-a6c4-7b8af5f310cf",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "b07dec4e-d552-4027-824b-deac77a185c6",
+      "name": "Retrieve an ad pixel - default",
+      "request": {
+        "urlPathTemplate": "/ad_pixels/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"error_message\": \"error_message\",\n  \"external_id\": \"111222001\",\n  \"id\": \"adpx_xxxxxxxxxxxxxx\",\n  \"name\": \"Supplier pixel\",\n  \"platform\": \"meta\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "b07dec4e-d552-4027-824b-deac77a185c6",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "424f7112-b4ec-4269-9abc-69233983b063",
+      "name": "Delete an ad pixel - default",
+      "request": {
+        "urlPathTemplate": "/ad_pixels/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"deleted\": true,\n  \"id\": \"adpx_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "424f7112-b4ec-4269-9abc-69233983b063",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "538467b4-ef89-40e7-aa4e-f57c09a6a594",
+      "name": "Update an ad pixel - default",
+      "request": {
+        "urlPathTemplate": "/ad_pixels/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"error_message\": \"error_message\",\n  \"external_id\": \"111222001\",\n  \"id\": \"adpx_xxxxxxxxxxxxxx\",\n  \"name\": \"Supplier pixel\",\n  \"platform\": \"meta\",\n  \"status\": \"active\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "538467b4-ef89-40e7-aa4e-f57c09a6a594",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "2df06a58-bf86-4295-9521-b390ae30caab",
       "name": "List Ads - default",
       "request": {
@@ -16902,6 +17073,6 @@
     }
   ],
   "meta": {
-    "total": 472
+    "total": 477
   }
 }
