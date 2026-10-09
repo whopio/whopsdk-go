@@ -832,7 +832,7 @@ type CreatePartnerReferralRequestsRequestBody struct {
 	CreatePartnerReferralRequestsRequestBodyTargetUserID   *CreatePartnerReferralRequestsRequestBodyTargetUserID
 	CreatePartnerReferralRequestsRequestBodyTargetUsername *CreatePartnerReferralRequestsRequestBodyTargetUsername
 	CreatePartnerReferralRequestsRequestBodyTargetEmail    *CreatePartnerReferralRequestsRequestBodyTargetEmail
-	// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link for the selected team membership, or your personal context when `authorized_user_id` is omitted, creating a random code when none exists. Only authorized staff can configure rewards or select another partner.
+	// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link for the selected team membership, or your personal context when `authorized_user_id` is omitted, creating a random code when none exists.
 	CreatePartnerReferralRequestsRequestBodyCode *CreatePartnerReferralRequestsRequestBodyCode
 
 	typ string
@@ -1290,7 +1290,7 @@ var createPartnerReferralRequestsRequestBodyCodeNullableFields = map[string]*big
 	"max_redemptions": createPartnerReferralRequestsRequestBodyCodeFieldMaxRedemptions,
 }
 
-// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link for the selected team membership, or your personal context when `authorized_user_id` is omitted, creating a random code when none exists. Only authorized staff can configure rewards or select another partner.
+// Create your own referral link with an optional custom code and redemption limit. Without configuration, returns your oldest saved link for the selected team membership, or your personal context when `authorized_user_id` is omitted, creating a random code when none exists.
 type CreatePartnerReferralRequestsRequestBodyCode struct {
 	// The partner's team membership on the business this link is made for, prefixed `ausr_`. Omit for a personal link.
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"authorized_user_id,omitempty"`
@@ -1298,7 +1298,7 @@ type CreatePartnerReferralRequestsRequestBodyCode struct {
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// Maximum permitted redemptions, or null for no configured limit.
 	MaxRedemptions *int `json:"max_redemptions,omitempty" url:"max_redemptions,omitempty"`
-	// Optional authenticated partner ID, prefixed `user_`. Ordinary credentials cannot select another partner. Staff must supply the enrolled, non-suspended partner receiving attribution.
+	// Optional. Your own partner ID, prefixed `user_`; you cannot create a link for another partner.
 	PartnerID *string `json:"partner_id,omitempty" url:"partner_id,omitempty"`
 	// Create or retrieve a reusable referral link without requesting attribution for an existing business.
 	RequestType CreatePartnerReferralRequestsRequestBodyCodeRequestType `json:"request_type" url:"request_type"`
