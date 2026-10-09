@@ -9,6 +9,7 @@ import (
 	adcampaigns "github.com/whopio/whopsdk-go/v2/adcampaigns"
 	adconversionvaluerules "github.com/whopio/whopsdk-go/v2/adconversionvaluerules"
 	adgroups "github.com/whopio/whopsdk-go/v2/adgroups"
+	adpixels "github.com/whopio/whopsdk-go/v2/adpixels"
 	ads "github.com/whopio/whopsdk-go/v2/ads"
 	affiliatesclient "github.com/whopio/whopsdk-go/v2/affiliates/client"
 	aichats "github.com/whopio/whopsdk-go/v2/aichats"
@@ -108,6 +109,7 @@ type Whop struct {
 	AdCampaigns              *adcampaigns.Client
 	AdConversionValueRules   *adconversionvaluerules.Client
 	AdGroups                 *adgroups.Client
+	AdPixels                 *adpixels.Client
 	Ads                      *ads.Client
 	Affiliates               *affiliatesclient.Client
 	AiChats                  *aichats.Client
@@ -214,6 +216,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		AdCampaigns:              adcampaigns.NewClient(options),
 		AdConversionValueRules:   adconversionvaluerules.NewClient(options),
 		AdGroups:                 adgroups.NewClient(options),
+		AdPixels:                 adpixels.NewClient(options),
 		Ads:                      ads.NewClient(options),
 		Affiliates:               affiliatesclient.NewClient(options),
 		AiChats:                  aichats.NewClient(options),

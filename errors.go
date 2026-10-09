@@ -41,11 +41,11 @@ func (b *BadRequestError) GetBody() any {
 // Conflict
 type ConflictError struct {
 	*core.APIError
-	Body *V1ErrorResponse
+	Body any
 }
 
 func (c *ConflictError) UnmarshalJSON(data []byte) error {
-	var body *V1ErrorResponse
+	var body any
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (c *ConflictError) Unwrap() error {
 	return c.APIError
 }
 
-func (c *ConflictError) GetBody() *V1ErrorResponse {
+func (c *ConflictError) GetBody() any {
 	if c == nil {
 		return nil
 	}
