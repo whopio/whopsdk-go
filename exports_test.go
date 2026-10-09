@@ -3317,13 +3317,6 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		assert.Equal(t, CreateExportsRequestResource("leads"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_content_rewards_submissions", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateExportsRequestResourceFromString("content_rewards_submissions")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateExportsRequestResource("content_rewards_submissions"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_invoices", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateExportsRequestResourceFromString("invoices")
@@ -3589,13 +3582,6 @@ func TestEnumExportResource(t *testing.T) {
 		val, err := NewExportResourceFromString("leads")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ExportResource("leads"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_content_rewards_submissions", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewExportResourceFromString("content_rewards_submissions")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ExportResource("content_rewards_submissions"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_invoices", func(t *testing.T) {
@@ -3978,13 +3964,6 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		val, err := NewListExportsRequestResourceFromString("leads")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExportsRequestResource("leads"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_content_rewards_submissions", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListExportsRequestResourceFromString("content_rewards_submissions")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListExportsRequestResource("content_rewards_submissions"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_invoices", func(t *testing.T) {
