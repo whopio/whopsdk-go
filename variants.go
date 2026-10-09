@@ -427,19 +427,21 @@ func (d *DeleteVariantsRequest) SetID(id string) {
 }
 
 var (
-	listVariantsRequestFieldAccountID      = big.NewInt(1 << 0)
-	listVariantsRequestFieldDirection      = big.NewInt(1 << 1)
-	listVariantsRequestFieldOrder          = big.NewInt(1 << 2)
-	listVariantsRequestFieldReleaseMethods = big.NewInt(1 << 3)
-	listVariantsRequestFieldVisibilities   = big.NewInt(1 << 4)
-	listVariantsRequestFieldPlanTypes      = big.NewInt(1 << 5)
-	listVariantsRequestFieldProductIDs     = big.NewInt(1 << 6)
-	listVariantsRequestFieldCreatedBefore  = big.NewInt(1 << 7)
-	listVariantsRequestFieldCreatedAfter   = big.NewInt(1 << 8)
-	listVariantsRequestFieldFirst          = big.NewInt(1 << 9)
-	listVariantsRequestFieldAfter          = big.NewInt(1 << 10)
-	listVariantsRequestFieldLast           = big.NewInt(1 << 11)
-	listVariantsRequestFieldBefore         = big.NewInt(1 << 12)
+	listVariantsRequestFieldAccountID           = big.NewInt(1 << 0)
+	listVariantsRequestFieldDirection           = big.NewInt(1 << 1)
+	listVariantsRequestFieldOrder               = big.NewInt(1 << 2)
+	listVariantsRequestFieldReleaseMethods      = big.NewInt(1 << 3)
+	listVariantsRequestFieldVisibilities        = big.NewInt(1 << 4)
+	listVariantsRequestFieldPlanTypes           = big.NewInt(1 << 5)
+	listVariantsRequestFieldProductIDs          = big.NewInt(1 << 6)
+	listVariantsRequestFieldCreatedBefore       = big.NewInt(1 << 7)
+	listVariantsRequestFieldCreatedAfter        = big.NewInt(1 << 8)
+	listVariantsRequestFieldPresentmentCurrency = big.NewInt(1 << 9)
+	listVariantsRequestFieldIPAddress           = big.NewInt(1 << 10)
+	listVariantsRequestFieldFirst               = big.NewInt(1 << 11)
+	listVariantsRequestFieldAfter               = big.NewInt(1 << 12)
+	listVariantsRequestFieldLast                = big.NewInt(1 << 13)
+	listVariantsRequestFieldBefore              = big.NewInt(1 << 14)
 )
 
 type ListVariantsRequest struct {
@@ -461,6 +463,10 @@ type ListVariantsRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return variants created after this timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// The currency to state each variant's prices in. Omit it, or send null, for each variant's own currency. `auto` states them in the currency of the country Whop places the buyer in: by `ip_address` when your server sends one, and by the request's own IP address otherwise. A three-letter ISO 4217 code, such as `eur`, states them in that currency. A variant converts only where a payment quote for it would be priced in that currency, and stays in its own currency otherwise: a renewing variant, one with adaptive pricing off, a currency no payment method can collect, or `auto` for a buyer Whop cannot place in a country. Converted prices are an estimate at the current exchange rate. Nothing is held: the payment quote the buyer pays from fixes the rate.
+	PresentmentCurrency *string `json:"-" url:"presentment_currency,omitempty"`
+	// The buyer's IP address, when your server reads on their behalf. Needs an API key; any other caller is placed by its own request. Where `presentment_currency` `auto` finds the buyer's local currency.
+	IPAddress *string `json:"-" url:"ip_address,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -546,6 +552,20 @@ func (l *ListVariantsRequest) SetCreatedAfter(createdAfter *string) {
 	l.require(listVariantsRequestFieldCreatedAfter)
 }
 
+// SetPresentmentCurrency sets the PresentmentCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVariantsRequest) SetPresentmentCurrency(presentmentCurrency *string) {
+	l.PresentmentCurrency = presentmentCurrency
+	l.require(listVariantsRequestFieldPresentmentCurrency)
+}
+
+// SetIPAddress sets the IPAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVariantsRequest) SetIPAddress(ipAddress *string) {
+	l.IPAddress = ipAddress
+	l.require(listVariantsRequestFieldIPAddress)
+}
+
 // SetFirst sets the First field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListVariantsRequest) SetFirst(first *int) {
@@ -575,12 +595,18 @@ func (l *ListVariantsRequest) SetBefore(before *string) {
 }
 
 var (
-	retrieveVariantsRequestFieldID = big.NewInt(1 << 0)
+	retrieveVariantsRequestFieldID                  = big.NewInt(1 << 0)
+	retrieveVariantsRequestFieldPresentmentCurrency = big.NewInt(1 << 1)
+	retrieveVariantsRequestFieldIPAddress           = big.NewInt(1 << 2)
 )
 
 type RetrieveVariantsRequest struct {
 	// Variant ID, prefixed `plan_`.
 	ID string `json:"-" url:"-"`
+	// The currency to state each variant's prices in. Omit it, or send null, for each variant's own currency. `auto` states them in the currency of the country Whop places the buyer in: by `ip_address` when your server sends one, and by the request's own IP address otherwise. A three-letter ISO 4217 code, such as `eur`, states them in that currency. A variant converts only where a payment quote for it would be priced in that currency, and stays in its own currency otherwise: a renewing variant, one with adaptive pricing off, a currency no payment method can collect, or `auto` for a buyer Whop cannot place in a country. Converted prices are an estimate at the current exchange rate. Nothing is held: the payment quote the buyer pays from fixes the rate.
+	PresentmentCurrency *string `json:"-" url:"presentment_currency,omitempty"`
+	// The buyer's IP address, when your server reads on their behalf. Needs an API key; any other caller is placed by its own request. Where `presentment_currency` `auto` finds the buyer's local currency.
+	IPAddress *string `json:"-" url:"ip_address,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -600,6 +626,20 @@ func (r *RetrieveVariantsRequest) require(field *big.Int) {
 func (r *RetrieveVariantsRequest) SetID(id string) {
 	r.ID = id
 	r.require(retrieveVariantsRequestFieldID)
+}
+
+// SetPresentmentCurrency sets the PresentmentCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVariantsRequest) SetPresentmentCurrency(presentmentCurrency *string) {
+	r.PresentmentCurrency = presentmentCurrency
+	r.require(retrieveVariantsRequestFieldPresentmentCurrency)
+}
+
+// SetIPAddress sets the IPAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVariantsRequest) SetIPAddress(ipAddress *string) {
+	r.IPAddress = ipAddress
+	r.require(retrieveVariantsRequestFieldIPAddress)
 }
 
 var (
@@ -697,7 +737,7 @@ type Variant struct {
 	CollectTax bool `json:"collect_tax" url:"collect_tax"`
 	// When the variant was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Three-letter ISO currency code for this variant's prices.
+	// Three-letter ISO 4217 code of the currency every price on this variant is stated in, lowercase: the variant's own currency, or the `presentment_currency` the read asked for when the variant can be converted into it.
 	Currency     string             `json:"currency" url:"currency"`
 	CustomFields []*PlanCustomField `json:"custom_fields" url:"custom_fields"`
 	// Whether the variant can be deleted (it has no memberships or waitlist entries). `null` unless the actor has the `plan:basic:read` scope on the variant's account.
@@ -708,15 +748,15 @@ type Variant struct {
 	EffectivePaymentMethodConfiguration *CheckoutSessionPaymentMethodConfiguration `json:"effective_payment_method_configuration,omitempty" url:"effective_payment_method_configuration,omitempty"`
 	// Access duration in days for expiration-based variants, such as 365 for a one-year pass. `null` for variants without an expiration.
 	ExpirationDays *float64 `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Human-readable price for display (currency + interval), e.g. "$10 / month".
+	// Human-readable price for display (currency + interval) in `currency`, e.g. "$10 / month".
 	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
 	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
 	// Pricing-tier image (`url`, `blurhash`) shown on the product page; `null` when no image is set.
 	Image map[string]any `json:"image,omitempty" url:"image,omitempty"`
-	// Initial purchase price in variant currency.
+	// Initial purchase price, in `currency`.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring variants, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this variant.
+	// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring variants, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this variant. Stated in `currency`.
 	InitialPriceDue *Money `json:"initial_price_due" url:"initial_price_due"`
 	// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
@@ -738,7 +778,7 @@ type Variant struct {
 	PurchaseURL string `json:"purchase_url" url:"purchase_url"`
 	// Sales method for this variant.
 	ReleaseMethod VariantReleaseMethod `json:"release_method" url:"release_method"`
-	// Recurring price charged every billing period.
+	// Recurring price charged every billing period, in `currency`.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
 	// Stock keeping unit, free text set by the seller (e.g. `TSHIRT-LARGE-BLUE`). Not enforced unique. `null` when unset.
 	Sku *string `json:"sku,omitempty" url:"sku,omitempty"`
@@ -746,9 +786,9 @@ type Variant struct {
 	SplitPayRequiredPayments *float64 `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
 	// Units available for purchase. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	Stock *float64 `json:"stock,omitempty" url:"stock,omitempty"`
-	// Original initial price shown with a strikethrough, in the variant's currency. `null` when no strikethrough is set.
+	// Original initial price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
 	StrikeThroughInitialPrice *float64 `json:"strike_through_initial_price,omitempty" url:"strike_through_initial_price,omitempty"`
-	// Original renewal price shown with a strikethrough, in the variant's currency. `null` when no strikethrough is set.
+	// Original renewal price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
 	StrikeThroughRenewalPrice *float64 `json:"strike_through_renewal_price,omitempty" url:"strike_through_renewal_price,omitempty"`
 	// How tax is handled for this variant, including whether tax is included in the price, added at checkout, or not configured.
 	TaxType VariantTaxType `json:"tax_type" url:"tax_type"`

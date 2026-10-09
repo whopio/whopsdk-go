@@ -58476,22 +58476,22 @@ type VariantListItem struct {
 	CheckoutStyling map[string]any `json:"checkout_styling,omitempty" url:"checkout_styling,omitempty"`
 	// When the variant was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Three-letter ISO currency code for this variant's prices.
+	// Three-letter ISO 4217 code of the currency every price on this variant is stated in, lowercase: the variant's own currency, or the `presentment_currency` the read asked for when the variant can be converted into it.
 	Currency     string             `json:"currency" url:"currency"`
 	CustomFields []*PlanCustomField `json:"custom_fields" url:"custom_fields"`
 	// Customer-visible variant description. Maximum 1000 characters. `null` if no description is set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// Access duration in days for expiration-based variants, such as 365 for a one-year pass. `null` for variants without an expiration.
 	ExpirationDays *float64 `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Human-readable price for display (currency + interval), e.g. "$10 / month".
+	// Human-readable price for display (currency + interval) in `currency`, e.g. "$10 / month".
 	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
 	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
 	// Pricing-tier image (`url`, `blurhash`) shown on the product page; `null` when no image is set.
 	Image map[string]any `json:"image,omitempty" url:"image,omitempty"`
-	// Initial purchase price in variant currency.
+	// Initial purchase price, in `currency`.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring variants, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this variant.
+	// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring variants, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this variant. Stated in `currency`.
 	InitialPriceDue *Money `json:"initial_price_due" url:"initial_price_due"`
 	// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
@@ -58513,7 +58513,7 @@ type VariantListItem struct {
 	PurchaseURL string `json:"purchase_url" url:"purchase_url"`
 	// Sales method for this variant.
 	ReleaseMethod VariantListItemReleaseMethod `json:"release_method" url:"release_method"`
-	// Recurring price charged every billing period.
+	// Recurring price charged every billing period, in `currency`.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
 	// Stock keeping unit, free text set by the seller (e.g. `TSHIRT-LARGE-BLUE`). Not enforced unique. `null` when unset.
 	Sku *string `json:"sku,omitempty" url:"sku,omitempty"`
@@ -58521,9 +58521,9 @@ type VariantListItem struct {
 	SplitPayRequiredPayments *float64 `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
 	// Units available for purchase. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	Stock *float64 `json:"stock,omitempty" url:"stock,omitempty"`
-	// Original initial price shown with a strikethrough, in the variant's currency. `null` when no strikethrough is set.
+	// Original initial price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
 	StrikeThroughInitialPrice *float64 `json:"strike_through_initial_price,omitempty" url:"strike_through_initial_price,omitempty"`
-	// Original renewal price shown with a strikethrough, in the variant's currency. `null` when no strikethrough is set.
+	// Original renewal price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
 	StrikeThroughRenewalPrice *float64 `json:"strike_through_renewal_price,omitempty" url:"strike_through_renewal_price,omitempty"`
 	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 	ThreeDsLevel *VariantListItemThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`

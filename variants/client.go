@@ -64,6 +64,12 @@ func NewClient(options *core.RequestOptions) *Client {
 //	            "prod_xxxxxxxxxxxxxx",
 //	        ),
 //	    },
+//	    PresentmentCurrency: whopsdk.String(
+//	        "auto",
+//	    ),
+//	    IPAddress: whopsdk.String(
+//	        "203.0.113.7",
+//	    ),
 //	}
 //	client.Variants.List(
 //	    context.TODO(),
@@ -171,6 +177,12 @@ func (c *Client) Create(
 //
 //	request := &whopsdk.RetrieveVariantsRequest{
 //	    ID: "id",
+//	    PresentmentCurrency: whopsdk.String(
+//	        "auto",
+//	    ),
+//	    IPAddress: whopsdk.String(
+//	        "203.0.113.7",
+//	    ),
 //	}
 //	client.Variants.Retrieve(
 //	    context.TODO(),

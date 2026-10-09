@@ -14162,6 +14162,12 @@
                 "equalTo": "prod_xxxxxxxxxxxxxx"
               }
             ]
+          },
+          "presentment_currency": {
+            "equalTo": "auto"
+          },
+          "ip_address": {
+            "equalTo": "203.0.113.7"
           }
         }
       },
@@ -14230,6 +14236,14 @@
         "pathParameters": {
           "id": {
             "equalTo": "id"
+          }
+        },
+        "queryParameters": {
+          "presentment_currency": {
+            "equalTo": "auto"
+          },
+          "ip_address": {
+            "equalTo": "203.0.113.7"
           }
         }
       },
