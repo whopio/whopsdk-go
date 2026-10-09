@@ -81,6 +81,7 @@ var (
 	retrieveStatsRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 67)
 	retrieveStatsRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 68)
 	retrieveStatsRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	retrieveStatsRequestFieldReferringAccountID  = big.NewInt(0).Lsh(big.NewInt(1), 70)
 )
 
 type RetrieveStatsRequest struct {
@@ -224,6 +225,8 @@ type RetrieveStatsRequest struct {
 	EventCountLt *float64 `json:"-" url:"event_count_lt,omitempty"`
 	// People metric only: event_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
 	EventCountLte *float64 `json:"-" url:"event_count_lte,omitempty"`
+	// Read a referral metric for a business instead of the caller: the referrals its team members made, past members included, for example biz_AbC123. Requires company:basic:read on that business and cannot be combined with user_id. Available on metrics that list referring_account_id.
+	ReferringAccountID *string `json:"-" url:"referring_account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -726,6 +729,13 @@ func (r *RetrieveStatsRequest) SetEventCountLt(eventCountLt *float64) {
 func (r *RetrieveStatsRequest) SetEventCountLte(eventCountLte *float64) {
 	r.EventCountLte = eventCountLte
 	r.require(retrieveStatsRequestFieldEventCountLte)
+}
+
+// SetReferringAccountID sets the ReferringAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetReferringAccountID(referringAccountID *string) {
+	r.ReferringAccountID = referringAccountID
+	r.require(retrieveStatsRequestFieldReferringAccountID)
 }
 
 var (

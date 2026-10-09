@@ -12,23 +12,26 @@ import (
 )
 
 var (
-	listBusinessesRequestFieldStatus              = big.NewInt(1 << 0)
-	listBusinessesRequestFieldHasEarnings         = big.NewInt(1 << 1)
-	listBusinessesRequestFieldFirst               = big.NewInt(1 << 2)
-	listBusinessesRequestFieldAfter               = big.NewInt(1 << 3)
-	listBusinessesRequestFieldLast                = big.NewInt(1 << 4)
-	listBusinessesRequestFieldBefore              = big.NewInt(1 << 5)
-	listBusinessesRequestFieldOrder               = big.NewInt(1 << 6)
-	listBusinessesRequestFieldDirection           = big.NewInt(1 << 7)
-	listBusinessesRequestFieldCreatedBefore       = big.NewInt(1 << 8)
-	listBusinessesRequestFieldCreatedAfter        = big.NewInt(1 << 9)
-	listBusinessesRequestFieldReferredUserID      = big.NewInt(1 << 10)
-	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 11)
-	listBusinessesRequestFieldTier                = big.NewInt(1 << 12)
-	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 13)
+	listBusinessesRequestFieldReferringAccountID  = big.NewInt(1 << 0)
+	listBusinessesRequestFieldStatus              = big.NewInt(1 << 1)
+	listBusinessesRequestFieldHasEarnings         = big.NewInt(1 << 2)
+	listBusinessesRequestFieldFirst               = big.NewInt(1 << 3)
+	listBusinessesRequestFieldAfter               = big.NewInt(1 << 4)
+	listBusinessesRequestFieldLast                = big.NewInt(1 << 5)
+	listBusinessesRequestFieldBefore              = big.NewInt(1 << 6)
+	listBusinessesRequestFieldOrder               = big.NewInt(1 << 7)
+	listBusinessesRequestFieldDirection           = big.NewInt(1 << 8)
+	listBusinessesRequestFieldCreatedBefore       = big.NewInt(1 << 9)
+	listBusinessesRequestFieldCreatedAfter        = big.NewInt(1 << 10)
+	listBusinessesRequestFieldReferredUserID      = big.NewInt(1 << 11)
+	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 12)
+	listBusinessesRequestFieldTier                = big.NewInt(1 << 13)
+	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 14)
 )
 
 type ListBusinessesRequest struct {
+	// List the referrals this business's team members made, past members included, instead of the authenticated user's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id.
+	ReferringAccountID *string `json:"-" url:"referring_account_id,omitempty"`
 	// Filter by referral status.
 	Status *ListBusinessesRequestStatus `json:"-" url:"status,omitempty"`
 	// When true, only businesses with pending or completed earnings paid to the caller.
@@ -69,6 +72,13 @@ func (l *ListBusinessesRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	l.explicitFields = next
+}
+
+// SetReferringAccountID sets the ReferringAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesRequest) SetReferringAccountID(referringAccountID *string) {
+	l.ReferringAccountID = referringAccountID
+	l.require(listBusinessesRequestFieldReferringAccountID)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
