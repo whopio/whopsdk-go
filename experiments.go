@@ -18,7 +18,7 @@ var (
 type ActivateExperimentsRequest struct {
 	// The experiment identifier — the `expt_` id or the flag_key handle.
 	ID string `json:"-" url:"-"`
-	// Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Reporting window length in days. Omit to use the default. This does not automatically end the experiment.
 	DurationDays *int `json:"duration_days,omitempty" url:"-"`
@@ -92,9 +92,9 @@ var (
 )
 
 type CreateExperimentsRequest struct {
-	// Owning account tag or internal. Required; ownership cannot change.
+	// Owning account ID. Required; ownership cannot change.
 	AccountID string `json:"account_id" url:"-"`
-	// Randomization unit, and the only identity the assignment is keyed on — evaluation fails rather than falling back to another. `user` (default) uses `subject[user_id]` for account experiments and the signed-in user for internal experiments; `account` uses `subject[account_id]`, so every user of an account gets the same arm; `anonymous` uses the anonymous id and survives sign-in. Fixed after creation.
+	// Randomization unit, and the only identity the assignment is keyed on — evaluation fails rather than falling back to another. `user` (default) uses `subject[user_id]`; `account` uses `subject[account_id]`, so every user of an account gets the same arm; `anonymous` uses the anonymous id and survives sign-in. Fixed after creation.
 	BucketBy *CreateExperimentsRequestBucketBy `json:"bucket_by,omitempty" url:"-"`
 	Control  *CreateExperimentsRequestControl  `json:"control,omitempty" url:"-"`
 	// When `true`, creates a binary feature flag rather than a full experiment. Feature flags expose the same evaluation API but do not collect metric results. Defaults to `false`.
@@ -104,7 +104,8 @@ type CreateExperimentsRequest struct {
 	// Required for full experiments; rejected on feature flags. Structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." Evidence should be something real — a baseline number, a funnel breakdown — not a guess, and [name] is you, not something to leave blank.
 	Hypothesis *string `json:"hypothesis,omitempty" url:"-"`
 	// Human-readable display name. Defaults to `flag_key` when omitted.
-	Name            *string                      `json:"name,omitempty" url:"-"`
+	Name *string `json:"name,omitempty" url:"-"`
+	// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
 	RelatedResource *ExperimentResourceReference `json:"related_resource,omitempty" url:"-"`
 	// Rules that determine which subjects qualify for the experiment.
 	TargetingRules []*CreateExperimentsRequestTargetingRulesItem `json:"targeting_rules,omitempty" url:"-"`
@@ -225,7 +226,7 @@ var (
 type EndExperimentsRequest struct {
 	// The experiment identifier — the `expt_` id or the flag_key handle.
 	ID string `json:"-" url:"-"`
-	// Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// What you learned and why you chose this outcome. Required.
 	Findings string `json:"findings" url:"-"`
@@ -304,15 +305,15 @@ var (
 )
 
 type ExposuresExperimentsRequest struct {
-	// Bucketing subject. Ownership is the top-level account_id. Account experiments accept caller-supplied subject IDs; internal experiments derive the user from the session.
+	// Bucketing subject: the user, account, or anonymous ID the experiment's `bucket_by` assigns on. Ownership is the top-level account_id.
 	Subject *ExposuresExperimentsRequestSubject `json:"-" url:"subject,omitempty"`
 	// Restricts batch evaluation to this related resource; omitted batches contain only unbound experiments.
 	RelatedResource *ExperimentResourceReference `json:"-" url:"related_resource,omitempty"`
 	// Flag or experiment to evaluate — the flag_key handle or the `expt_` id. Omit to return all flags the caller qualifies for.
 	FlagKey *string `json:"-" url:"flag_key,omitempty"`
-	// Owning account ID or internal. Required when evaluating by flag_key or in a batch; optional for an expt_ ID.
+	// Owning account ID. Required when evaluating by flag_key or in a batch; optional for an expt_ ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[variant]=pro remain accepted for existing callers. For internal experiments, is_internal_user is derived from the session and cannot be overridden.
+	// JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[variant]=pro remain accepted for existing callers.
 	Properties *string `json:"-" url:"properties,omitempty"`
 	// Set false to evaluate without recording an exposure. Omitted records it.
 	LogExposure *bool `json:"-" url:"log_exposure,omitempty"`
@@ -385,7 +386,7 @@ var (
 )
 
 type ListExperimentsRequest struct {
-	// Owning account ID. Omit or pass internal for Whop internal experiments; internal access is required.
+	// Owning account ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Filter by related resource; requires account_id.
 	RelatedResource *ExperimentResourceReference `json:"-" url:"related_resource,omitempty"`
@@ -488,7 +489,7 @@ var (
 type PauseExperimentsRequest struct {
 	// The experiment identifier — the `expt_` id or the flag_key handle.
 	ID string `json:"-" url:"-"`
-	// Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -526,7 +527,7 @@ var (
 type RetrieveExperimentsRequest struct {
 	// The experiment identifier — the `expt_` id or the flag_key handle.
 	ID string `json:"-" url:"-"`
-	// Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -595,13 +596,13 @@ var experimentNullableFields = map[string]*big.Int{
 }
 
 type Experiment struct {
-	// Owning account ID, or internal for Whop platform experiments.
+	// Owning account ID.
 	AccountID string `json:"account_id" url:"account_id"`
 	// Assignment hashes UTF-8 seed + subject ID with CRC32 modulo 100 and selects the stored end-exclusive range.
 	AssignmentSeed string `json:"assignment_seed" url:"assignment_seed"`
 	// Randomization unit — `user` buckets each user independently, `account` buckets whole accounts (every user of an account gets the same arm). `null` for feature flags.
 	BucketBy *ExperimentBucketBy `json:"bucket_by,omitempty" url:"bucket_by,omitempty"`
-	// Revision of the serving configuration. Does not change the assignment seed.
+	// Revision of the serving configuration. Increments on every configuration change, so a cached definition with a lower revision is stale. Does not change the assignment seed.
 	ConfigurationRevision int                `json:"configuration_revision" url:"configuration_revision"`
 	Control               *ExperimentControl `json:"control" url:"control"`
 	// When the experiment was created, as an ISO 8601 timestamp.
@@ -621,7 +622,8 @@ type Experiment struct {
 	// Unique identifier for the experiment, prefixed `expt_`.
 	ID string `json:"id" url:"id"`
 	// Human-readable display name.
-	Name            string                       `json:"name" url:"name"`
+	Name string `json:"name" url:"name"`
+	// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
 	RelatedResource *ExperimentResourceReference `json:"related_resource" url:"related_resource"`
 	// When the experiment began collecting data, as an ISO 8601 timestamp. `null` for drafts.
 	StartedAt *string `json:"started_at,omitempty" url:"started_at,omitempty"`
@@ -2139,7 +2141,7 @@ func (e *ExposuresExperimentsRequestSubject) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// Randomization unit, and the only identity the assignment is keyed on — evaluation fails rather than falling back to another. `user` (default) uses `subject[user_id]` for account experiments and the signed-in user for internal experiments; `account` uses `subject[account_id]`, so every user of an account gets the same arm; `anonymous` uses the anonymous id and survives sign-in. Fixed after creation.
+// Randomization unit, and the only identity the assignment is keyed on — evaluation fails rather than falling back to another. `user` (default) uses `subject[user_id]`; `account` uses `subject[account_id]`, so every user of an account gets the same arm; `anonymous` uses the anonymous id and survives sign-in. Fixed after creation.
 type CreateExperimentsRequestBucketBy string
 
 const (
@@ -3691,11 +3693,12 @@ var (
 type UpdateExperimentsRequest struct {
 	// The experiment identifier — the `expt_` id or the flag_key handle.
 	ID string `json:"-" url:"-"`
-	// Owning account or internal. Required when id is a flag key; optional for an expt_ ID.
+	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
 	AccountID *string                          `json:"-" url:"account_id,omitempty"`
 	Control   *UpdateExperimentsRequestControl `json:"control,omitempty" url:"-"`
 	// Omit to leave unchanged. Send an empty string to clear it. Not accepted on feature flags. When setting it, structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." same as on create.
-	Hypothesis      *string                      `json:"hypothesis,omitempty" url:"-"`
+	Hypothesis *string `json:"hypothesis,omitempty" url:"-"`
+	// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
 	RelatedResource *ExperimentResourceReference `json:"related_resource,omitempty" url:"-"`
 	// Replace the targeting rules with this set. Omit to leave unchanged.
 	TargetingRules []*UpdateExperimentsRequestTargetingRulesItem `json:"targeting_rules,omitempty" url:"-"`

@@ -113,7 +113,7 @@ func TestExperimentsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateExperimentsRequest{
-		AccountID: "internal",
+		AccountID: "biz_xxxxxxxxxxxxxx",
 		FlagKey:   "checkout_redesign_v2",
 	}
 	_, invocationErr := client.Experiments.Create(

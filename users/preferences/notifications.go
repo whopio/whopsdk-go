@@ -228,7 +228,7 @@ type SetNotificationsRequestPreferencesItemScope struct {
 	ExperienceID *string `json:"experience_id,omitempty" url:"experience_id,omitempty"`
 	// Account whose team notifications the preference is scoped to, `biz_` tag.
 	TeamAccountID *string `json:"team_account_id,omitempty" url:"team_account_id,omitempty"`
-	// Notification topic to scope the preference to, `topic_` tag.
+	// Notification topic to scope the preference to, `topic_` tag. Topic IDs come from `GET /notifications/topics`.
 	TopicID *string `json:"topic_id,omitempty" url:"topic_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

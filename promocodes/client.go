@@ -131,7 +131,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates a promo code for an account. First-party sessions may attach an affiliate.
+// Creates a promo code for an account.
 //
 // Example:
 //
