@@ -3829,7 +3829,7 @@ type AccountPaymentControls struct {
 	// Automatic refund settings for resolution center cases.
 	ResolutionCenterAutoRefund *AccountResolutionCenterAutoRefundControl            `json:"resolution_center_auto_refund" url:"resolution_center_auto_refund"`
 	RestrictedPaymentMethods   []AccountPaymentControlsRestrictedPaymentMethodsItem `json:"restricted_payment_methods" url:"restricted_payment_methods"`
-	// Why pending funds without a settlement date aren't moving yet. `kyc_incomplete` and `pending_information_request` are things the merchant can act on. `withdrawals_disabled` means Whop has blocked withdrawals, so these funds cannot become available. `null` when there's no reason to show — still clearing, or held for a reason that isn't named here.
+	// Why pending funds without a settlement date aren't moving yet. `kyc_incomplete`, `pending_information_request`, and `update_payout_profile` are things the merchant can act on. `compliance_review` means a verification the merchant already submitted is being reviewed, so these funds stay pending until it clears. `withdrawals_disabled` means Whop has blocked withdrawals, so these funds cannot become available. `null` when there's no reason to show — still clearing, or held for a reason that isn't named here.
 	UndatedPendingReason *AccountPaymentControlsUndatedPendingReason `json:"undated_pending_reason,omitempty" url:"undated_pending_reason,omitempty"`
 	// How the account's balance automatically withdraws.
 	WithdrawalSchedule *AccountWithdrawalScheduleControl `json:"withdrawal_schedule" url:"withdrawal_schedule"`
@@ -4103,12 +4103,14 @@ func (a AccountPaymentControlsRestrictedPaymentMethodsItem) Ptr() *AccountPaymen
 	return &a
 }
 
-// Why pending funds without a settlement date aren't moving yet. `kyc_incomplete` and `pending_information_request` are things the merchant can act on. `withdrawals_disabled` means Whop has blocked withdrawals, so these funds cannot become available. `null` when there's no reason to show — still clearing, or held for a reason that isn't named here.
+// Why pending funds without a settlement date aren't moving yet. `kyc_incomplete`, `pending_information_request`, and `update_payout_profile` are things the merchant can act on. `compliance_review` means a verification the merchant already submitted is being reviewed, so these funds stay pending until it clears. `withdrawals_disabled` means Whop has blocked withdrawals, so these funds cannot become available. `null` when there's no reason to show — still clearing, or held for a reason that isn't named here.
 type AccountPaymentControlsUndatedPendingReason string
 
 const (
 	AccountPaymentControlsUndatedPendingReasonKycIncomplete             AccountPaymentControlsUndatedPendingReason = "kyc_incomplete"
 	AccountPaymentControlsUndatedPendingReasonPendingInformationRequest AccountPaymentControlsUndatedPendingReason = "pending_information_request"
+	AccountPaymentControlsUndatedPendingReasonUpdatePayoutProfile       AccountPaymentControlsUndatedPendingReason = "update_payout_profile"
+	AccountPaymentControlsUndatedPendingReasonComplianceReview          AccountPaymentControlsUndatedPendingReason = "compliance_review"
 	AccountPaymentControlsUndatedPendingReasonWithdrawalsDisabled       AccountPaymentControlsUndatedPendingReason = "withdrawals_disabled"
 )
 
@@ -4118,6 +4120,10 @@ func NewAccountPaymentControlsUndatedPendingReasonFromString(s string) (AccountP
 		return AccountPaymentControlsUndatedPendingReasonKycIncomplete, nil
 	case "pending_information_request":
 		return AccountPaymentControlsUndatedPendingReasonPendingInformationRequest, nil
+	case "update_payout_profile":
+		return AccountPaymentControlsUndatedPendingReasonUpdatePayoutProfile, nil
+	case "compliance_review":
+		return AccountPaymentControlsUndatedPendingReasonComplianceReview, nil
 	case "withdrawals_disabled":
 		return AccountPaymentControlsUndatedPendingReasonWithdrawalsDisabled, nil
 	}

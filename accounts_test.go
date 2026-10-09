@@ -23539,6 +23539,20 @@ func TestEnumAccountPaymentControlsUndatedPendingReason(t *testing.T) {
 		assert.Equal(t, AccountPaymentControlsUndatedPendingReason("pending_information_request"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_update_payout_profile", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsUndatedPendingReasonFromString("update_payout_profile")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsUndatedPendingReason("update_payout_profile"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_compliance_review", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountPaymentControlsUndatedPendingReasonFromString("compliance_review")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountPaymentControlsUndatedPendingReason("compliance_review"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_withdrawals_disabled", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAccountPaymentControlsUndatedPendingReasonFromString("withdrawals_disabled")
