@@ -2071,6 +2071,14 @@ client.AdCampaigns.Update(
 <dl>
 <dd>
 
+**adsPlatform:** `*whopsdk.UpdateAdCampaignsRequestXAdsPlatform` — The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **bidType:** `*whopsdk.UpdateAdCampaignsRequestBidType` — How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Switching to `minimum_cost` clears the cap amounts stored on the campaign's ad groups. Only for campaigns that own the budget.
     
 </dd>
@@ -3209,6 +3217,14 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
+**adsPlatform:** `*whopsdk.CreateAdGroupsRequestXAdsPlatform` — The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **adCampaignID:** `string` — The ad campaign to create the ad group in, prefixed `adcamp_`.
     
 </dd>
@@ -3865,6 +3881,14 @@ client.AdGroups.Update(
 <dd>
 
 **id:** `string` — The ad group ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adsPlatform:** `*whopsdk.UpdateAdGroupsRequestXAdsPlatform` — The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
     
 </dd>
 </dl>
@@ -4543,6 +4567,14 @@ client.Ads.Create(
 <dl>
 <dd>
 
+**adsPlatform:** `*whopsdk.CreateAdsRequestXAdsPlatform` — The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **adGroup:** `map[string]any` — An inline ad group to create (same shape as POST /ad_groups, including ad_campaign_id). Creates the ad group and the ad together. Provide this OR ad_group_id.
     
 </dd>
@@ -4900,6 +4932,14 @@ client.Ads.Update(
 <dd>
 
 **id:** `string` — The ad ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adsPlatform:** `*whopsdk.UpdateAdsRequestXAdsPlatform` — The platform returned when you last retrieved the campaign, ad group, or ad. A different current platform rejects the request with campaign_changed; retrieve the resource again before editing. Required after a delivery-platform migration when creating ads or ad groups, or changing fields other than title, status, budget, and account scope.
     
 </dd>
 </dl>

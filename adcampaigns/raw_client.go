@@ -224,6 +224,9 @@ func (r *RawClient) Update(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	if request.AdsPlatform != nil {
+		headers.Add("X-Ads-Platform", string(*request.AdsPlatform))
+	}
 	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.AdCampaign
 	raw, err := r.caller.Call(
