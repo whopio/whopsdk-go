@@ -15579,7 +15579,7 @@ client.DmMembers.Update(
 <dl>
 <dd>
 
-Lists your domains. Filter by account, app, status, or hostname.
+Lists your domains. Filter by account, app, status, hostname, or the state of a capability.
 
 Pass `search` to find domains to buy instead: the exact domain first, even when taken, then your name on popular extensions, then suggestions. Pass `tlds` to check only the extensions you choose. Results aren't reserved.
 </dd>
@@ -15629,7 +15629,7 @@ client.Domains.List(
 <dl>
 <dd>
 
-**appID:** `*string` — Only domains assigned to this app, prefixed app_.
+**appID:** `*string` — Only domains whose website serves this app, prefixed app_.
     
 </dd>
 </dl>
@@ -15637,7 +15637,7 @@ client.Domains.List(
 <dl>
 <dd>
 
-**status:** `*whopsdk.ListDomainsRequestStatus` — Only domains with this lifecycle status. Removed and failed domains aren't listed; retrieve them by ID.
+**status:** `*whopsdk.ListDomainsRequestStatus` — Only domains with this status: the most pressing state of their capabilities, or `idle` when they want nothing.
     
 </dd>
 </dl>
@@ -15693,7 +15693,7 @@ client.Domains.List(
 <dl>
 <dd>
 
-**search:** `*string` — A name or domain to find domains to buy, such as `example` or `example.com`; a subdomain or URL searches its registrable domain. Returns search results instead of your domains, without other filters or pagination.
+**search:** `*string` — A name or domain to find domains to buy, such as `example` or `example.com`; a subdomain or URL searches its registrable domain. Returns domains with `availability` instead of your domains, without other filters or pagination.
     
 </dd>
 </dl>
@@ -15710,6 +15710,30 @@ client.Domains.List(
 <dd>
 
 **domain:** `*string` — Only your domain with this hostname, such as `example.com`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verification:** `*string` — Only domains with verification in this state, such as `ready`, or `any` for every domain that has verification.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**registration:** `*string` — Only domains with registration in this state, such as `ready`, or `any` for every domain that has registration.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**website:** `*string` — Only domains with website in this state, such as `ready`, or `any` for every domain that has website.
     
 </dd>
 </dl>
@@ -15733,13 +15757,13 @@ client.Domains.List(
 <dl>
 <dd>
 
-Buys a domain through Whop, or connects one you registered elsewhere.
+Adds a domain to your account with the capabilities you want.
 
-A bought domain starts `awaiting_payment`. Pay its `amount_due` at `purchase_url`, or pass `payment_method_id` to charge a saved card. Whop then registers it, hosts its DNS, issues its certificate and serves the app, and renews it every year while `auto_renew` is on. An unpaid purchase is removed after 7 days.
+Pass `registration` to buy the domain through Whop; it's the default when you pass no capability. Pay its `amount_due` at `purchase_url`, or pass `registration.payment_method_id` to charge a saved card. Whop then registers it, runs its DNS, and renews it every year while `auto_renew` is on.
 
-With `mode: external`, Whop returns the DNS records to publish instead. Verification and certificate setup run automatically, and unverified claims are removed after 48 hours. A claim doesn't reserve the hostname.
+Pass `verification` to connect a domain you registered elsewhere: its `issues` list the TXT and routing records to publish. Pass `website` with an `app_id` to serve that app on the domain.
 
-Adding a domain this account removed or failed before revives it under its original ID, starting over as a new claim or purchase.
+To change a domain you already have, update it instead. Adding a domain this account deleted revives it under its original ID.
 </dd>
 </dl>
 </dd>
@@ -15783,14 +15807,6 @@ client.Domains.Create(
 <dl>
 <dd>
 
-**appID:** `*string` — App ID, prefixed app_, for the domain to serve. The app must belong to the account. Required with `mode: external`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **domain:** `string` — Bare hostname, such as example.com or checkout.example.com. A bought domain must be a root domain. Wildcards, paths, schemes, and ports are not accepted.
     
 </dd>
@@ -15807,7 +15823,7 @@ client.Domains.Create(
 <dl>
 <dd>
 
-**mode:** `*whopsdk.CreateDomainsRequestMode` — `managed` buys the domain through Whop; `external` connects a domain you registered elsewhere.
+**registration:** `*whopsdk.CreateDomainsRequestRegistration` — Buy the domain through Whop, renew it every year, and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase.
     
 </dd>
 </dl>
@@ -15815,7 +15831,7 @@ client.Domains.Create(
 <dl>
 <dd>
 
-**paymentMethodID:** `*string` — Saved card to charge for a bought domain and its renewals, prefixed `payt_`. It must belong to the signed-in user.
+**verification:** `*whopsdk.CreateDomainsRequestVerification` — Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
     
 </dd>
 </dl>
@@ -15823,7 +15839,7 @@ client.Domains.Create(
 <dl>
 <dd>
 
-**replaceExisting:** `*bool` — With `mode: external`, explicitly transfer a domain from its current owner after publishing this new claim's TXT proof. Create the claim after the current owner verified.
+**website:** `*whopsdk.CreateDomainsRequestWebsite` — Serve a Whop website on the domain. Pass `null` to stop serving it; the domain keeps its other capabilities.
     
 </dd>
 </dl>
@@ -15847,9 +15863,9 @@ client.Domains.Create(
 <dl>
 <dd>
 
-Retrieves a domain's status, issues, billing, and DNS records, and checks it again in the background if it isn't active yet.
+Retrieves a domain by ID or hostname. Both return the same domain, shown as fully as you can see it: everything for your own accounts, and only who has it and what it serves for anyone else.
 
-Pass a hostname instead of an ID to look up any domain, with its `registration_quote` and, if registered, its `public_record`.
+A hostname no domain on Whop has comes back with its `availability` instead.
 </dd>
 </dl>
 </dd>
@@ -15885,7 +15901,7 @@ client.Domains.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — Domain ID, prefixed `dom_`. To retrieve, you can pass a hostname such as `example.com` instead; a bare name looks up `.com`.
+**id:** `string` — Domain ID, prefixed `dom_`, or a hostname such as `example.com`; a bare name looks up `.com`.
     
 </dd>
 </dl>
@@ -15909,7 +15925,7 @@ client.Domains.Retrieve(
 <dl>
 <dd>
 
-Stops routing a connected domain to its app and starts cleanup: it returns as `deleting`; retrieve it until it's `removed`. Deleting an unpaid purchase cancels it. A registered domain can't be deleted; turn off `auto_renew` and it's released after it expires. Creating the domain on this account again revives it under the same ID.
+Removes the domain from your account and releases its capabilities in the background. Deleting an unpaid purchase cancels it. A registered domain can't be deleted; turn off `auto_renew` and it's released after it expires. Adding the domain to this account again revives it under the same ID.
 </dd>
 </dl>
 </dd>
@@ -15945,7 +15961,7 @@ client.Domains.Delete(
 <dl>
 <dd>
 
-**id:** `string` — Domain ID, prefixed `dom_`. To retrieve, you can pass a hostname such as `example.com` instead; a bare name looks up `.com`.
+**id:** `string` — Domain ID, prefixed `dom_`, or a hostname such as `example.com`; a bare name looks up `.com`.
     
 </dd>
 </dl>
@@ -15969,7 +15985,7 @@ client.Domains.Delete(
 <dl>
 <dd>
 
-Reassigns a domain to another app in the same account, replaces its metadata, or changes how a bought domain renews. The hostname and owning account cannot be edited.
+Changes a domain's capabilities or metadata. Pass a capability to add it or change its settings, or `null` to release it; capabilities you leave out don't change. Passing a capability that needs action again retries it. Releasing every capability keeps the domain, `idle`; delete it to remove it.
 </dd>
 </dl>
 </dd>
@@ -16005,23 +16021,7 @@ client.Domains.Update(
 <dl>
 <dd>
 
-**id:** `string` — Domain ID, prefixed `dom_`. To retrieve, you can pass a hostname such as `example.com` instead; a bare name looks up `.com`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**appID:** `*string` — App ID, prefixed app_. Must belong to the same account. Pass `null` to detach a bought domain from its app; it keeps renewing.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**autoRenew:** `*bool` — For a bought domain, whether Whop charges its saved card to renew it before it expires.
+**id:** `string` — Domain ID, prefixed `dom_`, or a hostname such as `example.com`; a bare name looks up `.com`.
     
 </dd>
 </dl>
@@ -16037,7 +16037,83 @@ client.Domains.Update(
 <dl>
 <dd>
 
-**paymentMethodID:** `*string` — For a bought domain, the saved card to charge, prefixed `payt_`. It must belong to the signed-in user. Pass `null` to remove it.
+**registration:** `*whopsdk.UpdateDomainsRequestRegistration` — Buy the domain through Whop, renew it every year, and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**verification:** `*whopsdk.UpdateDomainsRequestVerification` — Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**website:** `*whopsdk.UpdateDomainsRequestWebsite` — Serve a Whop website on the domain. Pass `null` to stop serving it; the domain keeps its other capabilities.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Domains.Check(ID) -> *whopsdk.Domain</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Checks the domain's DNS, payment, and provider state again now instead of at its next scheduled check. Returns the domain as saved; retrieve it again to see the result.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CheckDomainsRequest{
+    ID: "id",
+}
+client.Domains.Check(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Domain ID, prefixed `dom_`.
     
 </dd>
 </dl>

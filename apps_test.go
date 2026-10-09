@@ -13617,39 +13617,25 @@ func TestEnumAppDeploymentStatus(t *testing.T) {
 }
 
 func TestEnumAppDomainStatus(t *testing.T) {
-	t.Run("NewFromString_pending_verification", func(t *testing.T) {
+	t.Run("NewFromString_idle", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewAppDomainStatusFromString("pending_verification")
+		val, err := NewAppDomainStatusFromString("idle")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AppDomainStatus("pending_verification"), val, "enum value should match expected wire value")
+		assert.Equal(t, AppDomainStatus("idle"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_awaiting_payment", func(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewAppDomainStatusFromString("awaiting_payment")
+		val, err := NewAppDomainStatusFromString("pending")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AppDomainStatus("awaiting_payment"), val, "enum value should match expected wire value")
+		assert.Equal(t, AppDomainStatus("pending"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_registering", func(t *testing.T) {
+	t.Run("NewFromString_ready", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewAppDomainStatusFromString("registering")
+		val, err := NewAppDomainStatusFromString("ready")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AppDomainStatus("registering"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_provisioning", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAppDomainStatusFromString("provisioning")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AppDomainStatus("provisioning"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_active", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAppDomainStatusFromString("active")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AppDomainStatus("active"), val, "enum value should match expected wire value")
+		assert.Equal(t, AppDomainStatus("ready"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_action_required", func(t *testing.T) {
@@ -13659,32 +13645,11 @@ func TestEnumAppDomainStatus(t *testing.T) {
 		assert.Equal(t, AppDomainStatus("action_required"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_deleting", func(t *testing.T) {
+	t.Run("NewFromString_releasing", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewAppDomainStatusFromString("deleting")
+		val, err := NewAppDomainStatusFromString("releasing")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AppDomainStatus("deleting"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_expired", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAppDomainStatusFromString("expired")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AppDomainStatus("expired"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_failed", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAppDomainStatusFromString("failed")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AppDomainStatus("failed"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_removed", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAppDomainStatusFromString("removed")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AppDomainStatus("removed"), val, "enum value should match expected wire value")
+		assert.Equal(t, AppDomainStatus("releasing"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -13693,7 +13658,7 @@ func TestEnumAppDomainStatus(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewAppDomainStatusFromString("pending_verification")
+		val, err := NewAppDomainStatusFromString("idle")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
