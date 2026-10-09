@@ -27542,35 +27542,34 @@ var (
 	paymentFieldPaymentMethodType          = big.NewInt(1 << 27)
 	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 28)
 	paymentFieldPaymentsFailed             = big.NewInt(1 << 29)
-	paymentFieldPdfURL                     = big.NewInt(1 << 30)
-	paymentFieldPlanID                     = big.NewInt(1 << 31)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 32)
-	paymentFieldProductID                  = big.NewInt(1 << 33)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 34)
-	paymentFieldQuoteID                    = big.NewInt(1 << 35)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 36)
-	paymentFieldRefundable                 = big.NewInt(1 << 37)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 38)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 39)
-	paymentFieldRetryable                  = big.NewInt(1 << 40)
-	paymentFieldRiskScore                  = big.NewInt(1 << 41)
-	paymentFieldRiskSignals                = big.NewInt(1 << 42)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 43)
-	paymentFieldShipmentID                 = big.NewInt(1 << 44)
-	paymentFieldShippingAddress            = big.NewInt(1 << 45)
-	paymentFieldStatus                     = big.NewInt(1 << 46)
-	paymentFieldSubstatus                  = big.NewInt(1 << 47)
-	paymentFieldSubtotal                   = big.NewInt(1 << 48)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 49)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 50)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 51)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 52)
-	paymentFieldTotal                      = big.NewInt(1 << 53)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 54)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 55)
-	paymentFieldUser                       = big.NewInt(1 << 56)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 57)
-	paymentFieldVoidable                   = big.NewInt(1 << 58)
+	paymentFieldPlanID                     = big.NewInt(1 << 30)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 31)
+	paymentFieldProductID                  = big.NewInt(1 << 32)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 33)
+	paymentFieldQuoteID                    = big.NewInt(1 << 34)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 35)
+	paymentFieldRefundable                 = big.NewInt(1 << 36)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 37)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 38)
+	paymentFieldRetryable                  = big.NewInt(1 << 39)
+	paymentFieldRiskScore                  = big.NewInt(1 << 40)
+	paymentFieldRiskSignals                = big.NewInt(1 << 41)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 42)
+	paymentFieldShipmentID                 = big.NewInt(1 << 43)
+	paymentFieldShippingAddress            = big.NewInt(1 << 44)
+	paymentFieldStatus                     = big.NewInt(1 << 45)
+	paymentFieldSubstatus                  = big.NewInt(1 << 46)
+	paymentFieldSubtotal                   = big.NewInt(1 << 47)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 48)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 49)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 50)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 51)
+	paymentFieldTotal                      = big.NewInt(1 << 52)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 53)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 54)
+	paymentFieldUser                       = big.NewInt(1 << 55)
+	paymentFieldVerificationChecks         = big.NewInt(1 << 56)
+	paymentFieldVoidable                   = big.NewInt(1 << 57)
 )
 
 // paymentNullableFields maps the wire names of Payment's nullable fields (required or optional) to their field bits.
@@ -27596,7 +27595,6 @@ var paymentNullableFields = map[string]*big.Int{
 	"payment_instrument":           paymentFieldPaymentInstrument,
 	"payment_method_id":            paymentFieldPaymentMethodID,
 	"payment_method_type":          paymentFieldPaymentMethodType,
-	"pdf_url":                      paymentFieldPdfURL,
 	"plan_id":                      paymentFieldPlanID,
 	"presentment_total":            paymentFieldPresentmentTotal,
 	"product_id":                   paymentFieldProductID,
@@ -27677,8 +27675,6 @@ type Payment struct {
 	PaymentRuleMatches []*PaymentRuleMatch `json:"payment_rule_matches" url:"payment_rule_matches"`
 	// How many charge attempts have failed on this payment.
 	PaymentsFailed float64 `json:"payments_failed" url:"payments_failed"`
-	// A link to download this payment's receipt (invoice) as a PDF. Fetch it with the same credential as this request to receive the file. Null until the payment is paid.
-	PdfURL *string `json:"pdf_url,omitempty" url:"pdf_url,omitempty"`
 	// The variant that was charged, prefixed `plan_`.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The account-facing total in the currency presented to the buyer, before conversion into the settlement currency. Excludes buyer fees.
@@ -27952,13 +27948,6 @@ func (p *Payment) GetPaymentsFailed() float64 {
 		return 0
 	}
 	return p.PaymentsFailed
-}
-
-func (p *Payment) GetPdfURL() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PdfURL
 }
 
 func (p *Payment) GetPlanID() *string {
@@ -28381,13 +28370,6 @@ func (p *Payment) SetPaymentRuleMatches(paymentRuleMatches []*PaymentRuleMatch) 
 func (p *Payment) SetPaymentsFailed(paymentsFailed float64) {
 	p.PaymentsFailed = paymentsFailed
 	p.require(paymentFieldPaymentsFailed)
-}
-
-// SetPdfURL sets the PdfURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetPdfURL(pdfURL *string) {
-	p.PdfURL = pdfURL
-	p.require(paymentFieldPdfURL)
 }
 
 // SetPlanID sets the PlanID field and marks it as non-optional;
