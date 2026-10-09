@@ -179,7 +179,8 @@ var (
 	listDomainsRequestFieldDomain       = big.NewInt(1 << 11)
 	listDomainsRequestFieldVerification = big.NewInt(1 << 12)
 	listDomainsRequestFieldRegistration = big.NewInt(1 << 13)
-	listDomainsRequestFieldWebsite      = big.NewInt(1 << 14)
+	listDomainsRequestFieldPlatform     = big.NewInt(1 << 14)
+	listDomainsRequestFieldWebsite      = big.NewInt(1 << 15)
 )
 
 type ListDomainsRequest struct {
@@ -208,11 +209,13 @@ type ListDomainsRequest struct {
 	// Only your domain with this hostname, such as `example.com`.
 	Domain *string `json:"-" url:"domain,omitempty"`
 	// Only domains with verification in this state, such as `ready`, or `any` for every domain that has verification.
-	Verification *string `json:"-" url:"verification,omitempty"`
+	Verification *ListDomainsRequestVerification `json:"-" url:"verification,omitempty"`
 	// Only domains with registration in this state, such as `ready`, or `any` for every domain that has registration.
-	Registration *string `json:"-" url:"registration,omitempty"`
+	Registration *ListDomainsRequestRegistration `json:"-" url:"registration,omitempty"`
+	// Only domains with platform in this state, such as `ready`, or `any` for every domain that has platform.
+	Platform *ListDomainsRequestPlatform `json:"-" url:"platform,omitempty"`
 	// Only domains with website in this state, such as `ready`, or `any` for every domain that has website.
-	Website *string `json:"-" url:"website,omitempty"`
+	Website *ListDomainsRequestWebsite `json:"-" url:"website,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -313,21 +316,28 @@ func (l *ListDomainsRequest) SetDomain(domain *string) {
 
 // SetVerification sets the Verification field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListDomainsRequest) SetVerification(verification *string) {
+func (l *ListDomainsRequest) SetVerification(verification *ListDomainsRequestVerification) {
 	l.Verification = verification
 	l.require(listDomainsRequestFieldVerification)
 }
 
 // SetRegistration sets the Registration field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListDomainsRequest) SetRegistration(registration *string) {
+func (l *ListDomainsRequest) SetRegistration(registration *ListDomainsRequestRegistration) {
 	l.Registration = registration
 	l.require(listDomainsRequestFieldRegistration)
 }
 
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDomainsRequest) SetPlatform(platform *ListDomainsRequestPlatform) {
+	l.Platform = platform
+	l.require(listDomainsRequestFieldPlatform)
+}
+
 // SetWebsite sets the Website field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListDomainsRequest) SetWebsite(website *string) {
+func (l *ListDomainsRequest) SetWebsite(website *ListDomainsRequestWebsite) {
 	l.Website = website
 	l.require(listDomainsRequestFieldWebsite)
 }
@@ -369,12 +379,13 @@ var (
 	domainFieldIssues       = big.NewInt(1 << 5)
 	domainFieldMetadata     = big.NewInt(1 << 6)
 	domainFieldOwnedBy      = big.NewInt(1 << 7)
-	domainFieldPublicRecord = big.NewInt(1 << 8)
-	domainFieldRegistration = big.NewInt(1 << 9)
-	domainFieldStatus       = big.NewInt(1 << 10)
-	domainFieldUpdatedAt    = big.NewInt(1 << 11)
-	domainFieldVerification = big.NewInt(1 << 12)
-	domainFieldWebsite      = big.NewInt(1 << 13)
+	domainFieldPlatform     = big.NewInt(1 << 8)
+	domainFieldPublicRecord = big.NewInt(1 << 9)
+	domainFieldRegistration = big.NewInt(1 << 10)
+	domainFieldStatus       = big.NewInt(1 << 11)
+	domainFieldUpdatedAt    = big.NewInt(1 << 12)
+	domainFieldVerification = big.NewInt(1 << 13)
+	domainFieldWebsite      = big.NewInt(1 << 14)
 )
 
 // domainNullableFields maps the wire names of Domain's nullable fields (required or optional) to their field bits.
@@ -384,6 +395,7 @@ var domainNullableFields = map[string]*big.Int{
 	"created_at":    domainFieldCreatedAt,
 	"id":            domainFieldID,
 	"owned_by":      domainFieldOwnedBy,
+	"platform":      domainFieldPlatform,
 	"public_record": domainFieldPublicRecord,
 	"registration":  domainFieldRegistration,
 	"status":        domainFieldStatus,
@@ -408,6 +420,8 @@ type Domain struct {
 	Metadata map[string]string `json:"metadata" url:"metadata"`
 	// The other account that has proven it owns this hostname. `null` when no other account does.
 	OwnedBy *DomainOwner `json:"owned_by,omitempty" url:"owned_by,omitempty"`
+	// An address on a zone Whop runs, such as example.whop.site, that follows its app's route. `null` for other domains or when not visible to you.
+	Platform *DomainPlatform `json:"platform,omitempty" url:"platform,omitempty"`
 	// The domain's public registration record (RDAP), read when you retrieve it by hostname. `null` for domains on Whop, available domains, or a record that couldn't be read.
 	PublicRecord *DomainPublicRecord `json:"public_record,omitempty" url:"public_record,omitempty"`
 	// Buying the domain through Whop, renewing it, and running its DNS. `null` when not wanted or not visible to you.
@@ -482,6 +496,13 @@ func (d *Domain) GetOwnedBy() *DomainOwner {
 		return nil
 	}
 	return d.OwnedBy
+}
+
+func (d *Domain) GetPlatform() *DomainPlatform {
+	if d == nil {
+		return nil
+	}
+	return d.Platform
 }
 
 func (d *Domain) GetPublicRecord() *DomainPublicRecord {
@@ -596,6 +617,13 @@ func (d *Domain) SetMetadata(metadata map[string]string) {
 func (d *Domain) SetOwnedBy(ownedBy *DomainOwner) {
 	d.OwnedBy = ownedBy
 	d.require(domainFieldOwnedBy)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Domain) SetPlatform(platform *DomainPlatform) {
+	d.Platform = platform
+	d.require(domainFieldPlatform)
 }
 
 // SetPublicRecord sets the PublicRecord field and marks it as non-optional;
@@ -1168,6 +1196,7 @@ type DomainIssueCapability string
 const (
 	DomainIssueCapabilityVerification DomainIssueCapability = "verification"
 	DomainIssueCapabilityRegistration DomainIssueCapability = "registration"
+	DomainIssueCapabilityPlatform     DomainIssueCapability = "platform"
 	DomainIssueCapabilityWebsite      DomainIssueCapability = "website"
 )
 
@@ -1177,6 +1206,8 @@ func NewDomainIssueCapabilityFromString(s string) (DomainIssueCapability, error)
 		return DomainIssueCapabilityVerification, nil
 	case "registration":
 		return DomainIssueCapabilityRegistration, nil
+	case "platform":
+		return DomainIssueCapabilityPlatform, nil
 	case "website":
 		return DomainIssueCapabilityWebsite, nil
 	}
@@ -1271,11 +1302,12 @@ var (
 	domainListItemFieldIssues       = big.NewInt(1 << 5)
 	domainListItemFieldMetadata     = big.NewInt(1 << 6)
 	domainListItemFieldOwnedBy      = big.NewInt(1 << 7)
-	domainListItemFieldRegistration = big.NewInt(1 << 8)
-	domainListItemFieldStatus       = big.NewInt(1 << 9)
-	domainListItemFieldUpdatedAt    = big.NewInt(1 << 10)
-	domainListItemFieldVerification = big.NewInt(1 << 11)
-	domainListItemFieldWebsite      = big.NewInt(1 << 12)
+	domainListItemFieldPlatform     = big.NewInt(1 << 8)
+	domainListItemFieldRegistration = big.NewInt(1 << 9)
+	domainListItemFieldStatus       = big.NewInt(1 << 10)
+	domainListItemFieldUpdatedAt    = big.NewInt(1 << 11)
+	domainListItemFieldVerification = big.NewInt(1 << 12)
+	domainListItemFieldWebsite      = big.NewInt(1 << 13)
 )
 
 // domainListItemNullableFields maps the wire names of DomainListItem's nullable fields (required or optional) to their field bits.
@@ -1285,6 +1317,7 @@ var domainListItemNullableFields = map[string]*big.Int{
 	"created_at":   domainListItemFieldCreatedAt,
 	"id":           domainListItemFieldID,
 	"owned_by":     domainListItemFieldOwnedBy,
+	"platform":     domainListItemFieldPlatform,
 	"registration": domainListItemFieldRegistration,
 	"status":       domainListItemFieldStatus,
 	"updated_at":   domainListItemFieldUpdatedAt,
@@ -1308,6 +1341,8 @@ type DomainListItem struct {
 	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// The other account that has proven it owns this hostname. `null` when no other account does.
 	OwnedBy *DomainOwner `json:"owned_by,omitempty" url:"owned_by,omitempty"`
+	// An address on a zone Whop runs, such as example.whop.site, that follows its app's route. `null` for other domains or when not visible to you.
+	Platform *DomainPlatform `json:"platform,omitempty" url:"platform,omitempty"`
 	// Buying the domain through Whop, renewing it, and running its DNS. `null` when not wanted or not visible to you.
 	Registration *DomainRegistration `json:"registration,omitempty" url:"registration,omitempty"`
 	// The most pressing state of the domain's capabilities: `releasing`, then `action_required`, then `pending`, then `ready`. `idle` when it wants nothing.
@@ -1380,6 +1415,13 @@ func (d *DomainListItem) GetOwnedBy() *DomainOwner {
 		return nil
 	}
 	return d.OwnedBy
+}
+
+func (d *DomainListItem) GetPlatform() *DomainPlatform {
+	if d == nil {
+		return nil
+	}
+	return d.Platform
 }
 
 func (d *DomainListItem) GetRegistration() *DomainRegistration {
@@ -1487,6 +1529,13 @@ func (d *DomainListItem) SetMetadata(metadata map[string]any) {
 func (d *DomainListItem) SetOwnedBy(ownedBy *DomainOwner) {
 	d.OwnedBy = ownedBy
 	d.require(domainListItemFieldOwnedBy)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetPlatform(platform *DomainPlatform) {
+	d.Platform = platform
+	d.require(domainListItemFieldPlatform)
 }
 
 // SetRegistration sets the Registration field and marks it as non-optional;
@@ -1753,6 +1802,122 @@ func (d *DomainOwner) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	domainPlatformFieldState = big.NewInt(1 << 0)
+)
+
+type DomainPlatform struct {
+	// Whether Whop holds this address for the account. A platform address is ready as soon as its route is claimed.
+	State DomainPlatformState `json:"state" url:"state"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainPlatform) GetState() DomainPlatformState {
+	if d == nil {
+		return ""
+	}
+	return d.State
+}
+
+func (d *DomainPlatform) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainPlatform) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainPlatform) SetState(state DomainPlatformState) {
+	d.State = state
+	d.require(domainPlatformFieldState)
+}
+
+func (d *DomainPlatform) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainPlatform
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainPlatform(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainPlatform) MarshalJSON() ([]byte, error) {
+	type embed DomainPlatform
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainPlatform) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// Whether Whop holds this address for the account. A platform address is ready as soon as its route is claimed.
+type DomainPlatformState string
+
+const (
+	DomainPlatformStatePending        DomainPlatformState = "pending"
+	DomainPlatformStateReady          DomainPlatformState = "ready"
+	DomainPlatformStateActionRequired DomainPlatformState = "action_required"
+	DomainPlatformStateReleasing      DomainPlatformState = "releasing"
+)
+
+func NewDomainPlatformStateFromString(s string) (DomainPlatformState, error) {
+	switch s {
+	case "pending":
+		return DomainPlatformStatePending, nil
+	case "ready":
+		return DomainPlatformStateReady, nil
+	case "action_required":
+		return DomainPlatformStateActionRequired, nil
+	case "releasing":
+		return DomainPlatformStateReleasing, nil
+	}
+	var t DomainPlatformState
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DomainPlatformState) Ptr() *DomainPlatformState {
+	return &d
 }
 
 var (
@@ -3215,6 +3380,68 @@ func (l ListDomainsRequestOrder) Ptr() *ListDomainsRequestOrder {
 	return &l
 }
 
+type ListDomainsRequestPlatform string
+
+const (
+	ListDomainsRequestPlatformPending        ListDomainsRequestPlatform = "pending"
+	ListDomainsRequestPlatformReady          ListDomainsRequestPlatform = "ready"
+	ListDomainsRequestPlatformActionRequired ListDomainsRequestPlatform = "action_required"
+	ListDomainsRequestPlatformReleasing      ListDomainsRequestPlatform = "releasing"
+	ListDomainsRequestPlatformAny            ListDomainsRequestPlatform = "any"
+)
+
+func NewListDomainsRequestPlatformFromString(s string) (ListDomainsRequestPlatform, error) {
+	switch s {
+	case "pending":
+		return ListDomainsRequestPlatformPending, nil
+	case "ready":
+		return ListDomainsRequestPlatformReady, nil
+	case "action_required":
+		return ListDomainsRequestPlatformActionRequired, nil
+	case "releasing":
+		return ListDomainsRequestPlatformReleasing, nil
+	case "any":
+		return ListDomainsRequestPlatformAny, nil
+	}
+	var t ListDomainsRequestPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDomainsRequestPlatform) Ptr() *ListDomainsRequestPlatform {
+	return &l
+}
+
+type ListDomainsRequestRegistration string
+
+const (
+	ListDomainsRequestRegistrationPending        ListDomainsRequestRegistration = "pending"
+	ListDomainsRequestRegistrationReady          ListDomainsRequestRegistration = "ready"
+	ListDomainsRequestRegistrationActionRequired ListDomainsRequestRegistration = "action_required"
+	ListDomainsRequestRegistrationReleasing      ListDomainsRequestRegistration = "releasing"
+	ListDomainsRequestRegistrationAny            ListDomainsRequestRegistration = "any"
+)
+
+func NewListDomainsRequestRegistrationFromString(s string) (ListDomainsRequestRegistration, error) {
+	switch s {
+	case "pending":
+		return ListDomainsRequestRegistrationPending, nil
+	case "ready":
+		return ListDomainsRequestRegistrationReady, nil
+	case "action_required":
+		return ListDomainsRequestRegistrationActionRequired, nil
+	case "releasing":
+		return ListDomainsRequestRegistrationReleasing, nil
+	case "any":
+		return ListDomainsRequestRegistrationAny, nil
+	}
+	var t ListDomainsRequestRegistration
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDomainsRequestRegistration) Ptr() *ListDomainsRequestRegistration {
+	return &l
+}
+
 type ListDomainsRequestStatus string
 
 const (
@@ -3243,6 +3470,68 @@ func NewListDomainsRequestStatusFromString(s string) (ListDomainsRequestStatus, 
 }
 
 func (l ListDomainsRequestStatus) Ptr() *ListDomainsRequestStatus {
+	return &l
+}
+
+type ListDomainsRequestVerification string
+
+const (
+	ListDomainsRequestVerificationPending        ListDomainsRequestVerification = "pending"
+	ListDomainsRequestVerificationReady          ListDomainsRequestVerification = "ready"
+	ListDomainsRequestVerificationActionRequired ListDomainsRequestVerification = "action_required"
+	ListDomainsRequestVerificationReleasing      ListDomainsRequestVerification = "releasing"
+	ListDomainsRequestVerificationAny            ListDomainsRequestVerification = "any"
+)
+
+func NewListDomainsRequestVerificationFromString(s string) (ListDomainsRequestVerification, error) {
+	switch s {
+	case "pending":
+		return ListDomainsRequestVerificationPending, nil
+	case "ready":
+		return ListDomainsRequestVerificationReady, nil
+	case "action_required":
+		return ListDomainsRequestVerificationActionRequired, nil
+	case "releasing":
+		return ListDomainsRequestVerificationReleasing, nil
+	case "any":
+		return ListDomainsRequestVerificationAny, nil
+	}
+	var t ListDomainsRequestVerification
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDomainsRequestVerification) Ptr() *ListDomainsRequestVerification {
+	return &l
+}
+
+type ListDomainsRequestWebsite string
+
+const (
+	ListDomainsRequestWebsitePending        ListDomainsRequestWebsite = "pending"
+	ListDomainsRequestWebsiteReady          ListDomainsRequestWebsite = "ready"
+	ListDomainsRequestWebsiteActionRequired ListDomainsRequestWebsite = "action_required"
+	ListDomainsRequestWebsiteReleasing      ListDomainsRequestWebsite = "releasing"
+	ListDomainsRequestWebsiteAny            ListDomainsRequestWebsite = "any"
+)
+
+func NewListDomainsRequestWebsiteFromString(s string) (ListDomainsRequestWebsite, error) {
+	switch s {
+	case "pending":
+		return ListDomainsRequestWebsitePending, nil
+	case "ready":
+		return ListDomainsRequestWebsiteReady, nil
+	case "action_required":
+		return ListDomainsRequestWebsiteActionRequired, nil
+	case "releasing":
+		return ListDomainsRequestWebsiteReleasing, nil
+	case "any":
+		return ListDomainsRequestWebsiteAny, nil
+	}
+	var t ListDomainsRequestWebsite
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDomainsRequestWebsite) Ptr() *ListDomainsRequestWebsite {
 	return &l
 }
 

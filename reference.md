@@ -15717,7 +15717,7 @@ client.Domains.List(
 <dl>
 <dd>
 
-**verification:** `*string` — Only domains with verification in this state, such as `ready`, or `any` for every domain that has verification.
+**verification:** `*whopsdk.ListDomainsRequestVerification` — Only domains with verification in this state, such as `ready`, or `any` for every domain that has verification.
     
 </dd>
 </dl>
@@ -15725,7 +15725,7 @@ client.Domains.List(
 <dl>
 <dd>
 
-**registration:** `*string` — Only domains with registration in this state, such as `ready`, or `any` for every domain that has registration.
+**registration:** `*whopsdk.ListDomainsRequestRegistration` — Only domains with registration in this state, such as `ready`, or `any` for every domain that has registration.
     
 </dd>
 </dl>
@@ -15733,7 +15733,15 @@ client.Domains.List(
 <dl>
 <dd>
 
-**website:** `*string` — Only domains with website in this state, such as `ready`, or `any` for every domain that has website.
+**platform:** `*whopsdk.ListDomainsRequestPlatform` — Only domains with platform in this state, such as `ready`, or `any` for every domain that has platform.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**website:** `*whopsdk.ListDomainsRequestWebsite` — Only domains with website in this state, such as `ready`, or `any` for every domain that has website.
     
 </dd>
 </dl>
