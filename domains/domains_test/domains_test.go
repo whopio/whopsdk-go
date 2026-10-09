@@ -210,3 +210,29 @@ func TestDomainsUpdateWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestDomainsUpdateWithWireMock", "PATCH", "/domains/id", nil, 1)
 }
+
+func TestDomainsCheckWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.CheckDomainsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Domains.Check(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestDomainsCheckWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestDomainsCheckWithWireMock", "POST", "/domains/id/check", nil, 1)
+}

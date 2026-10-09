@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists your domains. Filter by account, app, status, or hostname.
+// Lists your domains. Filter by account, app, status, hostname, or the state of a capability.
 //
 // Pass `search` to find domains to buy instead: the exact domain first, even when taken, then your name on popular extensions, then suggestions. Pass `tlds` to check only the extensions you choose. Results aren't reserved.
 //
@@ -127,13 +127,13 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Buys a domain through Whop, or connects one you registered elsewhere.
+// Adds a domain to your account with the capabilities you want.
 //
-// A bought domain starts `awaiting_payment`. Pay its `amount_due` at `purchase_url`, or pass `payment_method_id` to charge a saved card. Whop then registers it, hosts its DNS, issues its certificate and serves the app, and renews it every year while `auto_renew` is on. An unpaid purchase is removed after 7 days.
+// Pass `registration` to buy the domain through Whop; it's the default when you pass no capability. Pay its `amount_due` at `purchase_url`, or pass `registration.payment_method_id` to charge a saved card. Whop then registers it, runs its DNS, and renews it every year while `auto_renew` is on.
 //
-// With `mode: external`, Whop returns the DNS records to publish instead. Verification and certificate setup run automatically, and unverified claims are removed after 48 hours. A claim doesn't reserve the hostname.
+// Pass `verification` to connect a domain you registered elsewhere: its `issues` list the TXT and routing records to publish. Pass `website` with an `app_id` to serve that app on the domain.
 //
-// Adding a domain this account removed or failed before revives it under its original ID, starting over as a new claim or purchase.
+// To change a domain you already have, update it instead. Adding a domain this account deleted revives it under its original ID.
 //
 // Example:
 //
@@ -160,9 +160,9 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves a domain's status, issues, billing, and DNS records, and checks it again in the background if it isn't active yet.
+// Retrieves a domain by ID or hostname. Both return the same domain, shown as fully as you can see it: everything for your own accounts, and only who has it and what it serves for anyone else.
 //
-// Pass a hostname instead of an ID to look up any domain, with its `registration_quote` and, if registered, its `public_record`.
+// A hostname no domain on Whop has comes back with its `availability` instead.
 //
 // Example:
 //
@@ -189,7 +189,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Stops routing a connected domain to its app and starts cleanup: it returns as `deleting`; retrieve it until it's `removed`. Deleting an unpaid purchase cancels it. A registered domain can't be deleted; turn off `auto_renew` and it's released after it expires. Creating the domain on this account again revives it under the same ID.
+// Removes the domain from your account and releases its capabilities in the background. Deleting an unpaid purchase cancels it. A registered domain can't be deleted; turn off `auto_renew` and it's released after it expires. Adding the domain to this account again revives it under the same ID.
 //
 // Example:
 //
@@ -216,7 +216,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Reassigns a domain to another app in the same account, replaces its metadata, or changes how a bought domain renews. The hostname and owning account cannot be edited.
+// Changes a domain's capabilities or metadata. Pass a capability to add it or change its settings, or `null` to release it; capabilities you leave out don't change. Passing a capability that needs action again retries it. Releasing every capability keeps the domain, `idle`; delete it to remove it.
 //
 // Example:
 //
@@ -233,6 +233,33 @@ func (c *Client) Update(
 	opts ...option.RequestOption,
 ) (*whopsdk.Domain, error) {
 	response, err := c.WithRawResponse.Update(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Checks the domain's DNS, payment, and provider state again now instead of at its next scheduled check. Returns the domain as saved; retrieve it again to see the result.
+//
+// Example:
+//
+//	request := &whopsdk.CheckDomainsRequest{
+//	    ID: "id",
+//	}
+//	client.Domains.Check(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Check(
+	ctx context.Context,
+	request *whopsdk.CheckDomainsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Domain, error) {
+	response, err := c.WithRawResponse.Check(
 		ctx,
 		request,
 		opts...,
