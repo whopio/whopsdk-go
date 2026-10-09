@@ -27698,6 +27698,66 @@ client.Payments.ListFees(
 </dl>
 </details>
 
+<details><summary><code>client.Payments.GeneratePdf(ID) -> *whopsdk.PaymentPdf</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates the payment's receipt (invoice) as a PDF and returns a short-lived link to download it. Each call generates a new file and link, so this endpoint does not replay `Idempotency-Key` responses.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.GeneratePdfPaymentsRequest{
+    ID: "id",
+}
+client.Payments.GeneratePdf(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The payment whose receipt to generate, prefixed `pay_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Payments.Refund(ID, request) -> *whopsdk.Payment</code></summary>
 <dl>
 <dd>

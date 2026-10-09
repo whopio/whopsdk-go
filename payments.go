@@ -240,6 +240,34 @@ func (c *CreatePaymentsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	generatePdfPaymentsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type GeneratePdfPaymentsRequest struct {
+	// The payment whose receipt to generate, prefixed `pay_`.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GeneratePdfPaymentsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if g.explicitFields != nil {
+		next.Set(g.explicitFields)
+	}
+	next.Or(next, field)
+	g.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GeneratePdfPaymentsRequest) SetID(id string) {
+	g.ID = id
+	g.require(generatePdfPaymentsRequestFieldID)
+}
+
+var (
 	listPaymentsRequestFieldMode          = big.NewInt(1 << 0)
 	listPaymentsRequestFieldAccountID     = big.NewInt(1 << 1)
 	listPaymentsRequestFieldStatus        = big.NewInt(1 << 2)
@@ -1407,6 +1435,110 @@ func NewPaymentLastPaymentErrorDeclineCodeFromString(s string) (PaymentLastPayme
 
 func (p PaymentLastPaymentErrorDeclineCode) Ptr() *PaymentLastPaymentErrorDeclineCode {
 	return &p
+}
+
+var (
+	paymentPdfFieldExpiresAt = big.NewInt(1 << 0)
+	paymentPdfFieldURL       = big.NewInt(1 << 1)
+)
+
+type PaymentPdf struct {
+	// When the link stops working, as an ISO 8601 timestamp. Generate a new PDF for a fresh link.
+	ExpiresAt string `json:"expires_at" url:"expires_at"`
+	// A short-lived link to download the payment's receipt as a PDF. Anyone holding the link can download the file until it expires.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentPdf) GetExpiresAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.ExpiresAt
+}
+
+func (p *PaymentPdf) GetURL() string {
+	if p == nil {
+		return ""
+	}
+	return p.URL
+}
+
+func (p *PaymentPdf) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentPdf) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentPdf) SetExpiresAt(expiresAt string) {
+	p.ExpiresAt = expiresAt
+	p.require(paymentPdfFieldExpiresAt)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentPdf) SetURL(url string) {
+	p.URL = url
+	p.require(paymentPdfFieldURL)
+}
+
+func (p *PaymentPdf) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentPdf
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentPdf(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentPdf) MarshalJSON() ([]byte, error) {
+	type embed PaymentPdf
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentPdf) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }
 
 var (

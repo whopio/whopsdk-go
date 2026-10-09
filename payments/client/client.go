@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-08"
+		apiVersionDateDefault := "2026-10-09"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -247,6 +247,33 @@ func (c *Client) ListFees(
 	opts ...option.RequestOption,
 ) (*whopsdk.ListFeesPaymentsResponse, error) {
 	response, err := c.WithRawResponse.ListFees(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Generates the payment's receipt (invoice) as a PDF and returns a short-lived link to download it. Each call generates a new file and link, so this endpoint does not replay `Idempotency-Key` responses.
+//
+// Example:
+//
+//	request := &whopsdk.GeneratePdfPaymentsRequest{
+//	    ID: "id",
+//	}
+//	client.Payments.GeneratePdf(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GeneratePdf(
+	ctx context.Context,
+	request *whopsdk.GeneratePdfPaymentsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.PaymentPdf, error) {
+	response, err := c.WithRawResponse.GeneratePdf(
 		ctx,
 		request,
 		opts...,
