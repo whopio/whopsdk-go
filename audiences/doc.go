@@ -2,5 +2,5 @@
 
 // An Audience is a reusable group of people to include or exclude when targeting ads. Build custom audiences from customer lists, Whop People data, or social engagement, and create lookalikes to reach people similar to an existing audience.
 //
-// Use the Audiences API to create, list, and delete audiences and monitor asynchronous processing. Meta engagement sources include videos, lead forms, Instagram profiles, and Facebook pages. Engagement membership updates on Meta; Whop People audiences can refresh automatically or keep a snapshot.
+// Use the Audiences API to create audiences, add people to an uploaded customer list, rename or refilter an audience, and monitor asynchronous processing. Engagement sources on Meta include videos, lead forms, Instagram profiles, and Facebook pages, and their membership updates on Meta; Whop People audiences can refresh automatically or keep a snapshot.
 package audiences

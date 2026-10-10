@@ -44,7 +44,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Deprecated. Lists every metric, which no longer says which of them a projection accepts. List the ones you can chart with `GET /stats/time_series`. Aggregates that are not bucketed over time are reports, listed at `GET /stats/reports`.
+// Deprecated. Lists every metric without saying which ones you can chart. List chartable metrics with `GET /stats/time_series`, and aggregates that are not bucketed over time with `GET /stats/reports`.
 //
 // Example:
 //

@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of courses, filtered by either an experience or a company.
+// Returns a paginated list of the courses in an experience or an account. `hidden` courses are included only for callers with `courses:update`.
 //
 // Required permissions:
 //   - `courses:read`
@@ -166,7 +166,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing course.
+// Retrieves the details of an existing course. A `hidden` course is returned only to callers with `courses:update`.
 //
 // Required permissions:
 //   - `courses:read`

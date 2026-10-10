@@ -548,7 +548,7 @@ var (
 )
 
 type RetrieveAccountsRequest struct {
-	// Account ID, prefixed `biz_`, its public route, or `me` for the account associated with the current API key.
+	// Account ID, prefixed `biz_`, its public route, or `me` for the account associated with the current Account API key. User tokens have no single account, so they cannot use `me`.
 	ID string `json:"-" url:"-"`
 	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise.
 	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
@@ -585,7 +585,7 @@ var (
 )
 
 type RetryAdsPaymentAccountsRequest struct {
-	// The account ID.
+	// Account ID, prefixed `biz_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -10232,7 +10232,7 @@ var (
 )
 
 type UpdateAccountsRequest struct {
-	// Account ID, prefixed `biz_`.
+	// Account ID, prefixed `biz_`. The reserved id `me` resolves to the requesting account, which an Account API key cannot edit.
 	ID string `json:"-" url:"-"`
 	// Whether prospective affiliates must submit an application before promoting this account.
 	AffiliateApplicationRequired *bool `json:"affiliate_application_required,omitempty" url:"-"`

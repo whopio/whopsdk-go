@@ -23,7 +23,7 @@ var (
 )
 
 type ListEconomicIntelligenceRequest struct {
-	// Account ID, prefixed `biz_`. Defaults to the API key's own account; omit for personal onboarding.
+	// Account ID, prefixed `biz_`. Defaults to the API key's own account; omit for personal onboarding, where signed-out visitors receive a business-setup template and eligible users receive their saved setup recommendation.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Filter recommendations by their current status.
 	Status *ListEconomicIntelligenceRequestStatus `json:"-" url:"status,omitempty"`

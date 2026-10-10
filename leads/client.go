@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of leads for a company, with optional filtering by product and creation date.
+// Lists an account's leads, newest first.
 //
 // Required permissions:
 //   - `lead:basic:read`
@@ -143,7 +143,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Record a new lead for a company, capturing a potential customer's interest in a specific product.
+// Records a lead: a potential customer's interest in an account or one of its products.
 //
 // Required permissions:
 //   - `lead:manage`
@@ -209,7 +209,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Update the metadata or referrer information on an existing lead record.
+// Updates a lead's `metadata` or `referrer`.
 //
 // Required permissions:
 //   - `lead:manage`

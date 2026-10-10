@@ -42,7 +42,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of affiliates for the actor in context, with optional filtering by status, search, and sorting.
+// Lists the affiliates of an account.
 //
 // Required permissions:
 //   - `affiliate:basic:read`
@@ -133,7 +133,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates or finds an affiliate for a company and user.
+// Creates an affiliate for a user on an account. If the user is already an affiliate of the account, returns that affiliate, reactivating it if it was archived.
 //
 // Required permissions:
 //   - `affiliate:create`
@@ -194,7 +194,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Archives an existing Affiliate
+// Archives an affiliate. The affiliate that handles Whop marketplace referrals cannot be archived.
 //
 // Required permissions:
 //   - `affiliate:update`
@@ -224,7 +224,7 @@ func (c *Client) Archive(
 	return response.Body, nil
 }
 
-// Unarchives an existing Affiliate
+// Unarchives an archived affiliate.
 //
 // Required permissions:
 //   - `affiliate:update`

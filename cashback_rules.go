@@ -31,7 +31,7 @@ type CreateCashbackRulesRequest struct {
 	MerchantName *string `json:"merchant_name,omitempty" url:"-"`
 	// Cashback rate in basis points: 500 means 5%.
 	RateBps int `json:"rate_bps" url:"-"`
-	// Account ID prefixed biz_ belonging to a direct connected account. Required when both merchant filters are omitted or null. Otherwise, omit or set null to designate all direct connected accounts.
+	// Account ID, prefixed `biz_`, of one direct connected account to limit the rule to. Required when both merchant filters are omitted or `null`, in which case the rule matches all eligible transactions for that account. Otherwise, omit or set `null` to designate all direct connected accounts.
 	ScopedAccountID *string `json:"scoped_account_id,omitempty" url:"-"`
 	// Inclusive start, strictly later than the current time, as an ISO 8601 timestamp.
 	StartsAt time.Time `json:"starts_at" url:"-"`
@@ -297,7 +297,7 @@ type CashbackPayout struct {
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// Cashback rule filter from the request, prefixed `cicbr_`. Omitted when not supplied.
 	CashbackRuleID *string `json:"cashback_rule_id,omitempty" url:"cashback_rule_id,omitempty"`
-	// Request status. `processing` means background processing was queued, not that payment completed. `failed` means the queue rejected the request. Subsequent transaction failures retry automatically.
+	// Request status. `processing` means background processing was queued, not that payment completed. `failed`, returned with HTTP `200`, means the queue rejected the request. Subsequent transaction failures retry automatically.
 	Status CashbackPayoutStatus `json:"status" url:"status"`
 	// Card transaction filter from the request, prefixed `citx_`. Omitted when not supplied.
 	TransactionID *string `json:"transaction_id,omitempty" url:"transaction_id,omitempty"`
@@ -430,7 +430,7 @@ func (c *CashbackPayout) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Request status. `processing` means background processing was queued, not that payment completed. `failed` means the queue rejected the request. Subsequent transaction failures retry automatically.
+// Request status. `processing` means background processing was queued, not that payment completed. `failed`, returned with HTTP `200`, means the queue rejected the request. Subsequent transaction failures retry automatically.
 type CashbackPayoutStatus string
 
 const (

@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of DM channels for the currently authenticated user, sorted by most recently active.
+// Lists the authenticated user's DM channels, most recently active first.
 //
 // Required permissions:
 //   - `dms:read`
@@ -132,7 +132,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Create a new DM channel between two or more users, optionally scoped to a specific company. Returns the existing channel if one already exists.
+// Creates a DM channel between two or more users, optionally scoped to an account. Returns the existing channel if one already exists.
 //
 // Required permissions:
 //   - `dms:channel:manage`
@@ -195,7 +195,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Permanently delete a DM channel and all of its messages. Only an admin of the channel can perform this action.
+// Permanently deletes a DM channel and all of its messages. Only a channel admin can delete it.
 //
 // Required permissions (one of):
 //   - `dms:channel:manage`
@@ -226,7 +226,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Update the settings of an existing DM channel, such as its display name. Only an admin of the channel can perform this action.
+// Updates a DM channel's settings, such as its display name. Only a channel admin can update it.
 //
 // Required permissions (one of):
 //   - `dms:channel:manage`

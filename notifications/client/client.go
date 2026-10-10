@@ -42,7 +42,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists the authenticated user's notifications, newest first. Requires a user credential — an account API key has no notification feed. Without filters the feed spans every experience the user belongs to plus the teams they are a member of. The `after` cursor is a notification `id` from a previous response; subsequent pages contain older notifications.
+// Lists the authenticated user's notifications, newest first. Without filters the feed spans every experience the user belongs to plus the teams they are a member of. Requires a user credential — an account API key has no notification feed.
 //
 // Example:
 //
@@ -181,7 +181,7 @@ func (c *Client) Badges(
 	return response.Body, nil
 }
 
-// Marks the authenticated user's notifications as read: one experience's (`experience_id`) or everything (`all: true`) — exactly one of the two. Requires a user credential. Responds with the refreshed badge rows for the affected scope.
+// Marks the authenticated user's notifications as read, for one experience or all of them, and returns the refreshed badge rows for that scope. Requires a user credential.
 //
 // Example:
 //
@@ -206,7 +206,7 @@ func (c *Client) MarkRead(
 	return response.Body, nil
 }
 
-// Retrieves a single notification by id — either an `id` returned by List Notifications, or the ephemeral id delivered with a push/websocket event. Requires a user credential.
+// Retrieves a single notification, from the feed or from a push or websocket event. Requires a user credential.
 //
 // Example:
 //

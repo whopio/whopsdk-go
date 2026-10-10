@@ -2,5 +2,5 @@
 
 // An External Account represents a profile on another platform connected to a Whop account or user, such as a Facebook page, Instagram account, or TikTok account. Connecting an external account lets Whop run [ads](/api-reference/beta/ads/ad) under that profile's identity and promote its existing posts. External account IDs are prefixed `sacc_`.
 //
-// Use the External Accounts API to list connected accounts, create a Whop-managed Facebook page, start an OAuth connection, disconnect an external account, and list a connected profile's posts or a Facebook page's lead forms.
+// Use the External Accounts API to list connected accounts, create a Whop-managed Facebook page or TikTok account, start an OAuth connection, disconnect an external account, list a connected profile's posts or a Facebook page's lead forms, and manage the creators an Instagram account runs partnership ads with.
 package externalaccounts

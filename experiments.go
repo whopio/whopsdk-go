@@ -305,7 +305,7 @@ var (
 )
 
 type ExposuresExperimentsRequest struct {
-	// Bucketing subject: the user, account, or anonymous ID the experiment's `bucket_by` assigns on. Ownership is the top-level account_id.
+	// Bucketing subject: the user, account, or anonymous ID the experiment's `bucket_by` assigns on. Only the identity matching `bucket_by` is used; when it is missing, evaluating a single flag fails and a batch omits that experiment. Subjects outside every treatment range receive `control`. `subject[account_id]` also enables account-level targeting rules. Experiment ownership comes from the top-level `account_id`.
 	Subject *ExposuresExperimentsRequestSubject `json:"-" url:"subject,omitempty"`
 	// Restricts batch evaluation to this related resource; omitted batches contain only unbound experiments.
 	RelatedResource *ExperimentResourceReference `json:"-" url:"related_resource,omitempty"`
@@ -315,7 +315,7 @@ type ExposuresExperimentsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// JSON-encoded scalar values that property targeting conditions match against. Numeric and boolean strings are coerced. Nested query keys such as properties[variant]=pro remain accepted for existing callers.
 	Properties *string `json:"-" url:"properties,omitempty"`
-	// Set false to evaluate without recording an exposure. Omitted records it.
+	// Set `false` to read an assignment without recording an exposure, such as when a client caches assignments up front and records the exposure when the arm is rendered. Omitted records the exposure.
 	LogExposure *bool `json:"-" url:"log_exposure,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

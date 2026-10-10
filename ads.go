@@ -291,7 +291,7 @@ type DuplicateAdsRequest struct {
 	Count *int `json:"count,omitempty" url:"-"`
 	// Whether the copies keep the original post's engagement (likes, comments, shares). Defaults to false.
 	PreserveEngagement *bool `json:"preserve_engagement,omitempty" url:"-"`
-	// Ad group to duplicate into. Defaults to the ad's own ad group.
+	// Ad group to duplicate into, which must belong to the same account and be compatible with the ad. Defaults to the ad's own ad group.
 	TargetAdGroupID *string `json:"target_ad_group_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

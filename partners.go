@@ -39,24 +39,21 @@ func (l *LeaderboardPartnersRequest) SetPeriod(period *LeaderboardPartnersReques
 }
 
 var (
-	referredUsersPartnersRequestFieldUserID                 = big.NewInt(1 << 0)
-	referredUsersPartnersRequestFieldEarningPartnerID       = big.NewInt(1 << 1)
-	referredUsersPartnersRequestFieldEarningPartnerUsername = big.NewInt(1 << 2)
-	referredUsersPartnersRequestFieldReferringAccountID     = big.NewInt(1 << 3)
-	referredUsersPartnersRequestFieldQuery                  = big.NewInt(1 << 4)
-	referredUsersPartnersRequestFieldHasBusinesses          = big.NewInt(1 << 5)
-	referredUsersPartnersRequestFieldHasEarningBusinesses   = big.NewInt(1 << 6)
-	referredUsersPartnersRequestFieldOrder                  = big.NewInt(1 << 7)
-	referredUsersPartnersRequestFieldDirection              = big.NewInt(1 << 8)
-	referredUsersPartnersRequestFieldFirst                  = big.NewInt(1 << 9)
-	referredUsersPartnersRequestFieldAfter                  = big.NewInt(1 << 10)
-	referredUsersPartnersRequestFieldLast                   = big.NewInt(1 << 11)
-	referredUsersPartnersRequestFieldBefore                 = big.NewInt(1 << 12)
+	referredUsersPartnersRequestFieldEarningPartnerID       = big.NewInt(1 << 0)
+	referredUsersPartnersRequestFieldEarningPartnerUsername = big.NewInt(1 << 1)
+	referredUsersPartnersRequestFieldReferringAccountID     = big.NewInt(1 << 2)
+	referredUsersPartnersRequestFieldQuery                  = big.NewInt(1 << 3)
+	referredUsersPartnersRequestFieldHasBusinesses          = big.NewInt(1 << 4)
+	referredUsersPartnersRequestFieldHasEarningBusinesses   = big.NewInt(1 << 5)
+	referredUsersPartnersRequestFieldOrder                  = big.NewInt(1 << 6)
+	referredUsersPartnersRequestFieldDirection              = big.NewInt(1 << 7)
+	referredUsersPartnersRequestFieldFirst                  = big.NewInt(1 << 8)
+	referredUsersPartnersRequestFieldAfter                  = big.NewInt(1 << 9)
+	referredUsersPartnersRequestFieldLast                   = big.NewInt(1 << 10)
+	referredUsersPartnersRequestFieldBefore                 = big.NewInt(1 << 11)
 )
 
 type ReferredUsersPartnersRequest struct {
-	// Set to global to view referred users across partners with each primary referrer's cached total earnings. Requires an admin or partner manager session; OAuth tokens and company API keys cannot use global mode. Optionally narrow to one earning_partner_id or earning_partner_username.
-	UserID *ReferredUsersPartnersRequestUserID `json:"-" url:"user_id,omitempty"`
 	// The selected referring partner's user_ ID. Requires user_id=global; cannot be combined with earning_partner_username.
 	EarningPartnerID *string `json:"-" url:"earning_partner_id,omitempty"`
 	// The selected referring partner's exact username. Requires user_id=global; cannot be combined with earning_partner_id.
@@ -93,13 +90,6 @@ func (r *ReferredUsersPartnersRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	r.explicitFields = next
-}
-
-// SetUserID sets the UserID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReferredUsersPartnersRequest) SetUserID(userID *ReferredUsersPartnersRequestUserID) {
-	r.UserID = userID
-	r.require(referredUsersPartnersRequestFieldUserID)
 }
 
 // SetEarningPartnerID sets the EarningPartnerID field and marks it as non-optional;
@@ -2507,25 +2497,6 @@ func NewReferredUsersPartnersRequestOrderFromString(s string) (ReferredUsersPart
 }
 
 func (r ReferredUsersPartnersRequestOrder) Ptr() *ReferredUsersPartnersRequestOrder {
-	return &r
-}
-
-type ReferredUsersPartnersRequestUserID string
-
-const (
-	ReferredUsersPartnersRequestUserIDGlobal ReferredUsersPartnersRequestUserID = "global"
-)
-
-func NewReferredUsersPartnersRequestUserIDFromString(s string) (ReferredUsersPartnersRequestUserID, error) {
-	switch s {
-	case "global":
-		return ReferredUsersPartnersRequestUserIDGlobal, nil
-	}
-	var t ReferredUsersPartnersRequestUserID
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (r ReferredUsersPartnersRequestUserID) Ptr() *ReferredUsersPartnersRequestUserID {
 	return &r
 }
 

@@ -22,7 +22,7 @@ var (
 type CreateAppBuildsRequest struct {
 	// The app to create the build for, prefixed `app_`. Defaults to the app behind the presented credential.
 	AppID *string `json:"app_id,omitempty" url:"-"`
-	// The uploaded build file: `{ id }` for an existing file or `{ direct_upload_id }` for a completed direct upload.
+	// The uploaded build file: pass `id` for an existing file or `direct_upload_id` for a completed direct upload. iOS and Android builds take a .zip bundle; web builds take a JavaScript file or a .zip archive of the hosted site.
 	Attachment *CreateAppBuildsRequestAttachment `json:"attachment" url:"-"`
 	// A client-generated checksum of the build file, used to verify file integrity when unpacked.
 	Checksum string `json:"checksum" url:"-"`
@@ -778,7 +778,7 @@ var (
 	createAppBuildsRequestAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
-// The uploaded build file: `{ id }` for an existing file or `{ direct_upload_id }` for a completed direct upload.
+// The uploaded build file: pass `id` for an existing file or `direct_upload_id` for a completed direct upload. iOS and Android builds take a .zip bundle; web builds take a JavaScript file or a .zip archive of the hosted site.
 type CreateAppBuildsRequestAttachment struct {
 	// The signed id of a completed direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`

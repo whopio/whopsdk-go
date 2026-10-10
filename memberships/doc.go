@@ -2,5 +2,5 @@
 
 // A Membership is a customer's purchase of a variant: the subscription or one-time grant that gives them access to a product. It tracks billing state (`active`, `trialing`, `past_due`, and so on), the current period, pending cancellations, custom metadata, and the software license key when the product includes licensing.
 //
-// Use the Memberships API to list an account's memberships or the caller's own, retrieve one by ID or license key, invite a recipient to join through a free variant, and manage the lifecycle: cancel immediately or at period end, reverse a scheduled period-end cancellation, pause and resume payment collection, extend with free days, apply a promo code mid-cycle, generate a transfer link, and update metadata.
+// Use the Memberships API to list an account's memberships or your own, retrieve one by ID or license key, invite a recipient to join through a free variant, and manage the lifecycle: cancel immediately or at period end, reverse a scheduled cancellation, pause and resume payment collection, extend or reactivate access, apply a promo code or affiliate, change renewal cadence, resync access, generate a transfer link, and update metadata.
 package memberships

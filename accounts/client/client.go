@@ -51,7 +51,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists accounts visible to the credential. User tokens return the user's business accounts; Account API keys return the requesting account and its connected accounts. Pass `parent_account_id` to return only that parent account's connected accounts. Includes each account's `cards` application summary when the caller has `company:balance:read` access to that account.
+// Lists accounts visible to the credential. User tokens return the user's business accounts; Account API keys return the requesting account and its connected accounts.
 //
 // Example:
 //
@@ -181,7 +181,7 @@ func (c *Client) Me(
 	return response.Body, nil
 }
 
-// Retrieves a single account by ID or public route when it is visible to the credential, including its crypto wallet. The reserved id `me` retrieves the account associated with the current Account API key; user tokens have no single account, so they must address one by ID or route.
+// Retrieves an account visible to the credential by ID or public route, including its crypto wallet.
 //
 // Example:
 //
@@ -235,7 +235,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Updates an account. User tokens can update business accounts; Account API keys can update connected accounts. The reserved id `me` — accepted on Retrieve Account — resolves to the requesting account, which an Account API key cannot edit, so updates must name the connected account by its `biz_` id.
+// Updates an account. User tokens can update business accounts; Account API keys can update connected accounts.
 //
 // Example:
 //
@@ -262,7 +262,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Starts an LLC or C-Corp formation for a business account. Defaults to an LLC; set `entity_type` to `c_corp` to form a C-Corp, which additionally requires `share_structure` and officer `roles` on every founder. On submission, the application is validated and the response returns a hosted checkout URL. Once paid, the filing is submitted. Track progress through the account's [`company_formation`](/api-reference/beta/accounts/retrieve-account) field on Retrieve Account.
+// Starts an LLC or C-Corp formation for a business account. The application is validated and the response returns a hosted checkout URL; once paid, the filing is submitted. Track progress through the account's [`company_formation`](/api-reference/beta/accounts/retrieve-account) field on Retrieve Account.
 //
 // Example:
 //
@@ -353,7 +353,7 @@ func (c *Client) FormCompany(
 	return response.Body, nil
 }
 
-// Queues one background retry of the account's failed ads payments across its campaigns, using the account's configured ads payment methods. A queued response does not mean payment succeeded. Read campaign delivery_status and issues for the outcome. Successful settlement clears the payment block without changing configured active or paused status; legacy payment_failed status becomes paused. Another request while the account retry is queued or running returns an error asking you to wait.
+// Queues one background retry of the account's failed ads payments across its campaigns, using the account's configured ads payment methods. A queued response does not mean payment succeeded; read each campaign's `delivery_status` and `issues` for the outcome. Successful settlement clears the payment block without changing a configured `active` or `paused` status; a legacy `payment_failed` status becomes `paused`. Returns an error when the account has no failed ads payments, or while a previous retry for the account is queued or running.
 //
 // Example:
 //

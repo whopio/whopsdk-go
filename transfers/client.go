@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists transfers visible to the caller. Optional account filters narrow the results.
+// Lists the transfers you can see, sent or received, newest first by default. Optional account filters narrow the results.
 //
 // Example:
 //
@@ -118,7 +118,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Moves money between accounts, or into a claim link anyone with the URL can redeem.
+// Moves money between Whop balances, sends USDT from an account's wallet, or funds a claim link anyone with the URL can redeem. The `type` you send decides which object comes back.
 //
 // Example:
 //
@@ -150,7 +150,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Lists the people and accounts you can send money to.
+// Lists the people and accounts you can send money to from a balance. Pass a result's ID as `destination_id` when creating a transfer.
 //
 // Example:
 //

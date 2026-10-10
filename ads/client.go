@@ -236,7 +236,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Copies the ad into its own ad group, or into target_ad_group_id (which must belong to the same account and be compatible with the ad). Copies keep the source ad's active/paused state.
+// Copies an ad into its own ad group or into another one. Copies keep the source ad's active or paused state.
 //
 // Example:
 //

@@ -2201,7 +2201,7 @@ var userRecommendedActionNullableFields = map[string]*big.Int{
 type UserRecommendedAction struct {
 	// The account (`biz_`) a business recommendation is for, or `null` for personal recommendations
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The account's display name, or `null`
+	// The account's display name, or `null` for personal recommendations
 	AccountName *string `json:"account_name,omitempty" url:"account_name,omitempty"`
 	// The recommendation; new values may be added, so handle unknown actions gracefully
 	Action              UserRecommendedActionAction `json:"action" url:"action"`

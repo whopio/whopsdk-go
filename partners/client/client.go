@@ -63,7 +63,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Ranks referrers by partner business earnings — all-time by default, or over the current day, month, year, or trailing 30 days. Authentication is optional: authenticated callers also get their own standing, anonymous callers get the rankings alone.
+// Ranks referrers by partner business earnings over the chosen `period`, all-time by default. Authentication is optional: authenticated callers also get their own standing, anonymous callers get the rankings alone.
 //
 // Example:
 //
@@ -88,7 +88,7 @@ func (c *Client) Leaderboard(
 	return response.Body, nil
 }
 
-// Lists the users the caller referred onto Whop, newest first by default, each with the caller's total affiliate earnings from that user across all tiers. Earnings sorting uses cached totals. Authorized staff can set user_id=global to list referrals across partners, with earnings for each user's current primary referrer.
+// Lists the users the caller referred onto Whop, newest first by default, each with the caller's total affiliate earnings from that user across all tiers.
 //
 // Example:
 //
@@ -168,7 +168,7 @@ func (c *Client) ReferredUsers(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Retrieves the authenticated user's public profile, enrollment date, partner verification timestamp, verification waitlist status, partner certification completion, active direct business referral count, and default payout rates. Use me or the authenticated user's own user ID; other users are not accessible. Users who have not enrolled have a null joined_at. Create and manage referral links through /partner_referral_requests.
+// Retrieves the authenticated user's partner profile: enrollment and verification status, certification completion, active direct business referral count, and default payout rates. Other users' profiles are not accessible. To create and manage referral links, use `/partner_referral_requests`.
 //
 // Example:
 //

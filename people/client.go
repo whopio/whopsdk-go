@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists the people (visitors and customers) of an account: the identity-linked person profiles aggregated from every pixel, payment, and platform event — identities, purchases and LTV, geo/device profile, traffic sources, and first/last marketing touches.
+// Lists the people (visitors and customers) of an account: identity-linked profiles assembled from every pixel, payment, and platform event. Filter and sort them to segment an account's audience.
 //
 // Example:
 //
@@ -130,7 +130,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Retrieves one person for an account. The identifier can be a person ID (prefixed `prsn_`), a user ID (prefixed `user_`), an email address, or a phone number — merged people resolve to the surviving profile.
+// Retrieves one person for an account, looked up by person ID, user ID, email address, or phone number.
 //
 // Example:
 //

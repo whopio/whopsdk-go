@@ -38,7 +38,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Retrieve the account's completed or pending swaps — currently just the latest one.
+// Lists the completed or pending swaps for an account or user — currently only the most recent one.
 //
 // Example:
 //
@@ -63,7 +63,7 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
-// Swaps one token for another from the account's wallet, or converts between fiat currencies in the account's ledger at the mid-market rate. Crypto swaps finish in the background — check the swap for its status.
+// Swaps one token for another in an account or user's wallet, or converts between their fiat balances at the mid-market rate. Crypto swaps finish in the background — retrieve the swap to follow its status.
 //
 // Example:
 //
@@ -91,7 +91,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Previews the price of a swap. Fiat pairs quote the in-ledger mid-market conversion — the same rate creating the swap fills at. No funds move and nothing is saved.
+// Previews the price of a swap before you create it. Fiat pairs quote the mid-market rate — the same rate creating the swap fills at. No funds move, nothing is saved, and no authentication is required.
 //
 // Example:
 //
@@ -120,7 +120,7 @@ func (c *Client) CreateQuote(
 	return response.Body, nil
 }
 
-// Retrieves a single swap and its status.
+// Retrieves a swap and its status. Poll it after creating a crypto swap, which finishes in the background.
 //
 // Example:
 //

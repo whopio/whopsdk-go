@@ -31,7 +31,7 @@ type CreateAdConversionValueRulesRequest struct {
 	Metadata   map[string]string                                `json:"metadata,omitempty" url:"-"`
 	// Signed percent change from negative 100 to 10000. The sent value cannot go below zero.
 	PercentageChange *float64 `json:"percentage_change,omitempty" url:"-"`
-	// Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Stale or incomplete conflict selections fail.
+	// Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Rules left with no selections are paused. Stale or incomplete conflict selections fail.
 	ReplaceRuleIDs []string `json:"replace_rule_ids,omitempty" url:"-"`
 	// Initial rule status. Defaults to active.
 	Status *CreateAdConversionValueRulesRequestStatus `json:"status,omitempty" url:"-"`
@@ -140,7 +140,7 @@ var (
 )
 
 type DeleteAdConversionValueRulesRequest struct {
-	// Conversion value rule ID.
+	// Conversion value rule ID, prefixed `adcvr_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -177,6 +177,7 @@ var (
 )
 
 type ListAdConversionValueRulesRequest struct {
+	// Only rules belonging to this account, prefixed `biz_`.
 	AccountID *string                                    `json:"-" url:"account_id,omitempty"`
 	Status    *ListAdConversionValueRulesRequestStatus   `json:"-" url:"status,omitempty"`
 	Platform  *ListAdConversionValueRulesRequestPlatform `json:"-" url:"platform,omitempty"`
@@ -281,7 +282,7 @@ var (
 )
 
 type PauseAdConversionValueRulesRequest struct {
-	// Conversion value rule ID.
+	// Conversion value rule ID, prefixed `adcvr_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -309,7 +310,7 @@ var (
 )
 
 type RetrieveAdConversionValueRulesRequest struct {
-	// Conversion value rule ID.
+	// Conversion value rule ID, prefixed `adcvr_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1051,7 +1052,7 @@ var createAdConversionValueRulesRequestEventsItemNullableFields = map[string]*bi
 }
 
 type CreateAdConversionValueRulesRequestEventsItem struct {
-	// Exact custom event name. Required for custom events; null for standard events.
+	// Exact custom event name. Required for custom events; `null` for standard events. Google does not support named custom events.
 	CustomName *string                                                `json:"custom_name,omitempty" url:"custom_name,omitempty"`
 	EventName  CreateAdConversionValueRulesRequestEventsItemEventName `json:"event_name" url:"event_name"`
 
@@ -1986,7 +1987,7 @@ var updateAdConversionValueRulesRequestEventsItemNullableFields = map[string]*bi
 }
 
 type UpdateAdConversionValueRulesRequestEventsItem struct {
-	// Exact custom event name. Required for custom events; null for standard events.
+	// Exact custom event name. Required for custom events; `null` for standard events. Google does not support named custom events.
 	CustomName *string                                                `json:"custom_name,omitempty" url:"custom_name,omitempty"`
 	EventName  UpdateAdConversionValueRulesRequestEventsItemEventName `json:"event_name" url:"event_name"`
 
@@ -2431,7 +2432,7 @@ var (
 )
 
 type UnpauseAdConversionValueRulesRequest struct {
-	// Conversion value rule ID.
+	// Conversion value rule ID, prefixed `adcvr_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2466,7 +2467,7 @@ var (
 )
 
 type UpdateAdConversionValueRulesRequest struct {
-	// Conversion value rule ID.
+	// Conversion value rule ID, prefixed `adcvr_`.
 	ID             string                                             `json:"-" url:"-"`
 	AdjustmentType *UpdateAdConversionValueRulesRequestAdjustmentType `json:"adjustment_type,omitempty" url:"-"`
 	// Events adjusted on every selected target. Every platform must support every selected event.
@@ -2475,7 +2476,7 @@ type UpdateAdConversionValueRulesRequest struct {
 	Metadata   map[string]string                                `json:"metadata,omitempty" url:"-"`
 	// Signed percent change from negative 100 to 10000. The sent value cannot go below zero.
 	PercentageChange *float64 `json:"percentage_change,omitempty" url:"-"`
-	// Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Stale or incomplete conflict selections fail.
+	// Exact IDs of active rules whose overlapping selections will be replaced. Other selections keep their values; remaining selections may split into separate rules. Broader rules remain as fallbacks for other items. Rules left with no selections are paused. Stale or incomplete conflict selections fail.
 	ReplaceRuleIDs []string `json:"replace_rule_ids,omitempty" url:"-"`
 	// Targets sharing one scope. Every selected event applies to every target. At most 500 target and event combinations.
 	Targets []*UpdateAdConversionValueRulesRequestTargetsItem `json:"targets,omitempty" url:"-"`

@@ -2,5 +2,5 @@
 
 // Stats represent aggregated activity for an account over time. They help you understand revenue, transactions, disputes, members, referrals, and advertising performance across reporting periods like days, weeks, or months.
 //
-// Use the Stats API to list available metrics and their filterable properties, then retrieve time-series values for a date range.
+// Use the Stats API to list the metrics you can chart and retrieve one as a time series over a date range, or list reports and retrieve aggregates that are not bucketed over time, such as platform-wide payment trends.
 package stats

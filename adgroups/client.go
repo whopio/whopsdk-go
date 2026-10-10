@@ -151,7 +151,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Estimates how many people a draft targeting spec can reach, before an ad group is created. The body takes the same targeting fields as creating an ad group — `regions`, `demographics`, `detailed_targeting`, `audiences`, `languages`, and `devices` — and nothing is persisted.
+// Estimates how many people a draft targeting spec can reach, before an ad group is created. The body takes the same targeting fields as creating an ad group, and nothing is persisted.
 //
 // Example:
 //
@@ -178,7 +178,7 @@ func (c *Client) EstimateReach(
 	return response.Body, nil
 }
 
-// Searches the ad platform's targeting taxonomy for options to target an ad group with. Each result comes back in the exact shape the ad-group body accepts for its `type`, so it can be used in `detailed_targeting`, `regions`, or `languages` as-is. A blank `query` browses the small fixed lists (behaviors, browse demographic categories, languages); interests, work employers, job titles, schools, majors, and locations need a search term.
+// Searches the ad platform's targeting taxonomy for options to target an ad group with. Each result comes back in the exact shape the ad-group body accepts for its `type`, so it can be used in `detailed_targeting`, `regions`, or `languages` as-is.
 //
 // Example:
 //
@@ -205,7 +205,7 @@ func (c *Client) SearchTargetingOptions(
 	return response.Body, nil
 }
 
-// Retrieves a single ad group.
+// Retrieves an ad group, with performance stats for the window set by `stats_from` and `stats_to`.
 //
 // Example:
 //
@@ -232,7 +232,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Deletes an ad group.
+// Deletes an ad group, removing it from the ad platform so it stops delivering.
 //
 // Example:
 //
@@ -286,7 +286,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Creates copies of the ad group in `duplicating` status and returns them — into its own campaign, or into target_ad_campaign_id (which must belong to the same account and be compatible with the ad group's targeting and goals); each copy transitions to its final status (matching the source's active/paused state) once duplication completes. Poll each returned ad group until it leaves `duplicating` — a copy that could not be completed is deleted and returns 404.
+// Starts copying an ad group and returns the copies in `duplicating` status. Poll each returned ad group until it leaves `duplicating`: it then takes the source's `active` or `paused` status, or, if the copy could not be completed, is deleted and returns 404.
 //
 // Example:
 //

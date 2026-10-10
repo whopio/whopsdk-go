@@ -290,7 +290,7 @@ var (
 type SubmitBountySubmissionsRequest struct {
 	// The claimed attempt to submit for review (`btys_` tag).
 	ID string `json:"-" url:"-"`
-	// Work to attach to the submission. Combine `urls`, `file_ids`, and `caption` freely; all are optional.
+	// Work to attach to a livestream attempt. Combine `urls`, `file_ids`, and `caption` freely; all are optional. If the attempt already went to review when its stream ended, the deliverable attaches to it once, until reviewers start voting. Data capture attempts take no deliverable.
 	Deliverable *SubmitBountySubmissionsRequestDeliverable `json:"deliverable,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2308,7 +2308,7 @@ var submitBountySubmissionsRequestDeliverableNullableFields = map[string]*big.In
 	"caption": submitBountySubmissionsRequestDeliverableFieldCaption,
 }
 
-// Work to attach to the submission. Combine `urls`, `file_ids`, and `caption` freely; all are optional.
+// Work to attach to a livestream attempt. Combine `urls`, `file_ids`, and `caption` freely; all are optional. If the attempt already went to review when its stream ended, the deliverable attaches to it once, until reviewers start voting. Data capture attempts take no deliverable.
 type SubmitBountySubmissionsRequestDeliverable struct {
 	// Written context shown to reviewers alongside the work.
 	Caption *string `json:"caption,omitempty" url:"caption,omitempty"`

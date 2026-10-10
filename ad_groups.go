@@ -369,7 +369,7 @@ type DuplicateAdGroupsRequest struct {
 	Count *int `json:"count,omitempty" url:"-"`
 	// Whether the copied ads keep the original posts' engagement (likes, comments, shares). Defaults to false.
 	PreserveEngagement *bool `json:"preserve_engagement,omitempty" url:"-"`
-	// Campaign to duplicate into. Defaults to the ad group's own campaign.
+	// Campaign to duplicate into. Must belong to the same account and be compatible with the ad group's targeting and goals. Defaults to the ad group's own campaign.
 	TargetAdCampaignID *string `json:"target_ad_campaign_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -853,7 +853,7 @@ type SearchTargetingOptionsAdGroupsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The ad network whose targeting taxonomy to search.
 	Platform SearchTargetingOptionsAdGroupsRequestPlatform `json:"-" url:"platform"`
-	// The search term. Blank browses the fixed lists; interests, work employers, job titles, schools, majors, and locations return nothing without one.
+	// The search term. Blank browses the small fixed lists (behaviors, browse demographic categories, and languages); interests, work employers, job titles, schools, majors, and locations return nothing without one.
 	Query *string `json:"-" url:"query,omitempty"`
 	// Kinds of targeting options to search. Defaults to all of them.
 	Types []*SearchTargetingOptionsAdGroupsRequestTypesItem `json:"-" url:"types,omitempty"`

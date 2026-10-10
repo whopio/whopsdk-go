@@ -42,7 +42,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Retrieves the authenticated user's settings document. Addressed only as `me` — the document always belongs to the session user.
+// Retrieves the authenticated user's settings document.
 //
 // Example:
 //

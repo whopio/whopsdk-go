@@ -18,7 +18,7 @@ var (
 type ApplyPromoCodeMembershipsRequest struct {
 	// Membership ID (`mem_` tag).
 	ID string `json:"-" url:"-"`
-	// The promo code to apply, as customers enter it at checkout (for example `SAVE20`).
+	// The promo code to apply, as customers enter it at checkout (for example `SAVE20`). Its stock, variant eligibility, and expiry are checked as at checkout.
 	PromoCode string `json:"promo_code" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -83,7 +83,7 @@ type AssignAffiliateMembershipsRequest struct {
 	ID string `json:"-" url:"-"`
 	// Whether the commission is a percentage of each payment or a fixed amount per payment.
 	CommissionType AssignAffiliateMembershipsRequestCommissionType `json:"commission_type" url:"-"`
-	// A whole number from 1 to 90 for `percentage`, or an amount greater than 1 in the membership currency for `flat_fee`. Flat fees need matching billing and settlement currencies.
+	// A whole number from 1 to 90 for `percentage`, or an amount greater than 1 in the membership currency for `flat_fee`. The payout cannot exceed 90% of the next renewal amount. Flat fees need matching billing and settlement currencies.
 	CommissionValue float64 `json:"commission_value" url:"-"`
 	// Email address of the user to assign. Pass exactly one of `user_id`, `email`, or `username`.
 	Email *string `json:"email,omitempty" url:"-"`
@@ -3213,7 +3213,7 @@ var (
 type UpdateMembershipsRequest struct {
 	// Membership ID (`mem_` tag), or a software license key.
 	ID string `json:"-" url:"-"`
-	// Number of days between recurring charges. Sets the current period end to the current period start plus this value and applies to every recurring variant. The new period end must remain in the future. Existing non-daily memberships cannot be changed to daily billing.
+	// Number of days between recurring charges. Sets the current period end to the current period start plus this value and applies to every recurring variant, so future renewals use the same cadence. The new period end must remain in the future. Only for active, trialing, or past-due memberships billed automatically by Whop; invoice, externally billed, and canceling memberships are not supported. Existing non-daily memberships cannot be changed to daily billing. Cannot be combined with other fields.
 	BillingPeriodDays *int `json:"billing_period_days,omitempty" url:"-"`
 	// `true` cancels at the end of the current billing period (the customer keeps access until then); `false` reverses a pending cancellation.
 	CancelAtPeriodEnd *bool `json:"cancel_at_period_end,omitempty" url:"-"`
