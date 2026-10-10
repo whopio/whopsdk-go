@@ -35,6 +35,14 @@ func TestSettersCreateAppsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDomainID", func(t *testing.T) {
+		obj := &CreateAppsRequest{}
+		var fernTestValueDomainID *string
+		obj.SetDomainID(fernTestValueDomainID)
+		assert.Equal(t, fernTestValueDomainID, obj.DomainID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetIcon", func(t *testing.T) {
 		obj := &CreateAppsRequest{}
 		var fernTestValueIcon *CreateAppsRequestIcon
@@ -148,6 +156,37 @@ func TestSettersMarkExplicitCreateAppsRequest(t *testing.T) {
 
 		// Act
 		obj.SetBaseURL(fernTestValueBaseURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDomainID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAppsRequest{}
+		var fernTestValueDomainID *string
+
+		// Act
+		obj.SetDomainID(fernTestValueDomainID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1605,14 +1644,6 @@ func TestSettersApp(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPreviousHostedURLs", func(t *testing.T) {
-		obj := &App{}
-		var fernTestValuePreviousHostedURLs []string
-		obj.SetPreviousHostedURLs(fernTestValuePreviousHostedURLs)
-		assert.Equal(t, fernTestValuePreviousHostedURLs, obj.PreviousHostedURLs)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetProductID", func(t *testing.T) {
 		obj := &App{}
 		var fernTestValueProductID *string
@@ -2597,39 +2628,6 @@ func TestGettersApp(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPreviewToken() // Should return zero value
-	})
-
-	t.Run("GetPreviousHostedURLs", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &App{}
-		var expected []string
-		obj.PreviousHostedURLs = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPreviousHostedURLs(), "getter should return the property value")
-	})
-
-	t.Run("GetPreviousHostedURLs_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &App{}
-		obj.PreviousHostedURLs = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPreviousHostedURLs(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPreviousHostedURLs_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *App
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPreviousHostedURLs() // Should return zero value
 	})
 
 	t.Run("GetProductID", func(t *testing.T) {
@@ -3887,37 +3885,6 @@ func TestSettersMarkExplicitApp(t *testing.T) {
 
 		// Act
 		obj.SetPreviewToken(fernTestValuePreviewToken)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetPreviousHostedURLs_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &App{}
-		var fernTestValuePreviousHostedURLs []string
-
-		// Act
-		obj.SetPreviousHostedURLs(fernTestValuePreviousHostedURLs)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6333,14 +6300,6 @@ func TestSettersAppListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetPreviousHostedURLs", func(t *testing.T) {
-		obj := &AppListItem{}
-		var fernTestValuePreviousHostedURLs []string
-		obj.SetPreviousHostedURLs(fernTestValuePreviousHostedURLs)
-		assert.Equal(t, fernTestValuePreviousHostedURLs, obj.PreviousHostedURLs)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetRoute", func(t *testing.T) {
 		obj := &AppListItem{}
 		var fernTestValueRoute *string
@@ -6974,39 +6933,6 @@ func TestGettersAppListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetOrigin() // Should return zero value
-	})
-
-	t.Run("GetPreviousHostedURLs", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AppListItem{}
-		var expected []string
-		obj.PreviousHostedURLs = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPreviousHostedURLs(), "getter should return the property value")
-	})
-
-	t.Run("GetPreviousHostedURLs_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AppListItem{}
-		obj.PreviousHostedURLs = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPreviousHostedURLs(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPreviousHostedURLs_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *AppListItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPreviousHostedURLs() // Should return zero value
 	})
 
 	t.Run("GetRoute", func(t *testing.T) {
@@ -7721,37 +7647,6 @@ func TestSettersMarkExplicitAppListItem(t *testing.T) {
 
 		// Act
 		obj.SetOrigin(fernTestValueOrigin)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetPreviousHostedURLs_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AppListItem{}
-		var fernTestValuePreviousHostedURLs []string
-
-		// Act
-		obj.SetPreviousHostedURLs(fernTestValuePreviousHostedURLs)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12763,7 +12658,6 @@ func TestRequiredNullableRoundTripApp(t *testing.T) {
 		"deployment",
 		"description",
 		"discover_path",
-		"domains",
 		"experience_path",
 		"hosted_url",
 		"imported_from_url",
@@ -12790,7 +12684,7 @@ func TestRequiredNullableRoundTripApp(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj App
-		require.NoError(t, json.Unmarshal([]byte(`{"api_key":null,"app_store_description":null,"banner_image":null,"base_url":null,"dashboard_path":null,"default_api_key":null,"deployment":null,"description":null,"discover_path":null,"domains":null,"experience_path":null,"hosted_url":null,"imported_from_url":null,"marketplace_status":null,"openapi_path":null,"origin":null,"preview_token":null,"product_id":null,"production_android_build":null,"production_ios_build":null,"production_web_build":null,"route":null,"secrets":null,"skills_path":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"api_key":null,"app_store_description":null,"banner_image":null,"base_url":null,"dashboard_path":null,"default_api_key":null,"deployment":null,"description":null,"discover_path":null,"experience_path":null,"hosted_url":null,"imported_from_url":null,"marketplace_status":null,"openapi_path":null,"origin":null,"preview_token":null,"product_id":null,"production_android_build":null,"production_ios_build":null,"production_web_build":null,"route":null,"secrets":null,"skills_path":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -12963,7 +12857,6 @@ func TestRequiredNullableRoundTripAppListItem(t *testing.T) {
 		"dashboard_path",
 		"description",
 		"discover_path",
-		"domains",
 		"experience_path",
 		"hosted_url",
 		"openapi_path",
@@ -12982,7 +12875,7 @@ func TestRequiredNullableRoundTripAppListItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj AppListItem
-		require.NoError(t, json.Unmarshal([]byte(`{"banner_image":null,"base_url":null,"dashboard_path":null,"description":null,"discover_path":null,"domains":null,"experience_path":null,"hosted_url":null,"openapi_path":null,"origin":null,"route":null,"skills_path":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"banner_image":null,"base_url":null,"dashboard_path":null,"description":null,"discover_path":null,"experience_path":null,"hosted_url":null,"openapi_path":null,"origin":null,"route":null,"skills_path":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

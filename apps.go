@@ -14,11 +14,12 @@ var (
 	createAppsRequestFieldAccountID       = big.NewInt(1 << 0)
 	createAppsRequestFieldAppType         = big.NewInt(1 << 1)
 	createAppsRequestFieldBaseURL         = big.NewInt(1 << 2)
-	createAppsRequestFieldIcon            = big.NewInt(1 << 3)
-	createAppsRequestFieldImportedFromURL = big.NewInt(1 << 4)
-	createAppsRequestFieldName            = big.NewInt(1 << 5)
-	createAppsRequestFieldRedirectURIs    = big.NewInt(1 << 6)
-	createAppsRequestFieldRoute           = big.NewInt(1 << 7)
+	createAppsRequestFieldDomainID        = big.NewInt(1 << 3)
+	createAppsRequestFieldIcon            = big.NewInt(1 << 4)
+	createAppsRequestFieldImportedFromURL = big.NewInt(1 << 5)
+	createAppsRequestFieldName            = big.NewInt(1 << 6)
+	createAppsRequestFieldRedirectURIs    = big.NewInt(1 << 7)
+	createAppsRequestFieldRoute           = big.NewInt(1 << 8)
 )
 
 type CreateAppsRequest struct {
@@ -28,6 +29,8 @@ type CreateAppsRequest struct {
 	AppType *CreateAppsRequestAppType `json:"app_type,omitempty" url:"-"`
 	// The base production URL where the app is hosted, such as `https://myapp.example.com`.
 	BaseURL *string `json:"base_url,omitempty" url:"-"`
+	// A domain on the account (`dom_` tag) to serve the app at, such as a whop.site address claimed with `POST /domains`. Required with `template_id`.
+	DomainID *string `json:"domain_id,omitempty" url:"-"`
 	// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 	Icon *CreateAppsRequestIcon `json:"icon,omitempty" url:"-"`
 	// The address of the existing website this app is imported from, such as `https://shop.example.com`. Must be an `http` or `https` URL.
@@ -36,7 +39,7 @@ type CreateAppsRequest struct {
 	Name string `json:"name" url:"-"`
 	// The whitelisted OAuth callback URLs that users are redirected to after authorizing the app.
 	RedirectURIs []string `json:"redirect_uris,omitempty" url:"-"`
-	// The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.site.
+	// Deprecated: claim an address with `POST /domains` and pass `domain_id`. The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.site.
 	Route *string `json:"route,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -71,6 +74,13 @@ func (c *CreateAppsRequest) SetAppType(appType *CreateAppsRequestAppType) {
 func (c *CreateAppsRequest) SetBaseURL(baseURL *string) {
 	c.BaseURL = baseURL
 	c.require(createAppsRequestFieldBaseURL)
+}
+
+// SetDomainID sets the DomainID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAppsRequest) SetDomainID(domainID *string) {
+	c.DomainID = domainID
+	c.require(createAppsRequestFieldDomainID)
 }
 
 // SetIcon sets the Icon field and marks it as non-optional;
@@ -530,19 +540,18 @@ var (
 	appFieldOpenapiPath                    = big.NewInt(1 << 26)
 	appFieldOrigin                         = big.NewInt(1 << 27)
 	appFieldPreviewToken                   = big.NewInt(1 << 28)
-	appFieldPreviousHostedURLs             = big.NewInt(1 << 29)
-	appFieldProductID                      = big.NewInt(1 << 30)
-	appFieldProductionAndroidBuild         = big.NewInt(1 << 31)
-	appFieldProductionIosBuild             = big.NewInt(1 << 32)
-	appFieldProductionWebBuild             = big.NewInt(1 << 33)
-	appFieldRedirectURIs                   = big.NewInt(1 << 34)
-	appFieldRequestedPermissions           = big.NewInt(1 << 35)
-	appFieldRequiredScopes                 = big.NewInt(1 << 36)
-	appFieldRoute                          = big.NewInt(1 << 37)
-	appFieldSecrets                        = big.NewInt(1 << 38)
-	appFieldSkillsPath                     = big.NewInt(1 << 39)
-	appFieldStatus                         = big.NewInt(1 << 40)
-	appFieldVerified                       = big.NewInt(1 << 41)
+	appFieldProductID                      = big.NewInt(1 << 29)
+	appFieldProductionAndroidBuild         = big.NewInt(1 << 30)
+	appFieldProductionIosBuild             = big.NewInt(1 << 31)
+	appFieldProductionWebBuild             = big.NewInt(1 << 32)
+	appFieldRedirectURIs                   = big.NewInt(1 << 33)
+	appFieldRequestedPermissions           = big.NewInt(1 << 34)
+	appFieldRequiredScopes                 = big.NewInt(1 << 35)
+	appFieldRoute                          = big.NewInt(1 << 36)
+	appFieldSecrets                        = big.NewInt(1 << 37)
+	appFieldSkillsPath                     = big.NewInt(1 << 38)
+	appFieldStatus                         = big.NewInt(1 << 39)
+	appFieldVerified                       = big.NewInt(1 << 40)
 )
 
 // appNullableFields maps the wire names of App's nullable fields (required or optional) to their field bits.
@@ -556,7 +565,6 @@ var appNullableFields = map[string]*big.Int{
 	"deployment":               appFieldDeployment,
 	"description":              appFieldDescription,
 	"discover_path":            appFieldDiscoverPath,
-	"domains":                  appFieldDomains,
 	"experience_path":          appFieldExperiencePath,
 	"hosted_url":               appFieldHostedURL,
 	"imported_from_url":        appFieldImportedFromURL,
@@ -605,11 +613,12 @@ type App struct {
 	DiscoverPath *string `json:"discover_path,omitempty" url:"discover_path,omitempty"`
 	// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
 	DomainID     string                `json:"domain_id" url:"domain_id"`
-	Domains      []*AppDomain          `json:"domains,omitempty" url:"domains,omitempty"`
+	Domains      []*AppDomain          `json:"domains" url:"domains"`
 	ElementsUsed []AppElementsUsedItem `json:"elements_used" url:"elements_used"`
 	// URL path for the member-facing hub view, or `null` when not configured.
 	ExperiencePath *string `json:"experience_path,omitempty" url:"experience_path,omitempty"`
 	// Full URL where the app's hosted web build is served, or `null` if no route is claimed.
+	// DEPRECATED: Read `domains` instead.
 	HostedURL *string `json:"hosted_url,omitempty" url:"hosted_url,omitempty"`
 	// The app's icon. Falls back to the default app icon when none is uploaded.
 	Icon *AppIcon `json:"icon" url:"icon"`
@@ -628,8 +637,7 @@ type App struct {
 	// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
 	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
 	// A short-lived signed pass scoping the caller to this app's gated preview hosts — every build preview and the live dev-server sandbox. Add it to a preview host as the `__whop_preview` query param (or `x-whop-preview-token` header). `null` unless the caller is a team member who can read the app's developer settings.
-	PreviewToken       *string  `json:"preview_token,omitempty" url:"preview_token,omitempty"`
-	PreviousHostedURLs []string `json:"previous_hosted_urls" url:"previous_hosted_urls"`
+	PreviewToken *string `json:"preview_token,omitempty" url:"preview_token,omitempty"`
 	// ID of the app's product listing on the Whop app store, or `null` when the app has no associated product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The approved build currently served on Android, or `null` when none is deployed.
@@ -642,6 +650,7 @@ type App struct {
 	RequestedPermissions []*AppRequestedPermission `json:"requested_permissions" url:"requested_permissions"`
 	RequiredScopes       []AppRequiredScopesItem   `json:"required_scopes" url:"required_scopes"`
 	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
+	// DEPRECATED: Read `domains` instead.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
 	// The app's production secrets as an object of string values, injected into the hosted server runtime. `null` when the caller lacks the `developer:update_app` permission.
 	Secrets map[string]any `json:"secrets,omitempty" url:"secrets,omitempty"`
@@ -860,13 +869,6 @@ func (a *App) GetPreviewToken() *string {
 		return nil
 	}
 	return a.PreviewToken
-}
-
-func (a *App) GetPreviousHostedURLs() []string {
-	if a == nil {
-		return nil
-	}
-	return a.PreviousHostedURLs
 }
 
 func (a *App) GetProductID() *string {
@@ -1170,13 +1172,6 @@ func (a *App) SetOrigin(origin *string) {
 func (a *App) SetPreviewToken(previewToken *string) {
 	a.PreviewToken = previewToken
 	a.require(appFieldPreviewToken)
-}
-
-// SetPreviousHostedURLs sets the PreviousHostedURLs field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *App) SetPreviousHostedURLs(previousHostedURLs []string) {
-	a.PreviousHostedURLs = previousHostedURLs
-	a.require(appFieldPreviousHostedURLs)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -2586,11 +2581,10 @@ var (
 	appListItemFieldName                           = big.NewInt(1 << 17)
 	appListItemFieldOpenapiPath                    = big.NewInt(1 << 18)
 	appListItemFieldOrigin                         = big.NewInt(1 << 19)
-	appListItemFieldPreviousHostedURLs             = big.NewInt(1 << 20)
-	appListItemFieldRoute                          = big.NewInt(1 << 21)
-	appListItemFieldSkillsPath                     = big.NewInt(1 << 22)
-	appListItemFieldStatus                         = big.NewInt(1 << 23)
-	appListItemFieldVerified                       = big.NewInt(1 << 24)
+	appListItemFieldRoute                          = big.NewInt(1 << 20)
+	appListItemFieldSkillsPath                     = big.NewInt(1 << 21)
+	appListItemFieldStatus                         = big.NewInt(1 << 22)
+	appListItemFieldVerified                       = big.NewInt(1 << 23)
 )
 
 // appListItemNullableFields maps the wire names of AppListItem's nullable fields (required or optional) to their field bits.
@@ -2600,7 +2594,6 @@ var appListItemNullableFields = map[string]*big.Int{
 	"dashboard_path":  appListItemFieldDashboardPath,
 	"description":     appListItemFieldDescription,
 	"discover_path":   appListItemFieldDiscoverPath,
-	"domains":         appListItemFieldDomains,
 	"experience_path": appListItemFieldExperiencePath,
 	"hosted_url":      appListItemFieldHostedURL,
 	"openapi_path":    appListItemFieldOpenapiPath,
@@ -2633,10 +2626,11 @@ type AppListItem struct {
 	DiscoverPath *string `json:"discover_path,omitempty" url:"discover_path,omitempty"`
 	// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
 	DomainID string       `json:"domain_id" url:"domain_id"`
-	Domains  []*AppDomain `json:"domains,omitempty" url:"domains,omitempty"`
+	Domains  []*AppDomain `json:"domains" url:"domains"`
 	// URL path for the member-facing hub view, or `null` when not configured.
 	ExperiencePath *string `json:"experience_path,omitempty" url:"experience_path,omitempty"`
 	// Full URL where the app's hosted web build is served, or `null` if no route is claimed.
+	// DEPRECATED: Read `domains` instead.
 	HostedURL *string `json:"hosted_url,omitempty" url:"hosted_url,omitempty"`
 	// The app's icon. Falls back to the default app icon when none is uploaded.
 	Icon *AppIcon `json:"icon" url:"icon"`
@@ -2647,9 +2641,9 @@ type AppListItem struct {
 	// URL path to the app's OpenAPI spec file, or `null` when not configured.
 	OpenapiPath *string `json:"openapi_path,omitempty" url:"openapi_path,omitempty"`
 	// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
-	Origin             *string  `json:"origin,omitempty" url:"origin,omitempty"`
-	PreviousHostedURLs []string `json:"previous_hosted_urls" url:"previous_hosted_urls"`
+	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
 	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
+	// DEPRECATED: Read `domains` instead.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
 	// URL path to the app's skills directory, or `null` when not configured.
 	SkillsPath *string `json:"skills_path,omitempty" url:"skills_path,omitempty"`
@@ -2803,13 +2797,6 @@ func (a *AppListItem) GetOrigin() *string {
 		return nil
 	}
 	return a.Origin
-}
-
-func (a *AppListItem) GetPreviousHostedURLs() []string {
-	if a == nil {
-		return nil
-	}
-	return a.PreviousHostedURLs
 }
 
 func (a *AppListItem) GetRoute() *string {
@@ -2994,13 +2981,6 @@ func (a *AppListItem) SetOpenapiPath(openapiPath *string) {
 func (a *AppListItem) SetOrigin(origin *string) {
 	a.Origin = origin
 	a.require(appListItemFieldOrigin)
-}
-
-// SetPreviousHostedURLs sets the PreviousHostedURLs field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AppListItem) SetPreviousHostedURLs(previousHostedURLs []string) {
-	a.PreviousHostedURLs = previousHostedURLs
-	a.require(appListItemFieldPreviousHostedURLs)
 }
 
 // SetRoute sets the Route field and marks it as non-optional;
