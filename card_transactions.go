@@ -11,23 +11,26 @@ import (
 
 var (
 	listCardTransactionsRequestFieldAccountID      = big.NewInt(1 << 0)
-	listCardTransactionsRequestFieldTransactionIDs = big.NewInt(1 << 1)
-	listCardTransactionsRequestFieldCardID         = big.NewInt(1 << 2)
-	listCardTransactionsRequestFieldCardholderID   = big.NewInt(1 << 3)
-	listCardTransactionsRequestFieldStatus         = big.NewInt(1 << 4)
-	listCardTransactionsRequestFieldCreatedAfter   = big.NewInt(1 << 5)
-	listCardTransactionsRequestFieldCreatedBefore  = big.NewInt(1 << 6)
-	listCardTransactionsRequestFieldOrder          = big.NewInt(1 << 7)
-	listCardTransactionsRequestFieldDirection      = big.NewInt(1 << 8)
-	listCardTransactionsRequestFieldFirst          = big.NewInt(1 << 9)
-	listCardTransactionsRequestFieldAfter          = big.NewInt(1 << 10)
-	listCardTransactionsRequestFieldLast           = big.NewInt(1 << 11)
-	listCardTransactionsRequestFieldBefore         = big.NewInt(1 << 12)
+	listCardTransactionsRequestFieldUserID         = big.NewInt(1 << 1)
+	listCardTransactionsRequestFieldTransactionIDs = big.NewInt(1 << 2)
+	listCardTransactionsRequestFieldCardID         = big.NewInt(1 << 3)
+	listCardTransactionsRequestFieldCardholderID   = big.NewInt(1 << 4)
+	listCardTransactionsRequestFieldStatus         = big.NewInt(1 << 5)
+	listCardTransactionsRequestFieldCreatedAfter   = big.NewInt(1 << 6)
+	listCardTransactionsRequestFieldCreatedBefore  = big.NewInt(1 << 7)
+	listCardTransactionsRequestFieldOrder          = big.NewInt(1 << 8)
+	listCardTransactionsRequestFieldDirection      = big.NewInt(1 << 9)
+	listCardTransactionsRequestFieldFirst          = big.NewInt(1 << 10)
+	listCardTransactionsRequestFieldAfter          = big.NewInt(1 << 11)
+	listCardTransactionsRequestFieldLast           = big.NewInt(1 << 12)
+	listCardTransactionsRequestFieldBefore         = big.NewInt(1 << 13)
 )
 
 type ListCardTransactionsRequest struct {
-	// The account whose card transactions to list, prefixed `biz_`. Defaults to the credential's account.
+	// The account whose card transactions to list, prefixed `biz_`. Provide this or `user_id`. Defaults to the credential's account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// The user whose personal card transactions to list, prefixed `user_`. Provide this or `account_id`. Only that user can read them.
+	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Return only these card transactions, each prefixed `citx_`. Repeat the parameter, or pass one comma-separated value.
 	TransactionIDs []*string `json:"-" url:"transaction_ids,omitempty"`
 	// Return only transactions charged to these cards, each prefixed `icrd_`.
@@ -71,6 +74,13 @@ func (l *ListCardTransactionsRequest) require(field *big.Int) {
 func (l *ListCardTransactionsRequest) SetAccountID(accountID *string) {
 	l.AccountID = accountID
 	l.require(listCardTransactionsRequestFieldAccountID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCardTransactionsRequest) SetUserID(userID *string) {
+	l.UserID = userID
+	l.require(listCardTransactionsRequestFieldUserID)
 }
 
 // SetTransactionIDs sets the TransactionIDs field and marks it as non-optional;
@@ -160,13 +170,16 @@ func (l *ListCardTransactionsRequest) SetBefore(before *string) {
 var (
 	retrieveCardTransactionsRequestFieldID        = big.NewInt(1 << 0)
 	retrieveCardTransactionsRequestFieldAccountID = big.NewInt(1 << 1)
+	retrieveCardTransactionsRequestFieldUserID    = big.NewInt(1 << 2)
 )
 
 type RetrieveCardTransactionsRequest struct {
 	// The card transaction ID, prefixed `citx_`.
 	ID string `json:"-" url:"-"`
-	// The account that owns the transaction, prefixed `biz_`. Defaults to the credential's account.
+	// The account that owns the transaction, prefixed `biz_`. Provide this or `user_id`. Defaults to the credential's account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// The user that owns the transaction, prefixed `user_`. Provide this or `account_id`. Only that user can read it.
+	UserID *string `json:"-" url:"user_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -193,6 +206,13 @@ func (r *RetrieveCardTransactionsRequest) SetID(id string) {
 func (r *RetrieveCardTransactionsRequest) SetAccountID(accountID *string) {
 	r.AccountID = accountID
 	r.require(retrieveCardTransactionsRequestFieldAccountID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveCardTransactionsRequest) SetUserID(userID *string) {
+	r.UserID = userID
+	r.require(retrieveCardTransactionsRequestFieldUserID)
 }
 
 var (
