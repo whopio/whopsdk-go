@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of invoices for a company, with optional filtering by product, status, collection method, and creation date.
+// Returns a paginated list of invoices for an account, with optional filtering by product, status, collection method, and creation date.
 //
 // Required permissions:
 //   - `invoice:basic:read`

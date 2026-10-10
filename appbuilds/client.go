@@ -121,7 +121,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Uploads a new build artifact for an app. Upload the file first (POST /files or a direct upload), then reference it here; iOS and Android take a .zip bundle, web takes a JavaScript file or a .zip archive of the hosted site.
+// Uploads a new build artifact for an app. Upload the file first with `POST /files` or a direct upload, then reference it in `attachment`.
 //
 // Example:
 //

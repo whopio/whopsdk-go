@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// List saved rules the caller can read. Filter by business with account_id.
+// Lists the conversion value rules you can read.
 //
 // Example:
 //
@@ -118,7 +118,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Create one rule covering every selected target and event combination. Active rules cannot overlap for the same platform and event. Customer prices and Whop revenue stay unchanged.
+// Creates one rule covering every selected target and event combination. Active rules cannot overlap for the same platform and event. Customer prices and Whop revenue stay unchanged.
 //
 // Example:
 //
@@ -157,6 +157,8 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
+// Retrieves a conversion value rule with its targets, events, and value adjustment.
+//
 // Example:
 //
 //	request := &whopsdk.RetrieveAdConversionValueRulesRequest{
@@ -182,7 +184,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Soft-delete a rule and deactivate all its coverage. Preserve its stored settings.
+// Deletes a rule and deactivates all its coverage. The rule's stored settings are preserved.
 //
 // Example:
 //
@@ -209,7 +211,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Edit a rule without changing its status. Supplied targets or events replace that selection in full. Omitted fields stay unchanged. All changes succeed or fail together.
+// Edits a rule without changing its status. Supplied `targets` or `events` replace that selection in full, and omitted fields stay unchanged. All changes succeed or fail together.
 //
 // Example:
 //
@@ -236,7 +238,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Pause the rule across all selected targets and events.
+// Pauses the rule across all selected targets and events.
 //
 // Example:
 //
@@ -263,7 +265,7 @@ func (c *Client) Pause(
 	return response.Body, nil
 }
 
-// Resume the rule and automatically replace overlapping selections in the same transaction. Other selections keep their values, and broader rules remain as defaults. Rules with no remaining selections are paused. Resuming an already-active rule makes no changes.
+// Resumes the rule and automatically replaces overlapping selections in the same transaction. Other selections keep their values, and broader rules remain as defaults. Rules with no remaining selections are paused. Resuming an already-active rule makes no changes.
 //
 // Example:
 //

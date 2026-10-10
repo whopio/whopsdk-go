@@ -40,7 +40,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists activity for a member and all of their non-drafted memberships, most recent first.
+// Lists activity for a member and all of their memberships that are not `drafted`, most recent first.
 //
 // Example:
 //

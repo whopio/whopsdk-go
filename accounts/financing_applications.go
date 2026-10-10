@@ -15,7 +15,7 @@ var (
 )
 
 type CreateFinancingApplicationsRequest struct {
-	// Merchant account ID, prefixed biz_.
+	// Merchant account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -73,7 +73,7 @@ var (
 )
 
 type ListFinancingApplicationsRequest struct {
-	// Merchant account ID, prefixed biz_.
+	// Merchant account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"-"`
 	// Only applications in this review state.
 	Status *ListFinancingApplicationsRequestStatus `json:"-" url:"status,omitempty"`
@@ -183,9 +183,9 @@ var (
 )
 
 type RetrieveFinancingApplicationsRequest struct {
-	// Merchant account ID, prefixed biz_.
+	// Merchant account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"-"`
-	// Financing application ID, prefixed inrq_.
+	// Financing application ID, prefixed `inrq_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -222,9 +222,9 @@ var (
 )
 
 type SubmitFinancingApplicationsRequest struct {
-	// Merchant account ID, prefixed biz_.
+	// Merchant account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"-"`
-	// Financing application ID, prefixed inrq_.
+	// Financing application ID, prefixed `inrq_`.
 	ID                 string                                                `json:"-" url:"-"`
 	MerchantAcceptance *SubmitFinancingApplicationsRequestMerchantAcceptance `json:"merchant_acceptance" url:"-"`
 
@@ -615,7 +615,7 @@ var (
 type SubmitFinancingApplicationsRequestMerchantAcceptance struct {
 	// Affirmation that the merchant accepted the presented terms.
 	Accepted bool `json:"accepted" url:"accepted"`
-	// Exact terms.version returned by the application and presented to the merchant.
+	// Exact `terms.version` returned by the application and presented to the merchant. A stale version is rejected.
 	TermsVersion string `json:"terms_version" url:"terms_version"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -724,12 +724,13 @@ var updateFinancingApplicationsRequestAnswersItemNullableFields = map[string]*bi
 }
 
 type UpdateFinancingApplicationsRequestAnswersItem struct {
-	// Complete replacement set of uploaded file IDs for this requirement. Empty removes all files.
-	FileIDs []string                                            `json:"file_ids,omitempty" url:"file_ids,omitempty"`
-	Money   *UpdateFinancingApplicationsRequestAnswersItemMoney `json:"money,omitempty" url:"money,omitempty"`
+	// Complete replacement set of file IDs for this requirement, prefixed `file_`. Upload documents through the Files API first: new files must belong to the caller, be ready and private, and satisfy the requirement's formats and 20 MB limit. An empty array removes all files.
+	FileIDs []string `json:"file_ids,omitempty" url:"file_ids,omitempty"`
+	// Price answer, such as `max_product_price`. `null` clears the price.
+	Money *UpdateFinancingApplicationsRequestAnswersItemMoney `json:"money,omitempty" url:"money,omitempty"`
 	// ID of a merchant requirement returned on this application.
 	RequirementID string `json:"requirement_id" url:"requirement_id"`
-	// Text answers. Use money instead for max_product_price.
+	// Text answers. Use `money` instead for `max_product_price`. An empty array clears the answer.
 	Values []string `json:"values,omitempty" url:"values,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -865,6 +866,7 @@ var (
 	updateFinancingApplicationsRequestAnswersItemMoneyFieldCurrency = big.NewInt(1 << 1)
 )
 
+// Price answer, such as `max_product_price`. `null` clears the price.
 type UpdateFinancingApplicationsRequestAnswersItemMoney struct {
 	// Positive exact decimal amount in major units, such as 1234.56. At most 12 whole digits and the currency's fractional precision.
 	Amount string `json:"amount" url:"amount"`
@@ -1240,9 +1242,9 @@ var (
 )
 
 type UpdateFinancingApplicationsRequest struct {
-	// Merchant account ID, prefixed biz_.
+	// Merchant account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"-"`
-	// Financing application ID, prefixed inrq_.
+	// Financing application ID, prefixed `inrq_`.
 	ID      string                                           `json:"-" url:"-"`
 	Answers []*UpdateFinancingApplicationsRequestAnswersItem `json:"answers" url:"-"`
 

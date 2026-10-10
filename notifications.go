@@ -308,7 +308,7 @@ var (
 )
 
 type RetrieveNotificationsRequest struct {
-	// A notification `id` from List Notifications, or the id delivered with a push/websocket event.
+	// A notification `id` from List Notifications, or the ephemeral id delivered with a push or websocket event.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

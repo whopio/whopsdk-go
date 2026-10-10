@@ -23,13 +23,13 @@ var (
 type ListTopicsRequest struct {
 	// Only return preferences for this delivery channel (or not narrowed to a channel).
 	Channel *ListTopicsRequestChannel `json:"-" url:"channel,omitempty"`
-	// Only return preferences scoped to this account's member notifications (`biz_` tag).
+	// Only return preferences scoped to this account's member notifications (`biz_` tag), or not narrowed to an account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// Only return preferences scoped to this account's team notifications (`biz_` tag).
+	// Only return preferences scoped to this account's team notifications (`biz_` tag), or not narrowed to a team account.
 	TeamAccountID *string `json:"-" url:"team_account_id,omitempty"`
-	// Only return preferences scoped to this experience (`exp_` tag).
+	// Only return preferences scoped to this experience (`exp_` tag), or not narrowed to an experience.
 	ExperienceID *string `json:"-" url:"experience_id,omitempty"`
-	// Only return preferences scoped to this notification topic (`topic_` tag).
+	// Only return preferences scoped to this notification topic (`topic_` tag), or not narrowed to a topic.
 	TopicID *string `json:"-" url:"topic_id,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`

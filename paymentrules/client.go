@@ -39,6 +39,8 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Lists the payment rules on an account.
+//
 // Example:
 //
 //	request := &whopsdk.ListPaymentRulesRequest{}
@@ -117,6 +119,8 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
+// Creates a payment rule. It is created `active` and applies its `action` to new payments that match all of its `conditions`.
+//
 // Example:
 //
 //	request := &whopsdk.CreatePaymentRulesRequest{
@@ -154,7 +158,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Small and returned in full on one page.
+// Lists the payment attributes a rule condition can read, with the operators and values each one accepts. Small and returned in full on one page.
 //
 // Example:
 //
@@ -175,6 +179,8 @@ func (c *Client) ListFields(
 	return response.Body, nil
 }
 
+// Retrieves a payment rule.
+//
 // Example:
 //
 //	request := &whopsdk.RetrievePaymentRulesRequest{
@@ -200,7 +206,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// The rule stops applying to new payments and is kept, so the payments it already decided still name it.
+// Deletes a payment rule. It stops applying to new payments but is kept, so the payments it already decided still name it.
 //
 // Example:
 //
@@ -227,7 +233,7 @@ func (c *Client) Delete(
 	return nil
 }
 
-// Changes the rule's name or metadata, keeping its ID and everything recorded against it. What the rule *does* is fixed once created, so the payments it decided keep naming the rule that decided them; use replace to change that.
+// Updates a payment rule's name or metadata, keeping its ID and everything recorded against it. A rule's `action` and `conditions` are fixed once created, so the payments it decided keep naming the rule that decided them; use `POST /payment_rules/:id/replace` to change them.
 //
 // Example:
 //
@@ -254,6 +260,8 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
+// Activates an inactive payment rule so it applies to new payments again. A deleted rule cannot be activated.
+//
 // Example:
 //
 //	request := &whopsdk.ActivatePaymentRulesRequest{
@@ -279,7 +287,7 @@ func (c *Client) Activate(
 	return response.Body, nil
 }
 
-// The rule stops applying to new payments. It keeps its ID and can be activated again.
+// Deactivates a payment rule so it stops applying to new payments. It keeps its ID and can be activated again.
 //
 // Example:
 //
@@ -306,7 +314,7 @@ func (c *Client) Deactivate(
 	return response.Body, nil
 }
 
-// Deletes this rule and creates its successor in one step. The successor carries a new ID and the metadata of the rule it replaced,.
+// Changes a payment rule's `action` and `conditions` by deleting it and creating its successor in one step. The successor has a new ID and keeps the replaced rule's name, metadata, and `active` or `inactive` status.
 //
 // Example:
 //

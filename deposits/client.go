@@ -38,7 +38,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Retrieve the deposit methods for an account, including crypto and bank transfer. Bitcoin deposits are converted by Relay directly to USDT on Plasma in the destination account's wallet. Crypto deposits require a $10 minimum.
+// Returns the deposit methods for an account or user, including crypto addresses, bank transfer instructions, and, for a business, a hosted deposit page. Bitcoin deposits are converted to USDT on Plasma in the destination's wallet. Business destinations require no authentication.
 //
 // Example:
 //

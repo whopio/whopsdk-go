@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of messages within a specific experience chat, DM, or group chat channel, sorted by creation time.
+// Lists messages in an experience chat, DM, or group chat channel, sorted by creation time.
 //
 // Required permissions (one of):
 //   - `chat:read`
@@ -132,7 +132,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Send a new message in an experience chat, DM, or group chat channel. Supports text content, attachments, polls, and replies.
+// Sends a message in an experience chat, DM, or group chat channel. Supports text content, attachments, polls, and replies.
 //
 // Required permissions (one of):
 //   - `chat:message:create`
@@ -199,7 +199,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Permanently delete a message from an experience chat, DM, or group chat channel. Only the message author or a channel admin can delete a message.
+// Permanently deletes a message from an experience chat, DM, or group chat channel. Only the message author or a channel admin can delete a message.
 //
 // Required permissions (one of):
 //   - `chat:message:create` and `chat:read`
@@ -232,7 +232,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Edit the content, attachments, or pinned status of an existing message in an experience chat, DM, or group chat channel.
+// Edits the content, attachments, or pinned status of a message in an experience chat, DM, or group chat channel.
 //
 // Required permissions (one of):
 //   - `chat:message:create`

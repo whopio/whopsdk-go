@@ -2,7 +2,7 @@
 
 // A Trade is one request on an account's or user's Whop-managed wallet. A `buy` bridges USDT0 to the trading account, sets the cross leverage, and places one market buy. A `close` closes the position in one market, if one is open, and sends all withdrawable USDC back to the wallet. Hyperliquid perpetuals are the only supported venue.
 //
-// Creating a trade returns `201` with the trade in `pending`. The trade runs in the background: read it with `GET /trades/{id}` until its `status` is `completed`, `failed` or `in_review`. A buy that does not fill sends its money back to the wallet, and `funds_location` says where the money is.
+// Use the Trades API to open and close positions from a wallet and follow each trade until it finishes. Trades run in the background; a buy that does not fill sends its money back to the wallet, and `funds_location` says where the money is.
 //
 // The trading API, including `include_trading` on accounts and users, is in beta. It can change without a new API version date.
 package trades

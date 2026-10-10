@@ -70,9 +70,9 @@ var setNotificationsRequestPreferencesItemNullableFields = map[string]*big.Int{
 }
 
 type SetNotificationsRequestPreferencesItem struct {
-	// What the user is notified about in this scope. `mentions` is only valid for an experience level. `null` clears the preference.
+	// What the user is notified about in this scope. `mentions` is only valid for an experience level; a topic override is `all` or `nothing`. `null` clears the preference, so the scope inherits its default again rather than being switched off.
 	Level *SetNotificationsRequestPreferencesItemLevel `json:"level,omitempty" url:"level,omitempty"`
-	// What the preference applies to. `null` on a dimension means the preference is not narrowed there.
+	// What the preference applies to. `null` on a dimension means the preference is not narrowed there. A scope read back from either list endpoint can be sent as-is. A scope naming an experience with no topic sets that experience's level; any other scope sets a topic override.
 	Scope *SetNotificationsRequestPreferencesItemScope `json:"scope" url:"scope"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -175,7 +175,7 @@ func (s *SetNotificationsRequestPreferencesItem) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// What the user is notified about in this scope. `mentions` is only valid for an experience level. `null` clears the preference.
+// What the user is notified about in this scope. `mentions` is only valid for an experience level; a topic override is `all` or `nothing`. `null` clears the preference, so the scope inherits its default again rather than being switched off.
 type SetNotificationsRequestPreferencesItemLevel string
 
 const (
@@ -218,7 +218,7 @@ var setNotificationsRequestPreferencesItemScopeNullableFields = map[string]*big.
 	"topic_id":        setNotificationsRequestPreferencesItemScopeFieldTopicID,
 }
 
-// What the preference applies to. `null` on a dimension means the preference is not narrowed there.
+// What the preference applies to. `null` on a dimension means the preference is not narrowed there. A scope read back from either list endpoint can be sent as-is. A scope naming an experience with no topic sets that experience's level; any other scope sets a topic override.
 type SetNotificationsRequestPreferencesItemScope struct {
 	// Account to scope the preference to (member notifications), `biz_` tag.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`

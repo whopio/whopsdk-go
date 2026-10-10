@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of shipments for an account.
+// Lists an account's shipments.
 //
 // Example:
 //
@@ -153,7 +153,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves a shipment by its id, or by the payment id it fulfills.
+// Retrieves a shipment by its ID, or by the ID of the payment it fulfills.
 //
 // Example:
 //

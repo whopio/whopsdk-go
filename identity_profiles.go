@@ -31,7 +31,7 @@ type ListIdentityProfileRequest struct {
 	Last        *int                     `json:"-" url:"last,omitempty"`
 	ProfileType *IdentityProfileKinds    `json:"-" url:"profile_type,omitempty"`
 	Status      *IdentityProfileStatuses `json:"-" url:"status,omitempty"`
-	// The unique identifier of the company to filter to. When omitted, returns IPs across all ledgers the actor can read.
+	// Account to list identity profiles for, prefixed `biz_`. Omit to list profiles across every account you can read, including child accounts under a parent and, with a user credential, your own user.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

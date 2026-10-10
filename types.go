@@ -1651,9 +1651,9 @@ type AccountFee struct {
 	Adjustable bool `json:"adjustable" url:"adjustable"`
 	// Which group of the fee schedule this fee belongs to, for grouping in a UI.
 	Category AccountFeeCategory `json:"category" url:"category"`
-	// The platform rate before custom or inherited pricing is applied.
+	// The platform rate before custom or inherited pricing is applied. Its `percentage` and `fixed` are `null` when a connected account's fees are read without access to its parent account.
 	Default *AccountFeeRate `json:"default" url:"default"`
-	// When a custom or inherited rate expires and the fee returns to `default`, as an ISO 8601 timestamp. `null` when the default applies or the rate does not expire.
+	// When a custom or inherited rate expires and the fee returns to `default`, as an ISO 8601 timestamp. `null` when the default applies, the rate does not expire, or a connected account's fees are read without access to its parent account.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// The amount charged per event in effect. `null` when the fee has no fixed component.
 	Fixed *Money `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -1667,9 +1667,9 @@ type AccountFee struct {
 	Region *AccountFeeRegion `json:"region,omitempty" url:"region,omitempty"`
 	// The rate, source, default, reset rate, and editable limits in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
 	Regions map[string]*AccountFeeRegionalRate `json:"regions" url:"regions"`
-	// The rate that takes effect when this account's custom rate is cleared, including inherited pricing.
+	// The rate that takes effect when this account's custom rate is cleared, including inherited pricing. Its `percentage` and `fixed` are `null` when a connected account's fees are read without access to its parent account.
 	Reset *AccountFeeRate `json:"reset" url:"reset"`
-	// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
+	// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to. `null` when a connected account's fees are read without access to its parent account.
 	Source *AccountFeeSource `json:"source,omitempty" url:"source,omitempty"`
 	// Why the caller may not change this fee, or `null` when `adjustable`. `not_permitted` when the caller has no say over it.
 	UnadjustableReason *AccountFeeUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
@@ -1979,7 +1979,7 @@ var accountFeeMarkupNullableFields = map[string]*big.Int{
 type AccountFeeMarkup struct {
 	// Whether the caller may change this markup through `PATCH`. True for the platform's team holding the `company:update_child_fees` scope.
 	Adjustable bool `json:"adjustable" url:"adjustable"`
-	// What applies if this row is cleared: the platform's default for all its connected accounts, or zero.
+	// What applies if this row is cleared: the platform's default for all its connected accounts, or zero. Its `percentage` and `fixed` are `null` when a connected account's fees are read without access to its parent account.
 	Default *AccountFeeRate `json:"default" url:"default"`
 	// The amount the platform adds per event. Zero when no markup is set.
 	Fixed *Money `json:"fixed" url:"fixed"`
@@ -1987,7 +1987,7 @@ type AccountFeeMarkup struct {
 	Maximum *AccountFeeRate `json:"maximum" url:"maximum"`
 	// The percentage of the transaction the platform adds, where `2` means 2%. `0` when no markup is set.
 	Percentage float64 `json:"percentage" url:"percentage"`
-	// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero.
+	// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero. `null` when a connected account's fees are read without access to its parent account.
 	Source *AccountFeeMarkupSource `json:"source,omitempty" url:"source,omitempty"`
 	// Why the caller may not change this markup, or `null` when `adjustable`.
 	UnadjustableReason *AccountFeeMarkupUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
@@ -2162,7 +2162,7 @@ func (a *AccountFeeMarkup) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero.
+// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero. `null` when a connected account's fees are read without access to its parent account.
 type AccountFeeMarkupSource string
 
 const (
@@ -2796,7 +2796,7 @@ func (a AccountFeeRegionalRateSource) Ptr() *AccountFeeRegionalRateSource {
 	return &a
 }
 
-// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to.
+// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to. `null` when a connected account's fees are read without access to its parent account.
 type AccountFeeSource string
 
 const (
@@ -2928,7 +2928,7 @@ type AccountFees struct {
 	ParentAccountID *string `json:"parent_account_id,omitempty" url:"parent_account_id,omitempty"`
 	// Processing fees for every non-card payment method the platform prices, keyed by payment method type such as `us_bank_account` or `klarna`.
 	PaymentMethods map[string]*AccountFee `json:"payment_methods" url:"payment_methods"`
-	// Fees on withdrawals, keyed by payout method: `bank_wire`, `same_day_bank`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`.
+	// Fees on withdrawals, keyed by payout method: `bank_wire`, `same_day_bank`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`. Payout fees the parent account covers show as zero when a connected account's fees are read without access to its parent account.
 	Payouts map[string]*AccountFee `json:"payouts" url:"payouts"`
 	// Charged on a Whop Ads auto top-up that is funded from pending balance.
 	PendingAutoTopup *AccountFee `json:"pending_auto_topup" url:"pending_auto_topup"`
@@ -29964,7 +29964,7 @@ var paymentInputNullableFields = map[string]*big.Int{
 type PaymentInput struct {
 	// The account the purchase belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
-	// What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+	// What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `plan_id` and `plan`.
 	LineItems []*PaymentInputLineItemsItem `json:"line_items,omitempty" url:"line_items,omitempty"`
 	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 	Plan *PaymentInputPlan `json:"plan,omitempty" url:"plan,omitempty"`

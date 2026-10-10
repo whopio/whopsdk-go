@@ -59,7 +59,7 @@ var (
 type CreatePaymentsRequest struct {
 	// The account the purchase belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
-	// What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency.
+	// What the buyer is purchasing. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `plan_id` and `plan`.
 	LineItems []*PaymentInputLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `plan_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
 	Plan *PaymentInputPlan `json:"plan,omitempty" url:"-"`
@@ -290,13 +290,13 @@ var (
 )
 
 type ListPaymentsRequest struct {
-	// Which sales to list. `account_sales` returns sales for the accounts the caller can read. `user_sales` returns only sales received by the signed-in user's primary ledger account, without a company; requires their own Whop login session and cannot be combined with `account_id`.
+	// Which sales to list. `account_sales` returns sales for the accounts the caller can read. `user_sales` returns only sales the signed-in user received personally, outside any account; it requires the user's own Whop login session and cannot be combined with `account_id`.
 	Mode *ListPaymentsRequestMode `json:"-" url:"mode,omitempty"`
 	// Only payments charged by this account, prefixed `biz_`.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only payments in this lifecycle state.
 	Status *ListPaymentsRequestStatus `json:"-" url:"status,omitempty"`
-	// Only payments charged for this reason.
+	// Only payments charged for this reason. `subscription_cycle` also matches renewals recorded as `subscription_update`.
 	BillingReason *ListPaymentsRequestBillingReason `json:"-" url:"billing_reason,omitempty"`
 	// Only payments presented in this three-letter currency, such as `usd`.
 	Currency *string `json:"-" url:"currency,omitempty"`

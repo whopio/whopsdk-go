@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists payment method domains. Without `account_id`, returns the caller's own domains and those of every connected account.
+// Lists the payment method domains registered for your account and its connected accounts.
 //
 // Example:
 //
@@ -119,7 +119,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Registers a hostname with the wallet provider and attempts verification inline. Returns `verified` when the provider fetched the domain-association file (for Apple Pay, `/.well-known/apple-developer-merchantid-domain-association`), or `pending` when it could not — host the file, then retry with the verify endpoint.
+// Registers a hostname with the wallet provider and attempts verification inline. Returns `verified` when the provider fetched the domain-association file (for Apple Pay, `/.well-known/apple-developer-merchantid-domain-association`), or `pending` when it could not: host the file, then retry with `POST /payment_method_domains/:id/verify`.
 //
 // Example:
 //

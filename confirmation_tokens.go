@@ -17,7 +17,7 @@ var (
 type RetrieveConfirmationTokensRequest struct {
 	// Confirmation token ID, prefixed `ctok_`.
 	ID string `json:"-" url:"-"`
-	// The account (biz_) the token was minted for.
+	// The account the token was minted for, prefixed `biz_`. It must match the token's account.
 	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

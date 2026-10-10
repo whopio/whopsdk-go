@@ -26,7 +26,7 @@ type CreateTradesRequest struct {
 	Leverage *int `json:"leverage,omitempty" url:"-"`
 	// The perpetual market, for example `BTC`.
 	Market string `json:"market" url:"-"`
-	// `buy` or `close`.
+	// `buy` bridges `amount` USDT0 to the trading account, sets cross `leverage` on `market`, and places one market buy; if it does not fill, its money goes back to the wallet. `close` closes the position in `market`, if one is open, and sends all withdrawable USDC back to the wallet.
 	Type CreateTradesRequestType `json:"type" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -798,7 +798,7 @@ func (t TradeType) Ptr() *TradeType {
 	return &t
 }
 
-// `buy` or `close`.
+// `buy` bridges `amount` USDT0 to the trading account, sets cross `leverage` on `market`, and places one market buy; if it does not fill, its money goes back to the wallet. `close` closes the position in `market`, if one is open, and sends all withdrawable USDC back to the wallet.
 type CreateTradesRequestType string
 
 const (

@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of customer reviews for a specific product, with optional filtering by star rating and creation date.
+// Lists the customer reviews for a product.
 //
 // Example:
 //

@@ -42,7 +42,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists setup intents newest first. An account API key lists its own account; a user token lists every account it can read, or one account with `account_id`. `client_secret` is always null on list rows — retrieve the setup intent for it.
+// Lists setup intents newest first. An account API key lists its own account; a user token lists every account it can read, or one account with `account_id`.
 //
 // Example:
 //
@@ -122,7 +122,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Saves a buyer's payment method for later without charging it. Pass a `confirmation_token` for a method the buyer just supplied through the payment elements in setup mode, or a `payment_method_id` already on file to re-verify it. The response is the setup intent as created, not its outcome: it is `processing` while the payment method is saved in the background, and `requires_action` when the buyer still has a step. Hand `client_secret` to the elements' `handleNextAction`, or poll Retrieve setup status, for the outcome. A buyer's own token holding `member:payment_methods:use` may create a setup intent for itself from a confirmation token.
+// Saves a buyer's payment method for later without charging it — one the buyer just supplied through the payment elements in setup mode, or one already on file to re-verify. The setup completes in the background, so the response is the setup intent as created, not its outcome: hand `client_secret` to the elements' `handleNextAction`, or poll Retrieve setup status. A buyer's own token holding `member:payment_methods:use` may create a setup intent for itself from a confirmation token.
 //
 // Example:
 //
@@ -149,7 +149,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Returns one setup intent. Related records are ids — once `status` is `succeeded`, `payment_method_id` is the saved method to charge or retrieve. The buyer's own token may retrieve a setup intent that belongs to it.
+// Retrieves a setup intent. Once its `status` is `succeeded`, charge the saved method by its `payment_method_id`. The buyer's own token may retrieve a setup intent that belongs to it.
 //
 // Example:
 //

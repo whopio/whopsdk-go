@@ -4,5 +4,5 @@
 //
 // Use the Accounts API to create accounts, list accounts visible to your credentials, retrieve or update an account, suspend or delete a connected account managed by your platform, and retrieve the account associated with the current API key.
 //
-// An account applies to accept financing payments through financing applications. A financing application requests review of a merchant account for payment financing, not a loan or business capital. Create, list, and retrieve applications for your account and its direct sub-accounts. Creating an application returns an existing open application when one is already collecting information or awaiting review.
+// To accept payment-financing methods, an account applies through a financing application: a request to review the account for payment financing, not a loan or business capital. Create an application, save answers to its requirements, then submit it for review. You can manage applications for your own account and its direct connected accounts.
 package accounts

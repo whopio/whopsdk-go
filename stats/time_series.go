@@ -166,7 +166,7 @@ type RetrieveTimeSeriesRequest struct {
 	ConversionWindow *string `json:"-" url:"conversion_window,omitempty"`
 	// Funnel only. Include only entrants whose full conversion window has elapsed. Required for confidence intervals and comparisons.
 	MatureOnly *bool `json:"-" url:"mature_only,omitempty"`
-	// Funnel only. Required when metric=funnel. Consecutive one-based steps encoded as steps[1][event], steps[1][page], steps[2][event], and so on. Values are scalar strings, never JSON.
+	// Funnel only. Required when metric=funnel. 2 to 10 ordered events per person, as consecutive one-based bracket parameters such as `steps[1][event]=pixel.page&steps[1][page]=/pricing*&steps[2][event]=payment.completed`. Values are scalar strings, never JSON. A person's first step 1 match inside `from`/`to` anchors their cohort, breakdown, and conversion window; later matches do not restart it. Other events may occur between steps, and conversions may land after `to`. For an experiment funnel, make `experiment.exposure` step 1 and pass `breakdown_by=variant`.
 	Steps *v2.RetrieveTimeSeriesRequestSteps `json:"-" url:"steps,omitempty"`
 	// Funnel only. The breakdown value to use as baseline for whole-window final conversion. Requires breakdown_by and mature_only=true; defaults confidence_level to 0.95.
 	CompareTo *string `json:"-" url:"compare_to,omitempty"`
@@ -1370,7 +1370,7 @@ type RetrieveTimeSeriesResponseDataPointsItem struct {
 	Steps []*v2.FunnelStepResult `json:"steps,omitempty" url:"steps,omitempty"`
 	// Unix timestamp (seconds) of the period start.
 	Timestamp int `json:"timestamp" url:"timestamp"`
-	// The metric's value for this period, in the metric's unit.
+	// The metric's value for this period, in the metric's unit. For `funnel`, the final-step conversion percentage.
 	Value *float64 `json:"value,omitempty" url:"value,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

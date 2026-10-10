@@ -29,7 +29,7 @@ var (
 type PlatformTrendsReportsRequest struct {
 	// What each row is. Omit it for one row per window, holding the window's total.
 	BreakdownBy *PlatformTrendsReportsRequestBreakdownBy `json:"-" url:"breakdown_by,omitempty"`
-	// Comma-separated properties and metrics to return on each row. Defaults to `gross_revenue,businesses`.
+	// Comma-separated properties and metrics to return on each row. `business_type` can ride along on `industry_type` rows. Defaults to `gross_revenue,businesses`.
 	Columns *string `json:"-" url:"columns,omitempty"`
 	// Comma-separated windows, at most four: `1d`, `7d`, `30d`, `90d`, `365d`, `mtd`, `qtd`, `ytd`, `all_time`, an explicit `2026-09-01..2026-10-01`, any of these prefixed `prev:` for the equal-length period before, or suffixed `@2026-09-01` to end earlier. Defaults to `30d`.
 	Windows *string `json:"-" url:"windows,omitempty"`
@@ -1482,7 +1482,7 @@ var (
 )
 
 type PlatformTrendsReportsResponseDataReportsItem struct {
-	// The page of rows. Only the requested columns are present.
+	// The page of rows. Only the requested columns are present. A breakdown value with fewer than three businesses behind it is left out, and a filtered total that small comes back with every metric `null`.
 	Rows   []*PlatformTrendsReportsResponseDataReportsItemRowsItem `json:"rows" url:"rows"`
 	Window *PlatformTrendsReportsResponseDataReportsItemWindow     `json:"window" url:"window"`
 
