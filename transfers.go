@@ -11,173 +11,6 @@ import (
 )
 
 var (
-	createTransfersRequestFieldAmount          = big.NewInt(1 << 0)
-	createTransfersRequestFieldCurrency        = big.NewInt(1 << 1)
-	createTransfersRequestFieldDestinationID   = big.NewInt(1 << 2)
-	createTransfersRequestFieldExpiresAt       = big.NewInt(1 << 3)
-	createTransfersRequestFieldFeedID          = big.NewInt(1 << 4)
-	createTransfersRequestFieldFeedType        = big.NewInt(1 << 5)
-	createTransfersRequestFieldIdempotenceKey  = big.NewInt(1 << 6)
-	createTransfersRequestFieldMetadata        = big.NewInt(1 << 7)
-	createTransfersRequestFieldNotes           = big.NewInt(1 << 8)
-	createTransfersRequestFieldOriginID        = big.NewInt(1 << 9)
-	createTransfersRequestFieldRedeemableCount = big.NewInt(1 << 10)
-	createTransfersRequestFieldType            = big.NewInt(1 << 11)
-)
-
-type CreateTransfersRequest struct {
-	// The amount to move, in the transfer currency. For example 25.00.
-	Amount float64 `json:"amount" url:"-"`
-	// Currency, such as `usd`. Required for ledger transfers.
-	Currency *string `json:"currency,omitempty" url:"-"`
-	// The recipient. Required for ledger and wallet_send (a user_/biz_/ldgr_ ID, or — for sends — an email). Omit for claim_link.
-	DestinationID *string `json:"destination_id,omitempty" url:"-"`
-	// claim_link only. Link expiry as an ISO 8601 timestamp. Defaults to 24 hours from creation.
-	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"-"`
-	// Ledger transfers only. The feed the transfer was initiated from. Given with `feed_type`, the payment receipt posts into that feed instead of a direct message.
-	FeedID *string `json:"feed_id,omitempty" url:"-"`
-	// Ledger transfers only. The type of the feed named by `feed_id`.
-	FeedType *CreateTransfersRequestFeedType `json:"feed_type,omitempty" url:"-"`
-	// Ledger transfers and wallet sends. A unique key that makes retries safe. Retrying with the same key returns the original transfer, or attaches to the original wallet send, instead of moving money twice.
-	IdempotenceKey *string `json:"idempotence_key,omitempty" url:"-"`
-	// Ledger transfers only. Custom key-value pairs attached to the transfer. Max 50 keys, 100 chars per key, 500 chars per string value.
-	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
-	// Ledger transfers only. A short note describing the transfer.
-	Notes *string `json:"notes,omitempty" url:"-"`
-	// The account sending the funds. A user ID (user_xxx), account ID (biz_xxx), or ledger account ID (ldgr_xxx).
-	OriginID string `json:"origin_id" url:"-"`
-	// claim_link only. How many different users can claim the link. Defaults to 1.
-	RedeemableCount *int `json:"redeemable_count,omitempty" url:"-"`
-	// The kind of money movement, which decides what comes back. Defaults to ledger. `ledger` moves credit between two Whop balances and returns a `transfer`; `wallet_send` sends USDT from the origin account's Ethereum wallet and returns a `send`; `claim_link` funds a shareable link anyone with the URL can redeem and returns a `claim_link`. A `ledger` transfer from a stablecoin-rails account settles on-chain when covered, and still returns a `transfer`.
-	Type *CreateTransfersRequestType `json:"type,omitempty" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (c *CreateTransfersRequest) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAmount sets the Amount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetAmount(amount float64) {
-	c.Amount = amount
-	c.require(createTransfersRequestFieldAmount)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetCurrency(currency *string) {
-	c.Currency = currency
-	c.require(createTransfersRequestFieldCurrency)
-}
-
-// SetDestinationID sets the DestinationID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetDestinationID(destinationID *string) {
-	c.DestinationID = destinationID
-	c.require(createTransfersRequestFieldDestinationID)
-}
-
-// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetExpiresAt(expiresAt *time.Time) {
-	c.ExpiresAt = expiresAt
-	c.require(createTransfersRequestFieldExpiresAt)
-}
-
-// SetFeedID sets the FeedID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetFeedID(feedID *string) {
-	c.FeedID = feedID
-	c.require(createTransfersRequestFieldFeedID)
-}
-
-// SetFeedType sets the FeedType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetFeedType(feedType *CreateTransfersRequestFeedType) {
-	c.FeedType = feedType
-	c.require(createTransfersRequestFieldFeedType)
-}
-
-// SetIdempotenceKey sets the IdempotenceKey field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetIdempotenceKey(idempotenceKey *string) {
-	c.IdempotenceKey = idempotenceKey
-	c.require(createTransfersRequestFieldIdempotenceKey)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetMetadata(metadata map[string]any) {
-	c.Metadata = metadata
-	c.require(createTransfersRequestFieldMetadata)
-}
-
-// SetNotes sets the Notes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetNotes(notes *string) {
-	c.Notes = notes
-	c.require(createTransfersRequestFieldNotes)
-}
-
-// SetOriginID sets the OriginID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetOriginID(originID string) {
-	c.OriginID = originID
-	c.require(createTransfersRequestFieldOriginID)
-}
-
-// SetRedeemableCount sets the RedeemableCount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetRedeemableCount(redeemableCount *int) {
-	c.RedeemableCount = redeemableCount
-	c.require(createTransfersRequestFieldRedeemableCount)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersRequest) SetType(type_ *CreateTransfersRequestType) {
-	c.Type = type_
-	c.require(createTransfersRequestFieldType)
-}
-
-func (c *CreateTransfersRequest) UnmarshalJSON(data []byte) error {
-	type embed CreateTransfersRequest
-	var body = struct {
-		embed
-		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
-	}{
-		embed: embed(*c),
-	}
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*c = CreateTransfersRequest(body.embed)
-	c.ExpiresAt = body.ExpiresAt.TimePtr()
-	return nil
-}
-
-func (c *CreateTransfersRequest) MarshalJSON() ([]byte, error) {
-	type embed CreateTransfersRequest
-	var marshaler = struct {
-		embed
-		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
-	}{
-		embed:     embed(*c),
-		ExpiresAt: internal.NewOptionalDateTime(c.ExpiresAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-var (
 	listTransfersRequestFieldOriginID      = big.NewInt(1 << 0)
 	listTransfersRequestFieldDestinationID = big.NewInt(1 << 1)
 	listTransfersRequestFieldOrder         = big.NewInt(1 << 2)
@@ -191,9 +24,9 @@ var (
 )
 
 type ListTransfersRequest struct {
-	// Filter to transfers sent from this account. Provide this or destination_id.
+	// Filter to transfers sent from this account.
 	OriginID *string `json:"-" url:"origin_id,omitempty"`
-	// Filter to transfers received by this account. Provide this or origin_id.
+	// Filter to transfers received by this account.
 	DestinationID *string `json:"-" url:"destination_id,omitempty"`
 	// Sort column. Defaults to created_at.
 	Order *ListTransfersRequestOrder `json:"-" url:"order,omitempty"`
@@ -381,73 +214,572 @@ func (r *RetrieveTransfersRequest) SetID(id string) {
 	r.require(retrieveTransfersRequestFieldID)
 }
 
-// Ledger transfers only. The type of the feed named by `feed_id`.
-type CreateTransfersRequestFeedType string
+type CreateTransfersRequestBody struct {
+	Type string
+	// Moves credit between two Whop balances and returns a `transfer`. A transfer from a stablecoin-rails account settles on-chain when covered, and still returns a `transfer`.
+	Balance *CreateTransfersRequestBodyBalance
+	// Funds a shareable link anyone with the URL can redeem and returns a `claim_link`.
+	ClaimLink *CreateTransfersRequestBodyClaimLink
 
-const (
-	CreateTransfersRequestFeedTypeDmsFeed        CreateTransfersRequestFeedType = "dms_feed"
-	CreateTransfersRequestFeedTypeChatFeed       CreateTransfersRequestFeedType = "chat_feed"
-	CreateTransfersRequestFeedTypeForumFeed      CreateTransfersRequestFeedType = "forum_feed"
-	CreateTransfersRequestFeedTypeLivestreamFeed CreateTransfersRequestFeedType = "livestream_feed"
-	CreateTransfersRequestFeedTypeUniversalPost  CreateTransfersRequestFeedType = "universal_post"
-	CreateTransfersRequestFeedTypeUser           CreateTransfersRequestFeedType = "user"
+	rawJSON json.RawMessage
+}
+
+func (c *CreateTransfersRequestBody) GetType() string {
+	if c == nil {
+		return ""
+	}
+	return c.Type
+}
+
+func (c *CreateTransfersRequestBody) GetBalance() *CreateTransfersRequestBodyBalance {
+	if c == nil {
+		return nil
+	}
+	return c.Balance
+}
+
+func (c *CreateTransfersRequestBody) GetClaimLink() *CreateTransfersRequestBodyClaimLink {
+	if c == nil {
+		return nil
+	}
+	return c.ClaimLink
+}
+
+func (c *CreateTransfersRequestBody) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	c.Type = unmarshaler.Type
+	if unmarshaler.Type == "" {
+		return fmt.Errorf("%T did not include discriminant type", c)
+	}
+	switch unmarshaler.Type {
+	case "balance":
+		value := new(CreateTransfersRequestBodyBalance)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Balance = value
+	case "claim_link":
+		value := new(CreateTransfersRequestBodyClaimLink)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.ClaimLink = value
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c CreateTransfersRequestBody) MarshalJSON() ([]byte, error) {
+	if err := c.validate(); err != nil {
+		return nil, err
+	}
+	if c.Balance != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Balance, "type", "balance")
+	}
+	if c.ClaimLink != nil {
+		return internal.MarshalJSONWithExtraProperty(c.ClaimLink, "type", "claim_link")
+	}
+	if len(c.rawJSON) > 0 {
+		return c.rawJSON, nil
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", c)
+}
+
+type CreateTransfersRequestBodyVisitor interface {
+	VisitBalance(*CreateTransfersRequestBodyBalance) error
+	VisitClaimLink(*CreateTransfersRequestBodyClaimLink) error
+}
+
+func (c *CreateTransfersRequestBody) Accept(visitor CreateTransfersRequestBodyVisitor) error {
+	if c.Balance != nil {
+		return visitor.VisitBalance(c.Balance)
+	}
+	if c.ClaimLink != nil {
+		return visitor.VisitClaimLink(c.ClaimLink)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", c)
+}
+
+func (c *CreateTransfersRequestBody) validate() error {
+	if c == nil {
+		return fmt.Errorf("type %T is nil", c)
+	}
+	var fields []string
+	if c.Balance != nil {
+		fields = append(fields, "balance")
+	}
+	if c.ClaimLink != nil {
+		fields = append(fields, "claim_link")
+	}
+	if len(fields) == 0 {
+		if c.Type != "" {
+			if len(c.rawJSON) > 0 {
+				return nil
+			}
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", c, c.Type)
+		}
+		return fmt.Errorf("type %T is empty", c)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", c, fields)
+	}
+	if c.Type != "" {
+		field := fields[0]
+		if c.Type != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				c,
+				c.Type,
+				c,
+			)
+		}
+	}
+	return nil
+}
+
+var (
+	createTransfersRequestBodyBalanceFieldAmount         = big.NewInt(1 << 0)
+	createTransfersRequestBodyBalanceFieldCurrency       = big.NewInt(1 << 1)
+	createTransfersRequestBodyBalanceFieldDestinationID  = big.NewInt(1 << 2)
+	createTransfersRequestBodyBalanceFieldFeedID         = big.NewInt(1 << 3)
+	createTransfersRequestBodyBalanceFieldFeedType       = big.NewInt(1 << 4)
+	createTransfersRequestBodyBalanceFieldIdempotenceKey = big.NewInt(1 << 5)
+	createTransfersRequestBodyBalanceFieldMetadata       = big.NewInt(1 << 6)
+	createTransfersRequestBodyBalanceFieldNotes          = big.NewInt(1 << 7)
+	createTransfersRequestBodyBalanceFieldOriginID       = big.NewInt(1 << 8)
 )
 
-func NewCreateTransfersRequestFeedTypeFromString(s string) (CreateTransfersRequestFeedType, error) {
+// createTransfersRequestBodyBalanceNullableFields maps the wire names of CreateTransfersRequestBodyBalance's nullable fields (required or optional) to their field bits.
+var createTransfersRequestBodyBalanceNullableFields = map[string]*big.Int{
+	"feed_id":         createTransfersRequestBodyBalanceFieldFeedID,
+	"feed_type":       createTransfersRequestBodyBalanceFieldFeedType,
+	"idempotence_key": createTransfersRequestBodyBalanceFieldIdempotenceKey,
+	"metadata":        createTransfersRequestBodyBalanceFieldMetadata,
+	"notes":           createTransfersRequestBodyBalanceFieldNotes,
+}
+
+// Moves credit between two Whop balances and returns a `transfer`. A transfer from a stablecoin-rails account settles on-chain when covered, and still returns a `transfer`.
+type CreateTransfersRequestBodyBalance struct {
+	// The amount to move, in the transfer currency. For example 25.00.
+	Amount float64 `json:"amount" url:"amount"`
+	// Currency, such as `usd`.
+	Currency string `json:"currency" url:"currency"`
+	// The recipient. A user ID (user_xxx), account ID (biz_xxx), or ledger account ID (ldgr_xxx).
+	DestinationID string `json:"destination_id" url:"destination_id"`
+	// The feed the transfer was initiated from. Given with `feed_type`, the payment receipt posts into that feed instead of a direct message.
+	FeedID *string `json:"feed_id,omitempty" url:"feed_id,omitempty"`
+	// The type of the feed named by `feed_id`.
+	FeedType *CreateTransfersRequestBodyBalanceFeedType `json:"feed_type,omitempty" url:"feed_type,omitempty"`
+	// A unique key that makes retries safe. Retrying with the same key returns the original transfer instead of moving money twice.
+	IdempotenceKey *string `json:"idempotence_key,omitempty" url:"idempotence_key,omitempty"`
+	// Custom key-value pairs attached to the transfer. Max 50 keys, 100 chars per key, 500 chars per string value.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// A short note describing the transfer.
+	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
+	// The account sending the funds. A user ID (user_xxx), account ID (biz_xxx), or ledger account ID (ldgr_xxx).
+	OriginID string `json:"origin_id" url:"origin_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateTransfersRequestBodyBalance) GetAmount() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.Amount
+}
+
+func (c *CreateTransfersRequestBodyBalance) GetCurrency() string {
+	if c == nil {
+		return ""
+	}
+	return c.Currency
+}
+
+func (c *CreateTransfersRequestBodyBalance) GetDestinationID() string {
+	if c == nil {
+		return ""
+	}
+	return c.DestinationID
+}
+
+func (c *CreateTransfersRequestBodyBalance) GetFeedID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.FeedID
+}
+
+func (c *CreateTransfersRequestBodyBalance) GetFeedType() *CreateTransfersRequestBodyBalanceFeedType {
+	if c == nil {
+		return nil
+	}
+	return c.FeedType
+}
+
+func (c *CreateTransfersRequestBodyBalance) GetIdempotenceKey() *string {
+	if c == nil {
+		return nil
+	}
+	return c.IdempotenceKey
+}
+
+func (c *CreateTransfersRequestBodyBalance) GetMetadata() map[string]any {
+	if c == nil {
+		return nil
+	}
+	return c.Metadata
+}
+
+func (c *CreateTransfersRequestBodyBalance) GetNotes() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Notes
+}
+
+func (c *CreateTransfersRequestBodyBalance) GetOriginID() string {
+	if c == nil {
+		return ""
+	}
+	return c.OriginID
+}
+
+func (c *CreateTransfersRequestBodyBalance) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateTransfersRequestBodyBalance) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyBalance) SetAmount(amount float64) {
+	c.Amount = amount
+	c.require(createTransfersRequestBodyBalanceFieldAmount)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyBalance) SetCurrency(currency string) {
+	c.Currency = currency
+	c.require(createTransfersRequestBodyBalanceFieldCurrency)
+}
+
+// SetDestinationID sets the DestinationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyBalance) SetDestinationID(destinationID string) {
+	c.DestinationID = destinationID
+	c.require(createTransfersRequestBodyBalanceFieldDestinationID)
+}
+
+// SetFeedID sets the FeedID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyBalance) SetFeedID(feedID *string) {
+	c.FeedID = feedID
+	c.require(createTransfersRequestBodyBalanceFieldFeedID)
+}
+
+// SetFeedType sets the FeedType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyBalance) SetFeedType(feedType *CreateTransfersRequestBodyBalanceFeedType) {
+	c.FeedType = feedType
+	c.require(createTransfersRequestBodyBalanceFieldFeedType)
+}
+
+// SetIdempotenceKey sets the IdempotenceKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyBalance) SetIdempotenceKey(idempotenceKey *string) {
+	c.IdempotenceKey = idempotenceKey
+	c.require(createTransfersRequestBodyBalanceFieldIdempotenceKey)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyBalance) SetMetadata(metadata map[string]any) {
+	c.Metadata = metadata
+	c.require(createTransfersRequestBodyBalanceFieldMetadata)
+}
+
+// SetNotes sets the Notes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyBalance) SetNotes(notes *string) {
+	c.Notes = notes
+	c.require(createTransfersRequestBodyBalanceFieldNotes)
+}
+
+// SetOriginID sets the OriginID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyBalance) SetOriginID(originID string) {
+	c.OriginID = originID
+	c.require(createTransfersRequestBodyBalanceFieldOriginID)
+}
+
+func (c *CreateTransfersRequestBodyBalance) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateTransfersRequestBodyBalance
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateTransfersRequestBodyBalance(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersRequestBodyBalanceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateTransfersRequestBodyBalance) MarshalJSON() ([]byte, error) {
+	type embed CreateTransfersRequestBodyBalance
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateTransfersRequestBodyBalance) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// The type of the feed named by `feed_id`.
+type CreateTransfersRequestBodyBalanceFeedType string
+
+const (
+	CreateTransfersRequestBodyBalanceFeedTypeDmsFeed        CreateTransfersRequestBodyBalanceFeedType = "dms_feed"
+	CreateTransfersRequestBodyBalanceFeedTypeChatFeed       CreateTransfersRequestBodyBalanceFeedType = "chat_feed"
+	CreateTransfersRequestBodyBalanceFeedTypeForumFeed      CreateTransfersRequestBodyBalanceFeedType = "forum_feed"
+	CreateTransfersRequestBodyBalanceFeedTypeLivestreamFeed CreateTransfersRequestBodyBalanceFeedType = "livestream_feed"
+	CreateTransfersRequestBodyBalanceFeedTypeUniversalPost  CreateTransfersRequestBodyBalanceFeedType = "universal_post"
+	CreateTransfersRequestBodyBalanceFeedTypeUser           CreateTransfersRequestBodyBalanceFeedType = "user"
+)
+
+func NewCreateTransfersRequestBodyBalanceFeedTypeFromString(s string) (CreateTransfersRequestBodyBalanceFeedType, error) {
 	switch s {
 	case "dms_feed":
-		return CreateTransfersRequestFeedTypeDmsFeed, nil
+		return CreateTransfersRequestBodyBalanceFeedTypeDmsFeed, nil
 	case "chat_feed":
-		return CreateTransfersRequestFeedTypeChatFeed, nil
+		return CreateTransfersRequestBodyBalanceFeedTypeChatFeed, nil
 	case "forum_feed":
-		return CreateTransfersRequestFeedTypeForumFeed, nil
+		return CreateTransfersRequestBodyBalanceFeedTypeForumFeed, nil
 	case "livestream_feed":
-		return CreateTransfersRequestFeedTypeLivestreamFeed, nil
+		return CreateTransfersRequestBodyBalanceFeedTypeLivestreamFeed, nil
 	case "universal_post":
-		return CreateTransfersRequestFeedTypeUniversalPost, nil
+		return CreateTransfersRequestBodyBalanceFeedTypeUniversalPost, nil
 	case "user":
-		return CreateTransfersRequestFeedTypeUser, nil
+		return CreateTransfersRequestBodyBalanceFeedTypeUser, nil
 	}
-	var t CreateTransfersRequestFeedType
+	var t CreateTransfersRequestBodyBalanceFeedType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateTransfersRequestFeedType) Ptr() *CreateTransfersRequestFeedType {
+func (c CreateTransfersRequestBodyBalanceFeedType) Ptr() *CreateTransfersRequestBodyBalanceFeedType {
 	return &c
 }
 
-// The kind of money movement, which decides what comes back. Defaults to ledger. `ledger` moves credit between two Whop balances and returns a `transfer`; `wallet_send` sends USDT from the origin account's Ethereum wallet and returns a `send`; `claim_link` funds a shareable link anyone with the URL can redeem and returns a `claim_link`. A `ledger` transfer from a stablecoin-rails account settles on-chain when covered, and still returns a `transfer`.
-type CreateTransfersRequestType string
-
-const (
-	CreateTransfersRequestTypeLedger     CreateTransfersRequestType = "ledger"
-	CreateTransfersRequestTypeWalletSend CreateTransfersRequestType = "wallet_send"
-	CreateTransfersRequestTypeClaimLink  CreateTransfersRequestType = "claim_link"
+var (
+	createTransfersRequestBodyClaimLinkFieldAmount          = big.NewInt(1 << 0)
+	createTransfersRequestBodyClaimLinkFieldExpiresAt       = big.NewInt(1 << 1)
+	createTransfersRequestBodyClaimLinkFieldOriginID        = big.NewInt(1 << 2)
+	createTransfersRequestBodyClaimLinkFieldRedeemableCount = big.NewInt(1 << 3)
 )
 
-func NewCreateTransfersRequestTypeFromString(s string) (CreateTransfersRequestType, error) {
-	switch s {
-	case "ledger":
-		return CreateTransfersRequestTypeLedger, nil
-	case "wallet_send":
-		return CreateTransfersRequestTypeWalletSend, nil
-	case "claim_link":
-		return CreateTransfersRequestTypeClaimLink, nil
-	}
-	var t CreateTransfersRequestType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
+// createTransfersRequestBodyClaimLinkNullableFields maps the wire names of CreateTransfersRequestBodyClaimLink's nullable fields (required or optional) to their field bits.
+var createTransfersRequestBodyClaimLinkNullableFields = map[string]*big.Int{
+	"expires_at": createTransfersRequestBodyClaimLinkFieldExpiresAt,
 }
 
-func (c CreateTransfersRequestType) Ptr() *CreateTransfersRequestType {
-	return &c
+// Funds a shareable link anyone with the URL can redeem and returns a `claim_link`.
+type CreateTransfersRequestBodyClaimLink struct {
+	// The amount to move, in the transfer currency. For example 25.00.
+	Amount float64 `json:"amount" url:"amount"`
+	// Link expiry as an ISO 8601 timestamp. Defaults to 24 hours from creation.
+	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"expires_at,omitempty"`
+	// The account sending the funds. A user ID (user_xxx), account ID (biz_xxx), or ledger account ID (ldgr_xxx).
+	OriginID string `json:"origin_id" url:"origin_id"`
+	// How many different users can claim the link. Defaults to 1.
+	RedeemableCount *int `json:"redeemable_count,omitempty" url:"redeemable_count,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateTransfersRequestBodyClaimLink) GetAmount() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.Amount
+}
+
+func (c *CreateTransfersRequestBodyClaimLink) GetExpiresAt() *time.Time {
+	if c == nil {
+		return nil
+	}
+	return c.ExpiresAt
+}
+
+func (c *CreateTransfersRequestBodyClaimLink) GetOriginID() string {
+	if c == nil {
+		return ""
+	}
+	return c.OriginID
+}
+
+func (c *CreateTransfersRequestBodyClaimLink) GetRedeemableCount() *int {
+	if c == nil {
+		return nil
+	}
+	return c.RedeemableCount
+}
+
+func (c *CreateTransfersRequestBodyClaimLink) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateTransfersRequestBodyClaimLink) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyClaimLink) SetAmount(amount float64) {
+	c.Amount = amount
+	c.require(createTransfersRequestBodyClaimLinkFieldAmount)
+}
+
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyClaimLink) SetExpiresAt(expiresAt *time.Time) {
+	c.ExpiresAt = expiresAt
+	c.require(createTransfersRequestBodyClaimLinkFieldExpiresAt)
+}
+
+// SetOriginID sets the OriginID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyClaimLink) SetOriginID(originID string) {
+	c.OriginID = originID
+	c.require(createTransfersRequestBodyClaimLinkFieldOriginID)
+}
+
+// SetRedeemableCount sets the RedeemableCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyClaimLink) SetRedeemableCount(redeemableCount *int) {
+	c.RedeemableCount = redeemableCount
+	c.require(createTransfersRequestBodyClaimLinkFieldRedeemableCount)
+}
+
+func (c *CreateTransfersRequestBodyClaimLink) UnmarshalJSON(data []byte) error {
+	type embed CreateTransfersRequestBodyClaimLink
+	var unmarshaler = struct {
+		embed
+		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = CreateTransfersRequestBodyClaimLink(unmarshaler.embed)
+	c.ExpiresAt = unmarshaler.ExpiresAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersRequestBodyClaimLinkNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateTransfersRequestBodyClaimLink) MarshalJSON() ([]byte, error) {
+	type embed CreateTransfersRequestBodyClaimLink
+	var marshaler = struct {
+		embed
+		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
+	}{
+		embed:     embed(*c),
+		ExpiresAt: internal.NewOptionalDateTime(c.ExpiresAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateTransfersRequestBodyClaimLink) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 type CreateTransfersResponse struct {
 	Object string
-	// A transfer of credit between two ledger accounts.
+	// A transfer between Whop accounts or users.
 	Transfer *CreateTransfersResponseTransfer
-	// Returned for a wallet_send: an onchain USDT send to a recipient.
-	Send *CreateTransfersResponseSend
 	// A shareable link anyone holding its code can open to claim the funds.
 	ClaimLink *CreateTransfersResponseClaimLink
 
@@ -466,13 +798,6 @@ func (c *CreateTransfersResponse) GetTransfer() *CreateTransfersResponseTransfer
 		return nil
 	}
 	return c.Transfer
-}
-
-func (c *CreateTransfersResponse) GetSend() *CreateTransfersResponseSend {
-	if c == nil {
-		return nil
-	}
-	return c.Send
 }
 
 func (c *CreateTransfersResponse) GetClaimLink() *CreateTransfersResponseClaimLink {
@@ -500,12 +825,6 @@ func (c *CreateTransfersResponse) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		c.Transfer = value
-	case "send":
-		value := new(CreateTransfersResponseSend)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		c.Send = value
 	case "claim_link":
 		value := new(CreateTransfersResponseClaimLink)
 		if err := json.Unmarshal(data, &value); err != nil {
@@ -524,9 +843,6 @@ func (c CreateTransfersResponse) MarshalJSON() ([]byte, error) {
 	if c.Transfer != nil {
 		return internal.MarshalJSONWithExtraProperty(c.Transfer, "object", "transfer")
 	}
-	if c.Send != nil {
-		return internal.MarshalJSONWithExtraProperty(c.Send, "object", "send")
-	}
 	if c.ClaimLink != nil {
 		return internal.MarshalJSONWithExtraProperty(c.ClaimLink, "object", "claim_link")
 	}
@@ -538,16 +854,12 @@ func (c CreateTransfersResponse) MarshalJSON() ([]byte, error) {
 
 type CreateTransfersResponseVisitor interface {
 	VisitTransfer(*CreateTransfersResponseTransfer) error
-	VisitSend(*CreateTransfersResponseSend) error
 	VisitClaimLink(*CreateTransfersResponseClaimLink) error
 }
 
 func (c *CreateTransfersResponse) Accept(visitor CreateTransfersResponseVisitor) error {
 	if c.Transfer != nil {
 		return visitor.VisitTransfer(c.Transfer)
-	}
-	if c.Send != nil {
-		return visitor.VisitSend(c.Send)
 	}
 	if c.ClaimLink != nil {
 		return visitor.VisitClaimLink(c.ClaimLink)
@@ -562,9 +874,6 @@ func (c *CreateTransfersResponse) validate() error {
 	var fields []string
 	if c.Transfer != nil {
 		fields = append(fields, "transfer")
-	}
-	if c.Send != nil {
-		fields = append(fields, "send")
 	}
 	if c.ClaimLink != nil {
 		fields = append(fields, "claim_link")
@@ -1462,424 +1771,69 @@ func (c CreateTransfersResponseClaimLinkStatus) Ptr() *CreateTransfersResponseCl
 }
 
 var (
-	createTransfersResponseSendFieldAmount      = big.NewInt(1 << 0)
-	createTransfersResponseSendFieldCurrency    = big.NewInt(1 << 1)
-	createTransfersResponseSendFieldDestination = big.NewInt(1 << 2)
-	createTransfersResponseSendFieldSource      = big.NewInt(1 << 3)
-	createTransfersResponseSendFieldTxHash      = big.NewInt(1 << 4)
-)
-
-// Returned for a wallet_send: an onchain USDT send to a recipient.
-type CreateTransfersResponseSend struct {
-	Amount      string                                  `json:"amount" url:"amount"`
-	Currency    string                                  `json:"currency" url:"currency"`
-	Destination *CreateTransfersResponseSendDestination `json:"destination" url:"destination"`
-	Source      *CreateTransfersResponseSendSource      `json:"source" url:"source"`
-	TxHash      string                                  `json:"tx_hash" url:"tx_hash"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateTransfersResponseSend) GetAmount() string {
-	if c == nil {
-		return ""
-	}
-	return c.Amount
-}
-
-func (c *CreateTransfersResponseSend) GetCurrency() string {
-	if c == nil {
-		return ""
-	}
-	return c.Currency
-}
-
-func (c *CreateTransfersResponseSend) GetDestination() *CreateTransfersResponseSendDestination {
-	if c == nil {
-		return nil
-	}
-	return c.Destination
-}
-
-func (c *CreateTransfersResponseSend) GetSource() *CreateTransfersResponseSendSource {
-	if c == nil {
-		return nil
-	}
-	return c.Source
-}
-
-func (c *CreateTransfersResponseSend) GetTxHash() string {
-	if c == nil {
-		return ""
-	}
-	return c.TxHash
-}
-
-func (c *CreateTransfersResponseSend) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateTransfersResponseSend) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAmount sets the Amount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseSend) SetAmount(amount string) {
-	c.Amount = amount
-	c.require(createTransfersResponseSendFieldAmount)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseSend) SetCurrency(currency string) {
-	c.Currency = currency
-	c.require(createTransfersResponseSendFieldCurrency)
-}
-
-// SetDestination sets the Destination field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseSend) SetDestination(destination *CreateTransfersResponseSendDestination) {
-	c.Destination = destination
-	c.require(createTransfersResponseSendFieldDestination)
-}
-
-// SetSource sets the Source field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseSend) SetSource(source *CreateTransfersResponseSendSource) {
-	c.Source = source
-	c.require(createTransfersResponseSendFieldSource)
-}
-
-// SetTxHash sets the TxHash field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseSend) SetTxHash(txHash string) {
-	c.TxHash = txHash
-	c.require(createTransfersResponseSendFieldTxHash)
-}
-
-func (c *CreateTransfersResponseSend) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTransfersResponseSend
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateTransfersResponseSend(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateTransfersResponseSend) MarshalJSON() ([]byte, error) {
-	type embed CreateTransfersResponseSend
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateTransfersResponseSend) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createTransfersResponseSendDestinationFieldAccountID = big.NewInt(1 << 0)
-	createTransfersResponseSendDestinationFieldAddress   = big.NewInt(1 << 1)
-)
-
-type CreateTransfersResponseSendDestination struct {
-	AccountID string `json:"account_id" url:"account_id"`
-	Address   string `json:"address" url:"address"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateTransfersResponseSendDestination) GetAccountID() string {
-	if c == nil {
-		return ""
-	}
-	return c.AccountID
-}
-
-func (c *CreateTransfersResponseSendDestination) GetAddress() string {
-	if c == nil {
-		return ""
-	}
-	return c.Address
-}
-
-func (c *CreateTransfersResponseSendDestination) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateTransfersResponseSendDestination) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseSendDestination) SetAccountID(accountID string) {
-	c.AccountID = accountID
-	c.require(createTransfersResponseSendDestinationFieldAccountID)
-}
-
-// SetAddress sets the Address field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseSendDestination) SetAddress(address string) {
-	c.Address = address
-	c.require(createTransfersResponseSendDestinationFieldAddress)
-}
-
-func (c *CreateTransfersResponseSendDestination) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTransfersResponseSendDestination
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateTransfersResponseSendDestination(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateTransfersResponseSendDestination) MarshalJSON() ([]byte, error) {
-	type embed CreateTransfersResponseSendDestination
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateTransfersResponseSendDestination) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createTransfersResponseSendSourceFieldAccountID = big.NewInt(1 << 0)
-	createTransfersResponseSendSourceFieldAddress   = big.NewInt(1 << 1)
-)
-
-type CreateTransfersResponseSendSource struct {
-	AccountID string `json:"account_id" url:"account_id"`
-	Address   string `json:"address" url:"address"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateTransfersResponseSendSource) GetAccountID() string {
-	if c == nil {
-		return ""
-	}
-	return c.AccountID
-}
-
-func (c *CreateTransfersResponseSendSource) GetAddress() string {
-	if c == nil {
-		return ""
-	}
-	return c.Address
-}
-
-func (c *CreateTransfersResponseSendSource) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateTransfersResponseSendSource) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseSendSource) SetAccountID(accountID string) {
-	c.AccountID = accountID
-	c.require(createTransfersResponseSendSourceFieldAccountID)
-}
-
-// SetAddress sets the Address field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseSendSource) SetAddress(address string) {
-	c.Address = address
-	c.require(createTransfersResponseSendSourceFieldAddress)
-}
-
-func (c *CreateTransfersResponseSendSource) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTransfersResponseSendSource
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateTransfersResponseSendSource(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateTransfersResponseSendSource) MarshalJSON() ([]byte, error) {
-	type embed CreateTransfersResponseSendSource
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateTransfersResponseSendSource) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createTransfersResponseTransferFieldAmount                     = big.NewInt(1 << 0)
-	createTransfersResponseTransferFieldCreatedAt                  = big.NewInt(1 << 1)
-	createTransfersResponseTransferFieldCreatedByUser              = big.NewInt(1 << 2)
-	createTransfersResponseTransferFieldCurrency                   = big.NewInt(1 << 3)
-	createTransfersResponseTransferFieldDestination                = big.NewInt(1 << 4)
-	createTransfersResponseTransferFieldDestinationLedgerAccountID = big.NewInt(1 << 5)
-	createTransfersResponseTransferFieldFailedAt                   = big.NewInt(1 << 6)
-	createTransfersResponseTransferFieldFailureCode                = big.NewInt(1 << 7)
-	createTransfersResponseTransferFieldFailureReason              = big.NewInt(1 << 8)
-	createTransfersResponseTransferFieldFeeAmount                  = big.NewInt(1 << 9)
-	createTransfersResponseTransferFieldID                         = big.NewInt(1 << 10)
-	createTransfersResponseTransferFieldMetadata                   = big.NewInt(1 << 11)
-	createTransfersResponseTransferFieldNotes                      = big.NewInt(1 << 12)
-	createTransfersResponseTransferFieldOrigin                     = big.NewInt(1 << 13)
-	createTransfersResponseTransferFieldOriginLedgerAccountID      = big.NewInt(1 << 14)
-	createTransfersResponseTransferFieldStatus                     = big.NewInt(1 << 15)
+	createTransfersResponseTransferFieldAmount          = big.NewInt(1 << 0)
+	createTransfersResponseTransferFieldCreatedAt       = big.NewInt(1 << 1)
+	createTransfersResponseTransferFieldDestination     = big.NewInt(1 << 2)
+	createTransfersResponseTransferFieldFailedAt        = big.NewInt(1 << 3)
+	createTransfersResponseTransferFieldFailureCode     = big.NewInt(1 << 4)
+	createTransfersResponseTransferFieldFailureReason   = big.NewInt(1 << 5)
+	createTransfersResponseTransferFieldFee             = big.NewInt(1 << 6)
+	createTransfersResponseTransferFieldID              = big.NewInt(1 << 7)
+	createTransfersResponseTransferFieldMetadata        = big.NewInt(1 << 8)
+	createTransfersResponseTransferFieldNotes           = big.NewInt(1 << 9)
+	createTransfersResponseTransferFieldOrigin          = big.NewInt(1 << 10)
+	createTransfersResponseTransferFieldStatus          = big.NewInt(1 << 11)
+	createTransfersResponseTransferFieldStatusChangedAt = big.NewInt(1 << 12)
+	createTransfersResponseTransferFieldSucceededAt     = big.NewInt(1 << 13)
+	createTransfersResponseTransferFieldTrackingURL     = big.NewInt(1 << 14)
 )
 
 // createTransfersResponseTransferNullableFields maps the wire names of CreateTransfersResponseTransfer's nullable fields (required or optional) to their field bits.
 var createTransfersResponseTransferNullableFields = map[string]*big.Int{
-	"created_by_user": createTransfersResponseTransferFieldCreatedByUser,
-	"failed_at":       createTransfersResponseTransferFieldFailedAt,
-	"failure_code":    createTransfersResponseTransferFieldFailureCode,
-	"failure_reason":  createTransfersResponseTransferFieldFailureReason,
-	"fee_amount":      createTransfersResponseTransferFieldFeeAmount,
-	"metadata":        createTransfersResponseTransferFieldMetadata,
-	"notes":           createTransfersResponseTransferFieldNotes,
+	"amount":            createTransfersResponseTransferFieldAmount,
+	"destination":       createTransfersResponseTransferFieldDestination,
+	"failed_at":         createTransfersResponseTransferFieldFailedAt,
+	"failure_code":      createTransfersResponseTransferFieldFailureCode,
+	"failure_reason":    createTransfersResponseTransferFieldFailureReason,
+	"fee":               createTransfersResponseTransferFieldFee,
+	"notes":             createTransfersResponseTransferFieldNotes,
+	"origin":            createTransfersResponseTransferFieldOrigin,
+	"status_changed_at": createTransfersResponseTransferFieldStatusChangedAt,
+	"succeeded_at":      createTransfersResponseTransferFieldSucceededAt,
 }
 
-// A transfer of credit between two ledger accounts.
+// A transfer between Whop accounts or users.
 type CreateTransfersResponseTransfer struct {
-	// Transfer amount.
-	Amount float64 `json:"amount" url:"amount"`
+	// Amount credited to the recipient. Null while the transfer has not succeeded.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
 	// When the transfer was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-	CreatedByUser *CreateTransfersResponseTransferCreatedByUser `json:"created_by_user,omitempty" url:"created_by_user,omitempty"`
-	// Transfer currency.
-	Currency string `json:"currency" url:"currency"`
-	// Account or user receiving funds.
-	Destination *CreateTransfersResponseTransferDestination `json:"destination" url:"destination"`
-	// Destination ledger account ID.
-	DestinationLedgerAccountID string `json:"destination_ledger_account_id" url:"destination_ledger_account_id"`
-	// When the transfer failed, as an ISO 8601 timestamp. Null unless the transfer has failed.
+	// Business account or user receiving the transfer.
+	Destination *CreateTransfersResponseTransferDestination `json:"destination,omitempty" url:"destination,omitempty"`
+	// Recorded failure time. Null unless the transfer has failed.
 	FailedAt *time.Time `json:"failed_at,omitempty" url:"failed_at,omitempty"`
-	// Machine-readable code for why the transfer failed. Null unless the transfer has failed.
+	// Machine-readable failure code. Null unless the transfer has failed.
 	FailureCode *string `json:"failure_code,omitempty" url:"failure_code,omitempty"`
-	// Human-readable explanation of why the transfer failed. Null unless the transfer has failed.
+	// Failure explanation. Null unless the transfer has failed.
 	FailureReason *string `json:"failure_reason,omitempty" url:"failure_reason,omitempty"`
-	// Fee charged for the transfer.
-	FeeAmount *float64 `json:"fee_amount,omitempty" url:"fee_amount,omitempty"`
+	// All applicable transfer fees, including platform markup. Null when the authoritative total is unavailable.
+	Fee *Money `json:"fee,omitempty" url:"fee,omitempty"`
 	// Transfer ID.
 	ID string `json:"id" url:"id"`
 	// Custom metadata attached to the transfer.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// Transfer note.
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
-	// Account or user sending funds.
-	Origin *CreateTransfersResponseTransferOrigin `json:"origin" url:"origin"`
-	// Source ledger account ID.
-	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Business account or user sending the transfer.
+	Origin *CreateTransfersResponseTransferOrigin `json:"origin,omitempty" url:"origin,omitempty"`
+	// Current transfer status.
 	Status CreateTransfersResponseTransferStatus `json:"status" url:"status"`
+	// Recorded time of the current transition. Null when the historical transition time is unknown.
+	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
+	// Recorded success time. Null when unknown.
+	SucceededAt *time.Time `json:"succeeded_at,omitempty" url:"succeeded_at,omitempty"`
+	// Tracking page for the transfer. Viewing it requires sign-in and access to the transfer.
+	TrackingURL string `json:"tracking_url" url:"tracking_url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1888,9 +1842,9 @@ type CreateTransfersResponseTransfer struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateTransfersResponseTransfer) GetAmount() float64 {
+func (c *CreateTransfersResponseTransfer) GetAmount() *Money {
 	if c == nil {
-		return 0
+		return nil
 	}
 	return c.Amount
 }
@@ -1902,32 +1856,11 @@ func (c *CreateTransfersResponseTransfer) GetCreatedAt() time.Time {
 	return c.CreatedAt
 }
 
-func (c *CreateTransfersResponseTransfer) GetCreatedByUser() *CreateTransfersResponseTransferCreatedByUser {
-	if c == nil {
-		return nil
-	}
-	return c.CreatedByUser
-}
-
-func (c *CreateTransfersResponseTransfer) GetCurrency() string {
-	if c == nil {
-		return ""
-	}
-	return c.Currency
-}
-
 func (c *CreateTransfersResponseTransfer) GetDestination() *CreateTransfersResponseTransferDestination {
 	if c == nil {
 		return nil
 	}
 	return c.Destination
-}
-
-func (c *CreateTransfersResponseTransfer) GetDestinationLedgerAccountID() string {
-	if c == nil {
-		return ""
-	}
-	return c.DestinationLedgerAccountID
 }
 
 func (c *CreateTransfersResponseTransfer) GetFailedAt() *time.Time {
@@ -1951,11 +1884,11 @@ func (c *CreateTransfersResponseTransfer) GetFailureReason() *string {
 	return c.FailureReason
 }
 
-func (c *CreateTransfersResponseTransfer) GetFeeAmount() *float64 {
+func (c *CreateTransfersResponseTransfer) GetFee() *Money {
 	if c == nil {
 		return nil
 	}
-	return c.FeeAmount
+	return c.Fee
 }
 
 func (c *CreateTransfersResponseTransfer) GetID() string {
@@ -1986,18 +1919,32 @@ func (c *CreateTransfersResponseTransfer) GetOrigin() *CreateTransfersResponseTr
 	return c.Origin
 }
 
-func (c *CreateTransfersResponseTransfer) GetOriginLedgerAccountID() string {
-	if c == nil {
-		return ""
-	}
-	return c.OriginLedgerAccountID
-}
-
 func (c *CreateTransfersResponseTransfer) GetStatus() CreateTransfersResponseTransferStatus {
 	if c == nil {
 		return ""
 	}
 	return c.Status
+}
+
+func (c *CreateTransfersResponseTransfer) GetStatusChangedAt() *time.Time {
+	if c == nil {
+		return nil
+	}
+	return c.StatusChangedAt
+}
+
+func (c *CreateTransfersResponseTransfer) GetSucceededAt() *time.Time {
+	if c == nil {
+		return nil
+	}
+	return c.SucceededAt
+}
+
+func (c *CreateTransfersResponseTransfer) GetTrackingURL() string {
+	if c == nil {
+		return ""
+	}
+	return c.TrackingURL
 }
 
 func (c *CreateTransfersResponseTransfer) GetExtraProperties() map[string]interface{} {
@@ -2018,7 +1965,7 @@ func (c *CreateTransfersResponseTransfer) require(field *big.Int) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransfer) SetAmount(amount float64) {
+func (c *CreateTransfersResponseTransfer) SetAmount(amount *Money) {
 	c.Amount = amount
 	c.require(createTransfersResponseTransferFieldAmount)
 }
@@ -2030,32 +1977,11 @@ func (c *CreateTransfersResponseTransfer) SetCreatedAt(createdAt time.Time) {
 	c.require(createTransfersResponseTransferFieldCreatedAt)
 }
 
-// SetCreatedByUser sets the CreatedByUser field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransfer) SetCreatedByUser(createdByUser *CreateTransfersResponseTransferCreatedByUser) {
-	c.CreatedByUser = createdByUser
-	c.require(createTransfersResponseTransferFieldCreatedByUser)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransfer) SetCurrency(currency string) {
-	c.Currency = currency
-	c.require(createTransfersResponseTransferFieldCurrency)
-}
-
 // SetDestination sets the Destination field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateTransfersResponseTransfer) SetDestination(destination *CreateTransfersResponseTransferDestination) {
 	c.Destination = destination
 	c.require(createTransfersResponseTransferFieldDestination)
-}
-
-// SetDestinationLedgerAccountID sets the DestinationLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransfer) SetDestinationLedgerAccountID(destinationLedgerAccountID string) {
-	c.DestinationLedgerAccountID = destinationLedgerAccountID
-	c.require(createTransfersResponseTransferFieldDestinationLedgerAccountID)
 }
 
 // SetFailedAt sets the FailedAt field and marks it as non-optional;
@@ -2079,11 +2005,11 @@ func (c *CreateTransfersResponseTransfer) SetFailureReason(failureReason *string
 	c.require(createTransfersResponseTransferFieldFailureReason)
 }
 
-// SetFeeAmount sets the FeeAmount field and marks it as non-optional;
+// SetFee sets the Fee field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransfer) SetFeeAmount(feeAmount *float64) {
-	c.FeeAmount = feeAmount
-	c.require(createTransfersResponseTransferFieldFeeAmount)
+func (c *CreateTransfersResponseTransfer) SetFee(fee *Money) {
+	c.Fee = fee
+	c.require(createTransfersResponseTransferFieldFee)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2114,13 +2040,6 @@ func (c *CreateTransfersResponseTransfer) SetOrigin(origin *CreateTransfersRespo
 	c.require(createTransfersResponseTransferFieldOrigin)
 }
 
-// SetOriginLedgerAccountID sets the OriginLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransfer) SetOriginLedgerAccountID(originLedgerAccountID string) {
-	c.OriginLedgerAccountID = originLedgerAccountID
-	c.require(createTransfersResponseTransferFieldOriginLedgerAccountID)
-}
-
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateTransfersResponseTransfer) SetStatus(status CreateTransfersResponseTransferStatus) {
@@ -2128,12 +2047,35 @@ func (c *CreateTransfersResponseTransfer) SetStatus(status CreateTransfersRespon
 	c.require(createTransfersResponseTransferFieldStatus)
 }
 
+// SetStatusChangedAt sets the StatusChangedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseTransfer) SetStatusChangedAt(statusChangedAt *time.Time) {
+	c.StatusChangedAt = statusChangedAt
+	c.require(createTransfersResponseTransferFieldStatusChangedAt)
+}
+
+// SetSucceededAt sets the SucceededAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseTransfer) SetSucceededAt(succeededAt *time.Time) {
+	c.SucceededAt = succeededAt
+	c.require(createTransfersResponseTransferFieldSucceededAt)
+}
+
+// SetTrackingURL sets the TrackingURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseTransfer) SetTrackingURL(trackingURL string) {
+	c.TrackingURL = trackingURL
+	c.require(createTransfersResponseTransferFieldTrackingURL)
+}
+
 func (c *CreateTransfersResponseTransfer) UnmarshalJSON(data []byte) error {
 	type embed CreateTransfersResponseTransfer
 	var unmarshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
 		embed: embed(*c),
 	}
@@ -2143,6 +2085,8 @@ func (c *CreateTransfersResponseTransfer) UnmarshalJSON(data []byte) error {
 	*c = CreateTransfersResponseTransfer(unmarshaler.embed)
 	c.CreatedAt = unmarshaler.CreatedAt.Time()
 	c.FailedAt = unmarshaler.FailedAt.TimePtr()
+	c.StatusChangedAt = unmarshaler.StatusChangedAt.TimePtr()
+	c.SucceededAt = unmarshaler.SucceededAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -2163,12 +2107,16 @@ func (c *CreateTransfersResponseTransfer) MarshalJSON() ([]byte, error) {
 	type embed CreateTransfersResponseTransfer
 	var marshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
-		embed:     embed(*c),
-		CreatedAt: internal.NewDateTime(c.CreatedAt),
-		FailedAt:  internal.NewOptionalDateTime(c.FailedAt),
+		embed:           embed(*c),
+		CreatedAt:       internal.NewDateTime(c.CreatedAt),
+		FailedAt:        internal.NewOptionalDateTime(c.FailedAt),
+		StatusChangedAt: internal.NewOptionalDateTime(c.StatusChangedAt),
+		SucceededAt:     internal.NewOptionalDateTime(c.SucceededAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -2190,24 +2138,28 @@ func (c *CreateTransfersResponseTransfer) String() string {
 }
 
 var (
-	createTransfersResponseTransferCreatedByUserFieldID       = big.NewInt(1 << 0)
-	createTransfersResponseTransferCreatedByUserFieldName     = big.NewInt(1 << 1)
-	createTransfersResponseTransferCreatedByUserFieldUsername = big.NewInt(1 << 2)
+	createTransfersResponseTransferDestinationFieldID      = big.NewInt(1 << 0)
+	createTransfersResponseTransferDestinationFieldLogoURL = big.NewInt(1 << 1)
+	createTransfersResponseTransferDestinationFieldName    = big.NewInt(1 << 2)
+	createTransfersResponseTransferDestinationFieldObject  = big.NewInt(1 << 3)
 )
 
-// createTransfersResponseTransferCreatedByUserNullableFields maps the wire names of CreateTransfersResponseTransferCreatedByUser's nullable fields (required or optional) to their field bits.
-var createTransfersResponseTransferCreatedByUserNullableFields = map[string]*big.Int{
-	"name": createTransfersResponseTransferCreatedByUserFieldName,
+// createTransfersResponseTransferDestinationNullableFields maps the wire names of CreateTransfersResponseTransferDestination's nullable fields (required or optional) to their field bits.
+var createTransfersResponseTransferDestinationNullableFields = map[string]*big.Int{
+	"logo_url": createTransfersResponseTransferDestinationFieldLogoURL,
+	"name":     createTransfersResponseTransferDestinationFieldName,
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-type CreateTransfersResponseTransferCreatedByUser struct {
-	// User ID.
+// Business account or user receiving the transfer.
+type CreateTransfersResponseTransferDestination struct {
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username string `json:"username" url:"username"`
+	// Whether the profile is a business account or a user.
+	Object CreateTransfersResponseTransferDestinationObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2216,35 +2168,42 @@ type CreateTransfersResponseTransferCreatedByUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateTransfersResponseTransferCreatedByUser) GetID() string {
+func (c *CreateTransfersResponseTransferDestination) GetID() string {
 	if c == nil {
 		return ""
 	}
 	return c.ID
 }
 
-func (c *CreateTransfersResponseTransferCreatedByUser) GetName() *string {
+func (c *CreateTransfersResponseTransferDestination) GetLogoURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.LogoURL
+}
+
+func (c *CreateTransfersResponseTransferDestination) GetName() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Name
 }
 
-func (c *CreateTransfersResponseTransferCreatedByUser) GetUsername() string {
+func (c *CreateTransfersResponseTransferDestination) GetObject() CreateTransfersResponseTransferDestinationObject {
 	if c == nil {
 		return ""
 	}
-	return c.Username
+	return c.Object
 }
 
-func (c *CreateTransfersResponseTransferCreatedByUser) GetExtraProperties() map[string]interface{} {
+func (c *CreateTransfersResponseTransferDestination) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateTransfersResponseTransferCreatedByUser) require(field *big.Int) {
+func (c *CreateTransfersResponseTransferDestination) require(field *big.Int) {
 	next := new(big.Int)
 	if c.explicitFields != nil {
 		next.Set(c.explicitFields)
@@ -2255,299 +2214,45 @@ func (c *CreateTransfersResponseTransferCreatedByUser) require(field *big.Int) {
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferCreatedByUser) SetID(id string) {
+func (c *CreateTransfersResponseTransferDestination) SetID(id string) {
 	c.ID = id
-	c.require(createTransfersResponseTransferCreatedByUserFieldID)
+	c.require(createTransfersResponseTransferDestinationFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseTransferDestination) SetLogoURL(logoURL *string) {
+	c.LogoURL = logoURL
+	c.require(createTransfersResponseTransferDestinationFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferCreatedByUser) SetName(name *string) {
+func (c *CreateTransfersResponseTransferDestination) SetName(name *string) {
 	c.Name = name
-	c.require(createTransfersResponseTransferCreatedByUserFieldName)
+	c.require(createTransfersResponseTransferDestinationFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferCreatedByUser) SetUsername(username string) {
-	c.Username = username
-	c.require(createTransfersResponseTransferCreatedByUserFieldUsername)
-}
-
-func (c *CreateTransfersResponseTransferCreatedByUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTransfersResponseTransferCreatedByUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateTransfersResponseTransferCreatedByUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferCreatedByUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateTransfersResponseTransferCreatedByUser) MarshalJSON() ([]byte, error) {
-	type embed CreateTransfersResponseTransferCreatedByUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateTransfersResponseTransferCreatedByUser) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Account or user receiving funds.
-type CreateTransfersResponseTransferDestination struct {
-	Typename string
-	Company  *CreateTransfersResponseTransferDestinationCompany
-	User     *CreateTransfersResponseTransferDestinationUser
-
-	rawJSON json.RawMessage
-}
-
-func (c *CreateTransfersResponseTransferDestination) GetTypename() string {
-	if c == nil {
-		return ""
-	}
-	return c.Typename
-}
-
-func (c *CreateTransfersResponseTransferDestination) GetCompany() *CreateTransfersResponseTransferDestinationCompany {
-	if c == nil {
-		return nil
-	}
-	return c.Company
-}
-
-func (c *CreateTransfersResponseTransferDestination) GetUser() *CreateTransfersResponseTransferDestinationUser {
-	if c == nil {
-		return nil
-	}
-	return c.User
+func (c *CreateTransfersResponseTransferDestination) SetObject(object CreateTransfersResponseTransferDestinationObject) {
+	c.Object = object
+	c.require(createTransfersResponseTransferDestinationFieldObject)
 }
 
 func (c *CreateTransfersResponseTransferDestination) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	c.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", c)
-	}
-	switch unmarshaler.Typename {
-	case "Company":
-		value := new(CreateTransfersResponseTransferDestinationCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		c.Company = value
-	case "User":
-		value := new(CreateTransfersResponseTransferDestinationUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		c.User = value
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c CreateTransfersResponseTransferDestination) MarshalJSON() ([]byte, error) {
-	if err := c.validate(); err != nil {
-		return nil, err
-	}
-	if c.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(c.Company, "typename", "Company")
-	}
-	if c.User != nil {
-		return internal.MarshalJSONWithExtraProperty(c.User, "typename", "User")
-	}
-	if len(c.rawJSON) > 0 {
-		return c.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", c)
-}
-
-type CreateTransfersResponseTransferDestinationVisitor interface {
-	VisitCompany(*CreateTransfersResponseTransferDestinationCompany) error
-	VisitUser(*CreateTransfersResponseTransferDestinationUser) error
-}
-
-func (c *CreateTransfersResponseTransferDestination) Accept(visitor CreateTransfersResponseTransferDestinationVisitor) error {
-	if c.Company != nil {
-		return visitor.VisitCompany(c.Company)
-	}
-	if c.User != nil {
-		return visitor.VisitUser(c.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", c)
-}
-
-func (c *CreateTransfersResponseTransferDestination) validate() error {
-	if c == nil {
-		return fmt.Errorf("type %T is nil", c)
-	}
-	var fields []string
-	if c.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if c.User != nil {
-		fields = append(fields, "User")
-	}
-	if len(fields) == 0 {
-		if c.Typename != "" {
-			if len(c.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", c, c.Typename)
-		}
-		return fmt.Errorf("type %T is empty", c)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", c, fields)
-	}
-	if c.Typename != "" {
-		field := fields[0]
-		if c.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				c,
-				c.Typename,
-				c,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	createTransfersResponseTransferDestinationCompanyFieldID    = big.NewInt(1 << 0)
-	createTransfersResponseTransferDestinationCompanyFieldRoute = big.NewInt(1 << 1)
-	createTransfersResponseTransferDestinationCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-// createTransfersResponseTransferDestinationCompanyNullableFields maps the wire names of CreateTransfersResponseTransferDestinationCompany's nullable fields (required or optional) to their field bits.
-var createTransfersResponseTransferDestinationCompanyNullableFields = map[string]*big.Int{
-	"route": createTransfersResponseTransferDestinationCompanyFieldRoute,
-	"title": createTransfersResponseTransferDestinationCompanyFieldTitle,
-}
-
-type CreateTransfersResponseTransferDestinationCompany struct {
-	// Account ID.
-	ID string `json:"id" url:"id"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateTransfersResponseTransferDestinationCompany) GetID() string {
-	if c == nil {
-		return ""
-	}
-	return c.ID
-}
-
-func (c *CreateTransfersResponseTransferDestinationCompany) GetRoute() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Route
-}
-
-func (c *CreateTransfersResponseTransferDestinationCompany) GetTitle() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Title
-}
-
-func (c *CreateTransfersResponseTransferDestinationCompany) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateTransfersResponseTransferDestinationCompany) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferDestinationCompany) SetID(id string) {
-	c.ID = id
-	c.require(createTransfersResponseTransferDestinationCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferDestinationCompany) SetRoute(route *string) {
-	c.Route = route
-	c.require(createTransfersResponseTransferDestinationCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferDestinationCompany) SetTitle(title *string) {
-	c.Title = title
-	c.require(createTransfersResponseTransferDestinationCompanyFieldTitle)
-}
-
-func (c *CreateTransfersResponseTransferDestinationCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTransfersResponseTransferDestinationCompany
+	type unmarshaler CreateTransfersResponseTransferDestination
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateTransfersResponseTransferDestinationCompany(value)
+	*c = CreateTransfersResponseTransferDestination(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferDestinationCompanyNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferDestinationNullableFields)
 	if err != nil {
 		return err
 	}
@@ -2558,8 +2263,8 @@ func (c *CreateTransfersResponseTransferDestinationCompany) UnmarshalJSON(data [
 	return nil
 }
 
-func (c *CreateTransfersResponseTransferDestinationCompany) MarshalJSON() ([]byte, error) {
-	type embed CreateTransfersResponseTransferDestinationCompany
+func (c *CreateTransfersResponseTransferDestination) MarshalJSON() ([]byte, error) {
+	type embed CreateTransfersResponseTransferDestination
 	var marshaler = struct {
 		embed
 	}{
@@ -2569,7 +2274,7 @@ func (c *CreateTransfersResponseTransferDestinationCompany) MarshalJSON() ([]byt
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateTransfersResponseTransferDestinationCompany) String() string {
+func (c *CreateTransfersResponseTransferDestination) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -2584,24 +2289,52 @@ func (c *CreateTransfersResponseTransferDestinationCompany) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-var (
-	createTransfersResponseTransferDestinationUserFieldID       = big.NewInt(1 << 0)
-	createTransfersResponseTransferDestinationUserFieldName     = big.NewInt(1 << 1)
-	createTransfersResponseTransferDestinationUserFieldUsername = big.NewInt(1 << 2)
+// Whether the profile is a business account or a user.
+type CreateTransfersResponseTransferDestinationObject string
+
+const (
+	CreateTransfersResponseTransferDestinationObjectAccount CreateTransfersResponseTransferDestinationObject = "account"
+	CreateTransfersResponseTransferDestinationObjectUser    CreateTransfersResponseTransferDestinationObject = "user"
 )
 
-// createTransfersResponseTransferDestinationUserNullableFields maps the wire names of CreateTransfersResponseTransferDestinationUser's nullable fields (required or optional) to their field bits.
-var createTransfersResponseTransferDestinationUserNullableFields = map[string]*big.Int{
-	"name": createTransfersResponseTransferDestinationUserFieldName,
+func NewCreateTransfersResponseTransferDestinationObjectFromString(s string) (CreateTransfersResponseTransferDestinationObject, error) {
+	switch s {
+	case "account":
+		return CreateTransfersResponseTransferDestinationObjectAccount, nil
+	case "user":
+		return CreateTransfersResponseTransferDestinationObjectUser, nil
+	}
+	var t CreateTransfersResponseTransferDestinationObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-type CreateTransfersResponseTransferDestinationUser struct {
-	// User ID.
+func (c CreateTransfersResponseTransferDestinationObject) Ptr() *CreateTransfersResponseTransferDestinationObject {
+	return &c
+}
+
+var (
+	createTransfersResponseTransferOriginFieldID      = big.NewInt(1 << 0)
+	createTransfersResponseTransferOriginFieldLogoURL = big.NewInt(1 << 1)
+	createTransfersResponseTransferOriginFieldName    = big.NewInt(1 << 2)
+	createTransfersResponseTransferOriginFieldObject  = big.NewInt(1 << 3)
+)
+
+// createTransfersResponseTransferOriginNullableFields maps the wire names of CreateTransfersResponseTransferOrigin's nullable fields (required or optional) to their field bits.
+var createTransfersResponseTransferOriginNullableFields = map[string]*big.Int{
+	"logo_url": createTransfersResponseTransferOriginFieldLogoURL,
+	"name":     createTransfersResponseTransferOriginFieldName,
+}
+
+// Business account or user sending the transfer.
+type CreateTransfersResponseTransferOrigin struct {
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether the profile is a business account or a user.
+	Object CreateTransfersResponseTransferOriginObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2610,35 +2343,42 @@ type CreateTransfersResponseTransferDestinationUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateTransfersResponseTransferDestinationUser) GetID() string {
+func (c *CreateTransfersResponseTransferOrigin) GetID() string {
 	if c == nil {
 		return ""
 	}
 	return c.ID
 }
 
-func (c *CreateTransfersResponseTransferDestinationUser) GetName() *string {
+func (c *CreateTransfersResponseTransferOrigin) GetLogoURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.LogoURL
+}
+
+func (c *CreateTransfersResponseTransferOrigin) GetName() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Name
 }
 
-func (c *CreateTransfersResponseTransferDestinationUser) GetUsername() *string {
+func (c *CreateTransfersResponseTransferOrigin) GetObject() CreateTransfersResponseTransferOriginObject {
 	if c == nil {
-		return nil
+		return ""
 	}
-	return c.Username
+	return c.Object
 }
 
-func (c *CreateTransfersResponseTransferDestinationUser) GetExtraProperties() map[string]interface{} {
+func (c *CreateTransfersResponseTransferOrigin) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateTransfersResponseTransferDestinationUser) require(field *big.Int) {
+func (c *CreateTransfersResponseTransferOrigin) require(field *big.Int) {
 	next := new(big.Int)
 	if c.explicitFields != nil {
 		next.Set(c.explicitFields)
@@ -2649,299 +2389,45 @@ func (c *CreateTransfersResponseTransferDestinationUser) require(field *big.Int)
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferDestinationUser) SetID(id string) {
+func (c *CreateTransfersResponseTransferOrigin) SetID(id string) {
 	c.ID = id
-	c.require(createTransfersResponseTransferDestinationUserFieldID)
+	c.require(createTransfersResponseTransferOriginFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersResponseTransferOrigin) SetLogoURL(logoURL *string) {
+	c.LogoURL = logoURL
+	c.require(createTransfersResponseTransferOriginFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferDestinationUser) SetName(name *string) {
+func (c *CreateTransfersResponseTransferOrigin) SetName(name *string) {
 	c.Name = name
-	c.require(createTransfersResponseTransferDestinationUserFieldName)
+	c.require(createTransfersResponseTransferOriginFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferDestinationUser) SetUsername(username *string) {
-	c.Username = username
-	c.require(createTransfersResponseTransferDestinationUserFieldUsername)
-}
-
-func (c *CreateTransfersResponseTransferDestinationUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTransfersResponseTransferDestinationUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateTransfersResponseTransferDestinationUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferDestinationUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateTransfersResponseTransferDestinationUser) MarshalJSON() ([]byte, error) {
-	type embed CreateTransfersResponseTransferDestinationUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateTransfersResponseTransferDestinationUser) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Account or user sending funds.
-type CreateTransfersResponseTransferOrigin struct {
-	Typename string
-	Company  *CreateTransfersResponseTransferOriginCompany
-	User     *CreateTransfersResponseTransferOriginUser
-
-	rawJSON json.RawMessage
-}
-
-func (c *CreateTransfersResponseTransferOrigin) GetTypename() string {
-	if c == nil {
-		return ""
-	}
-	return c.Typename
-}
-
-func (c *CreateTransfersResponseTransferOrigin) GetCompany() *CreateTransfersResponseTransferOriginCompany {
-	if c == nil {
-		return nil
-	}
-	return c.Company
-}
-
-func (c *CreateTransfersResponseTransferOrigin) GetUser() *CreateTransfersResponseTransferOriginUser {
-	if c == nil {
-		return nil
-	}
-	return c.User
+func (c *CreateTransfersResponseTransferOrigin) SetObject(object CreateTransfersResponseTransferOriginObject) {
+	c.Object = object
+	c.require(createTransfersResponseTransferOriginFieldObject)
 }
 
 func (c *CreateTransfersResponseTransferOrigin) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	c.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", c)
-	}
-	switch unmarshaler.Typename {
-	case "Company":
-		value := new(CreateTransfersResponseTransferOriginCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		c.Company = value
-	case "User":
-		value := new(CreateTransfersResponseTransferOriginUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		c.User = value
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c CreateTransfersResponseTransferOrigin) MarshalJSON() ([]byte, error) {
-	if err := c.validate(); err != nil {
-		return nil, err
-	}
-	if c.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(c.Company, "typename", "Company")
-	}
-	if c.User != nil {
-		return internal.MarshalJSONWithExtraProperty(c.User, "typename", "User")
-	}
-	if len(c.rawJSON) > 0 {
-		return c.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", c)
-}
-
-type CreateTransfersResponseTransferOriginVisitor interface {
-	VisitCompany(*CreateTransfersResponseTransferOriginCompany) error
-	VisitUser(*CreateTransfersResponseTransferOriginUser) error
-}
-
-func (c *CreateTransfersResponseTransferOrigin) Accept(visitor CreateTransfersResponseTransferOriginVisitor) error {
-	if c.Company != nil {
-		return visitor.VisitCompany(c.Company)
-	}
-	if c.User != nil {
-		return visitor.VisitUser(c.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", c)
-}
-
-func (c *CreateTransfersResponseTransferOrigin) validate() error {
-	if c == nil {
-		return fmt.Errorf("type %T is nil", c)
-	}
-	var fields []string
-	if c.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if c.User != nil {
-		fields = append(fields, "User")
-	}
-	if len(fields) == 0 {
-		if c.Typename != "" {
-			if len(c.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", c, c.Typename)
-		}
-		return fmt.Errorf("type %T is empty", c)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", c, fields)
-	}
-	if c.Typename != "" {
-		field := fields[0]
-		if c.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				c,
-				c.Typename,
-				c,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	createTransfersResponseTransferOriginCompanyFieldID    = big.NewInt(1 << 0)
-	createTransfersResponseTransferOriginCompanyFieldRoute = big.NewInt(1 << 1)
-	createTransfersResponseTransferOriginCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-// createTransfersResponseTransferOriginCompanyNullableFields maps the wire names of CreateTransfersResponseTransferOriginCompany's nullable fields (required or optional) to their field bits.
-var createTransfersResponseTransferOriginCompanyNullableFields = map[string]*big.Int{
-	"route": createTransfersResponseTransferOriginCompanyFieldRoute,
-	"title": createTransfersResponseTransferOriginCompanyFieldTitle,
-}
-
-type CreateTransfersResponseTransferOriginCompany struct {
-	// Account ID.
-	ID string `json:"id" url:"id"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateTransfersResponseTransferOriginCompany) GetID() string {
-	if c == nil {
-		return ""
-	}
-	return c.ID
-}
-
-func (c *CreateTransfersResponseTransferOriginCompany) GetRoute() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Route
-}
-
-func (c *CreateTransfersResponseTransferOriginCompany) GetTitle() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Title
-}
-
-func (c *CreateTransfersResponseTransferOriginCompany) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateTransfersResponseTransferOriginCompany) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferOriginCompany) SetID(id string) {
-	c.ID = id
-	c.require(createTransfersResponseTransferOriginCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferOriginCompany) SetRoute(route *string) {
-	c.Route = route
-	c.require(createTransfersResponseTransferOriginCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferOriginCompany) SetTitle(title *string) {
-	c.Title = title
-	c.require(createTransfersResponseTransferOriginCompanyFieldTitle)
-}
-
-func (c *CreateTransfersResponseTransferOriginCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTransfersResponseTransferOriginCompany
+	type unmarshaler CreateTransfersResponseTransferOrigin
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateTransfersResponseTransferOriginCompany(value)
+	*c = CreateTransfersResponseTransferOrigin(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferOriginCompanyNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferOriginNullableFields)
 	if err != nil {
 		return err
 	}
@@ -2952,8 +2438,8 @@ func (c *CreateTransfersResponseTransferOriginCompany) UnmarshalJSON(data []byte
 	return nil
 }
 
-func (c *CreateTransfersResponseTransferOriginCompany) MarshalJSON() ([]byte, error) {
-	type embed CreateTransfersResponseTransferOriginCompany
+func (c *CreateTransfersResponseTransferOrigin) MarshalJSON() ([]byte, error) {
+	type embed CreateTransfersResponseTransferOrigin
 	var marshaler = struct {
 		embed
 	}{
@@ -2963,7 +2449,7 @@ func (c *CreateTransfersResponseTransferOriginCompany) MarshalJSON() ([]byte, er
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateTransfersResponseTransferOriginCompany) String() string {
+func (c *CreateTransfersResponseTransferOrigin) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -2978,140 +2464,30 @@ func (c *CreateTransfersResponseTransferOriginCompany) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-var (
-	createTransfersResponseTransferOriginUserFieldID       = big.NewInt(1 << 0)
-	createTransfersResponseTransferOriginUserFieldName     = big.NewInt(1 << 1)
-	createTransfersResponseTransferOriginUserFieldUsername = big.NewInt(1 << 2)
+// Whether the profile is a business account or a user.
+type CreateTransfersResponseTransferOriginObject string
+
+const (
+	CreateTransfersResponseTransferOriginObjectAccount CreateTransfersResponseTransferOriginObject = "account"
+	CreateTransfersResponseTransferOriginObjectUser    CreateTransfersResponseTransferOriginObject = "user"
 )
 
-// createTransfersResponseTransferOriginUserNullableFields maps the wire names of CreateTransfersResponseTransferOriginUser's nullable fields (required or optional) to their field bits.
-var createTransfersResponseTransferOriginUserNullableFields = map[string]*big.Int{
-	"name": createTransfersResponseTransferOriginUserFieldName,
+func NewCreateTransfersResponseTransferOriginObjectFromString(s string) (CreateTransfersResponseTransferOriginObject, error) {
+	switch s {
+	case "account":
+		return CreateTransfersResponseTransferOriginObjectAccount, nil
+	case "user":
+		return CreateTransfersResponseTransferOriginObjectUser, nil
+	}
+	var t CreateTransfersResponseTransferOriginObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-type CreateTransfersResponseTransferOriginUser struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
+func (c CreateTransfersResponseTransferOriginObject) Ptr() *CreateTransfersResponseTransferOriginObject {
+	return &c
 }
 
-func (c *CreateTransfersResponseTransferOriginUser) GetID() string {
-	if c == nil {
-		return ""
-	}
-	return c.ID
-}
-
-func (c *CreateTransfersResponseTransferOriginUser) GetName() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Name
-}
-
-func (c *CreateTransfersResponseTransferOriginUser) GetUsername() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Username
-}
-
-func (c *CreateTransfersResponseTransferOriginUser) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateTransfersResponseTransferOriginUser) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferOriginUser) SetID(id string) {
-	c.ID = id
-	c.require(createTransfersResponseTransferOriginUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferOriginUser) SetName(name *string) {
-	c.Name = name
-	c.require(createTransfersResponseTransferOriginUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateTransfersResponseTransferOriginUser) SetUsername(username *string) {
-	c.Username = username
-	c.require(createTransfersResponseTransferOriginUserFieldUsername)
-}
-
-func (c *CreateTransfersResponseTransferOriginUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateTransfersResponseTransferOriginUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateTransfersResponseTransferOriginUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createTransfersResponseTransferOriginUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateTransfersResponseTransferOriginUser) MarshalJSON() ([]byte, error) {
-	type embed CreateTransfersResponseTransferOriginUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateTransfersResponseTransferOriginUser) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Current transfer status.
 type CreateTransfersResponseTransferStatus string
 
 const (
@@ -3963,66 +3339,72 @@ func (l *ListTransfersResponse) String() string {
 }
 
 var (
-	listTransfersResponseDataItemFieldAmount                     = big.NewInt(1 << 0)
-	listTransfersResponseDataItemFieldCreatedAt                  = big.NewInt(1 << 1)
-	listTransfersResponseDataItemFieldCreatedByUser              = big.NewInt(1 << 2)
-	listTransfersResponseDataItemFieldCurrency                   = big.NewInt(1 << 3)
-	listTransfersResponseDataItemFieldDestinationLedgerAccountID = big.NewInt(1 << 4)
-	listTransfersResponseDataItemFieldFailedAt                   = big.NewInt(1 << 5)
-	listTransfersResponseDataItemFieldFailureCode                = big.NewInt(1 << 6)
-	listTransfersResponseDataItemFieldFailureReason              = big.NewInt(1 << 7)
-	listTransfersResponseDataItemFieldFeeAmount                  = big.NewInt(1 << 8)
-	listTransfersResponseDataItemFieldID                         = big.NewInt(1 << 9)
-	listTransfersResponseDataItemFieldMetadata                   = big.NewInt(1 << 10)
-	listTransfersResponseDataItemFieldNotes                      = big.NewInt(1 << 11)
-	listTransfersResponseDataItemFieldObject                     = big.NewInt(1 << 12)
-	listTransfersResponseDataItemFieldOriginLedgerAccountID      = big.NewInt(1 << 13)
-	listTransfersResponseDataItemFieldStatus                     = big.NewInt(1 << 14)
+	listTransfersResponseDataItemFieldAmount          = big.NewInt(1 << 0)
+	listTransfersResponseDataItemFieldCreatedAt       = big.NewInt(1 << 1)
+	listTransfersResponseDataItemFieldDestination     = big.NewInt(1 << 2)
+	listTransfersResponseDataItemFieldFailedAt        = big.NewInt(1 << 3)
+	listTransfersResponseDataItemFieldFailureCode     = big.NewInt(1 << 4)
+	listTransfersResponseDataItemFieldFailureReason   = big.NewInt(1 << 5)
+	listTransfersResponseDataItemFieldFee             = big.NewInt(1 << 6)
+	listTransfersResponseDataItemFieldID              = big.NewInt(1 << 7)
+	listTransfersResponseDataItemFieldMetadata        = big.NewInt(1 << 8)
+	listTransfersResponseDataItemFieldNotes           = big.NewInt(1 << 9)
+	listTransfersResponseDataItemFieldObject          = big.NewInt(1 << 10)
+	listTransfersResponseDataItemFieldOrigin          = big.NewInt(1 << 11)
+	listTransfersResponseDataItemFieldStatus          = big.NewInt(1 << 12)
+	listTransfersResponseDataItemFieldStatusChangedAt = big.NewInt(1 << 13)
+	listTransfersResponseDataItemFieldSucceededAt     = big.NewInt(1 << 14)
+	listTransfersResponseDataItemFieldTrackingURL     = big.NewInt(1 << 15)
 )
 
 // listTransfersResponseDataItemNullableFields maps the wire names of ListTransfersResponseDataItem's nullable fields (required or optional) to their field bits.
 var listTransfersResponseDataItemNullableFields = map[string]*big.Int{
-	"created_by_user": listTransfersResponseDataItemFieldCreatedByUser,
-	"failed_at":       listTransfersResponseDataItemFieldFailedAt,
-	"failure_code":    listTransfersResponseDataItemFieldFailureCode,
-	"failure_reason":  listTransfersResponseDataItemFieldFailureReason,
-	"fee_amount":      listTransfersResponseDataItemFieldFeeAmount,
-	"metadata":        listTransfersResponseDataItemFieldMetadata,
-	"notes":           listTransfersResponseDataItemFieldNotes,
+	"amount":            listTransfersResponseDataItemFieldAmount,
+	"destination":       listTransfersResponseDataItemFieldDestination,
+	"failed_at":         listTransfersResponseDataItemFieldFailedAt,
+	"failure_code":      listTransfersResponseDataItemFieldFailureCode,
+	"failure_reason":    listTransfersResponseDataItemFieldFailureReason,
+	"fee":               listTransfersResponseDataItemFieldFee,
+	"notes":             listTransfersResponseDataItemFieldNotes,
+	"origin":            listTransfersResponseDataItemFieldOrigin,
+	"status_changed_at": listTransfersResponseDataItemFieldStatusChangedAt,
+	"succeeded_at":      listTransfersResponseDataItemFieldSucceededAt,
 }
 
-// A transfer of credit between two ledger accounts.
+// A transfer between Whop accounts or users.
 type ListTransfersResponseDataItem struct {
-	// Transfer amount.
-	Amount float64 `json:"amount" url:"amount"`
+	// Amount credited to the recipient. Null while the transfer has not succeeded.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
 	// When the transfer was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-	CreatedByUser *ListTransfersResponseDataItemCreatedByUser `json:"created_by_user,omitempty" url:"created_by_user,omitempty"`
-	// Transfer currency.
-	Currency string `json:"currency" url:"currency"`
-	// Destination ledger account ID.
-	DestinationLedgerAccountID string `json:"destination_ledger_account_id" url:"destination_ledger_account_id"`
-	// When the transfer failed, as an ISO 8601 timestamp. Null unless the transfer has failed.
+	// Business account or user receiving the transfer.
+	Destination *ListTransfersResponseDataItemDestination `json:"destination,omitempty" url:"destination,omitempty"`
+	// Recorded failure time. Null unless the transfer has failed.
 	FailedAt *time.Time `json:"failed_at,omitempty" url:"failed_at,omitempty"`
-	// Machine-readable code for why the transfer failed. Null unless the transfer has failed.
+	// Machine-readable failure code. Null unless the transfer has failed.
 	FailureCode *string `json:"failure_code,omitempty" url:"failure_code,omitempty"`
-	// Human-readable explanation of why the transfer failed. Null unless the transfer has failed.
+	// Failure explanation. Null unless the transfer has failed.
 	FailureReason *string `json:"failure_reason,omitempty" url:"failure_reason,omitempty"`
-	// Fee charged for the transfer.
-	FeeAmount *float64 `json:"fee_amount,omitempty" url:"fee_amount,omitempty"`
+	// All applicable transfer fees, including platform markup. Null when the authoritative total is unavailable.
+	Fee *Money `json:"fee,omitempty" url:"fee,omitempty"`
 	// Transfer ID.
 	ID string `json:"id" url:"id"`
 	// Custom metadata attached to the transfer.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// Transfer note.
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
 	// The object type.
 	Object ListTransfersResponseDataItemObject `json:"object" url:"object"`
-	// Source ledger account ID.
-	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Business account or user sending the transfer.
+	Origin *ListTransfersResponseDataItemOrigin `json:"origin,omitempty" url:"origin,omitempty"`
+	// Current transfer status.
 	Status ListTransfersResponseDataItemStatus `json:"status" url:"status"`
+	// Recorded time of the current transition. Null when the historical transition time is unknown.
+	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
+	// Recorded success time. Null when unknown.
+	SucceededAt *time.Time `json:"succeeded_at,omitempty" url:"succeeded_at,omitempty"`
+	// Tracking page for the transfer. Viewing it requires sign-in and access to the transfer.
+	TrackingURL string `json:"tracking_url" url:"tracking_url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4031,9 +3413,9 @@ type ListTransfersResponseDataItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListTransfersResponseDataItem) GetAmount() float64 {
+func (l *ListTransfersResponseDataItem) GetAmount() *Money {
 	if l == nil {
-		return 0
+		return nil
 	}
 	return l.Amount
 }
@@ -4045,25 +3427,11 @@ func (l *ListTransfersResponseDataItem) GetCreatedAt() time.Time {
 	return l.CreatedAt
 }
 
-func (l *ListTransfersResponseDataItem) GetCreatedByUser() *ListTransfersResponseDataItemCreatedByUser {
+func (l *ListTransfersResponseDataItem) GetDestination() *ListTransfersResponseDataItemDestination {
 	if l == nil {
 		return nil
 	}
-	return l.CreatedByUser
-}
-
-func (l *ListTransfersResponseDataItem) GetCurrency() string {
-	if l == nil {
-		return ""
-	}
-	return l.Currency
-}
-
-func (l *ListTransfersResponseDataItem) GetDestinationLedgerAccountID() string {
-	if l == nil {
-		return ""
-	}
-	return l.DestinationLedgerAccountID
+	return l.Destination
 }
 
 func (l *ListTransfersResponseDataItem) GetFailedAt() *time.Time {
@@ -4087,11 +3455,11 @@ func (l *ListTransfersResponseDataItem) GetFailureReason() *string {
 	return l.FailureReason
 }
 
-func (l *ListTransfersResponseDataItem) GetFeeAmount() *float64 {
+func (l *ListTransfersResponseDataItem) GetFee() *Money {
 	if l == nil {
 		return nil
 	}
-	return l.FeeAmount
+	return l.Fee
 }
 
 func (l *ListTransfersResponseDataItem) GetID() string {
@@ -4122,11 +3490,11 @@ func (l *ListTransfersResponseDataItem) GetObject() ListTransfersResponseDataIte
 	return l.Object
 }
 
-func (l *ListTransfersResponseDataItem) GetOriginLedgerAccountID() string {
+func (l *ListTransfersResponseDataItem) GetOrigin() *ListTransfersResponseDataItemOrigin {
 	if l == nil {
-		return ""
+		return nil
 	}
-	return l.OriginLedgerAccountID
+	return l.Origin
 }
 
 func (l *ListTransfersResponseDataItem) GetStatus() ListTransfersResponseDataItemStatus {
@@ -4134,6 +3502,27 @@ func (l *ListTransfersResponseDataItem) GetStatus() ListTransfersResponseDataIte
 		return ""
 	}
 	return l.Status
+}
+
+func (l *ListTransfersResponseDataItem) GetStatusChangedAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.StatusChangedAt
+}
+
+func (l *ListTransfersResponseDataItem) GetSucceededAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.SucceededAt
+}
+
+func (l *ListTransfersResponseDataItem) GetTrackingURL() string {
+	if l == nil {
+		return ""
+	}
+	return l.TrackingURL
 }
 
 func (l *ListTransfersResponseDataItem) GetExtraProperties() map[string]interface{} {
@@ -4154,7 +3543,7 @@ func (l *ListTransfersResponseDataItem) require(field *big.Int) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTransfersResponseDataItem) SetAmount(amount float64) {
+func (l *ListTransfersResponseDataItem) SetAmount(amount *Money) {
 	l.Amount = amount
 	l.require(listTransfersResponseDataItemFieldAmount)
 }
@@ -4166,25 +3555,11 @@ func (l *ListTransfersResponseDataItem) SetCreatedAt(createdAt time.Time) {
 	l.require(listTransfersResponseDataItemFieldCreatedAt)
 }
 
-// SetCreatedByUser sets the CreatedByUser field and marks it as non-optional;
+// SetDestination sets the Destination field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTransfersResponseDataItem) SetCreatedByUser(createdByUser *ListTransfersResponseDataItemCreatedByUser) {
-	l.CreatedByUser = createdByUser
-	l.require(listTransfersResponseDataItemFieldCreatedByUser)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTransfersResponseDataItem) SetCurrency(currency string) {
-	l.Currency = currency
-	l.require(listTransfersResponseDataItemFieldCurrency)
-}
-
-// SetDestinationLedgerAccountID sets the DestinationLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTransfersResponseDataItem) SetDestinationLedgerAccountID(destinationLedgerAccountID string) {
-	l.DestinationLedgerAccountID = destinationLedgerAccountID
-	l.require(listTransfersResponseDataItemFieldDestinationLedgerAccountID)
+func (l *ListTransfersResponseDataItem) SetDestination(destination *ListTransfersResponseDataItemDestination) {
+	l.Destination = destination
+	l.require(listTransfersResponseDataItemFieldDestination)
 }
 
 // SetFailedAt sets the FailedAt field and marks it as non-optional;
@@ -4208,11 +3583,11 @@ func (l *ListTransfersResponseDataItem) SetFailureReason(failureReason *string) 
 	l.require(listTransfersResponseDataItemFieldFailureReason)
 }
 
-// SetFeeAmount sets the FeeAmount field and marks it as non-optional;
+// SetFee sets the Fee field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTransfersResponseDataItem) SetFeeAmount(feeAmount *float64) {
-	l.FeeAmount = feeAmount
-	l.require(listTransfersResponseDataItemFieldFeeAmount)
+func (l *ListTransfersResponseDataItem) SetFee(fee *Money) {
+	l.Fee = fee
+	l.require(listTransfersResponseDataItemFieldFee)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4243,11 +3618,11 @@ func (l *ListTransfersResponseDataItem) SetObject(object ListTransfersResponseDa
 	l.require(listTransfersResponseDataItemFieldObject)
 }
 
-// SetOriginLedgerAccountID sets the OriginLedgerAccountID field and marks it as non-optional;
+// SetOrigin sets the Origin field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTransfersResponseDataItem) SetOriginLedgerAccountID(originLedgerAccountID string) {
-	l.OriginLedgerAccountID = originLedgerAccountID
-	l.require(listTransfersResponseDataItemFieldOriginLedgerAccountID)
+func (l *ListTransfersResponseDataItem) SetOrigin(origin *ListTransfersResponseDataItemOrigin) {
+	l.Origin = origin
+	l.require(listTransfersResponseDataItemFieldOrigin)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -4257,12 +3632,35 @@ func (l *ListTransfersResponseDataItem) SetStatus(status ListTransfersResponseDa
 	l.require(listTransfersResponseDataItemFieldStatus)
 }
 
+// SetStatusChangedAt sets the StatusChangedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransfersResponseDataItem) SetStatusChangedAt(statusChangedAt *time.Time) {
+	l.StatusChangedAt = statusChangedAt
+	l.require(listTransfersResponseDataItemFieldStatusChangedAt)
+}
+
+// SetSucceededAt sets the SucceededAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransfersResponseDataItem) SetSucceededAt(succeededAt *time.Time) {
+	l.SucceededAt = succeededAt
+	l.require(listTransfersResponseDataItemFieldSucceededAt)
+}
+
+// SetTrackingURL sets the TrackingURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransfersResponseDataItem) SetTrackingURL(trackingURL string) {
+	l.TrackingURL = trackingURL
+	l.require(listTransfersResponseDataItemFieldTrackingURL)
+}
+
 func (l *ListTransfersResponseDataItem) UnmarshalJSON(data []byte) error {
 	type embed ListTransfersResponseDataItem
 	var unmarshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
 		embed: embed(*l),
 	}
@@ -4272,6 +3670,8 @@ func (l *ListTransfersResponseDataItem) UnmarshalJSON(data []byte) error {
 	*l = ListTransfersResponseDataItem(unmarshaler.embed)
 	l.CreatedAt = unmarshaler.CreatedAt.Time()
 	l.FailedAt = unmarshaler.FailedAt.TimePtr()
+	l.StatusChangedAt = unmarshaler.StatusChangedAt.TimePtr()
+	l.SucceededAt = unmarshaler.SucceededAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *l)
 	if err != nil {
 		return err
@@ -4292,12 +3692,16 @@ func (l *ListTransfersResponseDataItem) MarshalJSON() ([]byte, error) {
 	type embed ListTransfersResponseDataItem
 	var marshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
-		embed:     embed(*l),
-		CreatedAt: internal.NewDateTime(l.CreatedAt),
-		FailedAt:  internal.NewOptionalDateTime(l.FailedAt),
+		embed:           embed(*l),
+		CreatedAt:       internal.NewDateTime(l.CreatedAt),
+		FailedAt:        internal.NewOptionalDateTime(l.FailedAt),
+		StatusChangedAt: internal.NewOptionalDateTime(l.StatusChangedAt),
+		SucceededAt:     internal.NewOptionalDateTime(l.SucceededAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -4319,24 +3723,28 @@ func (l *ListTransfersResponseDataItem) String() string {
 }
 
 var (
-	listTransfersResponseDataItemCreatedByUserFieldID       = big.NewInt(1 << 0)
-	listTransfersResponseDataItemCreatedByUserFieldName     = big.NewInt(1 << 1)
-	listTransfersResponseDataItemCreatedByUserFieldUsername = big.NewInt(1 << 2)
+	listTransfersResponseDataItemDestinationFieldID      = big.NewInt(1 << 0)
+	listTransfersResponseDataItemDestinationFieldLogoURL = big.NewInt(1 << 1)
+	listTransfersResponseDataItemDestinationFieldName    = big.NewInt(1 << 2)
+	listTransfersResponseDataItemDestinationFieldObject  = big.NewInt(1 << 3)
 )
 
-// listTransfersResponseDataItemCreatedByUserNullableFields maps the wire names of ListTransfersResponseDataItemCreatedByUser's nullable fields (required or optional) to their field bits.
-var listTransfersResponseDataItemCreatedByUserNullableFields = map[string]*big.Int{
-	"name": listTransfersResponseDataItemCreatedByUserFieldName,
+// listTransfersResponseDataItemDestinationNullableFields maps the wire names of ListTransfersResponseDataItemDestination's nullable fields (required or optional) to their field bits.
+var listTransfersResponseDataItemDestinationNullableFields = map[string]*big.Int{
+	"logo_url": listTransfersResponseDataItemDestinationFieldLogoURL,
+	"name":     listTransfersResponseDataItemDestinationFieldName,
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-type ListTransfersResponseDataItemCreatedByUser struct {
-	// User ID.
+// Business account or user receiving the transfer.
+type ListTransfersResponseDataItemDestination struct {
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username string `json:"username" url:"username"`
+	// Whether the profile is a business account or a user.
+	Object ListTransfersResponseDataItemDestinationObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4345,35 +3753,42 @@ type ListTransfersResponseDataItemCreatedByUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListTransfersResponseDataItemCreatedByUser) GetID() string {
+func (l *ListTransfersResponseDataItemDestination) GetID() string {
 	if l == nil {
 		return ""
 	}
 	return l.ID
 }
 
-func (l *ListTransfersResponseDataItemCreatedByUser) GetName() *string {
+func (l *ListTransfersResponseDataItemDestination) GetLogoURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LogoURL
+}
+
+func (l *ListTransfersResponseDataItemDestination) GetName() *string {
 	if l == nil {
 		return nil
 	}
 	return l.Name
 }
 
-func (l *ListTransfersResponseDataItemCreatedByUser) GetUsername() string {
+func (l *ListTransfersResponseDataItemDestination) GetObject() ListTransfersResponseDataItemDestinationObject {
 	if l == nil {
 		return ""
 	}
-	return l.Username
+	return l.Object
 }
 
-func (l *ListTransfersResponseDataItemCreatedByUser) GetExtraProperties() map[string]interface{} {
+func (l *ListTransfersResponseDataItemDestination) GetExtraProperties() map[string]interface{} {
 	if l == nil {
 		return nil
 	}
 	return l.extraProperties
 }
 
-func (l *ListTransfersResponseDataItemCreatedByUser) require(field *big.Int) {
+func (l *ListTransfersResponseDataItemDestination) require(field *big.Int) {
 	next := new(big.Int)
 	if l.explicitFields != nil {
 		next.Set(l.explicitFields)
@@ -4384,38 +3799,45 @@ func (l *ListTransfersResponseDataItemCreatedByUser) require(field *big.Int) {
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTransfersResponseDataItemCreatedByUser) SetID(id string) {
+func (l *ListTransfersResponseDataItemDestination) SetID(id string) {
 	l.ID = id
-	l.require(listTransfersResponseDataItemCreatedByUserFieldID)
+	l.require(listTransfersResponseDataItemDestinationFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransfersResponseDataItemDestination) SetLogoURL(logoURL *string) {
+	l.LogoURL = logoURL
+	l.require(listTransfersResponseDataItemDestinationFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTransfersResponseDataItemCreatedByUser) SetName(name *string) {
+func (l *ListTransfersResponseDataItemDestination) SetName(name *string) {
 	l.Name = name
-	l.require(listTransfersResponseDataItemCreatedByUserFieldName)
+	l.require(listTransfersResponseDataItemDestinationFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTransfersResponseDataItemCreatedByUser) SetUsername(username string) {
-	l.Username = username
-	l.require(listTransfersResponseDataItemCreatedByUserFieldUsername)
+func (l *ListTransfersResponseDataItemDestination) SetObject(object ListTransfersResponseDataItemDestinationObject) {
+	l.Object = object
+	l.require(listTransfersResponseDataItemDestinationFieldObject)
 }
 
-func (l *ListTransfersResponseDataItemCreatedByUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler ListTransfersResponseDataItemCreatedByUser
+func (l *ListTransfersResponseDataItemDestination) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListTransfersResponseDataItemDestination
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*l = ListTransfersResponseDataItemCreatedByUser(value)
+	*l = ListTransfersResponseDataItemDestination(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *l)
 	if err != nil {
 		return err
 	}
 	l.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, listTransfersResponseDataItemCreatedByUserNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listTransfersResponseDataItemDestinationNullableFields)
 	if err != nil {
 		return err
 	}
@@ -4426,8 +3848,8 @@ func (l *ListTransfersResponseDataItemCreatedByUser) UnmarshalJSON(data []byte) 
 	return nil
 }
 
-func (l *ListTransfersResponseDataItemCreatedByUser) MarshalJSON() ([]byte, error) {
-	type embed ListTransfersResponseDataItemCreatedByUser
+func (l *ListTransfersResponseDataItemDestination) MarshalJSON() ([]byte, error) {
+	type embed ListTransfersResponseDataItemDestination
 	var marshaler = struct {
 		embed
 	}{
@@ -4437,7 +3859,7 @@ func (l *ListTransfersResponseDataItemCreatedByUser) MarshalJSON() ([]byte, erro
 	return json.Marshal(explicitMarshaler)
 }
 
-func (l *ListTransfersResponseDataItemCreatedByUser) String() string {
+func (l *ListTransfersResponseDataItemDestination) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -4450,6 +3872,29 @@ func (l *ListTransfersResponseDataItemCreatedByUser) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// Whether the profile is a business account or a user.
+type ListTransfersResponseDataItemDestinationObject string
+
+const (
+	ListTransfersResponseDataItemDestinationObjectAccount ListTransfersResponseDataItemDestinationObject = "account"
+	ListTransfersResponseDataItemDestinationObjectUser    ListTransfersResponseDataItemDestinationObject = "user"
+)
+
+func NewListTransfersResponseDataItemDestinationObjectFromString(s string) (ListTransfersResponseDataItemDestinationObject, error) {
+	switch s {
+	case "account":
+		return ListTransfersResponseDataItemDestinationObjectAccount, nil
+	case "user":
+		return ListTransfersResponseDataItemDestinationObjectUser, nil
+	}
+	var t ListTransfersResponseDataItemDestinationObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListTransfersResponseDataItemDestinationObject) Ptr() *ListTransfersResponseDataItemDestinationObject {
+	return &l
 }
 
 // The object type.
@@ -4472,7 +3917,182 @@ func (l ListTransfersResponseDataItemObject) Ptr() *ListTransfersResponseDataIte
 	return &l
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+var (
+	listTransfersResponseDataItemOriginFieldID      = big.NewInt(1 << 0)
+	listTransfersResponseDataItemOriginFieldLogoURL = big.NewInt(1 << 1)
+	listTransfersResponseDataItemOriginFieldName    = big.NewInt(1 << 2)
+	listTransfersResponseDataItemOriginFieldObject  = big.NewInt(1 << 3)
+)
+
+// listTransfersResponseDataItemOriginNullableFields maps the wire names of ListTransfersResponseDataItemOrigin's nullable fields (required or optional) to their field bits.
+var listTransfersResponseDataItemOriginNullableFields = map[string]*big.Int{
+	"logo_url": listTransfersResponseDataItemOriginFieldLogoURL,
+	"name":     listTransfersResponseDataItemOriginFieldName,
+}
+
+// Business account or user sending the transfer.
+type ListTransfersResponseDataItemOrigin struct {
+	// Account or user ID.
+	ID string `json:"id" url:"id"`
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Whether the profile is a business account or a user.
+	Object ListTransfersResponseDataItemOriginObject `json:"object" url:"object"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListTransfersResponseDataItemOrigin) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *ListTransfersResponseDataItemOrigin) GetLogoURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LogoURL
+}
+
+func (l *ListTransfersResponseDataItemOrigin) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *ListTransfersResponseDataItemOrigin) GetObject() ListTransfersResponseDataItemOriginObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *ListTransfersResponseDataItemOrigin) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListTransfersResponseDataItemOrigin) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransfersResponseDataItemOrigin) SetID(id string) {
+	l.ID = id
+	l.require(listTransfersResponseDataItemOriginFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransfersResponseDataItemOrigin) SetLogoURL(logoURL *string) {
+	l.LogoURL = logoURL
+	l.require(listTransfersResponseDataItemOriginFieldLogoURL)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransfersResponseDataItemOrigin) SetName(name *string) {
+	l.Name = name
+	l.require(listTransfersResponseDataItemOriginFieldName)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransfersResponseDataItemOrigin) SetObject(object ListTransfersResponseDataItemOriginObject) {
+	l.Object = object
+	l.require(listTransfersResponseDataItemOriginFieldObject)
+}
+
+func (l *ListTransfersResponseDataItemOrigin) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListTransfersResponseDataItemOrigin
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListTransfersResponseDataItemOrigin(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listTransfersResponseDataItemOriginNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListTransfersResponseDataItemOrigin) MarshalJSON() ([]byte, error) {
+	type embed ListTransfersResponseDataItemOrigin
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListTransfersResponseDataItemOrigin) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Whether the profile is a business account or a user.
+type ListTransfersResponseDataItemOriginObject string
+
+const (
+	ListTransfersResponseDataItemOriginObjectAccount ListTransfersResponseDataItemOriginObject = "account"
+	ListTransfersResponseDataItemOriginObjectUser    ListTransfersResponseDataItemOriginObject = "user"
+)
+
+func NewListTransfersResponseDataItemOriginObjectFromString(s string) (ListTransfersResponseDataItemOriginObject, error) {
+	switch s {
+	case "account":
+		return ListTransfersResponseDataItemOriginObjectAccount, nil
+	case "user":
+		return ListTransfersResponseDataItemOriginObjectUser, nil
+	}
+	var t ListTransfersResponseDataItemOriginObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListTransfersResponseDataItemOriginObject) Ptr() *ListTransfersResponseDataItemOriginObject {
+	return &l
+}
+
+// Current transfer status.
 type ListTransfersResponseDataItemStatus string
 
 const (
@@ -4669,7 +4289,7 @@ type PostTransferCompletedPayload struct {
 	APIVersion PostTransferCompletedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
 	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	// A transfer of credit between two ledger accounts.
+	// A transfer between Whop accounts or users.
 	Data *PostTransferCompletedPayloadData `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
@@ -4893,72 +4513,72 @@ func (p PostTransferCompletedPayloadAPIVersion) Ptr() *PostTransferCompletedPayl
 }
 
 var (
-	postTransferCompletedPayloadDataFieldAmount                     = big.NewInt(1 << 0)
-	postTransferCompletedPayloadDataFieldCreatedAt                  = big.NewInt(1 << 1)
-	postTransferCompletedPayloadDataFieldCreatedByUser              = big.NewInt(1 << 2)
-	postTransferCompletedPayloadDataFieldCurrency                   = big.NewInt(1 << 3)
-	postTransferCompletedPayloadDataFieldDestination                = big.NewInt(1 << 4)
-	postTransferCompletedPayloadDataFieldDestinationLedgerAccountID = big.NewInt(1 << 5)
-	postTransferCompletedPayloadDataFieldFailedAt                   = big.NewInt(1 << 6)
-	postTransferCompletedPayloadDataFieldFailureCode                = big.NewInt(1 << 7)
-	postTransferCompletedPayloadDataFieldFailureReason              = big.NewInt(1 << 8)
-	postTransferCompletedPayloadDataFieldFeeAmount                  = big.NewInt(1 << 9)
-	postTransferCompletedPayloadDataFieldID                         = big.NewInt(1 << 10)
-	postTransferCompletedPayloadDataFieldMetadata                   = big.NewInt(1 << 11)
-	postTransferCompletedPayloadDataFieldNotes                      = big.NewInt(1 << 12)
-	postTransferCompletedPayloadDataFieldObject                     = big.NewInt(1 << 13)
-	postTransferCompletedPayloadDataFieldOrigin                     = big.NewInt(1 << 14)
-	postTransferCompletedPayloadDataFieldOriginLedgerAccountID      = big.NewInt(1 << 15)
-	postTransferCompletedPayloadDataFieldStatus                     = big.NewInt(1 << 16)
+	postTransferCompletedPayloadDataFieldAmount          = big.NewInt(1 << 0)
+	postTransferCompletedPayloadDataFieldCreatedAt       = big.NewInt(1 << 1)
+	postTransferCompletedPayloadDataFieldDestination     = big.NewInt(1 << 2)
+	postTransferCompletedPayloadDataFieldFailedAt        = big.NewInt(1 << 3)
+	postTransferCompletedPayloadDataFieldFailureCode     = big.NewInt(1 << 4)
+	postTransferCompletedPayloadDataFieldFailureReason   = big.NewInt(1 << 5)
+	postTransferCompletedPayloadDataFieldFee             = big.NewInt(1 << 6)
+	postTransferCompletedPayloadDataFieldID              = big.NewInt(1 << 7)
+	postTransferCompletedPayloadDataFieldMetadata        = big.NewInt(1 << 8)
+	postTransferCompletedPayloadDataFieldNotes           = big.NewInt(1 << 9)
+	postTransferCompletedPayloadDataFieldObject          = big.NewInt(1 << 10)
+	postTransferCompletedPayloadDataFieldOrigin          = big.NewInt(1 << 11)
+	postTransferCompletedPayloadDataFieldStatus          = big.NewInt(1 << 12)
+	postTransferCompletedPayloadDataFieldStatusChangedAt = big.NewInt(1 << 13)
+	postTransferCompletedPayloadDataFieldSucceededAt     = big.NewInt(1 << 14)
+	postTransferCompletedPayloadDataFieldTrackingURL     = big.NewInt(1 << 15)
 )
 
 // postTransferCompletedPayloadDataNullableFields maps the wire names of PostTransferCompletedPayloadData's nullable fields (required or optional) to their field bits.
 var postTransferCompletedPayloadDataNullableFields = map[string]*big.Int{
-	"created_by_user": postTransferCompletedPayloadDataFieldCreatedByUser,
-	"failed_at":       postTransferCompletedPayloadDataFieldFailedAt,
-	"failure_code":    postTransferCompletedPayloadDataFieldFailureCode,
-	"failure_reason":  postTransferCompletedPayloadDataFieldFailureReason,
-	"fee_amount":      postTransferCompletedPayloadDataFieldFeeAmount,
-	"metadata":        postTransferCompletedPayloadDataFieldMetadata,
-	"notes":           postTransferCompletedPayloadDataFieldNotes,
+	"amount":            postTransferCompletedPayloadDataFieldAmount,
+	"destination":       postTransferCompletedPayloadDataFieldDestination,
+	"failed_at":         postTransferCompletedPayloadDataFieldFailedAt,
+	"failure_code":      postTransferCompletedPayloadDataFieldFailureCode,
+	"failure_reason":    postTransferCompletedPayloadDataFieldFailureReason,
+	"fee":               postTransferCompletedPayloadDataFieldFee,
+	"notes":             postTransferCompletedPayloadDataFieldNotes,
+	"origin":            postTransferCompletedPayloadDataFieldOrigin,
+	"status_changed_at": postTransferCompletedPayloadDataFieldStatusChangedAt,
+	"succeeded_at":      postTransferCompletedPayloadDataFieldSucceededAt,
 }
 
-// A transfer of credit between two ledger accounts.
+// A transfer between Whop accounts or users.
 type PostTransferCompletedPayloadData struct {
-	// Transfer amount.
-	Amount float64 `json:"amount" url:"amount"`
+	// Amount credited to the recipient. Null while the transfer has not succeeded.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
 	// When the transfer was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-	CreatedByUser *PostTransferCompletedPayloadDataCreatedByUser `json:"created_by_user,omitempty" url:"created_by_user,omitempty"`
-	// Transfer currency.
-	Currency string `json:"currency" url:"currency"`
-	// Account or user receiving funds.
-	Destination *PostTransferCompletedPayloadDataDestination `json:"destination" url:"destination"`
-	// Destination ledger account ID.
-	DestinationLedgerAccountID string `json:"destination_ledger_account_id" url:"destination_ledger_account_id"`
-	// When the transfer failed, as an ISO 8601 timestamp. Null unless the transfer has failed.
+	// Business account or user receiving the transfer.
+	Destination *PostTransferCompletedPayloadDataDestination `json:"destination,omitempty" url:"destination,omitempty"`
+	// Recorded failure time. Null unless the transfer has failed.
 	FailedAt *time.Time `json:"failed_at,omitempty" url:"failed_at,omitempty"`
-	// Machine-readable code for why the transfer failed. Null unless the transfer has failed.
+	// Machine-readable failure code. Null unless the transfer has failed.
 	FailureCode *string `json:"failure_code,omitempty" url:"failure_code,omitempty"`
-	// Human-readable explanation of why the transfer failed. Null unless the transfer has failed.
+	// Failure explanation. Null unless the transfer has failed.
 	FailureReason *string `json:"failure_reason,omitempty" url:"failure_reason,omitempty"`
-	// Fee charged for the transfer.
-	FeeAmount *float64 `json:"fee_amount,omitempty" url:"fee_amount,omitempty"`
+	// All applicable transfer fees, including platform markup. Null when the authoritative total is unavailable.
+	Fee *Money `json:"fee,omitempty" url:"fee,omitempty"`
 	// Transfer ID.
 	ID string `json:"id" url:"id"`
 	// Custom metadata attached to the transfer.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// Transfer note.
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
-	// The object type. Discriminates the create response from a send or a claim link.
+	// The object type.
 	Object PostTransferCompletedPayloadDataObject `json:"object" url:"object"`
-	// Account or user sending funds.
-	Origin *PostTransferCompletedPayloadDataOrigin `json:"origin" url:"origin"`
-	// Source ledger account ID.
-	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Business account or user sending the transfer.
+	Origin *PostTransferCompletedPayloadDataOrigin `json:"origin,omitempty" url:"origin,omitempty"`
+	// Current transfer status.
 	Status PostTransferCompletedPayloadDataStatus `json:"status" url:"status"`
+	// Recorded time of the current transition. Null when the historical transition time is unknown.
+	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
+	// Recorded success time. Null when unknown.
+	SucceededAt *time.Time `json:"succeeded_at,omitempty" url:"succeeded_at,omitempty"`
+	// Tracking page for the transfer. Viewing it requires sign-in and access to the transfer.
+	TrackingURL string `json:"tracking_url" url:"tracking_url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4967,9 +4587,9 @@ type PostTransferCompletedPayloadData struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostTransferCompletedPayloadData) GetAmount() float64 {
+func (p *PostTransferCompletedPayloadData) GetAmount() *Money {
 	if p == nil {
-		return 0
+		return nil
 	}
 	return p.Amount
 }
@@ -4981,32 +4601,11 @@ func (p *PostTransferCompletedPayloadData) GetCreatedAt() time.Time {
 	return p.CreatedAt
 }
 
-func (p *PostTransferCompletedPayloadData) GetCreatedByUser() *PostTransferCompletedPayloadDataCreatedByUser {
-	if p == nil {
-		return nil
-	}
-	return p.CreatedByUser
-}
-
-func (p *PostTransferCompletedPayloadData) GetCurrency() string {
-	if p == nil {
-		return ""
-	}
-	return p.Currency
-}
-
 func (p *PostTransferCompletedPayloadData) GetDestination() *PostTransferCompletedPayloadDataDestination {
 	if p == nil {
 		return nil
 	}
 	return p.Destination
-}
-
-func (p *PostTransferCompletedPayloadData) GetDestinationLedgerAccountID() string {
-	if p == nil {
-		return ""
-	}
-	return p.DestinationLedgerAccountID
 }
 
 func (p *PostTransferCompletedPayloadData) GetFailedAt() *time.Time {
@@ -5030,11 +4629,11 @@ func (p *PostTransferCompletedPayloadData) GetFailureReason() *string {
 	return p.FailureReason
 }
 
-func (p *PostTransferCompletedPayloadData) GetFeeAmount() *float64 {
+func (p *PostTransferCompletedPayloadData) GetFee() *Money {
 	if p == nil {
 		return nil
 	}
-	return p.FeeAmount
+	return p.Fee
 }
 
 func (p *PostTransferCompletedPayloadData) GetID() string {
@@ -5072,18 +4671,32 @@ func (p *PostTransferCompletedPayloadData) GetOrigin() *PostTransferCompletedPay
 	return p.Origin
 }
 
-func (p *PostTransferCompletedPayloadData) GetOriginLedgerAccountID() string {
-	if p == nil {
-		return ""
-	}
-	return p.OriginLedgerAccountID
-}
-
 func (p *PostTransferCompletedPayloadData) GetStatus() PostTransferCompletedPayloadDataStatus {
 	if p == nil {
 		return ""
 	}
 	return p.Status
+}
+
+func (p *PostTransferCompletedPayloadData) GetStatusChangedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.StatusChangedAt
+}
+
+func (p *PostTransferCompletedPayloadData) GetSucceededAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.SucceededAt
+}
+
+func (p *PostTransferCompletedPayloadData) GetTrackingURL() string {
+	if p == nil {
+		return ""
+	}
+	return p.TrackingURL
 }
 
 func (p *PostTransferCompletedPayloadData) GetExtraProperties() map[string]interface{} {
@@ -5104,7 +4717,7 @@ func (p *PostTransferCompletedPayloadData) require(field *big.Int) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadData) SetAmount(amount float64) {
+func (p *PostTransferCompletedPayloadData) SetAmount(amount *Money) {
 	p.Amount = amount
 	p.require(postTransferCompletedPayloadDataFieldAmount)
 }
@@ -5116,32 +4729,11 @@ func (p *PostTransferCompletedPayloadData) SetCreatedAt(createdAt time.Time) {
 	p.require(postTransferCompletedPayloadDataFieldCreatedAt)
 }
 
-// SetCreatedByUser sets the CreatedByUser field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadData) SetCreatedByUser(createdByUser *PostTransferCompletedPayloadDataCreatedByUser) {
-	p.CreatedByUser = createdByUser
-	p.require(postTransferCompletedPayloadDataFieldCreatedByUser)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadData) SetCurrency(currency string) {
-	p.Currency = currency
-	p.require(postTransferCompletedPayloadDataFieldCurrency)
-}
-
 // SetDestination sets the Destination field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostTransferCompletedPayloadData) SetDestination(destination *PostTransferCompletedPayloadDataDestination) {
 	p.Destination = destination
 	p.require(postTransferCompletedPayloadDataFieldDestination)
-}
-
-// SetDestinationLedgerAccountID sets the DestinationLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadData) SetDestinationLedgerAccountID(destinationLedgerAccountID string) {
-	p.DestinationLedgerAccountID = destinationLedgerAccountID
-	p.require(postTransferCompletedPayloadDataFieldDestinationLedgerAccountID)
 }
 
 // SetFailedAt sets the FailedAt field and marks it as non-optional;
@@ -5165,11 +4757,11 @@ func (p *PostTransferCompletedPayloadData) SetFailureReason(failureReason *strin
 	p.require(postTransferCompletedPayloadDataFieldFailureReason)
 }
 
-// SetFeeAmount sets the FeeAmount field and marks it as non-optional;
+// SetFee sets the Fee field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadData) SetFeeAmount(feeAmount *float64) {
-	p.FeeAmount = feeAmount
-	p.require(postTransferCompletedPayloadDataFieldFeeAmount)
+func (p *PostTransferCompletedPayloadData) SetFee(fee *Money) {
+	p.Fee = fee
+	p.require(postTransferCompletedPayloadDataFieldFee)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5207,13 +4799,6 @@ func (p *PostTransferCompletedPayloadData) SetOrigin(origin *PostTransferComplet
 	p.require(postTransferCompletedPayloadDataFieldOrigin)
 }
 
-// SetOriginLedgerAccountID sets the OriginLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadData) SetOriginLedgerAccountID(originLedgerAccountID string) {
-	p.OriginLedgerAccountID = originLedgerAccountID
-	p.require(postTransferCompletedPayloadDataFieldOriginLedgerAccountID)
-}
-
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostTransferCompletedPayloadData) SetStatus(status PostTransferCompletedPayloadDataStatus) {
@@ -5221,12 +4806,35 @@ func (p *PostTransferCompletedPayloadData) SetStatus(status PostTransferComplete
 	p.require(postTransferCompletedPayloadDataFieldStatus)
 }
 
+// SetStatusChangedAt sets the StatusChangedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferCompletedPayloadData) SetStatusChangedAt(statusChangedAt *time.Time) {
+	p.StatusChangedAt = statusChangedAt
+	p.require(postTransferCompletedPayloadDataFieldStatusChangedAt)
+}
+
+// SetSucceededAt sets the SucceededAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferCompletedPayloadData) SetSucceededAt(succeededAt *time.Time) {
+	p.SucceededAt = succeededAt
+	p.require(postTransferCompletedPayloadDataFieldSucceededAt)
+}
+
+// SetTrackingURL sets the TrackingURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferCompletedPayloadData) SetTrackingURL(trackingURL string) {
+	p.TrackingURL = trackingURL
+	p.require(postTransferCompletedPayloadDataFieldTrackingURL)
+}
+
 func (p *PostTransferCompletedPayloadData) UnmarshalJSON(data []byte) error {
 	type embed PostTransferCompletedPayloadData
 	var unmarshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
 		embed: embed(*p),
 	}
@@ -5236,6 +4844,8 @@ func (p *PostTransferCompletedPayloadData) UnmarshalJSON(data []byte) error {
 	*p = PostTransferCompletedPayloadData(unmarshaler.embed)
 	p.CreatedAt = unmarshaler.CreatedAt.Time()
 	p.FailedAt = unmarshaler.FailedAt.TimePtr()
+	p.StatusChangedAt = unmarshaler.StatusChangedAt.TimePtr()
+	p.SucceededAt = unmarshaler.SucceededAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -5256,12 +4866,16 @@ func (p *PostTransferCompletedPayloadData) MarshalJSON() ([]byte, error) {
 	type embed PostTransferCompletedPayloadData
 	var marshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
-		embed:     embed(*p),
-		CreatedAt: internal.NewDateTime(p.CreatedAt),
-		FailedAt:  internal.NewOptionalDateTime(p.FailedAt),
+		embed:           embed(*p),
+		CreatedAt:       internal.NewDateTime(p.CreatedAt),
+		FailedAt:        internal.NewOptionalDateTime(p.FailedAt),
+		StatusChangedAt: internal.NewOptionalDateTime(p.StatusChangedAt),
+		SucceededAt:     internal.NewOptionalDateTime(p.SucceededAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -5283,24 +4897,28 @@ func (p *PostTransferCompletedPayloadData) String() string {
 }
 
 var (
-	postTransferCompletedPayloadDataCreatedByUserFieldID       = big.NewInt(1 << 0)
-	postTransferCompletedPayloadDataCreatedByUserFieldName     = big.NewInt(1 << 1)
-	postTransferCompletedPayloadDataCreatedByUserFieldUsername = big.NewInt(1 << 2)
+	postTransferCompletedPayloadDataDestinationFieldID      = big.NewInt(1 << 0)
+	postTransferCompletedPayloadDataDestinationFieldLogoURL = big.NewInt(1 << 1)
+	postTransferCompletedPayloadDataDestinationFieldName    = big.NewInt(1 << 2)
+	postTransferCompletedPayloadDataDestinationFieldObject  = big.NewInt(1 << 3)
 )
 
-// postTransferCompletedPayloadDataCreatedByUserNullableFields maps the wire names of PostTransferCompletedPayloadDataCreatedByUser's nullable fields (required or optional) to their field bits.
-var postTransferCompletedPayloadDataCreatedByUserNullableFields = map[string]*big.Int{
-	"name": postTransferCompletedPayloadDataCreatedByUserFieldName,
+// postTransferCompletedPayloadDataDestinationNullableFields maps the wire names of PostTransferCompletedPayloadDataDestination's nullable fields (required or optional) to their field bits.
+var postTransferCompletedPayloadDataDestinationNullableFields = map[string]*big.Int{
+	"logo_url": postTransferCompletedPayloadDataDestinationFieldLogoURL,
+	"name":     postTransferCompletedPayloadDataDestinationFieldName,
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-type PostTransferCompletedPayloadDataCreatedByUser struct {
-	// User ID.
+// Business account or user receiving the transfer.
+type PostTransferCompletedPayloadDataDestination struct {
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username string `json:"username" url:"username"`
+	// Whether the profile is a business account or a user.
+	Object PostTransferCompletedPayloadDataDestinationObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5309,35 +4927,42 @@ type PostTransferCompletedPayloadDataCreatedByUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostTransferCompletedPayloadDataCreatedByUser) GetID() string {
+func (p *PostTransferCompletedPayloadDataDestination) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *PostTransferCompletedPayloadDataCreatedByUser) GetName() *string {
+func (p *PostTransferCompletedPayloadDataDestination) GetLogoURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LogoURL
+}
+
+func (p *PostTransferCompletedPayloadDataDestination) GetName() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Name
 }
 
-func (p *PostTransferCompletedPayloadDataCreatedByUser) GetUsername() string {
+func (p *PostTransferCompletedPayloadDataDestination) GetObject() PostTransferCompletedPayloadDataDestinationObject {
 	if p == nil {
 		return ""
 	}
-	return p.Username
+	return p.Object
 }
 
-func (p *PostTransferCompletedPayloadDataCreatedByUser) GetExtraProperties() map[string]interface{} {
+func (p *PostTransferCompletedPayloadDataDestination) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostTransferCompletedPayloadDataCreatedByUser) require(field *big.Int) {
+func (p *PostTransferCompletedPayloadDataDestination) require(field *big.Int) {
 	next := new(big.Int)
 	if p.explicitFields != nil {
 		next.Set(p.explicitFields)
@@ -5348,299 +4973,45 @@ func (p *PostTransferCompletedPayloadDataCreatedByUser) require(field *big.Int) 
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataCreatedByUser) SetID(id string) {
+func (p *PostTransferCompletedPayloadDataDestination) SetID(id string) {
 	p.ID = id
-	p.require(postTransferCompletedPayloadDataCreatedByUserFieldID)
+	p.require(postTransferCompletedPayloadDataDestinationFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferCompletedPayloadDataDestination) SetLogoURL(logoURL *string) {
+	p.LogoURL = logoURL
+	p.require(postTransferCompletedPayloadDataDestinationFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataCreatedByUser) SetName(name *string) {
+func (p *PostTransferCompletedPayloadDataDestination) SetName(name *string) {
 	p.Name = name
-	p.require(postTransferCompletedPayloadDataCreatedByUserFieldName)
+	p.require(postTransferCompletedPayloadDataDestinationFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataCreatedByUser) SetUsername(username string) {
-	p.Username = username
-	p.require(postTransferCompletedPayloadDataCreatedByUserFieldUsername)
-}
-
-func (p *PostTransferCompletedPayloadDataCreatedByUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferCompletedPayloadDataCreatedByUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostTransferCompletedPayloadDataCreatedByUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataCreatedByUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		p.require(presentFields)
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostTransferCompletedPayloadDataCreatedByUser) MarshalJSON() ([]byte, error) {
-	type embed PostTransferCompletedPayloadDataCreatedByUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostTransferCompletedPayloadDataCreatedByUser) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// Account or user receiving funds.
-type PostTransferCompletedPayloadDataDestination struct {
-	Typename string
-	Company  *PostTransferCompletedPayloadDataDestinationCompany
-	User     *PostTransferCompletedPayloadDataDestinationUser
-
-	rawJSON json.RawMessage
-}
-
-func (p *PostTransferCompletedPayloadDataDestination) GetTypename() string {
-	if p == nil {
-		return ""
-	}
-	return p.Typename
-}
-
-func (p *PostTransferCompletedPayloadDataDestination) GetCompany() *PostTransferCompletedPayloadDataDestinationCompany {
-	if p == nil {
-		return nil
-	}
-	return p.Company
-}
-
-func (p *PostTransferCompletedPayloadDataDestination) GetUser() *PostTransferCompletedPayloadDataDestinationUser {
-	if p == nil {
-		return nil
-	}
-	return p.User
+func (p *PostTransferCompletedPayloadDataDestination) SetObject(object PostTransferCompletedPayloadDataDestinationObject) {
+	p.Object = object
+	p.require(postTransferCompletedPayloadDataDestinationFieldObject)
 }
 
 func (p *PostTransferCompletedPayloadDataDestination) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	p.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", p)
-	}
-	switch unmarshaler.Typename {
-	case "Company":
-		value := new(PostTransferCompletedPayloadDataDestinationCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Company = value
-	case "User":
-		value := new(PostTransferCompletedPayloadDataDestinationUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.User = value
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p PostTransferCompletedPayloadDataDestination) MarshalJSON() ([]byte, error) {
-	if err := p.validate(); err != nil {
-		return nil, err
-	}
-	if p.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(p.Company, "typename", "Company")
-	}
-	if p.User != nil {
-		return internal.MarshalJSONWithExtraProperty(p.User, "typename", "User")
-	}
-	if len(p.rawJSON) > 0 {
-		return p.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-type PostTransferCompletedPayloadDataDestinationVisitor interface {
-	VisitCompany(*PostTransferCompletedPayloadDataDestinationCompany) error
-	VisitUser(*PostTransferCompletedPayloadDataDestinationUser) error
-}
-
-func (p *PostTransferCompletedPayloadDataDestination) Accept(visitor PostTransferCompletedPayloadDataDestinationVisitor) error {
-	if p.Company != nil {
-		return visitor.VisitCompany(p.Company)
-	}
-	if p.User != nil {
-		return visitor.VisitUser(p.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-func (p *PostTransferCompletedPayloadDataDestination) validate() error {
-	if p == nil {
-		return fmt.Errorf("type %T is nil", p)
-	}
-	var fields []string
-	if p.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if p.User != nil {
-		fields = append(fields, "User")
-	}
-	if len(fields) == 0 {
-		if p.Typename != "" {
-			if len(p.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", p, p.Typename)
-		}
-		return fmt.Errorf("type %T is empty", p)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", p, fields)
-	}
-	if p.Typename != "" {
-		field := fields[0]
-		if p.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				p,
-				p.Typename,
-				p,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	postTransferCompletedPayloadDataDestinationCompanyFieldID    = big.NewInt(1 << 0)
-	postTransferCompletedPayloadDataDestinationCompanyFieldRoute = big.NewInt(1 << 1)
-	postTransferCompletedPayloadDataDestinationCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-// postTransferCompletedPayloadDataDestinationCompanyNullableFields maps the wire names of PostTransferCompletedPayloadDataDestinationCompany's nullable fields (required or optional) to their field bits.
-var postTransferCompletedPayloadDataDestinationCompanyNullableFields = map[string]*big.Int{
-	"route": postTransferCompletedPayloadDataDestinationCompanyFieldRoute,
-	"title": postTransferCompletedPayloadDataDestinationCompanyFieldTitle,
-}
-
-type PostTransferCompletedPayloadDataDestinationCompany struct {
-	// Account ID.
-	ID string `json:"id" url:"id"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationCompany) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationCompany) GetRoute() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Route
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationCompany) GetTitle() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Title
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationCompany) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationCompany) require(field *big.Int) {
-	next := new(big.Int)
-	if p.explicitFields != nil {
-		next.Set(p.explicitFields)
-	}
-	next.Or(next, field)
-	p.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataDestinationCompany) SetID(id string) {
-	p.ID = id
-	p.require(postTransferCompletedPayloadDataDestinationCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataDestinationCompany) SetRoute(route *string) {
-	p.Route = route
-	p.require(postTransferCompletedPayloadDataDestinationCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataDestinationCompany) SetTitle(title *string) {
-	p.Title = title
-	p.require(postTransferCompletedPayloadDataDestinationCompanyFieldTitle)
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferCompletedPayloadDataDestinationCompany
+	type unmarshaler PostTransferCompletedPayloadDataDestination
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PostTransferCompletedPayloadDataDestinationCompany(value)
+	*p = PostTransferCompletedPayloadDataDestination(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
 	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataDestinationCompanyNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataDestinationNullableFields)
 	if err != nil {
 		return err
 	}
@@ -5651,8 +5022,8 @@ func (p *PostTransferCompletedPayloadDataDestinationCompany) UnmarshalJSON(data 
 	return nil
 }
 
-func (p *PostTransferCompletedPayloadDataDestinationCompany) MarshalJSON() ([]byte, error) {
-	type embed PostTransferCompletedPayloadDataDestinationCompany
+func (p *PostTransferCompletedPayloadDataDestination) MarshalJSON() ([]byte, error) {
+	type embed PostTransferCompletedPayloadDataDestination
 	var marshaler = struct {
 		embed
 	}{
@@ -5662,7 +5033,7 @@ func (p *PostTransferCompletedPayloadDataDestinationCompany) MarshalJSON() ([]by
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostTransferCompletedPayloadDataDestinationCompany) String() string {
+func (p *PostTransferCompletedPayloadDataDestination) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -5677,140 +5048,30 @@ func (p *PostTransferCompletedPayloadDataDestinationCompany) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-var (
-	postTransferCompletedPayloadDataDestinationUserFieldID       = big.NewInt(1 << 0)
-	postTransferCompletedPayloadDataDestinationUserFieldName     = big.NewInt(1 << 1)
-	postTransferCompletedPayloadDataDestinationUserFieldUsername = big.NewInt(1 << 2)
+// Whether the profile is a business account or a user.
+type PostTransferCompletedPayloadDataDestinationObject string
+
+const (
+	PostTransferCompletedPayloadDataDestinationObjectAccount PostTransferCompletedPayloadDataDestinationObject = "account"
+	PostTransferCompletedPayloadDataDestinationObjectUser    PostTransferCompletedPayloadDataDestinationObject = "user"
 )
 
-// postTransferCompletedPayloadDataDestinationUserNullableFields maps the wire names of PostTransferCompletedPayloadDataDestinationUser's nullable fields (required or optional) to their field bits.
-var postTransferCompletedPayloadDataDestinationUserNullableFields = map[string]*big.Int{
-	"name": postTransferCompletedPayloadDataDestinationUserFieldName,
+func NewPostTransferCompletedPayloadDataDestinationObjectFromString(s string) (PostTransferCompletedPayloadDataDestinationObject, error) {
+	switch s {
+	case "account":
+		return PostTransferCompletedPayloadDataDestinationObjectAccount, nil
+	case "user":
+		return PostTransferCompletedPayloadDataDestinationObjectUser, nil
+	}
+	var t PostTransferCompletedPayloadDataDestinationObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-type PostTransferCompletedPayloadDataDestinationUser struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
+func (p PostTransferCompletedPayloadDataDestinationObject) Ptr() *PostTransferCompletedPayloadDataDestinationObject {
+	return &p
 }
 
-func (p *PostTransferCompletedPayloadDataDestinationUser) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationUser) GetName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Name
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationUser) GetUsername() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Username
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationUser) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationUser) require(field *big.Int) {
-	next := new(big.Int)
-	if p.explicitFields != nil {
-		next.Set(p.explicitFields)
-	}
-	next.Or(next, field)
-	p.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataDestinationUser) SetID(id string) {
-	p.ID = id
-	p.require(postTransferCompletedPayloadDataDestinationUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataDestinationUser) SetName(name *string) {
-	p.Name = name
-	p.require(postTransferCompletedPayloadDataDestinationUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataDestinationUser) SetUsername(username *string) {
-	p.Username = username
-	p.require(postTransferCompletedPayloadDataDestinationUserFieldUsername)
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferCompletedPayloadDataDestinationUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostTransferCompletedPayloadDataDestinationUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataDestinationUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		p.require(presentFields)
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationUser) MarshalJSON() ([]byte, error) {
-	type embed PostTransferCompletedPayloadDataDestinationUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostTransferCompletedPayloadDataDestinationUser) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The object type. Discriminates the create response from a send or a claim link.
+// The object type.
 type PostTransferCompletedPayloadDataObject string
 
 const (
@@ -5830,285 +5091,29 @@ func (p PostTransferCompletedPayloadDataObject) Ptr() *PostTransferCompletedPayl
 	return &p
 }
 
-// Account or user sending funds.
+var (
+	postTransferCompletedPayloadDataOriginFieldID      = big.NewInt(1 << 0)
+	postTransferCompletedPayloadDataOriginFieldLogoURL = big.NewInt(1 << 1)
+	postTransferCompletedPayloadDataOriginFieldName    = big.NewInt(1 << 2)
+	postTransferCompletedPayloadDataOriginFieldObject  = big.NewInt(1 << 3)
+)
+
+// postTransferCompletedPayloadDataOriginNullableFields maps the wire names of PostTransferCompletedPayloadDataOrigin's nullable fields (required or optional) to their field bits.
+var postTransferCompletedPayloadDataOriginNullableFields = map[string]*big.Int{
+	"logo_url": postTransferCompletedPayloadDataOriginFieldLogoURL,
+	"name":     postTransferCompletedPayloadDataOriginFieldName,
+}
+
+// Business account or user sending the transfer.
 type PostTransferCompletedPayloadDataOrigin struct {
-	Typename string
-	Company  *PostTransferCompletedPayloadDataOriginCompany
-	User     *PostTransferCompletedPayloadDataOriginUser
-
-	rawJSON json.RawMessage
-}
-
-func (p *PostTransferCompletedPayloadDataOrigin) GetTypename() string {
-	if p == nil {
-		return ""
-	}
-	return p.Typename
-}
-
-func (p *PostTransferCompletedPayloadDataOrigin) GetCompany() *PostTransferCompletedPayloadDataOriginCompany {
-	if p == nil {
-		return nil
-	}
-	return p.Company
-}
-
-func (p *PostTransferCompletedPayloadDataOrigin) GetUser() *PostTransferCompletedPayloadDataOriginUser {
-	if p == nil {
-		return nil
-	}
-	return p.User
-}
-
-func (p *PostTransferCompletedPayloadDataOrigin) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	p.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", p)
-	}
-	switch unmarshaler.Typename {
-	case "Company":
-		value := new(PostTransferCompletedPayloadDataOriginCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Company = value
-	case "User":
-		value := new(PostTransferCompletedPayloadDataOriginUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.User = value
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p PostTransferCompletedPayloadDataOrigin) MarshalJSON() ([]byte, error) {
-	if err := p.validate(); err != nil {
-		return nil, err
-	}
-	if p.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(p.Company, "typename", "Company")
-	}
-	if p.User != nil {
-		return internal.MarshalJSONWithExtraProperty(p.User, "typename", "User")
-	}
-	if len(p.rawJSON) > 0 {
-		return p.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-type PostTransferCompletedPayloadDataOriginVisitor interface {
-	VisitCompany(*PostTransferCompletedPayloadDataOriginCompany) error
-	VisitUser(*PostTransferCompletedPayloadDataOriginUser) error
-}
-
-func (p *PostTransferCompletedPayloadDataOrigin) Accept(visitor PostTransferCompletedPayloadDataOriginVisitor) error {
-	if p.Company != nil {
-		return visitor.VisitCompany(p.Company)
-	}
-	if p.User != nil {
-		return visitor.VisitUser(p.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-func (p *PostTransferCompletedPayloadDataOrigin) validate() error {
-	if p == nil {
-		return fmt.Errorf("type %T is nil", p)
-	}
-	var fields []string
-	if p.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if p.User != nil {
-		fields = append(fields, "User")
-	}
-	if len(fields) == 0 {
-		if p.Typename != "" {
-			if len(p.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", p, p.Typename)
-		}
-		return fmt.Errorf("type %T is empty", p)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", p, fields)
-	}
-	if p.Typename != "" {
-		field := fields[0]
-		if p.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				p,
-				p.Typename,
-				p,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	postTransferCompletedPayloadDataOriginCompanyFieldID    = big.NewInt(1 << 0)
-	postTransferCompletedPayloadDataOriginCompanyFieldRoute = big.NewInt(1 << 1)
-	postTransferCompletedPayloadDataOriginCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-// postTransferCompletedPayloadDataOriginCompanyNullableFields maps the wire names of PostTransferCompletedPayloadDataOriginCompany's nullable fields (required or optional) to their field bits.
-var postTransferCompletedPayloadDataOriginCompanyNullableFields = map[string]*big.Int{
-	"route": postTransferCompletedPayloadDataOriginCompanyFieldRoute,
-	"title": postTransferCompletedPayloadDataOriginCompanyFieldTitle,
-}
-
-type PostTransferCompletedPayloadDataOriginCompany struct {
-	// Account ID.
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostTransferCompletedPayloadDataOriginCompany) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostTransferCompletedPayloadDataOriginCompany) GetRoute() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Route
-}
-
-func (p *PostTransferCompletedPayloadDataOriginCompany) GetTitle() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Title
-}
-
-func (p *PostTransferCompletedPayloadDataOriginCompany) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostTransferCompletedPayloadDataOriginCompany) require(field *big.Int) {
-	next := new(big.Int)
-	if p.explicitFields != nil {
-		next.Set(p.explicitFields)
-	}
-	next.Or(next, field)
-	p.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataOriginCompany) SetID(id string) {
-	p.ID = id
-	p.require(postTransferCompletedPayloadDataOriginCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataOriginCompany) SetRoute(route *string) {
-	p.Route = route
-	p.require(postTransferCompletedPayloadDataOriginCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataOriginCompany) SetTitle(title *string) {
-	p.Title = title
-	p.require(postTransferCompletedPayloadDataOriginCompanyFieldTitle)
-}
-
-func (p *PostTransferCompletedPayloadDataOriginCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferCompletedPayloadDataOriginCompany
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostTransferCompletedPayloadDataOriginCompany(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataOriginCompanyNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		p.require(presentFields)
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostTransferCompletedPayloadDataOriginCompany) MarshalJSON() ([]byte, error) {
-	type embed PostTransferCompletedPayloadDataOriginCompany
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostTransferCompletedPayloadDataOriginCompany) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-var (
-	postTransferCompletedPayloadDataOriginUserFieldID       = big.NewInt(1 << 0)
-	postTransferCompletedPayloadDataOriginUserFieldName     = big.NewInt(1 << 1)
-	postTransferCompletedPayloadDataOriginUserFieldUsername = big.NewInt(1 << 2)
-)
-
-// postTransferCompletedPayloadDataOriginUserNullableFields maps the wire names of PostTransferCompletedPayloadDataOriginUser's nullable fields (required or optional) to their field bits.
-var postTransferCompletedPayloadDataOriginUserNullableFields = map[string]*big.Int{
-	"name": postTransferCompletedPayloadDataOriginUserFieldName,
-}
-
-type PostTransferCompletedPayloadDataOriginUser struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether the profile is a business account or a user.
+	Object PostTransferCompletedPayloadDataOriginObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6117,35 +5122,42 @@ type PostTransferCompletedPayloadDataOriginUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostTransferCompletedPayloadDataOriginUser) GetID() string {
+func (p *PostTransferCompletedPayloadDataOrigin) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *PostTransferCompletedPayloadDataOriginUser) GetName() *string {
+func (p *PostTransferCompletedPayloadDataOrigin) GetLogoURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LogoURL
+}
+
+func (p *PostTransferCompletedPayloadDataOrigin) GetName() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Name
 }
 
-func (p *PostTransferCompletedPayloadDataOriginUser) GetUsername() *string {
+func (p *PostTransferCompletedPayloadDataOrigin) GetObject() PostTransferCompletedPayloadDataOriginObject {
 	if p == nil {
-		return nil
+		return ""
 	}
-	return p.Username
+	return p.Object
 }
 
-func (p *PostTransferCompletedPayloadDataOriginUser) GetExtraProperties() map[string]interface{} {
+func (p *PostTransferCompletedPayloadDataOrigin) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostTransferCompletedPayloadDataOriginUser) require(field *big.Int) {
+func (p *PostTransferCompletedPayloadDataOrigin) require(field *big.Int) {
 	next := new(big.Int)
 	if p.explicitFields != nil {
 		next.Set(p.explicitFields)
@@ -6156,38 +5168,45 @@ func (p *PostTransferCompletedPayloadDataOriginUser) require(field *big.Int) {
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataOriginUser) SetID(id string) {
+func (p *PostTransferCompletedPayloadDataOrigin) SetID(id string) {
 	p.ID = id
-	p.require(postTransferCompletedPayloadDataOriginUserFieldID)
+	p.require(postTransferCompletedPayloadDataOriginFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferCompletedPayloadDataOrigin) SetLogoURL(logoURL *string) {
+	p.LogoURL = logoURL
+	p.require(postTransferCompletedPayloadDataOriginFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataOriginUser) SetName(name *string) {
+func (p *PostTransferCompletedPayloadDataOrigin) SetName(name *string) {
 	p.Name = name
-	p.require(postTransferCompletedPayloadDataOriginUserFieldName)
+	p.require(postTransferCompletedPayloadDataOriginFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCompletedPayloadDataOriginUser) SetUsername(username *string) {
-	p.Username = username
-	p.require(postTransferCompletedPayloadDataOriginUserFieldUsername)
+func (p *PostTransferCompletedPayloadDataOrigin) SetObject(object PostTransferCompletedPayloadDataOriginObject) {
+	p.Object = object
+	p.require(postTransferCompletedPayloadDataOriginFieldObject)
 }
 
-func (p *PostTransferCompletedPayloadDataOriginUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferCompletedPayloadDataOriginUser
+func (p *PostTransferCompletedPayloadDataOrigin) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostTransferCompletedPayloadDataOrigin
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PostTransferCompletedPayloadDataOriginUser(value)
+	*p = PostTransferCompletedPayloadDataOrigin(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
 	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataOriginUserNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCompletedPayloadDataOriginNullableFields)
 	if err != nil {
 		return err
 	}
@@ -6198,8 +5217,8 @@ func (p *PostTransferCompletedPayloadDataOriginUser) UnmarshalJSON(data []byte) 
 	return nil
 }
 
-func (p *PostTransferCompletedPayloadDataOriginUser) MarshalJSON() ([]byte, error) {
-	type embed PostTransferCompletedPayloadDataOriginUser
+func (p *PostTransferCompletedPayloadDataOrigin) MarshalJSON() ([]byte, error) {
+	type embed PostTransferCompletedPayloadDataOrigin
 	var marshaler = struct {
 		embed
 	}{
@@ -6209,7 +5228,7 @@ func (p *PostTransferCompletedPayloadDataOriginUser) MarshalJSON() ([]byte, erro
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostTransferCompletedPayloadDataOriginUser) String() string {
+func (p *PostTransferCompletedPayloadDataOrigin) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -6224,7 +5243,30 @@ func (p *PostTransferCompletedPayloadDataOriginUser) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Whether the profile is a business account or a user.
+type PostTransferCompletedPayloadDataOriginObject string
+
+const (
+	PostTransferCompletedPayloadDataOriginObjectAccount PostTransferCompletedPayloadDataOriginObject = "account"
+	PostTransferCompletedPayloadDataOriginObjectUser    PostTransferCompletedPayloadDataOriginObject = "user"
+)
+
+func NewPostTransferCompletedPayloadDataOriginObjectFromString(s string) (PostTransferCompletedPayloadDataOriginObject, error) {
+	switch s {
+	case "account":
+		return PostTransferCompletedPayloadDataOriginObjectAccount, nil
+	case "user":
+		return PostTransferCompletedPayloadDataOriginObjectUser, nil
+	}
+	var t PostTransferCompletedPayloadDataOriginObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostTransferCompletedPayloadDataOriginObject) Ptr() *PostTransferCompletedPayloadDataOriginObject {
+	return &p
+}
+
+// Current transfer status.
 type PostTransferCompletedPayloadDataStatus string
 
 const (
@@ -6294,7 +5336,7 @@ type PostTransferCreatedPayload struct {
 	APIVersion PostTransferCreatedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
 	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	// A transfer of credit between two ledger accounts.
+	// A transfer between Whop accounts or users.
 	Data *PostTransferCreatedPayloadData `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
@@ -6518,72 +5560,72 @@ func (p PostTransferCreatedPayloadAPIVersion) Ptr() *PostTransferCreatedPayloadA
 }
 
 var (
-	postTransferCreatedPayloadDataFieldAmount                     = big.NewInt(1 << 0)
-	postTransferCreatedPayloadDataFieldCreatedAt                  = big.NewInt(1 << 1)
-	postTransferCreatedPayloadDataFieldCreatedByUser              = big.NewInt(1 << 2)
-	postTransferCreatedPayloadDataFieldCurrency                   = big.NewInt(1 << 3)
-	postTransferCreatedPayloadDataFieldDestination                = big.NewInt(1 << 4)
-	postTransferCreatedPayloadDataFieldDestinationLedgerAccountID = big.NewInt(1 << 5)
-	postTransferCreatedPayloadDataFieldFailedAt                   = big.NewInt(1 << 6)
-	postTransferCreatedPayloadDataFieldFailureCode                = big.NewInt(1 << 7)
-	postTransferCreatedPayloadDataFieldFailureReason              = big.NewInt(1 << 8)
-	postTransferCreatedPayloadDataFieldFeeAmount                  = big.NewInt(1 << 9)
-	postTransferCreatedPayloadDataFieldID                         = big.NewInt(1 << 10)
-	postTransferCreatedPayloadDataFieldMetadata                   = big.NewInt(1 << 11)
-	postTransferCreatedPayloadDataFieldNotes                      = big.NewInt(1 << 12)
-	postTransferCreatedPayloadDataFieldObject                     = big.NewInt(1 << 13)
-	postTransferCreatedPayloadDataFieldOrigin                     = big.NewInt(1 << 14)
-	postTransferCreatedPayloadDataFieldOriginLedgerAccountID      = big.NewInt(1 << 15)
-	postTransferCreatedPayloadDataFieldStatus                     = big.NewInt(1 << 16)
+	postTransferCreatedPayloadDataFieldAmount          = big.NewInt(1 << 0)
+	postTransferCreatedPayloadDataFieldCreatedAt       = big.NewInt(1 << 1)
+	postTransferCreatedPayloadDataFieldDestination     = big.NewInt(1 << 2)
+	postTransferCreatedPayloadDataFieldFailedAt        = big.NewInt(1 << 3)
+	postTransferCreatedPayloadDataFieldFailureCode     = big.NewInt(1 << 4)
+	postTransferCreatedPayloadDataFieldFailureReason   = big.NewInt(1 << 5)
+	postTransferCreatedPayloadDataFieldFee             = big.NewInt(1 << 6)
+	postTransferCreatedPayloadDataFieldID              = big.NewInt(1 << 7)
+	postTransferCreatedPayloadDataFieldMetadata        = big.NewInt(1 << 8)
+	postTransferCreatedPayloadDataFieldNotes           = big.NewInt(1 << 9)
+	postTransferCreatedPayloadDataFieldObject          = big.NewInt(1 << 10)
+	postTransferCreatedPayloadDataFieldOrigin          = big.NewInt(1 << 11)
+	postTransferCreatedPayloadDataFieldStatus          = big.NewInt(1 << 12)
+	postTransferCreatedPayloadDataFieldStatusChangedAt = big.NewInt(1 << 13)
+	postTransferCreatedPayloadDataFieldSucceededAt     = big.NewInt(1 << 14)
+	postTransferCreatedPayloadDataFieldTrackingURL     = big.NewInt(1 << 15)
 )
 
 // postTransferCreatedPayloadDataNullableFields maps the wire names of PostTransferCreatedPayloadData's nullable fields (required or optional) to their field bits.
 var postTransferCreatedPayloadDataNullableFields = map[string]*big.Int{
-	"created_by_user": postTransferCreatedPayloadDataFieldCreatedByUser,
-	"failed_at":       postTransferCreatedPayloadDataFieldFailedAt,
-	"failure_code":    postTransferCreatedPayloadDataFieldFailureCode,
-	"failure_reason":  postTransferCreatedPayloadDataFieldFailureReason,
-	"fee_amount":      postTransferCreatedPayloadDataFieldFeeAmount,
-	"metadata":        postTransferCreatedPayloadDataFieldMetadata,
-	"notes":           postTransferCreatedPayloadDataFieldNotes,
+	"amount":            postTransferCreatedPayloadDataFieldAmount,
+	"destination":       postTransferCreatedPayloadDataFieldDestination,
+	"failed_at":         postTransferCreatedPayloadDataFieldFailedAt,
+	"failure_code":      postTransferCreatedPayloadDataFieldFailureCode,
+	"failure_reason":    postTransferCreatedPayloadDataFieldFailureReason,
+	"fee":               postTransferCreatedPayloadDataFieldFee,
+	"notes":             postTransferCreatedPayloadDataFieldNotes,
+	"origin":            postTransferCreatedPayloadDataFieldOrigin,
+	"status_changed_at": postTransferCreatedPayloadDataFieldStatusChangedAt,
+	"succeeded_at":      postTransferCreatedPayloadDataFieldSucceededAt,
 }
 
-// A transfer of credit between two ledger accounts.
+// A transfer between Whop accounts or users.
 type PostTransferCreatedPayloadData struct {
-	// Transfer amount.
-	Amount float64 `json:"amount" url:"amount"`
+	// Amount credited to the recipient. Null while the transfer has not succeeded.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
 	// When the transfer was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-	CreatedByUser *PostTransferCreatedPayloadDataCreatedByUser `json:"created_by_user,omitempty" url:"created_by_user,omitempty"`
-	// Transfer currency.
-	Currency string `json:"currency" url:"currency"`
-	// Account or user receiving funds.
-	Destination *PostTransferCreatedPayloadDataDestination `json:"destination" url:"destination"`
-	// Destination ledger account ID.
-	DestinationLedgerAccountID string `json:"destination_ledger_account_id" url:"destination_ledger_account_id"`
-	// When the transfer failed, as an ISO 8601 timestamp. Null unless the transfer has failed.
+	// Business account or user receiving the transfer.
+	Destination *PostTransferCreatedPayloadDataDestination `json:"destination,omitempty" url:"destination,omitempty"`
+	// Recorded failure time. Null unless the transfer has failed.
 	FailedAt *time.Time `json:"failed_at,omitempty" url:"failed_at,omitempty"`
-	// Machine-readable code for why the transfer failed. Null unless the transfer has failed.
+	// Machine-readable failure code. Null unless the transfer has failed.
 	FailureCode *string `json:"failure_code,omitempty" url:"failure_code,omitempty"`
-	// Human-readable explanation of why the transfer failed. Null unless the transfer has failed.
+	// Failure explanation. Null unless the transfer has failed.
 	FailureReason *string `json:"failure_reason,omitempty" url:"failure_reason,omitempty"`
-	// Fee charged for the transfer.
-	FeeAmount *float64 `json:"fee_amount,omitempty" url:"fee_amount,omitempty"`
+	// All applicable transfer fees, including platform markup. Null when the authoritative total is unavailable.
+	Fee *Money `json:"fee,omitempty" url:"fee,omitempty"`
 	// Transfer ID.
 	ID string `json:"id" url:"id"`
 	// Custom metadata attached to the transfer.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// Transfer note.
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
-	// The object type. Discriminates the create response from a send or a claim link.
+	// The object type.
 	Object PostTransferCreatedPayloadDataObject `json:"object" url:"object"`
-	// Account or user sending funds.
-	Origin *PostTransferCreatedPayloadDataOrigin `json:"origin" url:"origin"`
-	// Source ledger account ID.
-	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Business account or user sending the transfer.
+	Origin *PostTransferCreatedPayloadDataOrigin `json:"origin,omitempty" url:"origin,omitempty"`
+	// Current transfer status.
 	Status PostTransferCreatedPayloadDataStatus `json:"status" url:"status"`
+	// Recorded time of the current transition. Null when the historical transition time is unknown.
+	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
+	// Recorded success time. Null when unknown.
+	SucceededAt *time.Time `json:"succeeded_at,omitempty" url:"succeeded_at,omitempty"`
+	// Tracking page for the transfer. Viewing it requires sign-in and access to the transfer.
+	TrackingURL string `json:"tracking_url" url:"tracking_url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6592,9 +5634,9 @@ type PostTransferCreatedPayloadData struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostTransferCreatedPayloadData) GetAmount() float64 {
+func (p *PostTransferCreatedPayloadData) GetAmount() *Money {
 	if p == nil {
-		return 0
+		return nil
 	}
 	return p.Amount
 }
@@ -6606,32 +5648,11 @@ func (p *PostTransferCreatedPayloadData) GetCreatedAt() time.Time {
 	return p.CreatedAt
 }
 
-func (p *PostTransferCreatedPayloadData) GetCreatedByUser() *PostTransferCreatedPayloadDataCreatedByUser {
-	if p == nil {
-		return nil
-	}
-	return p.CreatedByUser
-}
-
-func (p *PostTransferCreatedPayloadData) GetCurrency() string {
-	if p == nil {
-		return ""
-	}
-	return p.Currency
-}
-
 func (p *PostTransferCreatedPayloadData) GetDestination() *PostTransferCreatedPayloadDataDestination {
 	if p == nil {
 		return nil
 	}
 	return p.Destination
-}
-
-func (p *PostTransferCreatedPayloadData) GetDestinationLedgerAccountID() string {
-	if p == nil {
-		return ""
-	}
-	return p.DestinationLedgerAccountID
 }
 
 func (p *PostTransferCreatedPayloadData) GetFailedAt() *time.Time {
@@ -6655,11 +5676,11 @@ func (p *PostTransferCreatedPayloadData) GetFailureReason() *string {
 	return p.FailureReason
 }
 
-func (p *PostTransferCreatedPayloadData) GetFeeAmount() *float64 {
+func (p *PostTransferCreatedPayloadData) GetFee() *Money {
 	if p == nil {
 		return nil
 	}
-	return p.FeeAmount
+	return p.Fee
 }
 
 func (p *PostTransferCreatedPayloadData) GetID() string {
@@ -6697,18 +5718,32 @@ func (p *PostTransferCreatedPayloadData) GetOrigin() *PostTransferCreatedPayload
 	return p.Origin
 }
 
-func (p *PostTransferCreatedPayloadData) GetOriginLedgerAccountID() string {
-	if p == nil {
-		return ""
-	}
-	return p.OriginLedgerAccountID
-}
-
 func (p *PostTransferCreatedPayloadData) GetStatus() PostTransferCreatedPayloadDataStatus {
 	if p == nil {
 		return ""
 	}
 	return p.Status
+}
+
+func (p *PostTransferCreatedPayloadData) GetStatusChangedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.StatusChangedAt
+}
+
+func (p *PostTransferCreatedPayloadData) GetSucceededAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.SucceededAt
+}
+
+func (p *PostTransferCreatedPayloadData) GetTrackingURL() string {
+	if p == nil {
+		return ""
+	}
+	return p.TrackingURL
 }
 
 func (p *PostTransferCreatedPayloadData) GetExtraProperties() map[string]interface{} {
@@ -6729,7 +5764,7 @@ func (p *PostTransferCreatedPayloadData) require(field *big.Int) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadData) SetAmount(amount float64) {
+func (p *PostTransferCreatedPayloadData) SetAmount(amount *Money) {
 	p.Amount = amount
 	p.require(postTransferCreatedPayloadDataFieldAmount)
 }
@@ -6741,32 +5776,11 @@ func (p *PostTransferCreatedPayloadData) SetCreatedAt(createdAt time.Time) {
 	p.require(postTransferCreatedPayloadDataFieldCreatedAt)
 }
 
-// SetCreatedByUser sets the CreatedByUser field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadData) SetCreatedByUser(createdByUser *PostTransferCreatedPayloadDataCreatedByUser) {
-	p.CreatedByUser = createdByUser
-	p.require(postTransferCreatedPayloadDataFieldCreatedByUser)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadData) SetCurrency(currency string) {
-	p.Currency = currency
-	p.require(postTransferCreatedPayloadDataFieldCurrency)
-}
-
 // SetDestination sets the Destination field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostTransferCreatedPayloadData) SetDestination(destination *PostTransferCreatedPayloadDataDestination) {
 	p.Destination = destination
 	p.require(postTransferCreatedPayloadDataFieldDestination)
-}
-
-// SetDestinationLedgerAccountID sets the DestinationLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadData) SetDestinationLedgerAccountID(destinationLedgerAccountID string) {
-	p.DestinationLedgerAccountID = destinationLedgerAccountID
-	p.require(postTransferCreatedPayloadDataFieldDestinationLedgerAccountID)
 }
 
 // SetFailedAt sets the FailedAt field and marks it as non-optional;
@@ -6790,11 +5804,11 @@ func (p *PostTransferCreatedPayloadData) SetFailureReason(failureReason *string)
 	p.require(postTransferCreatedPayloadDataFieldFailureReason)
 }
 
-// SetFeeAmount sets the FeeAmount field and marks it as non-optional;
+// SetFee sets the Fee field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadData) SetFeeAmount(feeAmount *float64) {
-	p.FeeAmount = feeAmount
-	p.require(postTransferCreatedPayloadDataFieldFeeAmount)
+func (p *PostTransferCreatedPayloadData) SetFee(fee *Money) {
+	p.Fee = fee
+	p.require(postTransferCreatedPayloadDataFieldFee)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6832,13 +5846,6 @@ func (p *PostTransferCreatedPayloadData) SetOrigin(origin *PostTransferCreatedPa
 	p.require(postTransferCreatedPayloadDataFieldOrigin)
 }
 
-// SetOriginLedgerAccountID sets the OriginLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadData) SetOriginLedgerAccountID(originLedgerAccountID string) {
-	p.OriginLedgerAccountID = originLedgerAccountID
-	p.require(postTransferCreatedPayloadDataFieldOriginLedgerAccountID)
-}
-
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostTransferCreatedPayloadData) SetStatus(status PostTransferCreatedPayloadDataStatus) {
@@ -6846,12 +5853,35 @@ func (p *PostTransferCreatedPayloadData) SetStatus(status PostTransferCreatedPay
 	p.require(postTransferCreatedPayloadDataFieldStatus)
 }
 
+// SetStatusChangedAt sets the StatusChangedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferCreatedPayloadData) SetStatusChangedAt(statusChangedAt *time.Time) {
+	p.StatusChangedAt = statusChangedAt
+	p.require(postTransferCreatedPayloadDataFieldStatusChangedAt)
+}
+
+// SetSucceededAt sets the SucceededAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferCreatedPayloadData) SetSucceededAt(succeededAt *time.Time) {
+	p.SucceededAt = succeededAt
+	p.require(postTransferCreatedPayloadDataFieldSucceededAt)
+}
+
+// SetTrackingURL sets the TrackingURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferCreatedPayloadData) SetTrackingURL(trackingURL string) {
+	p.TrackingURL = trackingURL
+	p.require(postTransferCreatedPayloadDataFieldTrackingURL)
+}
+
 func (p *PostTransferCreatedPayloadData) UnmarshalJSON(data []byte) error {
 	type embed PostTransferCreatedPayloadData
 	var unmarshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
 		embed: embed(*p),
 	}
@@ -6861,6 +5891,8 @@ func (p *PostTransferCreatedPayloadData) UnmarshalJSON(data []byte) error {
 	*p = PostTransferCreatedPayloadData(unmarshaler.embed)
 	p.CreatedAt = unmarshaler.CreatedAt.Time()
 	p.FailedAt = unmarshaler.FailedAt.TimePtr()
+	p.StatusChangedAt = unmarshaler.StatusChangedAt.TimePtr()
+	p.SucceededAt = unmarshaler.SucceededAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -6881,12 +5913,16 @@ func (p *PostTransferCreatedPayloadData) MarshalJSON() ([]byte, error) {
 	type embed PostTransferCreatedPayloadData
 	var marshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
-		embed:     embed(*p),
-		CreatedAt: internal.NewDateTime(p.CreatedAt),
-		FailedAt:  internal.NewOptionalDateTime(p.FailedAt),
+		embed:           embed(*p),
+		CreatedAt:       internal.NewDateTime(p.CreatedAt),
+		FailedAt:        internal.NewOptionalDateTime(p.FailedAt),
+		StatusChangedAt: internal.NewOptionalDateTime(p.StatusChangedAt),
+		SucceededAt:     internal.NewOptionalDateTime(p.SucceededAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -6908,24 +5944,28 @@ func (p *PostTransferCreatedPayloadData) String() string {
 }
 
 var (
-	postTransferCreatedPayloadDataCreatedByUserFieldID       = big.NewInt(1 << 0)
-	postTransferCreatedPayloadDataCreatedByUserFieldName     = big.NewInt(1 << 1)
-	postTransferCreatedPayloadDataCreatedByUserFieldUsername = big.NewInt(1 << 2)
+	postTransferCreatedPayloadDataDestinationFieldID      = big.NewInt(1 << 0)
+	postTransferCreatedPayloadDataDestinationFieldLogoURL = big.NewInt(1 << 1)
+	postTransferCreatedPayloadDataDestinationFieldName    = big.NewInt(1 << 2)
+	postTransferCreatedPayloadDataDestinationFieldObject  = big.NewInt(1 << 3)
 )
 
-// postTransferCreatedPayloadDataCreatedByUserNullableFields maps the wire names of PostTransferCreatedPayloadDataCreatedByUser's nullable fields (required or optional) to their field bits.
-var postTransferCreatedPayloadDataCreatedByUserNullableFields = map[string]*big.Int{
-	"name": postTransferCreatedPayloadDataCreatedByUserFieldName,
+// postTransferCreatedPayloadDataDestinationNullableFields maps the wire names of PostTransferCreatedPayloadDataDestination's nullable fields (required or optional) to their field bits.
+var postTransferCreatedPayloadDataDestinationNullableFields = map[string]*big.Int{
+	"logo_url": postTransferCreatedPayloadDataDestinationFieldLogoURL,
+	"name":     postTransferCreatedPayloadDataDestinationFieldName,
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-type PostTransferCreatedPayloadDataCreatedByUser struct {
-	// User ID.
+// Business account or user receiving the transfer.
+type PostTransferCreatedPayloadDataDestination struct {
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username string `json:"username" url:"username"`
+	// Whether the profile is a business account or a user.
+	Object PostTransferCreatedPayloadDataDestinationObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6934,35 +5974,42 @@ type PostTransferCreatedPayloadDataCreatedByUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostTransferCreatedPayloadDataCreatedByUser) GetID() string {
+func (p *PostTransferCreatedPayloadDataDestination) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *PostTransferCreatedPayloadDataCreatedByUser) GetName() *string {
+func (p *PostTransferCreatedPayloadDataDestination) GetLogoURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LogoURL
+}
+
+func (p *PostTransferCreatedPayloadDataDestination) GetName() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Name
 }
 
-func (p *PostTransferCreatedPayloadDataCreatedByUser) GetUsername() string {
+func (p *PostTransferCreatedPayloadDataDestination) GetObject() PostTransferCreatedPayloadDataDestinationObject {
 	if p == nil {
 		return ""
 	}
-	return p.Username
+	return p.Object
 }
 
-func (p *PostTransferCreatedPayloadDataCreatedByUser) GetExtraProperties() map[string]interface{} {
+func (p *PostTransferCreatedPayloadDataDestination) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostTransferCreatedPayloadDataCreatedByUser) require(field *big.Int) {
+func (p *PostTransferCreatedPayloadDataDestination) require(field *big.Int) {
 	next := new(big.Int)
 	if p.explicitFields != nil {
 		next.Set(p.explicitFields)
@@ -6973,299 +6020,45 @@ func (p *PostTransferCreatedPayloadDataCreatedByUser) require(field *big.Int) {
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataCreatedByUser) SetID(id string) {
+func (p *PostTransferCreatedPayloadDataDestination) SetID(id string) {
 	p.ID = id
-	p.require(postTransferCreatedPayloadDataCreatedByUserFieldID)
+	p.require(postTransferCreatedPayloadDataDestinationFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferCreatedPayloadDataDestination) SetLogoURL(logoURL *string) {
+	p.LogoURL = logoURL
+	p.require(postTransferCreatedPayloadDataDestinationFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataCreatedByUser) SetName(name *string) {
+func (p *PostTransferCreatedPayloadDataDestination) SetName(name *string) {
 	p.Name = name
-	p.require(postTransferCreatedPayloadDataCreatedByUserFieldName)
+	p.require(postTransferCreatedPayloadDataDestinationFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataCreatedByUser) SetUsername(username string) {
-	p.Username = username
-	p.require(postTransferCreatedPayloadDataCreatedByUserFieldUsername)
-}
-
-func (p *PostTransferCreatedPayloadDataCreatedByUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferCreatedPayloadDataCreatedByUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostTransferCreatedPayloadDataCreatedByUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataCreatedByUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		p.require(presentFields)
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostTransferCreatedPayloadDataCreatedByUser) MarshalJSON() ([]byte, error) {
-	type embed PostTransferCreatedPayloadDataCreatedByUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostTransferCreatedPayloadDataCreatedByUser) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// Account or user receiving funds.
-type PostTransferCreatedPayloadDataDestination struct {
-	Typename string
-	Company  *PostTransferCreatedPayloadDataDestinationCompany
-	User     *PostTransferCreatedPayloadDataDestinationUser
-
-	rawJSON json.RawMessage
-}
-
-func (p *PostTransferCreatedPayloadDataDestination) GetTypename() string {
-	if p == nil {
-		return ""
-	}
-	return p.Typename
-}
-
-func (p *PostTransferCreatedPayloadDataDestination) GetCompany() *PostTransferCreatedPayloadDataDestinationCompany {
-	if p == nil {
-		return nil
-	}
-	return p.Company
-}
-
-func (p *PostTransferCreatedPayloadDataDestination) GetUser() *PostTransferCreatedPayloadDataDestinationUser {
-	if p == nil {
-		return nil
-	}
-	return p.User
+func (p *PostTransferCreatedPayloadDataDestination) SetObject(object PostTransferCreatedPayloadDataDestinationObject) {
+	p.Object = object
+	p.require(postTransferCreatedPayloadDataDestinationFieldObject)
 }
 
 func (p *PostTransferCreatedPayloadDataDestination) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	p.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", p)
-	}
-	switch unmarshaler.Typename {
-	case "Company":
-		value := new(PostTransferCreatedPayloadDataDestinationCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Company = value
-	case "User":
-		value := new(PostTransferCreatedPayloadDataDestinationUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.User = value
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p PostTransferCreatedPayloadDataDestination) MarshalJSON() ([]byte, error) {
-	if err := p.validate(); err != nil {
-		return nil, err
-	}
-	if p.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(p.Company, "typename", "Company")
-	}
-	if p.User != nil {
-		return internal.MarshalJSONWithExtraProperty(p.User, "typename", "User")
-	}
-	if len(p.rawJSON) > 0 {
-		return p.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-type PostTransferCreatedPayloadDataDestinationVisitor interface {
-	VisitCompany(*PostTransferCreatedPayloadDataDestinationCompany) error
-	VisitUser(*PostTransferCreatedPayloadDataDestinationUser) error
-}
-
-func (p *PostTransferCreatedPayloadDataDestination) Accept(visitor PostTransferCreatedPayloadDataDestinationVisitor) error {
-	if p.Company != nil {
-		return visitor.VisitCompany(p.Company)
-	}
-	if p.User != nil {
-		return visitor.VisitUser(p.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-func (p *PostTransferCreatedPayloadDataDestination) validate() error {
-	if p == nil {
-		return fmt.Errorf("type %T is nil", p)
-	}
-	var fields []string
-	if p.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if p.User != nil {
-		fields = append(fields, "User")
-	}
-	if len(fields) == 0 {
-		if p.Typename != "" {
-			if len(p.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", p, p.Typename)
-		}
-		return fmt.Errorf("type %T is empty", p)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", p, fields)
-	}
-	if p.Typename != "" {
-		field := fields[0]
-		if p.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				p,
-				p.Typename,
-				p,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	postTransferCreatedPayloadDataDestinationCompanyFieldID    = big.NewInt(1 << 0)
-	postTransferCreatedPayloadDataDestinationCompanyFieldRoute = big.NewInt(1 << 1)
-	postTransferCreatedPayloadDataDestinationCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-// postTransferCreatedPayloadDataDestinationCompanyNullableFields maps the wire names of PostTransferCreatedPayloadDataDestinationCompany's nullable fields (required or optional) to their field bits.
-var postTransferCreatedPayloadDataDestinationCompanyNullableFields = map[string]*big.Int{
-	"route": postTransferCreatedPayloadDataDestinationCompanyFieldRoute,
-	"title": postTransferCreatedPayloadDataDestinationCompanyFieldTitle,
-}
-
-type PostTransferCreatedPayloadDataDestinationCompany struct {
-	// Account ID.
-	ID string `json:"id" url:"id"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationCompany) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationCompany) GetRoute() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Route
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationCompany) GetTitle() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Title
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationCompany) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationCompany) require(field *big.Int) {
-	next := new(big.Int)
-	if p.explicitFields != nil {
-		next.Set(p.explicitFields)
-	}
-	next.Or(next, field)
-	p.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataDestinationCompany) SetID(id string) {
-	p.ID = id
-	p.require(postTransferCreatedPayloadDataDestinationCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataDestinationCompany) SetRoute(route *string) {
-	p.Route = route
-	p.require(postTransferCreatedPayloadDataDestinationCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataDestinationCompany) SetTitle(title *string) {
-	p.Title = title
-	p.require(postTransferCreatedPayloadDataDestinationCompanyFieldTitle)
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferCreatedPayloadDataDestinationCompany
+	type unmarshaler PostTransferCreatedPayloadDataDestination
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PostTransferCreatedPayloadDataDestinationCompany(value)
+	*p = PostTransferCreatedPayloadDataDestination(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
 	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataDestinationCompanyNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataDestinationNullableFields)
 	if err != nil {
 		return err
 	}
@@ -7276,8 +6069,8 @@ func (p *PostTransferCreatedPayloadDataDestinationCompany) UnmarshalJSON(data []
 	return nil
 }
 
-func (p *PostTransferCreatedPayloadDataDestinationCompany) MarshalJSON() ([]byte, error) {
-	type embed PostTransferCreatedPayloadDataDestinationCompany
+func (p *PostTransferCreatedPayloadDataDestination) MarshalJSON() ([]byte, error) {
+	type embed PostTransferCreatedPayloadDataDestination
 	var marshaler = struct {
 		embed
 	}{
@@ -7287,7 +6080,7 @@ func (p *PostTransferCreatedPayloadDataDestinationCompany) MarshalJSON() ([]byte
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostTransferCreatedPayloadDataDestinationCompany) String() string {
+func (p *PostTransferCreatedPayloadDataDestination) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -7302,140 +6095,30 @@ func (p *PostTransferCreatedPayloadDataDestinationCompany) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-var (
-	postTransferCreatedPayloadDataDestinationUserFieldID       = big.NewInt(1 << 0)
-	postTransferCreatedPayloadDataDestinationUserFieldName     = big.NewInt(1 << 1)
-	postTransferCreatedPayloadDataDestinationUserFieldUsername = big.NewInt(1 << 2)
+// Whether the profile is a business account or a user.
+type PostTransferCreatedPayloadDataDestinationObject string
+
+const (
+	PostTransferCreatedPayloadDataDestinationObjectAccount PostTransferCreatedPayloadDataDestinationObject = "account"
+	PostTransferCreatedPayloadDataDestinationObjectUser    PostTransferCreatedPayloadDataDestinationObject = "user"
 )
 
-// postTransferCreatedPayloadDataDestinationUserNullableFields maps the wire names of PostTransferCreatedPayloadDataDestinationUser's nullable fields (required or optional) to their field bits.
-var postTransferCreatedPayloadDataDestinationUserNullableFields = map[string]*big.Int{
-	"name": postTransferCreatedPayloadDataDestinationUserFieldName,
+func NewPostTransferCreatedPayloadDataDestinationObjectFromString(s string) (PostTransferCreatedPayloadDataDestinationObject, error) {
+	switch s {
+	case "account":
+		return PostTransferCreatedPayloadDataDestinationObjectAccount, nil
+	case "user":
+		return PostTransferCreatedPayloadDataDestinationObjectUser, nil
+	}
+	var t PostTransferCreatedPayloadDataDestinationObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-type PostTransferCreatedPayloadDataDestinationUser struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
+func (p PostTransferCreatedPayloadDataDestinationObject) Ptr() *PostTransferCreatedPayloadDataDestinationObject {
+	return &p
 }
 
-func (p *PostTransferCreatedPayloadDataDestinationUser) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationUser) GetName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Name
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationUser) GetUsername() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Username
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationUser) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationUser) require(field *big.Int) {
-	next := new(big.Int)
-	if p.explicitFields != nil {
-		next.Set(p.explicitFields)
-	}
-	next.Or(next, field)
-	p.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataDestinationUser) SetID(id string) {
-	p.ID = id
-	p.require(postTransferCreatedPayloadDataDestinationUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataDestinationUser) SetName(name *string) {
-	p.Name = name
-	p.require(postTransferCreatedPayloadDataDestinationUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataDestinationUser) SetUsername(username *string) {
-	p.Username = username
-	p.require(postTransferCreatedPayloadDataDestinationUserFieldUsername)
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferCreatedPayloadDataDestinationUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostTransferCreatedPayloadDataDestinationUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataDestinationUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		p.require(presentFields)
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationUser) MarshalJSON() ([]byte, error) {
-	type embed PostTransferCreatedPayloadDataDestinationUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostTransferCreatedPayloadDataDestinationUser) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The object type. Discriminates the create response from a send or a claim link.
+// The object type.
 type PostTransferCreatedPayloadDataObject string
 
 const (
@@ -7455,285 +6138,29 @@ func (p PostTransferCreatedPayloadDataObject) Ptr() *PostTransferCreatedPayloadD
 	return &p
 }
 
-// Account or user sending funds.
+var (
+	postTransferCreatedPayloadDataOriginFieldID      = big.NewInt(1 << 0)
+	postTransferCreatedPayloadDataOriginFieldLogoURL = big.NewInt(1 << 1)
+	postTransferCreatedPayloadDataOriginFieldName    = big.NewInt(1 << 2)
+	postTransferCreatedPayloadDataOriginFieldObject  = big.NewInt(1 << 3)
+)
+
+// postTransferCreatedPayloadDataOriginNullableFields maps the wire names of PostTransferCreatedPayloadDataOrigin's nullable fields (required or optional) to their field bits.
+var postTransferCreatedPayloadDataOriginNullableFields = map[string]*big.Int{
+	"logo_url": postTransferCreatedPayloadDataOriginFieldLogoURL,
+	"name":     postTransferCreatedPayloadDataOriginFieldName,
+}
+
+// Business account or user sending the transfer.
 type PostTransferCreatedPayloadDataOrigin struct {
-	Typename string
-	Company  *PostTransferCreatedPayloadDataOriginCompany
-	User     *PostTransferCreatedPayloadDataOriginUser
-
-	rawJSON json.RawMessage
-}
-
-func (p *PostTransferCreatedPayloadDataOrigin) GetTypename() string {
-	if p == nil {
-		return ""
-	}
-	return p.Typename
-}
-
-func (p *PostTransferCreatedPayloadDataOrigin) GetCompany() *PostTransferCreatedPayloadDataOriginCompany {
-	if p == nil {
-		return nil
-	}
-	return p.Company
-}
-
-func (p *PostTransferCreatedPayloadDataOrigin) GetUser() *PostTransferCreatedPayloadDataOriginUser {
-	if p == nil {
-		return nil
-	}
-	return p.User
-}
-
-func (p *PostTransferCreatedPayloadDataOrigin) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	p.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", p)
-	}
-	switch unmarshaler.Typename {
-	case "Company":
-		value := new(PostTransferCreatedPayloadDataOriginCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Company = value
-	case "User":
-		value := new(PostTransferCreatedPayloadDataOriginUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.User = value
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p PostTransferCreatedPayloadDataOrigin) MarshalJSON() ([]byte, error) {
-	if err := p.validate(); err != nil {
-		return nil, err
-	}
-	if p.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(p.Company, "typename", "Company")
-	}
-	if p.User != nil {
-		return internal.MarshalJSONWithExtraProperty(p.User, "typename", "User")
-	}
-	if len(p.rawJSON) > 0 {
-		return p.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-type PostTransferCreatedPayloadDataOriginVisitor interface {
-	VisitCompany(*PostTransferCreatedPayloadDataOriginCompany) error
-	VisitUser(*PostTransferCreatedPayloadDataOriginUser) error
-}
-
-func (p *PostTransferCreatedPayloadDataOrigin) Accept(visitor PostTransferCreatedPayloadDataOriginVisitor) error {
-	if p.Company != nil {
-		return visitor.VisitCompany(p.Company)
-	}
-	if p.User != nil {
-		return visitor.VisitUser(p.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-func (p *PostTransferCreatedPayloadDataOrigin) validate() error {
-	if p == nil {
-		return fmt.Errorf("type %T is nil", p)
-	}
-	var fields []string
-	if p.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if p.User != nil {
-		fields = append(fields, "User")
-	}
-	if len(fields) == 0 {
-		if p.Typename != "" {
-			if len(p.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", p, p.Typename)
-		}
-		return fmt.Errorf("type %T is empty", p)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", p, fields)
-	}
-	if p.Typename != "" {
-		field := fields[0]
-		if p.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				p,
-				p.Typename,
-				p,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	postTransferCreatedPayloadDataOriginCompanyFieldID    = big.NewInt(1 << 0)
-	postTransferCreatedPayloadDataOriginCompanyFieldRoute = big.NewInt(1 << 1)
-	postTransferCreatedPayloadDataOriginCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-// postTransferCreatedPayloadDataOriginCompanyNullableFields maps the wire names of PostTransferCreatedPayloadDataOriginCompany's nullable fields (required or optional) to their field bits.
-var postTransferCreatedPayloadDataOriginCompanyNullableFields = map[string]*big.Int{
-	"route": postTransferCreatedPayloadDataOriginCompanyFieldRoute,
-	"title": postTransferCreatedPayloadDataOriginCompanyFieldTitle,
-}
-
-type PostTransferCreatedPayloadDataOriginCompany struct {
-	// Account ID.
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostTransferCreatedPayloadDataOriginCompany) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostTransferCreatedPayloadDataOriginCompany) GetRoute() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Route
-}
-
-func (p *PostTransferCreatedPayloadDataOriginCompany) GetTitle() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Title
-}
-
-func (p *PostTransferCreatedPayloadDataOriginCompany) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostTransferCreatedPayloadDataOriginCompany) require(field *big.Int) {
-	next := new(big.Int)
-	if p.explicitFields != nil {
-		next.Set(p.explicitFields)
-	}
-	next.Or(next, field)
-	p.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataOriginCompany) SetID(id string) {
-	p.ID = id
-	p.require(postTransferCreatedPayloadDataOriginCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataOriginCompany) SetRoute(route *string) {
-	p.Route = route
-	p.require(postTransferCreatedPayloadDataOriginCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataOriginCompany) SetTitle(title *string) {
-	p.Title = title
-	p.require(postTransferCreatedPayloadDataOriginCompanyFieldTitle)
-}
-
-func (p *PostTransferCreatedPayloadDataOriginCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferCreatedPayloadDataOriginCompany
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostTransferCreatedPayloadDataOriginCompany(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataOriginCompanyNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		p.require(presentFields)
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostTransferCreatedPayloadDataOriginCompany) MarshalJSON() ([]byte, error) {
-	type embed PostTransferCreatedPayloadDataOriginCompany
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostTransferCreatedPayloadDataOriginCompany) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-var (
-	postTransferCreatedPayloadDataOriginUserFieldID       = big.NewInt(1 << 0)
-	postTransferCreatedPayloadDataOriginUserFieldName     = big.NewInt(1 << 1)
-	postTransferCreatedPayloadDataOriginUserFieldUsername = big.NewInt(1 << 2)
-)
-
-// postTransferCreatedPayloadDataOriginUserNullableFields maps the wire names of PostTransferCreatedPayloadDataOriginUser's nullable fields (required or optional) to their field bits.
-var postTransferCreatedPayloadDataOriginUserNullableFields = map[string]*big.Int{
-	"name": postTransferCreatedPayloadDataOriginUserFieldName,
-}
-
-type PostTransferCreatedPayloadDataOriginUser struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether the profile is a business account or a user.
+	Object PostTransferCreatedPayloadDataOriginObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7742,35 +6169,42 @@ type PostTransferCreatedPayloadDataOriginUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostTransferCreatedPayloadDataOriginUser) GetID() string {
+func (p *PostTransferCreatedPayloadDataOrigin) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *PostTransferCreatedPayloadDataOriginUser) GetName() *string {
+func (p *PostTransferCreatedPayloadDataOrigin) GetLogoURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LogoURL
+}
+
+func (p *PostTransferCreatedPayloadDataOrigin) GetName() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Name
 }
 
-func (p *PostTransferCreatedPayloadDataOriginUser) GetUsername() *string {
+func (p *PostTransferCreatedPayloadDataOrigin) GetObject() PostTransferCreatedPayloadDataOriginObject {
 	if p == nil {
-		return nil
+		return ""
 	}
-	return p.Username
+	return p.Object
 }
 
-func (p *PostTransferCreatedPayloadDataOriginUser) GetExtraProperties() map[string]interface{} {
+func (p *PostTransferCreatedPayloadDataOrigin) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostTransferCreatedPayloadDataOriginUser) require(field *big.Int) {
+func (p *PostTransferCreatedPayloadDataOrigin) require(field *big.Int) {
 	next := new(big.Int)
 	if p.explicitFields != nil {
 		next.Set(p.explicitFields)
@@ -7781,38 +6215,45 @@ func (p *PostTransferCreatedPayloadDataOriginUser) require(field *big.Int) {
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataOriginUser) SetID(id string) {
+func (p *PostTransferCreatedPayloadDataOrigin) SetID(id string) {
 	p.ID = id
-	p.require(postTransferCreatedPayloadDataOriginUserFieldID)
+	p.require(postTransferCreatedPayloadDataOriginFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferCreatedPayloadDataOrigin) SetLogoURL(logoURL *string) {
+	p.LogoURL = logoURL
+	p.require(postTransferCreatedPayloadDataOriginFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataOriginUser) SetName(name *string) {
+func (p *PostTransferCreatedPayloadDataOrigin) SetName(name *string) {
 	p.Name = name
-	p.require(postTransferCreatedPayloadDataOriginUserFieldName)
+	p.require(postTransferCreatedPayloadDataOriginFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferCreatedPayloadDataOriginUser) SetUsername(username *string) {
-	p.Username = username
-	p.require(postTransferCreatedPayloadDataOriginUserFieldUsername)
+func (p *PostTransferCreatedPayloadDataOrigin) SetObject(object PostTransferCreatedPayloadDataOriginObject) {
+	p.Object = object
+	p.require(postTransferCreatedPayloadDataOriginFieldObject)
 }
 
-func (p *PostTransferCreatedPayloadDataOriginUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferCreatedPayloadDataOriginUser
+func (p *PostTransferCreatedPayloadDataOrigin) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostTransferCreatedPayloadDataOrigin
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PostTransferCreatedPayloadDataOriginUser(value)
+	*p = PostTransferCreatedPayloadDataOrigin(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
 	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataOriginUserNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferCreatedPayloadDataOriginNullableFields)
 	if err != nil {
 		return err
 	}
@@ -7823,8 +6264,8 @@ func (p *PostTransferCreatedPayloadDataOriginUser) UnmarshalJSON(data []byte) er
 	return nil
 }
 
-func (p *PostTransferCreatedPayloadDataOriginUser) MarshalJSON() ([]byte, error) {
-	type embed PostTransferCreatedPayloadDataOriginUser
+func (p *PostTransferCreatedPayloadDataOrigin) MarshalJSON() ([]byte, error) {
+	type embed PostTransferCreatedPayloadDataOrigin
 	var marshaler = struct {
 		embed
 	}{
@@ -7834,7 +6275,7 @@ func (p *PostTransferCreatedPayloadDataOriginUser) MarshalJSON() ([]byte, error)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostTransferCreatedPayloadDataOriginUser) String() string {
+func (p *PostTransferCreatedPayloadDataOrigin) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -7849,7 +6290,30 @@ func (p *PostTransferCreatedPayloadDataOriginUser) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Whether the profile is a business account or a user.
+type PostTransferCreatedPayloadDataOriginObject string
+
+const (
+	PostTransferCreatedPayloadDataOriginObjectAccount PostTransferCreatedPayloadDataOriginObject = "account"
+	PostTransferCreatedPayloadDataOriginObjectUser    PostTransferCreatedPayloadDataOriginObject = "user"
+)
+
+func NewPostTransferCreatedPayloadDataOriginObjectFromString(s string) (PostTransferCreatedPayloadDataOriginObject, error) {
+	switch s {
+	case "account":
+		return PostTransferCreatedPayloadDataOriginObjectAccount, nil
+	case "user":
+		return PostTransferCreatedPayloadDataOriginObjectUser, nil
+	}
+	var t PostTransferCreatedPayloadDataOriginObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostTransferCreatedPayloadDataOriginObject) Ptr() *PostTransferCreatedPayloadDataOriginObject {
+	return &p
+}
+
+// Current transfer status.
 type PostTransferCreatedPayloadDataStatus string
 
 const (
@@ -7919,7 +6383,7 @@ type PostTransferFailedPayload struct {
 	APIVersion PostTransferFailedPayloadAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) the payload is serialized to
 	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	// A transfer of credit between two ledger accounts.
+	// A transfer between Whop accounts or users.
 	Data *PostTransferFailedPayloadData `json:"data" url:"data"`
 	// A unique ID for every single webhook request
 	ID string `json:"id" url:"id"`
@@ -8143,72 +6607,72 @@ func (p PostTransferFailedPayloadAPIVersion) Ptr() *PostTransferFailedPayloadAPI
 }
 
 var (
-	postTransferFailedPayloadDataFieldAmount                     = big.NewInt(1 << 0)
-	postTransferFailedPayloadDataFieldCreatedAt                  = big.NewInt(1 << 1)
-	postTransferFailedPayloadDataFieldCreatedByUser              = big.NewInt(1 << 2)
-	postTransferFailedPayloadDataFieldCurrency                   = big.NewInt(1 << 3)
-	postTransferFailedPayloadDataFieldDestination                = big.NewInt(1 << 4)
-	postTransferFailedPayloadDataFieldDestinationLedgerAccountID = big.NewInt(1 << 5)
-	postTransferFailedPayloadDataFieldFailedAt                   = big.NewInt(1 << 6)
-	postTransferFailedPayloadDataFieldFailureCode                = big.NewInt(1 << 7)
-	postTransferFailedPayloadDataFieldFailureReason              = big.NewInt(1 << 8)
-	postTransferFailedPayloadDataFieldFeeAmount                  = big.NewInt(1 << 9)
-	postTransferFailedPayloadDataFieldID                         = big.NewInt(1 << 10)
-	postTransferFailedPayloadDataFieldMetadata                   = big.NewInt(1 << 11)
-	postTransferFailedPayloadDataFieldNotes                      = big.NewInt(1 << 12)
-	postTransferFailedPayloadDataFieldObject                     = big.NewInt(1 << 13)
-	postTransferFailedPayloadDataFieldOrigin                     = big.NewInt(1 << 14)
-	postTransferFailedPayloadDataFieldOriginLedgerAccountID      = big.NewInt(1 << 15)
-	postTransferFailedPayloadDataFieldStatus                     = big.NewInt(1 << 16)
+	postTransferFailedPayloadDataFieldAmount          = big.NewInt(1 << 0)
+	postTransferFailedPayloadDataFieldCreatedAt       = big.NewInt(1 << 1)
+	postTransferFailedPayloadDataFieldDestination     = big.NewInt(1 << 2)
+	postTransferFailedPayloadDataFieldFailedAt        = big.NewInt(1 << 3)
+	postTransferFailedPayloadDataFieldFailureCode     = big.NewInt(1 << 4)
+	postTransferFailedPayloadDataFieldFailureReason   = big.NewInt(1 << 5)
+	postTransferFailedPayloadDataFieldFee             = big.NewInt(1 << 6)
+	postTransferFailedPayloadDataFieldID              = big.NewInt(1 << 7)
+	postTransferFailedPayloadDataFieldMetadata        = big.NewInt(1 << 8)
+	postTransferFailedPayloadDataFieldNotes           = big.NewInt(1 << 9)
+	postTransferFailedPayloadDataFieldObject          = big.NewInt(1 << 10)
+	postTransferFailedPayloadDataFieldOrigin          = big.NewInt(1 << 11)
+	postTransferFailedPayloadDataFieldStatus          = big.NewInt(1 << 12)
+	postTransferFailedPayloadDataFieldStatusChangedAt = big.NewInt(1 << 13)
+	postTransferFailedPayloadDataFieldSucceededAt     = big.NewInt(1 << 14)
+	postTransferFailedPayloadDataFieldTrackingURL     = big.NewInt(1 << 15)
 )
 
 // postTransferFailedPayloadDataNullableFields maps the wire names of PostTransferFailedPayloadData's nullable fields (required or optional) to their field bits.
 var postTransferFailedPayloadDataNullableFields = map[string]*big.Int{
-	"created_by_user": postTransferFailedPayloadDataFieldCreatedByUser,
-	"failed_at":       postTransferFailedPayloadDataFieldFailedAt,
-	"failure_code":    postTransferFailedPayloadDataFieldFailureCode,
-	"failure_reason":  postTransferFailedPayloadDataFieldFailureReason,
-	"fee_amount":      postTransferFailedPayloadDataFieldFeeAmount,
-	"metadata":        postTransferFailedPayloadDataFieldMetadata,
-	"notes":           postTransferFailedPayloadDataFieldNotes,
+	"amount":            postTransferFailedPayloadDataFieldAmount,
+	"destination":       postTransferFailedPayloadDataFieldDestination,
+	"failed_at":         postTransferFailedPayloadDataFieldFailedAt,
+	"failure_code":      postTransferFailedPayloadDataFieldFailureCode,
+	"failure_reason":    postTransferFailedPayloadDataFieldFailureReason,
+	"fee":               postTransferFailedPayloadDataFieldFee,
+	"notes":             postTransferFailedPayloadDataFieldNotes,
+	"origin":            postTransferFailedPayloadDataFieldOrigin,
+	"status_changed_at": postTransferFailedPayloadDataFieldStatusChangedAt,
+	"succeeded_at":      postTransferFailedPayloadDataFieldSucceededAt,
 }
 
-// A transfer of credit between two ledger accounts.
+// A transfer between Whop accounts or users.
 type PostTransferFailedPayloadData struct {
-	// Transfer amount.
-	Amount float64 `json:"amount" url:"amount"`
+	// Amount credited to the recipient. Null while the transfer has not succeeded.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
 	// When the transfer was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-	CreatedByUser *PostTransferFailedPayloadDataCreatedByUser `json:"created_by_user,omitempty" url:"created_by_user,omitempty"`
-	// Transfer currency.
-	Currency string `json:"currency" url:"currency"`
-	// Account or user receiving funds.
-	Destination *PostTransferFailedPayloadDataDestination `json:"destination" url:"destination"`
-	// Destination ledger account ID.
-	DestinationLedgerAccountID string `json:"destination_ledger_account_id" url:"destination_ledger_account_id"`
-	// When the transfer failed, as an ISO 8601 timestamp. Null unless the transfer has failed.
+	// Business account or user receiving the transfer.
+	Destination *PostTransferFailedPayloadDataDestination `json:"destination,omitempty" url:"destination,omitempty"`
+	// Recorded failure time. Null unless the transfer has failed.
 	FailedAt *time.Time `json:"failed_at,omitempty" url:"failed_at,omitempty"`
-	// Machine-readable code for why the transfer failed. Null unless the transfer has failed.
+	// Machine-readable failure code. Null unless the transfer has failed.
 	FailureCode *string `json:"failure_code,omitempty" url:"failure_code,omitempty"`
-	// Human-readable explanation of why the transfer failed. Null unless the transfer has failed.
+	// Failure explanation. Null unless the transfer has failed.
 	FailureReason *string `json:"failure_reason,omitempty" url:"failure_reason,omitempty"`
-	// Fee charged for the transfer.
-	FeeAmount *float64 `json:"fee_amount,omitempty" url:"fee_amount,omitempty"`
+	// All applicable transfer fees, including platform markup. Null when the authoritative total is unavailable.
+	Fee *Money `json:"fee,omitempty" url:"fee,omitempty"`
 	// Transfer ID.
 	ID string `json:"id" url:"id"`
 	// Custom metadata attached to the transfer.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// Transfer note.
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
-	// The object type. Discriminates the create response from a send or a claim link.
+	// The object type.
 	Object PostTransferFailedPayloadDataObject `json:"object" url:"object"`
-	// Account or user sending funds.
-	Origin *PostTransferFailedPayloadDataOrigin `json:"origin" url:"origin"`
-	// Source ledger account ID.
-	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Business account or user sending the transfer.
+	Origin *PostTransferFailedPayloadDataOrigin `json:"origin,omitempty" url:"origin,omitempty"`
+	// Current transfer status.
 	Status PostTransferFailedPayloadDataStatus `json:"status" url:"status"`
+	// Recorded time of the current transition. Null when the historical transition time is unknown.
+	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
+	// Recorded success time. Null when unknown.
+	SucceededAt *time.Time `json:"succeeded_at,omitempty" url:"succeeded_at,omitempty"`
+	// Tracking page for the transfer. Viewing it requires sign-in and access to the transfer.
+	TrackingURL string `json:"tracking_url" url:"tracking_url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8217,9 +6681,9 @@ type PostTransferFailedPayloadData struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostTransferFailedPayloadData) GetAmount() float64 {
+func (p *PostTransferFailedPayloadData) GetAmount() *Money {
 	if p == nil {
-		return 0
+		return nil
 	}
 	return p.Amount
 }
@@ -8231,32 +6695,11 @@ func (p *PostTransferFailedPayloadData) GetCreatedAt() time.Time {
 	return p.CreatedAt
 }
 
-func (p *PostTransferFailedPayloadData) GetCreatedByUser() *PostTransferFailedPayloadDataCreatedByUser {
-	if p == nil {
-		return nil
-	}
-	return p.CreatedByUser
-}
-
-func (p *PostTransferFailedPayloadData) GetCurrency() string {
-	if p == nil {
-		return ""
-	}
-	return p.Currency
-}
-
 func (p *PostTransferFailedPayloadData) GetDestination() *PostTransferFailedPayloadDataDestination {
 	if p == nil {
 		return nil
 	}
 	return p.Destination
-}
-
-func (p *PostTransferFailedPayloadData) GetDestinationLedgerAccountID() string {
-	if p == nil {
-		return ""
-	}
-	return p.DestinationLedgerAccountID
 }
 
 func (p *PostTransferFailedPayloadData) GetFailedAt() *time.Time {
@@ -8280,11 +6723,11 @@ func (p *PostTransferFailedPayloadData) GetFailureReason() *string {
 	return p.FailureReason
 }
 
-func (p *PostTransferFailedPayloadData) GetFeeAmount() *float64 {
+func (p *PostTransferFailedPayloadData) GetFee() *Money {
 	if p == nil {
 		return nil
 	}
-	return p.FeeAmount
+	return p.Fee
 }
 
 func (p *PostTransferFailedPayloadData) GetID() string {
@@ -8322,18 +6765,32 @@ func (p *PostTransferFailedPayloadData) GetOrigin() *PostTransferFailedPayloadDa
 	return p.Origin
 }
 
-func (p *PostTransferFailedPayloadData) GetOriginLedgerAccountID() string {
-	if p == nil {
-		return ""
-	}
-	return p.OriginLedgerAccountID
-}
-
 func (p *PostTransferFailedPayloadData) GetStatus() PostTransferFailedPayloadDataStatus {
 	if p == nil {
 		return ""
 	}
 	return p.Status
+}
+
+func (p *PostTransferFailedPayloadData) GetStatusChangedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.StatusChangedAt
+}
+
+func (p *PostTransferFailedPayloadData) GetSucceededAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.SucceededAt
+}
+
+func (p *PostTransferFailedPayloadData) GetTrackingURL() string {
+	if p == nil {
+		return ""
+	}
+	return p.TrackingURL
 }
 
 func (p *PostTransferFailedPayloadData) GetExtraProperties() map[string]interface{} {
@@ -8354,7 +6811,7 @@ func (p *PostTransferFailedPayloadData) require(field *big.Int) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadData) SetAmount(amount float64) {
+func (p *PostTransferFailedPayloadData) SetAmount(amount *Money) {
 	p.Amount = amount
 	p.require(postTransferFailedPayloadDataFieldAmount)
 }
@@ -8366,32 +6823,11 @@ func (p *PostTransferFailedPayloadData) SetCreatedAt(createdAt time.Time) {
 	p.require(postTransferFailedPayloadDataFieldCreatedAt)
 }
 
-// SetCreatedByUser sets the CreatedByUser field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadData) SetCreatedByUser(createdByUser *PostTransferFailedPayloadDataCreatedByUser) {
-	p.CreatedByUser = createdByUser
-	p.require(postTransferFailedPayloadDataFieldCreatedByUser)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadData) SetCurrency(currency string) {
-	p.Currency = currency
-	p.require(postTransferFailedPayloadDataFieldCurrency)
-}
-
 // SetDestination sets the Destination field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostTransferFailedPayloadData) SetDestination(destination *PostTransferFailedPayloadDataDestination) {
 	p.Destination = destination
 	p.require(postTransferFailedPayloadDataFieldDestination)
-}
-
-// SetDestinationLedgerAccountID sets the DestinationLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadData) SetDestinationLedgerAccountID(destinationLedgerAccountID string) {
-	p.DestinationLedgerAccountID = destinationLedgerAccountID
-	p.require(postTransferFailedPayloadDataFieldDestinationLedgerAccountID)
 }
 
 // SetFailedAt sets the FailedAt field and marks it as non-optional;
@@ -8415,11 +6851,11 @@ func (p *PostTransferFailedPayloadData) SetFailureReason(failureReason *string) 
 	p.require(postTransferFailedPayloadDataFieldFailureReason)
 }
 
-// SetFeeAmount sets the FeeAmount field and marks it as non-optional;
+// SetFee sets the Fee field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadData) SetFeeAmount(feeAmount *float64) {
-	p.FeeAmount = feeAmount
-	p.require(postTransferFailedPayloadDataFieldFeeAmount)
+func (p *PostTransferFailedPayloadData) SetFee(fee *Money) {
+	p.Fee = fee
+	p.require(postTransferFailedPayloadDataFieldFee)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8457,13 +6893,6 @@ func (p *PostTransferFailedPayloadData) SetOrigin(origin *PostTransferFailedPayl
 	p.require(postTransferFailedPayloadDataFieldOrigin)
 }
 
-// SetOriginLedgerAccountID sets the OriginLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadData) SetOriginLedgerAccountID(originLedgerAccountID string) {
-	p.OriginLedgerAccountID = originLedgerAccountID
-	p.require(postTransferFailedPayloadDataFieldOriginLedgerAccountID)
-}
-
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PostTransferFailedPayloadData) SetStatus(status PostTransferFailedPayloadDataStatus) {
@@ -8471,12 +6900,35 @@ func (p *PostTransferFailedPayloadData) SetStatus(status PostTransferFailedPaylo
 	p.require(postTransferFailedPayloadDataFieldStatus)
 }
 
+// SetStatusChangedAt sets the StatusChangedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferFailedPayloadData) SetStatusChangedAt(statusChangedAt *time.Time) {
+	p.StatusChangedAt = statusChangedAt
+	p.require(postTransferFailedPayloadDataFieldStatusChangedAt)
+}
+
+// SetSucceededAt sets the SucceededAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferFailedPayloadData) SetSucceededAt(succeededAt *time.Time) {
+	p.SucceededAt = succeededAt
+	p.require(postTransferFailedPayloadDataFieldSucceededAt)
+}
+
+// SetTrackingURL sets the TrackingURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferFailedPayloadData) SetTrackingURL(trackingURL string) {
+	p.TrackingURL = trackingURL
+	p.require(postTransferFailedPayloadDataFieldTrackingURL)
+}
+
 func (p *PostTransferFailedPayloadData) UnmarshalJSON(data []byte) error {
 	type embed PostTransferFailedPayloadData
 	var unmarshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
 		embed: embed(*p),
 	}
@@ -8486,6 +6938,8 @@ func (p *PostTransferFailedPayloadData) UnmarshalJSON(data []byte) error {
 	*p = PostTransferFailedPayloadData(unmarshaler.embed)
 	p.CreatedAt = unmarshaler.CreatedAt.Time()
 	p.FailedAt = unmarshaler.FailedAt.TimePtr()
+	p.StatusChangedAt = unmarshaler.StatusChangedAt.TimePtr()
+	p.SucceededAt = unmarshaler.SucceededAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -8506,12 +6960,16 @@ func (p *PostTransferFailedPayloadData) MarshalJSON() ([]byte, error) {
 	type embed PostTransferFailedPayloadData
 	var marshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
-		embed:     embed(*p),
-		CreatedAt: internal.NewDateTime(p.CreatedAt),
-		FailedAt:  internal.NewOptionalDateTime(p.FailedAt),
+		embed:           embed(*p),
+		CreatedAt:       internal.NewDateTime(p.CreatedAt),
+		FailedAt:        internal.NewOptionalDateTime(p.FailedAt),
+		StatusChangedAt: internal.NewOptionalDateTime(p.StatusChangedAt),
+		SucceededAt:     internal.NewOptionalDateTime(p.SucceededAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -8533,24 +6991,28 @@ func (p *PostTransferFailedPayloadData) String() string {
 }
 
 var (
-	postTransferFailedPayloadDataCreatedByUserFieldID       = big.NewInt(1 << 0)
-	postTransferFailedPayloadDataCreatedByUserFieldName     = big.NewInt(1 << 1)
-	postTransferFailedPayloadDataCreatedByUserFieldUsername = big.NewInt(1 << 2)
+	postTransferFailedPayloadDataDestinationFieldID      = big.NewInt(1 << 0)
+	postTransferFailedPayloadDataDestinationFieldLogoURL = big.NewInt(1 << 1)
+	postTransferFailedPayloadDataDestinationFieldName    = big.NewInt(1 << 2)
+	postTransferFailedPayloadDataDestinationFieldObject  = big.NewInt(1 << 3)
 )
 
-// postTransferFailedPayloadDataCreatedByUserNullableFields maps the wire names of PostTransferFailedPayloadDataCreatedByUser's nullable fields (required or optional) to their field bits.
-var postTransferFailedPayloadDataCreatedByUserNullableFields = map[string]*big.Int{
-	"name": postTransferFailedPayloadDataCreatedByUserFieldName,
+// postTransferFailedPayloadDataDestinationNullableFields maps the wire names of PostTransferFailedPayloadDataDestination's nullable fields (required or optional) to their field bits.
+var postTransferFailedPayloadDataDestinationNullableFields = map[string]*big.Int{
+	"logo_url": postTransferFailedPayloadDataDestinationFieldLogoURL,
+	"name":     postTransferFailedPayloadDataDestinationFieldName,
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-type PostTransferFailedPayloadDataCreatedByUser struct {
-	// User ID.
+// Business account or user receiving the transfer.
+type PostTransferFailedPayloadDataDestination struct {
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username string `json:"username" url:"username"`
+	// Whether the profile is a business account or a user.
+	Object PostTransferFailedPayloadDataDestinationObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8559,35 +7021,42 @@ type PostTransferFailedPayloadDataCreatedByUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostTransferFailedPayloadDataCreatedByUser) GetID() string {
+func (p *PostTransferFailedPayloadDataDestination) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *PostTransferFailedPayloadDataCreatedByUser) GetName() *string {
+func (p *PostTransferFailedPayloadDataDestination) GetLogoURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LogoURL
+}
+
+func (p *PostTransferFailedPayloadDataDestination) GetName() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Name
 }
 
-func (p *PostTransferFailedPayloadDataCreatedByUser) GetUsername() string {
+func (p *PostTransferFailedPayloadDataDestination) GetObject() PostTransferFailedPayloadDataDestinationObject {
 	if p == nil {
 		return ""
 	}
-	return p.Username
+	return p.Object
 }
 
-func (p *PostTransferFailedPayloadDataCreatedByUser) GetExtraProperties() map[string]interface{} {
+func (p *PostTransferFailedPayloadDataDestination) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostTransferFailedPayloadDataCreatedByUser) require(field *big.Int) {
+func (p *PostTransferFailedPayloadDataDestination) require(field *big.Int) {
 	next := new(big.Int)
 	if p.explicitFields != nil {
 		next.Set(p.explicitFields)
@@ -8598,299 +7067,45 @@ func (p *PostTransferFailedPayloadDataCreatedByUser) require(field *big.Int) {
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataCreatedByUser) SetID(id string) {
+func (p *PostTransferFailedPayloadDataDestination) SetID(id string) {
 	p.ID = id
-	p.require(postTransferFailedPayloadDataCreatedByUserFieldID)
+	p.require(postTransferFailedPayloadDataDestinationFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferFailedPayloadDataDestination) SetLogoURL(logoURL *string) {
+	p.LogoURL = logoURL
+	p.require(postTransferFailedPayloadDataDestinationFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataCreatedByUser) SetName(name *string) {
+func (p *PostTransferFailedPayloadDataDestination) SetName(name *string) {
 	p.Name = name
-	p.require(postTransferFailedPayloadDataCreatedByUserFieldName)
+	p.require(postTransferFailedPayloadDataDestinationFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataCreatedByUser) SetUsername(username string) {
-	p.Username = username
-	p.require(postTransferFailedPayloadDataCreatedByUserFieldUsername)
-}
-
-func (p *PostTransferFailedPayloadDataCreatedByUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferFailedPayloadDataCreatedByUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostTransferFailedPayloadDataCreatedByUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataCreatedByUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		p.require(presentFields)
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostTransferFailedPayloadDataCreatedByUser) MarshalJSON() ([]byte, error) {
-	type embed PostTransferFailedPayloadDataCreatedByUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostTransferFailedPayloadDataCreatedByUser) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// Account or user receiving funds.
-type PostTransferFailedPayloadDataDestination struct {
-	Typename string
-	Company  *PostTransferFailedPayloadDataDestinationCompany
-	User     *PostTransferFailedPayloadDataDestinationUser
-
-	rawJSON json.RawMessage
-}
-
-func (p *PostTransferFailedPayloadDataDestination) GetTypename() string {
-	if p == nil {
-		return ""
-	}
-	return p.Typename
-}
-
-func (p *PostTransferFailedPayloadDataDestination) GetCompany() *PostTransferFailedPayloadDataDestinationCompany {
-	if p == nil {
-		return nil
-	}
-	return p.Company
-}
-
-func (p *PostTransferFailedPayloadDataDestination) GetUser() *PostTransferFailedPayloadDataDestinationUser {
-	if p == nil {
-		return nil
-	}
-	return p.User
+func (p *PostTransferFailedPayloadDataDestination) SetObject(object PostTransferFailedPayloadDataDestinationObject) {
+	p.Object = object
+	p.require(postTransferFailedPayloadDataDestinationFieldObject)
 }
 
 func (p *PostTransferFailedPayloadDataDestination) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	p.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", p)
-	}
-	switch unmarshaler.Typename {
-	case "Company":
-		value := new(PostTransferFailedPayloadDataDestinationCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Company = value
-	case "User":
-		value := new(PostTransferFailedPayloadDataDestinationUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.User = value
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p PostTransferFailedPayloadDataDestination) MarshalJSON() ([]byte, error) {
-	if err := p.validate(); err != nil {
-		return nil, err
-	}
-	if p.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(p.Company, "typename", "Company")
-	}
-	if p.User != nil {
-		return internal.MarshalJSONWithExtraProperty(p.User, "typename", "User")
-	}
-	if len(p.rawJSON) > 0 {
-		return p.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-type PostTransferFailedPayloadDataDestinationVisitor interface {
-	VisitCompany(*PostTransferFailedPayloadDataDestinationCompany) error
-	VisitUser(*PostTransferFailedPayloadDataDestinationUser) error
-}
-
-func (p *PostTransferFailedPayloadDataDestination) Accept(visitor PostTransferFailedPayloadDataDestinationVisitor) error {
-	if p.Company != nil {
-		return visitor.VisitCompany(p.Company)
-	}
-	if p.User != nil {
-		return visitor.VisitUser(p.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-func (p *PostTransferFailedPayloadDataDestination) validate() error {
-	if p == nil {
-		return fmt.Errorf("type %T is nil", p)
-	}
-	var fields []string
-	if p.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if p.User != nil {
-		fields = append(fields, "User")
-	}
-	if len(fields) == 0 {
-		if p.Typename != "" {
-			if len(p.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", p, p.Typename)
-		}
-		return fmt.Errorf("type %T is empty", p)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", p, fields)
-	}
-	if p.Typename != "" {
-		field := fields[0]
-		if p.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				p,
-				p.Typename,
-				p,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	postTransferFailedPayloadDataDestinationCompanyFieldID    = big.NewInt(1 << 0)
-	postTransferFailedPayloadDataDestinationCompanyFieldRoute = big.NewInt(1 << 1)
-	postTransferFailedPayloadDataDestinationCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-// postTransferFailedPayloadDataDestinationCompanyNullableFields maps the wire names of PostTransferFailedPayloadDataDestinationCompany's nullable fields (required or optional) to their field bits.
-var postTransferFailedPayloadDataDestinationCompanyNullableFields = map[string]*big.Int{
-	"route": postTransferFailedPayloadDataDestinationCompanyFieldRoute,
-	"title": postTransferFailedPayloadDataDestinationCompanyFieldTitle,
-}
-
-type PostTransferFailedPayloadDataDestinationCompany struct {
-	// Account ID.
-	ID string `json:"id" url:"id"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostTransferFailedPayloadDataDestinationCompany) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostTransferFailedPayloadDataDestinationCompany) GetRoute() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Route
-}
-
-func (p *PostTransferFailedPayloadDataDestinationCompany) GetTitle() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Title
-}
-
-func (p *PostTransferFailedPayloadDataDestinationCompany) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostTransferFailedPayloadDataDestinationCompany) require(field *big.Int) {
-	next := new(big.Int)
-	if p.explicitFields != nil {
-		next.Set(p.explicitFields)
-	}
-	next.Or(next, field)
-	p.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataDestinationCompany) SetID(id string) {
-	p.ID = id
-	p.require(postTransferFailedPayloadDataDestinationCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataDestinationCompany) SetRoute(route *string) {
-	p.Route = route
-	p.require(postTransferFailedPayloadDataDestinationCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataDestinationCompany) SetTitle(title *string) {
-	p.Title = title
-	p.require(postTransferFailedPayloadDataDestinationCompanyFieldTitle)
-}
-
-func (p *PostTransferFailedPayloadDataDestinationCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferFailedPayloadDataDestinationCompany
+	type unmarshaler PostTransferFailedPayloadDataDestination
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PostTransferFailedPayloadDataDestinationCompany(value)
+	*p = PostTransferFailedPayloadDataDestination(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
 	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataDestinationCompanyNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataDestinationNullableFields)
 	if err != nil {
 		return err
 	}
@@ -8901,8 +7116,8 @@ func (p *PostTransferFailedPayloadDataDestinationCompany) UnmarshalJSON(data []b
 	return nil
 }
 
-func (p *PostTransferFailedPayloadDataDestinationCompany) MarshalJSON() ([]byte, error) {
-	type embed PostTransferFailedPayloadDataDestinationCompany
+func (p *PostTransferFailedPayloadDataDestination) MarshalJSON() ([]byte, error) {
+	type embed PostTransferFailedPayloadDataDestination
 	var marshaler = struct {
 		embed
 	}{
@@ -8912,7 +7127,7 @@ func (p *PostTransferFailedPayloadDataDestinationCompany) MarshalJSON() ([]byte,
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostTransferFailedPayloadDataDestinationCompany) String() string {
+func (p *PostTransferFailedPayloadDataDestination) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -8927,140 +7142,30 @@ func (p *PostTransferFailedPayloadDataDestinationCompany) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-var (
-	postTransferFailedPayloadDataDestinationUserFieldID       = big.NewInt(1 << 0)
-	postTransferFailedPayloadDataDestinationUserFieldName     = big.NewInt(1 << 1)
-	postTransferFailedPayloadDataDestinationUserFieldUsername = big.NewInt(1 << 2)
+// Whether the profile is a business account or a user.
+type PostTransferFailedPayloadDataDestinationObject string
+
+const (
+	PostTransferFailedPayloadDataDestinationObjectAccount PostTransferFailedPayloadDataDestinationObject = "account"
+	PostTransferFailedPayloadDataDestinationObjectUser    PostTransferFailedPayloadDataDestinationObject = "user"
 )
 
-// postTransferFailedPayloadDataDestinationUserNullableFields maps the wire names of PostTransferFailedPayloadDataDestinationUser's nullable fields (required or optional) to their field bits.
-var postTransferFailedPayloadDataDestinationUserNullableFields = map[string]*big.Int{
-	"name": postTransferFailedPayloadDataDestinationUserFieldName,
+func NewPostTransferFailedPayloadDataDestinationObjectFromString(s string) (PostTransferFailedPayloadDataDestinationObject, error) {
+	switch s {
+	case "account":
+		return PostTransferFailedPayloadDataDestinationObjectAccount, nil
+	case "user":
+		return PostTransferFailedPayloadDataDestinationObjectUser, nil
+	}
+	var t PostTransferFailedPayloadDataDestinationObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-type PostTransferFailedPayloadDataDestinationUser struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
+func (p PostTransferFailedPayloadDataDestinationObject) Ptr() *PostTransferFailedPayloadDataDestinationObject {
+	return &p
 }
 
-func (p *PostTransferFailedPayloadDataDestinationUser) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostTransferFailedPayloadDataDestinationUser) GetName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Name
-}
-
-func (p *PostTransferFailedPayloadDataDestinationUser) GetUsername() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Username
-}
-
-func (p *PostTransferFailedPayloadDataDestinationUser) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostTransferFailedPayloadDataDestinationUser) require(field *big.Int) {
-	next := new(big.Int)
-	if p.explicitFields != nil {
-		next.Set(p.explicitFields)
-	}
-	next.Or(next, field)
-	p.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataDestinationUser) SetID(id string) {
-	p.ID = id
-	p.require(postTransferFailedPayloadDataDestinationUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataDestinationUser) SetName(name *string) {
-	p.Name = name
-	p.require(postTransferFailedPayloadDataDestinationUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataDestinationUser) SetUsername(username *string) {
-	p.Username = username
-	p.require(postTransferFailedPayloadDataDestinationUserFieldUsername)
-}
-
-func (p *PostTransferFailedPayloadDataDestinationUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferFailedPayloadDataDestinationUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostTransferFailedPayloadDataDestinationUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataDestinationUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		p.require(presentFields)
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostTransferFailedPayloadDataDestinationUser) MarshalJSON() ([]byte, error) {
-	type embed PostTransferFailedPayloadDataDestinationUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostTransferFailedPayloadDataDestinationUser) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The object type. Discriminates the create response from a send or a claim link.
+// The object type.
 type PostTransferFailedPayloadDataObject string
 
 const (
@@ -9080,285 +7185,29 @@ func (p PostTransferFailedPayloadDataObject) Ptr() *PostTransferFailedPayloadDat
 	return &p
 }
 
-// Account or user sending funds.
+var (
+	postTransferFailedPayloadDataOriginFieldID      = big.NewInt(1 << 0)
+	postTransferFailedPayloadDataOriginFieldLogoURL = big.NewInt(1 << 1)
+	postTransferFailedPayloadDataOriginFieldName    = big.NewInt(1 << 2)
+	postTransferFailedPayloadDataOriginFieldObject  = big.NewInt(1 << 3)
+)
+
+// postTransferFailedPayloadDataOriginNullableFields maps the wire names of PostTransferFailedPayloadDataOrigin's nullable fields (required or optional) to their field bits.
+var postTransferFailedPayloadDataOriginNullableFields = map[string]*big.Int{
+	"logo_url": postTransferFailedPayloadDataOriginFieldLogoURL,
+	"name":     postTransferFailedPayloadDataOriginFieldName,
+}
+
+// Business account or user sending the transfer.
 type PostTransferFailedPayloadDataOrigin struct {
-	Typename string
-	Company  *PostTransferFailedPayloadDataOriginCompany
-	User     *PostTransferFailedPayloadDataOriginUser
-
-	rawJSON json.RawMessage
-}
-
-func (p *PostTransferFailedPayloadDataOrigin) GetTypename() string {
-	if p == nil {
-		return ""
-	}
-	return p.Typename
-}
-
-func (p *PostTransferFailedPayloadDataOrigin) GetCompany() *PostTransferFailedPayloadDataOriginCompany {
-	if p == nil {
-		return nil
-	}
-	return p.Company
-}
-
-func (p *PostTransferFailedPayloadDataOrigin) GetUser() *PostTransferFailedPayloadDataOriginUser {
-	if p == nil {
-		return nil
-	}
-	return p.User
-}
-
-func (p *PostTransferFailedPayloadDataOrigin) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	p.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", p)
-	}
-	switch unmarshaler.Typename {
-	case "Company":
-		value := new(PostTransferFailedPayloadDataOriginCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.Company = value
-	case "User":
-		value := new(PostTransferFailedPayloadDataOriginUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		p.User = value
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p PostTransferFailedPayloadDataOrigin) MarshalJSON() ([]byte, error) {
-	if err := p.validate(); err != nil {
-		return nil, err
-	}
-	if p.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(p.Company, "typename", "Company")
-	}
-	if p.User != nil {
-		return internal.MarshalJSONWithExtraProperty(p.User, "typename", "User")
-	}
-	if len(p.rawJSON) > 0 {
-		return p.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-type PostTransferFailedPayloadDataOriginVisitor interface {
-	VisitCompany(*PostTransferFailedPayloadDataOriginCompany) error
-	VisitUser(*PostTransferFailedPayloadDataOriginUser) error
-}
-
-func (p *PostTransferFailedPayloadDataOrigin) Accept(visitor PostTransferFailedPayloadDataOriginVisitor) error {
-	if p.Company != nil {
-		return visitor.VisitCompany(p.Company)
-	}
-	if p.User != nil {
-		return visitor.VisitUser(p.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", p)
-}
-
-func (p *PostTransferFailedPayloadDataOrigin) validate() error {
-	if p == nil {
-		return fmt.Errorf("type %T is nil", p)
-	}
-	var fields []string
-	if p.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if p.User != nil {
-		fields = append(fields, "User")
-	}
-	if len(fields) == 0 {
-		if p.Typename != "" {
-			if len(p.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", p, p.Typename)
-		}
-		return fmt.Errorf("type %T is empty", p)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", p, fields)
-	}
-	if p.Typename != "" {
-		field := fields[0]
-		if p.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				p,
-				p.Typename,
-				p,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	postTransferFailedPayloadDataOriginCompanyFieldID    = big.NewInt(1 << 0)
-	postTransferFailedPayloadDataOriginCompanyFieldRoute = big.NewInt(1 << 1)
-	postTransferFailedPayloadDataOriginCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-// postTransferFailedPayloadDataOriginCompanyNullableFields maps the wire names of PostTransferFailedPayloadDataOriginCompany's nullable fields (required or optional) to their field bits.
-var postTransferFailedPayloadDataOriginCompanyNullableFields = map[string]*big.Int{
-	"route": postTransferFailedPayloadDataOriginCompanyFieldRoute,
-	"title": postTransferFailedPayloadDataOriginCompanyFieldTitle,
-}
-
-type PostTransferFailedPayloadDataOriginCompany struct {
-	// Account ID.
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostTransferFailedPayloadDataOriginCompany) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostTransferFailedPayloadDataOriginCompany) GetRoute() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Route
-}
-
-func (p *PostTransferFailedPayloadDataOriginCompany) GetTitle() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Title
-}
-
-func (p *PostTransferFailedPayloadDataOriginCompany) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostTransferFailedPayloadDataOriginCompany) require(field *big.Int) {
-	next := new(big.Int)
-	if p.explicitFields != nil {
-		next.Set(p.explicitFields)
-	}
-	next.Or(next, field)
-	p.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataOriginCompany) SetID(id string) {
-	p.ID = id
-	p.require(postTransferFailedPayloadDataOriginCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataOriginCompany) SetRoute(route *string) {
-	p.Route = route
-	p.require(postTransferFailedPayloadDataOriginCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataOriginCompany) SetTitle(title *string) {
-	p.Title = title
-	p.require(postTransferFailedPayloadDataOriginCompanyFieldTitle)
-}
-
-func (p *PostTransferFailedPayloadDataOriginCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferFailedPayloadDataOriginCompany
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostTransferFailedPayloadDataOriginCompany(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataOriginCompanyNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		p.require(presentFields)
-	}
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostTransferFailedPayloadDataOriginCompany) MarshalJSON() ([]byte, error) {
-	type embed PostTransferFailedPayloadDataOriginCompany
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostTransferFailedPayloadDataOriginCompany) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-var (
-	postTransferFailedPayloadDataOriginUserFieldID       = big.NewInt(1 << 0)
-	postTransferFailedPayloadDataOriginUserFieldName     = big.NewInt(1 << 1)
-	postTransferFailedPayloadDataOriginUserFieldUsername = big.NewInt(1 << 2)
-)
-
-// postTransferFailedPayloadDataOriginUserNullableFields maps the wire names of PostTransferFailedPayloadDataOriginUser's nullable fields (required or optional) to their field bits.
-var postTransferFailedPayloadDataOriginUserNullableFields = map[string]*big.Int{
-	"name": postTransferFailedPayloadDataOriginUserFieldName,
-}
-
-type PostTransferFailedPayloadDataOriginUser struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether the profile is a business account or a user.
+	Object PostTransferFailedPayloadDataOriginObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -9367,35 +7216,42 @@ type PostTransferFailedPayloadDataOriginUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PostTransferFailedPayloadDataOriginUser) GetID() string {
+func (p *PostTransferFailedPayloadDataOrigin) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
 }
 
-func (p *PostTransferFailedPayloadDataOriginUser) GetName() *string {
+func (p *PostTransferFailedPayloadDataOrigin) GetLogoURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LogoURL
+}
+
+func (p *PostTransferFailedPayloadDataOrigin) GetName() *string {
 	if p == nil {
 		return nil
 	}
 	return p.Name
 }
 
-func (p *PostTransferFailedPayloadDataOriginUser) GetUsername() *string {
+func (p *PostTransferFailedPayloadDataOrigin) GetObject() PostTransferFailedPayloadDataOriginObject {
 	if p == nil {
-		return nil
+		return ""
 	}
-	return p.Username
+	return p.Object
 }
 
-func (p *PostTransferFailedPayloadDataOriginUser) GetExtraProperties() map[string]interface{} {
+func (p *PostTransferFailedPayloadDataOrigin) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PostTransferFailedPayloadDataOriginUser) require(field *big.Int) {
+func (p *PostTransferFailedPayloadDataOrigin) require(field *big.Int) {
 	next := new(big.Int)
 	if p.explicitFields != nil {
 		next.Set(p.explicitFields)
@@ -9406,38 +7262,45 @@ func (p *PostTransferFailedPayloadDataOriginUser) require(field *big.Int) {
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataOriginUser) SetID(id string) {
+func (p *PostTransferFailedPayloadDataOrigin) SetID(id string) {
 	p.ID = id
-	p.require(postTransferFailedPayloadDataOriginUserFieldID)
+	p.require(postTransferFailedPayloadDataOriginFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostTransferFailedPayloadDataOrigin) SetLogoURL(logoURL *string) {
+	p.LogoURL = logoURL
+	p.require(postTransferFailedPayloadDataOriginFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataOriginUser) SetName(name *string) {
+func (p *PostTransferFailedPayloadDataOrigin) SetName(name *string) {
 	p.Name = name
-	p.require(postTransferFailedPayloadDataOriginUserFieldName)
+	p.require(postTransferFailedPayloadDataOriginFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostTransferFailedPayloadDataOriginUser) SetUsername(username *string) {
-	p.Username = username
-	p.require(postTransferFailedPayloadDataOriginUserFieldUsername)
+func (p *PostTransferFailedPayloadDataOrigin) SetObject(object PostTransferFailedPayloadDataOriginObject) {
+	p.Object = object
+	p.require(postTransferFailedPayloadDataOriginFieldObject)
 }
 
-func (p *PostTransferFailedPayloadDataOriginUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostTransferFailedPayloadDataOriginUser
+func (p *PostTransferFailedPayloadDataOrigin) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostTransferFailedPayloadDataOrigin
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PostTransferFailedPayloadDataOriginUser(value)
+	*p = PostTransferFailedPayloadDataOrigin(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
 	p.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataOriginUserNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postTransferFailedPayloadDataOriginNullableFields)
 	if err != nil {
 		return err
 	}
@@ -9448,8 +7311,8 @@ func (p *PostTransferFailedPayloadDataOriginUser) UnmarshalJSON(data []byte) err
 	return nil
 }
 
-func (p *PostTransferFailedPayloadDataOriginUser) MarshalJSON() ([]byte, error) {
-	type embed PostTransferFailedPayloadDataOriginUser
+func (p *PostTransferFailedPayloadDataOrigin) MarshalJSON() ([]byte, error) {
+	type embed PostTransferFailedPayloadDataOrigin
 	var marshaler = struct {
 		embed
 	}{
@@ -9459,7 +7322,7 @@ func (p *PostTransferFailedPayloadDataOriginUser) MarshalJSON() ([]byte, error) 
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PostTransferFailedPayloadDataOriginUser) String() string {
+func (p *PostTransferFailedPayloadDataOrigin) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -9474,7 +7337,30 @@ func (p *PostTransferFailedPayloadDataOriginUser) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Whether the profile is a business account or a user.
+type PostTransferFailedPayloadDataOriginObject string
+
+const (
+	PostTransferFailedPayloadDataOriginObjectAccount PostTransferFailedPayloadDataOriginObject = "account"
+	PostTransferFailedPayloadDataOriginObjectUser    PostTransferFailedPayloadDataOriginObject = "user"
+)
+
+func NewPostTransferFailedPayloadDataOriginObjectFromString(s string) (PostTransferFailedPayloadDataOriginObject, error) {
+	switch s {
+	case "account":
+		return PostTransferFailedPayloadDataOriginObjectAccount, nil
+	case "user":
+		return PostTransferFailedPayloadDataOriginObjectUser, nil
+	}
+	var t PostTransferFailedPayloadDataOriginObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostTransferFailedPayloadDataOriginObject) Ptr() *PostTransferFailedPayloadDataOriginObject {
+	return &p
+}
+
+// Current transfer status.
 type PostTransferFailedPayloadDataStatus string
 
 const (
@@ -9521,72 +7407,72 @@ func (p PostTransferFailedPayloadType) Ptr() *PostTransferFailedPayloadType {
 }
 
 var (
-	retrieveTransfersResponseFieldAmount                     = big.NewInt(1 << 0)
-	retrieveTransfersResponseFieldCreatedAt                  = big.NewInt(1 << 1)
-	retrieveTransfersResponseFieldCreatedByUser              = big.NewInt(1 << 2)
-	retrieveTransfersResponseFieldCurrency                   = big.NewInt(1 << 3)
-	retrieveTransfersResponseFieldDestination                = big.NewInt(1 << 4)
-	retrieveTransfersResponseFieldDestinationLedgerAccountID = big.NewInt(1 << 5)
-	retrieveTransfersResponseFieldFailedAt                   = big.NewInt(1 << 6)
-	retrieveTransfersResponseFieldFailureCode                = big.NewInt(1 << 7)
-	retrieveTransfersResponseFieldFailureReason              = big.NewInt(1 << 8)
-	retrieveTransfersResponseFieldFeeAmount                  = big.NewInt(1 << 9)
-	retrieveTransfersResponseFieldID                         = big.NewInt(1 << 10)
-	retrieveTransfersResponseFieldMetadata                   = big.NewInt(1 << 11)
-	retrieveTransfersResponseFieldNotes                      = big.NewInt(1 << 12)
-	retrieveTransfersResponseFieldObject                     = big.NewInt(1 << 13)
-	retrieveTransfersResponseFieldOrigin                     = big.NewInt(1 << 14)
-	retrieveTransfersResponseFieldOriginLedgerAccountID      = big.NewInt(1 << 15)
-	retrieveTransfersResponseFieldStatus                     = big.NewInt(1 << 16)
+	retrieveTransfersResponseFieldAmount          = big.NewInt(1 << 0)
+	retrieveTransfersResponseFieldCreatedAt       = big.NewInt(1 << 1)
+	retrieveTransfersResponseFieldDestination     = big.NewInt(1 << 2)
+	retrieveTransfersResponseFieldFailedAt        = big.NewInt(1 << 3)
+	retrieveTransfersResponseFieldFailureCode     = big.NewInt(1 << 4)
+	retrieveTransfersResponseFieldFailureReason   = big.NewInt(1 << 5)
+	retrieveTransfersResponseFieldFee             = big.NewInt(1 << 6)
+	retrieveTransfersResponseFieldID              = big.NewInt(1 << 7)
+	retrieveTransfersResponseFieldMetadata        = big.NewInt(1 << 8)
+	retrieveTransfersResponseFieldNotes           = big.NewInt(1 << 9)
+	retrieveTransfersResponseFieldObject          = big.NewInt(1 << 10)
+	retrieveTransfersResponseFieldOrigin          = big.NewInt(1 << 11)
+	retrieveTransfersResponseFieldStatus          = big.NewInt(1 << 12)
+	retrieveTransfersResponseFieldStatusChangedAt = big.NewInt(1 << 13)
+	retrieveTransfersResponseFieldSucceededAt     = big.NewInt(1 << 14)
+	retrieveTransfersResponseFieldTrackingURL     = big.NewInt(1 << 15)
 )
 
 // retrieveTransfersResponseNullableFields maps the wire names of RetrieveTransfersResponse's nullable fields (required or optional) to their field bits.
 var retrieveTransfersResponseNullableFields = map[string]*big.Int{
-	"created_by_user": retrieveTransfersResponseFieldCreatedByUser,
-	"failed_at":       retrieveTransfersResponseFieldFailedAt,
-	"failure_code":    retrieveTransfersResponseFieldFailureCode,
-	"failure_reason":  retrieveTransfersResponseFieldFailureReason,
-	"fee_amount":      retrieveTransfersResponseFieldFeeAmount,
-	"metadata":        retrieveTransfersResponseFieldMetadata,
-	"notes":           retrieveTransfersResponseFieldNotes,
+	"amount":            retrieveTransfersResponseFieldAmount,
+	"destination":       retrieveTransfersResponseFieldDestination,
+	"failed_at":         retrieveTransfersResponseFieldFailedAt,
+	"failure_code":      retrieveTransfersResponseFieldFailureCode,
+	"failure_reason":    retrieveTransfersResponseFieldFailureReason,
+	"fee":               retrieveTransfersResponseFieldFee,
+	"notes":             retrieveTransfersResponseFieldNotes,
+	"origin":            retrieveTransfersResponseFieldOrigin,
+	"status_changed_at": retrieveTransfersResponseFieldStatusChangedAt,
+	"succeeded_at":      retrieveTransfersResponseFieldSucceededAt,
 }
 
-// A transfer of credit between two ledger accounts.
+// A transfer between Whop accounts or users.
 type RetrieveTransfersResponse struct {
-	// Transfer amount.
-	Amount float64 `json:"amount" url:"amount"`
+	// Amount credited to the recipient. Null while the transfer has not succeeded.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
 	// When the transfer was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-	CreatedByUser *RetrieveTransfersResponseCreatedByUser `json:"created_by_user,omitempty" url:"created_by_user,omitempty"`
-	// Transfer currency.
-	Currency string `json:"currency" url:"currency"`
-	// Account or user receiving funds.
-	Destination *RetrieveTransfersResponseDestination `json:"destination" url:"destination"`
-	// Destination ledger account ID.
-	DestinationLedgerAccountID string `json:"destination_ledger_account_id" url:"destination_ledger_account_id"`
-	// When the transfer failed, as an ISO 8601 timestamp. Null unless the transfer has failed.
+	// Business account or user receiving the transfer.
+	Destination *RetrieveTransfersResponseDestination `json:"destination,omitempty" url:"destination,omitempty"`
+	// Recorded failure time. Null unless the transfer has failed.
 	FailedAt *time.Time `json:"failed_at,omitempty" url:"failed_at,omitempty"`
-	// Machine-readable code for why the transfer failed. Null unless the transfer has failed.
+	// Machine-readable failure code. Null unless the transfer has failed.
 	FailureCode *string `json:"failure_code,omitempty" url:"failure_code,omitempty"`
-	// Human-readable explanation of why the transfer failed. Null unless the transfer has failed.
+	// Failure explanation. Null unless the transfer has failed.
 	FailureReason *string `json:"failure_reason,omitempty" url:"failure_reason,omitempty"`
-	// Fee charged for the transfer.
-	FeeAmount *float64 `json:"fee_amount,omitempty" url:"fee_amount,omitempty"`
+	// All applicable transfer fees, including platform markup. Null when the authoritative total is unavailable.
+	Fee *Money `json:"fee,omitempty" url:"fee,omitempty"`
 	// Transfer ID.
 	ID string `json:"id" url:"id"`
 	// Custom metadata attached to the transfer.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// Transfer note.
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
-	// The object type. Discriminates the create response from a send or a claim link.
+	// The object type.
 	Object RetrieveTransfersResponseObject `json:"object" url:"object"`
-	// Account or user sending funds.
-	Origin *RetrieveTransfersResponseOrigin `json:"origin" url:"origin"`
-	// Source ledger account ID.
-	OriginLedgerAccountID string `json:"origin_ledger_account_id" url:"origin_ledger_account_id"`
-	// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+	// Business account or user sending the transfer.
+	Origin *RetrieveTransfersResponseOrigin `json:"origin,omitempty" url:"origin,omitempty"`
+	// Current transfer status.
 	Status RetrieveTransfersResponseStatus `json:"status" url:"status"`
+	// Recorded time of the current transition. Null when the historical transition time is unknown.
+	StatusChangedAt *time.Time `json:"status_changed_at,omitempty" url:"status_changed_at,omitempty"`
+	// Recorded success time. Null when unknown.
+	SucceededAt *time.Time `json:"succeeded_at,omitempty" url:"succeeded_at,omitempty"`
+	// Tracking page for the transfer. Viewing it requires sign-in and access to the transfer.
+	TrackingURL string `json:"tracking_url" url:"tracking_url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -9595,9 +7481,9 @@ type RetrieveTransfersResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *RetrieveTransfersResponse) GetAmount() float64 {
+func (r *RetrieveTransfersResponse) GetAmount() *Money {
 	if r == nil {
-		return 0
+		return nil
 	}
 	return r.Amount
 }
@@ -9609,32 +7495,11 @@ func (r *RetrieveTransfersResponse) GetCreatedAt() time.Time {
 	return r.CreatedAt
 }
 
-func (r *RetrieveTransfersResponse) GetCreatedByUser() *RetrieveTransfersResponseCreatedByUser {
-	if r == nil {
-		return nil
-	}
-	return r.CreatedByUser
-}
-
-func (r *RetrieveTransfersResponse) GetCurrency() string {
-	if r == nil {
-		return ""
-	}
-	return r.Currency
-}
-
 func (r *RetrieveTransfersResponse) GetDestination() *RetrieveTransfersResponseDestination {
 	if r == nil {
 		return nil
 	}
 	return r.Destination
-}
-
-func (r *RetrieveTransfersResponse) GetDestinationLedgerAccountID() string {
-	if r == nil {
-		return ""
-	}
-	return r.DestinationLedgerAccountID
 }
 
 func (r *RetrieveTransfersResponse) GetFailedAt() *time.Time {
@@ -9658,11 +7523,11 @@ func (r *RetrieveTransfersResponse) GetFailureReason() *string {
 	return r.FailureReason
 }
 
-func (r *RetrieveTransfersResponse) GetFeeAmount() *float64 {
+func (r *RetrieveTransfersResponse) GetFee() *Money {
 	if r == nil {
 		return nil
 	}
-	return r.FeeAmount
+	return r.Fee
 }
 
 func (r *RetrieveTransfersResponse) GetID() string {
@@ -9700,18 +7565,32 @@ func (r *RetrieveTransfersResponse) GetOrigin() *RetrieveTransfersResponseOrigin
 	return r.Origin
 }
 
-func (r *RetrieveTransfersResponse) GetOriginLedgerAccountID() string {
-	if r == nil {
-		return ""
-	}
-	return r.OriginLedgerAccountID
-}
-
 func (r *RetrieveTransfersResponse) GetStatus() RetrieveTransfersResponseStatus {
 	if r == nil {
 		return ""
 	}
 	return r.Status
+}
+
+func (r *RetrieveTransfersResponse) GetStatusChangedAt() *time.Time {
+	if r == nil {
+		return nil
+	}
+	return r.StatusChangedAt
+}
+
+func (r *RetrieveTransfersResponse) GetSucceededAt() *time.Time {
+	if r == nil {
+		return nil
+	}
+	return r.SucceededAt
+}
+
+func (r *RetrieveTransfersResponse) GetTrackingURL() string {
+	if r == nil {
+		return ""
+	}
+	return r.TrackingURL
 }
 
 func (r *RetrieveTransfersResponse) GetExtraProperties() map[string]interface{} {
@@ -9732,7 +7611,7 @@ func (r *RetrieveTransfersResponse) require(field *big.Int) {
 
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponse) SetAmount(amount float64) {
+func (r *RetrieveTransfersResponse) SetAmount(amount *Money) {
 	r.Amount = amount
 	r.require(retrieveTransfersResponseFieldAmount)
 }
@@ -9744,32 +7623,11 @@ func (r *RetrieveTransfersResponse) SetCreatedAt(createdAt time.Time) {
 	r.require(retrieveTransfersResponseFieldCreatedAt)
 }
 
-// SetCreatedByUser sets the CreatedByUser field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponse) SetCreatedByUser(createdByUser *RetrieveTransfersResponseCreatedByUser) {
-	r.CreatedByUser = createdByUser
-	r.require(retrieveTransfersResponseFieldCreatedByUser)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponse) SetCurrency(currency string) {
-	r.Currency = currency
-	r.require(retrieveTransfersResponseFieldCurrency)
-}
-
 // SetDestination sets the Destination field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrieveTransfersResponse) SetDestination(destination *RetrieveTransfersResponseDestination) {
 	r.Destination = destination
 	r.require(retrieveTransfersResponseFieldDestination)
-}
-
-// SetDestinationLedgerAccountID sets the DestinationLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponse) SetDestinationLedgerAccountID(destinationLedgerAccountID string) {
-	r.DestinationLedgerAccountID = destinationLedgerAccountID
-	r.require(retrieveTransfersResponseFieldDestinationLedgerAccountID)
 }
 
 // SetFailedAt sets the FailedAt field and marks it as non-optional;
@@ -9793,11 +7651,11 @@ func (r *RetrieveTransfersResponse) SetFailureReason(failureReason *string) {
 	r.require(retrieveTransfersResponseFieldFailureReason)
 }
 
-// SetFeeAmount sets the FeeAmount field and marks it as non-optional;
+// SetFee sets the Fee field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponse) SetFeeAmount(feeAmount *float64) {
-	r.FeeAmount = feeAmount
-	r.require(retrieveTransfersResponseFieldFeeAmount)
+func (r *RetrieveTransfersResponse) SetFee(fee *Money) {
+	r.Fee = fee
+	r.require(retrieveTransfersResponseFieldFee)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -9835,13 +7693,6 @@ func (r *RetrieveTransfersResponse) SetOrigin(origin *RetrieveTransfersResponseO
 	r.require(retrieveTransfersResponseFieldOrigin)
 }
 
-// SetOriginLedgerAccountID sets the OriginLedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponse) SetOriginLedgerAccountID(originLedgerAccountID string) {
-	r.OriginLedgerAccountID = originLedgerAccountID
-	r.require(retrieveTransfersResponseFieldOriginLedgerAccountID)
-}
-
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrieveTransfersResponse) SetStatus(status RetrieveTransfersResponseStatus) {
@@ -9849,12 +7700,35 @@ func (r *RetrieveTransfersResponse) SetStatus(status RetrieveTransfersResponseSt
 	r.require(retrieveTransfersResponseFieldStatus)
 }
 
+// SetStatusChangedAt sets the StatusChangedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTransfersResponse) SetStatusChangedAt(statusChangedAt *time.Time) {
+	r.StatusChangedAt = statusChangedAt
+	r.require(retrieveTransfersResponseFieldStatusChangedAt)
+}
+
+// SetSucceededAt sets the SucceededAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTransfersResponse) SetSucceededAt(succeededAt *time.Time) {
+	r.SucceededAt = succeededAt
+	r.require(retrieveTransfersResponseFieldSucceededAt)
+}
+
+// SetTrackingURL sets the TrackingURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTransfersResponse) SetTrackingURL(trackingURL string) {
+	r.TrackingURL = trackingURL
+	r.require(retrieveTransfersResponseFieldTrackingURL)
+}
+
 func (r *RetrieveTransfersResponse) UnmarshalJSON(data []byte) error {
 	type embed RetrieveTransfersResponse
 	var unmarshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
 		embed: embed(*r),
 	}
@@ -9864,6 +7738,8 @@ func (r *RetrieveTransfersResponse) UnmarshalJSON(data []byte) error {
 	*r = RetrieveTransfersResponse(unmarshaler.embed)
 	r.CreatedAt = unmarshaler.CreatedAt.Time()
 	r.FailedAt = unmarshaler.FailedAt.TimePtr()
+	r.StatusChangedAt = unmarshaler.StatusChangedAt.TimePtr()
+	r.SucceededAt = unmarshaler.SucceededAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
@@ -9884,12 +7760,16 @@ func (r *RetrieveTransfersResponse) MarshalJSON() ([]byte, error) {
 	type embed RetrieveTransfersResponse
 	var marshaler = struct {
 		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		FailedAt  *internal.DateTime `json:"failed_at,omitempty"`
+		CreatedAt       *internal.DateTime `json:"created_at"`
+		FailedAt        *internal.DateTime `json:"failed_at,omitempty"`
+		StatusChangedAt *internal.DateTime `json:"status_changed_at,omitempty"`
+		SucceededAt     *internal.DateTime `json:"succeeded_at,omitempty"`
 	}{
-		embed:     embed(*r),
-		CreatedAt: internal.NewDateTime(r.CreatedAt),
-		FailedAt:  internal.NewOptionalDateTime(r.FailedAt),
+		embed:           embed(*r),
+		CreatedAt:       internal.NewDateTime(r.CreatedAt),
+		FailedAt:        internal.NewOptionalDateTime(r.FailedAt),
+		StatusChangedAt: internal.NewOptionalDateTime(r.StatusChangedAt),
+		SucceededAt:     internal.NewOptionalDateTime(r.SucceededAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -9911,24 +7791,28 @@ func (r *RetrieveTransfersResponse) String() string {
 }
 
 var (
-	retrieveTransfersResponseCreatedByUserFieldID       = big.NewInt(1 << 0)
-	retrieveTransfersResponseCreatedByUserFieldName     = big.NewInt(1 << 1)
-	retrieveTransfersResponseCreatedByUserFieldUsername = big.NewInt(1 << 2)
+	retrieveTransfersResponseDestinationFieldID      = big.NewInt(1 << 0)
+	retrieveTransfersResponseDestinationFieldLogoURL = big.NewInt(1 << 1)
+	retrieveTransfersResponseDestinationFieldName    = big.NewInt(1 << 2)
+	retrieveTransfersResponseDestinationFieldObject  = big.NewInt(1 << 3)
 )
 
-// retrieveTransfersResponseCreatedByUserNullableFields maps the wire names of RetrieveTransfersResponseCreatedByUser's nullable fields (required or optional) to their field bits.
-var retrieveTransfersResponseCreatedByUserNullableFields = map[string]*big.Int{
-	"name": retrieveTransfersResponseCreatedByUserFieldName,
+// retrieveTransfersResponseDestinationNullableFields maps the wire names of RetrieveTransfersResponseDestination's nullable fields (required or optional) to their field bits.
+var retrieveTransfersResponseDestinationNullableFields = map[string]*big.Int{
+	"logo_url": retrieveTransfersResponseDestinationFieldLogoURL,
+	"name":     retrieveTransfersResponseDestinationFieldName,
 }
 
-// The user who initiated the transfer, such as the team member who sent a manual payout. Null if the creator is unavailable.
-type RetrieveTransfersResponseCreatedByUser struct {
-	// User ID.
+// Business account or user receiving the transfer.
+type RetrieveTransfersResponseDestination struct {
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username string `json:"username" url:"username"`
+	// Whether the profile is a business account or a user.
+	Object RetrieveTransfersResponseDestinationObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -9937,35 +7821,42 @@ type RetrieveTransfersResponseCreatedByUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *RetrieveTransfersResponseCreatedByUser) GetID() string {
+func (r *RetrieveTransfersResponseDestination) GetID() string {
 	if r == nil {
 		return ""
 	}
 	return r.ID
 }
 
-func (r *RetrieveTransfersResponseCreatedByUser) GetName() *string {
+func (r *RetrieveTransfersResponseDestination) GetLogoURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.LogoURL
+}
+
+func (r *RetrieveTransfersResponseDestination) GetName() *string {
 	if r == nil {
 		return nil
 	}
 	return r.Name
 }
 
-func (r *RetrieveTransfersResponseCreatedByUser) GetUsername() string {
+func (r *RetrieveTransfersResponseDestination) GetObject() RetrieveTransfersResponseDestinationObject {
 	if r == nil {
 		return ""
 	}
-	return r.Username
+	return r.Object
 }
 
-func (r *RetrieveTransfersResponseCreatedByUser) GetExtraProperties() map[string]interface{} {
+func (r *RetrieveTransfersResponseDestination) GetExtraProperties() map[string]interface{} {
 	if r == nil {
 		return nil
 	}
 	return r.extraProperties
 }
 
-func (r *RetrieveTransfersResponseCreatedByUser) require(field *big.Int) {
+func (r *RetrieveTransfersResponseDestination) require(field *big.Int) {
 	next := new(big.Int)
 	if r.explicitFields != nil {
 		next.Set(r.explicitFields)
@@ -9976,299 +7867,45 @@ func (r *RetrieveTransfersResponseCreatedByUser) require(field *big.Int) {
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseCreatedByUser) SetID(id string) {
+func (r *RetrieveTransfersResponseDestination) SetID(id string) {
 	r.ID = id
-	r.require(retrieveTransfersResponseCreatedByUserFieldID)
+	r.require(retrieveTransfersResponseDestinationFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTransfersResponseDestination) SetLogoURL(logoURL *string) {
+	r.LogoURL = logoURL
+	r.require(retrieveTransfersResponseDestinationFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseCreatedByUser) SetName(name *string) {
+func (r *RetrieveTransfersResponseDestination) SetName(name *string) {
 	r.Name = name
-	r.require(retrieveTransfersResponseCreatedByUserFieldName)
+	r.require(retrieveTransfersResponseDestinationFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseCreatedByUser) SetUsername(username string) {
-	r.Username = username
-	r.require(retrieveTransfersResponseCreatedByUserFieldUsername)
-}
-
-func (r *RetrieveTransfersResponseCreatedByUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler RetrieveTransfersResponseCreatedByUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RetrieveTransfersResponseCreatedByUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseCreatedByUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		r.require(presentFields)
-	}
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RetrieveTransfersResponseCreatedByUser) MarshalJSON() ([]byte, error) {
-	type embed RetrieveTransfersResponseCreatedByUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RetrieveTransfersResponseCreatedByUser) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// Account or user receiving funds.
-type RetrieveTransfersResponseDestination struct {
-	Typename string
-	Company  *RetrieveTransfersResponseDestinationCompany
-	User     *RetrieveTransfersResponseDestinationUser
-
-	rawJSON json.RawMessage
-}
-
-func (r *RetrieveTransfersResponseDestination) GetTypename() string {
-	if r == nil {
-		return ""
-	}
-	return r.Typename
-}
-
-func (r *RetrieveTransfersResponseDestination) GetCompany() *RetrieveTransfersResponseDestinationCompany {
-	if r == nil {
-		return nil
-	}
-	return r.Company
-}
-
-func (r *RetrieveTransfersResponseDestination) GetUser() *RetrieveTransfersResponseDestinationUser {
-	if r == nil {
-		return nil
-	}
-	return r.User
+func (r *RetrieveTransfersResponseDestination) SetObject(object RetrieveTransfersResponseDestinationObject) {
+	r.Object = object
+	r.require(retrieveTransfersResponseDestinationFieldObject)
 }
 
 func (r *RetrieveTransfersResponseDestination) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	r.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", r)
-	}
-	switch unmarshaler.Typename {
-	case "Company":
-		value := new(RetrieveTransfersResponseDestinationCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		r.Company = value
-	case "User":
-		value := new(RetrieveTransfersResponseDestinationUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		r.User = value
-	}
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r RetrieveTransfersResponseDestination) MarshalJSON() ([]byte, error) {
-	if err := r.validate(); err != nil {
-		return nil, err
-	}
-	if r.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(r.Company, "typename", "Company")
-	}
-	if r.User != nil {
-		return internal.MarshalJSONWithExtraProperty(r.User, "typename", "User")
-	}
-	if len(r.rawJSON) > 0 {
-		return r.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", r)
-}
-
-type RetrieveTransfersResponseDestinationVisitor interface {
-	VisitCompany(*RetrieveTransfersResponseDestinationCompany) error
-	VisitUser(*RetrieveTransfersResponseDestinationUser) error
-}
-
-func (r *RetrieveTransfersResponseDestination) Accept(visitor RetrieveTransfersResponseDestinationVisitor) error {
-	if r.Company != nil {
-		return visitor.VisitCompany(r.Company)
-	}
-	if r.User != nil {
-		return visitor.VisitUser(r.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", r)
-}
-
-func (r *RetrieveTransfersResponseDestination) validate() error {
-	if r == nil {
-		return fmt.Errorf("type %T is nil", r)
-	}
-	var fields []string
-	if r.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if r.User != nil {
-		fields = append(fields, "User")
-	}
-	if len(fields) == 0 {
-		if r.Typename != "" {
-			if len(r.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", r, r.Typename)
-		}
-		return fmt.Errorf("type %T is empty", r)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", r, fields)
-	}
-	if r.Typename != "" {
-		field := fields[0]
-		if r.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				r,
-				r.Typename,
-				r,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	retrieveTransfersResponseDestinationCompanyFieldID    = big.NewInt(1 << 0)
-	retrieveTransfersResponseDestinationCompanyFieldRoute = big.NewInt(1 << 1)
-	retrieveTransfersResponseDestinationCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-// retrieveTransfersResponseDestinationCompanyNullableFields maps the wire names of RetrieveTransfersResponseDestinationCompany's nullable fields (required or optional) to their field bits.
-var retrieveTransfersResponseDestinationCompanyNullableFields = map[string]*big.Int{
-	"route": retrieveTransfersResponseDestinationCompanyFieldRoute,
-	"title": retrieveTransfersResponseDestinationCompanyFieldTitle,
-}
-
-type RetrieveTransfersResponseDestinationCompany struct {
-	// Account ID.
-	ID string `json:"id" url:"id"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RetrieveTransfersResponseDestinationCompany) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RetrieveTransfersResponseDestinationCompany) GetRoute() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Route
-}
-
-func (r *RetrieveTransfersResponseDestinationCompany) GetTitle() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Title
-}
-
-func (r *RetrieveTransfersResponseDestinationCompany) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RetrieveTransfersResponseDestinationCompany) require(field *big.Int) {
-	next := new(big.Int)
-	if r.explicitFields != nil {
-		next.Set(r.explicitFields)
-	}
-	next.Or(next, field)
-	r.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseDestinationCompany) SetID(id string) {
-	r.ID = id
-	r.require(retrieveTransfersResponseDestinationCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseDestinationCompany) SetRoute(route *string) {
-	r.Route = route
-	r.require(retrieveTransfersResponseDestinationCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseDestinationCompany) SetTitle(title *string) {
-	r.Title = title
-	r.require(retrieveTransfersResponseDestinationCompanyFieldTitle)
-}
-
-func (r *RetrieveTransfersResponseDestinationCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler RetrieveTransfersResponseDestinationCompany
+	type unmarshaler RetrieveTransfersResponseDestination
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*r = RetrieveTransfersResponseDestinationCompany(value)
+	*r = RetrieveTransfersResponseDestination(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
 	}
 	r.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseDestinationCompanyNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseDestinationNullableFields)
 	if err != nil {
 		return err
 	}
@@ -10279,8 +7916,8 @@ func (r *RetrieveTransfersResponseDestinationCompany) UnmarshalJSON(data []byte)
 	return nil
 }
 
-func (r *RetrieveTransfersResponseDestinationCompany) MarshalJSON() ([]byte, error) {
-	type embed RetrieveTransfersResponseDestinationCompany
+func (r *RetrieveTransfersResponseDestination) MarshalJSON() ([]byte, error) {
+	type embed RetrieveTransfersResponseDestination
 	var marshaler = struct {
 		embed
 	}{
@@ -10290,7 +7927,7 @@ func (r *RetrieveTransfersResponseDestinationCompany) MarshalJSON() ([]byte, err
 	return json.Marshal(explicitMarshaler)
 }
 
-func (r *RetrieveTransfersResponseDestinationCompany) String() string {
+func (r *RetrieveTransfersResponseDestination) String() string {
 	if r == nil {
 		return "<nil>"
 	}
@@ -10305,140 +7942,30 @@ func (r *RetrieveTransfersResponseDestinationCompany) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-var (
-	retrieveTransfersResponseDestinationUserFieldID       = big.NewInt(1 << 0)
-	retrieveTransfersResponseDestinationUserFieldName     = big.NewInt(1 << 1)
-	retrieveTransfersResponseDestinationUserFieldUsername = big.NewInt(1 << 2)
+// Whether the profile is a business account or a user.
+type RetrieveTransfersResponseDestinationObject string
+
+const (
+	RetrieveTransfersResponseDestinationObjectAccount RetrieveTransfersResponseDestinationObject = "account"
+	RetrieveTransfersResponseDestinationObjectUser    RetrieveTransfersResponseDestinationObject = "user"
 )
 
-// retrieveTransfersResponseDestinationUserNullableFields maps the wire names of RetrieveTransfersResponseDestinationUser's nullable fields (required or optional) to their field bits.
-var retrieveTransfersResponseDestinationUserNullableFields = map[string]*big.Int{
-	"name": retrieveTransfersResponseDestinationUserFieldName,
+func NewRetrieveTransfersResponseDestinationObjectFromString(s string) (RetrieveTransfersResponseDestinationObject, error) {
+	switch s {
+	case "account":
+		return RetrieveTransfersResponseDestinationObjectAccount, nil
+	case "user":
+		return RetrieveTransfersResponseDestinationObjectUser, nil
+	}
+	var t RetrieveTransfersResponseDestinationObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-type RetrieveTransfersResponseDestinationUser struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
+func (r RetrieveTransfersResponseDestinationObject) Ptr() *RetrieveTransfersResponseDestinationObject {
+	return &r
 }
 
-func (r *RetrieveTransfersResponseDestinationUser) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RetrieveTransfersResponseDestinationUser) GetName() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Name
-}
-
-func (r *RetrieveTransfersResponseDestinationUser) GetUsername() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Username
-}
-
-func (r *RetrieveTransfersResponseDestinationUser) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RetrieveTransfersResponseDestinationUser) require(field *big.Int) {
-	next := new(big.Int)
-	if r.explicitFields != nil {
-		next.Set(r.explicitFields)
-	}
-	next.Or(next, field)
-	r.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseDestinationUser) SetID(id string) {
-	r.ID = id
-	r.require(retrieveTransfersResponseDestinationUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseDestinationUser) SetName(name *string) {
-	r.Name = name
-	r.require(retrieveTransfersResponseDestinationUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseDestinationUser) SetUsername(username *string) {
-	r.Username = username
-	r.require(retrieveTransfersResponseDestinationUserFieldUsername)
-}
-
-func (r *RetrieveTransfersResponseDestinationUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler RetrieveTransfersResponseDestinationUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RetrieveTransfersResponseDestinationUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseDestinationUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		r.require(presentFields)
-	}
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RetrieveTransfersResponseDestinationUser) MarshalJSON() ([]byte, error) {
-	type embed RetrieveTransfersResponseDestinationUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RetrieveTransfersResponseDestinationUser) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// The object type. Discriminates the create response from a send or a claim link.
+// The object type.
 type RetrieveTransfersResponseObject string
 
 const (
@@ -10458,285 +7985,29 @@ func (r RetrieveTransfersResponseObject) Ptr() *RetrieveTransfersResponseObject 
 	return &r
 }
 
-// Account or user sending funds.
+var (
+	retrieveTransfersResponseOriginFieldID      = big.NewInt(1 << 0)
+	retrieveTransfersResponseOriginFieldLogoURL = big.NewInt(1 << 1)
+	retrieveTransfersResponseOriginFieldName    = big.NewInt(1 << 2)
+	retrieveTransfersResponseOriginFieldObject  = big.NewInt(1 << 3)
+)
+
+// retrieveTransfersResponseOriginNullableFields maps the wire names of RetrieveTransfersResponseOrigin's nullable fields (required or optional) to their field bits.
+var retrieveTransfersResponseOriginNullableFields = map[string]*big.Int{
+	"logo_url": retrieveTransfersResponseOriginFieldLogoURL,
+	"name":     retrieveTransfersResponseOriginFieldName,
+}
+
+// Business account or user sending the transfer.
 type RetrieveTransfersResponseOrigin struct {
-	Typename string
-	Company  *RetrieveTransfersResponseOriginCompany
-	User     *RetrieveTransfersResponseOriginUser
-
-	rawJSON json.RawMessage
-}
-
-func (r *RetrieveTransfersResponseOrigin) GetTypename() string {
-	if r == nil {
-		return ""
-	}
-	return r.Typename
-}
-
-func (r *RetrieveTransfersResponseOrigin) GetCompany() *RetrieveTransfersResponseOriginCompany {
-	if r == nil {
-		return nil
-	}
-	return r.Company
-}
-
-func (r *RetrieveTransfersResponseOrigin) GetUser() *RetrieveTransfersResponseOriginUser {
-	if r == nil {
-		return nil
-	}
-	return r.User
-}
-
-func (r *RetrieveTransfersResponseOrigin) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	r.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", r)
-	}
-	switch unmarshaler.Typename {
-	case "Company":
-		value := new(RetrieveTransfersResponseOriginCompany)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		r.Company = value
-	case "User":
-		value := new(RetrieveTransfersResponseOriginUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		r.User = value
-	}
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r RetrieveTransfersResponseOrigin) MarshalJSON() ([]byte, error) {
-	if err := r.validate(); err != nil {
-		return nil, err
-	}
-	if r.Company != nil {
-		return internal.MarshalJSONWithExtraProperty(r.Company, "typename", "Company")
-	}
-	if r.User != nil {
-		return internal.MarshalJSONWithExtraProperty(r.User, "typename", "User")
-	}
-	if len(r.rawJSON) > 0 {
-		return r.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", r)
-}
-
-type RetrieveTransfersResponseOriginVisitor interface {
-	VisitCompany(*RetrieveTransfersResponseOriginCompany) error
-	VisitUser(*RetrieveTransfersResponseOriginUser) error
-}
-
-func (r *RetrieveTransfersResponseOrigin) Accept(visitor RetrieveTransfersResponseOriginVisitor) error {
-	if r.Company != nil {
-		return visitor.VisitCompany(r.Company)
-	}
-	if r.User != nil {
-		return visitor.VisitUser(r.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", r)
-}
-
-func (r *RetrieveTransfersResponseOrigin) validate() error {
-	if r == nil {
-		return fmt.Errorf("type %T is nil", r)
-	}
-	var fields []string
-	if r.Company != nil {
-		fields = append(fields, "Company")
-	}
-	if r.User != nil {
-		fields = append(fields, "User")
-	}
-	if len(fields) == 0 {
-		if r.Typename != "" {
-			if len(r.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", r, r.Typename)
-		}
-		return fmt.Errorf("type %T is empty", r)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", r, fields)
-	}
-	if r.Typename != "" {
-		field := fields[0]
-		if r.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				r,
-				r.Typename,
-				r,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	retrieveTransfersResponseOriginCompanyFieldID    = big.NewInt(1 << 0)
-	retrieveTransfersResponseOriginCompanyFieldRoute = big.NewInt(1 << 1)
-	retrieveTransfersResponseOriginCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-// retrieveTransfersResponseOriginCompanyNullableFields maps the wire names of RetrieveTransfersResponseOriginCompany's nullable fields (required or optional) to their field bits.
-var retrieveTransfersResponseOriginCompanyNullableFields = map[string]*big.Int{
-	"route": retrieveTransfersResponseOriginCompanyFieldRoute,
-	"title": retrieveTransfersResponseOriginCompanyFieldTitle,
-}
-
-type RetrieveTransfersResponseOriginCompany struct {
-	// Account ID.
+	// Account or user ID.
 	ID string `json:"id" url:"id"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RetrieveTransfersResponseOriginCompany) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RetrieveTransfersResponseOriginCompany) GetRoute() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Route
-}
-
-func (r *RetrieveTransfersResponseOriginCompany) GetTitle() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Title
-}
-
-func (r *RetrieveTransfersResponseOriginCompany) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RetrieveTransfersResponseOriginCompany) require(field *big.Int) {
-	next := new(big.Int)
-	if r.explicitFields != nil {
-		next.Set(r.explicitFields)
-	}
-	next.Or(next, field)
-	r.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseOriginCompany) SetID(id string) {
-	r.ID = id
-	r.require(retrieveTransfersResponseOriginCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseOriginCompany) SetRoute(route *string) {
-	r.Route = route
-	r.require(retrieveTransfersResponseOriginCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseOriginCompany) SetTitle(title *string) {
-	r.Title = title
-	r.require(retrieveTransfersResponseOriginCompanyFieldTitle)
-}
-
-func (r *RetrieveTransfersResponseOriginCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler RetrieveTransfersResponseOriginCompany
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RetrieveTransfersResponseOriginCompany(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseOriginCompanyNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		r.require(presentFields)
-	}
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RetrieveTransfersResponseOriginCompany) MarshalJSON() ([]byte, error) {
-	type embed RetrieveTransfersResponseOriginCompany
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RetrieveTransfersResponseOriginCompany) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-var (
-	retrieveTransfersResponseOriginUserFieldID       = big.NewInt(1 << 0)
-	retrieveTransfersResponseOriginUserFieldName     = big.NewInt(1 << 1)
-	retrieveTransfersResponseOriginUserFieldUsername = big.NewInt(1 << 2)
-)
-
-// retrieveTransfersResponseOriginUserNullableFields maps the wire names of RetrieveTransfersResponseOriginUser's nullable fields (required or optional) to their field bits.
-var retrieveTransfersResponseOriginUserNullableFields = map[string]*big.Int{
-	"name": retrieveTransfersResponseOriginUserFieldName,
-}
-
-type RetrieveTransfersResponseOriginUser struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
+	// Business logo or user avatar URL. Null when no image is available.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Business or user display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether the profile is a business account or a user.
+	Object RetrieveTransfersResponseOriginObject `json:"object" url:"object"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -10745,35 +8016,42 @@ type RetrieveTransfersResponseOriginUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *RetrieveTransfersResponseOriginUser) GetID() string {
+func (r *RetrieveTransfersResponseOrigin) GetID() string {
 	if r == nil {
 		return ""
 	}
 	return r.ID
 }
 
-func (r *RetrieveTransfersResponseOriginUser) GetName() *string {
+func (r *RetrieveTransfersResponseOrigin) GetLogoURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.LogoURL
+}
+
+func (r *RetrieveTransfersResponseOrigin) GetName() *string {
 	if r == nil {
 		return nil
 	}
 	return r.Name
 }
 
-func (r *RetrieveTransfersResponseOriginUser) GetUsername() *string {
+func (r *RetrieveTransfersResponseOrigin) GetObject() RetrieveTransfersResponseOriginObject {
 	if r == nil {
-		return nil
+		return ""
 	}
-	return r.Username
+	return r.Object
 }
 
-func (r *RetrieveTransfersResponseOriginUser) GetExtraProperties() map[string]interface{} {
+func (r *RetrieveTransfersResponseOrigin) GetExtraProperties() map[string]interface{} {
 	if r == nil {
 		return nil
 	}
 	return r.extraProperties
 }
 
-func (r *RetrieveTransfersResponseOriginUser) require(field *big.Int) {
+func (r *RetrieveTransfersResponseOrigin) require(field *big.Int) {
 	next := new(big.Int)
 	if r.explicitFields != nil {
 		next.Set(r.explicitFields)
@@ -10784,38 +8062,45 @@ func (r *RetrieveTransfersResponseOriginUser) require(field *big.Int) {
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseOriginUser) SetID(id string) {
+func (r *RetrieveTransfersResponseOrigin) SetID(id string) {
 	r.ID = id
-	r.require(retrieveTransfersResponseOriginUserFieldID)
+	r.require(retrieveTransfersResponseOriginFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTransfersResponseOrigin) SetLogoURL(logoURL *string) {
+	r.LogoURL = logoURL
+	r.require(retrieveTransfersResponseOriginFieldLogoURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseOriginUser) SetName(name *string) {
+func (r *RetrieveTransfersResponseOrigin) SetName(name *string) {
 	r.Name = name
-	r.require(retrieveTransfersResponseOriginUserFieldName)
+	r.require(retrieveTransfersResponseOriginFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetObject sets the Object field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveTransfersResponseOriginUser) SetUsername(username *string) {
-	r.Username = username
-	r.require(retrieveTransfersResponseOriginUserFieldUsername)
+func (r *RetrieveTransfersResponseOrigin) SetObject(object RetrieveTransfersResponseOriginObject) {
+	r.Object = object
+	r.require(retrieveTransfersResponseOriginFieldObject)
 }
 
-func (r *RetrieveTransfersResponseOriginUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler RetrieveTransfersResponseOriginUser
+func (r *RetrieveTransfersResponseOrigin) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveTransfersResponseOrigin
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*r = RetrieveTransfersResponseOriginUser(value)
+	*r = RetrieveTransfersResponseOrigin(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
 	}
 	r.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseOriginUserNullableFields)
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveTransfersResponseOriginNullableFields)
 	if err != nil {
 		return err
 	}
@@ -10826,8 +8111,8 @@ func (r *RetrieveTransfersResponseOriginUser) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (r *RetrieveTransfersResponseOriginUser) MarshalJSON() ([]byte, error) {
-	type embed RetrieveTransfersResponseOriginUser
+func (r *RetrieveTransfersResponseOrigin) MarshalJSON() ([]byte, error) {
+	type embed RetrieveTransfersResponseOrigin
 	var marshaler = struct {
 		embed
 	}{
@@ -10837,7 +8122,7 @@ func (r *RetrieveTransfersResponseOriginUser) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (r *RetrieveTransfersResponseOriginUser) String() string {
+func (r *RetrieveTransfersResponseOrigin) String() string {
 	if r == nil {
 		return "<nil>"
 	}
@@ -10852,7 +8137,30 @@ func (r *RetrieveTransfersResponseOriginUser) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Transfer status. `processing` means the on-chain leg is still executing — subscribe to `transfer.completed` and `transfer.failed`, or retrieve the transfer to check its current status. A `failed` transfer may be retried under the same ID and later resolve to `succeeded`.
+// Whether the profile is a business account or a user.
+type RetrieveTransfersResponseOriginObject string
+
+const (
+	RetrieveTransfersResponseOriginObjectAccount RetrieveTransfersResponseOriginObject = "account"
+	RetrieveTransfersResponseOriginObjectUser    RetrieveTransfersResponseOriginObject = "user"
+)
+
+func NewRetrieveTransfersResponseOriginObjectFromString(s string) (RetrieveTransfersResponseOriginObject, error) {
+	switch s {
+	case "account":
+		return RetrieveTransfersResponseOriginObjectAccount, nil
+	case "user":
+		return RetrieveTransfersResponseOriginObjectUser, nil
+	}
+	var t RetrieveTransfersResponseOriginObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveTransfersResponseOriginObject) Ptr() *RetrieveTransfersResponseOriginObject {
+	return &r
+}
+
+// Current transfer status.
 type RetrieveTransfersResponseStatus string
 
 const (

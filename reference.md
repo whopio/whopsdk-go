@@ -37752,7 +37752,7 @@ client.Trades.Retrieve(
 <dl>
 <dd>
 
-Lists an account's transfers.
+Lists transfers visible to the caller. Optional account filters narrow the results.
 </dd>
 </dl>
 </dd>
@@ -37786,7 +37786,7 @@ client.Transfers.List(
 <dl>
 <dd>
 
-**originID:** `*string` — Filter to transfers sent from this account. Provide this or destination_id.
+**originID:** `*string` — Filter to transfers sent from this account.
     
 </dd>
 </dl>
@@ -37794,7 +37794,7 @@ client.Transfers.List(
 <dl>
 <dd>
 
-**destinationID:** `*string` — Filter to transfers received by this account. Provide this or origin_id.
+**destinationID:** `*string` — Filter to transfers received by this account.
     
 </dd>
 </dl>
@@ -37897,9 +37897,13 @@ Moves money between accounts, or into a claim link anyone with the URL can redee
 <dd>
 
 ```go
-request := &whopsdk.CreateTransfersRequest{
-    Amount: 25,
-    OriginID: "biz_xxxxxxxxxxxxxx",
+request := &whopsdk.CreateTransfersRequestBody{
+    Balance: &whopsdk.CreateTransfersRequestBodyBalance{
+        Amount: 25,
+        Currency: "usd",
+        DestinationID: "user_xxxxxxxxxxxxxx",
+        OriginID: "biz_xxxxxxxxxxxxxx",
+    },
 }
 client.Transfers.Create(
     context.TODO(),
@@ -37919,95 +37923,7 @@ client.Transfers.Create(
 <dl>
 <dd>
 
-**amount:** `float64` — The amount to move, in the transfer currency. For example 25.00.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**currency:** `*string` — Currency, such as `usd`. Required for ledger transfers.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**destinationID:** `*string` — The recipient. Required for ledger and wallet_send (a user_/biz_/ldgr_ ID, or — for sends — an email). Omit for claim_link.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**expiresAt:** `*time.Time` — claim_link only. Link expiry as an ISO 8601 timestamp. Defaults to 24 hours from creation.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**feedID:** `*string` — Ledger transfers only. The feed the transfer was initiated from. Given with `feed_type`, the payment receipt posts into that feed instead of a direct message.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**feedType:** `*whopsdk.CreateTransfersRequestFeedType` — Ledger transfers only. The type of the feed named by `feed_id`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**idempotenceKey:** `*string` — Ledger transfers and wallet sends. A unique key that makes retries safe. Retrying with the same key returns the original transfer, or attaches to the original wallet send, instead of moving money twice.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `map[string]any` — Ledger transfers only. Custom key-value pairs attached to the transfer. Max 50 keys, 100 chars per key, 500 chars per string value.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**notes:** `*string` — Ledger transfers only. A short note describing the transfer.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**originID:** `string` — The account sending the funds. A user ID (user_xxx), account ID (biz_xxx), or ledger account ID (ldgr_xxx).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**redeemableCount:** `*int` — claim_link only. How many different users can claim the link. Defaults to 1.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**type_:** `*whopsdk.CreateTransfersRequestType` — The kind of money movement, which decides what comes back. Defaults to ledger. `ledger` moves credit between two Whop balances and returns a `transfer`; `wallet_send` sends USDT from the origin account's Ethereum wallet and returns a `send`; `claim_link` funds a shareable link anyone with the URL can redeem and returns a `claim_link`. A `ledger` transfer from a stablecoin-rails account settles on-chain when covered, and still returns a `transfer`.
+**request:** `*whopsdk.CreateTransfersRequestBody` 
     
 </dd>
 </dl>

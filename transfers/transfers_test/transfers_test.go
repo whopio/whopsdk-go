@@ -112,9 +112,13 @@ func TestTransfersCreateWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.CreateTransfersRequest{
-		Amount:   25,
-		OriginID: "biz_xxxxxxxxxxxxxx",
+	request := &whopsdk.CreateTransfersRequestBody{
+		Balance: &whopsdk.CreateTransfersRequestBodyBalance{
+			Amount:        25,
+			Currency:      "usd",
+			DestinationID: "user_xxxxxxxxxxxxxx",
+			OriginID:      "biz_xxxxxxxxxxxxxx",
+		},
 	}
 	_, invocationErr := client.Transfers.Create(
 		context.TODO(),
