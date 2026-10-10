@@ -247,7 +247,7 @@ type ListAppsRequest struct {
 	Recommended *bool `json:"-" url:"recommended,omitempty"`
 	// A search string matched against app names.
 	Query *string `json:"-" url:"query,omitempty"`
-	// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template.
+	// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template. `template_recent_sales` ranks them by how many of those businesses processed a payment in the last 24 hours, recounted hourly, breaking ties by `template_usage`.
 	Order *ListAppsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListAppsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -501,47 +501,48 @@ func (r *RetrieveAppsRequest) SetID(id string) {
 }
 
 var (
-	appFieldAccount                   = big.NewInt(1 << 0)
-	appFieldAPIKey                    = big.NewInt(1 << 1)
-	appFieldAppStoreDescription       = big.NewInt(1 << 2)
-	appFieldAppType                   = big.NewInt(1 << 3)
-	appFieldBannerImage               = big.NewInt(1 << 4)
-	appFieldBaseURL                   = big.NewInt(1 << 5)
-	appFieldBusinessesCreatedCount    = big.NewInt(1 << 6)
-	appFieldBusinessesCreatedLogoURLs = big.NewInt(1 << 7)
-	appFieldCreator                   = big.NewInt(1 << 8)
-	appFieldDashboardPath             = big.NewInt(1 << 9)
-	appFieldDefaultAPIKey             = big.NewInt(1 << 10)
-	appFieldDeployment                = big.NewInt(1 << 11)
-	appFieldDescription               = big.NewInt(1 << 12)
-	appFieldDiscoverPath              = big.NewInt(1 << 13)
-	appFieldDomainID                  = big.NewInt(1 << 14)
-	appFieldDomains                   = big.NewInt(1 << 15)
-	appFieldElementsUsed              = big.NewInt(1 << 16)
-	appFieldExperiencePath            = big.NewInt(1 << 17)
-	appFieldHostedURL                 = big.NewInt(1 << 18)
-	appFieldIcon                      = big.NewInt(1 << 19)
-	appFieldID                        = big.NewInt(1 << 20)
-	appFieldImportedFromURL           = big.NewInt(1 << 21)
-	appFieldMarketplaceStatus         = big.NewInt(1 << 22)
-	appFieldName                      = big.NewInt(1 << 23)
-	appFieldOauthClientType           = big.NewInt(1 << 24)
-	appFieldOpenapiPath               = big.NewInt(1 << 25)
-	appFieldOrigin                    = big.NewInt(1 << 26)
-	appFieldPreviewToken              = big.NewInt(1 << 27)
-	appFieldPreviousHostedURLs        = big.NewInt(1 << 28)
-	appFieldProductID                 = big.NewInt(1 << 29)
-	appFieldProductionAndroidBuild    = big.NewInt(1 << 30)
-	appFieldProductionIosBuild        = big.NewInt(1 << 31)
-	appFieldProductionWebBuild        = big.NewInt(1 << 32)
-	appFieldRedirectURIs              = big.NewInt(1 << 33)
-	appFieldRequestedPermissions      = big.NewInt(1 << 34)
-	appFieldRequiredScopes            = big.NewInt(1 << 35)
-	appFieldRoute                     = big.NewInt(1 << 36)
-	appFieldSecrets                   = big.NewInt(1 << 37)
-	appFieldSkillsPath                = big.NewInt(1 << 38)
-	appFieldStatus                    = big.NewInt(1 << 39)
-	appFieldVerified                  = big.NewInt(1 << 40)
+	appFieldAccount                        = big.NewInt(1 << 0)
+	appFieldAPIKey                         = big.NewInt(1 << 1)
+	appFieldAppStoreDescription            = big.NewInt(1 << 2)
+	appFieldAppType                        = big.NewInt(1 << 3)
+	appFieldBannerImage                    = big.NewInt(1 << 4)
+	appFieldBaseURL                        = big.NewInt(1 << 5)
+	appFieldBusinessesCreatedCount         = big.NewInt(1 << 6)
+	appFieldBusinessesCreatedLogoURLs      = big.NewInt(1 << 7)
+	appFieldBusinessesWithRecentSalesCount = big.NewInt(1 << 8)
+	appFieldCreator                        = big.NewInt(1 << 9)
+	appFieldDashboardPath                  = big.NewInt(1 << 10)
+	appFieldDefaultAPIKey                  = big.NewInt(1 << 11)
+	appFieldDeployment                     = big.NewInt(1 << 12)
+	appFieldDescription                    = big.NewInt(1 << 13)
+	appFieldDiscoverPath                   = big.NewInt(1 << 14)
+	appFieldDomainID                       = big.NewInt(1 << 15)
+	appFieldDomains                        = big.NewInt(1 << 16)
+	appFieldElementsUsed                   = big.NewInt(1 << 17)
+	appFieldExperiencePath                 = big.NewInt(1 << 18)
+	appFieldHostedURL                      = big.NewInt(1 << 19)
+	appFieldIcon                           = big.NewInt(1 << 20)
+	appFieldID                             = big.NewInt(1 << 21)
+	appFieldImportedFromURL                = big.NewInt(1 << 22)
+	appFieldMarketplaceStatus              = big.NewInt(1 << 23)
+	appFieldName                           = big.NewInt(1 << 24)
+	appFieldOauthClientType                = big.NewInt(1 << 25)
+	appFieldOpenapiPath                    = big.NewInt(1 << 26)
+	appFieldOrigin                         = big.NewInt(1 << 27)
+	appFieldPreviewToken                   = big.NewInt(1 << 28)
+	appFieldPreviousHostedURLs             = big.NewInt(1 << 29)
+	appFieldProductID                      = big.NewInt(1 << 30)
+	appFieldProductionAndroidBuild         = big.NewInt(1 << 31)
+	appFieldProductionIosBuild             = big.NewInt(1 << 32)
+	appFieldProductionWebBuild             = big.NewInt(1 << 33)
+	appFieldRedirectURIs                   = big.NewInt(1 << 34)
+	appFieldRequestedPermissions           = big.NewInt(1 << 35)
+	appFieldRequiredScopes                 = big.NewInt(1 << 36)
+	appFieldRoute                          = big.NewInt(1 << 37)
+	appFieldSecrets                        = big.NewInt(1 << 38)
+	appFieldSkillsPath                     = big.NewInt(1 << 39)
+	appFieldStatus                         = big.NewInt(1 << 40)
+	appFieldVerified                       = big.NewInt(1 << 41)
 )
 
 // appNullableFields maps the wire names of App's nullable fields (required or optional) to their field bits.
@@ -588,6 +589,8 @@ type App struct {
 	// Website businesses created from this app as a template.
 	BusinessesCreatedCount    int      `json:"businesses_created_count" url:"businesses_created_count"`
 	BusinessesCreatedLogoURLs []string `json:"businesses_created_logo_urls" url:"businesses_created_logo_urls"`
+	// Website businesses created from this app as a template that processed a payment in the last 24 hours. Recounted hourly, so it can be up to an hour behind.
+	BusinessesWithRecentSalesCount int `json:"businesses_with_recent_sales_count" url:"businesses_with_recent_sales_count"`
 	// The user who owns the publishing account.
 	Creator *AppCreator `json:"creator" url:"creator"`
 	// URL path for the account dashboard view, or `null` when not configured.
@@ -710,6 +713,13 @@ func (a *App) GetBusinessesCreatedLogoURLs() []string {
 		return nil
 	}
 	return a.BusinessesCreatedLogoURLs
+}
+
+func (a *App) GetBusinessesWithRecentSalesCount() int {
+	if a == nil {
+		return 0
+	}
+	return a.BusinessesWithRecentSalesCount
 }
 
 func (a *App) GetCreator() *AppCreator {
@@ -1013,6 +1023,13 @@ func (a *App) SetBusinessesCreatedCount(businessesCreatedCount int) {
 func (a *App) SetBusinessesCreatedLogoURLs(businessesCreatedLogoURLs []string) {
 	a.BusinessesCreatedLogoURLs = businessesCreatedLogoURLs
 	a.require(appFieldBusinessesCreatedLogoURLs)
+}
+
+// SetBusinessesWithRecentSalesCount sets the BusinessesWithRecentSalesCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetBusinessesWithRecentSalesCount(businessesWithRecentSalesCount int) {
+	a.BusinessesWithRecentSalesCount = businessesWithRecentSalesCount
+	a.require(appFieldBusinessesWithRecentSalesCount)
 }
 
 // SetCreator sets the Creator field and marks it as non-optional;
@@ -2549,30 +2566,31 @@ func (a *AppIcon) String() string {
 }
 
 var (
-	appListItemFieldAccount                   = big.NewInt(1 << 0)
-	appListItemFieldAppType                   = big.NewInt(1 << 1)
-	appListItemFieldBannerImage               = big.NewInt(1 << 2)
-	appListItemFieldBaseURL                   = big.NewInt(1 << 3)
-	appListItemFieldBusinessesCreatedCount    = big.NewInt(1 << 4)
-	appListItemFieldBusinessesCreatedLogoURLs = big.NewInt(1 << 5)
-	appListItemFieldCreator                   = big.NewInt(1 << 6)
-	appListItemFieldDashboardPath             = big.NewInt(1 << 7)
-	appListItemFieldDescription               = big.NewInt(1 << 8)
-	appListItemFieldDiscoverPath              = big.NewInt(1 << 9)
-	appListItemFieldDomainID                  = big.NewInt(1 << 10)
-	appListItemFieldDomains                   = big.NewInt(1 << 11)
-	appListItemFieldExperiencePath            = big.NewInt(1 << 12)
-	appListItemFieldHostedURL                 = big.NewInt(1 << 13)
-	appListItemFieldIcon                      = big.NewInt(1 << 14)
-	appListItemFieldID                        = big.NewInt(1 << 15)
-	appListItemFieldName                      = big.NewInt(1 << 16)
-	appListItemFieldOpenapiPath               = big.NewInt(1 << 17)
-	appListItemFieldOrigin                    = big.NewInt(1 << 18)
-	appListItemFieldPreviousHostedURLs        = big.NewInt(1 << 19)
-	appListItemFieldRoute                     = big.NewInt(1 << 20)
-	appListItemFieldSkillsPath                = big.NewInt(1 << 21)
-	appListItemFieldStatus                    = big.NewInt(1 << 22)
-	appListItemFieldVerified                  = big.NewInt(1 << 23)
+	appListItemFieldAccount                        = big.NewInt(1 << 0)
+	appListItemFieldAppType                        = big.NewInt(1 << 1)
+	appListItemFieldBannerImage                    = big.NewInt(1 << 2)
+	appListItemFieldBaseURL                        = big.NewInt(1 << 3)
+	appListItemFieldBusinessesCreatedCount         = big.NewInt(1 << 4)
+	appListItemFieldBusinessesCreatedLogoURLs      = big.NewInt(1 << 5)
+	appListItemFieldBusinessesWithRecentSalesCount = big.NewInt(1 << 6)
+	appListItemFieldCreator                        = big.NewInt(1 << 7)
+	appListItemFieldDashboardPath                  = big.NewInt(1 << 8)
+	appListItemFieldDescription                    = big.NewInt(1 << 9)
+	appListItemFieldDiscoverPath                   = big.NewInt(1 << 10)
+	appListItemFieldDomainID                       = big.NewInt(1 << 11)
+	appListItemFieldDomains                        = big.NewInt(1 << 12)
+	appListItemFieldExperiencePath                 = big.NewInt(1 << 13)
+	appListItemFieldHostedURL                      = big.NewInt(1 << 14)
+	appListItemFieldIcon                           = big.NewInt(1 << 15)
+	appListItemFieldID                             = big.NewInt(1 << 16)
+	appListItemFieldName                           = big.NewInt(1 << 17)
+	appListItemFieldOpenapiPath                    = big.NewInt(1 << 18)
+	appListItemFieldOrigin                         = big.NewInt(1 << 19)
+	appListItemFieldPreviousHostedURLs             = big.NewInt(1 << 20)
+	appListItemFieldRoute                          = big.NewInt(1 << 21)
+	appListItemFieldSkillsPath                     = big.NewInt(1 << 22)
+	appListItemFieldStatus                         = big.NewInt(1 << 23)
+	appListItemFieldVerified                       = big.NewInt(1 << 24)
 )
 
 // appListItemNullableFields maps the wire names of AppListItem's nullable fields (required or optional) to their field bits.
@@ -2603,6 +2621,8 @@ type AppListItem struct {
 	// Number of businesses created from this app as a template.
 	BusinessesCreatedCount    int      `json:"businesses_created_count" url:"businesses_created_count"`
 	BusinessesCreatedLogoURLs []string `json:"businesses_created_logo_urls" url:"businesses_created_logo_urls"`
+	// Number of businesses created from this app as a template that processed a payment in the last 24 hours. Recounted hourly, so it can be up to an hour behind.
+	BusinessesWithRecentSalesCount int `json:"businesses_with_recent_sales_count" url:"businesses_with_recent_sales_count"`
 	// The user who owns the publishing account.
 	Creator *AppCreator `json:"creator" url:"creator"`
 	// URL path for the account dashboard view, or `null` when not configured.
@@ -2685,6 +2705,13 @@ func (a *AppListItem) GetBusinessesCreatedLogoURLs() []string {
 		return nil
 	}
 	return a.BusinessesCreatedLogoURLs
+}
+
+func (a *AppListItem) GetBusinessesWithRecentSalesCount() int {
+	if a == nil {
+		return 0
+	}
+	return a.BusinessesWithRecentSalesCount
 }
 
 func (a *AppListItem) GetCreator() *AppCreator {
@@ -2869,6 +2896,13 @@ func (a *AppListItem) SetBusinessesCreatedCount(businessesCreatedCount int) {
 func (a *AppListItem) SetBusinessesCreatedLogoURLs(businessesCreatedLogoURLs []string) {
 	a.BusinessesCreatedLogoURLs = businessesCreatedLogoURLs
 	a.require(appListItemFieldBusinessesCreatedLogoURLs)
+}
+
+// SetBusinessesWithRecentSalesCount sets the BusinessesWithRecentSalesCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetBusinessesWithRecentSalesCount(businessesWithRecentSalesCount int) {
+	a.BusinessesWithRecentSalesCount = businessesWithRecentSalesCount
+	a.require(appListItemFieldBusinessesWithRecentSalesCount)
 }
 
 // SetCreator sets the Creator field and marks it as non-optional;
@@ -3933,6 +3967,7 @@ type ListAppsRequestOrder string
 const (
 	ListAppsRequestOrderCreatedAt               ListAppsRequestOrder = "created_at"
 	ListAppsRequestOrderDiscoverableAt          ListAppsRequestOrder = "discoverable_at"
+	ListAppsRequestOrderTemplateRecentSales     ListAppsRequestOrder = "template_recent_sales"
 	ListAppsRequestOrderTemplateUsage           ListAppsRequestOrder = "template_usage"
 	ListAppsRequestOrderTotalInstallsLast30Days ListAppsRequestOrder = "total_installs_last_30_days"
 	ListAppsRequestOrderTotalInstallsLast7Days  ListAppsRequestOrder = "total_installs_last_7_days"
@@ -3944,6 +3979,8 @@ func NewListAppsRequestOrderFromString(s string) (ListAppsRequestOrder, error) {
 		return ListAppsRequestOrderCreatedAt, nil
 	case "discoverable_at":
 		return ListAppsRequestOrderDiscoverableAt, nil
+	case "template_recent_sales":
+		return ListAppsRequestOrderTemplateRecentSales, nil
 	case "template_usage":
 		return ListAppsRequestOrderTemplateUsage, nil
 	case "total_installs_last_30_days":
