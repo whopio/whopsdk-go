@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-09"
+		apiVersionDateDefault := "2026-10-09-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists an account's transfers.
+// Lists transfers visible to the caller. Optional account filters narrow the results.
 //
 // Example:
 //
@@ -94,7 +94,6 @@ func (c *Client) List(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
 	readPageResponse := func(response *whopsdk.ListTransfersResponse) *core.PageResponse[*string, *whopsdk.ListTransfersResponseDataItem, *whopsdk.ListTransfersResponse] {
@@ -123,9 +122,13 @@ func (c *Client) List(
 //
 // Example:
 //
-//	request := &whopsdk.CreateTransfersRequest{
-//	    Amount: 25,
-//	    OriginID: "biz_xxxxxxxxxxxxxx",
+//	request := &whopsdk.CreateTransfersRequestBody{
+//	    Balance: &whopsdk.CreateTransfersRequestBodyBalance{
+//	        Amount: 25,
+//	        Currency: "usd",
+//	        DestinationID: "user_xxxxxxxxxxxxxx",
+//	        OriginID: "biz_xxxxxxxxxxxxxx",
+//	    },
 //	}
 //	client.Transfers.Create(
 //	    context.TODO(),
@@ -133,7 +136,7 @@ func (c *Client) List(
 //	)
 func (c *Client) Create(
 	ctx context.Context,
-	request *whopsdk.CreateTransfersRequest,
+	request *whopsdk.CreateTransfersRequestBody,
 	opts ...option.RequestOption,
 ) (*whopsdk.CreateTransfersResponse, error) {
 	response, err := c.WithRawResponse.Create(
