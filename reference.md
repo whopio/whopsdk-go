@@ -10297,7 +10297,7 @@ client.BountySubmissions.Submit(
 <dl>
 <dd>
 
-Lists an account's card transactions, newest first. Defaults to the account the credential belongs to. Covers every card the owner has ever had, including canceled cards and spend that predates a re-application, and team members only see transactions on the cards assigned to them. Pass `transaction_ids` to fetch specific transactions instead of paging for them.
+Lists the card transactions of an account or a user, newest first. Defaults to the account the credential belongs to. Covers every card the owner has ever had, including canceled cards and spend that predates a re-application, and team members only see transactions on the cards assigned to them. Pass `transaction_ids` to fetch specific transactions instead of paging for them.
 </dd>
 </dl>
 </dd>
@@ -10347,7 +10347,15 @@ client.CardTransactions.List(
 <dl>
 <dd>
 
-**accountID:** `*string` — The account whose card transactions to list, prefixed `biz_`. Defaults to the credential's account.
+**accountID:** `*string` — The account whose card transactions to list, prefixed `biz_`. Provide this or `user_id`. Defaults to the credential's account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The user whose personal card transactions to list, prefixed `user_`. Provide this or `account_id`. Only that user can read them.
     
 </dd>
 </dl>
@@ -10511,7 +10519,15 @@ client.CardTransactions.Retrieve(
 <dl>
 <dd>
 
-**accountID:** `*string` — The account that owns the transaction, prefixed `biz_`. Defaults to the credential's account.
+**accountID:** `*string` — The account that owns the transaction, prefixed `biz_`. Provide this or `user_id`. Defaults to the credential's account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `*string` — The user that owns the transaction, prefixed `user_`. Provide this or `account_id`. Only that user can read it.
     
 </dd>
 </dl>
@@ -38182,7 +38198,7 @@ client.Users.List(
 <dl>
 <dd>
 
-Retrieves the authenticated user — the self view of the user object. Same shape as `GET /users/{id}`, with the self-only fields populated: `email` (email-read scope), `staff` (Whop staff only, staff-read scope), `balance` and `earnings_usd` (balance-read scope), the opt-in `balance_history`, and every linked social account.
+Retrieves the authenticated user — the self view of the user object. Same shape as `GET /users/{id}`, with the self-only fields populated: `email` (email-read scope), `staff` (Whop staff only, staff-read scope), `balance`, `cards` and `earnings_usd` (balance-read scope), the opt-in `balance_history`, and every linked social account.
 </dd>
 </dl>
 </dd>
@@ -46452,6 +46468,14 @@ client.Users.Preferences.Update(
 <dd>
 
 **bountyWorkerOnboardingDismissed:** `*bool` — Whether the user has dismissed the first-time bounty worker onboarding. Set to `false` to show it again.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cardsAutoTopUp:** `*bool` — Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. Requires a cards balance and the `payout:account:update` permission.
     
 </dd>
 </dl>

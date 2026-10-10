@@ -10,13 +10,16 @@ import (
 
 var (
 	updatePreferencesRequestFieldBountyWorkerOnboardingDismissed = big.NewInt(1 << 0)
-	updatePreferencesRequestFieldInvestigationEnabled            = big.NewInt(1 << 1)
-	updatePreferencesRequestFieldTermsAccepted                   = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldCardsAutoTopUp                  = big.NewInt(1 << 1)
+	updatePreferencesRequestFieldInvestigationEnabled            = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldTermsAccepted                   = big.NewInt(1 << 3)
 )
 
 type UpdatePreferencesRequest struct {
 	// Whether the user has dismissed the first-time bounty worker onboarding. Set to `false` to show it again.
 	BountyWorkerOnboardingDismissed *bool `json:"bounty_worker_onboarding_dismissed,omitempty" url:"-"`
+	// Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. Requires a cards balance and the `payout:account:update` permission.
+	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
 	// Whether investigation mode is enabled for the user. Only meaningful for staff users with investigation access.
 	InvestigationEnabled *bool `json:"investigation_enabled,omitempty" url:"-"`
 	// Records the user's acceptance of Whop's terms and policies. Only `true` is accepted — the server stamps `terms_accepted_at` and acceptance cannot be withdrawn here.
@@ -40,6 +43,13 @@ func (u *UpdatePreferencesRequest) require(field *big.Int) {
 func (u *UpdatePreferencesRequest) SetBountyWorkerOnboardingDismissed(bountyWorkerOnboardingDismissed *bool) {
 	u.BountyWorkerOnboardingDismissed = bountyWorkerOnboardingDismissed
 	u.require(updatePreferencesRequestFieldBountyWorkerOnboardingDismissed)
+}
+
+// SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetCardsAutoTopUp(cardsAutoTopUp *bool) {
+	u.CardsAutoTopUp = cardsAutoTopUp
+	u.require(updatePreferencesRequestFieldCardsAutoTopUp)
 }
 
 // SetInvestigationEnabled sets the InvestigationEnabled field and marks it as non-optional;

@@ -354,19 +354,20 @@ var (
 	userFieldBalanceHistory                    = big.NewInt(1 << 1)
 	userFieldBanner                            = big.NewInt(1 << 2)
 	userFieldBio                               = big.NewInt(1 << 3)
-	userFieldCreatedAt                         = big.NewInt(1 << 4)
-	userFieldEarningsUsd                       = big.NewInt(1 << 5)
-	userFieldEmail                             = big.NewInt(1 << 6)
-	userFieldID                                = big.NewInt(1 << 7)
-	userFieldName                              = big.NewInt(1 << 8)
-	userFieldProfilePicture                    = big.NewInt(1 << 9)
-	userFieldStaff                             = big.NewInt(1 << 10)
-	userFieldTrading                           = big.NewInt(1 << 11)
-	userFieldUsername                          = big.NewInt(1 << 12)
-	userFieldVerification                      = big.NewInt(1 << 13)
-	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 14)
-	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 15)
-	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 16)
+	userFieldCards                             = big.NewInt(1 << 4)
+	userFieldCreatedAt                         = big.NewInt(1 << 5)
+	userFieldEarningsUsd                       = big.NewInt(1 << 6)
+	userFieldEmail                             = big.NewInt(1 << 7)
+	userFieldID                                = big.NewInt(1 << 8)
+	userFieldName                              = big.NewInt(1 << 9)
+	userFieldProfilePicture                    = big.NewInt(1 << 10)
+	userFieldStaff                             = big.NewInt(1 << 11)
+	userFieldTrading                           = big.NewInt(1 << 12)
+	userFieldUsername                          = big.NewInt(1 << 13)
+	userFieldVerification                      = big.NewInt(1 << 14)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 15)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 16)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 17)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
@@ -375,6 +376,7 @@ var userNullableFields = map[string]*big.Int{
 	"balance_history":                       userFieldBalanceHistory,
 	"banner":                                userFieldBanner,
 	"bio":                                   userFieldBio,
+	"cards":                                 userFieldCards,
 	"earnings_usd":                          userFieldEarningsUsd,
 	"email":                                 userFieldEmail,
 	"name":                                  userFieldName,
@@ -394,6 +396,8 @@ type User struct {
 	Banner *UserBanner `json:"banner,omitempty" url:"banner,omitempty"`
 	// The user's biography
 	Bio *string `json:"bio,omitempty" url:"bio,omitempty"`
+	// Where the user's personal card application stands. Populated only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, or when the user has never applied for a card.
+	Cards *AccountCards `json:"cards,omitempty" url:"cards,omitempty"`
 	// When the user was created, as an ISO 8601 timestamp
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// The user's gross USD income over time, including a Partner commission breakdown. Populated only on single-user self reads for callers with balance-read scope; `null` otherwise.
@@ -454,6 +458,13 @@ func (u *User) GetBio() *string {
 		return nil
 	}
 	return u.Bio
+}
+
+func (u *User) GetCards() *AccountCards {
+	if u == nil {
+		return nil
+	}
+	return u.Cards
 }
 
 func (u *User) GetCreatedAt() string {
@@ -589,6 +600,13 @@ func (u *User) SetBanner(banner *UserBanner) {
 func (u *User) SetBio(bio *string) {
 	u.Bio = bio
 	u.require(userFieldBio)
+}
+
+// SetCards sets the Cards field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetCards(cards *AccountCards) {
+	u.Cards = cards
+	u.require(userFieldCards)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;

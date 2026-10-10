@@ -939,6 +939,186 @@ func (a AccountCapabilitiesTransfer) Ptr() *AccountCapabilitiesTransfer {
 }
 
 var (
+	accountCardsFieldKind   = big.NewInt(1 << 0)
+	accountCardsFieldStatus = big.NewInt(1 << 1)
+)
+
+// accountCardsNullableFields maps the wire names of AccountCards's nullable fields (required or optional) to their field bits.
+var accountCardsNullableFields = map[string]*big.Int{
+	"kind": accountCardsFieldKind,
+}
+
+type AccountCards struct {
+	// Whether the card application verifies a business (`business`, KYB) or a person (`individual`, consumer identity). `null` when the application is not yet linked to a verification.
+	Kind *AccountCardsKind `json:"kind,omitempty" url:"kind,omitempty"`
+	// Where the card application stands. `approved` means cards can be issued. `needs_verification` means the applicant has not completed identity verification yet; `needs_information` means they did, but the documents were rejected for a fixable reason and must be resubmitted. `pending` and `manual_review` are in flight. `denied`, `locked`, and `canceled` are terminal.
+	Status AccountCardsStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountCards) GetKind() *AccountCardsKind {
+	if a == nil {
+		return nil
+	}
+	return a.Kind
+}
+
+func (a *AccountCards) GetStatus() AccountCardsStatus {
+	if a == nil {
+		return ""
+	}
+	return a.Status
+}
+
+func (a *AccountCards) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountCards) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCards) SetKind(kind *AccountCardsKind) {
+	a.Kind = kind
+	a.require(accountCardsFieldKind)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCards) SetStatus(status AccountCardsStatus) {
+	a.Status = status
+	a.require(accountCardsFieldStatus)
+}
+
+func (a *AccountCards) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountCards
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountCards(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountCardsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountCards) MarshalJSON() ([]byte, error) {
+	type embed AccountCards
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountCards) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Whether the card application verifies a business (`business`, KYB) or a person (`individual`, consumer identity). `null` when the application is not yet linked to a verification.
+type AccountCardsKind string
+
+const (
+	AccountCardsKindIndividual AccountCardsKind = "individual"
+	AccountCardsKindBusiness   AccountCardsKind = "business"
+)
+
+func NewAccountCardsKindFromString(s string) (AccountCardsKind, error) {
+	switch s {
+	case "individual":
+		return AccountCardsKindIndividual, nil
+	case "business":
+		return AccountCardsKindBusiness, nil
+	}
+	var t AccountCardsKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountCardsKind) Ptr() *AccountCardsKind {
+	return &a
+}
+
+// Where the card application stands. `approved` means cards can be issued. `needs_verification` means the applicant has not completed identity verification yet; `needs_information` means they did, but the documents were rejected for a fixable reason and must be resubmitted. `pending` and `manual_review` are in flight. `denied`, `locked`, and `canceled` are terminal.
+type AccountCardsStatus string
+
+const (
+	AccountCardsStatusApproved          AccountCardsStatus = "approved"
+	AccountCardsStatusPending           AccountCardsStatus = "pending"
+	AccountCardsStatusManualReview      AccountCardsStatus = "manual_review"
+	AccountCardsStatusDenied            AccountCardsStatus = "denied"
+	AccountCardsStatusLocked            AccountCardsStatus = "locked"
+	AccountCardsStatusCanceled          AccountCardsStatus = "canceled"
+	AccountCardsStatusNeedsVerification AccountCardsStatus = "needs_verification"
+	AccountCardsStatusNeedsInformation  AccountCardsStatus = "needs_information"
+)
+
+func NewAccountCardsStatusFromString(s string) (AccountCardsStatus, error) {
+	switch s {
+	case "approved":
+		return AccountCardsStatusApproved, nil
+	case "pending":
+		return AccountCardsStatusPending, nil
+	case "manual_review":
+		return AccountCardsStatusManualReview, nil
+	case "denied":
+		return AccountCardsStatusDenied, nil
+	case "locked":
+		return AccountCardsStatusLocked, nil
+	case "canceled":
+		return AccountCardsStatusCanceled, nil
+	case "needs_verification":
+		return AccountCardsStatusNeedsVerification, nil
+	case "needs_information":
+		return AccountCardsStatusNeedsInformation, nil
+	}
+	var t AccountCardsStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountCardsStatus) Ptr() *AccountCardsStatus {
+	return &a
+}
+
+var (
 	accountCoveredPayoutFeesFieldAll           = big.NewInt(1 << 0)
 	accountCoveredPayoutFeesFieldBankWire      = big.NewInt(1 << 1)
 	accountCoveredPayoutFeesFieldCrypto        = big.NewInt(1 << 2)
@@ -57779,9 +57959,10 @@ func (u UserNotificationPreferenceObject) Ptr() *UserNotificationPreferenceObjec
 
 var (
 	userPreferencesFieldBountyWorkerOnboardingDismissed = big.NewInt(1 << 0)
-	userPreferencesFieldInvestigationEnabled            = big.NewInt(1 << 1)
-	userPreferencesFieldTermsAccepted                   = big.NewInt(1 << 2)
-	userPreferencesFieldTermsAcceptedAt                 = big.NewInt(1 << 3)
+	userPreferencesFieldCardsAutoTopUp                  = big.NewInt(1 << 1)
+	userPreferencesFieldInvestigationEnabled            = big.NewInt(1 << 2)
+	userPreferencesFieldTermsAccepted                   = big.NewInt(1 << 3)
+	userPreferencesFieldTermsAcceptedAt                 = big.NewInt(1 << 4)
 )
 
 // userPreferencesNullableFields maps the wire names of UserPreferences's nullable fields (required or optional) to their field bits.
@@ -57792,6 +57973,8 @@ var userPreferencesNullableFields = map[string]*big.Int{
 type UserPreferences struct {
 	// Whether the user has dismissed the first-time bounty worker onboarding. Set to `false` to show it again.
 	BountyWorkerOnboardingDismissed bool `json:"bounty_worker_onboarding_dismissed" url:"bounty_worker_onboarding_dismissed"`
+	// Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. `false` when the user has no cards balance.
+	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether investigation mode is enabled for the user. Only meaningful for staff users with investigation access.
 	InvestigationEnabled bool `json:"investigation_enabled" url:"investigation_enabled"`
 	// Whether the user has accepted Whop's terms and policies. `false` until recorded via `PATCH` with `terms_accepted: true`.
@@ -57811,6 +57994,13 @@ func (u *UserPreferences) GetBountyWorkerOnboardingDismissed() bool {
 		return false
 	}
 	return u.BountyWorkerOnboardingDismissed
+}
+
+func (u *UserPreferences) GetCardsAutoTopUp() bool {
+	if u == nil {
+		return false
+	}
+	return u.CardsAutoTopUp
 }
 
 func (u *UserPreferences) GetInvestigationEnabled() bool {
@@ -57855,6 +58045,13 @@ func (u *UserPreferences) require(field *big.Int) {
 func (u *UserPreferences) SetBountyWorkerOnboardingDismissed(bountyWorkerOnboardingDismissed bool) {
 	u.BountyWorkerOnboardingDismissed = bountyWorkerOnboardingDismissed
 	u.require(userPreferencesFieldBountyWorkerOnboardingDismissed)
+}
+
+// SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserPreferences) SetCardsAutoTopUp(cardsAutoTopUp bool) {
+	u.CardsAutoTopUp = cardsAutoTopUp
+	u.require(userPreferencesFieldCardsAutoTopUp)
 }
 
 // SetInvestigationEnabled sets the InvestigationEnabled field and marks it as non-optional;
