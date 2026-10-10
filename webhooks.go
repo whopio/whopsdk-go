@@ -1273,6 +1273,7 @@ const (
 	WebhookEventsItemAdCampaignPaymentFailed               WebhookEventsItem = "ad_campaign.payment_failed"
 	WebhookEventsItemAdCampaignUpdated                     WebhookEventsItem = "ad_campaign.updated"
 	WebhookEventsItemAdCampaignEvents                      WebhookEventsItem = "ad_campaign.events"
+	WebhookEventsItemAdGroupUpdated                        WebhookEventsItem = "ad_group.updated"
 	WebhookEventsItemAdUpdated                             WebhookEventsItem = "ad.updated"
 	WebhookEventsItemChatMessageCreated                    WebhookEventsItem = "chat.message.created"
 	WebhookEventsItemChatReactionCreated                   WebhookEventsItem = "chat.reaction.created"
@@ -1457,6 +1458,8 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemAdCampaignUpdated, nil
 	case "ad_campaign.events":
 		return WebhookEventsItemAdCampaignEvents, nil
+	case "ad_group.updated":
+		return WebhookEventsItemAdGroupUpdated, nil
 	case "ad.updated":
 		return WebhookEventsItemAdUpdated, nil
 	case "chat.message.created":
@@ -1992,6 +1995,7 @@ const (
 	WebhookListItemEventsItemAdCampaignPaymentFailed               WebhookListItemEventsItem = "ad_campaign.payment_failed"
 	WebhookListItemEventsItemAdCampaignUpdated                     WebhookListItemEventsItem = "ad_campaign.updated"
 	WebhookListItemEventsItemAdCampaignEvents                      WebhookListItemEventsItem = "ad_campaign.events"
+	WebhookListItemEventsItemAdGroupUpdated                        WebhookListItemEventsItem = "ad_group.updated"
 	WebhookListItemEventsItemAdUpdated                             WebhookListItemEventsItem = "ad.updated"
 	WebhookListItemEventsItemChatMessageCreated                    WebhookListItemEventsItem = "chat.message.created"
 	WebhookListItemEventsItemChatReactionCreated                   WebhookListItemEventsItem = "chat.reaction.created"
@@ -2176,6 +2180,8 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemAdCampaignUpdated, nil
 	case "ad_campaign.events":
 		return WebhookListItemEventsItemAdCampaignEvents, nil
+	case "ad_group.updated":
+		return WebhookListItemEventsItemAdGroupUpdated, nil
 	case "ad.updated":
 		return WebhookListItemEventsItemAdUpdated, nil
 	case "chat.message.created":
@@ -2324,6 +2330,7 @@ const (
 	WebhookTestableEventsItemAdCampaignPaymentFailed               WebhookTestableEventsItem = "ad_campaign.payment_failed"
 	WebhookTestableEventsItemAdCampaignUpdated                     WebhookTestableEventsItem = "ad_campaign.updated"
 	WebhookTestableEventsItemAdCampaignEvents                      WebhookTestableEventsItem = "ad_campaign.events"
+	WebhookTestableEventsItemAdGroupUpdated                        WebhookTestableEventsItem = "ad_group.updated"
 	WebhookTestableEventsItemAdUpdated                             WebhookTestableEventsItem = "ad.updated"
 	WebhookTestableEventsItemChatMessageCreated                    WebhookTestableEventsItem = "chat.message.created"
 	WebhookTestableEventsItemChatReactionCreated                   WebhookTestableEventsItem = "chat.reaction.created"
@@ -2508,6 +2515,8 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemAdCampaignUpdated, nil
 	case "ad_campaign.events":
 		return WebhookTestableEventsItemAdCampaignEvents, nil
+	case "ad_group.updated":
+		return WebhookTestableEventsItemAdGroupUpdated, nil
 	case "ad.updated":
 		return WebhookTestableEventsItemAdUpdated, nil
 	case "chat.message.created":
@@ -2652,6 +2661,7 @@ const (
 	CreateWebhooksRequestEventsItemAdCampaignPaymentFailed            CreateWebhooksRequestEventsItem = "ad_campaign.payment_failed"
 	CreateWebhooksRequestEventsItemAdCampaignUpdated                  CreateWebhooksRequestEventsItem = "ad_campaign.updated"
 	CreateWebhooksRequestEventsItemAdCampaignEvents                   CreateWebhooksRequestEventsItem = "ad_campaign.events"
+	CreateWebhooksRequestEventsItemAdGroupUpdated                     CreateWebhooksRequestEventsItem = "ad_group.updated"
 	CreateWebhooksRequestEventsItemAdUpdated                          CreateWebhooksRequestEventsItem = "ad.updated"
 	CreateWebhooksRequestEventsItemChatMessageCreated                 CreateWebhooksRequestEventsItem = "chat.message.created"
 	CreateWebhooksRequestEventsItemChatReactionCreated                CreateWebhooksRequestEventsItem = "chat.reaction.created"
@@ -2814,6 +2824,8 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemAdCampaignUpdated, nil
 	case "ad_campaign.events":
 		return CreateWebhooksRequestEventsItemAdCampaignEvents, nil
+	case "ad_group.updated":
+		return CreateWebhooksRequestEventsItemAdGroupUpdated, nil
 	case "ad.updated":
 		return CreateWebhooksRequestEventsItemAdUpdated, nil
 	case "chat.message.created":
@@ -3856,6 +3868,7 @@ const (
 	UpdateWebhooksRequestEventsItemAdCampaignPaymentFailed            UpdateWebhooksRequestEventsItem = "ad_campaign.payment_failed"
 	UpdateWebhooksRequestEventsItemAdCampaignUpdated                  UpdateWebhooksRequestEventsItem = "ad_campaign.updated"
 	UpdateWebhooksRequestEventsItemAdCampaignEvents                   UpdateWebhooksRequestEventsItem = "ad_campaign.events"
+	UpdateWebhooksRequestEventsItemAdGroupUpdated                     UpdateWebhooksRequestEventsItem = "ad_group.updated"
 	UpdateWebhooksRequestEventsItemAdUpdated                          UpdateWebhooksRequestEventsItem = "ad.updated"
 	UpdateWebhooksRequestEventsItemChatMessageCreated                 UpdateWebhooksRequestEventsItem = "chat.message.created"
 	UpdateWebhooksRequestEventsItemChatReactionCreated                UpdateWebhooksRequestEventsItem = "chat.reaction.created"
@@ -4018,6 +4031,8 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemAdCampaignUpdated, nil
 	case "ad_campaign.events":
 		return UpdateWebhooksRequestEventsItemAdCampaignEvents, nil
+	case "ad_group.updated":
+		return UpdateWebhooksRequestEventsItemAdGroupUpdated, nil
 	case "ad.updated":
 		return UpdateWebhooksRequestEventsItemAdUpdated, nil
 	case "chat.message.created":
